@@ -1,46 +1,35 @@
-import { Container, Sprite, Stage, useTick } from '@pixi/react';
-import { useReducer, useRef } from 'react';
-
-type reducertype = {
-    type: string,
-    data: any
-}
-
-const Bunny = () => {
-    const reducer = (a: any, data: reducertype) => data.data;
-    const [motion, update] = useReducer(reducer, undefined);
-    const iter = useRef(0);
-
-    useTick((delta) => {
-        const i = (iter.current += 0.05 * delta);
-
-        update({
-            type: 'update',
-            data: {
-                x: Math.sin(i) * 100,
-                y: Math.sin(i / 1.5) * 100,
-                rotation: Math.sin(i) * Math.PI,
-                anchor: Math.sin(i / 2),
-            },
-        });
-    });
-    try {
-        return <Sprite image="https://pixijs.io/pixi-react/img/bunny.png" {...motion} />;
-    }
-    catch (e) {
-        console.log(e);
-    }
-    return <></>;
-};
+import { useState } from 'react'
+import reactLogo from './assets/react.svg'
+import viteLogo from '/vite.svg'
+import './App.css'
 
 function App() {
-    return (
-        <Stage width={300} height={300} options={{ backgroundAlpha: 0 }}>
-            <Container x={150} y={150}>
-                <Bunny />
-            </Container>
-        </Stage>
-    );
+  const [count, setCount] = useState(0)
+
+  return (
+    <>
+      <div>
+        <a href="https://vitejs.dev" target="_blank">
+          <img src={viteLogo} className="logo" alt="Vite logo" />
+        </a>
+        <a href="https://react.dev" target="_blank">
+          <img src={reactLogo} className="logo react" alt="React logo" />
+        </a>
+      </div>
+      <h1>Vite + React</h1>
+      <div className="card">
+        <button onClick={() => setCount((count) => count + 1)}>
+          count is {count}
+        </button>
+        <p>
+          Edit <code>src/App.tsx</code> and save to test HMR
+        </p>
+      </div>
+      <p className="read-the-docs">
+        Click on the Vite and React logos to learn more
+      </p>
+    </>
+  )
 }
 
-export default App;
+export default App
