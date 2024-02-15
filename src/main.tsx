@@ -23,8 +23,14 @@ if (!reactRoot) {
     throw new Error('root element not found');
 }
 
+const container = new PIXI.Container();
+container.x = 0;
+container.y = 0;
+app.stage.addChild(container);
+
+
 ReactDOM.createRoot(reactRoot).render(
     <App />
 )
 
-showImage('https://pixijs.com/assets/bg_grass.jpg', app)
+await showImage('https://pixijs.com/assets/bg_grass.jpg', container)
