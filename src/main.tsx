@@ -2,6 +2,7 @@ import * as PIXI from 'pixi.js';
 import ReactDOM from 'react-dom/client';
 import App from './App.tsx';
 import './index.css';
+import { showImage } from './lib/image.ts';
 
 // Canvas setup with PIXI
 const canvas = document.body
@@ -25,3 +26,5 @@ if (!reactRoot) {
 ReactDOM.createRoot(reactRoot).render(
     <App />
 )
+
+showImage('https://pixijs.com/assets/bg_grass.jpg', app)
