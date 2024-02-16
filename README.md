@@ -1,30 +1,25 @@
-# React + TypeScript + Vite
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+# Windows Error
+Error: Cannot find module @rollup/rollup-win32-x64-msvc.
 
-Currently, two official plugins are available:
+npm install @rollup/rollup-win32-x64-msvc
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+# Linux Error
+error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
 
-## Expanding the ESLint configuration
+try these command
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+apt install libnss
 
-- Configure the top-level `parserOptions` property like this:
+apt install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+if the above commands didn't work then go for the below one
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+sudo apt install libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3-dev libxss-dev
+
+
+
+
+error while loading shared libraries: libasound.so.2: cannot open shared object file: No such file or directory
+
+sudo apt-get install libasound2
