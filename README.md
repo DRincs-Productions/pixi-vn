@@ -2,12 +2,12 @@
 
 ## Errors and Solutions
 
-### Error: Cannot find module @rollup/rollup-win32-x64-msvc.
+### Error: Cannot find module @rollup/rollup-win32-x64-msvc
 
 In Windows, when you start a new Electron project, you may encounter the following error:
 
 ```bash
-Error: Cannot find module @rollup/rollup-win32-x64-msvc.
+Error: Cannot find module @rollup/rollup-win32-x64-msvc
 ```
 
 To fix this error, run the following command:
