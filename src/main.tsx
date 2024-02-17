@@ -1,8 +1,8 @@
 import * as PIXI from 'pixi.js';
 import ReactDOM from 'react-dom/client';
-import App from './App.tsx';
+import App from './App';
 import './index.css';
-import { showImage } from './lib/image.ts';
+import { showImage } from './lib/image';
 
 // Canvas setup with PIXI
 const canvas = document.body
@@ -33,4 +33,4 @@ ReactDOM.createRoot(reactRoot).render(
     <App />
 )
 
-await showImage('https://pixijs.com/assets/bg_grass.jpg', container)
+showImage('https://pixijs.com/assets/bg_grass.jpg', container)
