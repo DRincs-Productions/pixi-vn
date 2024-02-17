@@ -1,5 +1,5 @@
 import * as PIXI from 'pixi.js';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { showImage } from './lib/image';
@@ -23,14 +23,14 @@ if (!reactRoot) {
     throw new Error('root element not found');
 }
 
+const root = createRoot(reactRoot);
+root.render(
+    <App />
+)
+
 const container = new PIXI.Container();
 container.x = 0;
 container.y = 0;
 app.stage.addChild(container);
-
-
-ReactDOM.createRoot(reactRoot).render(
-    <App />
-)
 
 showImage('https://pixijs.com/assets/bg_grass.jpg', container)
