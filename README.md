@@ -1,8 +1,22 @@
-# Use Electron
+## vs Ren'Py
 
-## Errors and Solutions
+### Performance
 
-### Error: Cannot find module @rollup/rollup-win32-x64-msvc
+### Syntax
+
+### Development possibilities
+
+### Interface components
+
+### Device Distribution
+
+### Development tools
+
+## Use Electron
+
+### Errors and Solutions
+
+#### Error: Cannot find module @rollup/rollup-win32-x64-msvc
 
 In Windows, when you start a new Electron project, you may encounter the following error:
 
@@ -17,7 +31,7 @@ npm install @rollup/rollup-win32-x64-msvc
 
 ```
 
-### error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
+#### error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
 
 In Linux, when you run an Electron app, you may encounter the following error:
 
@@ -40,7 +54,7 @@ sudo apt install libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 
 
 ```
 
-### error while loading shared libraries: libasound.so.2: cannot open shared object file: No such file or directory
+#### error while loading shared libraries: libasound.so.2: cannot open shared object file: No such file or directory
 
 In Linux, when you run an Electron app, you may encounter the following error:
 
