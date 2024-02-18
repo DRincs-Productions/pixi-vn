@@ -6,23 +6,27 @@ import { showImage } from './lib/image';
 import { Manager } from './lib/manager';
 
 // Canvas setup with PIXI
-const canvas = document.body
-if (!canvas) {
+const body = document.body
+if (!body) {
     throw new Error('body element not found');
 }
 
-Manager.initialize(1920, 1080, '#1099bb')
+Manager.initialize(1920, 1080, {
+    backgroundColor: 0x1099bb
+})
 
-canvas.appendChild(Manager.app.view as HTMLCanvasElement)
+body.appendChild(Manager.app.view as HTMLCanvasElement)
 
 // React setup with ReactDOM
-const reactRoot = document.getElementById('root')
-if (!reactRoot) {
+const root = document.getElementById('root')
+if (!root) {
     throw new Error('root element not found');
 }
 
-const root = createRoot(reactRoot);
-root.render(
+root.appendChild(Manager.interfaceDiv)
+const reactRoot = createRoot(Manager.interfaceDiv)
+
+reactRoot.render(
     <App />
 )
 
