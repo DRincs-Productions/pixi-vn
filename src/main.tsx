@@ -3,6 +3,7 @@ import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
 import { showImage } from './lib/image';
+import { Manager } from './lib/manager';
 
 // Canvas setup with PIXI
 const canvas = document.body
@@ -10,12 +11,9 @@ if (!canvas) {
     throw new Error('body element not found');
 }
 
-const app = new PIXI.Application({
-    background: '#1099bb',
-    resizeTo: window,
-});
+Manager.initialize(1920, 1080, '#1099bb')
 
-canvas.appendChild(app.view as HTMLCanvasElement);
+canvas.appendChild(Manager.app.view as HTMLCanvasElement)
 
 // React setup with ReactDOM
 const reactRoot = document.getElementById('root')
@@ -31,6 +29,6 @@ root.render(
 const container = new PIXI.Container();
 container.x = 0;
 container.y = 0;
-app.stage.addChild(container);
+Manager.app.stage.addChild(container);
 
 showImage('https://pixijs.com/assets/bg_grass.jpg', container)
