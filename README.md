@@ -1,46 +1,56 @@
-# Getting Started with Create React App
+# Use Electron
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+## Errors and Solutions
 
-## Available Scripts
+### Error: Cannot find module @rollup/rollup-win32-x64-msvc
 
-In the project directory, you can run:
+In Windows, when you start a new Electron project, you may encounter the following error:
 
-### `npm start`
+```bash
+Error: Cannot find module @rollup/rollup-win32-x64-msvc
+```
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+To fix this error, run the following command:
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+```bash
+npm install @rollup/rollup-win32-x64-msvc
 
-### `npm test`
+```
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+### error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
 
-### `npm run build`
+In Linux, when you run an Electron app, you may encounter the following error:
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+```bash
+error while loading shared libraries: libnss3.so: cannot open shared object file: No such file or directory
+```
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+To fix this error, try these command:
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+```bash
+apt install libnss
+apt install libnss3-dev libgdk-pixbuf2.0-dev libgtk-3-dev libxss-dev
 
-### `npm run eject`
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+if the above commands didn't work then go for the below one
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+```bash
+sudo apt install libgconf-2-4 libatk1.0-0 libatk-bridge2.0-0 libgdk-pixbuf2.0-0 libgtk-3-0 libgbm-dev libnss3-dev libxss-dev
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+### error while loading shared libraries: libasound.so.2: cannot open shared object file: No such file or directory
 
-## Learn More
+In Linux, when you run an Electron app, you may encounter the following error:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+```bash
+error while loading shared libraries: libasound.so.2: cannot open shared object file: No such file or directory
+```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+To fix this error, run the following command:
+
+```bash
+sudo apt-get install libasound2
+
+```
