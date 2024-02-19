@@ -21,7 +21,7 @@ export function showImage(id: string, imageUrl: string): Scene | undefined {
     return scene
 }
 
-export function showImageIntoContainer(imageUrl: string, container: Container): Sprite | undefined {
+export function showImageIntoContainer<T extends Container>(imageUrl: string, container: T): Sprite | undefined {
     let texture: Texture | undefined = undefined
     try {
         texture = Texture.from(imageUrl)
@@ -44,9 +44,9 @@ export function showImageIntoContainer(imageUrl: string, container: Container): 
         return
     }
 
-    let character = new Sprite(texture)
-    container.addChild(character)
-    return character
+    let sprite = new Sprite(texture)
+    container.addChild(sprite)
+    return sprite
 }
 
 export async function showImageAsync(id: string, imageUrl: string): Promise<void | Scene | undefined> {
@@ -72,7 +72,7 @@ export async function showImageAsync(id: string, imageUrl: string): Promise<void
         })
 }
 
-export async function showImageIntoContainerAsync(imageUrl: string, container: Scene): Promise<void | Sprite | undefined> {
+export async function showImageIntoContainerAsync<T extends Container>(imageUrl: string, container: T): Promise<void | Sprite | undefined> {
     return Assets.load(imageUrl)
         .then((texture) => {
             if (!texture) {
@@ -87,9 +87,9 @@ export async function showImageIntoContainerAsync(imageUrl: string, container: S
                 return
             }
 
-            const character = new Sprite(texture)
-            container.addChild(character)
-            return character
+            const sprite = new Sprite(texture)
+            container.addChild(sprite)
+            return sprite
         })
         .catch(() => {
             showErrorText(STRING_ERRORS.IMAGE_NOT_FOUND, container)
