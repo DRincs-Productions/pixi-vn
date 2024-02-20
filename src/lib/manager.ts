@@ -46,28 +46,28 @@ export class Manager {
 
     /* Resize Metods */
 
-    public static get getScreenScale() {
+    public static get screenScale() {
         let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
         let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
         return Math.min(screenWidth / Manager.width, screenHeight / Manager.height)
     }
 
-    public static get getEnlargedWidth() {
-        return Math.floor(Manager.getScreenScale * Manager.width)
+    public static get enlargedWidth() {
+        return Math.floor(Manager.screenScale * Manager.width)
     }
 
-    public static get getEnlargedHeight() {
-        return Math.floor(Manager.getScreenScale * Manager.height)
+    public static get enlargedHeight() {
+        return Math.floor(Manager.screenScale * Manager.height)
     }
 
-    public static get getHorizontalMargin() {
+    public static get horizontalMargin() {
         let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
-        return (screenWidth - Manager.getEnlargedWidth) / 2
+        return (screenWidth - Manager.enlargedWidth) / 2
     }
 
-    public static get getVerticalMargin() {
+    public static get verticalMargin() {
         let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-        return (screenHeight - Manager.getEnlargedHeight) / 2
+        return (screenHeight - Manager.enlargedHeight) / 2
     }
 
     public static resize(): void {
@@ -77,24 +77,24 @@ export class Manager {
         }
         else {
             let style = Manager.app.view.style;
-            style.width = `${Manager.getEnlargedWidth}px`;
-            style.height = `${Manager.getEnlargedHeight}px`;
-            (style as any).marginLeft = `${Manager.getHorizontalMargin}px`;
-            (style as any).marginRight = `${Manager.getHorizontalMargin}px`;
-            (style as any).marginTop = `${Manager.getVerticalMargin}px`;
-            (style as any).marginBottom = `${Manager.getVerticalMargin}px`;
+            style.width = `${Manager.enlargedWidth}px`;
+            style.height = `${Manager.enlargedHeight}px`;
+            (style as any).marginLeft = `${Manager.horizontalMargin}px`;
+            (style as any).marginRight = `${Manager.horizontalMargin}px`;
+            (style as any).marginTop = `${Manager.verticalMargin}px`;
+            (style as any).marginBottom = `${Manager.verticalMargin}px`;
         }
 
         if (!Manager.interfaceDiv) {
             console.error("Manager.interfaceDiv is undefined")
         }
         else {
-            Manager.interfaceDiv.style.width = `${Manager.getEnlargedWidth}px`
-            Manager.interfaceDiv.style.height = `${Manager.getEnlargedHeight}px`
-            Manager.interfaceDiv.style.marginLeft = `${Manager.getHorizontalMargin}px`
-            Manager.interfaceDiv.style.marginRight = `${Manager.getHorizontalMargin}px`
-            Manager.interfaceDiv.style.marginTop = `${Manager.getVerticalMargin}px`
-            Manager.interfaceDiv.style.marginBottom = `${Manager.getVerticalMargin}px`
+            Manager.interfaceDiv.style.width = `${Manager.enlargedWidth}px`
+            Manager.interfaceDiv.style.height = `${Manager.enlargedHeight}px`
+            Manager.interfaceDiv.style.marginLeft = `${Manager.horizontalMargin}px`
+            Manager.interfaceDiv.style.marginRight = `${Manager.horizontalMargin}px`
+            Manager.interfaceDiv.style.marginTop = `${Manager.verticalMargin}px`
+            Manager.interfaceDiv.style.marginBottom = `${Manager.verticalMargin}px`
         }
 
     }
