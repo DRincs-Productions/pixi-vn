@@ -56,6 +56,11 @@ export default function MainMenu() {
                     About
                 </MenuButton>
             </Grid>
+            <Grid>
+                <MenuButton>
+                    Help
+                </MenuButton>
+            </Grid>
         </Grid>
     );
 }
