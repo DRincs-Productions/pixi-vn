@@ -1,6 +1,7 @@
 import { Route, Routes } from 'react-router-dom';
 import AppImports from './AppImports';
 import MainMenu from './menu/MainMenu';
+import QuickActions from './menu/QuickActions';
 
 function App() {
 
@@ -8,6 +9,13 @@ function App() {
         <AppImports>
             <Routes>
                 <Route key={"main_menu"} path={"/"} element={<MainMenu />} />
+            </Routes>
+            <Routes>
+                <Route key={"game"} path={"game"}
+                    element={<>
+                        <QuickActions />
+                    </>}
+                />
             </Routes>
         </AppImports>
     )
