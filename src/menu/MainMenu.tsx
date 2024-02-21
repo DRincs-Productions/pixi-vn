@@ -1,4 +1,4 @@
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import MenuButton from '../components/MenuButton';
 import { showImage } from '../lib/image';
@@ -16,7 +16,7 @@ export default function MainMenu() {
             direction="column"
             justifyContent="center"
             alignItems="flex-start"
-            spacing={2}
+            spacing={{ xs: 1, sm: 2, lg: 3 }}
             sx={{
                 height: "100%",
                 width: "100%",
