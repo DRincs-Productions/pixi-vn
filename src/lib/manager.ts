@@ -123,7 +123,7 @@ export class Manager {
         return Manager.children[id]
     }
 
-    removeChildren() {
+    public static removeChildren() {
         Manager.app.stage.removeChildren()
         Manager.children = {}
     }

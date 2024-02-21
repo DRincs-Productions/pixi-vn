@@ -1,49 +1,60 @@
-import { Button } from '@mui/material';
 import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import { useEffect } from 'react';
+import MenuButton from '../components/MenuButton';
+import { showImage } from '../lib/image';
+import { Manager } from '../lib/manager';
 
 export default function MainMenu() {
+    useEffect(() => {
+        Manager.removeChildren()
+        showImage("background_main_menu", "https://andreannaking.com/wp-content/uploads/2021/12/Download-Beautiful-Nature-Landscape-Hd-Wallpaper-Full-HD-Wallpapers.jpg")
+    })
 
     return (
         <Grid
             container
             direction="column"
             justifyContent="center"
-            alignItems="flex-end"
+            alignItems="flex-start"
             spacing={2}
             sx={{
                 height: "100%",
-                marginRight: { xs: 0, sm: 2, md: 4, lg: 6, xl: 8 }
+                width: "100%",
+                paddingLeft: { xs: 1, sm: 2, md: 4, lg: 6, xl: 8 }
             }}
         >
             <Grid>
-                <Button
-                    variant="contained"
-                    size="small"
-                    onResize={() => {
-                        console.log("Button resized")
-                    }}
-                    onResizeCapture={() => {
-                        console.log("Button resized capture")
+                <MenuButton
+                    onClick={() => {
+                        Manager.removeChildren()
                     }}
                 >
-                    Contained
-                </Button>
+                    Continue
+                </MenuButton>
             </Grid>
             <Grid>
-                <Button
-                    variant="contained"
-                    size="small"
+                <MenuButton
+                    onClick={() => {
+                        Manager.removeChildren()
+                    }}
                 >
-                    Contained
-                </Button>
+                    Start
+                </MenuButton>
             </Grid>
             <Grid>
-                <Button
-                    variant="contained"
-                    size="small"
-                >
-                    Contained
-                </Button>
+                <MenuButton>
+                    Load
+                </MenuButton>
+            </Grid>
+            <Grid>
+                <MenuButton>
+                    Preferences
+                </MenuButton>
+            </Grid>
+            <Grid>
+                <MenuButton>
+                    About
+                </MenuButton>
             </Grid>
         </Grid>
     );
