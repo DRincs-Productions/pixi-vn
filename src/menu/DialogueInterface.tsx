@@ -1,17 +1,26 @@
 import DragHandleIcon from '@mui/icons-material/DragHandle';
-import { Divider, IconButton } from '@mui/joy';
+import { Button, Divider, useTheme } from '@mui/joy';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
-import { MouseEventHandler, useState } from 'react';
+import { useState } from 'react';
+import { Manager } from '../lib/manager';
+
+type WindowsSize = {
+    x: number,
+    y: number,
+}
 
 export default function DialogueInterface() {
-    const [size, setSize] = useState({ x: 400, y: 300 });
+    const [size, setSize] = useState({
+        x: 400 * Manager.screenScale,
+        y: 300 * Manager.screenScale,
+    });
 
-    const handler: MouseEventHandler<any> = (mouseDownEvent) => {
+    function handler<T>(mouseDownEvent: React.MouseEvent<T, MouseEvent>, size: WindowsSize, setSize: React.Dispatch<React.SetStateAction<WindowsSize>>) {
         const startSize = size;
         const startPosition = { x: mouseDownEvent.pageX, y: mouseDownEvent.pageY };
 
@@ -44,6 +53,30 @@ export default function DialogueInterface() {
                 right: 0,
             }}
         >
+            <Divider
+                orientation="horizontal"
+                sx={{
+                    position: "absolute",
+                    top: -5,
+                    width: "100%",
+                }}
+            >
+                <DragHandleIcon
+                    sx={{
+                        cursor: "row-resize",
+                        zIndex: 100,
+                        backgroundColor: useTheme().palette.neutral[300],
+                        ":hover": {
+                            backgroundColor: useTheme().palette.neutral[200],
+                        },
+                        borderRadius: 2,
+                        height: 13,
+                        width: 40,
+                    }}
+                    onMouseDown={(e) => handler(e, size, setSize)}
+                    color="primary"
+                />
+            </Divider>
             <Card
                 orientation="horizontal"
                 sx={{
@@ -51,21 +84,6 @@ export default function DialogueInterface() {
                     height: size.y,
                 }}
             >
-                <Divider
-                    orientation="horizontal"
-                    sx={{
-                        position: "absolute",
-                        top: -5,
-                        width: "100%",
-                    }}
-                >
-                    <DragHandleIcon
-                        sx={{
-                            cursor: "row-resize"
-                        }}
-                        onMouseDown={handler}
-                    />
-                </Divider>
                 <AspectRatio
                     flex
                     ratio="1"
@@ -83,25 +101,29 @@ export default function DialogueInterface() {
                     />
                 </AspectRatio>
                 <CardContent>
-                    <Typography fontSize="xl" fontWeight="lg">
+                    <Typography fontSize="xl" fontWeight="lg"
+                        sx={{
+                            position: "absolute",
+                            top: 7,
+                        }}
+                    >
                         Alex Morrison
                     </Typography>
                     <Sheet
                         sx={{
+                            marginTop: 3,
                             bgcolor: 'background.level1',
                             borderRadius: 'sm',
                             p: 1.5,
-                            my: 1.5,
+                            minHeight: 10,
                             display: 'flex',
-                            gap: 2,
-                            '& > div': { flex: 1 },
                             flex: 1,
                             overflow: 'auto',
                         }}
                     >
                         ..........
                     </Sheet>
-                    <IconButton
+                    <Button
                         variant="solid"
                         color="primary"
                         size="sm"
@@ -112,7 +134,7 @@ export default function DialogueInterface() {
                         }}
                     >
                         Next
-                    </IconButton>
+                    </Button>
                 </CardContent>
             </Card>
         </Box>
