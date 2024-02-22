@@ -1,8 +1,7 @@
 import DragHandleIcon from '@mui/icons-material/DragHandle';
-import { Divider } from '@mui/joy';
+import { Divider, IconButton } from '@mui/joy';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';
-import Button from '@mui/joy/Button';
 import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Sheet from '@mui/joy/Sheet';
@@ -97,19 +96,23 @@ export default function DialogueInterface() {
                             gap: 2,
                             '& > div': { flex: 1 },
                             flex: 1,
+                            overflow: 'auto',
                         }}
                     >
                         ..........
                     </Sheet>
-                    <Box sx={{ display: 'flex', gap: 1.5, '& > button': { flex: 1 } }}>
-                        <Button
-                            variant="solid"
-                            color="primary"
-                            size="sm"
-                        >
-                            Next
-                        </Button>
-                    </Box>
+                    <IconButton
+                        variant="solid"
+                        color="primary"
+                        size="sm"
+                        sx={{
+                            position: "absolute",
+                            bottom: 0,
+                            right: 0,
+                        }}
+                    >
+                        Next
+                    </IconButton>
                 </CardContent>
             </Card>
         </Box>
