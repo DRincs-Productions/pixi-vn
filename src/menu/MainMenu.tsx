@@ -25,6 +25,7 @@ export default function MainMenu() {
         >
             <Grid>
                 <MenuButton
+                    disabled
                     onClick={() => {
                         Manager.removeChildren()
                     }}
@@ -42,22 +43,30 @@ export default function MainMenu() {
                 </MenuButton>
             </Grid>
             <Grid>
-                <MenuButton>
+                <MenuButton
+                    disabled
+                >
                     Load
                 </MenuButton>
             </Grid>
             <Grid>
-                <MenuButton>
+                <MenuButton
+                    disabled
+                >
                     Preferences
                 </MenuButton>
             </Grid>
             <Grid>
-                <MenuButton>
+                <MenuButton
+                    disabled
+                >
                     About
                 </MenuButton>
             </Grid>
             <Grid>
-                <MenuButton>
+                <MenuButton
+                    disabled
+                >
                     Help
                 </MenuButton>
             </Grid>

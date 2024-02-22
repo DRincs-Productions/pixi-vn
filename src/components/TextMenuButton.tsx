@@ -1,4 +1,4 @@
-import { Link, LinkProps, LinkTypeMap } from "@mui/joy";
+import { Link, LinkProps, LinkTypeMap, Typography } from "@mui/joy";
 import { Link as RouterLink } from "react-router-dom";
 
 interface IProps extends LinkProps<LinkTypeMap['defaultComponent'], {
@@ -10,6 +10,7 @@ interface IProps extends LinkProps<LinkTypeMap['defaultComponent'], {
 export default function TextMenuButton(props: IProps) {
     const {
         sx,
+        children,
         ...rest
     } = props;
 
@@ -21,6 +22,10 @@ export default function TextMenuButton(props: IProps) {
             }}
             component={RouterLink}
             {...rest}
-        />
+        >
+            <Typography textColor="primary.200">
+                {children}
+            </Typography>
+        </Link>
     );
 }
