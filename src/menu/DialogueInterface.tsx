@@ -21,8 +21,8 @@ export default function DialogueInterface() {
                 let x = startSize.x - startPosition.x + mouseMoveEvent.pageX
                 let y = startSize.y + startPosition.y - mouseMoveEvent.pageY
                 return {
-                    x: x >= 0 ? x : 10,
-                    y: y >= 0 ? y : 10,
+                    x: x > 1 ? x : 2,
+                    y: y > 1 ? y : 2,
                 }
             });
         }
@@ -40,7 +40,7 @@ export default function DialogueInterface() {
                 width: '100%',
                 position: "absolute",
                 overflow: { xs: 'auto', sm: 'initial' },
-                bottom: 30,
+                bottom: { xs: 14, sm: 18, md: 20, lg: 24, xl: 30 },
                 left: 0,
                 right: 0,
             }}
