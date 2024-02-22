@@ -47,7 +47,6 @@ export default function DialogueInterface() {
             sx={{
                 width: '100%',
                 position: "absolute",
-                overflow: { xs: 'auto', sm: 'initial' },
                 bottom: { xs: 14, sm: 18, md: 20, lg: 24, xl: 30 },
                 left: 0,
                 right: 0,
@@ -123,20 +122,23 @@ export default function DialogueInterface() {
                     >
                         ..........
                     </Sheet>
-                    <Button
-                        variant="solid"
-                        color="primary"
-                        size="sm"
-                        sx={{
-                            position: "absolute",
-                            bottom: 0,
-                            right: 0,
-                        }}
-                    >
-                        Next
-                    </Button>
                 </CardContent>
             </Card>
+            <Button
+                variant="solid"
+                color="primary"
+                size="sm"
+                sx={{
+                    position: "absolute",
+                    bottom: -10,
+                    right: 0,
+                    width: { xs: 70, sm: 100, md: 150 },
+                    border: 3,
+                    zIndex: 100,
+                }}
+            >
+                Next
+            </Button>
         </Box>
     );
 }
