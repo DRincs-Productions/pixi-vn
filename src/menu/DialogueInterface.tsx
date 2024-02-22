@@ -1,3 +1,5 @@
+import DragHandleIcon from '@mui/icons-material/DragHandle';
+import { Divider } from '@mui/joy';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';
 import Button from '@mui/joy/Button';
@@ -5,8 +7,33 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
+import { MouseEventHandler, useState } from 'react';
 
 export default function DialogueInterface() {
+    const [size, setSize] = useState({ x: 400, y: 300 });
+
+    const handler: MouseEventHandler<any> = (mouseDownEvent) => {
+        const startSize = size;
+        const startPosition = { x: mouseDownEvent.pageX, y: mouseDownEvent.pageY };
+
+        function onMouseMove(mouseMoveEvent: any) {
+            setSize(() => {
+                let x = startSize.x - startPosition.x + mouseMoveEvent.pageX
+                let y = startSize.y + startPosition.y - mouseMoveEvent.pageY
+                return {
+                    x: x >= 0 ? x : 10,
+                    y: y >= 0 ? y : 10,
+                }
+            });
+        }
+        function onMouseUp() {
+            document.body.removeEventListener("mousemove", onMouseMove);
+        }
+
+        document.body.addEventListener("mousemove", onMouseMove);
+        document.body.addEventListener("mouseup", onMouseUp, { once: true });
+    };
+
     return (
         <Box
             sx={{
@@ -20,14 +47,30 @@ export default function DialogueInterface() {
         >
             <Card
                 orientation="horizontal"
-            // sx={{
-            //     overflow: 'auto',
-            //     resize: "both",
-            // }}
+                sx={{
+                    overflow: 'auto',
+                    height: size.y,
+                }}
             >
+                <Divider
+                    orientation="horizontal"
+                    sx={{
+                        position: "absolute",
+                        top: -5,
+                        width: "100%",
+                    }}
+                >
+                    <DragHandleIcon
+                        sx={{
+                            cursor: "row-resize"
+                        }}
+                        onMouseDown={handler}
+                    />
+                </Divider>
                 <AspectRatio
                     flex
                     ratio="1"
+                    maxHeight={"20%"}
                     sx={{
                         height: "100%",
                         minWidth: "20%",
