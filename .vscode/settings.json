@@ -37,9 +37,13 @@
     // move file
     "javascript.updateImportsOnFileMove.enabled": "always",
     "typescript.updateImportsOnFileMove.enabled": "always",
+    // color
+    "vscode-color-picker.languages": [
+        "javascript",
+        "typescript",
+        "javascriptreact",
+        "typescriptreact",
+    ],
     // olther
-    "git.enableSmartCommit": true,
     "extensions.ignoreRecommendations": false,
-    "diffEditor.ignoreTrimWhitespace": false,
-    "csharpToTypeScript.convertNullablesTo": "undefined",
 }
