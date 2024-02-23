@@ -11,10 +11,14 @@ import { Manager } from '../lib/manager';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 
 export default function DialogueInterface() {
-    const [size, setSize] = useState({
-        x: 400 * Manager.screenScale,
+    const [windowSize, setWindowSize] = useState({
+        x: 0,
         y: 300 * Manager.screenScale,
     });
+    const [imageSize, setImageSize] = useState({
+        x: 300 * Manager.screenScale,
+        y: 0,
+    })
 
     return (
         <Box
@@ -33,13 +37,14 @@ export default function DialogueInterface() {
                     top: -5,
                     width: "100%",
                 }}
-                onMouseDown={(e) => resizeWindowsHandler(e, size, setSize)}
+                onMouseDown={(e) => resizeWindowsHandler(e, windowSize, setWindowSize)}
             />
             <Card
                 orientation="horizontal"
                 sx={{
                     overflow: 'auto',
-                    height: size.y,
+                    height: windowSize.y,
+                    gap: 1
                 }}
             >
                 <AspectRatio
@@ -48,7 +53,7 @@ export default function DialogueInterface() {
                     maxHeight={"20%"}
                     sx={{
                         height: "100%",
-                        minWidth: "20%",
+                        minWidth: imageSize.x,
                     }}
                 >
                     <img
@@ -58,6 +63,14 @@ export default function DialogueInterface() {
                         alt=""
                     />
                 </AspectRatio>
+                <DragHandleDivider
+                    orientation="vertical"
+                    onMouseDown={(e) => resizeWindowsHandler(e, imageSize, setImageSize)}
+                    sx={{
+                        width: 0,
+                        left: -8,
+                    }}
+                />
                 <CardContent>
                     <Typography fontSize="xl" fontWeight="lg"
                         sx={{

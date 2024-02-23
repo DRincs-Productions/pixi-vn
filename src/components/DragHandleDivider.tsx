@@ -10,16 +10,18 @@ interface IProps extends DividerProps<DividerTypeMap['defaultComponent'], {
 export default function DragHandleDivider(props: IProps) {
     const {
         onMouseDown,
+        orientation,
         ...rest
     } = props;
 
     return (
         <Divider
+            orientation={orientation}
             {...rest}
         >
             <DragHandleIcon
                 sx={{
-                    cursor: "row-resize",
+                    cursor: orientation === "vertical" ? "col-resize" : "row-resize",
                     zIndex: 100,
                     backgroundColor: useTheme().palette.neutral[300],
                     ":hover": {
@@ -28,6 +30,7 @@ export default function DragHandleDivider(props: IProps) {
                     borderRadius: 2,
                     height: 13,
                     width: 40,
+                    transform: orientation === "vertical" ? "rotate(90deg)" : undefined,
                 }}
                 onMouseDown={onMouseDown}
                 color="primary"
