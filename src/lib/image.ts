@@ -1,6 +1,6 @@
 import { Assets, Container, Sprite, Texture } from 'pixi.js';
+import { GameWindowManager } from './WindowManager';
 import { STRING_ERRORS, showErrorText } from './error';
-import { GameWindowManager } from './manager';
 import { Scene } from './scene';
 
 export function showImage(id: string, imageUrl: string): Scene | undefined {

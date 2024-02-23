@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
-import { GameWindowManager } from './lib/manager'
+import { GameWindowManager } from './lib/WindowManager'
 
 // Canvas setup with PIXI
 const body = document.body
