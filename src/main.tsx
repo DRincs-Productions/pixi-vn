@@ -2,7 +2,6 @@ import * as PIXI from 'pixi.js'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
-import { showImage } from './lib/image'
 import { Manager } from './lib/manager'
 
 // Canvas setup with PIXI
@@ -12,7 +11,7 @@ if (!body) {
 }
 
 Manager.initialize(1920, 1080, {
-    backgroundColor: 0x1099bb
+    backgroundColor: "#303030"
 })
 
 Manager.addCanvasIntoElement(body)
@@ -34,5 +33,3 @@ const container = new PIXI.Container()
 container.x = 0
 container.y = 0
 Manager.app.stage.addChild(container)
-
-showImage("grass", 'https://pixijs.com/assets/bg_grass.jpg')

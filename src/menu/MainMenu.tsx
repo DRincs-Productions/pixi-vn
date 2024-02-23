@@ -1,10 +1,12 @@
-import Grid from '@mui/material/Unstable_Grid2'; // Grid version 2
+import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
 import { showImage } from '../lib/image';
 import { Manager } from '../lib/manager';
 
 export default function MainMenu() {
+    const navigate = useNavigate();
     useEffect(() => {
         Manager.removeChildren()
         showImage("background_main_menu", "https://andreannaking.com/wp-content/uploads/2021/12/Download-Beautiful-Nature-Landscape-Hd-Wallpaper-Full-HD-Wallpapers.jpg")
@@ -16,7 +18,7 @@ export default function MainMenu() {
             direction="column"
             justifyContent="center"
             alignItems="flex-start"
-            spacing={2}
+            spacing={{ xs: 1, sm: 2, lg: 3 }}
             sx={{
                 height: "100%",
                 width: "100%",
@@ -25,6 +27,7 @@ export default function MainMenu() {
         >
             <Grid>
                 <MenuButton
+                    disabled
                     onClick={() => {
                         Manager.removeChildren()
                     }}
@@ -36,24 +39,38 @@ export default function MainMenu() {
                 <MenuButton
                     onClick={() => {
                         Manager.removeChildren()
+                        navigate("/game")
                     }}
                 >
                     Start
                 </MenuButton>
             </Grid>
             <Grid>
-                <MenuButton>
+                <MenuButton
+                    disabled
+                >
                     Load
                 </MenuButton>
             </Grid>
             <Grid>
-                <MenuButton>
+                <MenuButton
+                    disabled
+                >
                     Preferences
                 </MenuButton>
             </Grid>
             <Grid>
-                <MenuButton>
+                <MenuButton
+                    disabled
+                >
                     About
+                </MenuButton>
+            </Grid>
+            <Grid>
+                <MenuButton
+                    disabled
+                >
+                    Help
                 </MenuButton>
             </Grid>
         </Grid>

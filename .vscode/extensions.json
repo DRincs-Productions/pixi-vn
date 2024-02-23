@@ -2,6 +2,7 @@
     "recommendations": [
         "ms-vscode.vscode-typescript-next",
         "dbaeumer.vscode-eslint",
-        "ionic.ionic"
+        "ionic.ionic",
+        "antiantisepticeye.vscode-color-picker"
     ]
 }

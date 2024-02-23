@@ -1,6 +1,8 @@
-import { Button, ButtonProps } from '@mui/material';
+import { Button, ButtonProps, ButtonTypeMap } from "@mui/joy";
 
-interface IProps extends ButtonProps {
+interface IProps extends ButtonProps<ButtonTypeMap['defaultComponent'], {
+    component?: React.ElementType;
+}> {
 }
 
 export default function MenuButton(props: IProps) {
@@ -11,10 +13,9 @@ export default function MenuButton(props: IProps) {
 
     return (
         <Button
-            variant="contained"
-            size="small"
+            size="sm"
             sx={{
-                fontSize: { xs: "0.5rem", sm: "0.75rem", md: "1rem", lg: "1.25rem", xl: "1.5rem" },
+                fontSize: { xs: "0.75rem", sm: "0.75rem", md: "1rem", lg: "1.25rem", xl: "1.5rem" },
                 ...sx
             }}
             {...rest}
