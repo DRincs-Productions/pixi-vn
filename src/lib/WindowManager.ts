@@ -100,27 +100,27 @@ export class GameWindowManager {
     }
 
     /* Edit Children Methods */
-    private static children: { [id: string]: DisplayObject } = {}
+    private static children: { [tag: string]: DisplayObject } = {}
 
-    public static addChild(id: string, child: DisplayObject) {
-        if (GameWindowManager.children[id]) {
-            GameWindowManager.removeChild(id)
+    public static addChild(tag: string, child: DisplayObject) {
+        if (GameWindowManager.children[tag]) {
+            GameWindowManager.removeChild(tag)
         }
         GameWindowManager.app.stage.addChild(child)
-        GameWindowManager.children[id] = child
+        GameWindowManager.children[tag] = child
     }
 
-    public static removeChild(id: string) {
-        if (!GameWindowManager.children[id]) {
-            console.error("Child with id not found")
+    public static removeChild(tag: string) {
+        if (!GameWindowManager.children[tag]) {
+            console.error("Child with tag not found")
             return
         }
-        GameWindowManager.app.stage.removeChild(GameWindowManager.children[id])
-        delete GameWindowManager.children[id]
+        GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag])
+        delete GameWindowManager.children[tag]
     }
 
-    public static getChild(id: string) {
-        return GameWindowManager.children[id]
+    public static getChild(tag: string) {
+        return GameWindowManager.children[tag]
     }
 
     public static removeChildren() {

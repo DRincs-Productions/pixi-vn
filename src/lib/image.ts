@@ -3,10 +3,10 @@ import { GameWindowManager } from './WindowManager';
 import { STRING_ERRORS, showErrorText } from './error';
 import { Scene } from './scene';
 
-export function showImage(id: string, imageUrl: string): Scene | undefined {
+export function showImage(tag: string, imageUrl: string): Scene | undefined {
     const scene = new Scene()
     try {
-        GameWindowManager.addChild(id, scene)
+        GameWindowManager.addChild(tag, scene)
     }
     catch (e) {
         console.error(e)
@@ -49,10 +49,10 @@ export function showImageIntoContainer<T extends Container>(imageUrl: string, co
     return sprite
 }
 
-export async function showImageAsync(id: string, imageUrl: string): Promise<void | Scene | undefined> {
+export async function showImageAsync(tag: string, imageUrl: string): Promise<void | Scene | undefined> {
     const scene = new Scene()
     try {
-        GameWindowManager.addChild(id, scene)
+        GameWindowManager.addChild(tag, scene)
     }
     catch (e) {
         console.error(e)
@@ -98,6 +98,6 @@ export async function showImageIntoContainerAsync<T extends Container>(imageUrl:
         })
 }
 
-export function hideImage(id: string) {
-    GameWindowManager.removeChild(id)
+export function hideImage(tag: string) {
+    GameWindowManager.removeChild(tag)
 }
