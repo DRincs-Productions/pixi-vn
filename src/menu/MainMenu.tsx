@@ -2,6 +2,7 @@ import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
+import { GameStorageManager } from '../lib/StorageManager';
 import { GameWindowManager } from '../lib/WindowManager';
 import { showImage } from '../lib/image';
 
@@ -29,6 +30,7 @@ export default function MainMenu() {
                 <MenuButton
                     disabled
                     onClick={() => {
+                        GameStorageManager.clear()
                         GameWindowManager.removeChildren()
                     }}
                 >
