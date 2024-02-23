@@ -7,16 +7,16 @@ import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
 import { useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
-import { Manager } from '../lib/manager';
+import { GameWindowManager } from '../lib/manager';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 
 export default function DialogueInterface() {
     const [windowSize, setWindowSize] = useState({
         x: 0,
-        y: 300 * Manager.screenScale,
+        y: 300 * GameWindowManager.screenScale,
     });
     const [imageSize, setImageSize] = useState({
-        x: 300 * Manager.screenScale,
+        x: 300 * GameWindowManager.screenScale,
         y: 0,
     })
 

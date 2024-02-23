@@ -3,12 +3,12 @@ import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
 import { showImage } from '../lib/image';
-import { Manager } from '../lib/manager';
+import { GameWindowManager } from '../lib/manager';
 
 export default function MainMenu() {
     const navigate = useNavigate();
     useEffect(() => {
-        Manager.removeChildren()
+        GameWindowManager.removeChildren()
         showImage("background_main_menu", "https://andreannaking.com/wp-content/uploads/2021/12/Download-Beautiful-Nature-Landscape-Hd-Wallpaper-Full-HD-Wallpapers.jpg")
     })
 
@@ -29,7 +29,7 @@ export default function MainMenu() {
                 <MenuButton
                     disabled
                     onClick={() => {
-                        Manager.removeChildren()
+                        GameWindowManager.removeChildren()
                     }}
                 >
                     Continue
@@ -38,7 +38,7 @@ export default function MainMenu() {
             <Grid>
                 <MenuButton
                     onClick={() => {
-                        Manager.removeChildren()
+                        GameWindowManager.removeChildren()
                         navigate("/game")
                     }}
                 >

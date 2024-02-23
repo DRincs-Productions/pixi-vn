@@ -2,7 +2,7 @@ import * as PIXI from 'pixi.js'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
-import { Manager } from './lib/manager'
+import { GameWindowManager } from './lib/manager'
 
 // Canvas setup with PIXI
 const body = document.body
@@ -10,11 +10,11 @@ if (!body) {
     throw new Error('body element not found')
 }
 
-Manager.initialize(1920, 1080, {
+GameWindowManager.initialize(1920, 1080, {
     backgroundColor: "#303030"
 })
 
-Manager.addCanvasIntoElement(body)
+GameWindowManager.addCanvasIntoElement(body)
 
 // React setup with ReactDOM
 const root = document.getElementById('root')
@@ -22,8 +22,8 @@ if (!root) {
     throw new Error('root element not found')
 }
 
-Manager.addInterfaceIntoElement(root)
-const reactRoot = createRoot(Manager.interfaceDiv)
+GameWindowManager.addInterfaceIntoElement(root)
+const reactRoot = createRoot(GameWindowManager.interfaceDiv)
 
 reactRoot.render(
     <App />
@@ -32,4 +32,4 @@ reactRoot.render(
 const container = new PIXI.Container()
 container.x = 0
 container.y = 0
-Manager.app.stage.addChild(container)
+GameWindowManager.app.stage.addChild(container)

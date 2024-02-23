@@ -1,12 +1,12 @@
 import { Assets, Container, Sprite, Texture } from 'pixi.js';
 import { STRING_ERRORS, showErrorText } from './error';
-import { Manager } from './manager';
+import { GameWindowManager } from './manager';
 import { Scene } from './scene';
 
 export function showImage(id: string, imageUrl: string): Scene | undefined {
     const scene = new Scene()
     try {
-        Manager.addChild(id, scene)
+        GameWindowManager.addChild(id, scene)
     }
     catch (e) {
         console.error(e)
@@ -52,7 +52,7 @@ export function showImageIntoContainer<T extends Container>(imageUrl: string, co
 export async function showImageAsync(id: string, imageUrl: string): Promise<void | Scene | undefined> {
     const scene = new Scene()
     try {
-        Manager.addChild(id, scene)
+        GameWindowManager.addChild(id, scene)
     }
     catch (e) {
         console.error(e)
@@ -99,5 +99,5 @@ export async function showImageIntoContainerAsync<T extends Container>(imageUrl:
 }
 
 export function hideImage(id: string) {
-    Manager.removeChild(id)
+    GameWindowManager.removeChild(id)
 }
