@@ -1,7 +1,4 @@
-export type ExportStorage = {
-    storage: object,
-    stepOidUsedList: string[],
-}
+import { ExportedStorage } from "../interface/ExportedStorage"
 
 export class GameStorageManager {
     private static stepOidUsedList: string[] = []
@@ -19,7 +16,7 @@ export class GameStorageManager {
         GameStorageManager.stepOidUsedList = []
         GameStorageManager.storage = {}
     }
-    public static export(): ExportStorage {
+    public static export(): ExportedStorage {
         return {
             storage: GameStorageManager.storage,
             stepOidUsedList: GameStorageManager.stepOidUsedList
@@ -29,13 +26,13 @@ export class GameStorageManager {
         GameStorageManager.clear()
         try {
             if (data.hasOwnProperty("storage")) {
-                GameStorageManager.storage = (data as ExportStorage)["storage"] as object
+                GameStorageManager.storage = (data as ExportedStorage)["storage"] as object
             }
             else {
                 console.log("No storage data found")
             }
             if (data.hasOwnProperty("stepOidUsedList")) {
-                GameStorageManager.stepOidUsedList = (data as ExportStorage)["stepOidUsedList"] as string[]
+                GameStorageManager.stepOidUsedList = (data as ExportedStorage)["stepOidUsedList"] as string[]
             }
             else {
                 console.log("No stepOidUsed data found")

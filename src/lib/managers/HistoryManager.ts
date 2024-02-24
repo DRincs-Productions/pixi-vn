@@ -5,9 +5,9 @@ import { HistoryStep } from "../interface/HistoryStep"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 
 /**
- * HistoryManager is a class that contains the history of the game.
+ * GameHistoryManager is a class that contains the history of the game.
  */
-export class HistoryManager {
+export class GameHistoryManager {
     private constructor() { }
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
@@ -24,33 +24,40 @@ export class HistoryManager {
      * @returns 
      */
     public static afterUpdate() {
-        if (!HistoryManager.currentLabel) {
+        if (!GameHistoryManager.currentLabel) {
             // TODO: implement
             return
         }
-        if (!labelIsRunnable(HistoryManager.currentLabel)) {
+        if (!labelIsRunnable(GameHistoryManager.currentLabel)) {
             // TODO: implement
             return
         }
-        let oldSteps = HistoryManager.stepsAfterLastHistoryLabel
-        let currentStepIndex = HistoryManager.currentLabel.getCorrespondingStepsNumber(oldSteps)
+        let oldSteps = GameHistoryManager.stepsAfterLastHistoryLabel
+        let currentStepIndex = GameHistoryManager.currentLabel.getCorrespondingStepsNumber(oldSteps)
         let stepToRemove = oldSteps.length - currentStepIndex
-        HistoryManager.removeLastHistoryNodes(stepToRemove)
-        HistoryManager.loadLastStep()
+        GameHistoryManager.removeLastHistoryNodes(stepToRemove)
+        GameHistoryManager.loadLastStep()
     }
     public static loadLastStep() {
         // TODO: implement
     }
+    /**
+     * Remove a number of items from the last of the history.
+     * @param itemNumber The number of items to remove from the last of the history.
+     */
     private static removeLastHistoryNodes(itemNumber: number) {
         for (let i = 0; i < itemNumber; i++) {
-            HistoryManager.stepHistory.pop()
+            GameHistoryManager.stepHistory.pop()
         }
     }
+    /**
+     * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
+     */
     private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
-        let length = HistoryManager.stepHistory.length
+        let length = GameHistoryManager.stepHistory.length
         let steps: StepHistoryDataType[] = []
         for (let i = length - 1; i >= 0; i--) {
-            let element = HistoryManager.stepHistory[i]
+            let element = GameHistoryManager.stepHistory[i]
             if (typeof element === "object" && "currentStep" in element) {
                 steps.push(element.currentStep)
             }
@@ -61,5 +68,12 @@ export class HistoryManager {
 
         steps = steps.reverse()
         return steps
+    }
+    /**
+     * Add a label to the history.
+     */
+    public static clear() {
+        GameHistoryManager.stepHistory = []
+        GameHistoryManager.currentLabel = null
     }
 }

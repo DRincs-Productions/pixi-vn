@@ -2,8 +2,8 @@ import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
+import { clearAllGameDatas } from '../lib/functions/GameUtility';
 import { showImage } from '../lib/functions/ImageUtility';
-import { GameStorageManager } from '../lib/managers/StorageManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
 
 export default function MainMenu() {
@@ -30,8 +30,7 @@ export default function MainMenu() {
                 <MenuButton
                     disabled
                     onClick={() => {
-                        GameStorageManager.clear()
-                        GameWindowManager.removeChildren()
+                        clearAllGameDatas()
                     }}
                 >
                     Continue
