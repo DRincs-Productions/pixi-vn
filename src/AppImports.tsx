@@ -1,3 +1,4 @@
+import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
 import { BrowserRouter } from 'react-router-dom';
 
 type Iprops = {
@@ -5,10 +6,13 @@ type Iprops = {
 }
 
 export default function AppImports(props: Iprops) {
+    const queryClient = new QueryClient()
 
     return (
         <BrowserRouter>
-            {props.children}
+            <QueryClientProvider client={queryClient} >
+                {props.children}
+            </QueryClientProvider>
         </BrowserRouter>
     );
 }

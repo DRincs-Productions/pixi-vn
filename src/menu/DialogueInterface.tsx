@@ -7,7 +7,9 @@ import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
 import { useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
+import { DialogueModel } from '../lib/classes/DialogueModel';
 import { GameWindowManager } from '../lib/managers/WindowManager';
+import { useDialogueMemory } from '../use_query/useDialogueMemory';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 
 export default function DialogueInterface() {
@@ -19,6 +21,10 @@ export default function DialogueInterface() {
         x: 300 * GameWindowManager.screenScale,
         y: 0,
     })
+
+    const {
+        data = new DialogueModel(""),
+    } = useDialogueMemory({})
 
     return (
         <Box
@@ -92,7 +98,7 @@ export default function DialogueInterface() {
                             overflow: 'auto',
                         }}
                     >
-                        ..........
+                        {data.text}
                     </Sheet>
                 </CardContent>
             </Card>
