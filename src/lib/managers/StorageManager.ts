@@ -1,4 +1,4 @@
-import { ExportedStorage } from "../interface/ExportedStorage"
+import { ExportedStorage } from "../classes/ExportedStorage"
 
 export class GameStorageManager {
     private static stepOidUsedList: string[] = []
