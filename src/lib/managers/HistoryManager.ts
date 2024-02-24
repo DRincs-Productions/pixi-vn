@@ -1,4 +1,4 @@
-import { Label } from "../Label"
+import { Label } from "../classes/Label"
 import { labelIsRunnable } from "../functions/StepLabelUtility"
 import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
 import { HistoryStep } from "../interface/HistoryStep"

@@ -1,6 +1,6 @@
-import { checkIfStepsIsEqual } from "./functions/StepLabelUtility"
-import { StepHistoryDataType } from "./types/StepHistoryDataType"
-import { StepLabelType } from "./types/StepLabelType"
+import { checkIfStepsIsEqual } from "../functions/StepLabelUtility"
+import { StepHistoryDataType } from "../types/StepHistoryDataType"
+import { StepLabelType } from "../types/StepLabelType"
 
 /**
  * Label is a class that contains a list of steps, which will be performed as the game continues.

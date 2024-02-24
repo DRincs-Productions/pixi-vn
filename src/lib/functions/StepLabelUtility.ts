@@ -1,4 +1,4 @@
-import { Label } from "../Label"
+import { Label } from "../classes/Label"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 
