@@ -19,13 +19,13 @@ export class GameStorageManager {
     }
     public static setVariable<T>(key: string, value: T) {
         key = key.toLowerCase()
-        if (GameStorageManager.hasOwnProperty(key)) {
+        if (GameStorageManager.storage.hasOwnProperty(key)) {
             (GameStorageManager.storage as any)[key] = value
         }
     }
     public static getVariable<T>(key: string): T | undefined {
         key = key.toLowerCase()
-        if (GameStorageManager.hasOwnProperty(key)) {
+        if (GameStorageManager.storage.hasOwnProperty(key)) {
             return (GameStorageManager.storage as any)[key]
         }
         return undefined
