@@ -1,6 +1,4 @@
-import { Label } from "./Label"
-
-type StepHistory = string
+import { Label, StepHistoryData } from "./Label"
 
 enum LabelEventEnum {
     End = "end",
@@ -16,7 +14,7 @@ interface HistoryLabel {
 interface HistoryStep {
     path: string,
     storage: object,
-    currentStep: StepHistory,
+    currentStep: StepHistoryData,
     currentStepNumber: number,
 }
 
@@ -26,20 +24,39 @@ export class HistoryManager {
     private constructor() { }
     public static stepHistory: HystoryElement[] = []
     public static lastLabel: Label | null = null
-    public static next() {
-        if (HistoryManager.lastLabel) {
-            // TODO: add check if is development and if is a laod save
-            let steps = HistoryManager.stepsAfterLastHistoryLabel
-            let res = HistoryManager.lastLabel.findLastStepIndex(steps)
-            // TODO: remove the inutil steps
-            // TODO: load lastest step
-
-            // TODO: else get the next step by index
+    public static afterUpdate() {
+        if (!HistoryManager.lastLabel) {
+            return
+        }
+        if (!HistoryManager.labelIsRunnable(HistoryManager.lastLabel)) {
+            return
+        }
+        let oldSteps = HistoryManager.stepsAfterLastHistoryLabel
+        let currentStepIndex = HistoryManager.lastLabel.getCorrespondingStepsNumber(oldSteps)
+        let stepToRemove = oldSteps.length - currentStepIndex
+        HistoryManager.removeLastHistoryNodes(stepToRemove)
+        HistoryManager.loadLastStep()
+    }
+    public static loadLastStep() {
+        // TODO: implement
+    }
+    private static labelIsRunnable(label: Label): boolean {
+        try {
+            let step = label.steps
+            return step.length > 0
+        }
+        catch {
+            return false
         }
     }
-    public static get stepsAfterLastHistoryLabel(): string[] {
+    private static removeLastHistoryNodes(itemNumber: number) {
+        for (let i = 0; i < itemNumber; i++) {
+            HistoryManager.stepHistory.pop()
+        }
+    }
+    private static get stepsAfterLastHistoryLabel(): StepHistoryData[] {
         let length = HistoryManager.stepHistory.length
-        let steps: string[] = []
+        let steps: StepHistoryData[] = []
         for (let i = length - 1; i >= 0; i--) {
             let element = HistoryManager.stepHistory[i]
             if (typeof element === "object" && "currentStep" in element) {

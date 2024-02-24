@@ -1,7 +1,16 @@
 export type StepLabel = (() => void | Promise<void>)
-type StepEquivelent = {
-    hystoryIndex: number,
-    labelIndex: number,
+export type StepHistoryData = string
+export function convertStelLabelToStepHistoryData(step: StepLabel): StepHistoryData {
+    return step.toString().toLocaleLowerCase()
+}
+export function checkIfStepsIsEqual(step1: StepHistoryData | StepLabel, step2: StepHistoryData | StepLabel): boolean {
+    if (typeof step1 === "function") {
+        step1 = convertStelLabelToStepHistoryData(step1)
+    }
+    if (typeof step2 === "function") {
+        step2 = convertStelLabelToStepHistoryData(step2)
+    }
+    return step1.toLocaleLowerCase() === step2.toLocaleLowerCase()
 }
 
 export abstract class Label {
@@ -9,26 +18,16 @@ export abstract class Label {
     public get steps() {
         return this.getSteps()
     }
-    public checkIfStepIsEqual(step: string, step2: StepLabel): boolean {
-        return step === step2.toString()
-    }
-    public findLastStepIndex(hystorySteps: string[]): StepEquivelent | null {
-        let hypotheticalIndex: number = hystorySteps.length - 1
-        if (hystorySteps.length === 0) {
-            return null
+    public getCorrespondingStepsNumber(steps: StepHistoryData[]): number {
+        if (steps.length === 0) {
+            return 0
         }
-        if (hystorySteps.length === 1) {
-            let step = hystorySteps[0]
-            if (this.checkIfStepIsEqual(step, this.steps[0])) {
-                return { hystoryIndex: 0, labelIndex: 0 }
+        let res: number = 0
+        steps.forEach((step, index) => {
+            if (checkIfStepsIsEqual(step, this.steps[index])) {
+                res = index
             }
-            else {
-                return null
-            }
-        }
-        // TODO: find the bests combination of steps
-        // TODO: Knapsack Problem
-        // TODO: return the best combination near the hypotheticalIndex
-        return null
+        })
+        return res
     }
 }
