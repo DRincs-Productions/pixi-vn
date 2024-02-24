@@ -1,4 +1,4 @@
-export interface ExportedStorage {
-    storage: object,
-    stepOidUsedList: string[],
+export class ExportedStorage {
+    storage: object = {}
+    stepOidUsedList: string[] = []
 }
