@@ -1,35 +1,6 @@
 import { Label, StepHistoryData, labelIsRunnable } from "./Label"
-
-/**
- * Enumeration of label events that occurred during the progression of the steps.
- */
-enum LabelEventEnum {
-    End = "end",
-    OpenByCall = "openbycall",
-    OpenByJump = "openbyjump",
-}
-
-/**
- * HistoryLabel is a interface that contains: 
- * - the type of event
- * - the label that occurred during the progression of the steps.
- */
-interface HistoryLabelEvent {
-    type: LabelEventEnum,
-    label: Label,
-}
-
-/**
- * HistoryStep is a interface that contains:
- * - the browser path that occurred during the progression of the steps.
- * - the storage that occurred during the progression of the steps.
- * - the step data.
- */
-interface HistoryStep {
-    path: string,
-    storage: object,
-    currentStep: StepHistoryData,
-}
+import { HistoryLabelEvent } from "./interface/HistoryLabelEvent"
+import { HistoryStep } from "./interface/HistoryStep"
 
 /**
  * HistoryManager is a class that contains the history of the game.
