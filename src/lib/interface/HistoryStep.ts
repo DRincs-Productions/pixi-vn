@@ -10,5 +10,5 @@ import { StepHistoryDataType } from "../types/StepHistoryDataType";
 export interface HistoryStep {
     path: string,
     storage: ExportedStorage,
-    currentStep: StepHistoryDataType,
+    step: StepHistoryDataType,
 }
