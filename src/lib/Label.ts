@@ -1,4 +1,11 @@
+/**
+ * StepLabel is a function that will be executed as the game continues.
+ */
 export type StepLabel = (() => void | Promise<void>)
+/**
+ * StepHistoryData is a string that will be stored in the history of the game.
+ * if the corresponding function of the step has been changed then StepHistoryData is not equal.
+ */
 export type StepHistoryData = string
 /**
  * Convert StepLabel to StepHistoryData
@@ -25,7 +32,23 @@ export function checkIfStepsIsEqual(step1: StepHistoryData | StepLabel, step2: S
 }
 
 /**
+ * After the update or code edit, some labels may no longer match.
+ * @param label
+ * @returns In case of label mismatch, return false.
+ */
+export function labelIsRunnable(label: Label): boolean {
+    try {
+        let step = label.steps
+        return step.length > 0
+    }
+    catch {
+        return false
+    }
+}
+
+/**
  * Label is a class that contains a list of steps, which will be performed as the game continues.
+ * For Ren'py this is the equivalent of a label.
  */
 export abstract class Label {
     /**

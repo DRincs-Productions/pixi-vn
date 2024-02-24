@@ -1,53 +1,72 @@
-import { Label, StepHistoryData } from "./Label"
+import { Label, StepHistoryData, labelIsRunnable } from "./Label"
 
+/**
+ * Enumeration of label events that occurred during the progression of the steps.
+ */
 enum LabelEventEnum {
     End = "end",
     OpenByCall = "openbycall",
     OpenByJump = "openbyjump",
 }
 
-interface HistoryLabel {
+/**
+ * HistoryLabel is a interface that contains: 
+ * - the type of event
+ * - the label that occurred during the progression of the steps.
+ */
+interface HistoryLabelEvent {
     type: LabelEventEnum,
     label: Label,
 }
 
+/**
+ * HistoryStep is a interface that contains:
+ * - the browser path that occurred during the progression of the steps.
+ * - the storage that occurred during the progression of the steps.
+ * - the step data.
+ */
 interface HistoryStep {
     path: string,
     storage: object,
     currentStep: StepHistoryData,
-    currentStepNumber: number,
 }
 
-type HystoryElement = HistoryLabel | HistoryStep
-
+/**
+ * HistoryManager is a class that contains the history of the game.
+ */
 export class HistoryManager {
     private constructor() { }
-    public static stepHistory: HystoryElement[] = []
-    public static lastLabel: Label | null = null
+    /**
+     * stepHistory is a list of label events and steps that occurred during the progression of the steps.
+     */
+    public static stepHistory: (HistoryLabelEvent | HistoryStep)[] = []
+    /**
+     * currentLabel is the current label that occurred during the progression of the steps.
+     */
+    public static currentLabel: Label | null = null
+    /**
+     * After the update or code edit, some steps or labels may no longer match.
+     * - In case of step mismatch, the game will be updated to the last matching step.
+     * - In case of label mismatch, the game gives an error.
+     * @returns 
+     */
     public static afterUpdate() {
-        if (!HistoryManager.lastLabel) {
+        if (!HistoryManager.currentLabel) {
+            // TODO: implement
             return
         }
-        if (!HistoryManager.labelIsRunnable(HistoryManager.lastLabel)) {
+        if (!labelIsRunnable(HistoryManager.currentLabel)) {
+            // TODO: implement
             return
         }
         let oldSteps = HistoryManager.stepsAfterLastHistoryLabel
-        let currentStepIndex = HistoryManager.lastLabel.getCorrespondingStepsNumber(oldSteps)
+        let currentStepIndex = HistoryManager.currentLabel.getCorrespondingStepsNumber(oldSteps)
         let stepToRemove = oldSteps.length - currentStepIndex
         HistoryManager.removeLastHistoryNodes(stepToRemove)
         HistoryManager.loadLastStep()
     }
     public static loadLastStep() {
         // TODO: implement
-    }
-    private static labelIsRunnable(label: Label): boolean {
-        try {
-            let step = label.steps
-            return step.length > 0
-        }
-        catch {
-            return false
-        }
     }
     private static removeLastHistoryNodes(itemNumber: number) {
         for (let i = 0; i < itemNumber; i++) {
