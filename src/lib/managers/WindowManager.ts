@@ -1,7 +1,8 @@
 import { Application, DisplayObject, IApplicationOptions } from "pixi.js";
 
 /**
- * https://www.pixijselementals.com/#letterbox-scale
+ * This class is responsible for managing the window size and the children of the window.
+ * This implementation was followed: https://www.pixijselementals.com/#letterbox-scale
  */
 export class GameWindowManager {
     private constructor() { }

@@ -7,7 +7,7 @@ import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
 import { useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
-import { GameWindowManager } from '../lib/WindowManager';
+import { GameWindowManager } from '../lib/managers/WindowManager';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 
 export default function DialogueInterface() {
