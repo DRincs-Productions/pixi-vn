@@ -1,4 +1,4 @@
-import { StepHistoryData } from "../Label";
+import { StepHistoryDataType } from "../types/StepHistoryDataType";
 
 /**
  * HistoryStep is a interface that contains:
@@ -9,5 +9,5 @@ import { StepHistoryData } from "../Label";
 export interface HistoryStep {
     path: string,
     storage: object,
-    currentStep: StepHistoryData,
+    currentStep: StepHistoryDataType,
 }

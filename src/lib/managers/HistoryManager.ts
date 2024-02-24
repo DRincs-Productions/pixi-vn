@@ -1,6 +1,8 @@
-import { Label, StepHistoryData, labelIsRunnable } from "./Label"
-import { HistoryLabelEvent } from "./interface/HistoryLabelEvent"
-import { HistoryStep } from "./interface/HistoryStep"
+import { Label } from "../Label"
+import { labelIsRunnable } from "../functions/StepLabelUtility"
+import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
+import { HistoryStep } from "../interface/HistoryStep"
+import { StepHistoryDataType } from "../types/StepHistoryDataType"
 
 /**
  * HistoryManager is a class that contains the history of the game.
@@ -44,9 +46,9 @@ export class HistoryManager {
             HistoryManager.stepHistory.pop()
         }
     }
-    private static get stepsAfterLastHistoryLabel(): StepHistoryData[] {
+    private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
         let length = HistoryManager.stepHistory.length
-        let steps: StepHistoryData[] = []
+        let steps: StepHistoryDataType[] = []
         for (let i = length - 1; i >= 0; i--) {
             let element = HistoryManager.stepHistory[i]
             if (typeof element === "object" && "currentStep" in element) {

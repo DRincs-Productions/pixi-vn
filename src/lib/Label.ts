@@ -1,50 +1,6 @@
-/**
- * StepLabel is a function that will be executed as the game continues.
- */
-export type StepLabel = (() => void | Promise<void>)
-/**
- * StepHistoryData is a string that will be stored in the history of the game.
- * if the corresponding function of the step has been changed then StepHistoryData is not equal.
- */
-export type StepHistoryData = string
-/**
- * Convert StepLabel to StepHistoryData
- * @param step
- * @returns
- */
-export function convertStelLabelToStepHistoryData(step: StepLabel): StepHistoryData {
-    return step.toString().toLocaleLowerCase()
-}
-/**
- * Check if two steps are equal
- * @param step1
- * @param step2
- * @returns
- */
-export function checkIfStepsIsEqual(step1: StepHistoryData | StepLabel, step2: StepHistoryData | StepLabel): boolean {
-    if (typeof step1 === "function") {
-        step1 = convertStelLabelToStepHistoryData(step1)
-    }
-    if (typeof step2 === "function") {
-        step2 = convertStelLabelToStepHistoryData(step2)
-    }
-    return step1.toLocaleLowerCase() === step2.toLocaleLowerCase()
-}
-
-/**
- * After the update or code edit, some labels may no longer match.
- * @param label
- * @returns In case of label mismatch, return false.
- */
-export function labelIsRunnable(label: Label): boolean {
-    try {
-        let step = label.steps
-        return step.length > 0
-    }
-    catch {
-        return false
-    }
-}
+import { checkIfStepsIsEqual } from "./functions/StepLabelUtility"
+import { StepHistoryDataType } from "./types/StepHistoryDataType"
+import { StepLabelType } from "./types/StepLabelType"
 
 /**
  * Label is a class that contains a list of steps, which will be performed as the game continues.
@@ -55,13 +11,13 @@ export abstract class Label {
      * Get the steps of the label.
      * Every time you update this list will also be updated when the other game versions load.
      */
-    public abstract get steps(): StepLabel[]
+    public abstract get steps(): StepLabelType[]
     /**
      * Get the corresponding steps number
      * @param externalSteps
      * @returns Numer of corresponding steps, for example, if externalSteps is [ABC, DEF, GHI] and the steps of the label is [ABC, GHT], the result will be 1
      */
-    public getCorrespondingStepsNumber(externalSteps: StepHistoryData[] | StepLabel[]): number {
+    public getCorrespondingStepsNumber(externalSteps: StepHistoryDataType[] | StepLabelType[]): number {
         if (externalSteps.length === 0) {
             return 0
         }
