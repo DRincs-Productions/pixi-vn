@@ -1,8 +1,8 @@
-import { Label } from "../classes/Label"
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
-import { convertStelLabelToStepHistoryData, labelIsRunnable } from "../functions/StepLabelUtility"
+import { convertStelLabelToStepHistoryData, getLabelByClassName } from "../functions/StepLabelUtility"
 import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
 import { HistoryStep } from "../interface/HistoryStep"
+import { LabelHistoryDataType } from "../types/LabelHistoryDataType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 import { GameStorageManager } from "./StorageManager"
@@ -16,11 +16,11 @@ export class GameStepManager {
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
     public static stepsHistory: (HistoryLabelEvent | HistoryStep)[] = []
-    private static openedLabels: (typeof Label)[] = []
+    private static openedLabels: LabelHistoryDataType[] = []
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    public static get currentLabel(): typeof Label | null {
+    public static get currentLabel(): LabelHistoryDataType | null {
         if (GameStepManager.openedLabels.length > 0) {
             return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
         }
@@ -37,12 +37,12 @@ export class GameStepManager {
             // TODO: implement
             return
         }
-        if (!labelIsRunnable(GameStepManager.currentLabel)) {
-            // TODO: implement
+        let currentLabel = getLabelByClassName(GameStepManager.currentLabel)
+        if (!currentLabel) {
+            console.error("Label not found")
             return
         }
         let oldSteps = GameStepManager.stepsAfterLastHistoryLabel
-        let currentLabel = new GameStepManager.currentLabel()
         let currentStepIndex = currentLabel.getCorrespondingStepsNumber(oldSteps)
         let stepToRemove = oldSteps.length - currentStepIndex
         GameStepManager.removeLastHistoryNodes(stepToRemove)
@@ -106,11 +106,11 @@ export class GameStepManager {
     public static async runNextStep() {
         let lasteStepsLength = GameStepManager.stepsAfterLastHistoryLabel.length
         if (GameStepManager.currentLabel) {
-            if (!labelIsRunnable(GameStepManager.currentLabel)) {
-                console.error("Label is not runnable")
+            let currentLabel = getLabelByClassName(GameStepManager.currentLabel)
+            if (!currentLabel) {
+                console.error("Label not found")
                 return
             }
-            let currentLabel = new GameStepManager.currentLabel()
             let n = currentLabel.steps.length
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
@@ -126,11 +126,11 @@ export class GameStepManager {
         }
         console.warn("No next step")
     }
-    public static async runLabel<T extends typeof Label>(label: T) {
+    public static async runLabel(label: LabelHistoryDataType) {
         GameStepManager.openLabel(label)
         await GameStepManager.runNextStep()
     }
-    private static openLabel<T extends typeof Label>(label: T) {
+    private static openLabel(label: LabelHistoryDataType) {
         let historyLabel: HistoryLabelEvent = {
             label: label,
             type: HistoryLabelEventEnum.OpenByCall,
