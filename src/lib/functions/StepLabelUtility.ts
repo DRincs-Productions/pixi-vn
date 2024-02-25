@@ -29,12 +29,12 @@ export function checkIfStepsIsEqual(step1: StepHistoryDataType | StepLabelType, 
 
 export function getLabelByClassName<T extends Label>(labelData: LabelHistoryDataType): T | undefined {
     try {
-        let l = new labelData()
-        let step = l.steps
+        let label = labelData()
+        let step = label.steps
         if (step.length = 0) {
             console.warn("Label has no steps")
         }
-        return l as T
+        return label as T
     }
     catch (e) {
         console.error(e)

@@ -42,7 +42,7 @@ export default function MainMenu() {
                 <MenuButton
                     onClick={() => {
                         GameWindowManager.removeChildren()
-                        GameStepManager.runLabel(ExempleLabel)
+                        GameStepManager.runLabel(() => new ExempleLabel())
                         navigate("/game")
                     }}
                 >
