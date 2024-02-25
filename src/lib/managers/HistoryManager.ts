@@ -131,9 +131,15 @@ export class GameStepManager {
         await GameStepManager.runNextStep()
     }
     private static openLabel(label: LabelHistoryDataType) {
+        let currentLabel = getLabelByClassName(label)
+        if (!currentLabel) {
+            console.error("Label not found")
+            return
+        }
         let historyLabel: HistoryLabelEvent = {
             label: label,
             type: HistoryLabelEventEnum.OpenByCall,
+            labelClassName: currentLabel.constructor.name,
         }
         GameStepManager.stepsHistory.push(historyLabel)
         GameStepManager.openedLabels.push(label)
@@ -143,9 +149,15 @@ export class GameStepManager {
             console.warn("No label to close")
             return
         }
+        let currentLabel = getLabelByClassName(GameStepManager.currentLabel)
+        if (!currentLabel) {
+            console.error("Label not found")
+            return
+        }
         let historyLabel: HistoryLabelEvent = {
             label: GameStepManager.currentLabel,
             type: HistoryLabelEventEnum.End,
+            labelClassName: currentLabel.constructor.name,
         }
         GameStepManager.stepsHistory.push(historyLabel)
         GameStepManager.openedLabels.pop()

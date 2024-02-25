@@ -9,4 +9,5 @@ import { LabelHistoryDataType } from "../types/LabelHistoryDataType";
 export interface HistoryLabelEvent {
     type: HistoryLabelEventEnum,
     label: LabelHistoryDataType,
+    labelClassName: string,
 }
