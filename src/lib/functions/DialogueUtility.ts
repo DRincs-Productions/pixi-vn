@@ -6,11 +6,15 @@ export function setDialogue(text: string): void {
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue)
 }
 
-export function getDialogue(): DialogueModel {
+export function getDialogue(): DialogueModel | undefined {
     let d = GameStorageManager.getVariable<DialogueModel>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
     if (d instanceof DialogueModel) {
         return d
     }
     console.error("No dialogue found")
-    return new DialogueModel("")
+    return undefined
+}
+
+export function clearDialogue(): void {
+    GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, undefined)
 }

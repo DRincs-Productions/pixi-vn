@@ -5,11 +5,12 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
 import { DialogueModel } from '../lib/classes/DialogueModel';
+import { getDialogue } from '../lib/functions/DialogueUtility';
+import { GameStepManager } from '../lib/managers/HistoryManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
-import { useDialogueMemory } from '../use_query/useDialogueMemory';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 
 export default function DialogueInterface() {
@@ -22,9 +23,12 @@ export default function DialogueInterface() {
         y: 0,
     })
 
-    const {
-        data = new DialogueModel(""),
-    } = useDialogueMemory({})
+    const [loading, setLoading] = useState(false)
+    const [dialogue, setDialogue] = useState<DialogueModel | undefined>(undefined)
+    useEffect(() => {
+        let dial = getDialogue()
+        setDialogue(dial)
+    }, [])
 
     return (
         <Box
@@ -36,7 +40,7 @@ export default function DialogueInterface() {
                 right: 0,
             }}
         >
-            <DragHandleDivider
+            {dialogue && <DragHandleDivider
                 orientation="horizontal"
                 sx={{
                     position: "absolute",
@@ -44,8 +48,8 @@ export default function DialogueInterface() {
                     width: "100%",
                 }}
                 onMouseDown={(e) => resizeWindowsHandler(e, windowSize, setWindowSize)}
-            />
-            <Card
+            />}
+            {dialogue && <Card
                 orientation="horizontal"
                 sx={{
                     overflow: 'auto',
@@ -98,14 +102,15 @@ export default function DialogueInterface() {
                             overflow: 'auto',
                         }}
                     >
-                        {data.text}
+                        {dialogue.text}
                     </Sheet>
                 </CardContent>
-            </Card>
+            </Card>}
             <Button
                 variant="solid"
                 color="primary"
                 size="sm"
+                loading={loading}
                 sx={{
                     position: "absolute",
                     bottom: -10,
@@ -113,6 +118,14 @@ export default function DialogueInterface() {
                     width: { xs: 70, sm: 100, md: 150 },
                     border: 3,
                     zIndex: 100,
+                }}
+                onClick={() => {
+                    setLoading(true)
+                    GameStepManager.runNextStep().then(() => {
+                        let dialogue = getDialogue()
+                        setDialogue(dialogue)
+                        setLoading(false)
+                    })
                 }}
             >
                 Next

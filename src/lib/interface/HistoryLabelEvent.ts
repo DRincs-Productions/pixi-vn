@@ -8,5 +8,5 @@ import { HistoryLabelEventEnum } from "../enums/LabelEventEnum";
  */
 export interface HistoryLabelEvent {
     type: HistoryLabelEventEnum,
-    label: Label,
+    label: typeof Label,
 }

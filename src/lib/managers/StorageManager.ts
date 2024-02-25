@@ -2,7 +2,7 @@ import { ExportedStorage } from "../classes/ExportedStorage"
 
 export class GameStorageManager {
     private static oidsUsed: string[] = []
-    private static storage: object = {}
+    private static storage: { [key: string]: any } = {}
     private constructor() { }
     public static get keysSystem() {
         return {
@@ -19,14 +19,18 @@ export class GameStorageManager {
     }
     public static setVariable<T>(key: string, value: T) {
         key = key.toLowerCase()
-        if (GameStorageManager.storage.hasOwnProperty(key)) {
-            (GameStorageManager.storage as any)[key] = value
+        if (value === undefined) {
+            if (GameStorageManager.storage.hasOwnProperty(key)) {
+                delete GameStorageManager.storage[key]
+            }
+            return
         }
+        GameStorageManager.storage[key] = value
     }
     public static getVariable<T>(key: string): T | undefined {
         key = key.toLowerCase()
         if (GameStorageManager.storage.hasOwnProperty(key)) {
-            return (GameStorageManager.storage as any)[key]
+            return GameStorageManager.storage[key]
         }
         return undefined
     }

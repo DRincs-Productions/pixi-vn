@@ -1,4 +1,5 @@
 import { Label } from "../classes/Label"
+import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
 import { convertStelLabelToStepHistoryData, labelIsRunnable } from "../functions/StepLabelUtility"
 import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
 import { HistoryStep } from "../interface/HistoryStep"
@@ -9,16 +10,22 @@ import { GameStorageManager } from "./StorageManager"
 /**
  * GameHistoryManager is a class that contains the history of the game.
  */
-export class GameHistoryManager {
+export class GameStepManager {
     private constructor() { }
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
     public static stepsHistory: (HistoryLabelEvent | HistoryStep)[] = []
+    private static openedLabels: (typeof Label)[] = []
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    public static currentLabel: Label | null = null
+    public static get currentLabel(): typeof Label | null {
+        if (GameStepManager.openedLabels.length > 0) {
+            return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
+        }
+        return null
+    }
     /**
      * After the update or code edit, some steps or labels may no longer match.
      * - In case of step mismatch, the game will be updated to the last matching step.
@@ -26,19 +33,20 @@ export class GameHistoryManager {
      * @returns 
      */
     public static afterUpdate() {
-        if (!GameHistoryManager.currentLabel) {
+        if (!GameStepManager.currentLabel) {
             // TODO: implement
             return
         }
-        if (!labelIsRunnable(GameHistoryManager.currentLabel)) {
+        if (!labelIsRunnable(GameStepManager.currentLabel)) {
             // TODO: implement
             return
         }
-        let oldSteps = GameHistoryManager.stepsAfterLastHistoryLabel
-        let currentStepIndex = GameHistoryManager.currentLabel.getCorrespondingStepsNumber(oldSteps)
+        let oldSteps = GameStepManager.stepsAfterLastHistoryLabel
+        let currentLabel = new GameStepManager.currentLabel()
+        let currentStepIndex = currentLabel.getCorrespondingStepsNumber(oldSteps)
         let stepToRemove = oldSteps.length - currentStepIndex
-        GameHistoryManager.removeLastHistoryNodes(stepToRemove)
-        GameHistoryManager.loadLastStep()
+        GameStepManager.removeLastHistoryNodes(stepToRemove)
+        GameStepManager.loadLastStep()
     }
     public static loadLastStep() {
         // TODO: implement
@@ -49,17 +57,17 @@ export class GameHistoryManager {
      */
     private static removeLastHistoryNodes(itemNumber: number) {
         for (let i = 0; i < itemNumber; i++) {
-            GameHistoryManager.stepsHistory.pop()
+            GameStepManager.stepsHistory.pop()
         }
     }
     /**
      * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
      */
     private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
-        let length = GameHistoryManager.stepsHistory.length
+        let length = GameStepManager.stepsHistory.length
         let steps: StepHistoryDataType[] = []
         for (let i = length - 1; i >= 0; i--) {
-            let element = GameHistoryManager.stepsHistory[i]
+            let element = GameStepManager.stepsHistory[i]
             if (typeof element === "object" && "step" in element) {
                 steps.push(element.step)
             }
@@ -75,37 +83,71 @@ export class GameHistoryManager {
      * Add a label to the history.
      */
     public static clear() {
-        GameHistoryManager.stepsHistory = []
-        GameHistoryManager.currentLabel = null
+        GameStepManager.stepsHistory = []
+        GameStepManager.openedLabels = []
     }
     /**
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    public static async addStepHistory(step: StepLabelType) {
+    public static addStepHistory(step: StepLabelType) {
         let stepHistory: StepHistoryDataType = convertStelLabelToStepHistoryData(step)
         let historyStep: HistoryStep = {
             path: window.location.pathname,
             storage: GameStorageManager.export(),
             step: stepHistory,
         }
-        GameHistoryManager.stepsHistory.push(historyStep)
+        GameStepManager.stepsHistory.push(historyStep)
     }
     /**
      * Execute the next step and add it to the history.
      * @returns
      */
     public static async runNextStep() {
-        let lasteStepsLength = GameHistoryManager.stepsAfterLastHistoryLabel.length
-        if (GameHistoryManager.currentLabel) {
-            let n = GameHistoryManager.currentLabel.steps.length
+        let lasteStepsLength = GameStepManager.stepsAfterLastHistoryLabel.length
+        if (GameStepManager.currentLabel) {
+            if (!labelIsRunnable(GameStepManager.currentLabel)) {
+                console.error("Label is not runnable")
+                return
+            }
+            let currentLabel = new GameStepManager.currentLabel()
+            let n = currentLabel.steps.length
             if (n > lasteStepsLength) {
-                let nextStep = GameHistoryManager.currentLabel.steps[lasteStepsLength]
-                GameHistoryManager.addStepHistory(nextStep)
+                let nextStep = currentLabel.steps[lasteStepsLength]
+                GameStepManager.addStepHistory(nextStep)
                 await nextStep()
+                return
+            }
+            if (n === lasteStepsLength) {
+                GameStepManager.closeLabel()
+                GameStepManager.runNextStep()
                 return
             }
         }
         console.warn("No next step")
+    }
+    public static async runLabel<T extends typeof Label>(label: T) {
+        GameStepManager.openLabel(label)
+        await GameStepManager.runNextStep()
+    }
+    private static openLabel<T extends typeof Label>(label: T) {
+        let historyLabel: HistoryLabelEvent = {
+            label: label,
+            type: HistoryLabelEventEnum.OpenByCall,
+        }
+        GameStepManager.stepsHistory.push(historyLabel)
+        GameStepManager.openedLabels.push(label)
+    }
+    private static closeLabel() {
+        if (!GameStepManager.currentLabel) {
+            console.warn("No label to close")
+            return
+        }
+        let historyLabel: HistoryLabelEvent = {
+            label: GameStepManager.currentLabel,
+            type: HistoryLabelEventEnum.End,
+        }
+        GameStepManager.stepsHistory.push(historyLabel)
+        GameStepManager.openedLabels.pop()
     }
 }

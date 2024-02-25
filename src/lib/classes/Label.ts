@@ -6,12 +6,15 @@ import { StepLabelType } from "../types/StepLabelType"
  * Label is a class that contains a list of steps, which will be performed as the game continues.
  * For Ren'py this is the equivalent of a label.
  */
-export abstract class Label {
+export class Label { // TODO: convert to abstract
     /**
      * Get the steps of the label.
      * Every time you update this list will also be updated when the other game versions load.
      */
-    public abstract get steps(): StepLabelType[]
+    public get steps(): StepLabelType[] {
+        console.warn("This method should be overridden")
+        throw new Error("This method should be overridden")
+    }
     /**
      * Get the corresponding steps number
      * @param externalSteps

@@ -31,12 +31,14 @@ export function checkIfStepsIsEqual(step1: StepHistoryDataType | StepLabelType, 
  * @param label
  * @returns In case of label mismatch, return false.
  */
-export function labelIsRunnable(label: Label): boolean {
+export function labelIsRunnable<T extends typeof Label>(label: T): boolean {
     try {
-        let step = label.steps
+        let l = new label()
+        let step = l.steps
         return step.length > 0
     }
-    catch {
+    catch (e) {
+        console.error(e)
         return false
     }
 }
