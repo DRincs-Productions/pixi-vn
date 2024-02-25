@@ -5,7 +5,7 @@ import MenuButton from '../components/MenuButton';
 import { ExempleLabel } from '../label/ExempleLabel';
 import { clearAllGameDatas } from '../lib/functions/GameUtility';
 import { showImage } from '../lib/functions/ImageUtility';
-import { GameStepManager } from '../lib/managers/HistoryManager';
+import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
 
 export default function MainMenu() {

@@ -1,4 +1,4 @@
-import { GameStepManager } from "../managers/HistoryManager";
+import { GameStepManager } from "../managers/StepManager";
 import { GameStorageManager } from "../managers/StorageManager";
 import { GameWindowManager } from "../managers/WindowManager";
 

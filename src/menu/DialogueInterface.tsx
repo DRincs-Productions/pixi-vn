@@ -9,7 +9,7 @@ import { useEffect, useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
 import { DialogueModel } from '../lib/classes/DialogueModel';
 import { getDialogue } from '../lib/functions/DialogueUtility';
-import { GameStepManager } from '../lib/managers/HistoryManager';
+import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 

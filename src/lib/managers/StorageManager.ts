@@ -1,4 +1,4 @@
-import { ExportedStorage } from "../classes/ExportedStorage"
+import { ExportedStorage } from "../interface/ExportedStorage"
 
 export class GameStorageManager {
     private static oidsUsed: string[] = []
@@ -38,11 +38,17 @@ export class GameStorageManager {
         GameStorageManager.oidsUsed = []
         GameStorageManager.storage = {}
     }
+    public static exportJson(): string {
+        return JSON.stringify(this.export())
+    }
     public static export(): ExportedStorage {
         return {
             storage: GameStorageManager.storage,
             stepOidUsedList: GameStorageManager.oidsUsed
         }
+    }
+    public static importJson(dataString: string): ExportedStorage {
+        return JSON.parse(dataString)
     }
     public static import(data: object) {
         GameStorageManager.clear()
