@@ -5,7 +5,6 @@ type Iprops = {
 }
 
 export default function AppImports(props: Iprops) {
-
     return (
         <BrowserRouter>
             {props.children}

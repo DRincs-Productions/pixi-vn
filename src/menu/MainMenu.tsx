@@ -2,8 +2,11 @@ import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
-import { GameWindowManager } from '../lib/WindowManager';
-import { showImage } from '../lib/image';
+import { ExempleLabel } from '../label/ExempleLabel';
+import { clearAllGameDatas } from '../lib/functions/GameUtility';
+import { showImage } from '../lib/functions/ImageUtility';
+import { GameStepManager } from '../lib/managers/HistoryManager';
+import { GameWindowManager } from '../lib/managers/WindowManager';
 
 export default function MainMenu() {
     const navigate = useNavigate();
@@ -29,7 +32,7 @@ export default function MainMenu() {
                 <MenuButton
                     disabled
                     onClick={() => {
-                        GameWindowManager.removeChildren()
+                        clearAllGameDatas()
                     }}
                 >
                     Continue
@@ -39,6 +42,7 @@ export default function MainMenu() {
                 <MenuButton
                     onClick={() => {
                         GameWindowManager.removeChildren()
+                        GameStepManager.runLabel(() => new ExempleLabel())
                         navigate("/game")
                     }}
                 >
