@@ -47,8 +47,8 @@ export class GameStorageManager {
             stepOidUsedList: GameStorageManager.oidsUsed
         }
     }
-    public static importJson(dataString: string): ExportedStorage {
-        return JSON.parse(dataString)
+    public static importJson(dataString: string) {
+        GameStorageManager.import(JSON.parse(dataString))
     }
     public static import(data: object) {
         GameStorageManager.clear()

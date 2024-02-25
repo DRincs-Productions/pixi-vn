@@ -1,5 +1,6 @@
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
 import { convertStelLabelToStepHistoryData, getLabelByClassName } from "../functions/StepLabelUtility"
+import { ExportedStep } from "../interface/ExportedStep"
 import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
 import { HistoryStep } from "../interface/HistoryStep"
 import { LabelHistoryDataType } from "../types/LabelHistoryDataType"
@@ -161,5 +162,37 @@ export class GameStepManager {
         }
         GameStepManager.stepsHistory.push(historyLabel)
         GameStepManager.openedLabels.pop()
+    }
+    public static exportJson(): string {
+        return JSON.stringify(this.export())
+    }
+    public static export(): ExportedStep {
+        return {
+            stepsHistory: GameStepManager.stepsHistory,
+            openedLabels: GameStepManager.openedLabels,
+        }
+    }
+    public static importJson(dataString: string) {
+        GameStepManager.import(JSON.parse(dataString))
+    }
+    public static import(data: object) {
+        GameStepManager.clear()
+        try {
+            if (data.hasOwnProperty("stepsHistory")) {
+                GameStepManager.stepsHistory = (data as ExportedStep)["stepsHistory"] as (HistoryLabelEvent | HistoryStep)[]
+            }
+            else {
+                console.log("No stepsHistory data found")
+            }
+            if (data.hasOwnProperty("openedLabels")) {
+                GameStepManager.openedLabels = (data as ExportedStep)["openedLabels"] as LabelHistoryDataType[]
+            }
+            else {
+                console.log("No openedLabels data found")
+            }
+        }
+        catch (e) {
+            console.error("Error importing data", e)
+        }
     }
 }
