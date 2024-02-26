@@ -1,5 +1,6 @@
+import { Label } from "../classes/Label"
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
-import { convertStelLabelToStepHistoryData, getLabelByClassName } from "../functions/StepLabelUtility"
+import { convertStelLabelToStepHistoryData } from "../functions/StepLabelUtility"
 import { ExportedStep } from "../interface/ExportedStep"
 import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
 import { HistoryStep } from "../interface/HistoryStep"
@@ -18,6 +19,7 @@ export class GameStepManager {
      */
     public static stepsHistory: (HistoryLabelEvent | HistoryStep)[] = []
     private static openedLabels: LabelHistoryDataType[] = []
+    public static registeredLabels: { [key: LabelHistoryDataType]: typeof Label } = {}
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
@@ -38,7 +40,7 @@ export class GameStepManager {
             // TODO: implement
             return
         }
-        let currentLabel = getLabelByClassName(GameStepManager.currentLabel)
+        let currentLabel = GameStepManager.getLabelByClassName(GameStepManager.currentLabel)
         if (!currentLabel) {
             console.error("Label not found")
             return
@@ -107,7 +109,7 @@ export class GameStepManager {
     public static async runNextStep() {
         let lasteStepsLength = GameStepManager.stepsAfterLastHistoryLabel.length
         if (GameStepManager.currentLabel) {
-            let currentLabel = getLabelByClassName(GameStepManager.currentLabel)
+            let currentLabel = GameStepManager.getLabelByClassName(GameStepManager.currentLabel)
             if (!currentLabel) {
                 console.error("Label not found")
                 return
@@ -127,15 +129,24 @@ export class GameStepManager {
         }
         console.warn("No next step")
     }
-    public static async runLabel(label: LabelHistoryDataType) {
-        GameStepManager.openLabel(label)
+    public static async runLabel(label: typeof Label | Label) {
+        try {
+            if (label instanceof Label) {
+                label = label.constructor as typeof Label
+            }
+            let labelName = label.name
+            GameStepManager.openLabel(labelName)
+        }
+        catch (e) {
+            console.error(e)
+            return
+        }
         await GameStepManager.runNextStep()
     }
-    private static openLabel(label: LabelHistoryDataType) {
-        let currentLabel = getLabelByClassName(label)
+    private static openLabel(label: string) {
+        let currentLabel = GameStepManager.getLabelByClassName(label)
         if (!currentLabel) {
-            console.error("Label not found")
-            return
+            throw new Error("Label not found")
         }
         let historyLabel: HistoryLabelEvent = {
             label: label,
@@ -150,7 +161,7 @@ export class GameStepManager {
             console.warn("No label to close")
             return
         }
-        let currentLabel = getLabelByClassName(GameStepManager.currentLabel)
+        let currentLabel = GameStepManager.getLabelByClassName(GameStepManager.currentLabel)
         if (!currentLabel) {
             console.error("Label not found")
             return
@@ -193,6 +204,25 @@ export class GameStepManager {
         }
         catch (e) {
             console.error("Error importing data", e)
+        }
+    }
+    private static getLabelByClassName<T extends Label>(labelName: LabelHistoryDataType): T | undefined {
+        try {
+            let labelType = GameStepManager.registeredLabels[labelName]
+            if (!labelType) {
+                console.error("Label not found")
+                return
+            }
+            let label = new labelType()
+            let step = label.steps
+            if (step.length = 0) {
+                console.warn("Label has no steps")
+            }
+            return label as T
+        }
+        catch (e) {
+            console.error(e)
+            return
         }
     }
 }

@@ -1,16 +1,18 @@
 import { Sprite } from "pixi.js";
 import { Label } from "../lib/classes/Label";
+import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
 import { hideImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
+@labelDecorator()
 export class ExempleLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
             () => setDialogue("Hello World!"),
             () => {
-                setDialogue("Hello World! 2")
+                setDialogue("This project have 2 parts, the first is the pixijs part, and the second is the react part.")
                 // create a new Sprite from an image path
                 const bunny = Sprite.from('https://pixijs.com/assets/bunny.png');
 
@@ -29,12 +31,9 @@ export class ExempleLabel extends Label {
                     bunny.rotation += 0.1 * delta;
                 });
             },
-            () => setDialogue("Hello World! 3"),
             () => hideImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),
-            () => setDialogue("Hello World! 4"),
-            () => setDialogue("Hello World! 5"),
-            () => setDialogue("Hello World! 6"),
+            () => setDialogue("it is possible to modify the \"Labels\" in runtime. try adding a step in ExempleLabel and then save."),
         ]
     }
 }

@@ -1,5 +1,3 @@
-import { Label } from "../classes/Label"
-import { LabelHistoryDataType } from "../types/LabelHistoryDataType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 
@@ -25,19 +23,4 @@ export function checkIfStepsIsEqual(step1: StepHistoryDataType | StepLabelType, 
         step2 = convertStelLabelToStepHistoryData(step2)
     }
     return step1.toLocaleLowerCase() === step2.toLocaleLowerCase()
-}
-
-export function getLabelByClassName<T extends Label>(labelData: LabelHistoryDataType): T | undefined {
-    try {
-        let label = labelData()
-        let step = label.steps
-        if (step.length = 0) {
-            console.warn("Label has no steps")
-        }
-        return label as T
-    }
-    catch (e) {
-        console.error(e)
-        return
-    }
 }

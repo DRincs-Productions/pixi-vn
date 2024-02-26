@@ -1,3 +1,1 @@
-import { Label } from "../classes/Label";
-
-export type LabelHistoryDataType = () => Label
+export type LabelHistoryDataType = string
