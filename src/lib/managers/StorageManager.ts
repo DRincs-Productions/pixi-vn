@@ -1,8 +1,9 @@
 import { ExportedStorage } from "../interface/ExportedStorage"
+import { StorageElementType } from "../types/StorageElementType"
 
 export class GameStorageManager {
     private static oidsUsed: string[] = []
-    private static storage: { [key: string]: any } = {}
+    private static storage: { [key: string]: StorageElementType } = {}
     private constructor() { }
     public static get keysSystem() {
         return {
@@ -17,7 +18,7 @@ export class GameStorageManager {
         GameStorageManager.oidsUsed.push(oid)
         return oid
     }
-    public static setVariable<T>(key: string, value: T) {
+    public static setVariable(key: string, value: StorageElementType) {
         key = key.toLowerCase()
         if (value === undefined) {
             if (GameStorageManager.storage.hasOwnProperty(key)) {
@@ -27,12 +28,18 @@ export class GameStorageManager {
         }
         GameStorageManager.storage[key] = value
     }
-    public static getVariable<T>(key: string): T | undefined {
+    public static getVariable(key: string): StorageElementType | undefined {
         key = key.toLowerCase()
         if (GameStorageManager.storage.hasOwnProperty(key)) {
-            return GameStorageManager.storage[key]
+            return GameStorageManager.storage[key] as StorageElementType
         }
         return undefined
+    }
+    public static removeVariable(key: string) {
+        key = key.toLowerCase()
+        if (GameStorageManager.storage.hasOwnProperty(key)) {
+            delete GameStorageManager.storage[key]
+        }
     }
     public static clear() {
         GameStorageManager.oidsUsed = []
@@ -54,13 +61,13 @@ export class GameStorageManager {
         GameStorageManager.clear()
         try {
             if (data.hasOwnProperty("storage")) {
-                GameStorageManager.storage = (data as ExportedStorage)["storage"] as object
+                GameStorageManager.storage = (data as ExportedStorage)["storage"]
             }
             else {
                 console.log("No storage data found")
             }
             if (data.hasOwnProperty("stepOidUsedList")) {
-                GameStorageManager.oidsUsed = (data as ExportedStorage)["stepOidUsedList"] as string[]
+                GameStorageManager.oidsUsed = (data as ExportedStorage)["stepOidUsedList"]
             }
             else {
                 console.log("No stepOidUsed data found")
