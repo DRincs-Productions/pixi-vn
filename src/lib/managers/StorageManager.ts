@@ -28,10 +28,10 @@ export class GameStorageManager {
         }
         GameStorageManager.storage[key] = value
     }
-    public static getVariable(key: string): StorageElementType | undefined {
+    public static getVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase()
         if (GameStorageManager.storage.hasOwnProperty(key)) {
-            return GameStorageManager.storage[key] as StorageElementType
+            return GameStorageManager.storage[key] as T
         }
         return undefined
     }
