@@ -8,9 +8,7 @@ export type TickerArgsType = { [tag: string]: StorageElementType }
  * This class should be extended and the fn method should be overridden.
  */
 export class TickerClass<T extends TickerArgsType> {
-    constructor(args: T) {
-        console.log("args", args)
-    }
+    constructor(_args: T) { }
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use GameWindowManager.getChild() to get the children of the canvas, and edit them.
