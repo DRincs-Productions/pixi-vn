@@ -1,10 +1,24 @@
 import { Label } from "../lib/classes/Label";
+import { TickerElement } from "../lib/classes/TickerElement";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
+import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
 import { hideImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { SpriteST } from "../lib/pixiElement/SpriteST";
 import { StepLabelType } from "../lib/types/StepLabelType";
+
+@tickerDecorator()
+export class ExempleTicker extends TickerElement {
+    override fn(delta: number): void {
+        let bunny = GameWindowManager.getChild<SpriteST>("bunny")
+        if (!bunny) {
+            console.error("bunny not found")
+            return
+        }
+        bunny.rotation += 0.1 * delta;
+    }
+}
 
 @labelDecorator()
 export class ExempleLabel extends Label {
@@ -24,12 +38,7 @@ export class ExempleLabel extends Label {
                 bunny.y = 100
 
                 // Listen for animate update
-                GameWindowManager.app.ticker.add((delta) => {
-                    // just for fun, let's rotate mr rabbit a little
-                    // delta is 1 if running at 100% performance
-                    // creates frame-independent transformation
-                    bunny.rotation += 0.1 * delta;
-                });
+                GameWindowManager.addTicker(ExempleTicker);
             },
             () => hideImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),

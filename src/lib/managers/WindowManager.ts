@@ -1,4 +1,5 @@
-import { Application, DisplayObject, IApplicationOptions } from "pixi.js";
+import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
+import { TickerElement } from "../classes/TickerElement";
 import { StoredGraficElement } from "../pixiElement/StoredGraficElement";
 
 /**
@@ -11,7 +12,7 @@ export class GameWindowManager {
     /**
      * The PIXI Application instance.
      */
-    static app: Application
+    private static app: Application
     /**
      * This is the div that have same size of the canvas.
      * This is useful to put interface elements.
@@ -172,8 +173,8 @@ export class GameWindowManager {
      * @param tag The tag of the child to be returned.
      * @returns The child with the tag.
      */
-    public static getChild(tag: string) {
-        return GameWindowManager.children[tag]
+    public static getChild<T extends StoredGraficElement<any, any>>(tag: string): T | undefined {
+        return GameWindowManager.children[tag] as T | undefined
     }
     /**
      * Remove all children from the canvas.
@@ -181,5 +182,43 @@ export class GameWindowManager {
     public static removeChildren() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager.children = {}
+    }
+
+    /** Edit Tickers Methods */
+
+    static registeredTicker: { [name: string]: typeof TickerElement } = {}
+    static currentTickers: TickerElement[] = []
+    static addTicker<T>(ticker: typeof TickerElement | TickerElement | string, context?: T, priority?: UPDATE_PRIORITY) {
+        let tickerName: string
+        if (typeof ticker === 'string') {
+            tickerName = ticker
+        }
+        else if (ticker instanceof TickerElement) {
+            tickerName = ticker.constructor.name
+        }
+        else {
+            tickerName = ticker.name
+        }
+        let t = GameWindowManager.geTickerByClassName(tickerName)
+        if (!t) {
+            console.error(`Ticker ${tickerName} not found`)
+            return
+        }
+        GameWindowManager.currentTickers.push(t)
+        GameWindowManager.app.ticker.add((dt) => t?.fn(dt), context, priority)
+    }
+    private static geTickerByClassName<T extends TickerElement>(labelName: string): T | undefined {
+        try {
+            let ticker = GameWindowManager.registeredTicker[labelName]
+            if (!ticker) {
+                console.error(`Ticker ${labelName} not found`)
+                return
+            }
+            return new ticker() as T
+        }
+        catch (e) {
+            console.error(e)
+            return
+        }
     }
 }
