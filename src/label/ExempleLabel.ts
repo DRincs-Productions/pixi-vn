@@ -1,9 +1,9 @@
-import { Sprite } from "pixi.js";
 import { Label } from "../lib/classes/Label";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
 import { hideImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
+import { SpriteST } from "../lib/pixiElement/SpriteST";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
 @labelDecorator()
@@ -14,7 +14,7 @@ export class ExempleLabel extends Label {
             () => {
                 setDialogue("This project have 2 parts, the first is the pixijs part, and the second is the react part.")
                 // create a new Sprite from an image path
-                const bunny = Sprite.from('https://pixijs.com/assets/bunny.png');
+                const bunny = SpriteST.from('https://pixijs.com/assets/bunny.png');
 
                 // center the sprite's anchor point
                 bunny.anchor.set(0.5);

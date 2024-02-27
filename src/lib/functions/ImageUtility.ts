@@ -1,27 +1,28 @@
-import { Assets, Container, Sprite, Texture } from 'pixi.js';
-import { Scene } from '../classes/Scene';
+import { Assets, Texture } from 'pixi.js';
 import { GameWindowManager } from '../managers/WindowManager';
+import { ContainerST } from '../pixiElement/ContainerST';
+import { SpriteST } from '../pixiElement/SpriteST';
 import { STRING_ERRORS, showErrorText } from './ErrorUtility';
 
-export function showImage(tag: string, imageUrl: string): Scene | undefined {
-    const scene = new Scene()
+export function showImage(tag: string, imageUrl: string): ContainerST | undefined {
+    const container = new ContainerST()
     try {
-        GameWindowManager.addChild(tag, scene)
+        GameWindowManager.addChild(tag, container)
     }
     catch (e) {
         console.error(e)
         return
     }
 
-    let sprite = showImageIntoContainer(imageUrl, scene)
+    let sprite = showImageIntoContainer(imageUrl, container)
     if (!sprite) {
         return
     }
-    scene.addChild(sprite)
-    return scene
+    container.addChild(sprite)
+    return container
 }
 
-export function showImageIntoContainer<T extends Container>(imageUrl: string, container: T): Sprite | undefined {
+export function showImageIntoContainer<T extends ContainerST>(imageUrl: string, container: T): SpriteST | undefined {
     let texture: Texture | undefined = undefined
     try {
         texture = Texture.from(imageUrl)
@@ -44,35 +45,35 @@ export function showImageIntoContainer<T extends Container>(imageUrl: string, co
         return
     }
 
-    let sprite = new Sprite(texture)
+    let sprite = new SpriteST(texture)
     container.addChild(sprite)
     return sprite
 }
 
-export async function showImageAsync(tag: string, imageUrl: string): Promise<void | Scene | undefined> {
-    const scene = new Scene()
+export async function showImageAsync(tag: string, imageUrl: string): Promise<void | ContainerST | undefined> {
+    const container = new ContainerST()
     try {
-        GameWindowManager.addChild(tag, scene)
+        GameWindowManager.addChild(tag, container)
     }
     catch (e) {
         console.error(e)
         return
     }
 
-    return await showImageIntoContainerAsync(imageUrl, scene)
+    return await showImageIntoContainerAsync(imageUrl, container)
         .then((sprite) => {
             if (!sprite) {
                 return
             }
-            scene.addChild(sprite)
-            return scene
+            container.addChild(sprite)
+            return container
         })
         .catch(() => {
             return
         })
 }
 
-export async function showImageIntoContainerAsync<T extends Container>(imageUrl: string, container: T): Promise<void | Sprite | undefined> {
+export async function showImageIntoContainerAsync<T extends ContainerST>(imageUrl: string, container: T): Promise<void | SpriteST | undefined> {
     return Assets.load(imageUrl)
         .then((texture) => {
             if (!texture) {
@@ -87,7 +88,7 @@ export async function showImageIntoContainerAsync<T extends Container>(imageUrl:
                 return
             }
 
-            const sprite = new Sprite(texture)
+            const sprite = new SpriteST(texture)
             container.addChild(sprite)
             return sprite
         })

@@ -1,4 +1,5 @@
 import { Application, DisplayObject, IApplicationOptions } from "pixi.js";
+import { StoredGraficElement } from "../pixiElement/StoredGraficElement";
 
 /**
  * This class is responsible for managing the window size and the children of the window.
@@ -139,18 +140,18 @@ export class GameWindowManager {
     /**
      * This is a dictionary that contains all children of Canvas, currently.
      */
-    private static children: { [tag: string]: DisplayObject } = {}
+    private static children: { [tag: string]: StoredGraficElement<any, any> } = {}
     /**
      * Add a child to the canvas.
      * If there is a child with the same tag, it will be removed.
      * @param tag The tag of the child.
      * @param child The child to be added.
      */
-    public static addChild(tag: string, child: DisplayObject) {
+    public static addChild<T1 extends DisplayObject, T2>(tag: string, child: StoredGraficElement<T1, T2>) {
         if (GameWindowManager.children[tag]) {
             GameWindowManager.removeChild(tag)
         }
-        GameWindowManager.app.stage.addChild(child)
+        GameWindowManager.app.stage.addChild(child.pixiElement)
         GameWindowManager.children[tag] = child
     }
     /**
@@ -163,7 +164,7 @@ export class GameWindowManager {
             console.error("Child with tag not found")
             return
         }
-        GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag])
+        GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag].pixiElement)
         delete GameWindowManager.children[tag]
     }
     /**

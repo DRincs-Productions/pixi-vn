@@ -1,4 +1,5 @@
-import { Container, Text } from "pixi.js";
+import { ContainerST } from "../pixiElement/ContainerST";
+import { TextST } from "../pixiElement/TextST";
 
 /**
  * List of string errors that can be shown in the canvas.
@@ -14,7 +15,7 @@ export const STRING_ERRORS = {
  * @param string  The string to be shown
  * @param container  The container where the string will be shown
  */
-export function showErrorText(string: string, container: Container) {
-    const text = new Text(string)
+export function showErrorText(string: string, container: ContainerST) {
+    const text = new TextST(string)
     container.addChild(text);
 }
