@@ -5,5 +5,5 @@ import { StorageElementType } from "../types/StorageElementType";
  */
 export interface ClassWithArgsHistory {
     className: string,
-    args: StorageElementType[],
+    args: { [tag: string]: StorageElementType }
 }

@@ -9,9 +9,9 @@ import { SpriteST } from "../lib/pixiElement/SpriteST";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
 @tickerDecorator()
-export class RotateTicker extends TickerClass {
-    override fn(delta: number): void {
-        let bunny = GameWindowManager.getChild<SpriteST>("bunny")
+export class RotateTicker extends TickerClass<{ elementId: string }> {
+    override fn(delta: number, args: { elementId: string }): void {
+        let bunny = GameWindowManager.getChild<SpriteST>(args.elementId)
         if (!bunny) {
             console.error("bunny not found")
             return
@@ -38,7 +38,7 @@ export class ExempleLabel extends Label {
                 bunny.y = 100
 
                 // Listen for animate update
-                GameWindowManager.addTicker(RotateTicker, { childId: "bunny" });
+                GameWindowManager.addTicker(RotateTicker, { elementId: "bunny" });
             },
             () => hideImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),

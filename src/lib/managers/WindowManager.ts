@@ -1,5 +1,6 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
-import { TickerClass } from "../classes/TickerClass";
+import { TickerArgsType, TickerClass } from "../classes/TickerClass";
+import { ClassWithArgsHistory } from "../interface/ClassWithArgsHistory";
 import { DisplayObjectStored } from "../pixiElement/StoredGraficElement";
 
 /**
@@ -184,10 +185,7 @@ export class GameWindowManager {
         GameWindowManager.children = {}
     }
 
-    /** Edit Temporary Children Methods */
-
     /**
-     * @override
      * Add a temporary child to the canvas.
      * @param child The child to be added.
      */
@@ -198,11 +196,37 @@ export class GameWindowManager {
         GameWindowManager.app.stage.addChild(child)
     }
 
+    /**
+     * Remove a temporary child from the canvas.
+     * @param child The child to be removed.
+     */
+    public static removeChildWithDisplayObject(child: DisplayObjectStored<any, any> | DisplayObject) {
+        if (child instanceof DisplayObjectStored) {
+            GameWindowManager.app.stage.removeChild(child.pixiElement)
+            return
+        }
+        GameWindowManager.app.stage.removeChild(child)
+    }
+
     /** Edit Tickers Methods */
 
+    /**
+     * A dictionary that contains all tickers registered and avvailable to be used.
+     */
     static registeredTicker: { [name: string]: typeof TickerClass } = {}
-    static currentTickers: TickerClass[] = []
-    static addTicker<TContext>(ticker: typeof TickerClass | TickerClass, context?: TContext, priority?: UPDATE_PRIORITY) {
+    /**
+     * Currently tickers that are running.
+     */
+    static currentTickers: ClassWithArgsHistory[] = []
+    /**
+     * Run a ticker.
+     * @param ticker The ticker class to be run.
+     * @param args The arguments to be used in the ticker.
+     * @param context The context to be used in the ticker.
+     * @param priority The priority to be used in the ticker.
+     * @returns 
+     */
+    static addTicker<TArgs extends TickerArgsType, TContext>(ticker: typeof TickerClass<TArgs>, args: TArgs, context?: TContext, priority?: UPDATE_PRIORITY) {
         let tickerName: string
         if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
@@ -210,22 +234,25 @@ export class GameWindowManager {
         else {
             tickerName = ticker.name
         }
-        let t = GameWindowManager.geTickerByClassName<TickerClass>(tickerName)
+        let t = GameWindowManager.geTickerByClassName<TArgs>(tickerName, args)
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
         }
-        GameWindowManager.currentTickers.push(t)
-        GameWindowManager.app.ticker.add((dt) => t?.fn(dt), context, priority)
+        GameWindowManager.currentTickers.push({
+            className: tickerName,
+            args: args,
+        })
+        GameWindowManager.app.ticker.add((dt) => t?.fn(dt, args), context, priority)
     }
-    private static geTickerByClassName<T = TickerClass>(labelName: string): T | undefined {
+    private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: string, args: TArgs): TickerClass<TArgs> | undefined {
         try {
             let ticker = GameWindowManager.registeredTicker[labelName]
             if (!ticker) {
                 console.error(`Ticker ${labelName} not found`)
                 return
             }
-            return new ticker() as T
+            return new ticker(args)
         }
         catch (e) {
             console.error(e)
