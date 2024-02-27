@@ -11,3 +11,8 @@ export function getTextureMemory(texture: Texture): ITextureMemory {
     }
     return textureMemory
 }
+
+export function getTexture(textureMemory: ITextureMemory) {
+    let texture = Texture.from(textureMemory.image)
+    return texture
+}

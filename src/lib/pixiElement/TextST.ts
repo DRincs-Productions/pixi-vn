@@ -8,7 +8,20 @@ interface IText extends ISprite {
 
 export class TextST extends SpriteSTInternal<Text, ITextMemory> {
     get memory(): ITextMemory {
-        throw new Error("Method not implemented.");
+        return {
+            x: this.x,
+            y: this.y,
+            rotation: this.rotation,
+            pivot: this.pivot,
+            anchor: this.anchor,
+        }
+    }
+    set memory(value: ITextMemory) {
+        this.x = value.x
+        this.y = value.y
+        this.rotation = value.rotation
+        this.pivot = value.pivot
+        this.anchor.set(value.anchor.x, value.anchor.y)
     }
     constructor(string?: string) {
         let text = new Text(string)

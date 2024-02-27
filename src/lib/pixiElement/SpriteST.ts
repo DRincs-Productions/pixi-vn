@@ -1,6 +1,6 @@
 import { IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
 import { ContainerSTInternal, IContainer } from "./ContainerST";
-import { ITextureMemory } from "./Texture";
+import { ITextureMemory, getTexture, getTextureMemory } from "./Texture";
 
 interface ISpriteMemory extends ISprite {
     texture: ITextureMemory,
@@ -10,7 +10,6 @@ export interface ISprite extends IContainer {
 }
 
 export abstract class SpriteSTInternal<T1 extends Sprite, T2 extends ISprite> extends ContainerSTInternal<T1, T2> {
-    abstract get memory(): T2
     constructor(sprite: T1) {
         super(sprite)
     }
@@ -49,7 +48,22 @@ export abstract class SpriteSTInternal<T1 extends Sprite, T2 extends ISprite> ex
 
 export class SpriteST extends SpriteSTInternal<Sprite, ISpriteMemory> {
     get memory(): ISpriteMemory {
-        throw new Error("Method not implemented.");
+        return {
+            x: this.x,
+            y: this.y,
+            rotation: this.rotation,
+            pivot: this.pivot,
+            anchor: this.anchor,
+            texture: getTextureMemory(this.pixiElement.texture)
+        }
+    }
+    set memory(value: ISpriteMemory) {
+        this.x = value.x
+        this.y = value.y
+        this.rotation = value.rotation
+        this.pivot = value.pivot
+        this.anchor.set(value.anchor.x, value.anchor.y)
+        this.pixiElement.texture = getTexture(value.texture)
     }
     constructor(texture?: Texture) {
         let sprite = new Sprite(texture)

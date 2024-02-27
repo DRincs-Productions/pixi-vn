@@ -11,7 +11,6 @@ export interface IContainer {
 }
 
 export abstract class ContainerSTInternal<T1 extends Container, T2 extends IContainer> extends DisplayObjectStored<T1, T2> {
-    abstract get memory(): T2
     private listChildren: DisplayObjectStored<any, any>[] = []
     constructor(container: T1) {
         super(container)
@@ -52,7 +51,18 @@ export abstract class ContainerSTInternal<T1 extends Container, T2 extends ICont
 
 export class ContainerST extends ContainerSTInternal<Container, IContainerMemory> {
     get memory(): IContainerMemory {
-        throw new Error("Method not implemented.");
+        return {
+            x: this.x,
+            y: this.y,
+            rotation: this.rotation,
+            pivot: this.pivot
+        }
+    }
+    set memory(value: IContainerMemory) {
+        this.x = value.x
+        this.y = value.y
+        this.rotation = value.rotation
+        this.pivot = value.pivot
     }
     constructor() {
         super(new Container())

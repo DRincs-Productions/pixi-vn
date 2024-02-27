@@ -10,4 +10,5 @@ export abstract class DisplayObjectStored<T extends DisplayObject, T2> {
         this.pixiElement = element
     }
     abstract get memory(): T2
+    abstract set memory(value: T2)
 }
