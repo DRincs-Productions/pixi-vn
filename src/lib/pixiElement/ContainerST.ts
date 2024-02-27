@@ -1,5 +1,5 @@
 import { Container } from "pixi.js";
-import { StoredGraficElement } from "./StoredGraficElement";
+import { DisplayObjectStored } from "./StoredGraficElement";
 
 export interface IContainerMemory extends IContainer {
 }
@@ -10,9 +10,9 @@ export interface IContainer {
     pivot: { x: number, y: number },
 }
 
-export abstract class ContainerSTInternal<T1 extends Container, T2 extends IContainer> extends StoredGraficElement<T1, T2> {
+export abstract class ContainerSTInternal<T1 extends Container, T2 extends IContainer> extends DisplayObjectStored<T1, T2> {
     abstract get memory(): T2
-    private listChildren: StoredGraficElement<any, any>[] = []
+    private listChildren: DisplayObjectStored<any, any>[] = []
     constructor(container: T1) {
         super(container)
     }
@@ -41,7 +41,7 @@ export abstract class ContainerSTInternal<T1 extends Container, T2 extends ICont
     set pivot(value: { x: number, y: number }) {
         this.pixiElement.pivot = value
     }
-    addChild<U extends StoredGraficElement<any, any>[]>(...children: U): U[0] {
+    addChild<U extends DisplayObjectStored<any, any>[]>(...children: U): U[0] {
         children.forEach(child => {
             this.pixiElement.addChild(child.pixiElement)
             this.listChildren.push(child)

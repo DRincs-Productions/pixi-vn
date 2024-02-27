@@ -1,6 +1,6 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
-import { TickerElement } from "../classes/TickerElement";
-import { StoredGraficElement } from "../pixiElement/StoredGraficElement";
+import { TickerClass } from "../classes/TickerClass";
+import { DisplayObjectStored } from "../pixiElement/StoredGraficElement";
 
 /**
  * This class is responsible for managing the window size and the children of the window.
@@ -141,14 +141,14 @@ export class GameWindowManager {
     /**
      * This is a dictionary that contains all children of Canvas, currently.
      */
-    private static children: { [tag: string]: StoredGraficElement<any, any> } = {}
+    private static children: { [tag: string]: DisplayObjectStored<any, any> } = {}
     /**
      * Add a child to the canvas.
      * If there is a child with the same tag, it will be removed.
      * @param tag The tag of the child.
      * @param child The child to be added.
      */
-    public static addChild<T1 extends DisplayObject, T2>(tag: string, child: StoredGraficElement<T1, T2>) {
+    public static addChild<T1 extends DisplayObject, T2>(tag: string, child: DisplayObjectStored<T1, T2>) {
         if (GameWindowManager.children[tag]) {
             GameWindowManager.removeChild(tag)
         }
@@ -173,7 +173,7 @@ export class GameWindowManager {
      * @param tag The tag of the child to be returned.
      * @returns The child with the tag.
      */
-    public static getChild<T extends StoredGraficElement<any, any>>(tag: string): T | undefined {
+    public static getChild<T extends DisplayObjectStored<any, any>>(tag: string): T | undefined {
         return GameWindowManager.children[tag] as T | undefined
     }
     /**
@@ -184,22 +184,33 @@ export class GameWindowManager {
         GameWindowManager.children = {}
     }
 
+    /** Edit Temporary Children Methods */
+
+    /**
+     * @override
+     * Add a temporary child to the canvas.
+     * @param child The child to be added.
+     */
+    public static addChildTemporary<T1 extends DisplayObject, T2>(child: DisplayObjectStored<T1, T2> | DisplayObject) {
+        if (child instanceof DisplayObjectStored) {
+            child = child.pixiElement
+        }
+        GameWindowManager.app.stage.addChild(child)
+    }
+
     /** Edit Tickers Methods */
 
-    static registeredTicker: { [name: string]: typeof TickerElement } = {}
-    static currentTickers: TickerElement[] = []
-    static addTicker<T>(ticker: typeof TickerElement | TickerElement | string, context?: T, priority?: UPDATE_PRIORITY) {
+    static registeredTicker: { [name: string]: typeof TickerClass } = {}
+    static currentTickers: TickerClass[] = []
+    static addTicker<TContext>(ticker: typeof TickerClass | TickerClass, context?: TContext, priority?: UPDATE_PRIORITY) {
         let tickerName: string
-        if (typeof ticker === 'string') {
-            tickerName = ticker
-        }
-        else if (ticker instanceof TickerElement) {
+        if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
         }
         else {
             tickerName = ticker.name
         }
-        let t = GameWindowManager.geTickerByClassName(tickerName)
+        let t = GameWindowManager.geTickerByClassName<TickerClass>(tickerName)
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
@@ -207,7 +218,7 @@ export class GameWindowManager {
         GameWindowManager.currentTickers.push(t)
         GameWindowManager.app.ticker.add((dt) => t?.fn(dt), context, priority)
     }
-    private static geTickerByClassName<T extends TickerElement>(labelName: string): T | undefined {
+    private static geTickerByClassName<T = TickerClass>(labelName: string): T | undefined {
         try {
             let ticker = GameWindowManager.registeredTicker[labelName]
             if (!ticker) {

@@ -1,5 +1,5 @@
 import { Label } from "../lib/classes/Label";
-import { TickerElement } from "../lib/classes/TickerElement";
+import { TickerClass } from "../lib/classes/TickerClass";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
@@ -9,7 +9,7 @@ import { SpriteST } from "../lib/pixiElement/SpriteST";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
 @tickerDecorator()
-export class ExempleTicker extends TickerElement {
+export class RotateTicker extends TickerClass {
     override fn(delta: number): void {
         let bunny = GameWindowManager.getChild<SpriteST>("bunny")
         if (!bunny) {
@@ -38,7 +38,7 @@ export class ExempleLabel extends Label {
                 bunny.y = 100
 
                 // Listen for animate update
-                GameWindowManager.addTicker(ExempleTicker);
+                GameWindowManager.addTicker(RotateTicker, { childId: "bunny" });
             },
             () => hideImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),

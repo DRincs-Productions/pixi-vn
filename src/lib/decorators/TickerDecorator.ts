@@ -1,8 +1,8 @@
-import { TickerElement } from "../classes/TickerElement"
+import { TickerClass } from "../classes/TickerClass"
 import { GameWindowManager } from "../managers/WindowManager"
 
 export function tickerDecorator(name?: string) {
-    return function (target: typeof TickerElement) {
+    return function (target: typeof TickerClass) {
         if (!name) {
             name = target.name
         }
