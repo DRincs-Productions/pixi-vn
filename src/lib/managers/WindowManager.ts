@@ -1,6 +1,7 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
 import { TickerArgsType, TickerClass } from "../classes/TickerClass";
 import { ClassWithArgsHistory } from "../interface/ClassWithArgsHistory";
+import { ExportedCanvas } from "../interface/ExportedCanvas";
 import { DisplayObjectStored } from "../pixiElement/StoredGraficElement";
 
 /**
@@ -257,6 +258,37 @@ export class GameWindowManager {
         catch (e) {
             console.error(e)
             return
+        }
+    }
+
+    static clear() {
+        GameWindowManager.removeChildren()
+        // TODO remove tickers
+    }
+
+    public static exportJson(): string {
+        return JSON.stringify(this.export())
+    }
+    public static export(): ExportedCanvas {
+        return {
+            currentTickers: GameWindowManager.currentTickers,
+        }
+    }
+    public static importJson(dataString: string) {
+        GameWindowManager.import(JSON.parse(dataString))
+    }
+    public static import(data: object) {
+        GameWindowManager.clear()
+        try {
+            if (data.hasOwnProperty("currentTickers")) {
+                GameWindowManager.currentTickers = (data as ExportedCanvas)["currentTickers"]
+            }
+            else {
+                console.log("No currentTickers data found")
+            }
+        }
+        catch (e) {
+            console.error("Error importing data", e)
         }
     }
 }
