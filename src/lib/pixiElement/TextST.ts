@@ -1,7 +1,9 @@
 import { Text } from "pixi.js";
+import { ExportedPixiElementType } from "./ExportedType";
 import { ISprite, SpriteSTInternal } from "./SpriteST";
 
-interface ITextMemory extends IText {
+export interface ITextMemory extends IText {
+    elements: ExportedPixiElementType[],
 }
 interface IText extends ISprite {
 }

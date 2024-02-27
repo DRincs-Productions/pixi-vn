@@ -1,7 +1,9 @@
 import { Container } from "pixi.js";
+import { ExportedPixiElementType } from "./ExportedType";
 import { DisplayObjectStored } from "./StoredGraficElement";
 
 export interface IContainerMemory extends IContainer {
+    elements: ExportedPixiElementType[]
 }
 export interface IContainer {
     x: number,
@@ -11,7 +13,7 @@ export interface IContainer {
 }
 
 export abstract class ContainerSTInternal<T1 extends Container, T2 extends IContainer> extends DisplayObjectStored<T1, T2> {
-    private listChildren: DisplayObjectStored<any, any>[] = []
+    listChildren: DisplayObjectStored<any, any>[] = []
     constructor(container: T1) {
         super(container)
     }

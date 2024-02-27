@@ -1,9 +1,11 @@
 import { IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
 import { ContainerSTInternal, IContainer } from "./ContainerST";
+import { ExportedPixiElementType } from "./ExportedType";
 import { ITextureMemory, getTexture, getTextureMemory } from "./Texture";
 
-interface ISpriteMemory extends ISprite {
+export interface ISpriteMemory extends ISprite {
     texture: ITextureMemory,
+    elements: ExportedPixiElementType[],
 }
 export interface ISprite extends IContainer {
     anchor: { x: number, y: number },
