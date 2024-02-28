@@ -6,6 +6,7 @@ export type TickerArgsType = { [tag: string]: StorageElementType }
  * A class is used to create a ticker element to add into a Pixi Application.
  * You can use GameWindowManager.addTicker() to add this element into the application.
  * This class should be extended and the fn method should be overridden.
+ * In Ren'Py is a transform.
  */
 export class TickerClass<T extends TickerArgsType> {
     constructor(_args: T) { }
