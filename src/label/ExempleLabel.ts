@@ -5,13 +5,13 @@ import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
 import { hideImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
-import { SpriteST } from "../lib/pixiElement/SpriteST";
+import { CanvasSprite } from "../lib/pixiElement/SpriteST";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
 @tickerDecorator()
 export class RotateTicker extends TickerClass<{ elementId: string }> {
     override fn(delta: number, args: { elementId: string }): void {
-        let bunny = GameWindowManager.getChild<SpriteST>(args.elementId)
+        let bunny = GameWindowManager.getChild<CanvasSprite>(args.elementId)
         if (!bunny) {
             console.error("bunny not found")
             return
@@ -28,7 +28,7 @@ export class ExempleLabel extends Label {
             () => {
                 setDialogue("This project have 2 parts, the first is the pixijs part, and the second is the react part.")
                 // create a new Sprite from an image path
-                const bunny = SpriteST.from('https://pixijs.com/assets/bunny.png');
+                const bunny = CanvasSprite.from('https://pixijs.com/assets/bunny.png');
 
                 // center the sprite's anchor point
                 bunny.anchor.set(0.5);

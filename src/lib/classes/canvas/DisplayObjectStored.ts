@@ -9,6 +9,12 @@ export abstract class DisplayObjectStored<T extends DisplayObject, T2> {
     constructor(element: T) {
         this.pixiElement = element
     }
+    /**
+     * This method return the memory of the canvas element.
+     */
     abstract get memory(): T2
+    /**
+     * This method set the memory of the canvas element.
+     */
     abstract set memory(value: T2)
 }

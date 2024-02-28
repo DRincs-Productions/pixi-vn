@@ -1,17 +1,17 @@
 import { IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
-import { ContainerSTInternal, IContainer } from "./ContainerST";
+import { CanvasContainerBase, ICanvasContainer } from "./ContainerST";
 import { ExportedPixiElementType } from "./ExportedType";
 import { ITextureMemory, getTexture, getTextureMemory } from "./Texture";
 
-export interface ISpriteMemory extends ISprite {
+export interface ICanvasSpriteMemory extends ICanvasSprite {
     texture: ITextureMemory,
     elements: ExportedPixiElementType[],
 }
-export interface ISprite extends IContainer {
+export interface ICanvasSprite extends ICanvasContainer {
     anchor: { x: number, y: number },
 }
 
-export abstract class SpriteSTInternal<T1 extends Sprite, T2 extends ISprite> extends ContainerSTInternal<T1, T2> {
+export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSprite> extends CanvasContainerBase<T1, T2> {
     constructor(sprite: T1) {
         super(sprite)
     }
@@ -40,17 +40,17 @@ export abstract class SpriteSTInternal<T1 extends Sprite, T2 extends ISprite> ex
     set rotation(value: number) {
         this.pixiElement.rotation = value
     }
-    static from(source: SpriteSource, options?: IBaseTextureOptions): SpriteST {
+    static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
         let sprite = Sprite.from(source, options)
-        let mySprite = new SpriteST()
+        let mySprite = new CanvasSprite()
         mySprite.pixiElement = sprite
         return mySprite
     }
 }
 
-export class SpriteST extends SpriteSTInternal<Sprite, ISpriteMemory> {
-    get memory(): ISpriteMemory {
-        let elements: ISpriteMemory = {
+export class CanvasSprite extends CanvasSpriteBase<Sprite, ICanvasSpriteMemory> {
+    get memory(): ICanvasSpriteMemory {
+        let elements: ICanvasSpriteMemory = {
             elements: [],
             x: this.x,
             y: this.y,
@@ -61,7 +61,7 @@ export class SpriteST extends SpriteSTInternal<Sprite, ISpriteMemory> {
         }
         return elements
     }
-    set memory(value: ISpriteMemory) {
+    set memory(value: ICanvasSpriteMemory) {
         this.x = value.x
         this.y = value.y
         this.rotation = value.rotation

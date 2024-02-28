@@ -1,8 +1,8 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
 import { TickerArgsType, TickerClass } from "../classes/TickerClass";
+import { DisplayObjectStored } from "../classes/canvas/DisplayObjectStored";
 import { ClassWithArgsHistory } from "../interface/ClassWithArgsHistory";
 import { ExportedCanvas } from "../interface/ExportedCanvas";
-import { DisplayObjectStored } from "../pixiElement/StoredGraficElement";
 
 /**
  * This class is responsible for managing the window size and the children of the window.

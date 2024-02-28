@@ -1,10 +1,10 @@
-import { getImageSprite, getImageSpriteAsync } from "../functions/ImageUtility";
-import { CanvasContainer, IContainerMemory } from "./ContainerST";
+import { getImageSprite, getImageSpriteAsync } from "../../functions/ImageUtility";
+import { CanvasContainer, ICanvasContainerMemory } from "../../pixiElement/ContainerST";
 
 /**
  * The memory of the image. It uses for save the state of the image.
  */
-export interface CanvasImageMemory extends IContainerMemory {
+export interface ICanvasImageMemory extends ICanvasContainerMemory {
     imageLink: string
 }
 
@@ -23,14 +23,14 @@ abstract class CanvasImageBase extends CanvasContainer {
      * @param image is the url of the image.
      */
     abstract updateImage(image: string): void
-    override get memory(): CanvasImageMemory {
+    override get memory(): ICanvasImageMemory {
         let memory = super.memory
         return {
             ...memory,
             imageLink: this.imageLink
         }
     }
-    override set memory(value: CanvasImageMemory) {
+    override set memory(value: ICanvasImageMemory) {
         this.updateImage(value.imageLink)
         super.memory = value
     }

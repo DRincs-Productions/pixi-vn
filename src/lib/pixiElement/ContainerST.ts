@@ -1,18 +1,18 @@
 import { Container } from "pixi.js";
+import { DisplayObjectStored } from "../classes/canvas/DisplayObjectStored";
 import { ExportedPixiElementType } from "./ExportedType";
-import { DisplayObjectStored } from "./StoredGraficElement";
 
-export interface IContainerMemory extends IContainer {
+export interface ICanvasContainerMemory extends ICanvasContainer {
     elements: ExportedPixiElementType[]
 }
-export interface IContainer {
+export interface ICanvasContainer {
     x: number,
     y: number,
     rotation: number,
     pivot: { x: number, y: number },
 }
 
-export abstract class ContainerSTInternal<T1 extends Container, T2 extends IContainer> extends DisplayObjectStored<T1, T2> {
+export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanvasContainer> extends DisplayObjectStored<T1, T2> {
     listChildren: DisplayObjectStored<any, any>[] = []
     constructor(container: T1) {
         super(container)
@@ -51,8 +51,8 @@ export abstract class ContainerSTInternal<T1 extends Container, T2 extends ICont
     }
 }
 
-export class CanvasContainer extends ContainerSTInternal<Container, IContainerMemory> {
-    get memory(): IContainerMemory {
+export class CanvasContainer extends CanvasContainerBase<Container, ICanvasContainerMemory> {
+    get memory(): ICanvasContainerMemory {
         return {
             elements: [],
             x: this.x,
@@ -61,7 +61,7 @@ export class CanvasContainer extends ContainerSTInternal<Container, IContainerMe
             pivot: { x: this.pivot.x, y: this.pivot.y },
         }
     }
-    set memory(value: IContainerMemory) {
+    set memory(value: ICanvasContainerMemory) {
         this.x = value.x
         this.y = value.y
         this.rotation = value.rotation

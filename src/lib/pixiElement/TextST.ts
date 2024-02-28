@@ -1,14 +1,14 @@
 import { Text } from "pixi.js";
 import { ExportedPixiElementType } from "./ExportedType";
-import { ISprite, SpriteSTInternal } from "./SpriteST";
+import { CanvasSpriteBase, ICanvasSprite } from "./SpriteST";
 
 export interface ITextMemory extends IText {
     elements: ExportedPixiElementType[],
 }
-interface IText extends ISprite {
+interface IText extends ICanvasSprite {
 }
 
-export class CanvasText extends SpriteSTInternal<Text, ITextMemory> {
+export class CanvasText extends CanvasSpriteBase<Text, ITextMemory> {
     get memory(): ITextMemory {
         return {
             elements: [],

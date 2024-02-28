@@ -1,9 +1,9 @@
-import { CanvasContainer, IContainerMemory } from "./ContainerST";
-import { ISpriteMemory } from "./SpriteST";
-import { DisplayObjectStored } from "./StoredGraficElement";
+import { DisplayObjectStored } from "../classes/canvas/DisplayObjectStored";
+import { CanvasContainer, ICanvasContainerMemory } from "./ContainerST";
+import { ICanvasSpriteMemory } from "./SpriteST";
 import { ITextMemory } from "./TextST";
 
-export type ExportedPixiElementType = IContainerMemory | ISpriteMemory | ITextMemory
+export type ExportedPixiElementType = ICanvasContainerMemory | ICanvasSpriteMemory | ITextMemory
 
 export function exampleFunction(
     element: DisplayObjectStored<any, any>,
