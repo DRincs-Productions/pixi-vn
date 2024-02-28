@@ -1,10 +1,24 @@
-import { Sprite } from "pixi.js";
 import { Label } from "../lib/classes/Label";
+import { TickerClass } from "../lib/classes/TickerClass";
+import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
+import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
 import { hideImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
+
+@tickerDecorator()
+export class RotateTicker extends TickerClass<{ elementId: string }> {
+    override fn(delta: number, args: { elementId: string }): void {
+        let bunny = GameWindowManager.getChild<CanvasSprite>(args.elementId)
+        if (!bunny) {
+            console.error("bunny not found")
+            return
+        }
+        bunny.rotation += 0.1 * delta;
+    }
+}
 
 @labelDecorator()
 export class ExempleLabel extends Label {
@@ -14,7 +28,7 @@ export class ExempleLabel extends Label {
             () => {
                 setDialogue("This project have 2 parts, the first is the pixijs part, and the second is the react part.")
                 // create a new Sprite from an image path
-                const bunny = Sprite.from('https://pixijs.com/assets/bunny.png');
+                const bunny = CanvasSprite.from('https://pixijs.com/assets/bunny.png');
 
                 // center the sprite's anchor point
                 bunny.anchor.set(0.5);
@@ -24,12 +38,7 @@ export class ExempleLabel extends Label {
                 bunny.y = 100
 
                 // Listen for animate update
-                GameWindowManager.app.ticker.add((delta) => {
-                    // just for fun, let's rotate mr rabbit a little
-                    // delta is 1 if running at 100% performance
-                    // creates frame-independent transformation
-                    bunny.rotation += 0.1 * delta;
-                });
+                GameWindowManager.addTicker(RotateTicker, { elementId: "bunny" });
             },
             () => hideImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),

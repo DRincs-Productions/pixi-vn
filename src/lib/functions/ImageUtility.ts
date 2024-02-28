@@ -1,103 +1,107 @@
-import { Assets, Container, Sprite, Texture } from 'pixi.js';
-import { Scene } from '../classes/Scene';
+import { Assets, Texture } from 'pixi.js';
+import { CanvasContainer } from '../classes/canvas/CanvasContainer';
+import { CanvasImage, CanvasImageAsync } from '../classes/canvas/CanvasImage';
+import { CanvasSprite } from '../classes/canvas/CanvasSprite';
+import { CanvasText } from '../classes/canvas/CanvasText';
 import { GameWindowManager } from '../managers/WindowManager';
-import { STRING_ERRORS, showErrorText } from './ErrorUtility';
+import { STRING_ERRORS, createTextError } from './ErrorUtility';
 
-export function showImage(tag: string, imageUrl: string): Scene | undefined {
-    const scene = new Scene()
+/**
+ * Show a image in the canvas.
+ * If exist a image with the same tag, then the image is replaced.
+ * If the image not exist, then a error is shown in canvas.
+ * @param tag is the unique tag of the image. You can use this tag to refer to this image
+ * @param imageUrl is the url of the image.
+ * @returns the container of the image.
+ */
+export function showImage(tag: string, imageUrl: string): CanvasContainer | void {
     try {
-        GameWindowManager.addChild(tag, scene)
+        let container = new CanvasImage(imageUrl)
+        GameWindowManager.addChild(tag, container)
     }
     catch (e) {
         console.error(e)
         return
     }
-
-    let sprite = showImageIntoContainer(imageUrl, scene)
-    if (!sprite) {
-        return
-    }
-    scene.addChild(sprite)
-    return scene
 }
 
-export function showImageIntoContainer<T extends Container>(imageUrl: string, container: T): Sprite | undefined {
+/**
+ * Show a image in the canvas, but asynchronously.
+ * If exist a image with the same tag, then the image is replaced.
+ * If the image not exist, then a error is shown in canvas.
+ * @param tag is the unique tag of the image. You can use this tag to refer to this image
+ * @param imageUrl is the url of the image.
+ * @returns the container of the image.
+ */
+export async function showImageAsync(tag: string, imageUrl: string): Promise<void | CanvasContainer> {
+    try {
+        let container = new CanvasImageAsync(imageUrl)
+        GameWindowManager.addChild(tag, container)
+    }
+    catch (e) {
+        console.error(e)
+        return
+    }
+}
+
+/**
+ * Get a image sprite from a url.
+ * @param imageUrl is the url of the image.
+ * @returns the image sprite, or a text with the error.
+ */
+export function getImageSprite(imageUrl: string): CanvasSprite | CanvasText {
     let texture: Texture | undefined = undefined
     try {
         texture = Texture.from(imageUrl)
     }
     catch (e) {
-        showErrorText(STRING_ERRORS.IMAGE_NOT_FOUND, container)
         console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-        return
+        return createTextError(STRING_ERRORS.IMAGE_NOT_FOUND)
     }
 
     if (!texture) {
-        showErrorText(STRING_ERRORS.IMAGE_NOT_FOUND, container)
         console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-        return
+        return createTextError(STRING_ERRORS.IMAGE_NOT_FOUND)
     }
     // if texture not is a Texture, then it is a TextureResource
     if (!(texture instanceof Texture)) {
-        showErrorText(STRING_ERRORS.FILE_NOT_IS_IMAGE, container)
         console.error(STRING_ERRORS.FILE_NOT_IS_IMAGE, imageUrl)
-        return
+        return createTextError(STRING_ERRORS.FILE_NOT_IS_IMAGE)
     }
 
-    let sprite = new Sprite(texture)
-    container.addChild(sprite)
-    return sprite
+    return new CanvasSprite(texture)
 }
 
-export async function showImageAsync(tag: string, imageUrl: string): Promise<void | Scene | undefined> {
-    const scene = new Scene()
-    try {
-        GameWindowManager.addChild(tag, scene)
-    }
-    catch (e) {
-        console.error(e)
-        return
-    }
-
-    return await showImageIntoContainerAsync(imageUrl, scene)
-        .then((sprite) => {
-            if (!sprite) {
-                return
-            }
-            scene.addChild(sprite)
-            return scene
-        })
-        .catch(() => {
-            return
-        })
-}
-
-export async function showImageIntoContainerAsync<T extends Container>(imageUrl: string, container: T): Promise<void | Sprite | undefined> {
+/**
+ * Get a image sprite from a url, but asynchronously.
+ * @param imageUrl is the url of the image.
+ * @returns the image sprite, or a text with the error.
+ */
+export async function getImageSpriteAsync(imageUrl: string): Promise<CanvasSprite | CanvasText> {
     return Assets.load(imageUrl)
         .then((texture) => {
             if (!texture) {
-                showErrorText(STRING_ERRORS.IMAGE_NOT_FOUND, container)
                 console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-                return
+                return createTextError(STRING_ERRORS.IMAGE_NOT_FOUND)
             }
             // if texture not is a Texture, then it is a TextureResource
             if (!(texture instanceof Texture)) {
-                showErrorText(STRING_ERRORS.FILE_NOT_IS_IMAGE, container)
                 console.error(STRING_ERRORS.FILE_NOT_IS_IMAGE, imageUrl)
-                return
+                return createTextError(STRING_ERRORS.FILE_NOT_IS_IMAGE)
             }
 
-            const sprite = new Sprite(texture)
-            container.addChild(sprite)
-            return sprite
+            return new CanvasSprite(texture)
         })
         .catch(() => {
-            showErrorText(STRING_ERRORS.IMAGE_NOT_FOUND, container)
             console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-            return
+            return createTextError(STRING_ERRORS.IMAGE_NOT_FOUND)
         })
 }
 
+/**
+ * Hide a image from the canvas.
+ * @param tag is the unique tag of the image. You can use this tag to refer to this image
+ */
 export function hideImage(tag: string) {
     GameWindowManager.removeChild(tag)
 }

@@ -1,13 +1,14 @@
 import { Label } from "../classes/Label"
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
-import { convertStelLabelToStepHistoryData } from "../functions/StepLabelUtility"
-import { ExportedStep } from "../interface/ExportedStep"
-import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
-import { HistoryStep } from "../interface/HistoryStep"
+import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
+import { IHistoryLabelEvent } from "../interface/IHistoryLabelEvent"
+import { IHistoryStep } from "../interface/IHistoryStep"
+import { ExportedStep } from "../interface/export/ExportedStep"
 import { LabelHistoryDataType } from "../types/LabelHistoryDataType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 import { GameStorageManager } from "./StorageManager"
+import { GameWindowManager } from "./WindowManager"
 
 /**
  * GameHistoryManager is a class that contains the history of the game.
@@ -17,7 +18,7 @@ export class GameStepManager {
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
-    public static stepsHistory: (HistoryLabelEvent | HistoryStep)[] = []
+    public static stepsHistory: (IHistoryLabelEvent | IHistoryStep)[] = []
     private static openedLabels: LabelHistoryDataType[] = []
     public static registeredLabels: { [key: LabelHistoryDataType]: typeof Label } = {}
     /**
@@ -94,11 +95,12 @@ export class GameStepManager {
      * @param label The label to add to the history.
      */
     public static addStepHistory(step: StepLabelType) {
-        let stepHistory: StepHistoryDataType = convertStelLabelToStepHistoryData(step)
-        let historyStep: HistoryStep = {
+        let stepHistory: StepHistoryDataType = convertStepLabelToStepHistoryData(step)
+        let historyStep: IHistoryStep = {
             path: window.location.pathname,
             storage: GameStorageManager.export(),
             step: stepHistory,
+            canvas: GameWindowManager.export(),
         }
         GameStepManager.stepsHistory.push(historyStep)
     }
@@ -148,7 +150,7 @@ export class GameStepManager {
         if (!currentLabel) {
             throw new Error("Label not found")
         }
-        let historyLabel: HistoryLabelEvent = {
+        let historyLabel: IHistoryLabelEvent = {
             label: label,
             type: HistoryLabelEventEnum.OpenByCall,
             labelClassName: currentLabel.constructor.name,
@@ -166,7 +168,7 @@ export class GameStepManager {
             console.error("Label not found")
             return
         }
-        let historyLabel: HistoryLabelEvent = {
+        let historyLabel: IHistoryLabelEvent = {
             label: GameStepManager.currentLabel,
             type: HistoryLabelEventEnum.End,
             labelClassName: currentLabel.constructor.name,
@@ -190,7 +192,7 @@ export class GameStepManager {
         GameStepManager.clear()
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                GameStepManager.stepsHistory = (data as ExportedStep)["stepsHistory"] as (HistoryLabelEvent | HistoryStep)[]
+                GameStepManager.stepsHistory = (data as ExportedStep)["stepsHistory"] as (IHistoryLabelEvent | IHistoryStep)[]
             }
             else {
                 console.log("No stepsHistory data found")

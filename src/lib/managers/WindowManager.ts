@@ -1,4 +1,9 @@
-import { Application, DisplayObject, IApplicationOptions } from "pixi.js";
+import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
+import { TickerArgsType, TickerClass } from "../classes/TickerClass";
+import { CanvasBase } from "../classes/canvas/CanvasBase";
+import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
+import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
+import { ExportedCanvas } from "../interface/export/ExportedCanvas";
 
 /**
  * This class is responsible for managing the window size and the children of the window.
@@ -10,7 +15,7 @@ export class GameWindowManager {
     /**
      * The PIXI Application instance.
      */
-    static app: Application
+    private static app: Application
     /**
      * This is the div that have same size of the canvas.
      * This is useful to put interface elements.
@@ -139,18 +144,18 @@ export class GameWindowManager {
     /**
      * This is a dictionary that contains all children of Canvas, currently.
      */
-    private static children: { [tag: string]: DisplayObject } = {}
+    private static children: { [tag: string]: CanvasBase<any, any> } = {}
     /**
      * Add a child to the canvas.
      * If there is a child with the same tag, it will be removed.
      * @param tag The tag of the child.
      * @param child The child to be added.
      */
-    public static addChild(tag: string, child: DisplayObject) {
+    public static addChild<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(tag: string, child: CanvasBase<T1, T2>) {
         if (GameWindowManager.children[tag]) {
             GameWindowManager.removeChild(tag)
         }
-        GameWindowManager.app.stage.addChild(child)
+        GameWindowManager.app.stage.addChild(child.pixiElement)
         GameWindowManager.children[tag] = child
     }
     /**
@@ -163,7 +168,7 @@ export class GameWindowManager {
             console.error("Child with tag not found")
             return
         }
-        GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag])
+        GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag].pixiElement)
         delete GameWindowManager.children[tag]
     }
     /**
@@ -171,8 +176,8 @@ export class GameWindowManager {
      * @param tag The tag of the child to be returned.
      * @returns The child with the tag.
      */
-    public static getChild(tag: string) {
-        return GameWindowManager.children[tag]
+    public static getChild<T extends CanvasBase<any, any>>(tag: string): T | undefined {
+        return GameWindowManager.children[tag] as T | undefined
     }
     /**
      * Remove all children from the canvas.
@@ -180,5 +185,116 @@ export class GameWindowManager {
     public static removeChildren() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager.children = {}
+    }
+
+    /**
+     * Add a temporary child to the canvas.
+     * @param child The child to be added.
+     */
+    public static addChildTemporary<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(child: CanvasBase<T1, T2> | DisplayObject) {
+        if (child instanceof CanvasBase) {
+            child = child.pixiElement
+        }
+        GameWindowManager.app.stage.addChild(child)
+    }
+
+    /**
+     * Remove a temporary child from the canvas.
+     * @param child The child to be removed.
+     */
+    public static removeChildWithDisplayObject(child: CanvasBase<any, any> | DisplayObject) {
+        if (child instanceof CanvasBase) {
+            GameWindowManager.app.stage.removeChild(child.pixiElement)
+            return
+        }
+        GameWindowManager.app.stage.removeChild(child)
+    }
+
+    /** Edit Tickers Methods */
+
+    /**
+     * A dictionary that contains all tickers registered and avvailable to be used.
+     */
+    static registeredTicker: { [name: string]: typeof TickerClass } = {}
+    /**
+     * Currently tickers that are running.
+     */
+    static currentTickers: IClassWithArgsHistory[] = []
+    /**
+     * Run a ticker.
+     * @param ticker The ticker class to be run.
+     * @param args The arguments to be used in the ticker.
+     * @param context The context to be used in the ticker.
+     * @param priority The priority to be used in the ticker.
+     * @returns 
+     */
+    static addTicker<TArgs extends TickerArgsType, TContext>(ticker: typeof TickerClass<TArgs>, args: TArgs, context?: TContext, priority?: UPDATE_PRIORITY) {
+        let tickerName: string
+        if (ticker instanceof TickerClass) {
+            tickerName = ticker.constructor.name
+        }
+        else {
+            tickerName = ticker.name
+        }
+        let t = GameWindowManager.geTickerByClassName<TArgs>(tickerName, args)
+        if (!t) {
+            console.error(`Ticker ${tickerName} not found`)
+            return
+        }
+        GameWindowManager.currentTickers.push({
+            className: tickerName,
+            args: args,
+        })
+        GameWindowManager.app.ticker.add((dt) => t?.fn(dt, args), context, priority)
+    }
+    private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: string, args: TArgs): TickerClass<TArgs> | undefined {
+        try {
+            let ticker = GameWindowManager.registeredTicker[labelName]
+            if (!ticker) {
+                console.error(`Ticker ${labelName} not found`)
+                return
+            }
+            return new ticker(args)
+        }
+        catch (e) {
+            console.error(e)
+            return
+        }
+    }
+
+    static clear() {
+        GameWindowManager.removeChildren()
+        // TODO remove tickers
+    }
+
+    public static exportJson(): string {
+        return JSON.stringify(this.export())
+    }
+    public static export(): ExportedCanvas {
+        let currentElements: ICanvasBaseMemory[] = []
+        for (let tag in GameWindowManager.children) {
+            currentElements.push(GameWindowManager.children[tag].memory)
+        }
+        return {
+            currentTickers: GameWindowManager.currentTickers,
+            currentElements: currentElements
+        }
+    }
+    public static importJson(dataString: string) {
+        GameWindowManager.import(JSON.parse(dataString))
+    }
+    public static import(data: object) {
+        GameWindowManager.clear()
+        try {
+            if (data.hasOwnProperty("currentTickers")) {
+                GameWindowManager.currentTickers = (data as ExportedCanvas)["currentTickers"]
+            }
+            else {
+                console.log("No currentTickers data found")
+            }
+        }
+        catch (e) {
+            console.error("Error importing data", e)
+        }
     }
 }

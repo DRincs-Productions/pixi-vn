@@ -1,14 +1,17 @@
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
-import { ExportedStorage } from "./ExportedStorage";
+import { ExportedCanvas } from "./export/ExportedCanvas";
+import { ExportedStorage } from "./export/ExportedStorage";
 
 /**
- * HistoryStep is a interface that contains:
+ * IHistoryStep is a interface that contains:
  * - the browser path that occurred during the progression of the steps.
  * - the storage that occurred during the progression of the steps.
  * - the step data.
+ * - the canvas that occurred during the progression of the steps.
  */
-export interface HistoryStep {
+export interface IHistoryStep {
     path: string,
     storage: ExportedStorage,
     step: StepHistoryDataType,
+    canvas: ExportedCanvas,
 }

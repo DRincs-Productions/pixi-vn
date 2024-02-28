@@ -1,4 +1,3 @@
-import * as PIXI from 'pixi.js'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
@@ -28,8 +27,3 @@ const reactRoot = createRoot(GameWindowManager.interfaceDiv)
 reactRoot.render(
     <App />
 )
-
-const container = new PIXI.Container()
-container.x = 0
-container.y = 0
-GameWindowManager.app.stage.addChild(container)

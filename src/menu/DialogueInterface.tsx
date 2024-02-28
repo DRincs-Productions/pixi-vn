@@ -7,7 +7,7 @@ import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
 import { useEffect, useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
-import { DialogueModel } from '../lib/classes/DialogueModel';
+import { DialogueModelBase } from '../lib/classes/DialogueModelBase';
 import { getDialogue } from '../lib/functions/DialogueUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
@@ -24,7 +24,7 @@ export default function DialogueInterface() {
     })
 
     const [loading, setLoading] = useState(false)
-    const [dialogue, setDialogue] = useState<DialogueModel | undefined>(undefined)
+    const [dialogue, setDialogue] = useState<DialogueModelBase | undefined>(undefined)
     useEffect(() => {
         let dial = getDialogue()
         setDialogue(dial)

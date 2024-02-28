@@ -1,14 +1,14 @@
-import { DialogueModel } from "../classes/DialogueModel";
+import { DialogueModelBase } from "../classes/DialogueModelBase";
 import { GameStorageManager } from "../managers/StorageManager";
 
 export function setDialogue(text: string): void {
-    let dialogue = new DialogueModel(text)
+    let dialogue = new DialogueModelBase(text)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue)
 }
 
-export function getDialogue(): DialogueModel | undefined {
-    let d = GameStorageManager.getVariable<DialogueModel>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
-    if (d instanceof DialogueModel) {
+export function getDialogue(): DialogueModelBase | undefined {
+    let d = GameStorageManager.getVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
+    if (d instanceof DialogueModelBase) {
         return d
     }
     console.error("No dialogue found")
