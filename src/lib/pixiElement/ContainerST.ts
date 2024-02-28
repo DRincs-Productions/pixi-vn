@@ -51,13 +51,14 @@ export abstract class ContainerSTInternal<T1 extends Container, T2 extends ICont
     }
 }
 
-export class ContainerST extends ContainerSTInternal<Container, IContainerMemory> {
+export class CanvasContainer extends ContainerSTInternal<Container, IContainerMemory> {
     get memory(): IContainerMemory {
         return {
+            elements: [],
             x: this.x,
             y: this.y,
             rotation: this.rotation,
-            pivot: this.pivot
+            pivot: { x: this.pivot.x, y: this.pivot.y },
         }
     }
     set memory(value: IContainerMemory) {

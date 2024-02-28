@@ -8,14 +8,15 @@ export interface ITextMemory extends IText {
 interface IText extends ISprite {
 }
 
-export class TextST extends SpriteSTInternal<Text, ITextMemory> {
+export class CanvasText extends SpriteSTInternal<Text, ITextMemory> {
     get memory(): ITextMemory {
         return {
+            elements: [],
             x: this.x,
             y: this.y,
             rotation: this.rotation,
-            pivot: this.pivot,
-            anchor: this.anchor,
+            pivot: { x: this.pivot.x, y: this.pivot.y },
+            anchor: { x: this.anchor.x, y: this.anchor.y },
         }
     }
     set memory(value: ITextMemory) {

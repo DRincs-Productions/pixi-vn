@@ -50,14 +50,16 @@ export abstract class SpriteSTInternal<T1 extends Sprite, T2 extends ISprite> ex
 
 export class SpriteST extends SpriteSTInternal<Sprite, ISpriteMemory> {
     get memory(): ISpriteMemory {
-        return {
+        let elements: ISpriteMemory = {
+            elements: [],
             x: this.x,
             y: this.y,
             rotation: this.rotation,
-            pivot: this.pivot,
-            anchor: this.anchor,
+            pivot: { x: this.pivot.x, y: this.pivot.y },
+            anchor: { x: this.anchor.x, y: this.anchor.y },
             texture: getTextureMemory(this.pixiElement.texture)
         }
+        return elements
     }
     set memory(value: ISpriteMemory) {
         this.x = value.x
