@@ -4,7 +4,7 @@ import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility
 import { IHistoryLabelEvent } from "../interface/IHistoryLabelEvent"
 import { IHistoryStep } from "../interface/IHistoryStep"
 import { ExportedStep } from "../interface/export/ExportedStep"
-import { LabelHistoryDataType } from "../types/LabelHistoryDataType"
+import { LabelTagType } from "../types/LabelTagType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 import { GameStorageManager } from "./StorageManager"
@@ -19,12 +19,12 @@ export class GameStepManager {
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
     public static stepsHistory: (IHistoryLabelEvent | IHistoryStep)[] = []
-    private static openedLabels: LabelHistoryDataType[] = []
-    public static registeredLabels: { [key: LabelHistoryDataType]: typeof Label } = {}
+    private static openedLabels: LabelTagType[] = []
+    public static registeredLabels: { [key: LabelTagType]: typeof Label } = {}
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    public static get currentLabel(): LabelHistoryDataType | null {
+    public static get currentLabel(): LabelTagType | null {
         if (GameStepManager.openedLabels.length > 0) {
             return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
         }
@@ -145,7 +145,7 @@ export class GameStepManager {
         }
         await GameStepManager.runNextStep()
     }
-    private static openLabel(label: string) {
+    private static openLabel(label: LabelTagType) {
         let currentLabel = GameStepManager.getLabelByClassName(label)
         if (!currentLabel) {
             throw new Error("Label not found")
@@ -198,7 +198,7 @@ export class GameStepManager {
                 console.log("No stepsHistory data found")
             }
             if (data.hasOwnProperty("openedLabels")) {
-                GameStepManager.openedLabels = (data as ExportedStep)["openedLabels"] as LabelHistoryDataType[]
+                GameStepManager.openedLabels = (data as ExportedStep)["openedLabels"] as LabelTagType[]
             }
             else {
                 console.log("No openedLabels data found")
@@ -208,7 +208,7 @@ export class GameStepManager {
             console.error("Error importing data", e)
         }
     }
-    private static getLabelByClassName<T extends Label>(labelName: LabelHistoryDataType): T | undefined {
+    private static getLabelByClassName<T extends Label>(labelName: LabelTagType): T | undefined {
         try {
             let labelType = GameStepManager.registeredLabels[labelName]
             if (!labelType) {

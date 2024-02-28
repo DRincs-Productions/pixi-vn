@@ -4,6 +4,7 @@ import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
+import { TickerTagType } from "../types/TickerTagType";
 
 /**
  * This class is responsible for managing the window size and the children of the window.
@@ -215,7 +216,7 @@ export class GameWindowManager {
     /**
      * A dictionary that contains all tickers registered and avvailable to be used.
      */
-    static registeredTicker: { [name: string]: typeof TickerClass } = {}
+    static registeredTicker: { [name: TickerTagType]: typeof TickerClass } = {}
     /**
      * Currently tickers that are running.
      */
@@ -229,7 +230,7 @@ export class GameWindowManager {
      * @returns 
      */
     static addTicker<TArgs extends TickerArgsType, TContext>(ticker: typeof TickerClass<TArgs>, args: TArgs, context?: TContext, priority?: UPDATE_PRIORITY) {
-        let tickerName: string
+        let tickerName: TickerTagType
         if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
         }
@@ -247,7 +248,7 @@ export class GameWindowManager {
         })
         GameWindowManager.app.ticker.add((dt) => t?.fn(dt, args), context, priority)
     }
-    private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: string, args: TArgs): TickerClass<TArgs> | undefined {
+    private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: TickerTagType, args: TArgs): TickerClass<TArgs> | undefined {
         try {
             let ticker = GameWindowManager.registeredTicker[labelName]
             if (!ticker) {

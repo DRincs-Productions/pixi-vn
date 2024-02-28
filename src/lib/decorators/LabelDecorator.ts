@@ -1,5 +1,6 @@
 import { Label } from "../classes/Label"
 import { GameStepManager } from "../managers/StepManager"
+import { LabelTagType } from "../types/LabelTagType"
 
 /**
  * LabelDecorator is a decorator that register a label in the game.
@@ -8,7 +9,7 @@ import { GameStepManager } from "../managers/StepManager"
  * @param name is th identifier of the label, by default is the name of the class
  * @returns 
  */
-export function labelDecorator(name?: string) {
+export function labelDecorator(name?: LabelTagType) {
     return function (target: typeof Label) {
         if (!name) {
             name = target.name

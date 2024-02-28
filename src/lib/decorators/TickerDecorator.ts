@@ -1,5 +1,6 @@
 import { TickerClass } from "../classes/TickerClass"
 import { GameWindowManager } from "../managers/WindowManager"
+import { TickerTagType } from "../types/TickerTagType"
 
 /**
  * TickerDecorator is a decorator that register a ticker in the game.
@@ -8,7 +9,7 @@ import { GameWindowManager } from "../managers/WindowManager"
  * @param name is th identifier of the label, by default is the name of the class
  * @returns 
  */
-export function tickerDecorator(name?: string) {
+export function tickerDecorator(name?: TickerTagType) {
     return function (target: typeof TickerClass<any>) {
         if (!name) {
             name = target.name

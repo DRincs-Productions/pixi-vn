@@ -1,5 +1,5 @@
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum";
-import { LabelHistoryDataType } from "../types/LabelHistoryDataType";
+import { LabelTagType } from "../types/LabelTagType";
 
 /**
  * IHistoryLabelEvent is a interface that contains: 
@@ -8,6 +8,6 @@ import { LabelHistoryDataType } from "../types/LabelHistoryDataType";
  */
 export interface IHistoryLabelEvent {
     type: HistoryLabelEventEnum,
-    label: LabelHistoryDataType,
+    label: LabelTagType,
     labelClassName: string,
 }
