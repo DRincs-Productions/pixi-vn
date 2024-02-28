@@ -6,7 +6,7 @@ import { StepLabelType } from "../types/StepLabelType"
  * @param step
  * @returns
  */
-export function convertStelLabelToStepHistoryData(step: StepLabelType): StepHistoryDataType {
+export function convertStepLabelToStepHistoryData(step: StepLabelType): StepHistoryDataType {
     return step.toString().toLocaleLowerCase()
 }
 /**
@@ -17,10 +17,10 @@ export function convertStelLabelToStepHistoryData(step: StepLabelType): StepHist
  */
 export function checkIfStepsIsEqual(step1: StepHistoryDataType | StepLabelType, step2: StepHistoryDataType | StepLabelType): boolean {
     if (typeof step1 === "function") {
-        step1 = convertStelLabelToStepHistoryData(step1)
+        step1 = convertStepLabelToStepHistoryData(step1)
     }
     if (typeof step2 === "function") {
-        step2 = convertStelLabelToStepHistoryData(step2)
+        step2 = convertStepLabelToStepHistoryData(step2)
     }
     return step1.toLocaleLowerCase() === step2.toLocaleLowerCase()
 }

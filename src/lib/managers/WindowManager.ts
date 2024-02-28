@@ -1,7 +1,7 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
 import { TickerArgsType, TickerClass } from "../classes/TickerClass";
-import { CanvasBase } from "../classes/canvas/DisplayObjectStored";
-import { ClassWithArgsHistory } from "../interface/ClassWithArgsHistory";
+import { CanvasBase } from "../classes/canvas/CanvasBase";
+import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
 
@@ -219,7 +219,7 @@ export class GameWindowManager {
     /**
      * Currently tickers that are running.
      */
-    static currentTickers: ClassWithArgsHistory[] = []
+    static currentTickers: IClassWithArgsHistory[] = []
     /**
      * Run a ticker.
      * @param ticker The ticker class to be run.
@@ -271,8 +271,13 @@ export class GameWindowManager {
         return JSON.stringify(this.export())
     }
     public static export(): ExportedCanvas {
+        let currentElements: ICanvasBaseMemory[] = []
+        for (let tag in GameWindowManager.children) {
+            currentElements.push(GameWindowManager.children[tag].memory)
+        }
         return {
             currentTickers: GameWindowManager.currentTickers,
+            currentElements: currentElements
         }
     }
     public static importJson(dataString: string) {

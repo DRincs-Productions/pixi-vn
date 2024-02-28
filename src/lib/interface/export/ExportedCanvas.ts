@@ -1,5 +1,7 @@
-import { ClassWithArgsHistory } from "../ClassWithArgsHistory";
+import { IClassWithArgsHistory } from "../IClassWithArgsHistory";
+import { ICanvasBaseMemory } from "../canvas/ICanvasBaseMemory";
 
 export interface ExportedCanvas {
-    currentTickers: ClassWithArgsHistory[]
+    currentTickers: IClassWithArgsHistory[]
+    currentElements: ICanvasBaseMemory[]
 }

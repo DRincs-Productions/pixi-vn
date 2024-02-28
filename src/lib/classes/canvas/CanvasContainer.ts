@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
-import { CanvasBase } from "./DisplayObjectStored";
+import { CanvasBase } from "./CanvasBase";
 
 export interface ICanvasContainer {
     x: number,

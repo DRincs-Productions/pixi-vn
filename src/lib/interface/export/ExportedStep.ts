@@ -1,8 +1,8 @@
 import { LabelHistoryDataType } from "../../types/LabelHistoryDataType"
-import { HistoryLabelEvent } from "../HistoryLabelEvent"
-import { HistoryStep } from "../HistoryStep"
+import { IHistoryLabelEvent } from "../IHistoryLabelEvent"
+import { IHistoryStep } from "../IHistoryStep"
 
 export interface ExportedStep {
-    stepsHistory: (HistoryLabelEvent | HistoryStep)[]
+    stepsHistory: (IHistoryLabelEvent | IHistoryStep)[]
     openedLabels: LabelHistoryDataType[]
 }
