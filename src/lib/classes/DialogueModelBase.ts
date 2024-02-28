@@ -5,5 +5,8 @@ export class DialogueModelBase {
     constructor(text: string) {
         this.text = text
     }
+    /**
+     * The text of the dialogue.
+     */
     text: string = ""
 }

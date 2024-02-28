@@ -4,6 +4,11 @@ import { CanvasContainerBase } from "../classes/canvas/CanvasContainer";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ITextureMemory } from "../interface/canvas/ITextureMemory";
 
+/**
+ * Get the memory object of the texture
+ * @param texture PixiJS Texture object
+ * @returns Memory object of the texture
+ */
 export function getTextureMemory(texture: Texture): ITextureMemory {
     let baseTexture = texture.baseTexture
     let textureMemory: ITextureMemory = {

@@ -48,6 +48,10 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
     }
 }
 
+/**
+ * This class is responsible for storing a PIXI Container.
+ * And allow to save your memory in a game save.
+ */
 export class CanvasContainer extends CanvasContainerBase<Container, ICanvasContainerMemory> {
     get memory(): ICanvasContainerMemory {
         return {

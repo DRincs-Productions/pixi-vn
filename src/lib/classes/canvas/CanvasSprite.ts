@@ -45,6 +45,10 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasCont
     }
 }
 
+/**
+ * This class is responsible for storing a PIXI Sprite.
+ * And allow to save your memory in a game save.
+ */
 export class CanvasSprite extends CanvasSpriteBase<Sprite, ICanvasSpriteMemory> {
     get memory(): ICanvasSpriteMemory {
         let elements: ICanvasSpriteMemory = {

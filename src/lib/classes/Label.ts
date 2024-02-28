@@ -6,7 +6,7 @@ import { StepLabelType } from "../types/StepLabelType"
  * Label is a class that contains a list of steps, which will be performed as the game continues.
  * For Ren'py this is the equivalent of a label.
  */
-export class Label { // TODO: convert to abstract
+export class Label {
     /**
      * Get the steps of the label.
      * Every time you update this list will also be updated when the other game versions load.
