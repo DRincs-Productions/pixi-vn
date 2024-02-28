@@ -223,13 +223,14 @@ export class GameWindowManager {
     static currentTickers: IClassWithArgsHistory[] = []
     /**
      * Run a ticker.
+     * @param childTag The tag of the child that will use the ticker.
      * @param ticker The ticker class to be run.
      * @param args The arguments to be used in the ticker.
      * @param context The context to be used in the ticker.
      * @param priority The priority to be used in the ticker.
      * @returns 
      */
-    static addTicker<TArgs extends TickerArgsType, TContext>(ticker: typeof TickerClass<TArgs>, args: TArgs, context?: TContext, priority?: UPDATE_PRIORITY) {
+    static addTicker<TArgs extends TickerArgsType, TContext>(childTag: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, context?: TContext, priority?: UPDATE_PRIORITY) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
@@ -237,17 +238,70 @@ export class GameWindowManager {
         else {
             tickerName = ticker.name
         }
+        if (typeof childTag === "string") {
+            childTag = [childTag]
+        }
         let t = GameWindowManager.geTickerByClassName<TArgs>(tickerName, args)
+        let tickerKey = tickerName + "$" + args.toString()
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
         }
-        GameWindowManager.currentTickers.push({
-            className: tickerName,
-            args: args,
-        })
-        GameWindowManager.app.ticker.add((dt) => t?.fn(dt, args), context, priority)
+        let tickerFun = (dt: number) => t.fn(dt, args)
+        let tickerHistory: IClassWithArgsHistory | undefined = GameWindowManager.getTickerById(tickerKey)
+        if (tickerHistory) {
+            tickerHistory.elements = tickerHistory.elements.filter((e) => !childTag.includes(e)).concat(childTag)
+        }
+        else {
+            tickerHistory = {
+                id: tickerKey,
+                fn: tickerFun,
+                className: tickerName,
+                args: args,
+                elements: childTag,
+            }
+        }
+        GameWindowManager.currentTickers.push(tickerHistory)
+        GameWindowManager.app.ticker.add((dt) => { t?.fn(dt, args) }, context, priority)
+        GameWindowManager.removeTickersWithoutConnectedChild()
     }
+    private static getTickerById(id: string): IClassWithArgsHistory | undefined {
+        GameWindowManager.currentTickers.forEach((t) => {
+            if (t.id === id) {
+                return t
+            }
+        })
+        return
+    }
+    public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerClass<any>) {
+        let tickerName: TickerTagType
+        if (ticker instanceof TickerClass) {
+            tickerName = ticker.constructor.name
+        }
+        else {
+            tickerName = ticker.name
+        }
+        if (typeof childTag === "string") {
+            childTag = [childTag]
+        }
+        let tickerKey = tickerName + "$" + ticker.name
+        let tickerHistory: IClassWithArgsHistory | undefined = GameWindowManager.getTickerById(tickerKey)
+        if (tickerHistory) {
+            tickerHistory.elements = tickerHistory.elements.filter((e) => !childTag.includes(e))
+        }
+        GameWindowManager.currentTickers = GameWindowManager.currentTickers.map((t) => {
+            if (t.id === tickerKey) {
+                t.elements = t.elements.filter((e) => !childTag.includes(e))
+            }
+            return t
+        })
+        GameWindowManager.removeTickersWithoutConnectedChild()
+    }
+    public static removeTickersWithoutConnectedChild() {
+        // TODO check if child exists
+        GameWindowManager.currentTickers = GameWindowManager.currentTickers.filter((t) => { t.elements.length * 0 })
+    }
+
     private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: TickerTagType, args: TArgs): TickerClass<TArgs> | undefined {
         try {
             let ticker = GameWindowManager.registeredTicker[labelName]
