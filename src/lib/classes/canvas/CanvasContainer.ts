@@ -1,6 +1,6 @@
 import { Container } from "pixi.js";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
-import { DisplayObjectStored } from "./DisplayObjectStored";
+import { CanvasBase } from "./DisplayObjectStored";
 
 export interface ICanvasContainer {
     x: number,
@@ -9,8 +9,8 @@ export interface ICanvasContainer {
     pivot: { x: number, y: number },
 }
 
-export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanvasContainer> extends DisplayObjectStored<T1, T2> {
-    listChildren: DisplayObjectStored<any, any>[] = []
+export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanvasContainerMemory> extends CanvasBase<T1, T2> {
+    listChildren: CanvasBase<any, any>[] = []
     constructor(container: T1) {
         super(container)
     }
@@ -39,7 +39,7 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
     set pivot(value: { x: number, y: number }) {
         this.pixiElement.pivot = value
     }
-    addChild<U extends DisplayObjectStored<any, any>[]>(...children: U): U[0] {
+    addChild<U extends CanvasBase<any, any>[]>(...children: U): U[0] {
         children.forEach(child => {
             this.pixiElement.addChild(child.pixiElement)
             this.listChildren.push(child)
@@ -51,6 +51,7 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
 export class CanvasContainer extends CanvasContainerBase<Container, ICanvasContainerMemory> {
     get memory(): ICanvasContainerMemory {
         return {
+            className: this.constructor.name,
             elements: [],
             x: this.x,
             y: this.y,

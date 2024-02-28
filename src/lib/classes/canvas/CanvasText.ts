@@ -1,13 +1,14 @@
 import { Text } from "pixi.js";
-import { ICanvasTextTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
-import { CanvasSpriteBase, ICanvasSprite } from "../../pixiElement/SpriteST";
+import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
+import { CanvasSpriteBase, ICanvasSprite } from "./CanvasSprite";
 
 export interface ICanvasText extends ICanvasSprite {
 }
 
-export class CanvasText extends CanvasSpriteBase<Text, ICanvasTextTextMemory> {
-    get memory(): ICanvasTextTextMemory {
+export class CanvasText extends CanvasSpriteBase<Text, ICanvasTextMemory> {
+    get memory(): ICanvasTextMemory {
         return {
+            className: this.constructor.name,
             elements: [],
             x: this.x,
             y: this.y,
@@ -16,7 +17,7 @@ export class CanvasText extends CanvasSpriteBase<Text, ICanvasTextTextMemory> {
             anchor: { x: this.anchor.x, y: this.anchor.y },
         }
     }
-    set memory(value: ICanvasTextTextMemory) {
+    set memory(value: ICanvasTextMemory) {
         this.x = value.x
         this.y = value.y
         this.rotation = value.rotation

@@ -1,8 +1,5 @@
 import { Texture } from "pixi.js";
-
-export interface ITextureMemory {
-    image: string,
-}
+import { ITextureMemory } from "../interface/canvas/ITextureMemory";
 
 export function getTextureMemory(texture: Texture): ITextureMemory {
     let baseTexture = texture.baseTexture

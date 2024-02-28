@@ -1,17 +1,14 @@
 import { IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
-import { CanvasContainerBase, ICanvasContainer } from "../classes/canvas/CanvasContainer";
-import { ExportedPixiElementType } from "./ExportedType";
-import { ITextureMemory, getTexture, getTextureMemory } from "./Texture";
+import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
+import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
+import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
+import { CanvasContainerBase, ICanvasContainer } from "./CanvasContainer";
 
-export interface ICanvasSpriteMemory extends ICanvasSprite {
-    texture: ITextureMemory,
-    elements: ExportedPixiElementType[],
-}
 export interface ICanvasSprite extends ICanvasContainer {
     anchor: { x: number, y: number },
 }
 
-export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSprite> extends CanvasContainerBase<T1, T2> {
+export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasContainerMemory> extends CanvasContainerBase<T1, T2> {
     constructor(sprite: T1) {
         super(sprite)
     }
@@ -51,6 +48,7 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
 export class CanvasSprite extends CanvasSpriteBase<Sprite, ICanvasSpriteMemory> {
     get memory(): ICanvasSpriteMemory {
         let elements: ICanvasSpriteMemory = {
+            className: this.constructor.name,
             elements: [],
             x: this.x,
             y: this.y,

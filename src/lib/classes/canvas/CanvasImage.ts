@@ -21,6 +21,7 @@ abstract class CanvasImageBase extends CanvasContainerBase<Container, ICanvasIma
     abstract updateImage(image: string): void
     override get memory(): ICanvasImageMemory {
         return {
+            className: this.className,
             elements: [],
             x: this.x,
             y: this.y,
@@ -29,6 +30,7 @@ abstract class CanvasImageBase extends CanvasContainerBase<Container, ICanvasIma
             imageLink: this.imageLink
         }
     }
+    abstract get className(): string
     override set memory(value: ICanvasImageMemory) {
         this.x = value.x
         this.y = value.y
@@ -42,6 +44,9 @@ abstract class CanvasImageBase extends CanvasContainerBase<Container, ICanvasIma
  * The class for the image.
  */
 export class CanvasImage extends CanvasImageBase {
+    get className(): string {
+        return this.constructor.name
+    }
     updateImage(image: string) {
         this.imageLink = image
         let element = getImageSprite(image)
@@ -53,6 +58,9 @@ export class CanvasImage extends CanvasImageBase {
  * The class for the image, but asynchronously.
  */
 export class CanvasImageAsync extends CanvasImageBase {
+    get className(): string {
+        return this.constructor.name
+    }
     updateImage(image: string): void {
         this.imageLink = image
         getImageSpriteAsync(image)

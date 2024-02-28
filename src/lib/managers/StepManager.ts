@@ -1,7 +1,7 @@
 import { Label } from "../classes/Label"
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
 import { convertStelLabelToStepHistoryData } from "../functions/StepLabelUtility"
-import { ExportedStep } from "../interface/ExportedStep"
+import { ExportedStep } from "../interface/export/ExportedStep"
 import { HistoryLabelEvent } from "../interface/HistoryLabelEvent"
 import { HistoryStep } from "../interface/HistoryStep"
 import { LabelHistoryDataType } from "../types/LabelHistoryDataType"

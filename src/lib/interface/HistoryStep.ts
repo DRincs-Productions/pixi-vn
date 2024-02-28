@@ -1,5 +1,5 @@
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
-import { ExportedStorage } from "./ExportedStorage";
+import { ExportedStorage } from "./export/ExportedStorage";
 
 /**
  * HistoryStep is a interface that contains:

@@ -1,11 +1,11 @@
 import { Label } from "../lib/classes/Label";
 import { TickerClass } from "../lib/classes/TickerClass";
+import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
 import { hideImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
-import { CanvasSprite } from "../lib/pixiElement/SpriteST";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
 @tickerDecorator()

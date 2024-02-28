@@ -1,6 +1,6 @@
 import { ICanvasContainer } from "../../classes/canvas/CanvasContainer";
-import { ExportedPixiElementType } from "../../pixiElement/ExportedType";
-
+import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
 export interface ICanvasContainerMemory extends ICanvasContainer {
-    elements: ExportedPixiElementType[]
+    className: string,
+    elements: ICanvasBaseMemory[]
 }

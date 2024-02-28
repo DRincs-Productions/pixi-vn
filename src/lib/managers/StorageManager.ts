@@ -1,4 +1,4 @@
-import { ExportedStorage } from "../interface/ExportedStorage"
+import { ExportedStorage } from "../interface/export/ExportedStorage"
 import { StorageElementType } from "../types/StorageElementType"
 
 export class GameStorageManager {

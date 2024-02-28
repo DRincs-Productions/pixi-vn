@@ -1,4 +1,4 @@
-import { StorageElementType } from "../types/StorageElementType"
+import { StorageElementType } from "../../types/StorageElementType"
 
 export interface ExportedStorage {
     storage: { [key: string]: StorageElementType }

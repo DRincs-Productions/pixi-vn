@@ -1,9 +1,9 @@
 import { Assets, Texture } from 'pixi.js';
 import { CanvasContainer } from '../classes/canvas/CanvasContainer';
 import { CanvasImage, CanvasImageAsync } from '../classes/canvas/CanvasImage';
+import { CanvasSprite } from '../classes/canvas/CanvasSprite';
 import { CanvasText } from '../classes/canvas/CanvasText';
 import { GameWindowManager } from '../managers/WindowManager';
-import { CanvasSprite } from '../pixiElement/SpriteST';
 import { STRING_ERRORS, createTextError } from './ErrorUtility';
 
 /**

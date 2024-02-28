@@ -1,8 +1,9 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
 import { TickerArgsType, TickerClass } from "../classes/TickerClass";
-import { DisplayObjectStored } from "../classes/canvas/DisplayObjectStored";
+import { CanvasBase } from "../classes/canvas/DisplayObjectStored";
 import { ClassWithArgsHistory } from "../interface/ClassWithArgsHistory";
-import { ExportedCanvas } from "../interface/ExportedCanvas";
+import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
+import { ExportedCanvas } from "../interface/export/ExportedCanvas";
 
 /**
  * This class is responsible for managing the window size and the children of the window.
@@ -143,14 +144,14 @@ export class GameWindowManager {
     /**
      * This is a dictionary that contains all children of Canvas, currently.
      */
-    private static children: { [tag: string]: DisplayObjectStored<any, any> } = {}
+    private static children: { [tag: string]: CanvasBase<any, any> } = {}
     /**
      * Add a child to the canvas.
      * If there is a child with the same tag, it will be removed.
      * @param tag The tag of the child.
      * @param child The child to be added.
      */
-    public static addChild<T1 extends DisplayObject, T2>(tag: string, child: DisplayObjectStored<T1, T2>) {
+    public static addChild<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(tag: string, child: CanvasBase<T1, T2>) {
         if (GameWindowManager.children[tag]) {
             GameWindowManager.removeChild(tag)
         }
@@ -175,7 +176,7 @@ export class GameWindowManager {
      * @param tag The tag of the child to be returned.
      * @returns The child with the tag.
      */
-    public static getChild<T extends DisplayObjectStored<any, any>>(tag: string): T | undefined {
+    public static getChild<T extends CanvasBase<any, any>>(tag: string): T | undefined {
         return GameWindowManager.children[tag] as T | undefined
     }
     /**
@@ -190,8 +191,8 @@ export class GameWindowManager {
      * Add a temporary child to the canvas.
      * @param child The child to be added.
      */
-    public static addChildTemporary<T1 extends DisplayObject, T2>(child: DisplayObjectStored<T1, T2> | DisplayObject) {
-        if (child instanceof DisplayObjectStored) {
+    public static addChildTemporary<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(child: CanvasBase<T1, T2> | DisplayObject) {
+        if (child instanceof CanvasBase) {
             child = child.pixiElement
         }
         GameWindowManager.app.stage.addChild(child)
@@ -201,8 +202,8 @@ export class GameWindowManager {
      * Remove a temporary child from the canvas.
      * @param child The child to be removed.
      */
-    public static removeChildWithDisplayObject(child: DisplayObjectStored<any, any> | DisplayObject) {
-        if (child instanceof DisplayObjectStored) {
+    public static removeChildWithDisplayObject(child: CanvasBase<any, any> | DisplayObject) {
+        if (child instanceof CanvasBase) {
             GameWindowManager.app.stage.removeChild(child.pixiElement)
             return
         }
