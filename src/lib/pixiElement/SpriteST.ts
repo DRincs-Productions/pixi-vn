@@ -1,5 +1,5 @@
 import { IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
-import { CanvasContainerBase, ICanvasContainer } from "./ContainerST";
+import { CanvasContainerBase, ICanvasContainer } from "../classes/canvas/CanvasContainer";
 import { ExportedPixiElementType } from "./ExportedType";
 import { ITextureMemory, getTexture, getTextureMemory } from "./Texture";
 

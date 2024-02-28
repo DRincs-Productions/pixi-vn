@@ -1,10 +1,7 @@
 import { Container } from "pixi.js";
-import { DisplayObjectStored } from "../classes/canvas/DisplayObjectStored";
-import { ExportedPixiElementType } from "./ExportedType";
+import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
+import { DisplayObjectStored } from "./DisplayObjectStored";
 
-export interface ICanvasContainerMemory extends ICanvasContainer {
-    elements: ExportedPixiElementType[]
-}
 export interface ICanvasContainer {
     x: number,
     y: number,

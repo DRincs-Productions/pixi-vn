@@ -1,20 +1,16 @@
+import { Container } from "pixi.js";
 import { getImageSprite, getImageSpriteAsync } from "../../functions/ImageUtility";
-import { CanvasContainer, ICanvasContainerMemory } from "../../pixiElement/ContainerST";
-
-/**
- * The memory of the image. It uses for save the state of the image.
- */
-export interface ICanvasImageMemory extends ICanvasContainerMemory {
-    imageLink: string
-}
+import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
+import { CanvasContainerBase } from "./CanvasContainer";
 
 /**
  * The base class for the image.
  */
-abstract class CanvasImageBase extends CanvasContainer {
+abstract class CanvasImageBase extends CanvasContainerBase<Container, ICanvasImageMemory> {
     imageLink: string
     constructor(image: string) {
-        super()
+        let container = new Container()
+        super(container)
         this.imageLink = image
         this.updateImage(image)
     }
@@ -24,15 +20,21 @@ abstract class CanvasImageBase extends CanvasContainer {
      */
     abstract updateImage(image: string): void
     override get memory(): ICanvasImageMemory {
-        let memory = super.memory
         return {
-            ...memory,
+            elements: [],
+            x: this.x,
+            y: this.y,
+            rotation: this.rotation,
+            pivot: { x: this.pivot.x, y: this.pivot.y },
             imageLink: this.imageLink
         }
     }
     override set memory(value: ICanvasImageMemory) {
+        this.x = value.x
+        this.y = value.y
+        this.rotation = value.rotation
+        this.pivot = value.pivot
         this.updateImage(value.imageLink)
-        super.memory = value
     }
 }
 

@@ -1,9 +1,10 @@
+import { CanvasContainer } from "../classes/canvas/CanvasContainer";
 import { DisplayObjectStored } from "../classes/canvas/DisplayObjectStored";
-import { CanvasContainer, ICanvasContainerMemory } from "./ContainerST";
+import { ICanvasContainerMemory } from "../interface/canvas/ICanvasContainerMemory";
+import { ICanvasTextTextMemory } from "../interface/canvas/ICanvasTextTextMemory";
 import { ICanvasSpriteMemory } from "./SpriteST";
-import { ITextMemory } from "./TextST";
 
-export type ExportedPixiElementType = ICanvasContainerMemory | ICanvasSpriteMemory | ITextMemory
+export type ExportedPixiElementType = ICanvasContainerMemory | ICanvasSpriteMemory | ICanvasTextTextMemory
 
 export function exampleFunction(
     element: DisplayObjectStored<any, any>,

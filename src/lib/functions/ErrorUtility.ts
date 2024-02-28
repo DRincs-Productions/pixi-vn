@@ -1,4 +1,4 @@
-import { CanvasText } from "../pixiElement/TextST";
+import { CanvasText } from "../classes/canvas/CanvasText";
 
 /**
  * List of string errors that can be shown in the canvas.
