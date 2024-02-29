@@ -18,14 +18,7 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
         })
         return children[0]
     }
-}
-
-/**
- * This class is responsible for storing a PIXI Container.
- * And allow to save your memory in a game save.
- */
-export class CanvasContainer extends CanvasContainerBase<Container, ICanvasContainerMemory> {
-    get memory(): ICanvasContainerMemory {
+    get memoryContainer(): ICanvasContainerMemory {
         return {
             className: this.constructor.name,
             elements: [],
@@ -36,14 +29,27 @@ export class CanvasContainer extends CanvasContainerBase<Container, ICanvasConta
             scale: { x: this.scale.x, y: this.scale.y },
         }
     }
-    set memory(value: ICanvasContainerMemory) {
+    set memoryContainer(value: ICanvasContainerMemory) {
         this.x = value.x
         this.y = value.y
         this.rotation = value.rotation
         this.pivot = value.pivot
         this.scale.set(value.scale.x, value.scale.y)
     }
+}
+
+/**
+ * This class is responsible for storing a PIXI Container.
+ * And allow to save your memory in a game save.
+ */
+export class CanvasContainer extends CanvasContainerBase<Container, ICanvasContainerMemory> {
     constructor() {
         super(new Container())
+    }
+    get memory(): ICanvasContainerMemory {
+        return super.memoryContainer
+    }
+    set memory(value: ICanvasContainerMemory) {
+        super.memoryContainer = value
     }
 }

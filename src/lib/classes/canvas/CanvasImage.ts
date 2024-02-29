@@ -19,26 +19,16 @@ abstract class CanvasImageBase extends CanvasContainerBase<Container, ICanvasIma
      * @param image is the url of the image.
      */
     abstract updateImage(image: string): void
-    override get memory(): ICanvasImageMemory {
+    get memory(): ICanvasImageMemory {
         return {
-            className: this.className,
-            elements: [],
-            x: this.x,
-            y: this.y,
-            rotation: this.rotation,
-            pivot: { x: this.pivot.x, y: this.pivot.y },
+            ...super.memoryContainer,
             imageLink: this.imageLink,
-            scale: { x: this.scale.x, y: this.scale.y },
         }
     }
     abstract get className(): string
-    override set memory(value: ICanvasImageMemory) {
-        this.x = value.x
-        this.y = value.y
-        this.rotation = value.rotation
-        this.pivot = value.pivot
+    set memory(value: ICanvasImageMemory) {
+        super.memoryContainer = value
         this.updateImage(value.imageLink)
-        this.scale.set(value.scale.x, value.scale.y)
     }
 }
 

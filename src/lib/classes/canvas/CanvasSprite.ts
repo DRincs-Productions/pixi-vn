@@ -1,6 +1,5 @@
 import { ColorSource, IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
 import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
-import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { CanvasContainerBase, ICanvasContainer } from "./CanvasContainer";
 
@@ -8,9 +7,24 @@ export interface ICanvasSprite extends ICanvasContainer {
     anchor: { x: number, y: number },
 }
 
-export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasContainerMemory> extends CanvasContainerBase<T1, T2> {
+export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpriteMemory> extends CanvasContainerBase<T1, T2> {
     constructor(sprite: T1) {
         super(sprite)
+    }
+    get memorySprite(): ICanvasSpriteMemory {
+        let elements: ICanvasSpriteMemory = {
+            ...super.memoryContainer,
+            anchor: { x: this.anchor.x, y: this.anchor.y },
+            texture: getTextureMemory(this.pixiElement.texture),
+            tint: this.tint,
+        }
+        return elements
+    }
+    set memorySprite(value: ICanvasSpriteMemory) {
+        super.memoryContainer = value
+        this.anchor.set(value.anchor.x, value.anchor.y)
+        this.pixiElement.texture = getTexture(value.texture)
+        this.tint = value.tint
     }
 
     get anchor() {
@@ -57,29 +71,10 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasCont
  */
 export class CanvasSprite extends CanvasSpriteBase<Sprite, ICanvasSpriteMemory> {
     get memory(): ICanvasSpriteMemory {
-        let elements: ICanvasSpriteMemory = {
-            className: this.constructor.name,
-            elements: [],
-            x: this.x,
-            y: this.y,
-            rotation: this.rotation,
-            pivot: { x: this.pivot.x, y: this.pivot.y },
-            anchor: { x: this.anchor.x, y: this.anchor.y },
-            texture: getTextureMemory(this.pixiElement.texture),
-            scale: { x: this.scale.x, y: this.scale.y },
-            tint: this.tint,
-        }
-        return elements
+        return this.memorySprite
     }
     set memory(value: ICanvasSpriteMemory) {
-        this.x = value.x
-        this.y = value.y
-        this.rotation = value.rotation
-        this.pivot = value.pivot
-        this.anchor.set(value.anchor.x, value.anchor.y)
-        this.pixiElement.texture = getTexture(value.texture)
-        this.scale.set(value.scale.x, value.scale.y)
-        this.tint = value.tint
+        this.memorySprite = value
     }
     constructor(texture?: Texture) {
         let sprite = new Sprite(texture)
