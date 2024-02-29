@@ -9,6 +9,7 @@ import { StepLabelType } from "../lib/types/StepLabelType";
 
 const bunny1Tag = "bunny1"
 const bunny2Tag = "bunny2"
+const bunny3Tag = "bunny3"
 
 @labelDecorator()
 export class TickerTestLabel extends Label {
@@ -54,7 +55,18 @@ export class TickerTestLabel extends Label {
             () => {
                 GameWindowManager.removeTickerConnectedToChild(bunny2Tag, RotateTicker)
                 setDialogue(`I have removed the RotateTicker connected to ${bunny2Tag}`)
-            }
+            },
+            () => {
+                removeImage(bunny2Tag)
+                let duration = 7000
+                const bunny = CanvasSprite.from('https://pixijs.com/assets/bunny.png');
+                bunny.anchor.set(0.5);
+                GameWindowManager.addChild(bunny3Tag, bunny);
+                bunny.x = 300
+                bunny.y = 300
+                GameWindowManager.addTicker(bunny3Tag, RotateTicker, { speed: 0.1 }, duration)
+                setDialogue(`I have added a image with a tag ${bunny3Tag} and I connected a RotateTicker with a speed of 0.1 and a duration of ${duration} to it. After ${duration}ms, the RotateTicker will be removed.`)
+            },
         ]
     }
 }
