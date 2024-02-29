@@ -22,7 +22,7 @@ export class GameWindowManager {
      * This is useful to put interface elements.
      * You can use React or other framework to put elements in this div.
      */
-    static interfaceDiv: HTMLElement
+    static htmlLayout: HTMLElement
     static width: number
     static height: number
 
@@ -44,10 +44,6 @@ export class GameWindowManager {
             ...options
         });
 
-        let div = document.createElement('div')
-        div.style.position = 'absolute'
-        GameWindowManager.interfaceDiv = div
-
         // Manager.app.ticker.add(Manager.update)
 
         // listen for the browser telling us that the screen size changed
@@ -65,11 +61,14 @@ export class GameWindowManager {
         element.appendChild(GameWindowManager.app.view as HTMLCanvasElement)
     }
     /**
-     * Add the interface div into a html element.
+     * Initialize the interface div and add it into a html element.
      * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
      */
-    public static addInterfaceIntoElement(element: HTMLElement) {
-        element.appendChild(GameWindowManager.interfaceDiv)
+    public static initializeHTMLLayout(element: HTMLElement) {
+        let div = document.createElement('div')
+        div.style.position = 'absolute'
+        element.appendChild(div)
+        GameWindowManager.htmlLayout = div
     }
 
     /* Resize Metods */
@@ -126,18 +125,14 @@ export class GameWindowManager {
             (style as any).marginBottom = `${GameWindowManager.verticalMargin}px`;
         }
 
-        if (!GameWindowManager.interfaceDiv) {
-            console.error("Manager.interfaceDiv is undefined")
+        if (GameWindowManager.htmlLayout) {
+            GameWindowManager.htmlLayout.style.width = `${GameWindowManager.enlargedWidth}px`
+            GameWindowManager.htmlLayout.style.height = `${GameWindowManager.enlargedHeight}px`
+            GameWindowManager.htmlLayout.style.marginLeft = `${GameWindowManager.horizontalMargin}px`
+            GameWindowManager.htmlLayout.style.marginRight = `${GameWindowManager.horizontalMargin}px`
+            GameWindowManager.htmlLayout.style.marginTop = `${GameWindowManager.verticalMargin}px`
+            GameWindowManager.htmlLayout.style.marginBottom = `${GameWindowManager.verticalMargin}px`
         }
-        else {
-            GameWindowManager.interfaceDiv.style.width = `${GameWindowManager.enlargedWidth}px`
-            GameWindowManager.interfaceDiv.style.height = `${GameWindowManager.enlargedHeight}px`
-            GameWindowManager.interfaceDiv.style.marginLeft = `${GameWindowManager.horizontalMargin}px`
-            GameWindowManager.interfaceDiv.style.marginRight = `${GameWindowManager.horizontalMargin}px`
-            GameWindowManager.interfaceDiv.style.marginTop = `${GameWindowManager.verticalMargin}px`
-            GameWindowManager.interfaceDiv.style.marginBottom = `${GameWindowManager.verticalMargin}px`
-        }
-
     }
 
     /* Edit Children Methods */

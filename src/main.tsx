@@ -21,8 +21,8 @@ if (!root) {
     throw new Error('root element not found')
 }
 
-GameWindowManager.addInterfaceIntoElement(root)
-const reactRoot = createRoot(GameWindowManager.interfaceDiv)
+GameWindowManager.initializeHTMLLayout(root)
+const reactRoot = createRoot(GameWindowManager.htmlLayout)
 
 reactRoot.render(
     <App />
