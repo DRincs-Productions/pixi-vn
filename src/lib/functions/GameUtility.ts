@@ -7,6 +7,6 @@ import { GameWindowManager } from "../managers/WindowManager";
  */
 export function clearAllGameDatas() {
     GameStorageManager.clear();
-    GameWindowManager.removeChildren();
+    GameWindowManager.clear();
     GameStepManager.clear();
 }

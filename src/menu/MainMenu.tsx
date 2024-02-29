@@ -2,7 +2,7 @@ import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
-import { ExempleLabel } from '../label/ExempleLabel';
+import { TickerTestLabel } from '../label/TickerTestLabel';
 import { clearAllGameDatas } from '../lib/functions/GameUtility';
 import { showImage } from '../lib/functions/ImageUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
@@ -11,7 +11,7 @@ import { GameWindowManager } from '../lib/managers/WindowManager';
 export default function MainMenu() {
     const navigate = useNavigate();
     useEffect(() => {
-        GameWindowManager.removeChildren()
+        clearAllGameDatas()
         showImage("background_main_menu", "https://andreannaking.com/wp-content/uploads/2021/12/Download-Beautiful-Nature-Landscape-Hd-Wallpaper-Full-HD-Wallpapers.jpg")
     })
 
@@ -30,19 +30,9 @@ export default function MainMenu() {
         >
             <Grid>
                 <MenuButton
-                    disabled
-                    onClick={() => {
-                        clearAllGameDatas()
-                    }}
-                >
-                    Continue
-                </MenuButton>
-            </Grid>
-            <Grid>
-                <MenuButton
                     onClick={() => {
                         GameWindowManager.removeChildren()
-                        GameStepManager.runLabel(ExempleLabel)
+                        GameStepManager.runLabel(TickerTestLabel)
                         navigate("/game")
                     }}
                 >

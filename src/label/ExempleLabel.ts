@@ -1,24 +1,11 @@
 import { Label } from "../lib/classes/Label";
-import { TickerClass } from "../lib/classes/TickerClass";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
+import { RotateTicker } from "../lib/classes/ticker/RotateTicker";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
-import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
-import { hideImage } from "../lib/functions/ImageUtility";
+import { removeImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
-
-@tickerDecorator()
-export class RotateTicker extends TickerClass<{ elementId: string }> {
-    override fn(delta: number, args: { elementId: string }): void {
-        let bunny = GameWindowManager.getChild<CanvasSprite>(args.elementId)
-        if (!bunny) {
-            console.error("bunny not found")
-            return
-        }
-        bunny.rotation += 0.1 * delta;
-    }
-}
 
 @labelDecorator()
 export class ExempleLabel extends Label {
@@ -38,9 +25,9 @@ export class ExempleLabel extends Label {
                 bunny.y = 100
 
                 // Listen for animate update
-                GameWindowManager.addTicker(RotateTicker, { elementId: "bunny" });
+                GameWindowManager.addTicker("bunny", RotateTicker, { speed: 0.1 });
             },
-            () => hideImage("bunny"), // TODO: remove ticker and crete a manager for this
+            () => removeImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),
             () => setDialogue("it is possible to modify the \"Labels\" in runtime. try adding a step in ExempleLabel and then save."),
         ]

@@ -99,9 +99,9 @@ export async function getImageSpriteAsync(imageUrl: string): Promise<CanvasSprit
 }
 
 /**
- * Hide a image from the canvas.
+ * Remove a image from the canvas.
  * @param tag is the unique tag of the image. You can use this tag to refer to this image
  */
-export function hideImage(tag: string) {
+export function removeImage(tag: string) {
     GameWindowManager.removeChild(tag)
 }
