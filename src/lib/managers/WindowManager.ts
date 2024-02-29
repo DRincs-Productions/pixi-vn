@@ -25,6 +25,9 @@ export class GameWindowManager {
     static htmlLayout: HTMLElement
     static width: number
     static height: number
+    static get screen() {
+        return GameWindowManager.app.screen
+    }
 
     /**
      * Initialize the PIXI Application and the interface div.

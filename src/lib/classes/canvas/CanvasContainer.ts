@@ -33,6 +33,7 @@ export class CanvasContainer extends CanvasContainerBase<Container, ICanvasConta
             y: this.y,
             rotation: this.rotation,
             pivot: { x: this.pivot.x, y: this.pivot.y },
+            scale: { x: this.scale.x, y: this.scale.y },
         }
     }
     set memory(value: ICanvasContainerMemory) {
@@ -40,6 +41,7 @@ export class CanvasContainer extends CanvasContainerBase<Container, ICanvasConta
         this.y = value.y
         this.rotation = value.rotation
         this.pivot = value.pivot
+        this.scale.set(value.scale.x, value.scale.y)
     }
     constructor() {
         super(new Container())

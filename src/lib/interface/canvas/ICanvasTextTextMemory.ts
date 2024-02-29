@@ -1,8 +1,7 @@
-import { ICanvasContainerMemory } from "./ICanvasContainerMemory";
+import { ICanvasSpriteMemory } from "./ICanvasSpriteMemory";
 
 /**
  * Interface for the canvas text memory
  */
-export interface ICanvasTextMemory extends ICanvasContainerMemory {
-    anchor: { x: number, y: number },
+export interface ICanvasTextMemory extends ICanvasSpriteMemory {
 }

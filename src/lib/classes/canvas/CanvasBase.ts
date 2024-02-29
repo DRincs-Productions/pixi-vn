@@ -1,4 +1,4 @@
-import { DisplayObject } from "pixi.js"
+import { DisplayObject, ObservablePoint } from "pixi.js"
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory"
 
 /**
@@ -42,5 +42,11 @@ export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBase
     }
     set pivot(value: { x: number, y: number }) {
         this.pixiElement.pivot = value
+    }
+    get scale() {
+        return this.pixiElement.scale
+    }
+    set scale(value: ObservablePoint) {
+        this.pixiElement.scale = value
     }
 }

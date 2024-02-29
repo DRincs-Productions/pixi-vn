@@ -1,3 +1,4 @@
+
 /**
  * Interface for the canvas base memory
  */
@@ -8,4 +9,5 @@ export interface ICanvasBaseMemory {
     y: number,
     rotation: number,
     pivot: { x: number, y: number },
+    scale: { x: number, y: number },
 }

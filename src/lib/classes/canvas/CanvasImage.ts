@@ -27,7 +27,8 @@ abstract class CanvasImageBase extends CanvasContainerBase<Container, ICanvasIma
             y: this.y,
             rotation: this.rotation,
             pivot: { x: this.pivot.x, y: this.pivot.y },
-            imageLink: this.imageLink
+            imageLink: this.imageLink,
+            scale: { x: this.scale.x, y: this.scale.y },
         }
     }
     abstract get className(): string
@@ -37,6 +38,7 @@ abstract class CanvasImageBase extends CanvasContainerBase<Container, ICanvasIma
         this.rotation = value.rotation
         this.pivot = value.pivot
         this.updateImage(value.imageLink)
+        this.scale.set(value.scale.x, value.scale.y)
     }
 }
 

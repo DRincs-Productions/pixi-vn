@@ -1,4 +1,4 @@
-import { IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
+import { ColorSource, IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
 import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
@@ -37,6 +37,12 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasCont
     set rotation(value: number) {
         this.pixiElement.rotation = value
     }
+    get tint(): ColorSource {
+        return this.pixiElement.tint
+    }
+    set tint(value: ColorSource) {
+        this.pixiElement.tint = value
+    }
     static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
         let sprite = Sprite.from(source, options)
         let mySprite = new CanvasSprite()
@@ -59,7 +65,9 @@ export class CanvasSprite extends CanvasSpriteBase<Sprite, ICanvasSpriteMemory> 
             rotation: this.rotation,
             pivot: { x: this.pivot.x, y: this.pivot.y },
             anchor: { x: this.anchor.x, y: this.anchor.y },
-            texture: getTextureMemory(this.pixiElement.texture)
+            texture: getTextureMemory(this.pixiElement.texture),
+            scale: { x: this.scale.x, y: this.scale.y },
+            tint: this.tint,
         }
         return elements
     }
@@ -70,6 +78,8 @@ export class CanvasSprite extends CanvasSpriteBase<Sprite, ICanvasSpriteMemory> 
         this.pivot = value.pivot
         this.anchor.set(value.anchor.x, value.anchor.y)
         this.pixiElement.texture = getTexture(value.texture)
+        this.scale.set(value.scale.x, value.scale.y)
+        this.tint = value.tint
     }
     constructor(texture?: Texture) {
         let sprite = new Sprite(texture)
