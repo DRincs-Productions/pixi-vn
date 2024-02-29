@@ -67,6 +67,23 @@ export class TickerTestLabel extends Label {
                 GameWindowManager.addTicker(bunny3Tag, RotateTicker, { speed: 0.1 }, duration)
                 setDialogue(`I have added a image with a tag ${bunny3Tag} and I connected a RotateTicker with a speed of 0.1 and a duration of ${duration} to it. After ${duration}ms, the RotateTicker will be removed.`)
             },
+            () => {
+                let my_speed = 0.1
+                let my_speed2 = 0.3
+                const bunny = CanvasSprite.from('https://pixijs.com/assets/bunny.png');
+
+                bunny.anchor.set(0.5);
+
+                GameWindowManager.addChild(bunny1Tag, bunny);
+                bunny.x = 100
+                bunny.y = 100
+
+                GameWindowManager.addTickersSteps(bunny1Tag, [
+                    { className: RotateTicker, args: { speed: my_speed }, duration: 1000 },
+                    { className: RotateTicker, args: { speed: my_speed2 }, duration: 1000 }
+                ])
+                setDialogue(`I have added a image with a tag ${bunny1Tag} and I connected a RotateTicker with a speed of ${my_speed} and a duration of 1000ms and then I connected a RotateTicker with a speed of ${my_speed2} and a duration of 1000ms to it.`)
+            }
         ]
     }
 }
