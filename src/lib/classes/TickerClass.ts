@@ -1,4 +1,5 @@
 import { StorageElementType } from "../types/StorageElementType"
+import { CanvasBase } from "./canvas/CanvasBase"
 
 export type TickerArgsType = { [tag: string]: StorageElementType }
 
@@ -9,14 +10,12 @@ export type TickerArgsType = { [tag: string]: StorageElementType }
  * In Ren'Py is a transform.
  */
 export class TickerClass<T extends TickerArgsType> {
-    constructor(_args: T) { }
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use GameWindowManager.getChild() to get the children of the canvas, and edit them.
      * @param dt Delta time
      */
-    fn(dt: number, args: T): void {
-        console.warn("This method should be overridden", dt, args)
+    fn(_dt: number, _args: T, _elements: CanvasBase<any, any>[]): void {
         throw new Error("This method should be overridden")
     }
 }

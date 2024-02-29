@@ -180,6 +180,16 @@ export class GameWindowManager {
     public static getChild<T extends CanvasBase<any, any>>(tag: string): T | undefined {
         return GameWindowManager.children[tag] as T | undefined
     }
+    public static getChilds<T extends CanvasBase<any, any>>(tags: string[]): T[] {
+        let elements: T[] = []
+        tags.forEach((tag) => {
+            let e = GameWindowManager.getChild<T>(tag)
+            if (e) {
+                elements.push(e)
+            }
+        })
+        return elements
+    }
     /**
      * Remove all children from the canvas.
      */
@@ -226,11 +236,10 @@ export class GameWindowManager {
      * @param childTag The tag of the child that will use the ticker.
      * @param ticker The ticker class to be run.
      * @param args The arguments to be used in the ticker.
-     * @param context The context to be used in the ticker.
      * @param priority The priority to be used in the ticker.
      * @returns 
      */
-    static addTicker<TArgs extends TickerArgsType, TContext>(childTag: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, context?: TContext, priority?: UPDATE_PRIORITY) {
+    static addTicker<TArgs extends TickerArgsType>(childTag: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, priority?: UPDATE_PRIORITY) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
@@ -241,16 +250,21 @@ export class GameWindowManager {
         if (typeof childTag === "string") {
             childTag = [childTag]
         }
-        let t = GameWindowManager.geTickerByClassName<TArgs>(tickerName, args)
+        let t = GameWindowManager.geTickerByClassName<TArgs>(tickerName)
         let tickerKey = tickerName + "$" + args.toString()
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
         }
-        let tickerFun = (dt: number) => t.fn(dt, args)
+        let tickerFun = (dt: number) => {
+            let elements = GameWindowManager.getChilds(childTag as string[])
+            t?.fn(dt, args, elements)
+        }
         let tickerHistory: IClassWithArgsHistory | undefined = GameWindowManager.getTickerById(tickerKey)
         if (tickerHistory) {
+            GameWindowManager.app.ticker.remove(tickerHistory.fn)
             tickerHistory.elements = tickerHistory.elements.filter((e) => !childTag.includes(e)).concat(childTag)
+            tickerHistory.fn = tickerFun
         }
         else {
             tickerHistory = {
@@ -259,10 +273,11 @@ export class GameWindowManager {
                 className: tickerName,
                 args: args,
                 elements: childTag,
+                priority: priority
             }
         }
         GameWindowManager.currentTickers.push(tickerHistory)
-        GameWindowManager.app.ticker.add((dt) => { t?.fn(dt, args) }, context, priority)
+        GameWindowManager.app.ticker.add(tickerFun, undefined, priority)
         GameWindowManager.removeTickersWithoutConnectedChild()
     }
     private static getTickerById(id: string): IClassWithArgsHistory | undefined {
@@ -284,13 +299,8 @@ export class GameWindowManager {
         if (typeof childTag === "string") {
             childTag = [childTag]
         }
-        let tickerKey = tickerName + "$" + ticker.name
-        let tickerHistory: IClassWithArgsHistory | undefined = GameWindowManager.getTickerById(tickerKey)
-        if (tickerHistory) {
-            tickerHistory.elements = tickerHistory.elements.filter((e) => !childTag.includes(e))
-        }
-        GameWindowManager.currentTickers = GameWindowManager.currentTickers.map((t) => {
-            if (t.id === tickerKey) {
+        GameWindowManager.currentTickers.map((t) => {
+            if (t.className === tickerName) {
                 t.elements = t.elements.filter((e) => !childTag.includes(e))
             }
             return t
@@ -298,18 +308,22 @@ export class GameWindowManager {
         GameWindowManager.removeTickersWithoutConnectedChild()
     }
     public static removeTickersWithoutConnectedChild() {
-        // TODO check if child exists
-        GameWindowManager.currentTickers = GameWindowManager.currentTickers.filter((t) => { t.elements.length * 0 })
+        GameWindowManager.currentTickers = GameWindowManager.currentTickers
+            .map((t) => {
+                t.elements = t.elements.filter((e) => GameWindowManager.children[e])
+                return t
+            })
+            .filter((t) => t.elements.length > 0)
     }
 
-    private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: TickerTagType, args: TArgs): TickerClass<TArgs> | undefined {
+    private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: TickerTagType): TickerClass<TArgs> | undefined {
         try {
             let ticker = GameWindowManager.registeredTicker[labelName]
             if (!ticker) {
                 console.error(`Ticker ${labelName} not found`)
                 return
             }
-            return new ticker(args)
+            return new ticker()
         }
         catch (e) {
             console.error(e)

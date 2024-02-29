@@ -1,3 +1,4 @@
+import { UPDATE_PRIORITY } from "pixi.js";
 import { StorageElementType } from "../types/StorageElementType";
 import { TickerTagType } from "../types/TickerTagType";
 
@@ -9,5 +10,6 @@ export interface IClassWithArgsHistory {
     fn: (dt: number) => void | undefined,
     className: TickerTagType,
     args: { [tag: string]: StorageElementType }
-    elements: string[]
+    elements: string[],
+    priority?: UPDATE_PRIORITY,
 }
