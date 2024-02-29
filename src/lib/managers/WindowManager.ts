@@ -72,6 +72,7 @@ export class GameWindowManager {
         div.style.position = 'absolute'
         element.appendChild(div)
         GameWindowManager.htmlLayout = div
+        GameWindowManager.resize()
     }
 
     /* Resize Metods */
