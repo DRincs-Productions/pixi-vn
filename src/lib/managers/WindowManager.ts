@@ -227,10 +227,11 @@ export class GameWindowManager {
      * @param childTags The tag of the child that will use the ticker.
      * @param ticker The ticker class to be run.
      * @param args The arguments to be used in the ticker.
+     * @param endTime The time to be used in the ticker. This number is in milliseconds. If it is undefined, the ticker will run forever.
      * @param priority The priority to be used in the ticker.
      * @returns 
      */
-    static addTicker<TArgs extends TickerArgsType>(childTags: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, priority?: UPDATE_PRIORITY) {
+    static addTicker<TArgs extends TickerArgsType>(childTags: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, endTime?: number, priority?: UPDATE_PRIORITY) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
@@ -256,6 +257,11 @@ export class GameWindowManager {
         }
         GameWindowManager.pushOrReplaceTicker(tickerHistory, t)
         GameWindowManager.removeTickersWithoutConnectedChild()
+        if (endTime) {
+            setTimeout(() => {
+                GameWindowManager.nextTickerStep(childTags, ticker)
+            }, endTime);
+        }
     }
     private static pushOrReplaceTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerClass<TArgs>) {
         let index = GameWindowManager.currentTickers.findIndex((t) =>
@@ -275,6 +281,10 @@ export class GameWindowManager {
             t?.fn(dt, ticker.args, ticker.childTags)
         }
         GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
+    }
+    private static nextTickerStep(childTag: string | string[], ticker: typeof TickerClass<any>) {
+        // TODO: Implement this method
+        GameWindowManager.removeTickerConnectedToChild(childTag, ticker)
     }
     /**
      * Remove a connection between a child and a ticker.
