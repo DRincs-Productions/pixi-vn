@@ -1,5 +1,4 @@
 import { StorageElementType } from "../types/StorageElementType"
-import { CanvasBase } from "./canvas/CanvasBase"
 
 export type TickerArgsType = { [tag: string]: StorageElementType }
 
@@ -15,7 +14,7 @@ export class TickerClass<T extends TickerArgsType> {
      * This method should be overridden and you can use GameWindowManager.getChild() to get the children of the canvas, and edit them.
      * @param dt Delta time
      */
-    fn(_dt: number, _args: T, _elements: CanvasBase<any, any>[]): void {
+    fn(_dt: number, _args: T, _childTags: string | string[]): void {
         throw new Error("This method should be overridden")
     }
 }

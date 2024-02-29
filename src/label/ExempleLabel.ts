@@ -3,7 +3,7 @@ import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
 import { RotateTicker } from "../lib/classes/ticker/RotateTicker";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
-import { hideImage } from "../lib/functions/ImageUtility";
+import { removeImage } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
@@ -27,7 +27,7 @@ export class ExempleLabel extends Label {
                 // Listen for animate update
                 GameWindowManager.addTicker("bunny", RotateTicker, { speed: 0.1 });
             },
-            () => hideImage("bunny"), // TODO: remove ticker and crete a manager for this
+            () => removeImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),
             () => setDialogue("it is possible to modify the \"Labels\" in runtime. try adding a step in ExempleLabel and then save."),
         ]

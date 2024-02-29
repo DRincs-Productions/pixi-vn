@@ -5,6 +5,6 @@ import { ICanvasBaseMemory } from "../canvas/ICanvasBaseMemory";
  * Interface exported canvas
  */
 export interface ExportedCanvas {
-    currentTickers: IClassWithArgsHistory[]
+    currentTickers: IClassWithArgsHistory<any>[]
     currentElements: ICanvasBaseMemory[]
 }

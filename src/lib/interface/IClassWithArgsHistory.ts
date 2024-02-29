@@ -1,15 +1,14 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { StorageElementType } from "../types/StorageElementType";
+import { TickerArgsType } from "../classes/TickerClass";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**
  * IClassWithArgsHistory is a class that contains the name of a class and the arguments that were used to create it.
  */
-export interface IClassWithArgsHistory {
-    id: string,
+export interface IClassWithArgsHistory<TArgs extends TickerArgsType> {
     fn: (dt: number) => void | undefined,
     className: TickerTagType,
-    args: { [tag: string]: StorageElementType }
-    elements: string[],
+    args: TArgs
+    childTags: string[],
     priority?: UPDATE_PRIORITY,
 }

@@ -171,6 +171,7 @@ export class GameWindowManager {
         }
         GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag].pixiElement)
         delete GameWindowManager.children[tag]
+        GameWindowManager.removeTickersWithoutConnectedChild()
     }
     /**
      * Get a child from the canvas.
@@ -180,22 +181,13 @@ export class GameWindowManager {
     public static getChild<T extends CanvasBase<any, any>>(tag: string): T | undefined {
         return GameWindowManager.children[tag] as T | undefined
     }
-    public static getChilds<T extends CanvasBase<any, any>>(tags: string[]): T[] {
-        let elements: T[] = []
-        tags.forEach((tag) => {
-            let e = GameWindowManager.getChild<T>(tag)
-            if (e) {
-                elements.push(e)
-            }
-        })
-        return elements
-    }
     /**
      * Remove all children from the canvas.
      */
     public static removeChildren() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager.children = {}
+        GameWindowManager.removeTickersWithoutConnectedChild()
     }
 
     /**
@@ -230,16 +222,16 @@ export class GameWindowManager {
     /**
      * Currently tickers that are running.
      */
-    static currentTickers: IClassWithArgsHistory[] = []
+    static currentTickers: IClassWithArgsHistory<any>[] = []
     /**
      * Run a ticker.
-     * @param childTag The tag of the child that will use the ticker.
+     * @param childTags The tag of the child that will use the ticker.
      * @param ticker The ticker class to be run.
      * @param args The arguments to be used in the ticker.
      * @param priority The priority to be used in the ticker.
      * @returns 
      */
-    static addTicker<TArgs extends TickerArgsType>(childTag: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, priority?: UPDATE_PRIORITY) {
+    static addTicker<TArgs extends TickerArgsType>(childTags: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, priority?: UPDATE_PRIORITY) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
@@ -247,46 +239,43 @@ export class GameWindowManager {
         else {
             tickerName = ticker.name
         }
-        if (typeof childTag === "string") {
-            childTag = [childTag]
+        if (typeof childTags === "string") {
+            childTags = [childTags]
         }
         let t = GameWindowManager.geTickerByClassName<TArgs>(tickerName)
-        let tickerKey = tickerName + "$" + args.toString()
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
         }
-        let tickerFun = (dt: number) => {
-            let elements = GameWindowManager.getChilds(childTag as string[])
-            t?.fn(dt, args, elements)
+        GameWindowManager.removeTickerConnectedToChild(childTags, ticker)
+        let tickerHistory: IClassWithArgsHistory<TArgs> = {
+            fn: () => { },
+            className: tickerName,
+            args: args,
+            childTags: childTags,
+            priority: priority
         }
-        let tickerHistory: IClassWithArgsHistory | undefined = GameWindowManager.getTickerById(tickerKey)
-        if (tickerHistory) {
-            GameWindowManager.app.ticker.remove(tickerHistory.fn)
-            tickerHistory.elements = tickerHistory.elements.filter((e) => !childTag.includes(e)).concat(childTag)
-            tickerHistory.fn = tickerFun
-        }
-        else {
-            tickerHistory = {
-                id: tickerKey,
-                fn: tickerFun,
-                className: tickerName,
-                args: args,
-                elements: childTag,
-                priority: priority
-            }
-        }
-        GameWindowManager.currentTickers.push(tickerHistory)
-        GameWindowManager.app.ticker.add(tickerFun, undefined, priority)
+        GameWindowManager.pushOrReplaceTicker(tickerHistory, t)
         GameWindowManager.removeTickersWithoutConnectedChild()
     }
-    private static getTickerById(id: string): IClassWithArgsHistory | undefined {
-        GameWindowManager.currentTickers.forEach((t) => {
-            if (t.id === id) {
-                return t
-            }
-        })
-        return
+    private static pushOrReplaceTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerClass<TArgs>) {
+        let index = GameWindowManager.currentTickers.findIndex((t) =>
+            t.className === ticker.className &&
+            t.priority === ticker.priority &&
+            JSON.stringify(t.args) === JSON.stringify(ticker.args)
+        )
+        if (index === -1) {
+            GameWindowManager.currentTickers.push(ticker)
+        }
+        else {
+            GameWindowManager.app.ticker.remove(GameWindowManager.currentTickers[index].fn)
+            ticker.childTags = GameWindowManager.currentTickers[index].childTags.filter((e) => !ticker.childTags.includes(e)).concat(ticker.childTags)
+            GameWindowManager.currentTickers[index] = ticker
+        }
+        ticker.fn = (dt: number) => {
+            t?.fn(dt, ticker.args, ticker.childTags)
+        }
+        GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
     }
     public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerClass<any>) {
         let tickerName: TickerTagType
@@ -301,19 +290,25 @@ export class GameWindowManager {
         }
         GameWindowManager.currentTickers.map((t) => {
             if (t.className === tickerName) {
-                t.elements = t.elements.filter((e) => !childTag.includes(e))
+                t.childTags = t.childTags.filter((e) => !childTag.includes(e))
             }
             return t
         })
         GameWindowManager.removeTickersWithoutConnectedChild()
     }
     public static removeTickersWithoutConnectedChild() {
-        GameWindowManager.currentTickers = GameWindowManager.currentTickers
+        let currentTickers = GameWindowManager.currentTickers
             .map((t) => {
-                t.elements = t.elements.filter((e) => GameWindowManager.children[e])
+                t.childTags = t.childTags.filter((e) => GameWindowManager.children[e])
                 return t
             })
-            .filter((t) => t.elements.length > 0)
+            .filter((t) => t.childTags.length > 0)
+        GameWindowManager.currentTickers
+            .filter((t) => !currentTickers.includes(t))
+            .forEach((t) => {
+                GameWindowManager.app.ticker.remove(t.fn)
+            })
+        GameWindowManager.currentTickers = currentTickers
     }
 
     private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: TickerTagType): TickerClass<TArgs> | undefined {
@@ -331,9 +326,15 @@ export class GameWindowManager {
         }
     }
 
+    public static removeTIckers() {
+        GameWindowManager.currentTickers.forEach((t) => {
+            GameWindowManager.app.ticker.remove(t.fn)
+        })
+        GameWindowManager.currentTickers = []
+    }
+
     static clear() {
         GameWindowManager.removeChildren()
-        // TODO remove tickers
     }
 
     public static exportJson(): string {

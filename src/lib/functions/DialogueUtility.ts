@@ -19,7 +19,6 @@ export function getDialogue(): DialogueModelBase | undefined {
     if (d instanceof DialogueModelBase) {
         return d
     }
-    console.error("No dialogue found")
     return undefined
 }
 
