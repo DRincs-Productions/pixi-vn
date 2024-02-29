@@ -3,10 +3,6 @@ import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerM
 import { CanvasBase } from "./CanvasBase";
 
 export interface ICanvasContainer {
-    x: number,
-    y: number,
-    rotation: number,
-    pivot: { x: number, y: number },
 }
 
 export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanvasContainerMemory> extends CanvasBase<T1, T2> {
@@ -15,30 +11,6 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
         super(container)
     }
 
-    get x() {
-        return this.pixiElement.x
-    }
-    set x(value: number) {
-        this.pixiElement.x = value
-    }
-    get y() {
-        return this.pixiElement.y
-    }
-    set y(value: number) {
-        this.pixiElement.y = value
-    }
-    get rotation() {
-        return this.pixiElement.rotation
-    }
-    set rotation(value: number) {
-        this.pixiElement.rotation = value
-    }
-    get pivot() {
-        return this.pixiElement.pivot
-    }
-    set pivot(value: { x: number, y: number }) {
-        this.pixiElement.pivot = value
-    }
     addChild<U extends CanvasBase<any, any>[]>(...children: U): U[0] {
         children.forEach(child => {
             this.pixiElement.addChild(child.pixiElement)

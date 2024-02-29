@@ -18,4 +18,29 @@ export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBase
      * This method set the memory of the canvas element.
      */
     abstract set memory(value: T2)
+
+    get x() {
+        return this.pixiElement.x
+    }
+    set x(value: number) {
+        this.pixiElement.x = value
+    }
+    get y() {
+        return this.pixiElement.y
+    }
+    set y(value: number) {
+        this.pixiElement.y = value
+    }
+    get rotation() {
+        return this.pixiElement.rotation
+    }
+    set rotation(value: number) {
+        this.pixiElement.rotation = value
+    }
+    get pivot() {
+        return this.pixiElement.pivot
+    }
+    set pivot(value: { x: number, y: number }) {
+        this.pixiElement.pivot = value
+    }
 }

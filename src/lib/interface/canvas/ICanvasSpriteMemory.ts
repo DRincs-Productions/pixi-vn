@@ -1,12 +1,10 @@
-import { ICanvasSprite } from "../../classes/canvas/CanvasSprite";
-import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
+import { ICanvasContainerMemory } from "./ICanvasContainerMemory";
 import { ITextureMemory } from "./ITextureMemory";
 
 /**
  * Interface for the canvas sprite memory
  */
-export interface ICanvasSpriteMemory extends ICanvasSprite {
-    className: string,
+export interface ICanvasSpriteMemory extends ICanvasContainerMemory {
     texture: ITextureMemory,
-    elements: ICanvasBaseMemory[],
+    anchor: { x: number, y: number },
 }

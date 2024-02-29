@@ -1,10 +1,8 @@
-import { ICanvasText } from "../../classes/canvas/CanvasText";
-import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
+import { ICanvasContainerMemory } from "./ICanvasContainerMemory";
 
 /**
  * Interface for the canvas text memory
  */
-export interface ICanvasTextMemory extends ICanvasText {
-    className: string,
-    elements: ICanvasBaseMemory[],
+export interface ICanvasTextMemory extends ICanvasContainerMemory {
+    anchor: { x: number, y: number },
 }
