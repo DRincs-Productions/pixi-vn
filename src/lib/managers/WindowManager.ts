@@ -161,6 +161,7 @@ export class GameWindowManager {
     }
     /**
      * Remove a child from the canvas.
+     * And remove all tickers that are not connected to any child.
      * @param tag The tag of the child to be removed.
      * @returns 
      */
@@ -183,13 +184,13 @@ export class GameWindowManager {
     }
     /**
      * Remove all children from the canvas.
+     * And remove all tickers that are not connected to any child.
      */
     public static removeChildren() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager.children = {}
         GameWindowManager.removeTickersWithoutConnectedChild()
     }
-
     /**
      * Add a temporary child to the canvas.
      * @param child The child to be added.
@@ -200,12 +201,11 @@ export class GameWindowManager {
         }
         GameWindowManager.app.stage.addChild(child)
     }
-
     /**
      * Remove a temporary child from the canvas.
      * @param child The child to be removed.
      */
-    public static removeChildWithDisplayObject(child: CanvasBase<any, any> | DisplayObject) {
+    public static removeChildTemporary(child: DisplayObject) {
         if (child instanceof CanvasBase) {
             GameWindowManager.app.stage.removeChild(child.pixiElement)
             return
@@ -277,6 +277,12 @@ export class GameWindowManager {
         }
         GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
     }
+    /**
+     * Remove a connection between a child and a ticker.
+     * And remove the ticker if there is no child connected to it.
+     * @param childTag The tag of the child that will use the ticker.
+     * @param ticker The ticker class to be removed.
+     */
     public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerClass<any>) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerClass) {
@@ -296,6 +302,9 @@ export class GameWindowManager {
         })
         GameWindowManager.removeTickersWithoutConnectedChild()
     }
+    /**
+     * Remove all tickers that are not connected to any existing child.
+     */
     public static removeTickersWithoutConnectedChild() {
         let currentTickers = GameWindowManager.currentTickers
             .map((t) => {
@@ -310,7 +319,11 @@ export class GameWindowManager {
             })
         GameWindowManager.currentTickers = currentTickers
     }
-
+    /**
+     * Get a ticker instance by the class name.
+     * @param labelName The name of the class.
+     * @returns The ticker instance.
+     */
     private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: TickerTagType): TickerClass<TArgs> | undefined {
         try {
             let ticker = GameWindowManager.registeredTicker[labelName]
@@ -325,14 +338,19 @@ export class GameWindowManager {
             return
         }
     }
-
-    public static removeTIckers() {
+    /**
+     * Remove all tickers from the canvas.
+     */
+    public static removeTickers() {
         GameWindowManager.currentTickers.forEach((t) => {
             GameWindowManager.app.ticker.remove(t.fn)
         })
         GameWindowManager.currentTickers = []
     }
 
+    /**
+     * Clear the canvas and the tickers.
+     */
     static clear() {
         GameWindowManager.removeChildren()
     }
