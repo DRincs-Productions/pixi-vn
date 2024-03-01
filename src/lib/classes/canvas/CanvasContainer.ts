@@ -2,9 +2,6 @@ import { Container } from "pixi.js";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 import { CanvasBase } from "./CanvasBase";
 
-export interface ICanvasContainer {
-}
-
 export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanvasContainerMemory> extends CanvasBase<T1, T2> {
     listChildren: CanvasBase<any, any>[] = []
     constructor(container: T1) {

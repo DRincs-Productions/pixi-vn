@@ -1,11 +1,7 @@
-import { ColorSource, IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
+import { ColorSource, Cursor, EventMode, IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
 import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
-import { CanvasContainerBase, ICanvasContainer } from "./CanvasContainer";
-
-export interface ICanvasSprite extends ICanvasContainer {
-    anchor: { x: number, y: number },
-}
+import { CanvasContainerBase } from "./CanvasContainer";
 
 export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpriteMemory> extends CanvasContainerBase<T1, T2> {
     constructor(sprite: T1) {
@@ -17,6 +13,8 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
             anchor: { x: this.anchor.x, y: this.anchor.y },
             texture: getTextureMemory(this.pixiElement.texture),
             tint: this.tint,
+            eventMode: this.eventMode,
+            cursor: this.cursor,
         }
         return elements
     }
@@ -25,6 +23,8 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
         this.anchor.set(value.anchor.x, value.anchor.y)
         this.pixiElement.texture = getTexture(value.texture)
         this.tint = value.tint
+        this.eventMode = value.eventMode
+        this.cursor = value.cursor
     }
 
     get anchor() {
@@ -51,11 +51,23 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
     set rotation(value: number) {
         this.pixiElement.rotation = value
     }
-    get tint(): ColorSource {
+    get tint() {
         return this.pixiElement.tint
     }
     set tint(value: ColorSource) {
         this.pixiElement.tint = value
+    }
+    get eventMode() {
+        return this.pixiElement.eventMode
+    }
+    set eventMode(value: EventMode) {
+        this.pixiElement.eventMode = value
+    }
+    get cursor() {
+        return this.pixiElement.cursor
+    }
+    set cursor(value: Cursor | string) {
+        this.pixiElement.cursor = value
     }
     static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
         let sprite = Sprite.from(source, options)
