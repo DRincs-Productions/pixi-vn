@@ -21,6 +21,9 @@ class AlienTintingTest extends CanvasSprite {
 
 @tickerDecorator()
 export class TintingTestTicker extends TickerClass<{}> {
+    constructor() {
+        super({})
+    }
     override fn(_delta: number, _args: {}, childTags: string[]): void {
         childTags.forEach((tag) => {
             // create a bounding box for the little dudes
@@ -99,7 +102,7 @@ export class TintingTestLabel extends Label {
                     aliens.push(dude);
 
                     GameWindowManager.addChild("alien" + i, dude);
-                    GameWindowManager.addTicker("alien" + i, TintingTestTicker, {});
+                    GameWindowManager.addTicker("alien" + i, new TintingTestTicker());
                 }
             },
             () => GameWindowManager.removeChildren(),

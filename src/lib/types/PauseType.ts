@@ -1,12 +1,11 @@
-export interface PauseType {
-    type: "Pause",
-    ticker: "Pause",
+export const PauseValueType = "Pause"
+export type PauseType = {
+    type: typeof PauseValueType,
     duration: number,
 }
 export function Pause(duration: number): PauseType {
     return {
-        type: "Pause",
-        ticker: "Pause",
+        type: PauseValueType,
         duration: duration,
     }
 }

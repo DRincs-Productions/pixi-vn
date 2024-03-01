@@ -7,7 +7,7 @@ import { CanvasSprite } from "../canvas/CanvasSprite";
  * A ticker that rotates the children of the canvas.
  */
 @tickerDecorator()
-export class RotateTicker extends TickerClass<{ speed: number, clockwise: boolean }> {
+export class RotateTicker extends TickerClass<{ speed?: number, clockwise?: boolean }> {
     /**
      * The method that will be called every frame to rotate the children of the canvas.
      * @param delta The delta time

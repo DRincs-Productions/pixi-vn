@@ -25,7 +25,7 @@ export class ExempleLabel extends Label {
                 bunny.y = 100
 
                 // Listen for animate update
-                GameWindowManager.addTicker("bunny", RotateTicker, { speed: 0.1 });
+                GameWindowManager.addTicker("bunny", new RotateTicker({ speed: 0.1 }));
             },
             () => removeImage("bunny"), // TODO: remove ticker and crete a manager for this
             () => clearDialogue(),

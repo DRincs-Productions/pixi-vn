@@ -1,16 +1,13 @@
 import { TickerArgsType } from "../classes/TickerClass"
 import { PauseType } from "../types/PauseType"
 import { RepeatType } from "../types/RepeatType"
+import { ITicker } from "./ITicker"
 
-export interface ITickersStep<TArgs extends TickerArgsType, T2> {
+export interface ITickersStep<TArgs extends TickerArgsType> extends ITicker<TArgs> {
     /**
      * Ticker class name
      */
-    ticker: T2,
-    /**
-     * Arguments to pass to the ticker
-     */
-    args: TArgs,
+    ticker: string,
     /**
      * Duration in milliseconds
      */
@@ -20,7 +17,7 @@ export interface ITickersStep<TArgs extends TickerArgsType, T2> {
 /**
  * The steps of the tickers
  */
-export interface ITickersSteps<T2> {
+export interface ITickersSteps {
     /**
      * The step number
      */
@@ -28,5 +25,5 @@ export interface ITickersSteps<T2> {
     /**
      * The steps of the tickers
      */
-    steps: (ITickersStep<any, T2> | RepeatType | PauseType)[]
+    steps: (ITickersStep<any> | RepeatType | PauseType)[]
 }
