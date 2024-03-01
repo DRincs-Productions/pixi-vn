@@ -427,7 +427,29 @@ export class GameWindowManager {
         GameWindowManager.currentTickers = []
     }
 
+    /**
+     * Canvas Event Register
+     */
     static registeredEvent: { [name: EventTagType]: typeof CanvasEvent } = {}
+    /**
+     * Get a event by the class name.
+     * @param labelName The name of the class.
+     * @returns The event instance.
+     */
+    static getEventByClassName<T extends CanvasEvent<any>>(labelName: EventTagType): T | undefined {
+        try {
+            let event = GameWindowManager.registeredEvent[labelName]
+            if (!event) {
+                console.error(`Event ${labelName} not found`)
+                return
+            }
+            return new event() as T
+        }
+        catch (e) {
+            console.error(e)
+            return
+        }
+    }
 
     /**
      * Clear the canvas and the tickers.

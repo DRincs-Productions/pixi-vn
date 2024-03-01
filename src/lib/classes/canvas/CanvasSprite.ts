@@ -1,7 +1,10 @@
 import { ColorSource, Cursor, EventMode, IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
 import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
-import { CanvasEvent, CanvasEventNames, CanvasEventTypes } from "../CanvasEvent";
+import { GameWindowManager } from "../../managers/WindowManager";
+import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
+import { EventTagType } from "../../types/EventTagType";
+import { CanvasEvent } from "../CanvasEvent";
 import { CanvasContainerBase } from "./CanvasContainer";
 
 export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpriteMemory> extends CanvasContainerBase<T1, T2> {
@@ -16,6 +19,7 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
             tint: this.tint,
             eventMode: this.eventMode,
             cursor: this.cursor,
+            onEvents: this.onEvents
         }
         return elements
     }
@@ -26,6 +30,16 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
         this.tint = value.tint
         this.eventMode = value.eventMode
         this.cursor = value.cursor
+        this.onEvents = value.onEvents
+        for (let key in this.onEvents) {
+            let event = this.onEvents[key]
+            let instance = GameWindowManager.getEventByClassName(event)
+            if (instance) {
+                this.pixiElement.on(key, () => {
+                    (instance as CanvasEvent<typeof this>).fn(event, this)
+                })
+            }
+        }
     }
 
     get anchor() {
@@ -70,8 +84,16 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
     set cursor(value: Cursor | string) {
         this.pixiElement.cursor = value
     }
-    on<T extends CanvasEventNames<CanvasEventTypes>>(_event: T, _fn: typeof CanvasEvent) {
-        // TODO: Implement this method
+    onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
+    on<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
+        let className = eventClass.name
+        let instance = GameWindowManager.getEventByClassName(className)
+        if (instance) {
+            this.onEvents[event] = className
+            this.pixiElement.on(event, () => {
+                (instance as CanvasEvent<typeof this>).fn(event, this)
+            })
+        }
     }
     static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
         let sprite = Sprite.from(source, options)

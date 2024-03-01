@@ -2,7 +2,7 @@ import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
-import { TickerTestLabel } from '../label/TickerTestLabel';
+import { EventsTestLabel } from '../label/EventsTestLabel';
 import { clearAllGameDatas } from '../lib/functions/GameUtility';
 import { showImage } from '../lib/functions/ImageUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
@@ -32,7 +32,7 @@ export default function MainMenu() {
                 <MenuButton
                     onClick={() => {
                         GameWindowManager.removeChildren()
-                        GameStepManager.runLabel(TickerTestLabel)
+                        GameStepManager.runLabel(EventsTestLabel)
                         navigate("/game")
                     }}
                 >
