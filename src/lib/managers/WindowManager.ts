@@ -5,6 +5,8 @@ import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
+import { PauseType } from "../types/PauseType";
+import { Repeat, RepeatType } from "../types/RepeatType";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**
@@ -264,7 +266,8 @@ export class GameWindowManager {
         GameWindowManager.removeTickersWithoutConnectedChild()
         if (duration) {
             setTimeout(() => {
-                GameWindowManager.nextTickerStep(childTags, ticker)
+                GameWindowManager.removeTickerConnectedToChild(childTags, ticker)
+                GameWindowManager.nextTickerStep(childTags)
             }, duration);
         }
     }
@@ -287,7 +290,7 @@ export class GameWindowManager {
         }
         GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
     }
-    public static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: ITickersStep<TArgs, typeof TickerClass>[]) {
+    public static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITickersStep<TArgs, typeof TickerClass> | RepeatType | PauseType)[]) {
         if (steps.length == 0) {
             console.error("Steps is empty")
             return
@@ -295,8 +298,14 @@ export class GameWindowManager {
         GameWindowManager.currentTickersSteps[tag] = {
             currentStepNumber: 0,
             steps: steps.map((s) => {
+                if (s === Repeat) {
+                    return s
+                }
+                if (s.ticker === "Pause") {
+                    return s
+                }
                 return {
-                    className: s.className.name,
+                    ticker: s.ticker.name,
                     args: s.args,
                     duration: s.duration
                 }
@@ -304,19 +313,32 @@ export class GameWindowManager {
         }
         GameWindowManager.runTickersSteps(tag, GameWindowManager.currentTickersSteps[tag].steps[0])
     }
-    private static runTickersSteps<TArgs extends TickerArgsType>(tag: string, step: ITickersStep<TArgs, string>) {
-        let ticker = GameWindowManager.geTickerByClassName<TArgs>(step.className)
-        if (!ticker) {
-            console.error(`Ticker ${step.className} not found`)
+    private static runTickersSteps<TArgs extends TickerArgsType>(tag: string, step: ITickersStep<TArgs, string> | RepeatType | PauseType) {
+        if (step === Repeat) {
+            step = GameWindowManager.currentTickersSteps[tag].steps[0]
+            GameWindowManager.currentTickersSteps[tag].currentStepNumber = 0
+            if (step === Repeat) {
+                console.error("TikersSteps has a RepeatType in the first step")
+                return
+            }
+        }
+        if (step.ticker === "Pause") {
+            setTimeout(() => {
+                GameWindowManager.nextTickerStep(tag)
+            }, step.duration);
             return
         }
-        GameWindowManager.addTicker(tag, ticker, step.args, step.duration)
+        let ticker = GameWindowManager.geTickerByClassName<TArgs>(step.ticker)
+        if (!ticker) {
+            console.error(`Ticker ${step.ticker} not found`)
+            return
+        }
+        GameWindowManager.addTicker(tag, ticker, (step as ITickersStep<TArgs, string>).args, step.duration)
     }
-    private static nextTickerStep(childTag: string | string[], ticker: typeof TickerClass<any> | TickerClass<any>) {
+    private static nextTickerStep(childTag: string | string[]) {
         if (typeof childTag === "string") {
             childTag = [childTag]
         }
-        GameWindowManager.removeTickerConnectedToChild(childTag, ticker)
         childTag.forEach((tag) => {
             if (GameWindowManager.currentTickersSteps[tag]) {
                 let steps = GameWindowManager.currentTickersSteps[tag]
