@@ -1,4 +1,5 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
+import { CanvasEvent } from "../classes/CanvasEvent";
 import { TickerArgsType, TickerClass } from "../classes/TickerClass";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
@@ -6,6 +7,7 @@ import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
+import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
 import { TickerTagType } from "../types/TickerTagType";
@@ -424,6 +426,8 @@ export class GameWindowManager {
         })
         GameWindowManager.currentTickers = []
     }
+
+    static registeredEvent: { [name: EventTagType]: typeof CanvasEvent } = {}
 
     /**
      * Clear the canvas and the tickers.

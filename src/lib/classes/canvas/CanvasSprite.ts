@@ -1,6 +1,7 @@
 import { ColorSource, Cursor, EventMode, IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
 import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
+import { CanvasEvent, CanvasEventNames, CanvasEventTypes } from "../CanvasEvent";
 import { CanvasContainerBase } from "./CanvasContainer";
 
 export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpriteMemory> extends CanvasContainerBase<T1, T2> {
@@ -68,6 +69,9 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
     }
     set cursor(value: Cursor | string) {
         this.pixiElement.cursor = value
+    }
+    on<T extends CanvasEventNames<CanvasEventTypes>>(_event: T, _fn: typeof CanvasEvent) {
+        // TODO: Implement this method
     }
     static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
         let sprite = Sprite.from(source, options)
