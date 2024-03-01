@@ -1,3 +1,5 @@
+import { UPDATE_PRIORITY } from "pixi.js"
+import { ITicker } from "../interface/ITicker"
 import { StorageElementType } from "../types/StorageElementType"
 
 export type TickerArgsType = { [tag: string]: StorageElementType }
@@ -8,7 +10,15 @@ export type TickerArgsType = { [tag: string]: StorageElementType }
  * This class should be extended and the fn method should be overridden.
  * In Ren'Py is a transform.
  */
-export class TickerClass<T extends TickerArgsType> {
+export class TickerClass<TArgs extends TickerArgsType> implements ITicker<TArgs> {
+    constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
+        this.args = args
+        this.duration = duration
+        this.priority = priority
+    }
+    args: TArgs
+    duration?: number
+    priority?: UPDATE_PRIORITY
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use GameWindowManager.getChild() to get the children of the canvas, and edit them.
@@ -16,7 +26,7 @@ export class TickerClass<T extends TickerArgsType> {
      * @param args The arguments that you passed when you added the ticker
      * @param childTags The tags of the children that are connected to this ticker
      */
-    fn(_dt: number, _args: T, _childTags: string | string[]): void {
+    fn(_dt: number, _args: TArgs, _childTags: string | string[]): void {
         throw new Error("This method should be overridden")
     }
 }

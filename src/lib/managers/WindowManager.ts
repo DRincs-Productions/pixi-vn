@@ -2,8 +2,12 @@ import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from
 import { TickerArgsType, TickerClass } from "../classes/TickerClass";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
+import { ITicker } from "../interface/ITicker";
+import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
+import { PauseType, PauseValueType } from "../types/PauseType";
+import { Repeat, RepeatType } from "../types/RepeatType";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**
@@ -223,25 +227,24 @@ export class GameWindowManager {
      */
     static currentTickers: IClassWithArgsHistory<any>[] = []
     /**
+     * The steps of the tickers
+     */
+    static currentTickersSteps: { [tag: string]: ITickersSteps } = {}
+    /**
      * Run a ticker.
      * @param childTags The tag of the child that will use the ticker.
      * @param ticker The ticker class to be run.
      * @param args The arguments to be used in the ticker.
+     * @param duration The time to be used in the ticker. This number is in milliseconds. If it is undefined, the ticker will run forever.
      * @param priority The priority to be used in the ticker.
      * @returns 
      */
-    static addTicker<TArgs extends TickerArgsType>(childTags: string | string[], ticker: typeof TickerClass<TArgs>, args: TArgs, priority?: UPDATE_PRIORITY) {
-        let tickerName: TickerTagType
-        if (ticker instanceof TickerClass) {
-            tickerName = ticker.constructor.name
-        }
-        else {
-            tickerName = ticker.name
-        }
+    static addTicker<TArgs extends TickerArgsType>(childTags: string | string[], ticker: TickerClass<TArgs>) {
+        let tickerName: TickerTagType = ticker.constructor.name
         if (typeof childTags === "string") {
             childTags = [childTags]
         }
-        let t = GameWindowManager.geTickerByClassName<TArgs>(tickerName)
+        let t = GameWindowManager.geTickerInstance<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
@@ -250,12 +253,18 @@ export class GameWindowManager {
         let tickerHistory: IClassWithArgsHistory<TArgs> = {
             fn: () => { },
             className: tickerName,
-            args: args,
+            args: ticker.args,
             childTags: childTags,
-            priority: priority
+            priority: ticker.priority
         }
         GameWindowManager.pushOrReplaceTicker(tickerHistory, t)
         GameWindowManager.removeTickersWithoutConnectedChild()
+        if (ticker.duration) {
+            setTimeout(() => {
+                GameWindowManager.removeTickerConnectedToChild(childTags, ticker)
+                GameWindowManager.nextTickerStep(childTags)
+            }, ticker.duration);
+        }
     }
     private static pushOrReplaceTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerClass<TArgs>) {
         let index = GameWindowManager.currentTickers.findIndex((t) =>
@@ -276,13 +285,82 @@ export class GameWindowManager {
         }
         GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
     }
+    public static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
+        if (steps.length == 0) {
+            console.error("Steps is empty")
+            return
+        }
+        GameWindowManager.currentTickersSteps[tag] = {
+            currentStepNumber: 0,
+            steps: steps.map((s) => {
+                if (s === Repeat) {
+                    return s
+                }
+                if (!s.duration) {
+                    console.warn("Duration is not defined, so it will be set to 1000")
+                    s.duration = 1000
+                }
+                if (s.hasOwnProperty("type") && (s as PauseType).type === PauseValueType) {
+                    return s as PauseType
+                }
+                let tickerName = s.constructor.name
+                return {
+                    ticker: tickerName,
+                    args: (s as ITicker<TArgs>).args,
+                    duration: s.duration,
+                }
+            })
+        }
+        GameWindowManager.runTickersSteps(tag, GameWindowManager.currentTickersSteps[tag].steps[0])
+    }
+    private static runTickersSteps<TArgs extends TickerArgsType>(tag: string, step: ITickersStep<TArgs> | RepeatType | PauseType) {
+        if (step === Repeat) {
+            step = GameWindowManager.currentTickersSteps[tag].steps[0]
+            GameWindowManager.currentTickersSteps[tag].currentStepNumber = 0
+            if (step === Repeat) {
+                console.error("TikersSteps has a RepeatType in the first step")
+                return
+            }
+        }
+        if (step.hasOwnProperty("type") && (step as PauseType).type === PauseValueType) {
+            setTimeout(() => {
+                GameWindowManager.nextTickerStep(tag)
+            }, step.duration);
+            return
+        }
+        let ticker = GameWindowManager.geTickerInstance<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
+        if (!ticker) {
+            console.error(`Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
+            return
+        }
+        GameWindowManager.addTicker(tag, ticker)
+    }
+    private static nextTickerStep(childTag: string | string[]) {
+        if (typeof childTag === "string") {
+            childTag = [childTag]
+        }
+        childTag.forEach((tag) => {
+            if (GameWindowManager.currentTickersSteps[tag]) {
+                let steps = GameWindowManager.currentTickersSteps[tag]
+                let currentStepNumber = steps.currentStepNumber
+                if (currentStepNumber + 1 < steps.steps.length) {
+                    steps.currentStepNumber++
+                    GameWindowManager.currentTickersSteps[tag] = steps
+                    GameWindowManager.runTickersSteps(tag, steps.steps[steps.currentStepNumber])
+                }
+                else {
+                    delete GameWindowManager.currentTickersSteps[tag]
+                }
+            }
+        })
+    }
     /**
      * Remove a connection between a child and a ticker.
      * And remove the ticker if there is no child connected to it.
      * @param childTag The tag of the child that will use the ticker.
      * @param ticker The ticker class to be removed.
      */
-    public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerClass<any>) {
+    public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerClass<any> | TickerClass<any>) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerClass) {
             tickerName = ticker.constructor.name
@@ -320,17 +398,17 @@ export class GameWindowManager {
     }
     /**
      * Get a ticker instance by the class name.
-     * @param labelName The name of the class.
+     * @param tickerName The name of the class.
      * @returns The ticker instance.
      */
-    private static geTickerByClassName<TArgs extends TickerArgsType>(labelName: TickerTagType): TickerClass<TArgs> | undefined {
+    private static geTickerInstance<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerClass<TArgs> | undefined {
         try {
-            let ticker = GameWindowManager.registeredTicker[labelName]
+            let ticker = GameWindowManager.registeredTicker[tickerName]
             if (!ticker) {
-                console.error(`Ticker ${labelName} not found`)
+                console.error(`Ticker ${tickerName} not found`)
                 return
             }
-            return new ticker()
+            return new ticker(args, duration, priority)
         }
         catch (e) {
             console.error(e)
