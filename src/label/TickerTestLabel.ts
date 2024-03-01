@@ -101,6 +101,7 @@ export class TickerTestLabel extends Label {
                     new RotateTicker({ speed: 0.2, clockwise: false }, 2000),
                     Repeat,
                 ])
+                setDialogue(`I have added a image with a tag ${alien2Tag} and I connected a RotateTicker with a speed of 0.1 and a duration of 2000ms and then I connected a RotateTicker with a speed of 0.2 and a duration of 2000ms to it. After 500ms, the RotateTicker will be repeated.`)
             }
         ]
     }

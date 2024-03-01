@@ -17,7 +17,7 @@ export class RotateTicker extends TickerClass<{ speed?: number, clockwise?: bool
      */
     override fn(delta: number, args: { speed?: number, clockwise?: boolean }, childTags: string[]): void {
         let speed = args.speed || 0.1
-        let clockwise = args.clockwise || true
+        let clockwise = args.clockwise === undefined ? true : args.clockwise
         childTags.forEach((tag) => {
             let element = GameWindowManager.getChild(tag)
             if (element && element instanceof CanvasSprite) {
