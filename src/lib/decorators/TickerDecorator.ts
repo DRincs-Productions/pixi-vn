@@ -1,4 +1,4 @@
-import { TickerClass } from "../classes/ticker/TickerClass"
+import { TickerBase } from "../classes/ticker/TickerBase"
 import { GameWindowManager } from "../managers/WindowManager"
 import { TickerTagType } from "../types/TickerTagType"
 
@@ -10,7 +10,7 @@ import { TickerTagType } from "../types/TickerTagType"
  * @returns 
  */
 export function tickerDecorator(name?: TickerTagType) {
-    return function (target: typeof TickerClass<any>) {
+    return function (target: typeof TickerBase<any>) {
         if (!name) {
             name = target.name
         }

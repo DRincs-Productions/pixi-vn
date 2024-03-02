@@ -1,4 +1,4 @@
-import { TickerArgsType } from "../classes/ticker/TickerClass"
+import { TickerArgsType } from "../classes/ticker/TickerBase"
 import { PauseType } from "../types/PauseType"
 import { RepeatType } from "../types/RepeatType"
 import { ITicker } from "./ITicker"

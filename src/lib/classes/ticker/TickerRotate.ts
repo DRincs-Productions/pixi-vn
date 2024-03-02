@@ -1,21 +1,33 @@
 import { tickerDecorator } from "../../decorators/TickerDecorator";
+import { updateTickerProgression } from "../../functions/TickerUtility";
+import { TickerProgrationType } from "../../interface/ITickerProgration";
 import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasSprite } from "../canvas/CanvasSprite";
-import { TickerClass } from "./TickerClass";
+import { TickerBase } from "./TickerBase";
 
 /**
  * A ticker that rotates the children of the canvas.
  */
 @tickerDecorator()
-export class RotateTicker extends TickerClass<{ speed?: number, clockwise?: boolean }> {
+export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, }> {
     /**
      * The method that will be called every frame to rotate the children of the canvas.
      * @param delta The delta time
      * @param args The arguments that are passed to the ticker
      * - speed: The speed of the rotation, default is 0.1
+     * - clockwise: The direction of the rotation, default is true
+     * - speedProgression: The progression of the speed
      * @param childTags The tags of the children that are connected to this ticker
      */
-    override fn(delta: number, args: { speed?: number, clockwise?: boolean }, childTags: string[]): void {
+    override fn(
+        delta: number,
+        args: {
+            speed?: number,
+            clockwise?: boolean,
+            speedProgression?: TickerProgrationType,
+        },
+        childTags: string[]
+    ): void {
         let speed = args.speed || 0.1
         let clockwise = args.clockwise === undefined ? true : args.clockwise
         childTags.forEach((tag) => {
@@ -27,5 +39,7 @@ export class RotateTicker extends TickerClass<{ speed?: number, clockwise?: bool
                     element.rotation -= speed * delta;
             }
         })
+        if (args.speedProgression)
+            updateTickerProgression(args, "speed", args.speedProgression)
     }
 }

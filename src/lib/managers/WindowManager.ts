@@ -1,7 +1,7 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
 import { CanvasEvent } from "../classes/CanvasEvent";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
-import { TickerArgsType, TickerClass } from "../classes/ticker/TickerClass";
+import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
@@ -224,7 +224,7 @@ export class GameWindowManager {
     /**
      * A dictionary that contains all tickers registered and avvailable to be used.
      */
-    static registeredTicker: { [name: TickerTagType]: typeof TickerClass } = {}
+    static registeredTicker: { [name: TickerTagType]: typeof TickerBase } = {}
     /**
      * Currently tickers that are running.
      */
@@ -242,7 +242,7 @@ export class GameWindowManager {
      * @param priority The priority to be used in the ticker.
      * @returns 
      */
-    static addTicker<TArgs extends TickerArgsType>(childTags: string | string[], ticker: TickerClass<TArgs>) {
+    static addTicker<TArgs extends TickerArgsType>(childTags: string | string[], ticker: TickerBase<TArgs>) {
         let tickerName: TickerTagType = ticker.constructor.name
         if (typeof childTags === "string") {
             childTags = [childTags]
@@ -269,7 +269,7 @@ export class GameWindowManager {
             }, ticker.duration);
         }
     }
-    private static pushOrReplaceTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerClass<TArgs>) {
+    private static pushOrReplaceTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerBase<TArgs>) {
         let index = GameWindowManager.currentTickers.findIndex((t) =>
             t.className === ticker.className &&
             t.priority === ticker.priority &&
@@ -363,9 +363,9 @@ export class GameWindowManager {
      * @param childTag The tag of the child that will use the ticker.
      * @param ticker The ticker class to be removed.
      */
-    public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerClass<any> | TickerClass<any>) {
+    public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
         let tickerName: TickerTagType
-        if (ticker instanceof TickerClass) {
+        if (ticker instanceof TickerBase) {
             tickerName = ticker.constructor.name
         }
         else {
@@ -404,7 +404,7 @@ export class GameWindowManager {
      * @param tickerName The name of the class.
      * @returns The ticker instance.
      */
-    private static geTickerInstance<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerClass<TArgs> | undefined {
+    private static geTickerInstance<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
         try {
             let ticker = GameWindowManager.registeredTicker[tickerName]
             if (!ticker) {
