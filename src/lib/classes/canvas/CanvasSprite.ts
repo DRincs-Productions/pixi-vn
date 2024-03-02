@@ -94,6 +94,7 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
                 (instance as CanvasEvent<typeof this>).fn(event, this)
             })
         }
+        return this
     }
     static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
         let sprite = Sprite.from(source, options)

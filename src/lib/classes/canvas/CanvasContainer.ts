@@ -24,6 +24,8 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
             rotation: this.rotation,
             pivot: { x: this.pivot.x, y: this.pivot.y },
             scale: { x: this.scale.x, y: this.scale.y },
+            width: this.width,
+            height: this.height,
         }
     }
     set memoryContainer(value: ICanvasContainerMemory) {
@@ -32,6 +34,20 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
         this.rotation = value.rotation
         this.pivot = value.pivot
         this.scale.set(value.scale.x, value.scale.y)
+        this.width = value.width
+        this.height = value.height
+    }
+    get width() {
+        return this.pixiElement.width
+    }
+    set width(value: number) {
+        this.pixiElement.width = value
+    }
+    get height() {
+        return this.pixiElement.height
+    }
+    set height(value: number) {
+        this.pixiElement.height = value
     }
 }
 
