@@ -49,4 +49,10 @@ export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBase
     set scale(value: ObservablePoint) {
         this.pixiElement.scale = value
     }
+    get alpha() {
+        return this.pixiElement.alpha
+    }
+    set alpha(value: number) {
+        this.pixiElement.alpha = value
+    }
 }

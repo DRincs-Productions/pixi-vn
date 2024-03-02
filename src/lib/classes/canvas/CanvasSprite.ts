@@ -102,6 +102,12 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
         mySprite.pixiElement = sprite
         return mySprite
     }
+    get texture() {
+        return this.pixiElement.texture
+    }
+    set texture(value: Texture) {
+        this.pixiElement.texture = value
+    }
 }
 
 /**

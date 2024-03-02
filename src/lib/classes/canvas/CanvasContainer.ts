@@ -26,6 +26,7 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
             scale: { x: this.scale.x, y: this.scale.y },
             width: this.width,
             height: this.height,
+            alpha: this.alpha,
         }
     }
     set memoryContainer(value: ICanvasContainerMemory) {
@@ -36,6 +37,7 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
         this.scale.set(value.scale.x, value.scale.y)
         this.width = value.width
         this.height = value.height
+        this.alpha = value.alpha
     }
     get width() {
         return this.pixiElement.width
