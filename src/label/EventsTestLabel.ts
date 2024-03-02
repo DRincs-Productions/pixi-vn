@@ -1,3 +1,4 @@
+import { Texture } from "pixi.js";
 import { CanvasEvent } from "../lib/classes/CanvasEvent";
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from '../lib/classes/canvas/CanvasSprite';
@@ -13,6 +14,42 @@ export class EventTest extends CanvasEvent<CanvasSprite> {
         if (event === 'pointerdown') {
             sprite.scale.x *= 1.25;
             sprite.scale.y *= 1.25;
+        }
+    }
+}
+@eventDecorator()
+export class EventTest2 extends CanvasEvent<CanvasSprite> {
+    textureButtonDown = Texture.from('https://pixijs.com/assets/button_down.png');
+    textureButtonOver = Texture.from('https://pixijs.com/assets/button_over.png');
+    textureButton = Texture.from('https://pixijs.com/assets/button.png');
+    override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
+        if (event === 'pointerdown') {
+            (sprite as any).isdown = true;
+            sprite.texture = this.textureButtonDown;
+            sprite.alpha = 1;
+        }
+        else if (event === 'pointerup' || event === 'pointerupoutside') {
+            (sprite as any).isdown = false;
+            if ((sprite as any).isOver) {
+                sprite.texture = this.textureButtonOver;
+            }
+            else {
+                sprite.texture = this.textureButton;
+            }
+        }
+        else if (event === 'pointerover') {
+            (sprite as any).isOver = true;
+            if ((sprite as any).isdown) {
+                return;
+            }
+            sprite.texture = this.textureButtonOver;
+        }
+        else if (event === 'pointerout') {
+            (sprite as any).isOver = false;
+            if ((sprite as any).isdown) {
+                return;
+            }
+            sprite.texture = this.textureButton;
         }
     }
 }
@@ -47,6 +84,65 @@ export class EventsTestLabel extends Label {
 
                 GameWindowManager.addChild("bunny", sprite);
             },
+            () => {
+                GameWindowManager.clear();
+                // create a background...
+                const background = CanvasSprite.from('https://pixijs.com/assets/bg_button.jpg');
+
+                background.width = GameWindowManager.screen.width;
+                background.height = GameWindowManager.screen.height;
+
+                // add background to stage...
+                GameWindowManager.addChild("bg", background);
+
+                // create some textures from an image path
+                const textureButton = Texture.from('https://pixijs.com/assets/button.png');
+
+                const buttons = [];
+
+                const buttonPositions = [
+                    175, 75,
+                    655, 75,
+                    410, 325,
+                    150, 465,
+                    685, 445,
+                ];
+
+                for (let i = 0; i < 5; i++) {
+                    const button = new CanvasSprite(textureButton);
+
+                    button.anchor.set(0.5);
+                    button.x = buttonPositions[i * 2];
+                    button.y = buttonPositions[i * 2 + 1];
+
+                    // make the button interactive...
+                    button.eventMode = 'static';
+                    button.cursor = 'pointer';
+
+                    button
+                        // Mouse & touch events are normalized into
+                        // the pointer* events for handling different
+                        // button events.
+                        .on('pointerdown', EventTest2)
+                        .on('pointerup', EventTest2)
+                        .on('pointerupoutside', EventTest2)
+                        .on('pointerover', EventTest2)
+                        .on('pointerout', EventTest2);
+
+                    // add it to the stage
+                    GameWindowManager.addChild("button" + i, button);
+
+                    // add button to array
+                    buttons.push(button);
+                }
+
+                // set some silly values...
+                buttons[0].scale.set(1.2);
+                buttons[2].rotation = Math.PI / 10;
+                buttons[3].scale.set(0.8);
+                buttons[4].scale.set(0.8, 1.2);
+                buttons[4].rotation = Math.PI;
+            }
         ]
     }
 }
