@@ -2,13 +2,13 @@ import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { TickerProgrationType } from "../../interface/ITickerProgration";
 import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasSprite } from "../canvas/CanvasSprite";
-import { TickerClass } from "./TickerClass";
+import { TickerBase } from "./TickerBase";
 
 /**
  * A ticker that rotates the children of the canvas.
  */
 @tickerDecorator()
-export class RotateTicker extends TickerClass<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, }> {
+export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, }> {
     /**
      * The method that will be called every frame to rotate the children of the canvas.
      * @param delta The delta time

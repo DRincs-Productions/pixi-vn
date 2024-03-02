@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { TickerArgsType } from "../classes/ticker/TickerClass";
+import { TickerArgsType } from "../classes/ticker/TickerBase";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**

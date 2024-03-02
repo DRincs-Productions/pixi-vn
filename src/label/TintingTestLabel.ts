@@ -1,7 +1,7 @@
 import { IBaseTextureOptions, Rectangle, Sprite, SpriteSource } from "pixi.js";
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
-import { TickerClass } from "../lib/classes/ticker/TickerClass";
+import { TickerBase } from "../lib/classes/ticker/TickerBase";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { GameWindowManager } from "../lib/managers/WindowManager";
@@ -20,7 +20,7 @@ class AlienTintingTest extends CanvasSprite {
 }
 
 @tickerDecorator()
-export class TintingTestTicker extends TickerClass<{}> {
+export class TintingTestTicker extends TickerBase<{}> {
     constructor() {
         super({})
     }

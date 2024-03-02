@@ -10,7 +10,7 @@ export type TickerArgsType = { [tag: string]: StorageElementType }
  * This class should be extended and the fn method should be overridden.
  * In Ren'Py is a transform.
  */
-export class TickerClass<TArgs extends TickerArgsType> implements ITicker<TArgs> {
+export class TickerBase<TArgs extends TickerArgsType> implements ITicker<TArgs> {
     constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
         this.args = args
         this.duration = duration
