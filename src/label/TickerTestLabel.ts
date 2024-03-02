@@ -12,6 +12,7 @@ import { StepLabelType } from "../lib/types/StepLabelType";
 const alien1Tag = "alien1"
 const alien2Tag = "alien2"
 const alien3Tag = "alien3"
+const alien4Tag = "alien4"
 
 @labelDecorator()
 export class TickerTestLabel extends Label {
@@ -102,7 +103,23 @@ export class TickerTestLabel extends Label {
                     Repeat,
                 ])
                 setDialogue(`I have added a image with a tag ${alien2Tag} and I connected a RotateTicker with a speed of 0.1 and a duration of 2000ms and then I connected a RotateTicker with a speed of 0.2 and a duration of 2000ms to it. After 500ms, the RotateTicker will be repeated.`)
-            }
+            },
+            () => {
+                const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
+
+                alien.anchor.set(0.5);
+
+                GameWindowManager.addChild(alien4Tag, alien);
+                alien.x = 700
+                alien.y = 100
+                let speed = 0
+                let speedLimit = 0.5
+                let amt = 0.001
+
+                GameWindowManager.addTicker(alien4Tag, new RotateTicker({ speed: speed, speedProgression: { type: "linear", amt: amt, limit: speedLimit } }))
+
+                setDialogue(`I have added a image with a tag ${alien4Tag} and I connected a RotateTicker with a speed of ${speed} and a linear speed progression of ${amt} and a limit of ${speedLimit} to it.`)
+            },
         ]
     }
 }
