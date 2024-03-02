@@ -46,6 +46,7 @@ export default function DialogueInterface() {
                     position: "absolute",
                     top: -5,
                     width: "100%",
+                    pointerEvents: "auto",
                 }}
                 onMouseDown={(e) => resizeWindowsHandler(e, windowSize, setWindowSize)}
             />}
