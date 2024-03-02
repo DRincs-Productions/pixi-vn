@@ -1,4 +1,5 @@
 import { tickerDecorator } from "../../decorators/TickerDecorator";
+import { updateTickerProgression } from "../../functions/TickerUtility";
 import { TickerProgrationType } from "../../interface/ITickerProgration";
 import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasSprite } from "../canvas/CanvasSprite";
@@ -38,32 +39,7 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
                     element.rotation -= speed * delta;
             }
         })
-        if (args.speed !== undefined
-            && args.speedProgression
-            && args.speed !== args.speedProgression.limit
-        ) {
-            if (args.speedProgression.type === "linear") {
-                args.speed += args.speedProgression.amt
-                if (args.speedProgression.limit !== undefined) {
-                    if (args.speed > args.speedProgression.limit && args.speedProgression.amt > 0) {
-                        args.speed = args.speedProgression.limit
-                    }
-                    else if (args.speed < args.speedProgression.limit && args.speedProgression.amt < 0) {
-                        args.speed = args.speedProgression.limit
-                    }
-                }
-            }
-            else if (args.speedProgression.type === "exponential") {
-                args.speed += args.speed * args.speedProgression.percentage
-                if (args.speedProgression.limit !== undefined) {
-                    if (args.speed > args.speedProgression.limit && args.speedProgression.percentage > 0) {
-                        args.speed = args.speedProgression.limit
-                    }
-                    else if (args.speed < args.speedProgression.limit && args.speedProgression.percentage < 0) {
-                        args.speed = args.speedProgression.limit
-                    }
-                }
-            }
-        }
+        if (args.speedProgression)
+            updateTickerProgression(args, "speed", args.speedProgression)
     }
 }
