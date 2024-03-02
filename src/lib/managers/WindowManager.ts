@@ -1,4 +1,5 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
+import { CanvasEvent } from "../classes/CanvasEvent";
 import { TickerArgsType, TickerClass } from "../classes/TickerClass";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
@@ -6,6 +7,7 @@ import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
+import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
 import { TickerTagType } from "../types/TickerTagType";
@@ -74,6 +76,7 @@ export class GameWindowManager {
     public static initializeHTMLLayout(element: HTMLElement) {
         let div = document.createElement('div')
         div.style.position = 'absolute'
+        div.style.pointerEvents = 'none'
         element.appendChild(div)
         GameWindowManager.htmlLayout = div
         GameWindowManager.resize()
@@ -423,6 +426,30 @@ export class GameWindowManager {
             GameWindowManager.app.ticker.remove(t.fn)
         })
         GameWindowManager.currentTickers = []
+    }
+
+    /**
+     * Canvas Event Register
+     */
+    static registeredEvent: { [name: EventTagType]: typeof CanvasEvent } = {}
+    /**
+     * Get a event by the class name.
+     * @param labelName The name of the class.
+     * @returns The event instance.
+     */
+    static getEventByClassName<T extends CanvasEvent<any>>(labelName: EventTagType): T | undefined {
+        try {
+            let event = GameWindowManager.registeredEvent[labelName]
+            if (!event) {
+                console.error(`Event ${labelName} not found`)
+                return
+            }
+            return new event() as T
+        }
+        catch (e) {
+            console.error(e)
+            return
+        }
     }
 
     /**

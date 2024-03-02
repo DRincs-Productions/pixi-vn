@@ -1,9 +1,6 @@
 import { Text } from "pixi.js";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
-import { CanvasSpriteBase, ICanvasSprite } from "./CanvasSprite";
-
-export interface ICanvasText extends ICanvasSprite {
-}
+import { CanvasSpriteBase } from "./CanvasSprite";
 
 /**
  * This class is responsible for storing a PIXI Text.

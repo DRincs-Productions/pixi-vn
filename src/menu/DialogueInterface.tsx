@@ -54,7 +54,8 @@ export default function DialogueInterface() {
                 sx={{
                     overflow: 'auto',
                     height: windowSize.y,
-                    gap: 1
+                    gap: 1,
+                    pointerEvents: "auto",
                 }}
             >
                 <AspectRatio
@@ -118,6 +119,7 @@ export default function DialogueInterface() {
                     width: { xs: 70, sm: 100, md: 150 },
                     border: 3,
                     zIndex: 100,
+                    pointerEvents: "auto",
                 }}
                 onClick={() => {
                     setLoading(true)
