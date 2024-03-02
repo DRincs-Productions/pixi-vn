@@ -195,7 +195,7 @@ export class GameWindowManager {
     public static removeChildren() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager.children = {}
-        GameWindowManager.removeTickersWithoutConnectedChild()
+        GameWindowManager.removeTickers()
     }
     /**
      * Add a temporary child to the canvas.
@@ -422,7 +422,8 @@ export class GameWindowManager {
      * Remove all tickers from the canvas.
      */
     public static removeTickers() {
-        GameWindowManager.currentTickers.forEach((t) => {
+        GameWindowManager.currentTickersSteps = {}
+        GameWindowManager.currentTickers.map((t) => {
             GameWindowManager.app.ticker.remove(t.fn)
         })
         GameWindowManager.currentTickers = []

@@ -127,14 +127,13 @@ export class TickerTestLabel extends Label {
                 GameWindowManager.addTickersSteps(alien2Tag,
                     [
                         new TickerFadeAlpha({
-                            speed: 0.02,
+                            speed: 0.01,
                             type: "hide",
-                            limit: 0.1,
-                        }, 2000),
+                        }, 3000),
                         new TickerFadeAlpha({
-                            speed: 0.02,
+                            speed: 0.01,
                             type: "show"
-                        }, 2000),
+                        }, 3000),
                         Repeat,
                     ]
                 )
