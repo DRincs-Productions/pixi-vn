@@ -76,6 +76,7 @@ export class GameWindowManager {
     public static initializeHTMLLayout(element: HTMLElement) {
         let div = document.createElement('div')
         div.style.position = 'absolute'
+        div.style.pointerEvents = 'none'
         element.appendChild(div)
         GameWindowManager.htmlLayout = div
         GameWindowManager.resize()

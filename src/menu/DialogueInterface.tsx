@@ -118,6 +118,7 @@ export default function DialogueInterface() {
                     width: { xs: 70, sm: 100, md: 150 },
                     border: 3,
                     zIndex: 100,
+                    pointerEvents: "auto",
                 }}
                 onClick={() => {
                     setLoading(true)

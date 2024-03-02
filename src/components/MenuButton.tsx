@@ -16,6 +16,7 @@ export default function MenuButton(props: IProps) {
             size="sm"
             sx={{
                 fontSize: { xs: "0.75rem", sm: "0.75rem", md: "1rem", lg: "1.25rem", xl: "1.5rem" },
+                pointerEvents: "auto",
                 ...sx
             }}
             {...rest}
