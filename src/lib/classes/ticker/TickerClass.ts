@@ -1,6 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { ITicker } from "../interface/ITicker"
-import { StorageElementType } from "../types/StorageElementType"
+import { ITicker } from "../../interface/ITicker"
+import { StorageElementType } from "../../types/StorageElementType"
 
 export type TickerArgsType = { [tag: string]: StorageElementType }
 

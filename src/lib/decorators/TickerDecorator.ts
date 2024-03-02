@@ -1,4 +1,4 @@
-import { TickerClass } from "../classes/TickerClass"
+import { TickerClass } from "../classes/ticker/TickerClass"
 import { GameWindowManager } from "../managers/WindowManager"
 import { TickerTagType } from "../types/TickerTagType"
 

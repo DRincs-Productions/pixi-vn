@@ -1,7 +1,7 @@
 import { IBaseTextureOptions, Rectangle, Sprite, SpriteSource } from "pixi.js";
 import { Label } from "../lib/classes/Label";
-import { TickerClass } from "../lib/classes/TickerClass";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
+import { TickerClass } from "../lib/classes/ticker/TickerClass";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { tickerDecorator } from "../lib/decorators/TickerDecorator";
 import { GameWindowManager } from "../lib/managers/WindowManager";

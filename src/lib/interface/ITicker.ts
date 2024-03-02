@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { TickerArgsType } from "../classes/TickerClass";
+import { TickerArgsType } from "../classes/ticker/TickerClass";
 
 export interface ITicker<TArgs extends TickerArgsType> {
     /**

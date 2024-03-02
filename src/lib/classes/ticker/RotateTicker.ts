@@ -1,7 +1,7 @@
 import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { GameWindowManager } from "../../managers/WindowManager";
-import { TickerClass } from "../TickerClass";
 import { CanvasSprite } from "../canvas/CanvasSprite";
+import { TickerClass } from "./TickerClass";
 
 /**
  * A ticker that rotates the children of the canvas.

@@ -1,7 +1,7 @@
 import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
 import { CanvasEvent } from "../classes/CanvasEvent";
-import { TickerArgsType, TickerClass } from "../classes/TickerClass";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
+import { TickerArgsType, TickerClass } from "../classes/ticker/TickerClass";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
