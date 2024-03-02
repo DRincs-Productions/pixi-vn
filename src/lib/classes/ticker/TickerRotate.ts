@@ -28,7 +28,7 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
         },
         childTags: string[]
     ): void {
-        let speed = args.speed || 0.1
+        let speed = args.speed === undefined ? 0.1 : args.speed
         let clockwise = args.clockwise === undefined ? true : args.clockwise
         childTags.forEach((tag) => {
             let element = GameWindowManager.getChild(tag)

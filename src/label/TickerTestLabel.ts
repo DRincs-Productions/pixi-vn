@@ -1,5 +1,6 @@
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
+import { TickerFadeAlpha } from "../lib/classes/ticker/TickerAlpha";
 import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { setDialogue } from "../lib/functions/DialogueUtility";
@@ -117,6 +118,26 @@ export class TickerTestLabel extends Label {
                 let amt = 0.001
 
                 GameWindowManager.addTicker(alien4Tag, new TickerRotate({ speed: speed, speedProgression: { type: "linear", amt: amt, limit: speedLimit } }))
+                // GameWindowManager.addTicker(alien1Tag,
+                //     new TickerAlpha({
+                //         alpha: 1,
+                //         alphaProgression: { type: "linear", amt: -0.01, limit: 0 }
+                //     })
+                // )
+                GameWindowManager.addTickersSteps(alien2Tag,
+                    [
+                        new TickerFadeAlpha({
+                            speed: 0.02,
+                            type: "hide",
+                            limit: 0.1,
+                        }, 2000),
+                        new TickerFadeAlpha({
+                            speed: 0.02,
+                            type: "show"
+                        }, 2000),
+                        Repeat,
+                    ]
+                )
 
                 setDialogue(`I have added a image with a tag ${alien4Tag} and I connected a RotateTicker with a speed of ${speed} and a linear speed progression of ${amt} and a limit of ${speedLimit} to it.`)
             },
