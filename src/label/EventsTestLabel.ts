@@ -4,6 +4,7 @@ import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from '../lib/classes/canvas/CanvasSprite';
 import { eventDecorator } from "../lib/decorators/EventDecorator";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
+import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
 import { GameWindowManager } from '../lib/managers/WindowManager';
 import { CanvasEventNamesType } from "../lib/types/CanvasEventNamesType";
 import { StepLabelType } from "../lib/types/StepLabelType";
@@ -83,8 +84,13 @@ export class EventsTestLabel extends Label {
                 // sprite.on('tap', onClick); // touch-only
 
                 GameWindowManager.addChild("bunny", sprite);
+
+                setDialogue("This is the test of clickable elements in a canvas. To make it possible to save the added events in a canvas element, use CanvasEvents.");
             },
+            () => setDialogue("To make the events in the canvas work. by default all elements in the gliaphic html interface are: pointerEvents = 'none'. to enable clicking on html elements, you will need to add the css pointerEvents = 'auto'"),
+            () => setDialogue("For performance reasons it is better to add the buttons in the html interface and not in the canvas."),
             () => {
+                clearDialogue();
                 GameWindowManager.clear();
                 // create a background...
                 const background = CanvasSprite.from('https://pixijs.com/assets/bg_button.jpg');
