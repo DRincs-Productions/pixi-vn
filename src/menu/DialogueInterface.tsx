@@ -54,7 +54,8 @@ export default function DialogueInterface() {
                 sx={{
                     overflow: 'auto',
                     height: windowSize.y,
-                    gap: 1
+                    gap: 1,
+                    pointerEvents: "auto",
                 }}
             >
                 <AspectRatio
