@@ -319,7 +319,7 @@ export class GameWindowManager {
     private static runTickersSteps<TArgs extends TickerArgsType>(tag: string, step: ITickersStep<TArgs> | RepeatType | PauseType) {
         if (step === Repeat) {
             step = GameWindowManager.currentTickersSteps[tag].steps[0]
-            GameWindowManager.currentTickersSteps[tag].currentStepNumber = 0
+            GameWindowManager.currentTickersSteps[tag].currentStepNumber = -1
             if (step === Repeat) {
                 console.error("TikersSteps has a RepeatType in the first step")
                 return
