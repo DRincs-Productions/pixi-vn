@@ -41,8 +41,11 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
                 if (type === "show" && element.alpha < limit) {
                     element.alpha += speed * delta
                 }
-                if (type === "hide" && element.alpha > limit) {
+                else if (type === "hide" && element.alpha > limit) {
                     element.alpha -= speed * delta
+                }
+                else {
+                    GameWindowManager.removeTickerConnectedToChild(tag, this)
                 }
             }
         })

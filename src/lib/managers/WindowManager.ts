@@ -385,19 +385,22 @@ export class GameWindowManager {
     /**
      * Remove all tickers that are not connected to any existing child.
      */
-    public static removeTickersWithoutConnectedChild() {
+    private static removeTickersWithoutConnectedChild() {
         let currentTickers = GameWindowManager.currentTickers
             .map((t) => {
                 t.childTags = t.childTags.filter((e) => GameWindowManager.children[e])
                 return t
             })
-            .filter((t) => t.childTags.length > 0)
-        GameWindowManager.currentTickers
-            .filter((t) => !currentTickers.includes(t))
-            .forEach((t) => {
-                GameWindowManager.app.ticker.remove(t.fn)
-            })
+        currentTickers.filter((t) => t.childTags.length === 0).forEach((t) => {
+            GameWindowManager.app.ticker.remove(t.fn)
+        })
+        currentTickers = currentTickers.filter((t) => t.childTags.length > 0)
         GameWindowManager.currentTickers = currentTickers
+        for (let tag in GameWindowManager.currentTickersSteps) {
+            if (GameWindowManager.children[tag] === undefined) {
+                delete GameWindowManager.currentTickersSteps[tag]
+            }
+        }
     }
     /**
      * Get a ticker instance by the class name.
