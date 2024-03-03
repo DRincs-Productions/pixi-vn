@@ -178,7 +178,7 @@ export class GameWindowManager {
         }
         GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag].pixiElement)
         delete GameWindowManager.children[tag]
-        GameWindowManager.removeTickersWithoutConnectedChild()
+        GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**
      * Get a child from the canvas.
@@ -252,7 +252,7 @@ export class GameWindowManager {
             console.error(`Ticker ${tickerName} not found`)
             return
         }
-        GameWindowManager.removeTickerConnectedToChild(childTags, ticker)
+        GameWindowManager.removeAssociationBetweenTickerChild(childTags, ticker)
         let tickerHistory: IClassWithArgsHistory<TArgs> = {
             fn: () => { },
             className: tickerName,
@@ -261,10 +261,9 @@ export class GameWindowManager {
             priority: ticker.priority
         }
         GameWindowManager.pushOrReplaceTicker(tickerHistory, t)
-        GameWindowManager.removeTickersWithoutConnectedChild()
+        GameWindowManager.removeTickersWithoutAssociatedChild()
         if (ticker.duration) {
             setTimeout(() => {
-                GameWindowManager.removeTickerConnectedToChild(childTags, ticker)
                 GameWindowManager.nextTickerStep(childTags)
             }, ticker.duration);
         }
@@ -288,7 +287,13 @@ export class GameWindowManager {
         }
         GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
     }
-    public static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
+    /**
+     * Run a sequence of tickers.
+     * @param tag The tag of child that will use the tickers.
+     * @param steps The steps of the tickers.
+     * @returns
+     */
+    static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
         if (steps.length == 0) {
             console.error("Steps is empty")
             return
@@ -314,12 +319,13 @@ export class GameWindowManager {
                 }
             })
         }
-        GameWindowManager.runTickersSteps(tag, GameWindowManager.currentTickersSteps[tag].steps[0])
+        GameWindowManager.runTickersSteps(tag)
     }
-    private static runTickersSteps<TArgs extends TickerArgsType>(tag: string, step: ITickersStep<TArgs> | RepeatType | PauseType) {
+    private static runTickersSteps<TArgs extends TickerArgsType>(tag: string) {
+        let step = GameWindowManager.currentTickersSteps[tag].steps[GameWindowManager.currentTickersSteps[tag].currentStepNumber]
         if (step === Repeat) {
             step = GameWindowManager.currentTickersSteps[tag].steps[0]
-            GameWindowManager.currentTickersSteps[tag].currentStepNumber = -1
+            GameWindowManager.currentTickersSteps[tag].currentStepNumber = 0
             if (step === Repeat) {
                 console.error("TikersSteps has a RepeatType in the first step")
                 return
@@ -345,11 +351,10 @@ export class GameWindowManager {
         childTag.forEach((tag) => {
             if (GameWindowManager.currentTickersSteps[tag]) {
                 let steps = GameWindowManager.currentTickersSteps[tag]
-                let currentStepNumber = steps.currentStepNumber
-                if (currentStepNumber + 1 < steps.steps.length) {
+                if (steps.currentStepNumber + 1 < steps.steps.length) {
                     steps.currentStepNumber++
                     GameWindowManager.currentTickersSteps[tag] = steps
-                    GameWindowManager.runTickersSteps(tag, steps.steps[steps.currentStepNumber])
+                    GameWindowManager.runTickersSteps(tag)
                 }
                 else {
                     delete GameWindowManager.currentTickersSteps[tag]
@@ -363,7 +368,7 @@ export class GameWindowManager {
      * @param childTag The tag of the child that will use the ticker.
      * @param ticker The ticker class to be removed.
      */
-    public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
+    public static removeAssociationBetweenTickerChild(childTag: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerBase) {
             tickerName = ticker.constructor.name
@@ -380,12 +385,12 @@ export class GameWindowManager {
             }
             return t
         })
-        GameWindowManager.removeTickersWithoutConnectedChild()
+        GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**
      * Remove all tickers that are not connected to any existing child.
      */
-    private static removeTickersWithoutConnectedChild() {
+    private static removeTickersWithoutAssociatedChild() {
         let currentTickers = GameWindowManager.currentTickers
             .map((t) => {
                 t.childTags = t.childTags.filter((e) => GameWindowManager.children[e])

@@ -57,7 +57,7 @@ export class TickerTestLabel extends Label {
             },
             () => setDialogue(`Since ${alien1Tag} is removed, the RotateTicker connected to it will not be performed`),
             () => {
-                GameWindowManager.removeTickerConnectedToChild(alien2Tag, TickerRotate)
+                GameWindowManager.removeAssociationBetweenTickerChild(alien2Tag, TickerRotate)
                 setDialogue(`I have removed the RotateTicker connected to ${alien2Tag}`)
             },
             () => {
