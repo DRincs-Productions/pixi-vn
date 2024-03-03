@@ -298,6 +298,7 @@ export class GameWindowManager {
             console.error("Steps is empty")
             return
         }
+        let alredyExists = GameWindowManager.currentTickersSteps[tag] !== undefined
         GameWindowManager.currentTickersSteps[tag] = {
             currentStepNumber: 0,
             steps: steps.map((s) => {
@@ -319,7 +320,9 @@ export class GameWindowManager {
                 }
             })
         }
-        GameWindowManager.runTickersSteps(tag)
+        if (!alredyExists) {
+            GameWindowManager.runTickersSteps(tag)
+        }
     }
     private static runTickersSteps<TArgs extends TickerArgsType>(tag: string) {
         let step = GameWindowManager.currentTickersSteps[tag].steps[GameWindowManager.currentTickersSteps[tag].currentStepNumber]
