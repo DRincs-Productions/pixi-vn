@@ -15,7 +15,7 @@ import { TickerBase } from "./TickerBase";
  * @param priority The priority of the ticker
  */
 @tickerDecorator()
-export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, }> {
+export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType }> {
     /**
      * The method that will be called every frame to rotate the children of the canvas.
      * @param delta The delta time

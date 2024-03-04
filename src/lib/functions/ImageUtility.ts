@@ -49,7 +49,7 @@ export async function showImageAsync(tag: string, imageUrl: string): Promise<voi
  * @param imageUrl is the url of the image.
  * @returns the image sprite, or a text with the error.
  */
-export function getImageSprite(imageUrl: string): CanvasSprite | CanvasText {
+export function getPixiImageSprite(imageUrl: string): CanvasSprite | CanvasText {
     let texture: Texture | undefined = undefined
     try {
         texture = Texture.from(imageUrl)
@@ -77,7 +77,7 @@ export function getImageSprite(imageUrl: string): CanvasSprite | CanvasText {
  * @param imageUrl is the url of the image.
  * @returns the image sprite, or a text with the error.
  */
-export async function getImageSpriteAsync(imageUrl: string): Promise<CanvasSprite | CanvasText> {
+export async function getPixiImageSpriteAsync(imageUrl: string): Promise<CanvasSprite | CanvasText> {
     return Assets.load(imageUrl)
         .then((texture) => {
             if (!texture) {

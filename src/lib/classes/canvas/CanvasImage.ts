@@ -1,8 +1,7 @@
 import { Sprite } from "pixi.js";
-import { getImageSprite, getImageSpriteAsync } from "../../functions/ImageUtility";
+import { getPixiImageSprite, getPixiImageSpriteAsync } from "../../functions/ImageUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
 import { CanvasContainerBase } from "./CanvasContainer";
-import { CanvasSprite } from "./CanvasSprite";
 
 /**
  * The base class for the image.
@@ -20,7 +19,7 @@ abstract class CanvasImageBase extends CanvasContainerBase<Sprite, ICanvasImageM
      * @param image is the url of the image.
      * @returns the sprite of the image.
      */
-    abstract updateImage(image: string): CanvasSprite | Promise<CanvasSprite>
+    abstract updateImage(image: string): void
     get memory(): ICanvasImageMemory {
         return {
             ...super.memoryContainer,
@@ -41,11 +40,9 @@ export class CanvasImage extends CanvasImageBase {
     get className(): string {
         return this.constructor.name
     }
-    updateImage(image: string): CanvasSprite {
+    updateImage(image: string) {
         this.imageLink = image
-        let element = getImageSprite(image)
-        this.addChild(element)
-        return element
+        this.pixiElement = getPixiImageSprite(image).pixiElement
     }
 }
 
@@ -56,16 +53,15 @@ export class CanvasImageAsync extends CanvasImageBase {
     get className(): string {
         return this.constructor.name
     }
-    async updateImage(image: string): Promise<CanvasSprite> {
+    async updateImage(image: string) {
         this.imageLink = image
-        return getImageSpriteAsync(image)
+        getPixiImageSpriteAsync(image)
             .then((element) => {
-                this.addChild(element)
-                return element
+                this.pixiElement = element.pixiElement
             })
             .catch(() => {
                 console.error("Error loading image")
-                return new CanvasSprite()
+                this.pixiElement = new Sprite()
             })
     }
 }

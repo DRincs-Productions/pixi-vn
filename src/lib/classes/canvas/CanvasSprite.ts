@@ -33,7 +33,7 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
         this.onEvents = value.onEvents
         for (let key in this.onEvents) {
             let event = this.onEvents[key]
-            let instance = GameWindowManager.getEventByClassName(event)
+            let instance = GameWindowManager.getEventInstanceByClassName(event)
             if (instance) {
                 this.pixiElement.on(key, () => {
                     (instance as CanvasEvent<typeof this>).fn(event, this)
@@ -87,7 +87,7 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
     onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
     on<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
-        let instance = GameWindowManager.getEventByClassName(className)
+        let instance = GameWindowManager.getEventInstanceByClassName(className)
         if (instance) {
             this.onEvents[event] = className
             this.pixiElement.on(event, () => {
