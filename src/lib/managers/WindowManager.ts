@@ -178,7 +178,7 @@ export class GameWindowManager {
         }
         GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag].pixiElement)
         delete GameWindowManager.children[tag]
-        GameWindowManager.removeTickersWithoutConnectedChild()
+        GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**
      * Get a child from the canvas.
@@ -262,7 +262,7 @@ export class GameWindowManager {
             priority: ticker.priority
         }
         GameWindowManager.pushTicker(tickerHistory, t)
-        GameWindowManager.removeTickersWithoutConnectedChild()
+        GameWindowManager.removeTickersWithoutAssociatedChild()
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
@@ -382,12 +382,12 @@ export class GameWindowManager {
                 GameWindowManager.currentTickersTimeouts[timeout].tags = t
             }
         }
-        GameWindowManager.removeTickersWithoutConnectedChild()
+        GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**
      * Remove all tickers that are not connected to any existing child.
      */
-    public static removeTickersWithoutConnectedChild() {
+    public static removeTickersWithoutAssociatedChild() {
         let currentTickers = GameWindowManager.currentTickers
             .map((t) => {
                 t.childTags = t.childTags.filter((e) => GameWindowManager.children[e])
