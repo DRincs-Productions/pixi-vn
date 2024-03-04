@@ -174,13 +174,16 @@ export class GameWindowManager {
      * @param tag The tag of the child to be removed.
      * @returns 
      */
-    public static removeChild(tag: string) {
-        if (!GameWindowManager._children[tag]) {
-            console.error("Child with tag not found")
-            return
+    public static removeChild(tag: string | string[]) {
+        if (typeof tag === "string") {
+            tag = [tag]
         }
-        GameWindowManager.app.stage.removeChild(GameWindowManager._children[tag].pixiElement)
-        delete GameWindowManager._children[tag]
+        tag.forEach((t) => {
+            if (GameWindowManager._children[t]) {
+                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t].pixiElement)
+                delete GameWindowManager._children[t]
+            }
+        })
         GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**

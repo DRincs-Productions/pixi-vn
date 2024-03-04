@@ -9,12 +9,12 @@ import { TickerBase } from "./TickerBase";
  * - speed: The speed of the fade
  * - type: The type of the fade, default is "hide"
  * - limit: The limit of the fade, default is 0 for hide and 1 for show
- * - removeChildAfter: If the child should be removed after the fade is done, default is false
+ * - tagToRemoveAfter?: The tag to remove after the fade is done
  * @param duration The duration of the ticker
  * @param priority The priority of the ticker
  */
 @tickerDecorator()
-export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number, removeChildAfter?: boolean }> {
+export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number, tagToRemoveAfter?: string[] | string }> {
     /**
      * The method that will be called every frame to fade the alpha of the children of the canvas.
      * @param delta The delta time
@@ -27,14 +27,17 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
             speed?: number,
             type?: "hide" | "show",
             limit?: number,
-            removeChildAfter?: boolean,
+            tagToRemoveAfter?: string[] | string
         },
         childTags: string[]
     ): void {
         let type = args.type === undefined ? "hide" : args.type
         let speed = args.speed === undefined ? 0.1 : args.speed
         let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
-        let removeChildAfter = args.removeChildAfter === undefined ? false : args.removeChildAfter
+        let removeChildAfter = args.tagToRemoveAfter || []
+        if (typeof removeChildAfter === "string") {
+            removeChildAfter = [removeChildAfter]
+        }
         if (type === "hide" && limit < 0) {
             limit = 0
         }
@@ -55,9 +58,7 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
                 else {
                     element.alpha = limit
                     GameWindowManager.removeAssociationBetweenTickerChild(tag, this)
-                    if (removeChildAfter) {
-                        GameWindowManager.removeChild(tag)
-                    }
+                    GameWindowManager.removeChild(tag)
                 }
             }
         })
