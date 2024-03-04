@@ -1,6 +1,6 @@
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
-import { TickerFadeAlpha } from "../lib/classes/ticker/TickerAlpha";
+import { TickerFadeAlpha } from "../lib/classes/ticker/TickerFadeAlpha";
 import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { setDialogue } from "../lib/functions/DialogueUtility";

@@ -5,6 +5,12 @@ import { TickerBase } from "./TickerBase";
 
 /**
  * A ticker that fades the alpha of the children of the canvas.
+ * @param args The arguments that are passed to the ticker
+ * - speed: The speed of the fade
+ * - type: The type of the fade, default is "hide"
+ * - limit: The limit of the fade, default is 0 for hide and 1 for show
+ * @param duration The duration of the ticker
+ * @param priority The priority of the ticker
  */
 @tickerDecorator()
 export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number }> {
@@ -12,9 +18,6 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
      * The method that will be called every frame to fade the alpha of the children of the canvas.
      * @param delta The delta time
      * @param args The arguments that are passed to the ticker
-     * - speed: The speed of the fade
-     * - type: The type of the fade, default is "hide"
-     * - limit: The limit of the fade, default is 0 for hide and 1 for show
      * @param childTags The tags of the children that are connected to this ticker
      */
     override fn(
@@ -22,7 +25,8 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
         args: {
             speed?: number,
             type?: "hide" | "show",
-            limit?: number
+            limit?: number,
+
         },
         childTags: string[]
     ): void {

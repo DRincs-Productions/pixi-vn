@@ -7,6 +7,12 @@ import { TickerBase } from "./TickerBase";
 
 /**
  * A ticker that rotates the children of the canvas.
+ * @param args The arguments that are passed to the ticker
+ * - speed: The speed of the rotation, default is 0.1
+ * - clockwise: The direction of the rotation, default is true
+ * - speedProgression: The progression of the speed
+ * @param duration The duration of the ticker
+ * @param priority The priority of the ticker
  */
 @tickerDecorator()
 export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, }> {
@@ -14,9 +20,6 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
      * The method that will be called every frame to rotate the children of the canvas.
      * @param delta The delta time
      * @param args The arguments that are passed to the ticker
-     * - speed: The speed of the rotation, default is 0.1
-     * - clockwise: The direction of the rotation, default is true
-     * - speedProgression: The progression of the speed
      * @param childTags The tags of the children that are connected to this ticker
      */
     override fn(
