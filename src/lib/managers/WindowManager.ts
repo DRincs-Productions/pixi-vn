@@ -171,7 +171,6 @@ export class GameWindowManager {
     /**
      * Remove a child from the canvas.
      * And remove all tickers that are not connected to any child.
-     * If have a tempPixiElement, it will be removed too.
      * @param tag The tag of the child to be removed.
      * @returns 
      */
@@ -181,7 +180,6 @@ export class GameWindowManager {
             return
         }
         GameWindowManager.app.stage.removeChild(GameWindowManager._children[tag].pixiElement)
-        GameWindowManager.removeChildTemporary(GameWindowManager._children[tag].pixiElement)
         delete GameWindowManager._children[tag]
         GameWindowManager.removeTickersWithoutAssociatedChild()
     }
@@ -252,6 +250,7 @@ export class GameWindowManager {
         return GameWindowManager._currentTickersSteps
     }
     private static _currentTickersSteps: { [tag: string]: ITickersSteps } = {}
+    static currentTickersTimeouts: { [timeout: string]: { tags: string[], ticker: string } } = {}
     /**
      * Run a ticker.
      * @param childTags The tag of the child that will use the ticker.
@@ -279,28 +278,19 @@ export class GameWindowManager {
             childTags: childTags,
             priority: ticker.priority
         }
-        GameWindowManager.pushOrReplaceTicker(tickerHistory, t)
+        GameWindowManager.pushTicker(tickerHistory, t)
         GameWindowManager.removeTickersWithoutAssociatedChild()
         if (ticker.duration) {
-            setTimeout(() => {
+            let timeout = setTimeout(() => {
+                GameWindowManager.removeTickerTimeoutInfo(timeout)
                 GameWindowManager.nextTickerStep(childTags)
             }, ticker.duration);
+            GameWindowManager.addTickerTimeoutInfo(childTags, tickerName, timeout.toString())
         }
     }
-    private static pushOrReplaceTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerBase<TArgs>) {
-        let index = GameWindowManager._currentTickers.findIndex((t) =>
-            t.className === ticker.className &&
-            t.priority === ticker.priority &&
-            JSON.stringify(t.args) === JSON.stringify(ticker.args)
-        )
-        if (index === -1) {
-            GameWindowManager._currentTickers.push(ticker)
-        }
-        else {
-            GameWindowManager.app.ticker.remove(GameWindowManager._currentTickers[index].fn)
-            ticker.childTags = GameWindowManager._currentTickers[index].childTags.filter((e) => !ticker.childTags.includes(e)).concat(ticker.childTags)
-            GameWindowManager._currentTickers[index] = ticker
-        }
+    private static pushTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerBase<TArgs>) {
+        GameWindowManager.removeAssociationBetweenTickerChild(ticker.childTags, ticker)
+        GameWindowManager._currentTickers.push(ticker)
         ticker.fn = (dt: number) => {
             t?.fn(dt, ticker.args, ticker.childTags)
         }
@@ -354,9 +344,11 @@ export class GameWindowManager {
             }
         }
         if (step.hasOwnProperty("type") && (step as PauseType).type === PauseValueType) {
-            setTimeout(() => {
+            let timeout = setTimeout(() => {
+                GameWindowManager.removeTickerTimeoutInfo(timeout)
                 GameWindowManager.nextTickerStep(tag)
             }, step.duration);
+            GameWindowManager.addTickerTimeoutInfo(tag, "steps", timeout.toString())
             return
         }
         let ticker = GameWindowManager.geTickerInstance<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
@@ -407,6 +399,15 @@ export class GameWindowManager {
             }
             return t
         })
+        for (let timeout in GameWindowManager.currentTickersTimeouts) {
+            let t = GameWindowManager.currentTickersTimeouts[timeout].tags.filter((e) => !childTag.includes(e))
+            if (t.length == 0) {
+                GameWindowManager.removeTickerTimeoutInfo(parseInt(timeout))
+            }
+            else {
+                GameWindowManager.currentTickersTimeouts[timeout].tags = t
+            }
+        }
         GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**
@@ -427,6 +428,20 @@ export class GameWindowManager {
             if (GameWindowManager._children[tag] === undefined) {
                 delete GameWindowManager._currentTickersSteps[tag]
             }
+        }
+    }
+    private static addTickerTimeoutInfo(tags: string | string[], ticker: string, timeout: string) {
+        if (typeof tags === "string") {
+            tags = [tags]
+        }
+        GameWindowManager.currentTickersTimeouts[timeout] = {
+            tags: tags,
+            ticker: ticker,
+        }
+    }
+    private static removeTickerTimeoutInfo(timeout: number) {
+        if (GameWindowManager.currentTickersTimeouts[timeout]) {
+            delete GameWindowManager.currentTickersTimeouts[timeout]
         }
     }
     /**
