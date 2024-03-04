@@ -151,7 +151,7 @@ export class GameWindowManager {
     /**
      * This is a dictionary that contains all children of Canvas, currently.
      */
-    private static children: { [tag: string]: CanvasBase<any, any> } = {}
+    private static _children: { [tag: string]: CanvasBase<any, any> } = {}
     /**
      * Add a child to the canvas.
      * If there is a child with the same tag, it will be removed.
@@ -159,11 +159,11 @@ export class GameWindowManager {
      * @param child The child to be added.
      */
     public static addChild<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(tag: string, child: CanvasBase<T1, T2>) {
-        if (GameWindowManager.children[tag]) {
+        if (GameWindowManager._children[tag]) {
             GameWindowManager.removeChild(tag)
         }
         GameWindowManager.app.stage.addChild(child.pixiElement)
-        GameWindowManager.children[tag] = child
+        GameWindowManager._children[tag] = child
     }
     /**
      * Remove a child from the canvas.
@@ -172,12 +172,12 @@ export class GameWindowManager {
      * @returns 
      */
     public static removeChild(tag: string) {
-        if (!GameWindowManager.children[tag]) {
+        if (!GameWindowManager._children[tag]) {
             console.error("Child with tag not found")
             return
         }
-        GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag].pixiElement)
-        delete GameWindowManager.children[tag]
+        GameWindowManager.app.stage.removeChild(GameWindowManager._children[tag].pixiElement)
+        delete GameWindowManager._children[tag]
         GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**
@@ -186,7 +186,7 @@ export class GameWindowManager {
      * @returns The child with the tag.
      */
     public static getChild<T extends CanvasBase<any, any>>(tag: string): T | undefined {
-        return GameWindowManager.children[tag] as T | undefined
+        return GameWindowManager._children[tag] as T | undefined
     }
     /**
      * Remove all children from the canvas.
@@ -194,7 +194,7 @@ export class GameWindowManager {
      */
     public static removeChildren() {
         GameWindowManager.app.stage.removeChildren()
-        GameWindowManager.children = {}
+        GameWindowManager._children = {}
         GameWindowManager.removeTickers()
     }
     /**
@@ -390,7 +390,7 @@ export class GameWindowManager {
     public static removeTickersWithoutAssociatedChild() {
         let currentTickers = GameWindowManager.currentTickers
             .map((t) => {
-                t.childTags = t.childTags.filter((e) => GameWindowManager.children[e])
+                t.childTags = t.childTags.filter((e) => GameWindowManager._children[e])
                 return t
             })
             .filter((t) => t.childTags.length > 0)
@@ -481,8 +481,8 @@ export class GameWindowManager {
     }
     public static export(): ExportedCanvas {
         let currentElements: ICanvasBaseMemory[] = []
-        for (let tag in GameWindowManager.children) {
-            currentElements.push(GameWindowManager.children[tag].memory)
+        for (let tag in GameWindowManager._children) {
+            currentElements.push(GameWindowManager._children[tag].memory)
         }
         return {
             currentTickers: GameWindowManager.currentTickers,
