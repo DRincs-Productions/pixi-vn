@@ -5,11 +5,27 @@ import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { CanvasEvent } from "../CanvasEvent";
-import { CanvasContainerBase } from "./CanvasContainer";
+import { CanvasContainer } from "./CanvasContainer";
 
-export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpriteMemory> extends CanvasContainerBase<T1, T2> {
-    constructor(sprite: T1) {
-        super(sprite)
+/**
+ * This class is responsible for storing a PIXI Sprite.
+ * And allow to save your memory in a game save.
+ */
+export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMemory = ICanvasSpriteMemory> extends CanvasContainer<T1, T2> {
+    constructor(texture?: Texture | Sprite) {
+        if (texture instanceof Sprite) {
+            super(texture as T1)
+        }
+        else {
+            let sprite = new Sprite(texture)
+            super(sprite as T1)
+        }
+    }
+    get memory(): T2 {
+        return this.memorySprite as T2
+    }
+    set memory(value: T2) {
+        this.memorySprite = value
     }
     get memorySprite(): ICanvasSpriteMemory {
         let elements: ICanvasSpriteMemory = {
@@ -98,8 +114,7 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
     }
     static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
         let sprite = Sprite.from(source, options)
-        let mySprite = new CanvasSprite()
-        mySprite.pixiElement = sprite
+        let mySprite = new CanvasSprite(sprite)
         return mySprite
     }
     get texture() {
@@ -107,22 +122,5 @@ export abstract class CanvasSpriteBase<T1 extends Sprite, T2 extends ICanvasSpri
     }
     set texture(value: Texture) {
         this.pixiElement.texture = value
-    }
-}
-
-/**
- * This class is responsible for storing a PIXI Sprite.
- * And allow to save your memory in a game save.
- */
-export class CanvasSprite extends CanvasSpriteBase<Sprite, ICanvasSpriteMemory> {
-    get memory(): ICanvasSpriteMemory {
-        return this.memorySprite
-    }
-    set memory(value: ICanvasSpriteMemory) {
-        this.memorySprite = value
-    }
-    constructor(texture?: Texture) {
-        let sprite = new Sprite(texture)
-        super(sprite)
     }
 }
