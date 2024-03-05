@@ -43,10 +43,7 @@ export class ShowImageTest extends Label {
                 await showImageAsync("alien", 'https://pixijs.com/assets/flowerTop.png')
             },
             () => {
-                showImageAsyncWithDisolveEffect("alien", 'https://pixijs.com/assets/eggHead.png',
-                    { speed: 0.3 },
-                    1000
-                )
+                showImageAsyncWithDisolveEffect("alien", 'https://pixijs.com/assets/eggHead.png', 0.01)
             }
         ]
     }

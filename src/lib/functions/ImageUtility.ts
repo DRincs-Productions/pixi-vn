@@ -143,29 +143,27 @@ export async function showImageAsyncWithEffect(tag: string, imageUrl: string, ef
  */
 export function showImageWithDisolveEffect(
     tag: string, imageUrl: string,
-    args: {
-        speed: number,
-    },
-    duration: number,
+    speed: number,
     priority?: UPDATE_PRIORITY,
 ): CanvasImageBase {
     if (!GameWindowManager.getChild(tag)) {
         let effect = new TickerFadeAlpha({
-            speed: args.speed,
+            speed: speed,
             type: "show",
-        }, duration, priority)
+        }, 10000, priority)
         return showImageWithEffect(tag, imageUrl, effect)
     }
 
     let specialTag = tag + "_temp_disolve"
     let effect = new TickerFadeAlpha({
-        speed: args.speed,
+        speed: speed,
         type: "show",
         tagToRemoveAfter: specialTag,
-    }, duration, priority)
+    }, 10000, priority)
     GameWindowManager.editTagChild(tag, specialTag)
-    let image = showImageWithEffect(tag, imageUrl, effect)
-    GameWindowManager.addTicker(specialTag, effect)
+    let image = showImage(tag, imageUrl)
+    image.alpha = 0
+    GameWindowManager.addTicker(tag, effect)
     return image
 }
 
@@ -182,29 +180,27 @@ export function showImageWithDisolveEffect(
  */
 export async function showImageAsyncWithDisolveEffect(
     tag: string, imageUrl: string,
-    args: {
-        speed: number,
-    },
-    duration: number,
+    speed: number,
     priority?: UPDATE_PRIORITY,
 ): Promise<CanvasImageBase> {
     if (!GameWindowManager.getChild(tag)) {
         let effect = new TickerFadeAlpha({
-            speed: args.speed,
+            speed: speed,
             type: "show",
-        }, duration, priority)
+        }, 10000, priority)
         return showImageAsyncWithEffect(tag, imageUrl, effect)
     }
 
     let specialTag = tag + "_temp_disolve"
     let effect = new TickerFadeAlpha({
-        speed: args.speed,
+        speed: speed,
         type: "show",
         tagToRemoveAfter: specialTag,
-    }, duration, priority)
+    }, 10000, priority)
     GameWindowManager.editTagChild(tag, specialTag)
     return showImageAsyncWithEffect(tag, imageUrl, effect)
         .then((image) => {
+            image.alpha = 0
             GameWindowManager.addTicker(specialTag, effect)
             return image
         })
