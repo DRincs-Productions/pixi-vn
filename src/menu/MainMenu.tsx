@@ -2,11 +2,11 @@ import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
+import { ShowImageTest } from '../label/ShowImageTest';
 import { clearAllGameDatas } from '../lib/functions/GameUtility';
 import { showImage } from '../lib/functions/ImageUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
-import { ShowImageTest } from '../label/ExempleLabel';
 
 export default function MainMenu() {
     const navigate = useNavigate();

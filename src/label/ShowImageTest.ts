@@ -2,7 +2,7 @@ import { Label } from "../lib/classes/Label";
 import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { setDialogue } from "../lib/functions/DialogueUtility";
-import { removeImage, showImage, showImageAsync, showImageWithEffect } from "../lib/functions/ImageUtility";
+import { removeImage, showImage, showImageAsync, showImageAsyncWithDisolveEffect, showImageWithEffect } from "../lib/functions/ImageUtility";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
 @labelDecorator()
@@ -42,6 +42,12 @@ export class ShowImageTest extends Label {
                 setDialogue("if you want to disable the Next button until the image is loaded you can use the wait button")
                 await showImageAsync("alien", 'https://pixijs.com/assets/flowerTop.png')
             },
+            () => {
+                showImageAsyncWithDisolveEffect("alien", 'https://pixijs.com/assets/eggHead.png',
+                    { speed: 0.3 },
+                    1000
+                )
+            }
         ]
     }
 }
