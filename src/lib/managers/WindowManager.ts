@@ -232,6 +232,17 @@ export class GameWindowManager {
         }
         GameWindowManager.app.stage.removeChild(child)
     }
+    /**
+     * Edit the tag of a child.
+     * @param oldTag The old tag of the child.
+     * @param newTag The new tag of the child.
+     */
+    public static editTagChild(oldTag: string, newTag: string) {
+        if (GameWindowManager._children[oldTag]) {
+            GameWindowManager._children[newTag] = GameWindowManager._children[oldTag]
+            delete GameWindowManager._children[oldTag]
+        }
+    }
 
     /** Edit Tickers Methods */
 
