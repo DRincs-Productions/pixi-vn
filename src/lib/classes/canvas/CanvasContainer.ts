@@ -44,14 +44,27 @@ export class CanvasContainer<T1 extends Container = Container, T2 extends ICanva
         }
     }
     set memoryContainer(value: ICanvasContainerMemory) {
-        if (value.x !== undefined) this.x = value.x
-        if (value.y !== undefined) this.y = value.y
-        if (value.rotation !== undefined) this.rotation = value.rotation
-        if (value.pivot !== undefined) this.pivot = value.pivot
-        if (value.scale !== undefined) this.scale = value.scale
         if (value.width !== undefined) this.width = value.width
         if (value.height !== undefined) this.height = value.height
+        // children ?: Container[];
+        // parent ?: Container;
+
+        if (value.isRenderGroup !== undefined) this.view.isRenderGroup = value.isRenderGroup
+        if (value.blendMode !== undefined) this.view.blendMode = value.blendMode
+        if (value.tint !== undefined) this.view.tint = value.tint
         if (value.alpha !== undefined) this.alpha = value.alpha
+        if (value.angle !== undefined) this.view.angle = value.angle
+        if (value.renderable !== undefined) this.view.renderable = value.renderable
+        if (value.rotation !== undefined) this.rotation = value.rotation
+        if (value.scale !== undefined) this.scale = value.scale
+        if (value.pivot !== undefined) this.pivot = value.pivot
+        if (value.position !== undefined) { this.view.position = value.position }
+        if (value.skew !== undefined) { this.view.skew = value.skew }
+        if (value.visible !== undefined) this.view.visible = value.visible
+        if (value.culled !== undefined) this.view.culled = value.culled
+        if (value.x !== undefined) this.x = value.x
+        if (value.y !== undefined) this.y = value.y
+        if (value.boundsArea !== undefined) this.view.boundsArea = value.boundsArea
     }
     get width() {
         return this.view.width
