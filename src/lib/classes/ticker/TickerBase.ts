@@ -1,4 +1,4 @@
-import { UPDATE_PRIORITY } from "pixi.js"
+import { Ticker, UPDATE_PRIORITY } from "pixi.js"
 import { ITicker } from "../../interface/ITicker"
 import { StorageElementType } from "../../types/StorageElementType"
 
@@ -22,11 +22,9 @@ export class TickerBase<TArgs extends TickerArgsType> implements ITicker<TArgs> 
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use GameWindowManager.addCanvasElement() to get the canvas element of the canvas, and edit them.
-     * @param dt Delta time
+     * @param t The ticker that is calling this method
      * @param args The arguments that you passed when you added the ticker
      * @param tags The tags of the canvas elements that are connected to this ticker
      */
-    fn(_dt: number, _args: TArgs, _tags: string | string[]): void {
-        throw new Error("This method should be overridden")
-    }
+    fn(_t: Ticker, _args: TArgs, _tags: string | string[]): void { throw new Error("This method should be overridden") }
 }

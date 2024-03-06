@@ -1,4 +1,4 @@
-import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
+import { Application, DisplayObject, IApplicationOptions, Ticker, UPDATE_PRIORITY } from "pixi.js";
 import { CanvasEvent } from "../classes/CanvasEvent";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
@@ -302,13 +302,13 @@ export class GameWindowManager {
             GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerName, timeout.toString())
         }
     }
-    private static pushTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerBase<TArgs>) {
-        GameWindowManager.removeAssociationBetweenTickerCanvasElement(ticker.canvasElementTags, ticker)
-        GameWindowManager._currentTickers.push(ticker)
-        ticker.fn = (dt: number) => {
-            t?.fn(dt, ticker.args, ticker.canvasElementTags)
+    private static pushTicker<TArgs extends TickerArgsType>(tickerData: IClassWithArgsHistory<TArgs>, ticker: TickerBase<TArgs>) {
+        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementTags, tickerData)
+        GameWindowManager._currentTickers.push(tickerData)
+        tickerData.fn = (t: Ticker) => {
+            ticker?.fn(t, tickerData.args, tickerData.canvasElementTags)
         }
-        GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
+        GameWindowManager.app.ticker.add(tickerData.fn, undefined, tickerData.priority)
     }
     /**
      * Run a sequence of tickers.
