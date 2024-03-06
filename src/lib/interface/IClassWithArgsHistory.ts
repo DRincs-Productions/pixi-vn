@@ -9,6 +9,6 @@ export interface IClassWithArgsHistory<TArgs extends TickerArgsType> {
     fn: (dt: number) => void | undefined,
     className: TickerTagType,
     args: TArgs
-    childTags: string[],
+    canvasElementTags: string[],
     priority?: UPDATE_PRIORITY,
 }

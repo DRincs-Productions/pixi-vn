@@ -31,7 +31,7 @@ export default function MainMenu() {
             <Grid>
                 <MenuButton
                     onClick={() => {
-                        GameWindowManager.removeChildren()
+                        GameWindowManager.removeCanvasElements()
                         GameStepManager.runLabel(ShowImageTest)
                         navigate("/game")
                     }}

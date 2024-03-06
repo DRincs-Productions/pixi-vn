@@ -45,7 +45,7 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
             limit = 1
         }
         childTags.forEach((tag) => {
-            let element = GameWindowManager.getChild(tag)
+            let element = GameWindowManager.getCanvasElement(tag)
             if (element && element instanceof CanvasSprite) {
                 if (type === "show" && element.alpha < limit) {
                     element.alpha += speed * delta
@@ -55,8 +55,8 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
                 }
                 else {
                     element.alpha = limit
-                    GameWindowManager.removeAssociationBetweenTickerChild(tag, this)
-                    GameWindowManager.removeChild(removeChildAfter)
+                    GameWindowManager.removeAssociationBetweenTickerCanvasElement(tag, this)
+                    GameWindowManager.removeCanvasElement(removeChildAfter)
                 }
             }
         })

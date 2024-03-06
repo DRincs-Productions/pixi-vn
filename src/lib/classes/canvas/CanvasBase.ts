@@ -11,9 +11,9 @@ export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBase
         return this._pixiElement
     }
     set pixiElement(value: T) {
-        if (GameWindowManager.childIsOnCanvas(this._pixiElement)) {
-            GameWindowManager.removeChildTemporary(this._pixiElement)
-            GameWindowManager.addChildTemporary(value)
+        if (GameWindowManager.canvasElementIsOnCanvas(this._pixiElement)) {
+            GameWindowManager.removeCanvasElementTemporary(this._pixiElement)
+            GameWindowManager.addCanvasElementTemporary(value)
         }
         this._pixiElement = value
     }

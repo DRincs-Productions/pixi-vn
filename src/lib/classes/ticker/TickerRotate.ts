@@ -34,7 +34,7 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
         let speed = args.speed === undefined ? 0.1 : args.speed
         let clockwise = args.clockwise === undefined ? true : args.clockwise
         childTags.forEach((tag) => {
-            let element = GameWindowManager.getChild(tag)
+            let element = GameWindowManager.getCanvasElement(tag)
             if (element && element instanceof CanvasSprite) {
                 if (clockwise)
                     element.rotation += speed * delta;

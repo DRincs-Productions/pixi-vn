@@ -15,7 +15,7 @@ import { STRING_ERRORS } from './ErrorUtility';
  */
 export function showImage(tag: string, imageUrl: string): CanvasImage {
     let image = new CanvasImage(imageUrl)
-    GameWindowManager.addChild(tag, image)
+    GameWindowManager.addCanvasElement(tag, image)
     return image
 }
 
@@ -29,7 +29,7 @@ export function showImage(tag: string, imageUrl: string): CanvasImage {
  */
 export async function showImageAsync(tag: string, imageUrl: string): Promise<CanvasImageAsync> {
     let image = new CanvasImageAsync(imageUrl)
-    GameWindowManager.addChild(tag, image)
+    GameWindowManager.addCanvasElement(tag, image)
     return image.refreshImage().then(() => image)
 }
 
@@ -98,7 +98,7 @@ export async function getPixiTextureAsync(imageUrl: string): Promise<Texture | s
  * @param tag is the unique tag of the image. You can use this tag to refer to this image
  */
 export function removeImage(tag: string) {
-    GameWindowManager.removeChild(tag)
+    GameWindowManager.removeCanvasElement(tag)
 }
 
 /**
@@ -146,7 +146,7 @@ export function showImageWithDisolveEffect(
     speed: number,
     priority?: UPDATE_PRIORITY,
 ): CanvasImageBase {
-    if (!GameWindowManager.getChild(tag)) {
+    if (!GameWindowManager.getCanvasElement(tag)) {
         let effect = new TickerFadeAlpha({
             speed: speed,
             type: "show",
@@ -160,7 +160,7 @@ export function showImageWithDisolveEffect(
         type: "show",
         tagToRemoveAfter: specialTag,
     }, 10000, priority)
-    GameWindowManager.editTagChild(tag, specialTag)
+    GameWindowManager.editTagCanvasElement(tag, specialTag)
     let image = showImage(tag, imageUrl)
     image.alpha = 0
     GameWindowManager.addTicker(tag, effect)
@@ -183,7 +183,7 @@ export async function showImageAsyncWithDisolveEffect(
     speed: number,
     priority?: UPDATE_PRIORITY,
 ): Promise<CanvasImageBase> {
-    if (!GameWindowManager.getChild(tag)) {
+    if (!GameWindowManager.getCanvasElement(tag)) {
         let effect = new TickerFadeAlpha({
             speed: speed,
             type: "show",
@@ -197,14 +197,14 @@ export async function showImageAsyncWithDisolveEffect(
         type: "show",
         tagToRemoveAfter: specialTag,
     }, 10000, priority)
-    GameWindowManager.editTagChild(tag, specialTag)
+    GameWindowManager.editTagCanvasElement(tag, specialTag)
     return showImageAsyncWithEffect(tag, imageUrl, effect)
         .then((image) => {
             image.alpha = 0
             return image
         })
         .catch((e) => {
-            GameWindowManager.editTagChild(specialTag, tag)
+            GameWindowManager.editTagCanvasElement(specialTag, tag)
             throw e
         })
 }

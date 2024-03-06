@@ -25,7 +25,7 @@ export class TickerTestLabel extends Label {
 
                 alien.anchor.set(0.5);
 
-                GameWindowManager.addChild(alien1Tag, alien);
+                GameWindowManager.addCanvasElement(alien1Tag, alien);
                 alien.x = 100
                 alien.y = 100
 
@@ -38,7 +38,7 @@ export class TickerTestLabel extends Label {
 
                 alien.anchor.set(0.5);
 
-                GameWindowManager.addChild(alien2Tag, alien);
+                GameWindowManager.addCanvasElement(alien2Tag, alien);
                 alien.x = 300
                 alien.y = 100
 
@@ -57,7 +57,7 @@ export class TickerTestLabel extends Label {
             },
             () => setDialogue(`Since ${alien1Tag} is removed, the RotateTicker connected to it will not be performed`),
             () => {
-                GameWindowManager.removeAssociationBetweenTickerChild(alien2Tag, TickerRotate)
+                GameWindowManager.removeAssociationBetweenTickerCanvasElement(alien2Tag, TickerRotate)
                 setDialogue(`I have removed the RotateTicker connected to ${alien2Tag}`)
             },
             () => {
@@ -65,7 +65,7 @@ export class TickerTestLabel extends Label {
                 let duration = 7000
                 const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
                 alien.anchor.set(0.5);
-                GameWindowManager.addChild(alien3Tag, alien);
+                GameWindowManager.addCanvasElement(alien3Tag, alien);
                 alien.x = 500
                 alien.y = 100
                 GameWindowManager.addTicker(alien3Tag, new TickerRotate({ speed: 0.1 }, duration))
@@ -78,7 +78,7 @@ export class TickerTestLabel extends Label {
 
                 alien.anchor.set(0.5);
 
-                GameWindowManager.addChild(alien1Tag, alien);
+                GameWindowManager.addCanvasElement(alien1Tag, alien);
                 alien.x = 100
                 alien.y = 100
 
@@ -93,7 +93,7 @@ export class TickerTestLabel extends Label {
 
                 alien.anchor.set(0.5);
 
-                GameWindowManager.addChild(alien2Tag, alien);
+                GameWindowManager.addCanvasElement(alien2Tag, alien);
                 alien.x = 300
                 alien.y = 100
 
@@ -110,7 +110,7 @@ export class TickerTestLabel extends Label {
 
                 alien.anchor.set(0.5);
 
-                GameWindowManager.addChild(alien4Tag, alien);
+                GameWindowManager.addCanvasElement(alien4Tag, alien);
                 alien.x = 700
                 alien.y = 100
                 let speed = 0
