@@ -1,4 +1,4 @@
-import { ObservablePoint } from "pixi.js"
+import { DisplayObject, ObservablePoint } from "pixi.js"
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory"
 import { GameWindowManager } from "../../managers/WindowManager"
 
