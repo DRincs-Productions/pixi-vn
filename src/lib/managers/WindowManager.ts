@@ -1,4 +1,4 @@
-import { Application, DisplayObject, IApplicationOptions, Ticker, UPDATE_PRIORITY } from "pixi.js";
+import { Application, ApplicationOptions, Container, Ticker, UPDATE_PRIORITY } from "pixi.js";
 import { CanvasEvent } from "../classes/CanvasEvent";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
@@ -22,7 +22,7 @@ export class GameWindowManager {
     /**
      * The PIXI Application instance.
      */
-    private static app: Application
+    private static app: Application = new Application()
     /**
      * This is the div that have same size of the canvas.
      * This is useful to put interface elements.
@@ -42,16 +42,10 @@ export class GameWindowManager {
      * @param height The height of the canvas
      * @param options The options of PIXI Application
      */
-    public static initialize(width: number, height: number, options?: Partial<IApplicationOptions>): void {
+    public static initialize(width: number, height: number, options?: Partial<ApplicationOptions>): void {
         GameWindowManager.width = width
         GameWindowManager.height = height
-        GameWindowManager.app = new Application({
-            resolution: window.devicePixelRatio || 1,
-            autoDensity: true,
-            width: width,
-            height: height,
-            ...options
-        });
+        GameWindowManager.app.init(options)
 
         // Manager.app.ticker.add(Manager.update)
 
@@ -123,11 +117,11 @@ export class GameWindowManager {
      */
     private static resize(): void {
         // now we use css trickery to set the sizes and margins
-        if (!GameWindowManager.app?.view?.style) {
-            console.error("Manager.app.view.style is undefined")
+        if (!GameWindowManager.app.canvas?.style) {
+            console.error("Manager.app.canvas.style is undefined")
         }
         else {
-            let style = GameWindowManager.app.view.style;
+            let style = GameWindowManager.app.canvas.style;
             style.width = `${GameWindowManager.enlargedWidth}px`;
             style.height = `${GameWindowManager.enlargedHeight}px`;
             (style as any).marginLeft = `${GameWindowManager.horizontalMargin}px`;
@@ -161,7 +155,7 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @param canvasElement The canvas elements to be added.
      */
-    public static addCanvasElement<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(tag: string, canvasElement: CanvasBase<T1, T2>) {
+    public static addCanvasElement<T1 extends Container, T2 extends ICanvasBaseMemory>(tag: string, canvasElement: CanvasBase<T1, T2>) {
         if (GameWindowManager._children[tag]) {
             GameWindowManager.removeCanvasElement(tag)
         }
@@ -199,7 +193,7 @@ export class GameWindowManager {
      * @param pixiElement The DisplayObject to be checked.
      * @returns If the DisplayObject is on the canvas.
      */
-    public static canvasElementIsOnCanvas<T extends DisplayObject>(pixiElement: T) {
+    public static canvasElementIsOnCanvas<T extends Container>(pixiElement: T) {
         return GameWindowManager.app.stage.children.includes(pixiElement)
     }
     /**
@@ -215,7 +209,7 @@ export class GameWindowManager {
      * Add a temporary canvas element to the canvas.
      * @param canvasElement The canvas elements to be added.
      */
-    public static addCanvasElementTemporary<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(canvasElement: CanvasBase<T1, T2> | DisplayObject) {
+    public static addCanvasElementTemporary<T1 extends Container, T2 extends ICanvasBaseMemory>(canvasElement: CanvasBase<T1, T2> | Container) {
         if (canvasElement instanceof CanvasBase) {
             canvasElement = canvasElement.view
         }
@@ -225,7 +219,7 @@ export class GameWindowManager {
      * Remove a temporary canvas element from the canvas.
      * @param canvasElement The canvas elements to be removed.
      */
-    public static removeCanvasElementTemporary(canvasElement: DisplayObject) {
+    public static removeCanvasElementTemporary(canvasElement: Container) {
         if (canvasElement instanceof CanvasBase) {
             GameWindowManager.app.stage.removeChild(canvasElement.view)
             return
