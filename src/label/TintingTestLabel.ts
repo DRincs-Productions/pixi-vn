@@ -14,7 +14,7 @@ class AlienTintingTest extends CanvasSprite {
     static override from(source: SpriteSource, options?: IBaseTextureOptions<any> | undefined): AlienTintingTest {
         let sprite = Sprite.from(source, options)
         let mySprite = new AlienTintingTest()
-        mySprite.pixiElement = sprite
+        mySprite.view = sprite
         return mySprite
     }
 }

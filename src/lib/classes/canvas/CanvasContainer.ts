@@ -24,7 +24,7 @@ export class CanvasContainer<T1 extends Container = Container, T2 extends ICanva
     }
     addChild<U extends CanvasBase<any, any>[]>(...children: U): U[0] {
         children.forEach(child => {
-            this.pixiElement.addChild(child.pixiElement)
+            this.view.addChild(child.view)
             this.listChildren.push(child)
         })
         return children[0]
@@ -54,15 +54,15 @@ export class CanvasContainer<T1 extends Container = Container, T2 extends ICanva
         this.alpha = value.alpha
     }
     get width() {
-        return this.pixiElement.width
+        return this.view.width
     }
     set width(value: number) {
-        this.pixiElement.width = value
+        this.view.width = value
     }
     get height() {
-        return this.pixiElement.height
+        return this.view.height
     }
     set height(value: number) {
-        this.pixiElement.height = value
+        this.view.height = value
     }
 }

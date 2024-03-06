@@ -165,7 +165,7 @@ export class GameWindowManager {
         if (GameWindowManager._children[tag]) {
             GameWindowManager.removeCanvasElement(tag)
         }
-        GameWindowManager.app.stage.addChild(canvasElement.pixiElement)
+        GameWindowManager.app.stage.addChild(canvasElement.view)
         GameWindowManager._children[tag] = canvasElement
     }
     /**
@@ -180,7 +180,7 @@ export class GameWindowManager {
         }
         tag.forEach((t) => {
             if (GameWindowManager._children[t]) {
-                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t].pixiElement)
+                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t].view)
                 delete GameWindowManager._children[t]
             }
         })
@@ -217,7 +217,7 @@ export class GameWindowManager {
      */
     public static addCanvasElementTemporary<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(canvasElement: CanvasBase<T1, T2> | DisplayObject) {
         if (canvasElement instanceof CanvasBase) {
-            canvasElement = canvasElement.pixiElement
+            canvasElement = canvasElement.view
         }
         GameWindowManager.app.stage.addChild(canvasElement)
     }
@@ -227,7 +227,7 @@ export class GameWindowManager {
      */
     public static removeCanvasElementTemporary(canvasElement: DisplayObject) {
         if (canvasElement instanceof CanvasBase) {
-            GameWindowManager.app.stage.removeChild(canvasElement.pixiElement)
+            GameWindowManager.app.stage.removeChild(canvasElement.view)
             return
         }
         GameWindowManager.app.stage.removeChild(canvasElement)

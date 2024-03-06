@@ -31,7 +31,7 @@ export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMe
         let elements: ICanvasSpriteMemory = {
             ...super.memoryContainer,
             anchor: { x: this.anchor.x, y: this.anchor.y },
-            texture: getTextureMemory(this.pixiElement.texture),
+            texture: getTextureMemory(this.view.texture),
             tint: this.tint,
             eventMode: this.eventMode,
             cursor: this.cursor,
@@ -42,7 +42,7 @@ export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMe
     set memorySprite(value: ICanvasSpriteMemory) {
         super.memoryContainer = value
         this.anchor.set(value.anchor.x, value.anchor.y)
-        this.pixiElement.texture = getTexture(value.texture)
+        this.view.texture = getTexture(value.texture)
         this.tint = value.tint
         this.eventMode = value.eventMode
         this.cursor = value.cursor
@@ -51,7 +51,7 @@ export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMe
             let event = this.onEvents[key]
             let instance = GameWindowManager.getEventInstanceByClassName(event)
             if (instance) {
-                this.pixiElement.on(key, () => {
+                this.view.on(key, () => {
                     (instance as CanvasEvent<typeof this>).fn(event, this)
                 })
             }
@@ -59,46 +59,46 @@ export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMe
     }
 
     get anchor() {
-        return this.pixiElement.anchor
+        return this.view.anchor
     }
     set anchor(value: ObservablePoint) {
-        this.pixiElement.anchor = value
+        this.view.anchor = value
     }
     get x() {
-        return this.pixiElement.x
+        return this.view.x
     }
     set x(value: number) {
-        this.pixiElement.x = value
+        this.view.x = value
     }
     get y() {
-        return this.pixiElement.y
+        return this.view.y
     }
     set y(value: number) {
-        this.pixiElement.y = value
+        this.view.y = value
     }
     get rotation() {
-        return this.pixiElement.rotation
+        return this.view.rotation
     }
     set rotation(value: number) {
-        this.pixiElement.rotation = value
+        this.view.rotation = value
     }
     get tint() {
-        return this.pixiElement.tint
+        return this.view.tint
     }
     set tint(value: ColorSource) {
-        this.pixiElement.tint = value
+        this.view.tint = value
     }
     get eventMode() {
-        return this.pixiElement.eventMode
+        return this.view.eventMode
     }
     set eventMode(value: EventMode) {
-        this.pixiElement.eventMode = value
+        this.view.eventMode = value
     }
     get cursor() {
-        return this.pixiElement.cursor
+        return this.view.cursor
     }
     set cursor(value: Cursor | string) {
-        this.pixiElement.cursor = value
+        this.view.cursor = value
     }
     onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
     on<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
@@ -106,7 +106,7 @@ export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMe
         let instance = GameWindowManager.getEventInstanceByClassName(className)
         if (instance) {
             this.onEvents[event] = className
-            this.pixiElement.on(event, () => {
+            this.view.on(event, () => {
                 (instance as CanvasEvent<typeof this>).fn(event, this)
             })
         }
@@ -118,9 +118,9 @@ export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMe
         return mySprite
     }
     get texture() {
-        return this.pixiElement.texture
+        return this.view.texture
     }
     set texture(value: Texture) {
-        this.pixiElement.texture = value
+        this.view.texture = value
     }
 }

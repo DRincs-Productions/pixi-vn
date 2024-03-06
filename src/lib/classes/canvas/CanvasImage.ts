@@ -45,7 +45,7 @@ export class CanvasImage extends CanvasImageBase {
         }
         else {
             // this.pixiElement.text = ""
-            this.pixiElement.texture = texture
+            this.view.texture = texture
         }
     }
 }
@@ -63,7 +63,7 @@ export class CanvasImageAsync extends CanvasImageBase {
                 }
                 else {
                     // this.pixiElement.text = ""
-                    this.pixiElement.texture = texture
+                    this.view.texture = texture
                 }
             })
             .catch(() => {

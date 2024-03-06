@@ -1,4 +1,4 @@
-import { DisplayObject, ObservablePoint } from "pixi.js"
+import { ObservablePoint } from "pixi.js"
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory"
 import { GameWindowManager } from "../../managers/WindowManager"
 
@@ -7,19 +7,19 @@ import { GameWindowManager } from "../../managers/WindowManager"
  * And allow to save your memory in a game save.
  */
 export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBaseMemory> {
-    get pixiElement() {
-        return this._pixiElement
+    get view() {
+        return this._view
     }
-    set pixiElement(value: T) {
-        if (GameWindowManager.canvasElementIsOnCanvas(this._pixiElement)) {
-            GameWindowManager.removeCanvasElementTemporary(this._pixiElement)
+    set view(value: T) {
+        if (GameWindowManager.canvasElementIsOnCanvas(this._view)) {
+            GameWindowManager.removeCanvasElementTemporary(this._view)
             GameWindowManager.addCanvasElementTemporary(value)
         }
-        this._pixiElement = value
+        this._view = value
     }
-    private _pixiElement: T
+    private _view: T
     constructor(element: T) {
-        this._pixiElement = element
+        this._view = element
     }
     /**
      * This method return the memory of the canvas element.
@@ -31,39 +31,39 @@ export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBase
     abstract set memory(value: T2)
 
     get x() {
-        return this.pixiElement.x
+        return this.view.x
     }
     set x(value: number) {
-        this.pixiElement.x = value
+        this.view.x = value
     }
     get y() {
-        return this.pixiElement.y
+        return this.view.y
     }
     set y(value: number) {
-        this.pixiElement.y = value
+        this.view.y = value
     }
     get rotation() {
-        return this.pixiElement.rotation
+        return this.view.rotation
     }
     set rotation(value: number) {
-        this.pixiElement.rotation = value
+        this.view.rotation = value
     }
     get pivot() {
-        return this.pixiElement.pivot
+        return this.view.pivot
     }
     set pivot(value: { x: number, y: number }) {
-        this.pixiElement.pivot = value
+        this.view.pivot = value
     }
     get scale() {
-        return this.pixiElement.scale
+        return this.view.scale
     }
     set scale(value: ObservablePoint) {
-        this.pixiElement.scale = value
+        this.view.scale = value
     }
     get alpha() {
-        return this.pixiElement.alpha
+        return this.view.alpha
     }
     set alpha(value: number) {
-        this.pixiElement.alpha = value
+        this.view.alpha = value
     }
 }
