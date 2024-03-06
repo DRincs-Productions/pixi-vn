@@ -201,7 +201,6 @@ export async function showImageAsyncWithDisolveEffect(
     return showImageAsyncWithEffect(tag, imageUrl, effect)
         .then((image) => {
             image.alpha = 0
-            GameWindowManager.addTicker(specialTag, effect)
             return image
         })
         .catch((e) => {

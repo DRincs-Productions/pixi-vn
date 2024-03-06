@@ -49,11 +49,9 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
             if (element && element instanceof CanvasSprite) {
                 if (type === "show" && element.alpha < limit) {
                     element.alpha += speed * delta
-                    return true
                 }
                 else if (type === "hide" && element.alpha > limit) {
                     element.alpha -= speed * delta
-                    return true
                 }
                 else {
                     element.alpha = limit
