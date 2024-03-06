@@ -1,4 +1,4 @@
-import { DisplayObject, Texture } from "pixi.js";
+import { Container, Texture } from "pixi.js";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { CanvasContainer } from "../classes/canvas/CanvasContainer";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
@@ -32,7 +32,7 @@ export function getTexture(textureMemory: ITextureMemory): Texture {
  * @param element Canvas element
  * @returns Memory object of the canvas
  */
-export function exportCanvas<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(
+export function exportCanvas<T1 extends Container, T2 extends ICanvasBaseMemory>(
     element: CanvasBase<T1, T2>,
 ): T2 {
     let temp = element.memory

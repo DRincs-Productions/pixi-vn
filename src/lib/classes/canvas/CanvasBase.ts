@@ -1,4 +1,4 @@
-import { DisplayObject, ObservablePoint } from "pixi.js"
+import { Container, ObservablePoint } from "pixi.js"
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory"
 import { GameWindowManager } from "../../managers/WindowManager"
 
@@ -6,7 +6,7 @@ import { GameWindowManager } from "../../managers/WindowManager"
  * This class is responsible for storing a PIXI DisplayObject.
  * And allow to save your memory in a game save.
  */
-export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBaseMemory> {
+export abstract class CanvasBase<T extends Container, T2 extends ICanvasBaseMemory> {
     get view() {
         return this._view
     }

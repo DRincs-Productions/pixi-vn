@@ -1,4 +1,4 @@
-import { ColorSource, Cursor, EventMode, IBaseTextureOptions, ObservablePoint, Sprite, SpriteSource, Texture } from "pixi.js";
+import { ColorSource, Cursor, EventMode, ObservablePoint, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { GameWindowManager } from "../../managers/WindowManager";
@@ -12,14 +12,9 @@ import { CanvasContainer } from "./CanvasContainer";
  * And allow to save your memory in a game save.
  */
 export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMemory = ICanvasSpriteMemory> extends CanvasContainer<T1, T2> {
-    constructor(texture?: Texture | Sprite) {
-        if (texture instanceof Sprite) {
-            super(texture as T1)
-        }
-        else {
-            let sprite = new Sprite(texture)
-            super(sprite as T1)
-        }
+    constructor(texture?: SpriteOptions | Texture) {
+        let sprite = new Sprite(texture)
+        super(sprite as T1)
     }
     get memory(): T2 {
         return this.memorySprite as T2
@@ -112,8 +107,8 @@ export class CanvasSprite<T1 extends Sprite = Sprite, T2 extends ICanvasSpriteMe
         }
         return this
     }
-    static from(source: SpriteSource, options?: IBaseTextureOptions): CanvasSprite {
-        let sprite = Sprite.from(source, options)
+    static from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite {
+        let sprite = Sprite.from(source, skipCache)
         let mySprite = new CanvasSprite(sprite)
         return mySprite
     }
