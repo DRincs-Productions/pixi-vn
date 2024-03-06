@@ -44,14 +44,14 @@ export class CanvasContainer<T1 extends Container = Container, T2 extends ICanva
         }
     }
     set memoryContainer(value: ICanvasContainerMemory) {
-        this.x = value.x
-        this.y = value.y
-        this.rotation = value.rotation
-        this.pivot = value.pivot
-        this.scale.set(value.scale.x, value.scale.y)
-        this.width = value.width
-        this.height = value.height
-        this.alpha = value.alpha
+        if (value.x !== undefined) this.x = value.x
+        if (value.y !== undefined) this.y = value.y
+        if (value.rotation !== undefined) this.rotation = value.rotation
+        if (value.pivot !== undefined) this.pivot = value.pivot
+        if (value.scale !== undefined) this.scale = value.scale
+        if (value.width !== undefined) this.width = value.width
+        if (value.height !== undefined) this.height = value.height
+        if (value.alpha !== undefined) this.alpha = value.alpha
     }
     get width() {
         return this.view.width

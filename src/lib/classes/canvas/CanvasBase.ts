@@ -1,4 +1,4 @@
-import { Container, ObservablePoint } from "pixi.js"
+import { Container, ObservablePoint, PointData } from "pixi.js"
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory"
 import { GameWindowManager } from "../../managers/WindowManager"
 
@@ -48,16 +48,16 @@ export abstract class CanvasBase<T extends Container, T2 extends ICanvasBaseMemo
     set rotation(value: number) {
         this.view.rotation = value
     }
-    get pivot() {
+    get pivot(): ObservablePoint {
         return this.view.pivot
     }
-    set pivot(value: { x: number, y: number }) {
+    set pivot(value: PointData | number) {
         this.view.pivot = value
     }
-    get scale() {
+    get scale(): ObservablePoint {
         return this.view.scale
     }
-    set scale(value: ObservablePoint) {
+    set scale(value: PointData | number) {
         this.view.scale = value
     }
     get alpha() {
