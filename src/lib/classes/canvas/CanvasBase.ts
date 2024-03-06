@@ -1,14 +1,25 @@
 import { DisplayObject, ObservablePoint } from "pixi.js"
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory"
+import { GameWindowManager } from "../../managers/WindowManager"
 
 /**
  * This class is responsible for storing a PIXI DisplayObject.
  * And allow to save your memory in a game save.
  */
 export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBaseMemory> {
-    pixiElement: T
+    get pixiElement() {
+        return this._pixiElement
+    }
+    set pixiElement(value: T) {
+        if (GameWindowManager.childIsOnCanvas(this._pixiElement)) {
+            GameWindowManager.removeChildTemporary(this._pixiElement)
+            GameWindowManager.addChildTemporary(value)
+        }
+        this._pixiElement = value
+    }
+    private _pixiElement: T
     constructor(element: T) {
-        this.pixiElement = element
+        this._pixiElement = element
     }
     /**
      * This method return the memory of the canvas element.

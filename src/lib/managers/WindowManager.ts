@@ -151,7 +151,10 @@ export class GameWindowManager {
     /**
      * This is a dictionary that contains all children of Canvas, currently.
      */
-    private static children: { [tag: string]: CanvasBase<any, any> } = {}
+    static get currentChildren() {
+        return GameWindowManager._children
+    }
+    private static _children: { [tag: string]: CanvasBase<any, any> } = {}
     /**
      * Add a child to the canvas.
      * If there is a child with the same tag, it will be removed.
@@ -159,11 +162,11 @@ export class GameWindowManager {
      * @param child The child to be added.
      */
     public static addChild<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(tag: string, child: CanvasBase<T1, T2>) {
-        if (GameWindowManager.children[tag]) {
+        if (GameWindowManager._children[tag]) {
             GameWindowManager.removeChild(tag)
         }
         GameWindowManager.app.stage.addChild(child.pixiElement)
-        GameWindowManager.children[tag] = child
+        GameWindowManager._children[tag] = child
     }
     /**
      * Remove a child from the canvas.
@@ -171,13 +174,16 @@ export class GameWindowManager {
      * @param tag The tag of the child to be removed.
      * @returns 
      */
-    public static removeChild(tag: string) {
-        if (!GameWindowManager.children[tag]) {
-            console.error("Child with tag not found")
-            return
+    public static removeChild(tag: string | string[]) {
+        if (typeof tag === "string") {
+            tag = [tag]
         }
-        GameWindowManager.app.stage.removeChild(GameWindowManager.children[tag].pixiElement)
-        delete GameWindowManager.children[tag]
+        tag.forEach((t) => {
+            if (GameWindowManager._children[t]) {
+                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t].pixiElement)
+                delete GameWindowManager._children[t]
+            }
+        })
         GameWindowManager.removeTickersWithoutAssociatedChild()
     }
     /**
@@ -186,7 +192,15 @@ export class GameWindowManager {
      * @returns The child with the tag.
      */
     public static getChild<T extends CanvasBase<any, any>>(tag: string): T | undefined {
-        return GameWindowManager.children[tag] as T | undefined
+        return GameWindowManager._children[tag] as T | undefined
+    }
+    /**
+     * Check if a DisplayObject is on the canvas.
+     * @param pixiElement The DisplayObject to be checked.
+     * @returns If the DisplayObject is on the canvas.
+     */
+    public static childIsOnCanvas<T extends DisplayObject>(pixiElement: T) {
+        return GameWindowManager.app.stage.children.includes(pixiElement)
     }
     /**
      * Remove all children from the canvas.
@@ -194,7 +208,7 @@ export class GameWindowManager {
      */
     public static removeChildren() {
         GameWindowManager.app.stage.removeChildren()
-        GameWindowManager.children = {}
+        GameWindowManager._children = {}
         GameWindowManager.removeTickers()
     }
     /**
@@ -218,6 +232,17 @@ export class GameWindowManager {
         }
         GameWindowManager.app.stage.removeChild(child)
     }
+    /**
+     * Edit the tag of a child.
+     * @param oldTag The old tag of the child.
+     * @param newTag The new tag of the child.
+     */
+    public static editTagChild(oldTag: string, newTag: string) {
+        if (GameWindowManager._children[oldTag]) {
+            GameWindowManager._children[newTag] = GameWindowManager._children[oldTag]
+            delete GameWindowManager._children[oldTag]
+        }
+    }
 
     /** Edit Tickers Methods */
 
@@ -228,11 +253,17 @@ export class GameWindowManager {
     /**
      * Currently tickers that are running.
      */
-    static currentTickers: IClassWithArgsHistory<any>[] = []
+    public static get currentTickers() {
+        return GameWindowManager._currentTickers
+    }
+    private static _currentTickers: IClassWithArgsHistory<any>[] = []
     /**
      * The steps of the tickers
      */
-    static currentTickersSteps: { [tag: string]: ITickersSteps } = {}
+    public static get currentTickersSteps() {
+        return GameWindowManager._currentTickersSteps
+    }
+    private static _currentTickersSteps: { [tag: string]: ITickersSteps } = {}
     static currentTickersTimeouts: { [timeout: string]: { tags: string[], ticker: string } } = {}
     /**
      * Run a ticker.
@@ -253,7 +284,7 @@ export class GameWindowManager {
             console.error(`Ticker ${tickerName} not found`)
             return
         }
-        GameWindowManager.removeTickerConnectedToChild(childTags, ticker)
+        GameWindowManager.removeAssociationBetweenTickerChild(childTags, ticker)
         let tickerHistory: IClassWithArgsHistory<TArgs> = {
             fn: () => { },
             className: tickerName,
@@ -272,19 +303,26 @@ export class GameWindowManager {
         }
     }
     private static pushTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerBase<TArgs>) {
-        GameWindowManager.removeTickerConnectedToChild(ticker.childTags, ticker)
-        GameWindowManager.currentTickers.push(ticker)
+        GameWindowManager.removeAssociationBetweenTickerChild(ticker.childTags, ticker)
+        GameWindowManager._currentTickers.push(ticker)
         ticker.fn = (dt: number) => {
             t?.fn(dt, ticker.args, ticker.childTags)
         }
         GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
     }
-    public static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
+    /**
+     * Run a sequence of tickers.
+     * @param tag The tag of child that will use the tickers.
+     * @param steps The steps of the tickers.
+     * @returns
+     */
+    static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
         if (steps.length == 0) {
             console.error("Steps is empty")
             return
         }
-        GameWindowManager.currentTickersSteps[tag] = {
+        let alredyExists = GameWindowManager._currentTickersSteps[tag] !== undefined
+        GameWindowManager._currentTickersSteps[tag] = {
             currentStepNumber: 0,
             steps: steps.map((s) => {
                 if (s === Repeat) {
@@ -305,12 +343,15 @@ export class GameWindowManager {
                 }
             })
         }
-        GameWindowManager.runTickersSteps(tag, GameWindowManager.currentTickersSteps[tag].steps[0])
+        if (!alredyExists) {
+            GameWindowManager.runTickersSteps(tag)
+        }
     }
-    private static runTickersSteps<TArgs extends TickerArgsType>(tag: string, step: ITickersStep<TArgs> | RepeatType | PauseType) {
+    private static runTickersSteps<TArgs extends TickerArgsType>(tag: string) {
+        let step = GameWindowManager._currentTickersSteps[tag].steps[GameWindowManager._currentTickersSteps[tag].currentStepNumber]
         if (step === Repeat) {
-            step = GameWindowManager.currentTickersSteps[tag].steps[0]
-            GameWindowManager.currentTickersSteps[tag].currentStepNumber = 0
+            step = GameWindowManager._currentTickersSteps[tag].steps[0]
+            GameWindowManager._currentTickersSteps[tag].currentStepNumber = 0
             if (step === Repeat) {
                 console.error("TikersSteps has a RepeatType in the first step")
                 return
@@ -336,16 +377,15 @@ export class GameWindowManager {
             childTag = [childTag]
         }
         childTag.forEach((tag) => {
-            if (GameWindowManager.currentTickersSteps[tag]) {
-                let steps = GameWindowManager.currentTickersSteps[tag]
-                let currentStepNumber = steps.currentStepNumber
-                if (currentStepNumber + 1 < steps.steps.length) {
+            if (GameWindowManager._currentTickersSteps[tag]) {
+                let steps = GameWindowManager._currentTickersSteps[tag]
+                if (steps.currentStepNumber + 1 < steps.steps.length) {
                     steps.currentStepNumber++
-                    GameWindowManager.currentTickersSteps[tag] = steps
-                    GameWindowManager.runTickersSteps(tag, steps.steps[steps.currentStepNumber])
+                    GameWindowManager._currentTickersSteps[tag] = steps
+                    GameWindowManager.runTickersSteps(tag)
                 }
                 else {
-                    delete GameWindowManager.currentTickersSteps[tag]
+                    delete GameWindowManager._currentTickersSteps[tag]
                 }
             }
         })
@@ -356,7 +396,7 @@ export class GameWindowManager {
      * @param childTag The tag of the child that will use the ticker.
      * @param ticker The ticker class to be removed.
      */
-    public static removeTickerConnectedToChild(childTag: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
+    public static removeAssociationBetweenTickerChild(childTag: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
         let tickerName: TickerTagType
         if (ticker instanceof TickerBase) {
             tickerName = ticker.constructor.name
@@ -367,7 +407,7 @@ export class GameWindowManager {
         if (typeof childTag === "string") {
             childTag = [childTag]
         }
-        GameWindowManager.currentTickers.map((t) => {
+        GameWindowManager._currentTickers.map((t) => {
             if (t.className === tickerName) {
                 t.childTags = t.childTags.filter((e) => !childTag.includes(e))
             }
@@ -387,19 +427,22 @@ export class GameWindowManager {
     /**
      * Remove all tickers that are not connected to any existing child.
      */
-    public static removeTickersWithoutAssociatedChild() {
-        let currentTickers = GameWindowManager.currentTickers
+    private static removeTickersWithoutAssociatedChild() {
+        let currentTickers = GameWindowManager._currentTickers
             .map((t) => {
-                t.childTags = t.childTags.filter((e) => GameWindowManager.children[e])
+                t.childTags = t.childTags.filter((e) => GameWindowManager._children[e])
                 return t
             })
-            .filter((t) => t.childTags.length > 0)
-        GameWindowManager.currentTickers
-            .filter((t) => !currentTickers.includes(t))
-            .forEach((t) => {
-                GameWindowManager.app.ticker.remove(t.fn)
-            })
-        GameWindowManager.currentTickers = currentTickers
+        currentTickers.filter((t) => t.childTags.length === 0).forEach((t) => {
+            GameWindowManager.app.ticker.remove(t.fn)
+        })
+        currentTickers = currentTickers.filter((t) => t.childTags.length > 0)
+        GameWindowManager._currentTickers = currentTickers
+        for (let tag in GameWindowManager._currentTickersSteps) {
+            if (GameWindowManager._children[tag] === undefined) {
+                delete GameWindowManager._currentTickersSteps[tag]
+            }
+        }
     }
     private static addTickerTimeoutInfo(tags: string | string[], ticker: string, timeout: string) {
         if (typeof tags === "string") {
@@ -438,11 +481,11 @@ export class GameWindowManager {
      * Remove all tickers from the canvas.
      */
     public static removeTickers() {
-        GameWindowManager.currentTickersSteps = {}
-        GameWindowManager.currentTickers.map((t) => {
+        GameWindowManager._currentTickersSteps = {}
+        GameWindowManager._currentTickers.map((t) => {
             GameWindowManager.app.ticker.remove(t.fn)
         })
-        GameWindowManager.currentTickers = []
+        GameWindowManager._currentTickers = []
     }
 
     /**
@@ -450,11 +493,11 @@ export class GameWindowManager {
      */
     static registeredEvent: { [name: EventTagType]: typeof CanvasEvent } = {}
     /**
-     * Get a event by the class name.
+     * Get an event instance by the class name.
      * @param labelName The name of the class.
      * @returns The event instance.
      */
-    static getEventByClassName<T extends CanvasEvent<any>>(labelName: EventTagType): T | undefined {
+    public static getEventInstanceByClassName<T extends CanvasEvent<any>>(labelName: EventTagType): T | undefined {
         try {
             let event = GameWindowManager.registeredEvent[labelName]
             if (!event) {
@@ -481,11 +524,11 @@ export class GameWindowManager {
     }
     public static export(): ExportedCanvas {
         let currentElements: ICanvasBaseMemory[] = []
-        for (let tag in GameWindowManager.children) {
-            currentElements.push(GameWindowManager.children[tag].memory)
+        for (let tag in GameWindowManager._children) {
+            currentElements.push(GameWindowManager._children[tag].memory)
         }
         return {
-            currentTickers: GameWindowManager.currentTickers,
+            currentTickers: GameWindowManager._currentTickers,
             currentElements: currentElements
         }
     }
@@ -496,7 +539,7 @@ export class GameWindowManager {
         GameWindowManager.clear()
         try {
             if (data.hasOwnProperty("currentTickers")) {
-                GameWindowManager.currentTickers = (data as ExportedCanvas)["currentTickers"]
+                GameWindowManager._currentTickers = (data as ExportedCanvas)["currentTickers"]
             }
             else {
                 console.log("No currentTickers data found")

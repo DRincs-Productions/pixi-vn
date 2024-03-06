@@ -1,6 +1,6 @@
 import { DisplayObject, Texture } from "pixi.js";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
-import { CanvasContainerBase } from "../classes/canvas/CanvasContainer";
+import { CanvasContainer } from "../classes/canvas/CanvasContainer";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ITextureMemory } from "../interface/canvas/ITextureMemory";
 
@@ -39,7 +39,7 @@ export function exportCanvas<T1 extends DisplayObject, T2 extends ICanvasBaseMem
     if (!element.hasOwnProperty("listChildren")) {
         return temp
     }
-    (element as CanvasContainerBase<any, any>).listChildren.forEach(child => {
+    (element as CanvasContainer<any, any>).listChildren.forEach(child => {
         temp.elements.push(exportCanvas(child))
     })
     return temp

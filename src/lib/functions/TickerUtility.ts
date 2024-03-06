@@ -1,5 +1,13 @@
 import { TickerProgrationType } from "../interface/ITickerProgration"
 
+/**
+ * This function updates the progression of the ticker.
+ * For example, if the speed of the ticker is 0.1 and the progression is 0.01, then the speed will be 0.11.
+ * @param args The arguments that are passed to the ticker
+ * @param propertyName The property name that will be updated 
+ * @param progression The progression of the ticker
+ * @returns 
+ */
 export function updateTickerProgression(args: any, propertyName: string, progression: TickerProgrationType) {
     if (args.hasOwnProperty(propertyName) && typeof args[propertyName] !== "number") {
         return

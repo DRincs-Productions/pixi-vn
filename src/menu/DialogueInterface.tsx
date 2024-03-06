@@ -124,11 +124,15 @@ export default function DialogueInterface() {
                 }}
                 onClick={() => {
                     setLoading(true)
-                    GameStepManager.runNextStep().then(() => {
-                        let dialogue = getDialogue()
-                        setDialogue(dialogue)
-                        setLoading(false)
-                    })
+                    GameStepManager.runNextStep()
+                        .then(() => {
+                            let dialogue = getDialogue()
+                            setDialogue(dialogue)
+                            setLoading(false)
+                        })
+                        .catch(() => {
+                            setLoading(false)
+                        })
                 }}
             >
                 Next

@@ -2,12 +2,26 @@ import { Container } from "pixi.js";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 import { CanvasBase } from "./CanvasBase";
 
-export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanvasContainerMemory> extends CanvasBase<T1, T2> {
+/**
+ * This class is responsible for storing a PIXI Container.
+ * And allow to save your memory in a game save.
+ */
+export class CanvasContainer<T1 extends Container = Container, T2 extends ICanvasContainerMemory = ICanvasContainerMemory> extends CanvasBase<T1, T2> {
     listChildren: CanvasBase<any, any>[] = []
-    constructor(container: T1) {
-        super(container)
+    constructor(container?: T1) {
+        if (container) {
+            super(container)
+        }
+        else {
+            super(new Container() as T1)
+        }
     }
-
+    get memory(): T2 {
+        return this.memoryContainer as T2
+    }
+    set memory(value: T2) {
+        this.memoryContainer = value
+    }
     addChild<U extends CanvasBase<any, any>[]>(...children: U): U[0] {
         children.forEach(child => {
             this.pixiElement.addChild(child.pixiElement)
@@ -50,21 +64,5 @@ export abstract class CanvasContainerBase<T1 extends Container, T2 extends ICanv
     }
     set height(value: number) {
         this.pixiElement.height = value
-    }
-}
-
-/**
- * This class is responsible for storing a PIXI Container.
- * And allow to save your memory in a game save.
- */
-export class CanvasContainer extends CanvasContainerBase<Container, ICanvasContainerMemory> {
-    constructor() {
-        super(new Container())
-    }
-    get memory(): ICanvasContainerMemory {
-        return super.memoryContainer
-    }
-    set memory(value: ICanvasContainerMemory) {
-        super.memoryContainer = value
     }
 }

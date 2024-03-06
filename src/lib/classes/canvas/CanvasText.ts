@@ -1,12 +1,12 @@
 import { Text } from "pixi.js";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
-import { CanvasSpriteBase } from "./CanvasSprite";
+import { CanvasSprite } from "./CanvasSprite";
 
 /**
  * This class is responsible for storing a PIXI Text.
  * And allow to save your memory in a game save.
  */
-export class CanvasText extends CanvasSpriteBase<Text, ICanvasTextMemory> {
+export class CanvasText extends CanvasSprite<Text, ICanvasTextMemory> {
     get memory(): ICanvasTextMemory {
         return this.memorySprite
     }

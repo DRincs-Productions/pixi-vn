@@ -1,36 +1,32 @@
 import { Sprite } from "pixi.js";
-import { getImageSprite, getImageSpriteAsync } from "../../functions/ImageUtility";
+import { getPixiTexture as getTextureOrTextError, getPixiTextureAsync as getTextureOrTextErrorAsync } from "../../functions/ImageUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
-import { CanvasContainerBase } from "./CanvasContainer";
 import { CanvasSprite } from "./CanvasSprite";
 
 /**
  * The base class for the image.
  */
-abstract class CanvasImageBase extends CanvasContainerBase<Sprite, ICanvasImageMemory> {
+export abstract class CanvasImageBase extends CanvasSprite<Sprite, ICanvasImageMemory> {
     imageLink: string
     constructor(image: string) {
         let element = new Sprite() // TODO add loader animation
         super(element)
         this.imageLink = image
-        this.updateImage(image)
     }
     /**
-     * Update the image of the element.
-     * @param image is the url of the image.
-     * @returns the sprite of the image.
+     * Refresh the image.
      */
-    abstract updateImage(image: string): CanvasSprite | Promise<CanvasSprite>
+    abstract refreshImage(): void
     get memory(): ICanvasImageMemory {
         return {
-            ...super.memoryContainer,
+            ...super.memorySprite,
             imageLink: this.imageLink,
         }
     }
-    abstract get className(): string
     set memory(value: ICanvasImageMemory) {
-        super.memoryContainer = value
-        this.updateImage(value.imageLink)
+        super.memorySprite = value
+        this.imageLink = value.imageLink
+        this.refreshImage()
     }
 }
 
@@ -38,34 +34,41 @@ abstract class CanvasImageBase extends CanvasContainerBase<Sprite, ICanvasImageM
  * The class for the image.
  */
 export class CanvasImage extends CanvasImageBase {
-    get className(): string {
-        return this.constructor.name
+    constructor(image: string) {
+        super(image)
+        this.refreshImage()
     }
-    updateImage(image: string): CanvasSprite {
-        this.imageLink = image
-        let element = getImageSprite(image)
-        this.addChild(element)
-        return element
+    refreshImage() {
+        let texture = getTextureOrTextError(this.imageLink)
+        if (typeof texture === "string") {
+            // this.pixiElement.text = texture
+        }
+        else {
+            // this.pixiElement.text = ""
+            this.pixiElement.texture = texture
+        }
     }
 }
 
 /**
  * The class for the image, but asynchronously.
+ * Must use refreshImage() to load the image.
  */
 export class CanvasImageAsync extends CanvasImageBase {
-    get className(): string {
-        return this.constructor.name
-    }
-    async updateImage(image: string): Promise<CanvasSprite> {
-        this.imageLink = image
-        return getImageSpriteAsync(image)
-            .then((element) => {
-                this.addChild(element)
-                return element
+    async refreshImage() {
+        getTextureOrTextErrorAsync(this.imageLink)
+            .then((texture) => {
+                if (typeof texture === "string") {
+                    // this.pixiElement.text = texture
+                }
+                else {
+                    // this.pixiElement.text = ""
+                    this.pixiElement.texture = texture
+                }
             })
             .catch(() => {
                 console.error("Error loading image")
-                return new CanvasSprite()
+                // this.pixiElement.text = "Error loading image"
             })
     }
 }

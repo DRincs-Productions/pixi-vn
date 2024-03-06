@@ -1,6 +1,6 @@
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
-import { TickerFadeAlpha } from "../lib/classes/ticker/TickerAlpha";
+import { TickerFadeAlpha } from "../lib/classes/ticker/TickerFadeAlpha";
 import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { setDialogue } from "../lib/functions/DialogueUtility";
@@ -57,7 +57,7 @@ export class TickerTestLabel extends Label {
             },
             () => setDialogue(`Since ${alien1Tag} is removed, the RotateTicker connected to it will not be performed`),
             () => {
-                GameWindowManager.removeTickerConnectedToChild(alien2Tag, TickerRotate)
+                GameWindowManager.removeAssociationBetweenTickerChild(alien2Tag, TickerRotate)
                 setDialogue(`I have removed the RotateTicker connected to ${alien2Tag}`)
             },
             () => {
