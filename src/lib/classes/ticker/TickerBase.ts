@@ -21,12 +21,12 @@ export class TickerBase<TArgs extends TickerArgsType> implements ITicker<TArgs> 
     priority?: UPDATE_PRIORITY
     /**
      * The method that will be called every frame.
-     * This method should be overridden and you can use GameWindowManager.getChild() to get the children of the canvas, and edit them.
+     * This method should be overridden and you can use GameWindowManager.addCanvasElement() to get the canvas element of the canvas, and edit them.
      * @param dt Delta time
      * @param args The arguments that you passed when you added the ticker
-     * @param childTags The tags of the children that are connected to this ticker
+     * @param tags The tags of the canvas elements that are connected to this ticker
      */
-    fn(_dt: number, _args: TArgs, _childTags: string | string[]): void {
+    fn(_dt: number, _args: TArgs, _tags: string | string[]): void {
         throw new Error("This method should be overridden")
     }
 }

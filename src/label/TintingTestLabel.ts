@@ -24,8 +24,8 @@ export class TintingTestTicker extends TickerBase<{}> {
     constructor() {
         super({})
     }
-    override fn(_delta: number, _args: {}, childTags: string[]): void {
-        childTags.forEach((tag) => {
+    override fn(_delta: number, _args: {}, tags: string[]): void {
+        tags.forEach((tag) => {
             // create a bounding box for the little dudes
             const dudeBoundsPadding = 100;
             const dudeBounds = new Rectangle(-dudeBoundsPadding,

@@ -36,10 +36,10 @@ export function exportCanvas<T1 extends DisplayObject, T2 extends ICanvasBaseMem
     element: CanvasBase<T1, T2>,
 ): T2 {
     let temp = element.memory
-    if (!element.hasOwnProperty("listChildren")) {
+    if (!(element instanceof CanvasContainer)) {
         return temp
     }
-    (element as CanvasContainer<any, any>).listChildren.forEach(child => {
+    element.listChildren.forEach(child => {
         temp.elements.push(exportCanvas(child))
     })
     return temp
