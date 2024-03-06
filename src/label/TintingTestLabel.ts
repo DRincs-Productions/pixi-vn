@@ -24,15 +24,15 @@ export class TintingTestTicker extends TickerBase<{}> {
     constructor() {
         super({})
     }
-    override fn(_delta: number, _args: {}, childTags: string[]): void {
-        childTags.forEach((tag) => {
+    override fn(_delta: number, _args: {}, tags: string[]): void {
+        tags.forEach((tag) => {
             // create a bounding box for the little dudes
             const dudeBoundsPadding = 100;
             const dudeBounds = new Rectangle(-dudeBoundsPadding,
                 -dudeBoundsPadding,
                 GameWindowManager.screen.width + dudeBoundsPadding * 2,
                 GameWindowManager.screen.height + dudeBoundsPadding * 2);
-            let dude = GameWindowManager.getChild(tag)
+            let dude = GameWindowManager.getCanvasElement(tag)
             if (dude && dude instanceof AlienTintingTest) {
 
                 dude.direction += dude.turningSpeed * 0.01;
@@ -101,11 +101,11 @@ export class TintingTestLabel extends Label {
                     // finally we push the dude into the aliens array so it it can be easily accessed later
                     aliens.push(dude);
 
-                    GameWindowManager.addChild("alien" + i, dude);
+                    GameWindowManager.addCanvasElement("alien" + i, dude);
                     GameWindowManager.addTicker("alien" + i, new TintingTestTicker());
                 }
             },
-            () => GameWindowManager.removeChildren(),
+            () => GameWindowManager.removeCanvasElements(),
         ]
     }
 }

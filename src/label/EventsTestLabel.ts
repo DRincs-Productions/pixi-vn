@@ -83,7 +83,7 @@ export class EventsTestLabel extends Label {
                 // sprite.on('click', onClick); // mouse-only
                 // sprite.on('tap', onClick); // touch-only
 
-                GameWindowManager.addChild("bunny", sprite);
+                GameWindowManager.addCanvasElement("bunny", sprite);
 
                 setDialogue("This is the test of clickable elements in a canvas. To make it possible to save the added events in a canvas element, use CanvasEvents.");
             },
@@ -99,7 +99,7 @@ export class EventsTestLabel extends Label {
                 background.height = GameWindowManager.screen.height;
 
                 // add background to stage...
-                GameWindowManager.addChild("bg", background);
+                GameWindowManager.addCanvasElement("bg", background);
 
                 // create some textures from an image path
                 const textureButton = Texture.from('https://pixijs.com/assets/button.png');
@@ -136,7 +136,7 @@ export class EventsTestLabel extends Label {
                         .on('pointerout', EventTest2);
 
                     // add it to the stage
-                    GameWindowManager.addChild("button" + i, button);
+                    GameWindowManager.addCanvasElement("button" + i, button);
 
                     // add button to array
                     buttons.push(button);

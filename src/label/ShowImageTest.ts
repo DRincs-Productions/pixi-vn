@@ -20,7 +20,7 @@ export class ShowImageTest extends Label {
                         bunny2.y = 100
                     })
 
-                setDialogue("You can also add a image to the canvas with the function showImage or showImageAsync. If you want add a CanvasElements, you can use GameWindowManager.addChild")
+                setDialogue("You can also add a image to the canvas with the function showImage or showImageAsync. If you want add a CanvasElements, you can use GameWindowManager.addCanvasElement")
             },
             () => setDialogue("In case the image is not in cache the function showImageAsync will load the image asynchronously. then you may see the image appear after."),
             () => setDialogue("showImageAsync may print error logs if you run showImage immediately after loading the same image (as in this case). To warn you that the image is already present in the cache and therefore the cache will be used."),
