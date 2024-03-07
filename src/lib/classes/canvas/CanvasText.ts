@@ -33,12 +33,12 @@ export class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
         console.warn("addChild() does not keep in memory the children, use addCanvasChild() instead")
         return super.addChild(...children)
     }
-    onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
+    onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent>(event: T, eventClass: T2) {
         let className = eventClass.name
         let instance = GameWindowManager.getEventInstanceByClassName(className)
         if (instance) {
             super.on(event, () => {
-                instance.fn(event, this)
+                (instance as CanvasEvent<SupportedCanvasElement>).fn(event, this)
             })
         }
         return this

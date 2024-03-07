@@ -7,6 +7,7 @@ import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
+import { CanvasEventNamesType } from "../types/CanvasEventNamesType";
 import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
@@ -486,13 +487,13 @@ export class GameWindowManager {
     /**
      * Canvas Event Register
      */
-    static registeredEvent: { [name: EventTagType]: typeof CanvasEvent } = {}
+    static registeredEvent: { [name: EventTagType]: typeof CanvasEvent<CanvasEventNamesType> } = {}
     /**
      * Get an event instance by the class name.
      * @param labelName The name of the class.
      * @returns The event instance.
      */
-    public static getEventInstanceByClassName<T extends CanvasEvent<any>>(labelName: EventTagType): T | undefined {
+    public static getEventInstanceByClassName<T = CanvasEvent<SupportedCanvasElement>>(labelName: EventTagType): T | undefined {
         try {
             let event = GameWindowManager.registeredEvent[labelName]
             if (!event) {

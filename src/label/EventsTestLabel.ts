@@ -77,7 +77,7 @@ export class EventsTestLabel extends Label {
                 sprite.cursor = 'pointer';
 
                 // Pointers normalize touch and mouse (good for mobile and desktop)
-                sprite.on('pointerdown', EventTest);
+                sprite.onEvent('pointerdown', EventTest);
 
                 // Alternatively, use the mouse & touch events:
                 // sprite.on('click', onClick); // mouse-only
@@ -129,11 +129,11 @@ export class EventsTestLabel extends Label {
                         // Mouse & touch events are normalized into
                         // the pointer* events for handling different
                         // button events.
-                        .on('pointerdown', EventTest2)
-                        .on('pointerup', EventTest2)
-                        .on('pointerupoutside', EventTest2)
-                        .on('pointerover', EventTest2)
-                        .on('pointerout', EventTest2);
+                        .onEvent('pointerdown', EventTest2)
+                        .onEvent('pointerup', EventTest2)
+                        .onEvent('pointerupoutside', EventTest2)
+                        .onEvent('pointerover', EventTest2)
+                        .onEvent('pointerout', EventTest2);
 
                     // add it to the stage
                     GameWindowManager.addCanvasElement("button" + i, button);

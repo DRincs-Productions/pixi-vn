@@ -40,7 +40,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
         let instance = GameWindowManager.getEventInstanceByClassName(className)
         if (instance) {
             super.on(event, () => {
-                instance.fn(event, this)
+                (instance as CanvasEvent<SupportedCanvasElement>).fn(event, this)
             })
         }
         return this

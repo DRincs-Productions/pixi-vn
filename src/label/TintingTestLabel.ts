@@ -13,9 +13,7 @@ class AlienTintingTest extends CanvasSprite {
     speed: number = 0
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): AlienTintingTest {
         let sprite = CanvasSprite.from(source, skipCache)
-        let mySprite = new AlienTintingTest()
-        mySprite.view = sprite
-        return mySprite
+        return new AlienTintingTest(sprite)
     }
 }
 
