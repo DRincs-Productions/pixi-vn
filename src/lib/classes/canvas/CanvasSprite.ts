@@ -56,7 +56,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
         console.warn("on() does not keep in memory the event class, use onEvent() instead")
         return super.on(event, fn, context)
     }
-    static from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite {
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite {
         let sprite = Sprite.from(source, skipCache)
         return new CanvasSprite(sprite)
     }
