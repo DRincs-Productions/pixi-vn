@@ -1,68 +1,75 @@
-import { Sprite } from "pixi.js";
-import { getTexture, getTextureMemory } from "../../functions/CanvasUtility";
+import { Container, ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { getTextureMemory } from "../../functions/CanvasUtility";
+import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
+import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
 import { CanvasEvent } from "../CanvasEvent";
 import { CanvasBase } from "./CanvasBase";
+import { getMemoryContainer } from "./CanvasContainer";
 
 /**
  * This class is responsible for storing a PIXI Sprite.
  * And allow to save your memory in a game save.
  */
-export class CanvasSprite extends Sprite implements CanvasBase<ICanvasSpriteMemory> {
+export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
     get memory(): ICanvasSpriteMemory {
-        return this.memorySprite as ICanvasSpriteMemory
+        return getMemorySprite(this)
     }
-    set memory(value: ICanvasSpriteMemory) {
-        this.memorySprite = value
+    private _onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
+    get onEvents() {
+        return this._onEvents
     }
-    get memorySprite(): ICanvasSpriteMemory {
-        let elements: ICanvasSpriteMemory = {
-            ...super.memoryContainer,
-            anchor: { x: this.anchor.x, y: this.anchor.y },
-            textureImage: getTextureMemory(this.view.texture),
-            tint: this.tint,
-            eventMode: this.eventMode,
-            cursor: this.cursor,
-            onEvents: this.onEvents
-        }
-        return elements
+    addCanvasChild<U extends SupportedCanvasElement[]>(...children: U): U[0] {
+        return super.addChild(...children)
     }
-    set memorySprite(value: ICanvasSpriteMemory) {
-        super.memoryContainer = value
-        this.anchor.set(value.anchor.x, value.anchor.y)
-        this.view.texture = getTexture(value.textureImage)
-        this.tint = value.tint
-        this.eventMode = value.eventMode
-        this.cursor = value.cursor
-        this.onEvents = value.onEvents
-        for (let key in this.onEvents) {
-            let event = this.onEvents[key]
-            let instance = GameWindowManager.getEventInstanceByClassName(event)
-            if (instance) {
-                this.view.on(key, () => {
-                    (instance as CanvasEvent<typeof this>).fn(event, this)
-                })
-            }
-        }
+    /**
+     * addChild() does not keep in memory the children, use addCanvasChild() instead
+     * @deprecated
+     * @param children 
+     * @returns 
+     */
+    override addChild<U extends Container[]>(...children: U): U[0] {
+        console.warn("addChild() does not keep in memory the children, use addCanvasChild() instead")
+        return super.addChild(...children)
     }
-    onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
-    on<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
+    onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
         let instance = GameWindowManager.getEventInstanceByClassName(className)
         if (instance) {
-            this.onEvents[event] = className
-            this.view.on(event, () => {
-                (instance as CanvasEvent<typeof this>).fn(event, this)
+            super.on(event, () => {
+                instance.fn(event, this)
             })
         }
         return this
     }
+    /**
+     * on() does not keep in memory the event class, use onEvent() instead
+     * @deprecated
+     * @param event 
+     * @param fn 
+     * @param context 
+     */
+    override on<T extends keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
+        console.warn("on() does not keep in memory the event class, use onEvent() instead")
+        return super.on(event, fn, context)
+    }
     static from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite {
         let sprite = Sprite.from(source, skipCache)
-        let mySprite = new CanvasSprite(sprite)
-        return mySprite
+        return new CanvasSprite(sprite)
+    }
+}
+
+export function getMemorySprite<T extends CanvasSprite>(element: T | CanvasSprite): ICanvasSpriteMemory {
+    let temp = getMemoryContainer(element)
+    return {
+        ...temp,
+        className: "CanvasSprite",
+        textureImage: getTextureMemory((element as any).texture),
+        anchor: { x: element.anchor.x, y: element.anchor.y },
+        roundPixels: element.roundPixels,
+        onEvents: element.onEvents,
     }
 }

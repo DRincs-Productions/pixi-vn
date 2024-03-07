@@ -8,6 +8,7 @@ import { ITextureMemory } from "./ITextureMemory";
  * Interface for the canvas sprite memory
  */
 export interface ICanvasSpriteMemory extends SpriteOptions, ICanvasBaseMemory {
+    className: "CanvasSprite",
     textureImage: ITextureMemory,
     onEvents: { [name: CanvasEventNamesType]: EventTagType }
 }

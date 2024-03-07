@@ -1,33 +1,26 @@
-import { Sprite } from "pixi.js";
 import { getPixiTexture as getTextureOrTextError, getPixiTextureAsync as getTextureOrTextErrorAsync } from "../../functions/ImageUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
-import { CanvasSprite } from "./CanvasSprite";
+import { CanvasSprite, getMemorySprite } from "./CanvasSprite";
 
 /**
  * The base class for the image.
  */
-export abstract class CanvasImageBase extends CanvasSprite<Sprite, ICanvasImageMemory> {
+export abstract class CanvasImageBase extends CanvasSprite<ICanvasImageMemory> {
     imageLink: string
-    constructor(image: string) {
-        let element = new Sprite() // TODO add loader animation
-        super(element)
-        this.imageLink = image
+    constructor(options?: ICanvasImageMemory | string) {
+        if (typeof options === "string") {
+            super()
+            this.imageLink = options
+        }
+        else {
+            super(options)
+            this.imageLink = options?.imageLink ?? ""
+        }
     }
     /**
      * Refresh the image.
      */
     abstract refreshImage(): void
-    get memory(): ICanvasImageMemory {
-        return {
-            ...super.memorySprite,
-            imageLink: this.imageLink,
-        }
-    }
-    set memory(value: ICanvasImageMemory) {
-        super.memorySprite = value
-        this.imageLink = value.imageLink
-        this.refreshImage()
-    }
 }
 
 /**
@@ -45,7 +38,7 @@ export class CanvasImage extends CanvasImageBase {
         }
         else {
             // this.pixiElement.text = ""
-            this.view.texture = texture
+            this.texture = texture
         }
     }
 }
@@ -63,12 +56,30 @@ export class CanvasImageAsync extends CanvasImageBase {
                 }
                 else {
                     // this.pixiElement.text = ""
-                    this.view.texture = texture
+                    this.texture = texture
                 }
             })
             .catch(() => {
                 console.error("Error loading image")
                 // this.pixiElement.text = "Error loading image"
             })
+    }
+}
+
+export function getMemoryCanvasImage(element: CanvasImageBase): ICanvasImageMemory {
+    let temp = getMemorySprite(element)
+    return {
+        ...temp,
+        className: "CanvasImage",
+        imageLink: element.imageLink,
+    }
+}
+
+export function getMemoryCanvasImageAsync(element: CanvasImageBase): ICanvasImageMemory {
+    let temp = getMemorySprite(element)
+    return {
+        ...temp,
+        className: "CanvasImageAsync",
+        imageLink: element.imageLink,
     }
 }
