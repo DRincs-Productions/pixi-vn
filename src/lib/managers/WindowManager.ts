@@ -10,6 +10,7 @@ import { ExportedCanvas } from "../interface/export/ExportedCanvas";
 import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
+import { SupportedCanvasElement } from "../types/SupportedCanvasElement";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**
@@ -148,18 +149,18 @@ export class GameWindowManager {
     static get currentCanvasElements() {
         return GameWindowManager._children
     }
-    private static _children: { [tag: string]: CanvasBase<any, any> } = {}
+    private static _children: { [tag: string]: SupportedCanvasElement } = {}
     /**
      * Add a canvas element to the canvas.
      * If there is a canvas element with the same tag, it will be removed.
      * @param tag The tag of the canvas element.
      * @param canvasElement The canvas elements to be added.
      */
-    public static addCanvasElement<T1 extends Container, T2 extends ICanvasBaseMemory>(tag: string, canvasElement: CanvasBase<T1, T2>) {
+    public static addCanvasElement(tag: string, canvasElement: SupportedCanvasElement) {
         if (GameWindowManager._children[tag]) {
             GameWindowManager.removeCanvasElement(tag)
         }
-        GameWindowManager.app.stage.addChild(canvasElement.view)
+        GameWindowManager.app.stage.addChild(canvasElement)
         GameWindowManager._children[tag] = canvasElement
     }
     /**
@@ -174,7 +175,7 @@ export class GameWindowManager {
         }
         tag.forEach((t) => {
             if (GameWindowManager._children[t]) {
-                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t].view)
+                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t])
                 delete GameWindowManager._children[t]
             }
         })
@@ -185,8 +186,8 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @returns The canvas element.
      */
-    public static getCanvasElement<T extends CanvasBase<any, any>>(tag: string): T | undefined {
-        return GameWindowManager._children[tag] as T | undefined
+    public static getCanvasElement(tag: string): SupportedCanvasElement | undefined {
+        return GameWindowManager._children[tag] as SupportedCanvasElement | undefined
     }
     /**
      * Check if a DisplayObject is on the canvas.
@@ -209,9 +210,9 @@ export class GameWindowManager {
      * Add a temporary canvas element to the canvas.
      * @param canvasElement The canvas elements to be added.
      */
-    public static addCanvasElementTemporary<T1 extends Container, T2 extends ICanvasBaseMemory>(canvasElement: CanvasBase<T1, T2> | Container) {
+    public static addCanvasElementTemporary(canvasElement: SupportedCanvasElement | Container) {
         if (canvasElement instanceof CanvasBase) {
-            canvasElement = canvasElement.view
+            canvasElement = canvasElement
         }
         GameWindowManager.app.stage.addChild(canvasElement)
     }
@@ -221,7 +222,7 @@ export class GameWindowManager {
      */
     public static removeCanvasElementTemporary(canvasElement: Container) {
         if (canvasElement instanceof CanvasBase) {
-            GameWindowManager.app.stage.removeChild(canvasElement.view)
+            GameWindowManager.app.stage.removeChild(canvasElement)
             return
         }
         GameWindowManager.app.stage.removeChild(canvasElement)
