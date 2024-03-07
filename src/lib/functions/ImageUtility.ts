@@ -34,37 +34,6 @@ export async function showImageAsync(tag: string, imageUrl: string): Promise<Can
 }
 
 /**
- * Get a texture from a url.
- * @param imageUrl is the url of the image.
- * @returns the texture of the image, or a text with the error.
- */
-export function getPixiTexture(imageUrl: string): Texture | string {
-    if (Assets.cache.has(imageUrl)) {
-        return Assets.get(imageUrl)
-    }
-    let texture: Texture | undefined = undefined
-    try {
-        texture = Texture.from(imageUrl)
-    }
-    catch (e) {
-        console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-        return STRING_ERRORS.IMAGE_NOT_FOUND
-    }
-
-    if (!texture) {
-        console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-        return STRING_ERRORS.IMAGE_NOT_FOUND
-    }
-    // if texture not is a Texture, then it is a TextureResource
-    if (!(texture instanceof Texture)) {
-        console.error(STRING_ERRORS.FILE_NOT_IS_IMAGE, imageUrl)
-        return STRING_ERRORS.FILE_NOT_IS_IMAGE
-    }
-
-    return texture
-}
-
-/**
  * Get a texture from a url, but the image is loaded asynchronously.
  * @param imageUrl is the url of the image.
  * @returns the texture of the image, or a text with the error.

@@ -1,7 +1,7 @@
 import { Label } from "../classes/Label"
-import { GameStepManager } from "../managers/StepManager"
 import { LabelTagType } from "../types/LabelTagType"
 
+export const registeredLabels: { [key: LabelTagType]: typeof Label } = {}
 /**
  * LabelDecorator is a decorator that register a label in the game.
  * Is a required decorator for use the label in the game.
@@ -14,9 +14,9 @@ export function labelDecorator(name?: LabelTagType) {
         if (!name) {
             name = target.name
         }
-        if (GameStepManager.registeredLabels[name]) {
+        if (registeredLabels[name]) {
             console.warn(`Label ${name} already exists, it will be overwritten`)
         }
-        GameStepManager.registeredLabels[name] = target
+        registeredLabels[name] = target
     }
 }

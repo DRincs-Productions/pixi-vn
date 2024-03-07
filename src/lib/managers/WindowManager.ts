@@ -2,12 +2,14 @@ import { Application, ApplicationOptions, Container, Ticker, UPDATE_PRIORITY } f
 import { CanvasEvent } from "../classes/CanvasEvent";
 import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
+import { registeredEvents } from "../decorators/EventDecorator";
+import { registeredTickers } from "../decorators/TickerDecorator";
+import { exportCanvasElement } from "../functions/CanvasUtility";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
-import { CanvasEventNamesType } from "../types/CanvasEventNamesType";
 import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
@@ -21,10 +23,24 @@ import { TickerTagType } from "../types/TickerTagType";
 export class GameWindowManager {
     private constructor() { }
 
+    private static _app: Application | undefined = undefined
     /**
      * The PIXI Application instance.
      */
-    private static app: Application = new Application()
+
+    static get app() {
+        if (!GameWindowManager._app) {
+            throw new Error("Manager.app is undefined")
+        }
+        return GameWindowManager._app
+    }
+    private static _isInitialized: boolean = false
+    /**
+     * If the manager is initialized.
+     */
+    static get isInitialized() {
+        return GameWindowManager._isInitialized
+    }
     /**
      * This is the div that have same size of the canvas.
      * This is useful to put interface elements.
@@ -40,22 +56,31 @@ export class GameWindowManager {
     /**
      * Initialize the PIXI Application and the interface div.
      * This method should be called before any other method.
+     * @param element The html element where I will put the canvas. Example: document.body
      * @param width The width of the canvas
      * @param height The height of the canvas
      * @param options The options of PIXI Application
      */
-    public static initialize(width: number, height: number, options?: Partial<ApplicationOptions>): void {
+    public static async initialize(element: HTMLElement, width: number, height: number, options?: Partial<ApplicationOptions>): Promise<void> {
         GameWindowManager.width = width
         GameWindowManager.height = height
-        GameWindowManager.app.init(options)
+        GameWindowManager._app = new Application()
+        return GameWindowManager.app.init({
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true,
+            width: width,
+            height: height,
+            ...options
+        }).then(() => {
+            GameWindowManager._isInitialized = true
+            // Manager.app.ticker.add(Manager.update)
+            this.addCanvasIntoElement(element)
+            // listen for the browser telling us that the screen size changed
+            window.addEventListener("resize", GameWindowManager.resize)
 
-        // Manager.app.ticker.add(Manager.update)
-
-        // listen for the browser telling us that the screen size changed
-        window.addEventListener("resize", GameWindowManager.resize)
-
-        // call it manually once so we are sure we are the correct size after starting
-        GameWindowManager.resize()
+            // call it manually once so we are sure we are the correct size after starting
+            GameWindowManager.resize()
+        });
     }
 
     /**
@@ -63,7 +88,12 @@ export class GameWindowManager {
      * @param element it is the html element where I will put the canvas. Example: document.body
      */
     public static addCanvasIntoElement(element: HTMLElement) {
-        element.appendChild(GameWindowManager.app.view as HTMLCanvasElement)
+        if (GameWindowManager.isInitialized) {
+            element.appendChild(GameWindowManager.app.canvas as HTMLCanvasElement)
+        }
+        else {
+            console.error("Manager is not initialized")
+        }
     }
     /**
      * Initialize the interface div and add it into a html element.
@@ -119,10 +149,7 @@ export class GameWindowManager {
      */
     private static resize(): void {
         // now we use css trickery to set the sizes and margins
-        if (!GameWindowManager.app.canvas?.style) {
-            console.error("Manager.app.canvas.style is undefined")
-        }
-        else {
+        if (GameWindowManager.isInitialized) {
             let style = GameWindowManager.app.canvas.style;
             style.width = `${GameWindowManager.enlargedWidth}px`;
             style.height = `${GameWindowManager.enlargedHeight}px`;
@@ -242,10 +269,6 @@ export class GameWindowManager {
 
     /** Edit Tickers Methods */
 
-    /**
-     * A dictionary that contains all tickers registered and avvailable to be used.
-     */
-    static registeredTicker: { [name: TickerTagType]: typeof TickerBase } = {}
     /**
      * Currently tickers that are running.
      */
@@ -461,7 +484,7 @@ export class GameWindowManager {
      */
     private static geTickerInstance<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
         try {
-            let ticker = GameWindowManager.registeredTicker[tickerName]
+            let ticker = registeredTickers[tickerName]
             if (!ticker) {
                 console.error(`Ticker ${tickerName} not found`)
                 return
@@ -485,17 +508,13 @@ export class GameWindowManager {
     }
 
     /**
-     * Canvas Event Register
-     */
-    static registeredEvent: { [name: EventTagType]: typeof CanvasEvent<CanvasEventNamesType> } = {}
-    /**
      * Get an event instance by the class name.
      * @param labelName The name of the class.
      * @returns The event instance.
      */
     public static getEventInstanceByClassName<T = CanvasEvent<SupportedCanvasElement>>(labelName: EventTagType): T | undefined {
         try {
-            let event = GameWindowManager.registeredEvent[labelName]
+            let event = registeredEvents[labelName]
             if (!event) {
                 console.error(`Event ${labelName} not found`)
                 return
@@ -521,7 +540,7 @@ export class GameWindowManager {
     public static export(): ExportedCanvas {
         let currentElements: ICanvasBaseMemory[] = []
         for (let tag in GameWindowManager._children) {
-            currentElements.push(GameWindowManager._children[tag].memory)
+            currentElements.push(exportCanvasElement(GameWindowManager._children[tag]))
         }
         return {
             currentTickers: GameWindowManager._currentTickers,

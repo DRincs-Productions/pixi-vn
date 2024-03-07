@@ -46,12 +46,12 @@ export class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
     /**
      * on() does not keep in memory the event class, use onEvent() instead
      * @deprecated
+     * @private
      * @param event 
      * @param fn 
      * @param context 
      */
     override on<T extends keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
-        console.warn("on() does not keep in memory the event class, use onEvent() instead")
         return super.on(event, fn, context)
     }
 }
