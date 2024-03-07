@@ -1,6 +1,6 @@
 import { Container, Texture } from "pixi.js";
 import { CanvasContainer, getMemoryContainer } from "../classes/canvas/CanvasContainer";
-import { CanvasImage, CanvasImageAsync, getMemoryCanvasImage, getMemoryCanvasImageAsync } from "../classes/canvas/CanvasImage";
+import { CanvasImage, getMemoryCanvasImage } from "../classes/canvas/CanvasImage";
 import { CanvasSprite, getMemorySprite } from "../classes/canvas/CanvasSprite";
 import { CanvasText, getMemoryText } from "../classes/canvas/CanvasText";
 import { ITextureMemory } from "../interface/canvas/ITextureMemory";
@@ -44,9 +44,6 @@ export function exportCanvasElement<T extends Container>(
     else if (element instanceof CanvasImage) {
         temp = getMemoryCanvasImage(element)
     }
-    else if (element instanceof CanvasImageAsync) {
-        temp = getMemoryCanvasImageAsync(element)
-    }
     else if (element instanceof CanvasSprite) {
         temp = getMemorySprite(element)
     }
@@ -77,9 +74,6 @@ export function importCanvasElement(
     }
     else if (memory.className === "CanvasImage") {
         element = new CanvasImage(memory.imageLink)
-    }
-    else if (memory.className === "CanvasImageAsync") {
-        element = new CanvasImageAsync(memory.imageLink)
     }
     else if (memory.className === "CanvasSprite") {
         element = CanvasSprite.from(getTexture(memory.textureImage))

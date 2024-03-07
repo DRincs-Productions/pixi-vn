@@ -1,6 +1,5 @@
 import { Application, ApplicationOptions, Container, Ticker, UPDATE_PRIORITY } from "pixi.js";
 import { CanvasEvent } from "../classes/CanvasEvent";
-import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
 import { registeredEvents } from "../decorators/EventDecorator";
 import { registeredTickers } from "../decorators/TickerDecorator";
@@ -233,27 +232,6 @@ export class GameWindowManager {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager._children = {}
         GameWindowManager.removeTickers()
-    }
-    /**
-     * Add a temporary canvas element to the canvas.
-     * @param canvasElement The canvas elements to be added.
-     */
-    public static addCanvasElementTemporary(canvasElement: SupportedCanvasElement | Container) {
-        if (canvasElement instanceof CanvasBase) {
-            canvasElement = canvasElement
-        }
-        GameWindowManager.app.stage.addChild(canvasElement)
-    }
-    /**
-     * Remove a temporary canvas element from the canvas.
-     * @param canvasElement The canvas elements to be removed.
-     */
-    public static removeCanvasElementTemporary(canvasElement: Container) {
-        if (canvasElement instanceof CanvasBase) {
-            GameWindowManager.app.stage.removeChild(canvasElement)
-            return
-        }
-        GameWindowManager.app.stage.removeChild(canvasElement)
     }
     /**
      * Edit the tag of a canvas element.
