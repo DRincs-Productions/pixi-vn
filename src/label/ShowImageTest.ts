@@ -1,8 +1,10 @@
 import { Label } from "../lib/classes/Label";
+import { CanvasImage } from "../lib/classes/canvas/CanvasImage";
 import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { setDialogue } from "../lib/functions/DialogueUtility";
 import { addImage, removeImage, showCanvasImages, showImage, showImageWithDisolveEffect, showImageWithEffect } from "../lib/functions/ImageUtility";
+import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
 @labelDecorator()
@@ -22,8 +24,7 @@ export class ShowImageTest extends Label {
                     })
             },
             () => {
-                removeImage("bunny1")
-                removeImage("bunny2")
+                removeImage(["bunny1", "bunny2"])
                 setDialogue("You can also remove a image from the canvas with the function removeImage.")
             },
             async () => {
@@ -37,6 +38,7 @@ export class ShowImageTest extends Label {
                 await showCanvasImages([alien1, alien2])
             },
             async () => {
+                removeImage(["alien1", "alien2"])
                 let alien = await showImageWithEffect("alien", 'https://pixijs.com/assets/eggHead.png',
                     new TickerRotate({ speed: 0.1 }),
                 )
@@ -51,7 +53,12 @@ export class ShowImageTest extends Label {
             () => {
                 showImageWithDisolveEffect("alien", 'https://pixijs.com/assets/eggHead.png', 0.01)
                 setDialogue("You can also show a image with a dissolve effect with the function showImageWithDisolveEffect")
-            }
+            },
+            () => {
+                let alien = GameWindowManager.getCanvasElement<CanvasImage>("alien")
+                if (alien) alien.alpha = 1
+                setDialogue("If you want to remove the dissolve effect, you can change the alpha of the image.")
+            },
         ]
     }
 }

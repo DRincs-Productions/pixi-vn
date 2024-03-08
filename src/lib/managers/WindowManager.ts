@@ -213,8 +213,8 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @returns The canvas element.
      */
-    public static getCanvasElement(tag: string): SupportedCanvasElement | undefined {
-        return GameWindowManager._children[tag] as SupportedCanvasElement | undefined
+    public static getCanvasElement<T extends SupportedCanvasElement>(tag: string): T | undefined {
+        return GameWindowManager._children[tag] as T | undefined
     }
     /**
      * Check if a DisplayObject is on the canvas.

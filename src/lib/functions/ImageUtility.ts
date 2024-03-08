@@ -93,7 +93,7 @@ export async function getTexture(imageUrl: string): Promise<Texture | string> {
  * Remove a image from the canvas.
  * @param tag is the unique tag of the image. You can use this tag to refer to this image
  */
-export function removeImage(tag: string) {
+export function removeImage(tag: string | string[]) {
     GameWindowManager.removeCanvasElement(tag)
 }
 
