@@ -36,19 +36,17 @@ export default function DialogueInterface() {
     }, [])
 
     function nextOnClick() {
-        () => {
-            setLoading(true)
-            GameStepManager.runNextStep()
-                .then((value) => {
-                    let dialogue = getDialogue()
-                    setText(dialogue)
-                    setLoading(false)
-                    setMenu(value)
-                })
-                .catch(() => {
-                    setLoading(false)
-                })
-        }
+        setLoading(true)
+        GameStepManager.runNextStep()
+            .then((value) => {
+                let dialogue = getDialogue()
+                setText(dialogue)
+                setLoading(false)
+                setMenu(value)
+            })
+            .catch(() => {
+                setLoading(false)
+            })
     }
 
     return (
