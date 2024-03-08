@@ -50,7 +50,7 @@ export async function showCanvasImages(canvasImages: CanvasImage[] | CanvasImage
     return Promise.all(promises).then((textures) => {
         return textures.map((texture, index) => {
             if (typeof texture === "string") {
-                // TODO: add a error image in the canvas
+                canvasImages[index].refreshImage()
                 console.error(STRING_ERRORS.IMAGE_NOT_FOUND, canvasImages[index].imageLink)
                 return canvasImages[index]
             }

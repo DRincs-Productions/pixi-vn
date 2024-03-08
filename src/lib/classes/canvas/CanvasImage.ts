@@ -16,16 +16,14 @@ export class CanvasImage extends CanvasSprite {
         return getTexture(this.imageLink)
             .then((texture) => {
                 if (typeof texture === "string") {
-                    // this.pixiElement.text = texture
+                    console.error("Error loading image")
                 }
                 else {
-                    // this.pixiElement.text = ""
                     this.texture = texture
                 }
             })
             .catch(() => {
                 console.error("Error loading image")
-                // this.pixiElement.text = "Error loading image"
             })
     }
 }
