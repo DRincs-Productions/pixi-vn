@@ -14,7 +14,7 @@ import { SupportedCanvasElement, SupportedCanvasElementMemory } from "../types/S
 export function getTextureMemory(texture: Texture): ITextureMemory {
     let sourceTexture = texture.source
     let textureMemory: ITextureMemory = {
-        image: (sourceTexture.resource as any).url
+        image: sourceTexture.label
     }
     return textureMemory
 }

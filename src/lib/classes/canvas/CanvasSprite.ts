@@ -38,6 +38,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
         let instance = GameWindowManager.getEventInstanceByClassName(className)
+        this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
                 (instance as CanvasEvent<SupportedCanvasElement>).fn(event, this)
@@ -58,7 +59,9 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite {
         let sprite = Sprite.from(source, skipCache)
-        return new CanvasSprite(sprite)
+        let mySprite = new CanvasSprite()
+        mySprite.texture = sprite.texture
+        return mySprite
     }
 }
 
