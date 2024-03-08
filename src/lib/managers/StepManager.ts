@@ -106,7 +106,7 @@ export class GameStepManager {
     }
     /**
      * Execute the next step and add it to the history.
-     * @returns
+     * @returns void if the step is a normal step, MunuType if the step is a menu.
      */
     public static async runNextStep() {
         let lasteStepsLength = GameStepManager.stepsAfterLastHistoryLabel.length
@@ -120,7 +120,12 @@ export class GameStepManager {
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
                 GameStepManager.addStepHistory(nextStep)
-                await nextStep()
+                let value = await nextStep()
+                // if is menu
+                if (value) {
+                    GameStepManager.addMenuHistory(GameStepManager.currentLabel)
+                    return value
+                }
                 return
             }
             if (n === lasteStepsLength) {
@@ -175,6 +180,19 @@ export class GameStepManager {
         }
         GameStepManager.stepsHistory.push(historyLabel)
         GameStepManager.openedLabels.pop()
+    }
+    private static addMenuHistory(label: LabelTagType) {
+        let currentLabel = GameStepManager.getLabelByClassName(label)
+        if (!currentLabel) {
+            console.error("Label not found")
+            return
+        }
+        let historyLabel: IHistoryLabelEvent = {
+            label: label,
+            type: HistoryLabelEventEnum.OpenMenu,
+            labelClassName: currentLabel.constructor.name,
+        }
+        GameStepManager.stepsHistory.push(historyLabel)
     }
     public static exportJson(): string {
         return JSON.stringify(this.export())
