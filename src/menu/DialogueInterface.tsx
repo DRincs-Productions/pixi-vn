@@ -15,8 +15,6 @@ import { MunuOptionsType } from '../lib/types/MunuOptionsType';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 import DialogueMenuInterface from './DialogueMenuInterface';
 
-
-
 export default function DialogueInterface() {
     const [windowSize, setWindowSize] = useState({
         x: 0,
