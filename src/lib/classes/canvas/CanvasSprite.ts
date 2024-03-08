@@ -1,4 +1,4 @@
-import { Container, ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getTextureMemory } from "../../functions/CanvasUtility";
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
@@ -21,19 +21,6 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     private _onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
     get onEvents() {
         return this._onEvents
-    }
-    addCanvasChild<U extends SupportedCanvasElement[]>(...children: U): U[0] {
-        return super.addChild(...children)
-    }
-    /**
-     * addChild() does not keep in memory the children, use addCanvasChild() instead
-     * @deprecated
-     * @param children 
-     * @returns 
-     */
-    override addChild<U extends Container[]>(...children: U): U[0] {
-        console.warn("addChild() does not keep in memory the children, use addCanvasChild() instead")
-        return super.addChild(...children)
     }
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name

@@ -3,6 +3,7 @@ import { CanvasContainer, getMemoryContainer } from "../classes/canvas/CanvasCon
 import { CanvasImage, getMemoryCanvasImage } from "../classes/canvas/CanvasImage";
 import { CanvasSprite, getMemorySprite } from "../classes/canvas/CanvasSprite";
 import { CanvasText, getMemoryText } from "../classes/canvas/CanvasText";
+import { ICanvasContainerMemory } from "../interface/canvas/ICanvasContainerMemory";
 import { ITextureMemory } from "../interface/canvas/ITextureMemory";
 import { SupportedCanvasElement, SupportedCanvasElementMemory } from "../types/SupportedCanvasElement";
 
@@ -49,14 +50,14 @@ export function exportCanvasElement<T extends Container>(
     }
     else if (element instanceof Container) {
         temp = getMemoryContainer(element)
+        element.children.forEach(child => {
+            (temp as ICanvasContainerMemory).elements.push(exportCanvasElement(child))
+        })
     }
     else {
         throw new Error("Invalid class name")
     }
 
-    element.children.forEach(child => {
-        temp.elements.push(exportCanvasElement(child))
-    })
     return temp
 }
 
@@ -80,13 +81,13 @@ export function importCanvasElement(
     }
     else if (memory.className === "CanvasContainer") {
         element = new CanvasContainer(memory)
+        memory.elements.forEach(child => {
+            (element as CanvasContainer).addCanvasChild(importCanvasElement(child))
+        })
     }
     else {
         throw new Error("Invalid class name")
     }
 
-    memory.elements.forEach(child => {
-        element.addCanvasChild(importCanvasElement(child))
-    })
     return element
 }
