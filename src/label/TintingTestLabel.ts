@@ -74,7 +74,7 @@ export class TintingTestLabel extends Label {
 
                 for (let i = 0; i < totalDudes; i++) {
                     // create a new Sprite that uses the image name that we just generated as its source
-                    const texture = await Assets.load('https://pixijs.com/asets/eggHead.png');
+                    const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
                     const dude = AlienTintingTest.from(texture);
 
                     // set the anchor point so the texture is centered on the sprite
