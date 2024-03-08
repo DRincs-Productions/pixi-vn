@@ -1,6 +1,7 @@
 import { getTexture } from "../../functions/ImageUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
 import { CanvasSprite, getMemorySprite } from "./CanvasSprite";
+import { CanvasText } from "./CanvasText";
 
 /**
  * The class for the image.
@@ -11,21 +12,32 @@ export class CanvasImage extends CanvasSprite {
         super()
         this.imageLink = image
     }
+    errorText?: CanvasText
     imageLink: string;
     async refreshImage() {
         return getTexture(this.imageLink)
             .then((texture) => {
                 if (typeof texture === "string") {
-                    // this.pixiElement.text = texture
+                    if (!this.errorText) {
+                        this.errorText = new CanvasText()
+                        this.addCanvasChild(this.errorText)
+                    }
+                    this.errorText.text = texture
                 }
                 else {
-                    // this.pixiElement.text = ""
+                    if (this.errorText) {
+                        this.removeChild(this.errorText)
+                    }
                     this.texture = texture
                 }
             })
             .catch(() => {
                 console.error("Error loading image")
-                // this.pixiElement.text = "Error loading image"
+                if (!this.errorText) {
+                    this.errorText = new CanvasText()
+                    this.addCanvasChild(this.errorText)
+                }
+                this.errorText.text = "Error loading image"
             })
     }
 }
