@@ -1,3 +1,4 @@
+import { Assets } from "pixi.js";
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
 import { TickerFadeAlpha } from "../lib/classes/ticker/TickerFadeAlpha";
@@ -19,9 +20,11 @@ const alien4Tag = "alien4"
 export class TickerTestLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
-            () => {
+            async () => {
                 let my_speed = 0.1
-                const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
+                // Load the bunny texture
+                const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                const alien = CanvasSprite.from(texture);
 
                 alien.anchor.set(0.5);
 
@@ -32,9 +35,10 @@ export class TickerTestLabel extends Label {
                 GameWindowManager.addTicker(alien1Tag, new TickerRotate({ speed: my_speed }));
                 setDialogue(`I have added a image with a tag ${alien1Tag} and I connected a RotateTicker with a speed of ${my_speed} to it.`)
             },
-            () => {
+            async () => {
                 let my_speed = 0.1
-                const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
+                const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                const alien = CanvasSprite.from(texture);
 
                 alien.anchor.set(0.5);
 
@@ -60,10 +64,11 @@ export class TickerTestLabel extends Label {
                 GameWindowManager.removeAssociationBetweenTickerCanvasElement(alien2Tag, TickerRotate)
                 setDialogue(`I have removed the RotateTicker connected to ${alien2Tag}`)
             },
-            () => {
+            async () => {
                 removeImage(alien2Tag)
                 let duration = 7000
-                const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
+                const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                const alien = CanvasSprite.from(texture);
                 alien.anchor.set(0.5);
                 GameWindowManager.addCanvasElement(alien3Tag, alien);
                 alien.x = 500
@@ -71,10 +76,11 @@ export class TickerTestLabel extends Label {
                 GameWindowManager.addTicker(alien3Tag, new TickerRotate({ speed: 0.1 }, duration))
                 setDialogue(`I have added a image with a tag ${alien3Tag} and I connected a RotateTicker with a speed of 0.1 and a duration of ${duration} to it. After ${duration}ms, the RotateTicker will be removed.`)
             },
-            () => {
+            async () => {
                 let my_speed = 0.1
                 let my_speed2 = 0.3
-                const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
+                const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                const alien = CanvasSprite.from(texture);
 
                 alien.anchor.set(0.5);
 
@@ -88,8 +94,9 @@ export class TickerTestLabel extends Label {
                 ])
                 setDialogue(`I have added a image with a tag ${alien1Tag} and I connected a RotateTicker with a speed of ${my_speed} and a duration of 1000ms and then I connected a RotateTicker with a speed of ${my_speed2} and a duration of 1000ms to it.`)
             },
-            () => {
-                const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
+            async () => {
+                const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                const alien = CanvasSprite.from(texture);
 
                 alien.anchor.set(0.5);
 
@@ -105,8 +112,9 @@ export class TickerTestLabel extends Label {
                 ])
                 setDialogue(`I have added a image with a tag ${alien2Tag} and I connected a RotateTicker with a speed of 0.1 and a duration of 2000ms and then I connected a RotateTicker with a speed of 0.2 and a duration of 2000ms to it. After 500ms, the RotateTicker will be repeated.`)
             },
-            () => {
-                const alien = CanvasSprite.from('https://pixijs.com/assets/eggHead.png');
+            async () => {
+                const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                const alien = CanvasSprite.from(texture);
 
                 alien.anchor.set(0.5);
 

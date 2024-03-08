@@ -1,4 +1,4 @@
-import { Rectangle, Texture, TextureSourceLike, Ticker } from "pixi.js";
+import { Assets, Rectangle, Texture, TextureSourceLike, Ticker } from "pixi.js";
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
 import { TickerBase } from "../lib/classes/ticker/TickerBase";
@@ -13,7 +13,9 @@ class AlienTintingTest extends CanvasSprite {
     speed: number = 0
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): AlienTintingTest {
         let sprite = CanvasSprite.from(source, skipCache)
-        return new AlienTintingTest(sprite)
+        let mySprite = new AlienTintingTest()
+        mySprite.texture = sprite.texture
+        return mySprite
     }
 }
 
@@ -64,7 +66,7 @@ export class TintingTestTicker extends TickerBase<{}> {
 export class TintingTestLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
-            () => {
+            async () => {
                 // holder to store the aliens
                 const aliens: AlienTintingTest[] = [];
 
@@ -72,7 +74,8 @@ export class TintingTestLabel extends Label {
 
                 for (let i = 0; i < totalDudes; i++) {
                     // create a new Sprite that uses the image name that we just generated as its source
-                    const dude = AlienTintingTest.from('https://pixijs.com/assets/eggHead.png');
+                    const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                    const dude = AlienTintingTest.from(texture);
 
                     // set the anchor point so the texture is centered on the sprite
                     dude.anchor.set(0.5);
