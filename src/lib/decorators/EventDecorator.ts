@@ -1,7 +1,11 @@
 import { CanvasEvent } from "../classes/CanvasEvent"
-import { GameWindowManager } from "../managers/WindowManager"
+import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
 import { EventTagType } from "../types/EventTagType"
 
+/**
+ * Canvas Event Register
+ */
+export const registeredEvents: { [name: EventTagType]: typeof CanvasEvent<CanvasEventNamesType> } = {}
 /**
  * EventDecorator is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
@@ -14,9 +18,9 @@ export function eventDecorator(name?: EventTagType) {
         if (!name) {
             name = target.name
         }
-        if (GameWindowManager.registeredEvent[name]) {
+        if (registeredEvents[name]) {
             console.warn(`Event ${name} already exists, it will be overwritten`)
         }
-        GameWindowManager.registeredEvent[name] = target
+        registeredEvents[name] = target
     }
 }

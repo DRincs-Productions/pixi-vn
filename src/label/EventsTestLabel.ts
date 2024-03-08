@@ -1,4 +1,4 @@
-import { Texture } from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 import { CanvasEvent } from "../lib/classes/CanvasEvent";
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from '../lib/classes/canvas/CanvasSprite';
@@ -62,8 +62,12 @@ export class EventTest2 extends CanvasEvent<CanvasSprite> {
 export class EventsTestLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
-            () => {
-                const sprite = CanvasSprite.from('https://pixijs.com/assets/bunny.png');
+            async () => {
+                // Load the bunny texture
+                const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+
+                // Create the bunny sprite
+                const sprite = CanvasSprite.from(texture);
 
                 // Set the initial position
                 sprite.anchor.set(0.5);
@@ -77,7 +81,7 @@ export class EventsTestLabel extends Label {
                 sprite.cursor = 'pointer';
 
                 // Pointers normalize touch and mouse (good for mobile and desktop)
-                sprite.on('pointerdown', EventTest);
+                sprite.onEvent('pointerdown', EventTest);
 
                 // Alternatively, use the mouse & touch events:
                 // sprite.on('click', onClick); // mouse-only
@@ -89,30 +93,33 @@ export class EventsTestLabel extends Label {
             },
             () => setDialogue("To make the events in the canvas work. by default all elements in the gliaphic html interface are: pointerEvents = 'none'. to enable clicking on html elements, you will need to add the css pointerEvents = 'auto'"),
             () => setDialogue("For performance reasons it is better to add the buttons in the html interface and not in the canvas."),
-            () => {
+            async () => {
                 clearDialogue();
                 GameWindowManager.clear();
-                // create a background...
+
+                // Load textures
+                await Assets.load([
+                    'https://pixijs.com/assets/bg_button.jpg',
+                    'https://pixijs.com/assets/button.png',
+                    'https://pixijs.com/assets/button_down.png',
+                    'https://pixijs.com/assets/button_over.png',
+                ]);
+
+                // Create a background...
                 const background = CanvasSprite.from('https://pixijs.com/assets/bg_button.jpg');
 
                 background.width = GameWindowManager.screen.width;
                 background.height = GameWindowManager.screen.height;
 
-                // add background to stage...
+                // Add background to stage...
                 GameWindowManager.addCanvasElement("bg", background);
 
-                // create some textures from an image path
+                // Create some textures from an image path
                 const textureButton = Texture.from('https://pixijs.com/assets/button.png');
 
                 const buttons = [];
 
-                const buttonPositions = [
-                    175, 75,
-                    655, 75,
-                    410, 325,
-                    150, 465,
-                    685, 445,
-                ];
+                const buttonPositions = [175, 75, 655, 75, 410, 325, 150, 465, 685, 445];
 
                 for (let i = 0; i < 5; i++) {
                     const button = new CanvasSprite(textureButton);
@@ -121,7 +128,7 @@ export class EventsTestLabel extends Label {
                     button.x = buttonPositions[i * 2];
                     button.y = buttonPositions[i * 2 + 1];
 
-                    // make the button interactive...
+                    // Make the button interactive...
                     button.eventMode = 'static';
                     button.cursor = 'pointer';
 
@@ -129,20 +136,20 @@ export class EventsTestLabel extends Label {
                         // Mouse & touch events are normalized into
                         // the pointer* events for handling different
                         // button events.
-                        .on('pointerdown', EventTest2)
-                        .on('pointerup', EventTest2)
-                        .on('pointerupoutside', EventTest2)
-                        .on('pointerover', EventTest2)
-                        .on('pointerout', EventTest2);
+                        .onEvent('pointerdown', EventTest2)
+                        .onEvent('pointerup', EventTest2)
+                        .onEvent('pointerupoutside', EventTest2)
+                        .onEvent('pointerover', EventTest2)
+                        .onEvent('pointerout', EventTest2);
 
-                    // add it to the stage
+                    // Add it to the stage
                     GameWindowManager.addCanvasElement("button" + i, button);
 
-                    // add button to array
+                    // Add button to array
                     buttons.push(button);
                 }
 
-                // set some silly values...
+                // Set some silly values...
                 buttons[0].scale.set(1.2);
                 buttons[2].rotation = Math.PI / 10;
                 buttons[3].scale.set(0.8);

@@ -1,17 +1,14 @@
-import { ColorSource, Cursor, EventMode } from "pixi.js";
+import { SpriteOptions } from "pixi.js";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
-import { ICanvasContainerMemory } from "./ICanvasContainerMemory";
+import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
 import { ITextureMemory } from "./ITextureMemory";
 
 /**
  * Interface for the canvas sprite memory
  */
-export interface ICanvasSpriteMemory extends ICanvasContainerMemory {
-    texture: ITextureMemory,
-    anchor: { x: number, y: number },
-    tint: ColorSource,
-    eventMode: EventMode,
-    cursor: Cursor | string,
+export interface ICanvasSpriteMemory extends SpriteOptions, ICanvasBaseMemory {
+    className: "CanvasSprite",
+    textureImage: ITextureMemory,
     onEvents: { [name: CanvasEventNamesType]: EventTagType }
 }

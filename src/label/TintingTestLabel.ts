@@ -1,4 +1,4 @@
-import { IBaseTextureOptions, Rectangle, Sprite, SpriteSource } from "pixi.js";
+import { Assets, Rectangle, Texture, TextureSourceLike, Ticker } from "pixi.js";
 import { Label } from "../lib/classes/Label";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
 import { TickerBase } from "../lib/classes/ticker/TickerBase";
@@ -11,10 +11,10 @@ class AlienTintingTest extends CanvasSprite {
     direction: number = 0
     turningSpeed: number = 0
     speed: number = 0
-    static override from(source: SpriteSource, options?: IBaseTextureOptions<any> | undefined): AlienTintingTest {
-        let sprite = Sprite.from(source, options)
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): AlienTintingTest {
+        let sprite = CanvasSprite.from(source, skipCache)
         let mySprite = new AlienTintingTest()
-        mySprite.pixiElement = sprite
+        mySprite.texture = sprite.texture
         return mySprite
     }
 }
@@ -24,7 +24,7 @@ export class TintingTestTicker extends TickerBase<{}> {
     constructor() {
         super({})
     }
-    override fn(_delta: number, _args: {}, tags: string[]): void {
+    override fn(_t: Ticker, _args: {}, tags: string[]): void {
         tags.forEach((tag) => {
             // create a bounding box for the little dudes
             const dudeBoundsPadding = 100;
@@ -66,7 +66,7 @@ export class TintingTestTicker extends TickerBase<{}> {
 export class TintingTestLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
-            () => {
+            async () => {
                 // holder to store the aliens
                 const aliens: AlienTintingTest[] = [];
 
@@ -74,7 +74,8 @@ export class TintingTestLabel extends Label {
 
                 for (let i = 0; i < totalDudes; i++) {
                     // create a new Sprite that uses the image name that we just generated as its source
-                    const dude = AlienTintingTest.from('https://pixijs.com/assets/eggHead.png');
+                    const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
+                    const dude = AlienTintingTest.from(texture);
 
                     // set the anchor point so the texture is centered on the sprite
                     dude.anchor.set(0.5);

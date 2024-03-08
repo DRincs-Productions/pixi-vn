@@ -1,3 +1,4 @@
+import { Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { TickerProgrationType } from "../../interface/ITickerProgration";
@@ -23,7 +24,7 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
      * @param tags The tags of the canvas element that are connected to this ticker
      */
     override fn(
-        delta: number,
+        t: Ticker,
         args: {
             speed?: number,
             clockwise?: boolean,
@@ -37,9 +38,9 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
             let element = GameWindowManager.getCanvasElement(tag)
             if (element && element instanceof CanvasSprite) {
                 if (clockwise)
-                    element.rotation += speed * delta;
+                    element.rotation += speed * t.deltaTime
                 else
-                    element.rotation -= speed * delta;
+                    element.rotation -= speed * t.deltaTime
             }
         })
         if (args.speedProgression)

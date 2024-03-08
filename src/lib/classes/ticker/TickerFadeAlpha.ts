@@ -1,3 +1,4 @@
+import { Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasSprite } from "../canvas/CanvasSprite";
@@ -22,7 +23,7 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
      * @param tags The tags of the canvas element that are connected to this ticker
      */
     override fn(
-        delta: number,
+        t: Ticker,
         args: {
             speed?: number,
             type?: "hide" | "show",
@@ -48,10 +49,10 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
             let element = GameWindowManager.getCanvasElement(tag)
             if (element && element instanceof CanvasSprite) {
                 if (type === "show" && element.alpha < limit) {
-                    element.alpha += speed * delta
+                    element.alpha += speed * t.deltaTime
                 }
                 else if (type === "hide" && element.alpha > limit) {
-                    element.alpha -= speed * delta
+                    element.alpha -= speed * t.deltaTime
                 }
                 else {
                     element.alpha = limit

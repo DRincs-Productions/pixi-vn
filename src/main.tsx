@@ -9,11 +9,9 @@ if (!body) {
     throw new Error('body element not found')
 }
 
-GameWindowManager.initialize(1920, 1080, {
+await GameWindowManager.initialize(body, 1920, 1080, {
     backgroundColor: "#303030"
 })
-
-GameWindowManager.addCanvasIntoElement(body)
 
 // React setup with ReactDOM
 const root = document.getElementById('root')

@@ -1,7 +1,10 @@
 import { TickerBase } from "../classes/ticker/TickerBase"
-import { GameWindowManager } from "../managers/WindowManager"
 import { TickerTagType } from "../types/TickerTagType"
 
+/**
+ * A dictionary that contains all tickers registered and avvailable to be used.
+ */
+export const registeredTickers: { [name: TickerTagType]: typeof TickerBase } = {}
 /**
  * TickerDecorator is a decorator that register a ticker in the game.
  * Is a required decorator for use the ticker in the game.
@@ -14,9 +17,9 @@ export function tickerDecorator(name?: TickerTagType) {
         if (!name) {
             name = target.name
         }
-        if (GameWindowManager.registeredTicker[name]) {
+        if (registeredTickers[name]) {
             console.warn(`Label ${name} already exists, it will be overwritten`)
         }
-        GameWindowManager.registeredTicker[name] = target
+        registeredTickers[name] = target
     }
 }

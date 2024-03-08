@@ -1,4 +1,5 @@
 import { Label } from "../classes/Label"
+import { registeredLabels } from "../decorators/LabelDecorator"
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
 import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
 import { IHistoryLabelEvent } from "../interface/IHistoryLabelEvent"
@@ -20,7 +21,6 @@ export class GameStepManager {
      */
     public static stepsHistory: (IHistoryLabelEvent | IHistoryStep)[] = []
     private static openedLabels: LabelTagType[] = []
-    public static registeredLabels: { [key: LabelTagType]: typeof Label } = {}
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
@@ -210,7 +210,7 @@ export class GameStepManager {
     }
     private static getLabelByClassName<T extends Label>(labelName: LabelTagType): T | undefined {
         try {
-            let labelType = GameStepManager.registeredLabels[labelName]
+            let labelType = registeredLabels[labelName]
             if (!labelType) {
                 console.error("Label not found")
                 return

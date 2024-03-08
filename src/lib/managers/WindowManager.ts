@@ -1,7 +1,9 @@
-import { Application, DisplayObject, IApplicationOptions, UPDATE_PRIORITY } from "pixi.js";
+import { Application, ApplicationOptions, Container, Ticker, UPDATE_PRIORITY } from "pixi.js";
 import { CanvasEvent } from "../classes/CanvasEvent";
-import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
+import { registeredEvents } from "../decorators/EventDecorator";
+import { registeredTickers } from "../decorators/TickerDecorator";
+import { exportCanvasElement } from "../functions/CanvasUtility";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
@@ -10,6 +12,7 @@ import { ExportedCanvas } from "../interface/export/ExportedCanvas";
 import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
+import { SupportedCanvasElement } from "../types/SupportedCanvasElement";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**
@@ -19,10 +22,24 @@ import { TickerTagType } from "../types/TickerTagType";
 export class GameWindowManager {
     private constructor() { }
 
+    private static _app: Application | undefined = undefined
     /**
      * The PIXI Application instance.
      */
-    private static app: Application
+
+    static get app() {
+        if (!GameWindowManager._app) {
+            throw new Error("Manager.app is undefined")
+        }
+        return GameWindowManager._app
+    }
+    private static _isInitialized: boolean = false
+    /**
+     * If the manager is initialized.
+     */
+    static get isInitialized() {
+        return GameWindowManager._isInitialized
+    }
     /**
      * This is the div that have same size of the canvas.
      * This is useful to put interface elements.
@@ -38,28 +55,31 @@ export class GameWindowManager {
     /**
      * Initialize the PIXI Application and the interface div.
      * This method should be called before any other method.
+     * @param element The html element where I will put the canvas. Example: document.body
      * @param width The width of the canvas
      * @param height The height of the canvas
      * @param options The options of PIXI Application
      */
-    public static initialize(width: number, height: number, options?: Partial<IApplicationOptions>): void {
+    public static async initialize(element: HTMLElement, width: number, height: number, options?: Partial<ApplicationOptions>): Promise<void> {
         GameWindowManager.width = width
         GameWindowManager.height = height
-        GameWindowManager.app = new Application({
+        GameWindowManager._app = new Application()
+        return GameWindowManager.app.init({
             resolution: window.devicePixelRatio || 1,
             autoDensity: true,
             width: width,
             height: height,
             ...options
+        }).then(() => {
+            GameWindowManager._isInitialized = true
+            // Manager.app.ticker.add(Manager.update)
+            this.addCanvasIntoElement(element)
+            // listen for the browser telling us that the screen size changed
+            window.addEventListener("resize", GameWindowManager.resize)
+
+            // call it manually once so we are sure we are the correct size after starting
+            GameWindowManager.resize()
         });
-
-        // Manager.app.ticker.add(Manager.update)
-
-        // listen for the browser telling us that the screen size changed
-        window.addEventListener("resize", GameWindowManager.resize)
-
-        // call it manually once so we are sure we are the correct size after starting
-        GameWindowManager.resize()
     }
 
     /**
@@ -67,7 +87,12 @@ export class GameWindowManager {
      * @param element it is the html element where I will put the canvas. Example: document.body
      */
     public static addCanvasIntoElement(element: HTMLElement) {
-        element.appendChild(GameWindowManager.app.view as HTMLCanvasElement)
+        if (GameWindowManager.isInitialized) {
+            element.appendChild(GameWindowManager.app.canvas as HTMLCanvasElement)
+        }
+        else {
+            console.error("Manager is not initialized")
+        }
     }
     /**
      * Initialize the interface div and add it into a html element.
@@ -123,11 +148,8 @@ export class GameWindowManager {
      */
     private static resize(): void {
         // now we use css trickery to set the sizes and margins
-        if (!GameWindowManager.app?.view?.style) {
-            console.error("Manager.app.view.style is undefined")
-        }
-        else {
-            let style = GameWindowManager.app.view.style;
+        if (GameWindowManager.isInitialized) {
+            let style = GameWindowManager.app.canvas.style;
             style.width = `${GameWindowManager.enlargedWidth}px`;
             style.height = `${GameWindowManager.enlargedHeight}px`;
             (style as any).marginLeft = `${GameWindowManager.horizontalMargin}px`;
@@ -154,18 +176,18 @@ export class GameWindowManager {
     static get currentCanvasElements() {
         return GameWindowManager._children
     }
-    private static _children: { [tag: string]: CanvasBase<any, any> } = {}
+    private static _children: { [tag: string]: SupportedCanvasElement } = {}
     /**
      * Add a canvas element to the canvas.
      * If there is a canvas element with the same tag, it will be removed.
      * @param tag The tag of the canvas element.
      * @param canvasElement The canvas elements to be added.
      */
-    public static addCanvasElement<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(tag: string, canvasElement: CanvasBase<T1, T2>) {
+    public static addCanvasElement(tag: string, canvasElement: SupportedCanvasElement) {
         if (GameWindowManager._children[tag]) {
             GameWindowManager.removeCanvasElement(tag)
         }
-        GameWindowManager.app.stage.addChild(canvasElement.pixiElement)
+        GameWindowManager.app.stage.addChild(canvasElement)
         GameWindowManager._children[tag] = canvasElement
     }
     /**
@@ -180,7 +202,7 @@ export class GameWindowManager {
         }
         tag.forEach((t) => {
             if (GameWindowManager._children[t]) {
-                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t].pixiElement)
+                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t])
                 delete GameWindowManager._children[t]
             }
         })
@@ -191,7 +213,7 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @returns The canvas element.
      */
-    public static getCanvasElement<T extends CanvasBase<any, any>>(tag: string): T | undefined {
+    public static getCanvasElement<T extends SupportedCanvasElement>(tag: string): T | undefined {
         return GameWindowManager._children[tag] as T | undefined
     }
     /**
@@ -199,7 +221,7 @@ export class GameWindowManager {
      * @param pixiElement The DisplayObject to be checked.
      * @returns If the DisplayObject is on the canvas.
      */
-    public static canvasElementIsOnCanvas<T extends DisplayObject>(pixiElement: T) {
+    public static canvasElementIsOnCanvas<T extends Container>(pixiElement: T) {
         return GameWindowManager.app.stage.children.includes(pixiElement)
     }
     /**
@@ -210,27 +232,6 @@ export class GameWindowManager {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager._children = {}
         GameWindowManager.removeTickers()
-    }
-    /**
-     * Add a temporary canvas element to the canvas.
-     * @param canvasElement The canvas elements to be added.
-     */
-    public static addCanvasElementTemporary<T1 extends DisplayObject, T2 extends ICanvasBaseMemory>(canvasElement: CanvasBase<T1, T2> | DisplayObject) {
-        if (canvasElement instanceof CanvasBase) {
-            canvasElement = canvasElement.pixiElement
-        }
-        GameWindowManager.app.stage.addChild(canvasElement)
-    }
-    /**
-     * Remove a temporary canvas element from the canvas.
-     * @param canvasElement The canvas elements to be removed.
-     */
-    public static removeCanvasElementTemporary(canvasElement: DisplayObject) {
-        if (canvasElement instanceof CanvasBase) {
-            GameWindowManager.app.stage.removeChild(canvasElement.pixiElement)
-            return
-        }
-        GameWindowManager.app.stage.removeChild(canvasElement)
     }
     /**
      * Edit the tag of a canvas element.
@@ -246,10 +247,6 @@ export class GameWindowManager {
 
     /** Edit Tickers Methods */
 
-    /**
-     * A dictionary that contains all tickers registered and avvailable to be used.
-     */
-    static registeredTicker: { [name: TickerTagType]: typeof TickerBase } = {}
     /**
      * Currently tickers that are running.
      */
@@ -302,13 +299,13 @@ export class GameWindowManager {
             GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerName, timeout.toString())
         }
     }
-    private static pushTicker<TArgs extends TickerArgsType>(ticker: IClassWithArgsHistory<TArgs>, t: TickerBase<TArgs>) {
-        GameWindowManager.removeAssociationBetweenTickerCanvasElement(ticker.canvasElementTags, ticker)
-        GameWindowManager._currentTickers.push(ticker)
-        ticker.fn = (dt: number) => {
-            t?.fn(dt, ticker.args, ticker.canvasElementTags)
+    private static pushTicker<TArgs extends TickerArgsType>(tickerData: IClassWithArgsHistory<TArgs>, ticker: TickerBase<TArgs>) {
+        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementTags, tickerData)
+        GameWindowManager._currentTickers.push(tickerData)
+        tickerData.fn = (t: Ticker) => {
+            ticker?.fn(t, tickerData.args, tickerData.canvasElementTags)
         }
-        GameWindowManager.app.ticker.add(ticker.fn, undefined, ticker.priority)
+        GameWindowManager.app.ticker.add(tickerData.fn, undefined, tickerData.priority)
     }
     /**
      * Run a sequence of tickers.
@@ -465,7 +462,7 @@ export class GameWindowManager {
      */
     private static geTickerInstance<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
         try {
-            let ticker = GameWindowManager.registeredTicker[tickerName]
+            let ticker = registeredTickers[tickerName]
             if (!ticker) {
                 console.error(`Ticker ${tickerName} not found`)
                 return
@@ -489,17 +486,13 @@ export class GameWindowManager {
     }
 
     /**
-     * Canvas Event Register
-     */
-    static registeredEvent: { [name: EventTagType]: typeof CanvasEvent } = {}
-    /**
      * Get an event instance by the class name.
      * @param labelName The name of the class.
      * @returns The event instance.
      */
-    public static getEventInstanceByClassName<T extends CanvasEvent<any>>(labelName: EventTagType): T | undefined {
+    public static getEventInstanceByClassName<T = CanvasEvent<SupportedCanvasElement>>(labelName: EventTagType): T | undefined {
         try {
-            let event = GameWindowManager.registeredEvent[labelName]
+            let event = registeredEvents[labelName]
             if (!event) {
                 console.error(`Event ${labelName} not found`)
                 return
@@ -525,7 +518,7 @@ export class GameWindowManager {
     public static export(): ExportedCanvas {
         let currentElements: ICanvasBaseMemory[] = []
         for (let tag in GameWindowManager._children) {
-            currentElements.push(GameWindowManager._children[tag].memory)
+            currentElements.push(exportCanvasElement(GameWindowManager._children[tag]))
         }
         return {
             currentTickers: GameWindowManager._currentTickers,

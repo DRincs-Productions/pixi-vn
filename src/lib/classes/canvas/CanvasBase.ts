@@ -1,26 +1,11 @@
-import { DisplayObject, ObservablePoint } from "pixi.js"
-import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory"
-import { GameWindowManager } from "../../managers/WindowManager"
+import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
+import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
 
 /**
  * This class is responsible for storing a PIXI DisplayObject.
  * And allow to save your memory in a game save.
  */
-export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBaseMemory> {
-    get pixiElement() {
-        return this._pixiElement
-    }
-    set pixiElement(value: T) {
-        if (GameWindowManager.canvasElementIsOnCanvas(this._pixiElement)) {
-            GameWindowManager.removeCanvasElementTemporary(this._pixiElement)
-            GameWindowManager.addCanvasElementTemporary(value)
-        }
-        this._pixiElement = value
-    }
-    private _pixiElement: T
-    constructor(element: T) {
-        this._pixiElement = element
-    }
+export abstract class CanvasBase<T2 extends ICanvasBaseMemory> {
     /**
      * This method return the memory of the canvas element.
      */
@@ -29,41 +14,5 @@ export abstract class CanvasBase<T extends DisplayObject, T2 extends ICanvasBase
      * This method set the memory of the canvas element.
      */
     abstract set memory(value: T2)
-
-    get x() {
-        return this.pixiElement.x
-    }
-    set x(value: number) {
-        this.pixiElement.x = value
-    }
-    get y() {
-        return this.pixiElement.y
-    }
-    set y(value: number) {
-        this.pixiElement.y = value
-    }
-    get rotation() {
-        return this.pixiElement.rotation
-    }
-    set rotation(value: number) {
-        this.pixiElement.rotation = value
-    }
-    get pivot() {
-        return this.pixiElement.pivot
-    }
-    set pivot(value: { x: number, y: number }) {
-        this.pixiElement.pivot = value
-    }
-    get scale() {
-        return this.pixiElement.scale
-    }
-    set scale(value: ObservablePoint) {
-        this.pixiElement.scale = value
-    }
-    get alpha() {
-        return this.pixiElement.alpha
-    }
-    set alpha(value: number) {
-        this.pixiElement.alpha = value
-    }
+    abstract addCanvasChild<U extends SupportedCanvasElement[]>(...children: U): U[0]
 }
