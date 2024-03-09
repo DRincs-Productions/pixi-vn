@@ -40,6 +40,8 @@ export default function DialogueInterface() {
                 let dialogue = getDialogue()
                 setText(dialogue)
                 setLoading(false)
+                if (value && value.length === 0)
+                    value = undefined
                 setMenu(value)
             })
             .catch(() => {

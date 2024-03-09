@@ -148,7 +148,7 @@ export class GameStepManager {
             console.error(e)
             return
         }
-        await GameStepManager.runNextStep()
+        return await GameStepManager.runNextStep()
     }
     private static openLabel(label: LabelTagType) {
         let currentLabel = GameStepManager.getLabelByClassName(label)
