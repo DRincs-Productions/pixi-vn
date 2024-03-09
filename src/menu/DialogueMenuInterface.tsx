@@ -43,10 +43,11 @@ export default function DialogueMenuInterface(props: IProps) {
                     pointerEvents: "auto",
                 }}
             >
-                {menu.map((item) => {
+                {menu.map((item, index) => {
                     return (
                         <Grid xs={12} >
                             <DialogueMenuButton
+                                key={index}
                                 onClick={() => {
                                     if (item.type == RunModeLabelEnum.OpenByCall) {
                                         GameStepManager.runLabel(item.label)

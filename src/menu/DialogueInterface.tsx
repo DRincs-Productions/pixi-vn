@@ -8,7 +8,7 @@ import Typography from '@mui/joy/Typography';
 import { useEffect, useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
 import { DialogueModelBase } from '../lib/classes/DialogueModelBase';
-import { getDialogue } from '../lib/functions/DialogueUtility';
+import { getDialogue, getMenuOptions } from '../lib/functions/DialogueUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
 import { MunuOptionsType } from '../lib/types/MunuOptionsType';
@@ -31,18 +31,19 @@ export default function DialogueInterface() {
     useEffect(() => {
         let dial = getDialogue()
         setText(dial)
+        let menu = getMenuOptions()
+        setMenu(menu)
     }, [])
 
     function nextOnClick() {
         setLoading(true)
         GameStepManager.runNextStep()
-            .then((value) => {
+            .then(() => {
                 let dialogue = getDialogue()
                 setText(dialogue)
+                let menu = getMenuOptions()
+                setMenu(menu)
                 setLoading(false)
-                if (value && value.length === 0)
-                    value = undefined
-                setMenu(value)
             })
             .catch(() => {
                 setLoading(false)

@@ -1,6 +1,7 @@
 import { Label } from "../classes/Label"
-import { registeredLabels } from "../decorators/LabelDecorator"
+import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
+import { clearMenuOptions, setMenuOptions } from "../functions/DialogueUtility"
 import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
 import { IHistoryLabelEvent } from "../interface/IHistoryLabelEvent"
 import { IHistoryStep } from "../interface/IHistoryStep"
@@ -41,7 +42,7 @@ export class GameStepManager {
             // TODO: implement
             return
         }
-        let currentLabel = GameStepManager.getLabelByClassName(GameStepManager.currentLabel)
+        let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
         if (!currentLabel) {
             console.error("Label not found")
             return
@@ -111,7 +112,7 @@ export class GameStepManager {
     public static async runNextStep() {
         let lasteStepsLength = GameStepManager.stepsAfterLastHistoryLabel.length
         if (GameStepManager.currentLabel) {
-            let currentLabel = GameStepManager.getLabelByClassName(GameStepManager.currentLabel)
+            let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
             if (!currentLabel) {
                 console.error("Label not found")
                 return
@@ -124,11 +125,13 @@ export class GameStepManager {
                 // if is menu
                 if (value) {
                     GameStepManager.addMenuHistory(GameStepManager.currentLabel)
-                    return value
+                    setMenuOptions(value)
                 }
-                return
+                else {
+                    clearMenuOptions()
+                }
             }
-            if (n === lasteStepsLength) {
+            else {
                 GameStepManager.closeLabel()
                 GameStepManager.runNextStep()
                 return
@@ -151,7 +154,7 @@ export class GameStepManager {
         return await GameStepManager.runNextStep()
     }
     private static openLabel(label: LabelTagType) {
-        let currentLabel = GameStepManager.getLabelByClassName(label)
+        let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
             throw new Error("Label not found")
         }
@@ -168,7 +171,7 @@ export class GameStepManager {
             console.warn("No label to close")
             return
         }
-        let currentLabel = GameStepManager.getLabelByClassName(GameStepManager.currentLabel)
+        let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
         if (!currentLabel) {
             console.error("Label not found")
             return
@@ -182,7 +185,7 @@ export class GameStepManager {
         GameStepManager.openedLabels.pop()
     }
     private static addMenuHistory(label: LabelTagType) {
-        let currentLabel = GameStepManager.getLabelByClassName(label)
+        let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
             console.error("Label not found")
             return
@@ -224,25 +227,6 @@ export class GameStepManager {
         }
         catch (e) {
             console.error("Error importing data", e)
-        }
-    }
-    private static getLabelByClassName<T extends Label>(labelName: LabelTagType): T | undefined {
-        try {
-            let labelType = registeredLabels[labelName]
-            if (!labelType) {
-                console.error("Label not found")
-                return
-            }
-            let label = new labelType()
-            let step = label.steps
-            if (step.length = 0) {
-                console.warn("Label has no steps")
-            }
-            return label as T
-        }
-        catch (e) {
-            console.error(e)
-            return
         }
     }
 }
