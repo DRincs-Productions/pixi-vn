@@ -45,8 +45,10 @@ export default function DialogueInterface() {
                 setMenu(menu)
                 setLoading(false)
             })
-            .catch(() => {
+            .catch((e) => {
                 setLoading(false)
+
+                console.error(e)
             })
     }
 

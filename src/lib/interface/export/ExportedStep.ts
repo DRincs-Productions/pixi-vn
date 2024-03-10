@@ -7,5 +7,9 @@ import { IHistoryStep } from "../IHistoryStep"
  */
 export interface ExportedStep {
     stepsHistory: (IHistoryLabelEvent | IHistoryStep)[]
-    openedLabels: LabelTagType[]
+    openedLabels: {
+        label: LabelTagType,
+        currentStepIndex: number,
+        currentStepIsMenu: boolean,
+    }[]
 }

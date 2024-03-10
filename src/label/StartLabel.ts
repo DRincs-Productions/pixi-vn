@@ -2,6 +2,8 @@ import { Label } from "../lib/classes/Label";
 import { MenuOptionLabel } from "../lib/classes/MenuOptionLabel";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { setDialogue } from "../lib/functions/DialogueUtility";
+import { GameStepManager } from "../lib/managers/StepManager";
+import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 import { EventsTestLabel } from "./EventsTestLabel";
 import { ShowImageTest } from "./ShowImageTest";
@@ -13,14 +15,16 @@ export class StartLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
             () => {
-                setDialogue("StartLabel")
+                GameWindowManager.clear()
+                setDialogue("Which test do you want to perform?")
                 return [
-                    new MenuOptionLabel("EventsTestLabel", EventsTestLabel),
-                    new MenuOptionLabel("ShowImageTest", ShowImageTest),
-                    new MenuOptionLabel("TickerTestLabel", TickerTestLabel),
-                    new MenuOptionLabel("TintingTestLabel", TintingTestLabel),
+                    new MenuOptionLabel("Events Test", EventsTestLabel),
+                    new MenuOptionLabel("Show Image Test", ShowImageTest),
+                    new MenuOptionLabel("Ticker Test", TickerTestLabel),
+                    new MenuOptionLabel("Tinting Test", TintingTestLabel),
                 ]
             },
+            () => GameStepManager.jumpLabel(StartLabel),
         ]
     }
 }
