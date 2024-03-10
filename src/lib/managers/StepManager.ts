@@ -107,7 +107,7 @@ export class GameStepManager {
     }
     /**
      * Execute the next step and add it to the history.
-     * @returns void if the step is a normal step, MunuType if the step is a menu.
+     * @returns
      */
     public static async runNextStep() {
         let lasteStepsLength = GameStepManager.stepsAfterLastHistoryLabel.length

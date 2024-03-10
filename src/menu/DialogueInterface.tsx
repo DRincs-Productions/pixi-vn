@@ -54,7 +54,7 @@ export default function DialogueInterface() {
         <>
             {menu && <DialogueMenuInterface
                 dialogueWindowHeight={windowSize.y + 50}
-                fullscreen={false}
+                fullscreen={text ? false : true}
                 menu={menu}
                 afterClick={nextOnClick}
             />}

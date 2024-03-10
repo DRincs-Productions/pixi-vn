@@ -29,23 +29,29 @@ export default function DialogueMenuInterface(props: IProps) {
                 top: 0,
                 left: 0,
                 right: 0,
+                height: fullscreen ? "100%" : height,
             }}
         >
             <Grid
                 container
-                direction="row"
+                direction="column"
                 justifyContent="center"
                 alignItems="center"
+                spacing={2}
                 sx={{
                     overflow: 'auto',
                     height: fullscreen ? "100%" : height,
                     gap: 1,
                     pointerEvents: "auto",
+                    width: '100%',
                 }}
             >
                 {menu.map((item, index) => {
                     return (
-                        <Grid xs={12} >
+                        <Grid
+                            justifyContent="center"
+                            alignItems="center"
+                        >
                             <DialogueMenuButton
                                 key={index}
                                 onClick={() => {
@@ -53,6 +59,10 @@ export default function DialogueMenuInterface(props: IProps) {
                                         GameStepManager.runLabel(item.label)
                                         afterClick && afterClick()
                                     }
+                                }}
+                                sx={{
+                                    left: 0,
+                                    right: 0,
                                 }}
                             >
                                 {item.text}

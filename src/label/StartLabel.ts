@@ -1,6 +1,7 @@
 import { Label } from "../lib/classes/Label";
 import { MenuOptionLabel } from "../lib/classes/MenuOptionLabel";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
+import { setDialogue } from "../lib/functions/DialogueUtility";
 import { StepLabelType } from "../lib/types/StepLabelType";
 import { EventsTestLabel } from "./EventsTestLabel";
 import { ShowImageTest } from "./ShowImageTest";
@@ -12,6 +13,7 @@ export class StartLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
             () => {
+                setDialogue("StartLabel")
                 return [
                     new MenuOptionLabel("EventsTestLabel", EventsTestLabel),
                     new MenuOptionLabel("ShowImageTest", ShowImageTest),
@@ -19,7 +21,6 @@ export class StartLabel extends Label {
                     new MenuOptionLabel("TintingTestLabel", TintingTestLabel),
                 ]
             },
-            // () => GameStepManager.jupmToStep('start')
         ]
     }
 }

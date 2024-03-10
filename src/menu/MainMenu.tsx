@@ -1,5 +1,5 @@
 import { Grid } from '@mui/joy';
-import { useEffect, useState } from 'react';
+import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
 import { StartLabel } from '../label/StartLabel';
@@ -9,7 +9,6 @@ import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
 
 export default function MainMenu() {
-    const [loadingStart, setLoadingStart] = useState(false)
     const navigate = useNavigate();
     useEffect(() => {
         clearAllGameDatas()
@@ -31,18 +30,10 @@ export default function MainMenu() {
         >
             <Grid>
                 <MenuButton
-                    loading={loadingStart}
                     onClick={() => {
-                        setLoadingStart(true)
+                        GameWindowManager.removeCanvasElements()
                         GameStepManager.runLabel(StartLabel)
-                            .then(() => {
-                                GameWindowManager.removeCanvasElements()
-                                setLoadingStart(false)
-                                navigate("/game")
-                            })
-                            .catch(() => {
-                                setLoadingStart(false)
-                            })
+                        navigate("/game")
                     }}
                 >
                     Start
