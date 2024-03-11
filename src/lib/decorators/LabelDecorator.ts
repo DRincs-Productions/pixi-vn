@@ -51,13 +51,13 @@ export function getLabelInstanceByClassName<T extends Label>(labelName: LabelTag
     try {
         let labelType = registeredLabels[labelName]
         if (!labelType) {
-            console.error("Label not found")
+            console.error(`Label ${labelName} not found`)
             return
         }
         let label = new labelType()
         let step = label.steps
         if (step.length = 0) {
-            console.warn("Label has no steps")
+            console.warn(`Label ${labelName} has no steps`)
         }
         return label as T
     }
