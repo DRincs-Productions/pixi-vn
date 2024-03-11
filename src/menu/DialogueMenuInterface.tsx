@@ -4,6 +4,7 @@ import { RunModeLabelEnum } from '../lib/enums/LabelEventEnum';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
 import { MunuOptionsType } from '../lib/types/MunuOptionsType';
+import { clearMenuOptions } from '../lib/functions/DialogueUtility';
 
 type IProps = {
     menu: MunuOptionsType,
@@ -56,6 +57,7 @@ export default function DialogueMenuInterface(props: IProps) {
                                 key={index}
                                 onClick={() => {
                                     if (item.type == RunModeLabelEnum.OpenByCall) {
+                                        clearMenuOptions()
                                         GameStepManager.runLabel(item.label)
                                         afterClick && afterClick()
                                     }

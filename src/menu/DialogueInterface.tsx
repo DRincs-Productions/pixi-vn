@@ -41,8 +41,8 @@ export default function DialogueInterface() {
             .then(() => {
                 let dialogue = getDialogue()
                 setText(dialogue)
-                let menu = getMenuOptions()
-                setMenu(menu)
+                let options = getMenuOptions()
+                setMenu(options)
                 setLoading(false)
             })
             .catch((e) => {

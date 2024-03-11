@@ -1,7 +1,6 @@
 import { Label } from "../classes/Label"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
 import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
-import { clearMenuOptions, setMenuOptions } from "../functions/DialogueUtility"
 import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
 import { IHistoryLabelEvent } from "../interface/IHistoryLabelEvent"
 import { IHistoryStep } from "../interface/IHistoryStep"
@@ -147,15 +146,7 @@ export class GameStepManager {
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
                 GameStepManager.addStepHistory(nextStep)
-                let value = await nextStep()
-                // if is menu
-                if (value) {
-                    GameStepManager.addMenuHistory(GameStepManager.currentLabel)
-                    setMenuOptions(value)
-                }
-                else {
-                    clearMenuOptions()
-                }
+                await nextStep()
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeLabel()
@@ -223,19 +214,6 @@ export class GameStepManager {
     public static jumpLabel(label: typeof Label | Label) {
         GameStepManager.closeAllLabels()
         GameStepManager.runLabel(label)
-    }
-    private static addMenuHistory(label: LabelTagType) {
-        let currentLabel = getLabelInstanceByClassName(label)
-        if (!currentLabel) {
-            console.error("Label not found")
-            return
-        }
-        let historyLabel: IHistoryLabelEvent = {
-            label: label,
-            type: HistoryLabelEventEnum.OpenMenu,
-            labelClassName: currentLabel.constructor.name,
-        }
-        GameStepManager.stepsHistory.push(historyLabel)
     }
     public static exportJson(): string {
         return JSON.stringify(this.export())
