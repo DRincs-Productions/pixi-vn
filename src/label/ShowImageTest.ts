@@ -57,7 +57,7 @@ export class ShowImageTest extends Label {
             () => {
                 let alien = GameWindowManager.getCanvasElement<CanvasImage>("alien")
                 if (alien) alien.alpha = 1
-                setDialogue("If you want to remove the dissolve effect, you can change the alpha of the image.")
+                setDialogue("If you want to remove the dissolve effect, you can change the alpha=1 of the image.")
             },
         ]
     }

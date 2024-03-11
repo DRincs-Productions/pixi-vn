@@ -1,15 +1,12 @@
-import { Application, ApplicationOptions, Container, Ticker, UPDATE_PRIORITY } from "pixi.js";
-import { CanvasEvent } from "../classes/CanvasEvent";
+import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
-import { registeredEvents } from "../decorators/EventDecorator";
-import { registeredTickers } from "../decorators/TickerDecorator";
+import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement } from "../functions/CanvasUtility";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
-import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
 import { SupportedCanvasElement } from "../types/SupportedCanvasElement";
@@ -276,7 +273,7 @@ export class GameWindowManager {
         if (typeof canvasElementTag === "string") {
             canvasElementTag = [canvasElementTag]
         }
-        let t = GameWindowManager.geTickerInstance<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)
+        let t = geTickerInstanceByClassName<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
@@ -362,7 +359,7 @@ export class GameWindowManager {
             GameWindowManager.addTickerTimeoutInfo(tag, "steps", timeout.toString())
             return
         }
-        let ticker = GameWindowManager.geTickerInstance<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
+        let ticker = geTickerInstanceByClassName<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
         if (!ticker) {
             console.error(`Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
             return
@@ -456,25 +453,6 @@ export class GameWindowManager {
         }
     }
     /**
-     * Get a ticker instance by the class name.
-     * @param tickerName The name of the class.
-     * @returns The ticker instance.
-     */
-    private static geTickerInstance<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
-        try {
-            let ticker = registeredTickers[tickerName]
-            if (!ticker) {
-                console.error(`Ticker ${tickerName} not found`)
-                return
-            }
-            return new ticker(args, duration, priority)
-        }
-        catch (e) {
-            console.error(e)
-            return
-        }
-    }
-    /**
      * Remove all tickers from the canvas.
      */
     public static removeTickers() {
@@ -483,26 +461,6 @@ export class GameWindowManager {
             GameWindowManager.app.ticker.remove(t.fn)
         })
         GameWindowManager._currentTickers = []
-    }
-
-    /**
-     * Get an event instance by the class name.
-     * @param labelName The name of the class.
-     * @returns The event instance.
-     */
-    public static getEventInstanceByClassName<T = CanvasEvent<SupportedCanvasElement>>(labelName: EventTagType): T | undefined {
-        try {
-            let event = registeredEvents[labelName]
-            if (!event) {
-                console.error(`Event ${labelName} not found`)
-                return
-            }
-            return new event() as T
-        }
-        catch (e) {
-            console.error(e)
-            return
-        }
     }
 
     /**

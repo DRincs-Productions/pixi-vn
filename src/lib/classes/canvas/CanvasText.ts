@@ -1,6 +1,6 @@
 import { Container, ContainerEvents, EventEmitter, Text } from "pixi.js";
+import { getEventInstanceByClassName } from "../../decorators/EventDecorator";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
-import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
@@ -35,7 +35,7 @@ export class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
     }
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
-        let instance = GameWindowManager.getEventInstanceByClassName(className)
+        let instance = getEventInstanceByClassName(className)
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
