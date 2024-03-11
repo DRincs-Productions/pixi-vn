@@ -13,5 +13,6 @@ export interface IHistoryStep {
     path: string,
     storage: ExportedStorage,
     step: StepHistoryDataType,
+    stepIndex: number,
     canvas: ExportedCanvas,
 }

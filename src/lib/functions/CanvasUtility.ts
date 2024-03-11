@@ -21,16 +21,6 @@ export function getTextureMemory(texture: Texture): ITextureMemory {
 }
 
 /**
- * Get the PixiJS texture from the memory object
- * @param textureMemory Memory object of the texture
- * @returns PixiJS Texture object
- */
-export function getTexture(textureMemory: ITextureMemory): Texture {
-    let texture = Texture.from(textureMemory.image)
-    return texture
-}
-
-/**
  * Export a Canvas element to a memory object
  * @param element Canvas element
  * @returns Memory object of the canvas
@@ -71,16 +61,20 @@ export function importCanvasElement(
 ): SupportedCanvasElement {
     let element: SupportedCanvasElement
     if (memory.className === "CanvasText") {
-        element = new CanvasText(memory)
+        element = new CanvasText()
+        element.memory = memory
     }
     else if (memory.className === "CanvasImage") {
-        element = new CanvasImage(memory.imageLink)
+        element = new CanvasImage(memory.textureImage.image)
+        element.memory = memory
     }
     else if (memory.className === "CanvasSprite") {
-        element = CanvasSprite.from(getTexture(memory.textureImage))
+        element = new CanvasSprite()
+        element.memory = memory
     }
     else if (memory.className === "CanvasContainer") {
-        element = new CanvasContainer(memory)
+        element = new CanvasContainer()
+        element.memory = memory
         memory.elements.forEach(child => {
             (element as CanvasContainer).addCanvasChild(importCanvasElement(child))
         })

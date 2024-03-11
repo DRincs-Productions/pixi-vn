@@ -1,15 +1,21 @@
 import { getTexture } from "../../functions/ImageUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
-import { CanvasSprite, getMemorySprite } from "./CanvasSprite";
+import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
 /**
  * The class for the image.
  * Must use refreshImage() to load the image.
  */
-export class CanvasImage extends CanvasSprite {
+export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
     constructor(image: string) {
         super()
         this.imageLink = image
+    }
+    override get memory(): ICanvasImageMemory {
+        return getMemoryCanvasImage(this)
+    }
+    override set memory(memory: ICanvasImageMemory) {
+        setMemoryCanvasImage(this, memory)
     }
     imageLink: string;
     async refreshImage() {
@@ -33,6 +39,10 @@ export function getMemoryCanvasImage(element: CanvasImage): ICanvasImageMemory {
     return {
         ...temp,
         className: "CanvasImage",
-        imageLink: element.imageLink,
+        textureImage: { image: element.imageLink },
     }
+}
+
+export function setMemoryCanvasImage(element: CanvasImage, memory: ICanvasImageMemory) {
+    setMemorySprite(element, memory)
 }

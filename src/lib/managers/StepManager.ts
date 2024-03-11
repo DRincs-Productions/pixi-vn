@@ -4,6 +4,7 @@ import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
 import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
 import { IHistoryLabelEvent } from "../interface/IHistoryLabelEvent"
 import { IHistoryStep } from "../interface/IHistoryStep"
+import { IOpenedLabel } from "../interface/IOpenedLabel"
 import { ExportedStep } from "../interface/export/ExportedStep"
 import { LabelTagType } from "../types/LabelTagType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
@@ -20,10 +21,7 @@ export class GameStepManager {
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
     private static stepsHistory: (IHistoryLabelEvent | IHistoryStep)[] = []
-    private static openedLabels: {
-        label: LabelTagType,
-        currentStepIndex: number,
-    }[] = []
+    private static openedLabels: IOpenedLabel[] = []
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
@@ -56,6 +54,7 @@ export class GameStepManager {
             storage: GameStorageManager.export(),
             step: stepHistory,
             canvas: GameWindowManager.export(),
+            stepIndex: GameStepManager.currentLabelStepIndex || 0,
         }
         GameStepManager.stepsHistory.push(historyStep)
     }
@@ -63,14 +62,14 @@ export class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static pushNewLabel(label: LabelTagType) {
+    private static pushNewLabel(label: LabelTagType, type: HistoryLabelEventEnum) {
         let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
             throw new Error("Label not found")
         }
         let historyLabel: IHistoryLabelEvent = {
             label: label,
-            type: HistoryLabelEventEnum.OpenByCall,
+            type: type,
             labelClassName: currentLabel.constructor.name,
         }
         GameStepManager.stepsHistory.push(historyLabel)
@@ -146,13 +145,12 @@ export class GameStepManager {
             let n = currentLabel.steps.length
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
-                GameStepManager.addStepHistory(nextStep)
                 await nextStep()
+                GameStepManager.addStepHistory(nextStep)
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeLabel()
                 await GameStepManager.runNextStep()
-                return
             }
             else {
                 console.warn("No next step")
@@ -171,7 +169,7 @@ export class GameStepManager {
                 label = label.constructor as typeof Label
             }
             let labelName = label.name
-            GameStepManager.pushNewLabel(labelName)
+            GameStepManager.pushNewLabel(labelName, HistoryLabelEventEnum.OpenByCall)
         }
         catch (e) {
             console.error(e)
@@ -184,9 +182,20 @@ export class GameStepManager {
      * Is a jump function in Ren'Py.
      * @param label 
      */
-    public static jumpLabel(label: typeof Label | Label) {
+    public static async jumpLabel(label: typeof Label | Label) {
         GameStepManager.closeAllLabels()
-        GameStepManager.callLabel(label)
+        try {
+            if (label instanceof Label) {
+                label = label.constructor as typeof Label
+            }
+            let labelName = label.name
+            GameStepManager.pushNewLabel(labelName, HistoryLabelEventEnum.OpenByJump)
+        }
+        catch (e) {
+            console.error(e)
+            return
+        }
+        return await GameStepManager.runCurrentStep()
     }
 
     /* After Update Methods */
@@ -295,10 +304,7 @@ export class GameStepManager {
                 console.log("No stepsHistory data found")
             }
             if (data.hasOwnProperty("openedLabels")) {
-                GameStepManager.openedLabels = (data as ExportedStep)["openedLabels"] as {
-                    label: LabelTagType,
-                    currentStepIndex: number,
-                }[]
+                GameStepManager.openedLabels = (data as ExportedStep)["openedLabels"] as IOpenedLabel[]
             }
             else {
                 console.log("No openedLabels data found")

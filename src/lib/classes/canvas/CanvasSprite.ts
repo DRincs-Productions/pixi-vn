@@ -1,22 +1,26 @@
 import { ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
-import { getEventInstanceByClassName } from "../../decorators/EventDecorator";
+import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
+import { getTexture } from "../../functions/ImageUtility";
+import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
-import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
+import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
 import { CanvasEvent } from "../CanvasEvent";
-import { CanvasBase } from "./CanvasBase";
-import { getMemoryContainer } from "./CanvasContainer";
+import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
  * This class is responsible for storing a PIXI Sprite.
  * And allow to save your memory in a game save.
  */
-export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
-    get memory(): ICanvasSpriteMemory {
+export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements ICanvasBase<Memory | ICanvasSpriteMemory> {
+    get memory(): Memory | ICanvasSpriteMemory {
         return getMemorySprite(this)
+    }
+    set memory(value: ICanvasSpriteMemory) {
+        setMemorySprite(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
     get onEvents() {
@@ -52,7 +56,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     }
 }
 
-export function getMemorySprite<T extends CanvasSprite>(element: T | CanvasSprite): ICanvasSpriteMemory {
+export function getMemorySprite<T extends CanvasSprite<any>>(element: T | CanvasSprite<any>): ICanvasSpriteMemory {
     let temp = getMemoryContainer(element)
     return {
         ...temp,
@@ -61,5 +65,33 @@ export function getMemorySprite<T extends CanvasSprite>(element: T | CanvasSprit
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
+    }
+}
+
+export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory) {
+    setMemoryContainer(element, memory)
+    getTexture(memory.textureImage.image).then((texture) => {
+        if (typeof texture === "string") {
+            console.error("Error loading image")
+        }
+        else {
+            element.texture = texture
+        }
+    })
+    if (memory.anchor) {
+        if (typeof memory.anchor === "number") {
+            element.anchor.set(memory.anchor, memory.anchor)
+        }
+        else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y)
+        }
+    }
+    memory.roundPixels && (element.roundPixels = memory.roundPixels)
+    for (let event in memory.onEvents) {
+        let className = memory.onEvents[event]
+        let instance = getEventTypeByClassName(className)
+        if (instance) {
+            element.onEvent(event as CanvasEventNamesType, instance)
+        }
     }
 }

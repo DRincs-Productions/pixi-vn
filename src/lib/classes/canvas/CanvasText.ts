@@ -1,20 +1,23 @@
 import { Container, ContainerEvents, EventEmitter, Text } from "pixi.js";
-import { getEventInstanceByClassName } from "../../decorators/EventDecorator";
+import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
+import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
 import { CanvasEvent } from "../CanvasEvent";
-import { CanvasBase } from "./CanvasBase";
-import { getMemoryContainer } from "./CanvasContainer";
+import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
  * This class is responsible for storing a PIXI Text.
  * And allow to save your memory in a game save.
  */
-export class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
+export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
     get memory(): ICanvasTextMemory {
         return getMemoryText(this)
+    }
+    set memory(value: ICanvasTextMemory) {
+        setMemoryText(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
     get onEvents() {
@@ -68,5 +71,28 @@ export function getMemoryText<T extends CanvasText>(element: T | CanvasText): IC
         style: element.style,
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
+    }
+}
+
+export function setMemoryText(element: CanvasText, memory: ICanvasTextMemory) {
+    setMemoryContainer(element, memory)
+    if (memory.anchor) {
+        if (typeof memory.anchor === "number") {
+            element.anchor.set(memory.anchor, memory.anchor)
+        }
+        else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y)
+        }
+    }
+    memory.text && (element.text = memory.text)
+    memory.resolution && (element.resolution = memory.resolution)
+    memory.style && (element.style = memory.style)
+    memory.roundPixels && (element.roundPixels = memory.roundPixels)
+    for (let event in memory.onEvents) {
+        let className = memory.onEvents[event]
+        let instance = getEventTypeByClassName(className)
+        if (instance) {
+            element.onEvent(event as CanvasEventNamesType, instance)
+        }
     }
 }
