@@ -1,15 +1,14 @@
 import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
-import { exportCanvasElement } from "../functions/CanvasUtility";
+import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
-import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
-import { SupportedCanvasElement } from "../types/SupportedCanvasElement";
+import { SupportedCanvasElement, SupportedCanvasElementMemory } from "../types/SupportedCanvasElement";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**
@@ -291,7 +290,8 @@ export class GameWindowManager {
             className: tickerName,
             args: ticker.args,
             canvasElementTags: canvasElementTag,
-            priority: ticker.priority
+            priority: ticker.priority,
+            duration: ticker.duration,
         }
         GameWindowManager.pushTicker(tickerHistory, t)
         GameWindowManager.removeTickersWithoutAssociatedCanvasElement()
@@ -408,7 +408,7 @@ export class GameWindowManager {
         if (typeof tag === "string") {
             tag = [tag]
         }
-        GameWindowManager._currentTickers.map((t) => {
+        GameWindowManager._currentTickers = GameWindowManager._currentTickers.map((t) => {
             if (t.className === tickerName) {
                 t.canvasElementTags = t.canvasElementTags.filter((e) => !tag.includes(e))
             }
@@ -464,10 +464,13 @@ export class GameWindowManager {
      */
     public static removeTickers() {
         GameWindowManager._currentTickersSteps = {}
-        GameWindowManager._currentTickers.map((t) => {
+        GameWindowManager._currentTickers.forEach((t) => {
             GameWindowManager.app.ticker.remove(t.fn)
         })
         GameWindowManager._currentTickers = []
+        for (let timeout in GameWindowManager.currentTickersTimeouts) {
+            GameWindowManager.removeTickerTimeoutInfo(parseInt(timeout))
+        }
     }
 
     /**
@@ -491,7 +494,7 @@ export class GameWindowManager {
      * @returns The object.
      */
     public static export(): ExportedCanvas {
-        let currentElements: { [tag: string]: ICanvasBaseMemory } = {}
+        let currentElements: { [tag: string]: SupportedCanvasElementMemory } = {}
         for (let tag in GameWindowManager._children) {
             currentElements[tag] = exportCanvasElement(GameWindowManager._children[tag])
         }
@@ -515,11 +518,33 @@ export class GameWindowManager {
     public static import(data: object) {
         GameWindowManager.clear()
         try {
-            if (data.hasOwnProperty("currentTickers")) {
-                GameWindowManager._currentTickers = (data as ExportedCanvas)["currentTickers"]
+            if (data.hasOwnProperty("childrenTagsOrder") && data.hasOwnProperty("currentElements")) {
+                let currentElements = (data as ExportedCanvas)["currentElements"]
+                let childrenTagsOrder = (data as ExportedCanvas)["childrenTagsOrder"]
+                childrenTagsOrder.forEach((tag) => {
+                    if (currentElements[tag]) {
+                        let element = importCanvasElement(currentElements[tag])
+                        GameWindowManager.addCanvasElement(tag, element)
+                        GameWindowManager.childrenTagsOrder.push(tag)
+                    }
+                })
             }
             else {
-                console.log("No currentTickers data found")
+                console.error("The data does not have the properties childrenTagsOrder and currentElements")
+                return
+            }
+            if (data.hasOwnProperty("currentTickers")) {
+                let currentTickers = (data as ExportedCanvas)["currentTickers"]
+                currentTickers.forEach((t) => {
+                    let tags: string[] = t.canvasElementTags
+                    let ticker = geTickerInstanceByClassName(t.className, t.args, t.duration, t.priority)
+                    if (ticker) {
+                        GameWindowManager.addTicker(tags, ticker)
+                    }
+                    else {
+                        console.error(`Ticker ${t.className} not found`)
+                    }
+                })
             }
         }
         catch (e) {
