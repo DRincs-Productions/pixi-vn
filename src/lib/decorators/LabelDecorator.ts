@@ -24,13 +24,13 @@ export function labelDecorator(name?: LabelTagType) {
 /**
  * is a function that returns the type of the label
  * @param labelName is the name of the label
- * @returns 
+ * @returns the label type
  */
 export function getLabelTypeByClassName<T extends typeof Label>(labelName: LabelTagType): T | undefined {
     try {
         let labelType = registeredLabels[labelName]
         if (!labelType) {
-            console.error("Label not found")
+            console.error(`Label ${labelName} not found`)
             return
         }
         new labelType()

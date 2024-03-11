@@ -1,7 +1,5 @@
 import { Application, ApplicationOptions, Container, Ticker, UPDATE_PRIORITY } from "pixi.js";
-import { CanvasEvent } from "../classes/CanvasEvent";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
-import { registeredEvents } from "../decorators/EventDecorator";
 import { registeredTickers } from "../decorators/TickerDecorator";
 import { exportCanvasElement } from "../functions/CanvasUtility";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
@@ -9,7 +7,6 @@ import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
-import { EventTagType } from "../types/EventTagType";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
 import { SupportedCanvasElement } from "../types/SupportedCanvasElement";
@@ -483,26 +480,6 @@ export class GameWindowManager {
             GameWindowManager.app.ticker.remove(t.fn)
         })
         GameWindowManager._currentTickers = []
-    }
-
-    /**
-     * Get an event instance by the class name.
-     * @param labelName The name of the class.
-     * @returns The event instance.
-     */
-    public static getEventInstanceByClassName<T = CanvasEvent<SupportedCanvasElement>>(labelName: EventTagType): T | undefined {
-        try {
-            let event = registeredEvents[labelName]
-            if (!event) {
-                console.error(`Event ${labelName} not found`)
-                return
-            }
-            return new event() as T
-        }
-        catch (e) {
-            console.error(e)
-            return
-        }
     }
 
     /**

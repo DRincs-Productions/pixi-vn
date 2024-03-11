@@ -1,6 +1,7 @@
 import { CanvasEvent } from "../classes/CanvasEvent"
 import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
 import { EventTagType } from "../types/EventTagType"
+import { SupportedCanvasElement } from "../types/SupportedCanvasElement"
 
 /**
  * Canvas Event Register
@@ -22,5 +23,47 @@ export function eventDecorator(name?: EventTagType) {
             console.warn(`Event ${name} already exists, it will be overwritten`)
         }
         registeredEvents[name] = target
+    }
+}
+
+/**
+ * Get an event type by the class name.
+ * @param eventName The name of the class.
+ * @returns The event type.
+ */
+export function getEventTypeByClassName<T = typeof CanvasEvent<SupportedCanvasElement>>(eventName: EventTagType): T | undefined {
+    try {
+        let eventType = registeredEvents[eventName]
+        if (!eventType) {
+            console.error(`Event ${eventName} not found`)
+            return
+        }
+        new eventType()
+        return eventType as T
+    }
+    catch (e) {
+        console.error(e)
+        return
+    }
+}
+
+/**
+ * Get an event instance by the class name.
+ * @param eventName The name of the class.
+ * @returns The event instance.
+ */
+export function getEventInstanceByClassName<T = CanvasEvent<SupportedCanvasElement>>(eventName: EventTagType): T | undefined {
+    try {
+        let eventType = registeredEvents[eventName]
+        if (!eventType) {
+            console.error(`Event ${eventName} not found`)
+            return
+        }
+        let event = new eventType()
+        return event as T
+    }
+    catch (e) {
+        console.error(e)
+        return
     }
 }

@@ -1,8 +1,8 @@
 import { ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { getEventInstanceByClassName } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
 import { ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
-import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
@@ -24,7 +24,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     }
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
-        let instance = GameWindowManager.getEventInstanceByClassName(className)
+        let instance = getEventInstanceByClassName(className)
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
