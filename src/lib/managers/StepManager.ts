@@ -54,6 +54,7 @@ export class GameStepManager {
             storage: GameStorageManager.export(),
             step: stepHistory,
             canvas: GameWindowManager.export(),
+            stepIndex: GameStepManager.currentLabelStepIndex || 0,
         }
         GameStepManager.stepsHistory.push(historyStep)
     }
@@ -144,13 +145,12 @@ export class GameStepManager {
             let n = currentLabel.steps.length
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
-                GameStepManager.addStepHistory(nextStep)
                 await nextStep()
+                GameStepManager.addStepHistory(nextStep)
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeLabel()
                 await GameStepManager.runNextStep()
-                return
             }
             else {
                 console.warn("No next step")
