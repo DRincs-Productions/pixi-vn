@@ -27,7 +27,7 @@ export class GameStepManager {
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    public static get currentLabel(): LabelTagType | null {
+    private static get currentLabel(): LabelTagType | null {
         if (GameStepManager.openedLabels.length > 0) {
             return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].label
         }
@@ -36,7 +36,7 @@ export class GameStepManager {
     /**
      * currentLabelStepIndex is the current step index of the current label that occurred during the progression of the steps.
      */
-    public static get currentLabelStepIndex(): number | null {
+    private static get currentLabelStepIndex(): number | null {
         if (GameStepManager.openedLabels.length > 0) {
             return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].currentStepIndex
         }
