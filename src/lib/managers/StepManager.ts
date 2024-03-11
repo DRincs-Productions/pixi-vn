@@ -272,7 +272,25 @@ export class GameStepManager {
     /* Go Back & Refresh Methods */
 
     public static goBack(steps: number) {
-
+        if (steps <= 0) {
+            return
+        }
+        if (GameStepManager.stepsHistory.length == 0) {
+            return
+        }
+        let laStep = GameStepManager.stepsHistory[GameStepManager.stepsHistory.length - 1]
+        // if step is IHistoryLabelEvent
+        if (typeof laStep === "object" && "type" in laStep) {
+            if (laStep.type === HistoryLabelEventEnum.End) {
+                return GameStepManager.goBack(steps - 1)
+            }
+            else if (laStep.type === HistoryLabelEventEnum.OpenByJump) {
+                return GameStepManager.goBack(steps - 1)
+            }
+            else if (laStep.type === HistoryLabelEventEnum.OpenByCall) {
+                return GameStepManager.goBack(steps - 1)
+            }
+        }
     }
 
     /**
