@@ -7,5 +7,5 @@ import { ICanvasImageMemory } from "../interface/canvas/ICanvasImageMemory";
 import { ICanvasSpriteMemory } from "../interface/canvas/ICanvasSpriteMemory";
 import { ICanvasTextMemory } from "../interface/canvas/ICanvasTextTextMemory";
 
-export type SupportedCanvasElement = CanvasContainer | CanvasSprite | CanvasImage | CanvasImage | CanvasText
+export type SupportedCanvasElement = CanvasContainer | CanvasSprite<any> | CanvasImage | CanvasImage | CanvasText
 export type SupportedCanvasElementMemory = ICanvasContainerMemory | ICanvasSpriteMemory | ICanvasSpriteMemory | ICanvasImageMemory | ICanvasTextMemory

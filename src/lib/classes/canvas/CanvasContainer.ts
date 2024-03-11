@@ -1,4 +1,4 @@
-import { Container } from "pixi.js";
+import { Container, ContainerOptions } from "pixi.js";
 import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
@@ -56,7 +56,7 @@ export function getMemoryContainer<T extends Container>(element: T): ICanvasCont
     }
 }
 
-export function setMemoryContainer<T extends Container>(element: T | Container, memory: ICanvasContainerMemory) {
+export function setMemoryContainer<T extends Container>(element: T | Container, memory: ContainerOptions) {
     memory.width && (element.width = memory.width)
     memory.height && (element.height = memory.height)
 

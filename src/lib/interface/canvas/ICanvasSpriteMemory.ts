@@ -4,11 +4,14 @@ import { EventTagType } from "../../types/EventTagType";
 import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
 import { ITextureMemory } from "./ITextureMemory";
 
+export interface ICanvasSpriteBaseMemory extends SpriteOptions, ICanvasBaseMemory {
+    textureImage: ITextureMemory,
+    onEvents: { [name: CanvasEventNamesType]: EventTagType }
+}
+
 /**
  * Interface for the canvas sprite memory
  */
-export interface ICanvasSpriteMemory extends SpriteOptions, ICanvasBaseMemory {
+export interface ICanvasSpriteMemory extends ICanvasSpriteBaseMemory {
     className: "CanvasSprite",
-    textureImage: ITextureMemory,
-    onEvents: { [name: CanvasEventNamesType]: EventTagType }
 }
