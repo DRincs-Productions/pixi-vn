@@ -1,6 +1,6 @@
-import { Application, ApplicationOptions, Container, Ticker, UPDATE_PRIORITY } from "pixi.js";
+import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
-import { registeredTickers } from "../decorators/TickerDecorator";
+import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement } from "../functions/CanvasUtility";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
@@ -273,7 +273,7 @@ export class GameWindowManager {
         if (typeof canvasElementTag === "string") {
             canvasElementTag = [canvasElementTag]
         }
-        let t = GameWindowManager.geTickerInstance<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)
+        let t = geTickerInstanceByClassName<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)
         if (!t) {
             console.error(`Ticker ${tickerName} not found`)
             return
@@ -359,7 +359,7 @@ export class GameWindowManager {
             GameWindowManager.addTickerTimeoutInfo(tag, "steps", timeout.toString())
             return
         }
-        let ticker = GameWindowManager.geTickerInstance<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
+        let ticker = geTickerInstanceByClassName<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
         if (!ticker) {
             console.error(`Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
             return
@@ -450,25 +450,6 @@ export class GameWindowManager {
     private static removeTickerTimeoutInfo(timeout: number) {
         if (GameWindowManager.currentTickersTimeouts[timeout]) {
             delete GameWindowManager.currentTickersTimeouts[timeout]
-        }
-    }
-    /**
-     * Get a ticker instance by the class name.
-     * @param tickerName The name of the class.
-     * @returns The ticker instance.
-     */
-    private static geTickerInstance<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
-        try {
-            let ticker = registeredTickers[tickerName]
-            if (!ticker) {
-                console.error(`Ticker ${tickerName} not found`)
-                return
-            }
-            return new ticker(args, duration, priority)
-        }
-        catch (e) {
-            console.error(e)
-            return
         }
     }
     /**

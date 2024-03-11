@@ -1,4 +1,5 @@
-import { TickerBase } from "../classes/ticker/TickerBase"
+import { UPDATE_PRIORITY } from "pixi.js"
+import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase"
 import { TickerTagType } from "../types/TickerTagType"
 
 /**
@@ -18,8 +19,28 @@ export function tickerDecorator(name?: TickerTagType) {
             name = target.name
         }
         if (registeredTickers[name]) {
-            console.warn(`Label ${name} already exists, it will be overwritten`)
+            console.warn(`Ticker ${name} already exists, it will be overwritten`)
         }
         registeredTickers[name] = target
+    }
+}
+
+/**
+ * Get a ticker instance by the class name.
+ * @param tickerName The name of the class.
+ * @returns The ticker instance.
+ */
+export function geTickerInstanceByClassName<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
+    try {
+        let ticker = registeredTickers[tickerName]
+        if (!ticker) {
+            console.error(`Ticker ${tickerName} not found`)
+            return
+        }
+        return new ticker(args, duration, priority)
+    }
+    catch (e) {
+        console.error(e)
+        return
     }
 }
