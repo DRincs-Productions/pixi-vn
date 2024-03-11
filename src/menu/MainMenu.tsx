@@ -32,7 +32,7 @@ export default function MainMenu() {
                 <MenuButton
                     onClick={() => {
                         GameWindowManager.removeCanvasElements()
-                        GameStepManager.runLabel(StartLabel)
+                        GameStepManager.callLabel(StartLabel)
                         navigate("/game")
                     }}
                 >
