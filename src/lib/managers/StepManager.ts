@@ -24,7 +24,6 @@ export class GameStepManager {
     private static openedLabels: {
         label: LabelTagType,
         currentStepIndex: number,
-        currentStepIsMenu: boolean,
     }[] = []
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
@@ -38,12 +37,6 @@ export class GameStepManager {
     public static get currentLabelStepIndex(): number | null {
         if (GameStepManager.openedLabels.length > 0) {
             return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].currentStepIndex
-        }
-        return null
-    }
-    public static get currentLabelOpenMenu(): boolean | null {
-        if (GameStepManager.openedLabels.length > 0) {
-            return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].currentStepIsMenu
         }
         return null
     }
@@ -139,14 +132,6 @@ export class GameStepManager {
         return await GameStepManager.runCurrentStep()
     }
     private static async runCurrentStep() {
-        if (GameStepManager.currentLabelOpenMenu) {
-            GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
-                ...GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1],
-                currentStepIsMenu: false,
-            }
-            await GameStepManager.runNextStep()
-            return
-        }
         if (GameStepManager.currentLabel) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
@@ -165,10 +150,6 @@ export class GameStepManager {
                 let value = await nextStep()
                 // if is menu
                 if (value) {
-                    GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
-                        ...GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1],
-                        currentStepIsMenu: true,
-                    }
                     GameStepManager.addMenuHistory(GameStepManager.currentLabel)
                     setMenuOptions(value)
                 }
@@ -214,7 +195,6 @@ export class GameStepManager {
         GameStepManager.openedLabels.push({
             label: label,
             currentStepIndex: 0,
-            currentStepIsMenu: false,
         })
     }
     private static closeLabel() {
@@ -282,7 +262,6 @@ export class GameStepManager {
                 GameStepManager.openedLabels = (data as ExportedStep)["openedLabels"] as {
                     label: LabelTagType,
                     currentStepIndex: number,
-                    currentStepIsMenu: boolean,
                 }[]
             }
             else {

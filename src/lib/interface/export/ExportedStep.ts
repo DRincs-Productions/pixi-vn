@@ -10,6 +10,5 @@ export interface ExportedStep {
     openedLabels: {
         label: LabelTagType,
         currentStepIndex: number,
-        currentStepIsMenu: boolean,
     }[]
 }
