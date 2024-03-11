@@ -1,16 +1,16 @@
-import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
+import { ICanvasBaseMemory } from "./canvas/ICanvasBaseMemory";
 
 /**
  * This class is responsible for storing a PIXI DisplayObject.
  * And allow to save your memory in a game save.
  */
-export abstract class CanvasBase<T2 extends ICanvasBaseMemory> {
+export interface ICanvasBase<T2 extends ICanvasBaseMemory> {
     /**
      * This method return the memory of the canvas element.
      */
-    abstract get memory(): T2
+    get memory(): T2
     /**
      * This method set the memory of the canvas element.
      */
-    abstract set memory(value: T2)
+    set memory(value: T2)
 }

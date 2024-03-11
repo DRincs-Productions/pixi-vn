@@ -1,13 +1,13 @@
 import { Container } from "pixi.js";
+import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
-import { CanvasBase } from "./CanvasBase";
 
 /**
  * This class is responsible for storing a PIXI Container.
  * And allow to save your memory in a game save.
  */
-export class CanvasContainer extends Container implements CanvasBase<ICanvasContainerMemory> {
+export class CanvasContainer extends Container implements ICanvasBase<ICanvasContainerMemory> {
     get memory(): ICanvasContainerMemory {
         return getMemoryContainer(this)
     }
