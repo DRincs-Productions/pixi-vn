@@ -6,5 +6,6 @@ import { ICanvasBaseMemory } from "../canvas/ICanvasBaseMemory";
  */
 export interface ExportedCanvas {
     currentTickers: IClassWithArgsHistory<any>[]
-    currentElements: ICanvasBaseMemory[]
+    currentElements: { [tag: string]: ICanvasBaseMemory }
+    childrenTagsOrder: string[]
 }

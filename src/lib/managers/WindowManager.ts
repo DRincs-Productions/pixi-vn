@@ -175,6 +175,10 @@ export class GameWindowManager {
     }
     private static _children: { [tag: string]: SupportedCanvasElement } = {}
     /**
+     * The order of the children tags.
+     */
+    private static childrenTagsOrder: string[] = []
+    /**
      * Add a canvas element to the canvas.
      * If there is a canvas element with the same tag, it will be removed.
      * @param tag The tag of the canvas element.
@@ -186,6 +190,7 @@ export class GameWindowManager {
         }
         GameWindowManager.app.stage.addChild(canvasElement)
         GameWindowManager._children[tag] = canvasElement
+        GameWindowManager.childrenTagsOrder.push(tag)
     }
     /**
      * Remove a canvas element from the canvas.
@@ -204,6 +209,7 @@ export class GameWindowManager {
             }
         })
         GameWindowManager.removeTickersWithoutAssociatedCanvasElement()
+        GameWindowManager.childrenTagsOrder = GameWindowManager.childrenTagsOrder.filter((t) => !tag.includes(t))
     }
     /**
      * Get a canvas element by the tag.
@@ -228,6 +234,7 @@ export class GameWindowManager {
     public static removeCanvasElements() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager._children = {}
+        GameWindowManager.childrenTagsOrder = []
         GameWindowManager.removeTickers()
     }
     /**
@@ -484,13 +491,14 @@ export class GameWindowManager {
      * @returns The object.
      */
     public static export(): ExportedCanvas {
-        let currentElements: ICanvasBaseMemory[] = []
+        let currentElements: { [tag: string]: ICanvasBaseMemory } = {}
         for (let tag in GameWindowManager._children) {
-            currentElements.push(exportCanvasElement(GameWindowManager._children[tag]))
+            currentElements[tag] = exportCanvasElement(GameWindowManager._children[tag])
         }
         return {
             currentTickers: GameWindowManager._currentTickers,
-            currentElements: currentElements
+            currentElements: currentElements,
+            childrenTagsOrder: GameWindowManager.childrenTagsOrder,
         }
     }
     /**
