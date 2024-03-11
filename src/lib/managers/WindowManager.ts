@@ -470,9 +470,19 @@ export class GameWindowManager {
         GameWindowManager.removeCanvasElements()
     }
 
+    /* Export and Import Methods */
+
+    /**
+     * Export the canvas and the tickers to a JSON string.
+     * @returns The JSON string.
+     */
     public static exportJson(): string {
         return JSON.stringify(this.export())
     }
+    /**
+     * Export the canvas and the tickers to an object.
+     * @returns The object.
+     */
     public static export(): ExportedCanvas {
         let currentElements: ICanvasBaseMemory[] = []
         for (let tag in GameWindowManager._children) {
@@ -483,9 +493,17 @@ export class GameWindowManager {
             currentElements: currentElements
         }
     }
+    /**
+     * Import the canvas and the tickers from a JSON string.
+     * @param dataString The JSON string.
+     */
     public static importJson(dataString: string) {
         GameWindowManager.import(JSON.parse(dataString))
     }
+    /**
+     * Import the canvas and the tickers from an object.
+     * @param data The object.
+     */
     public static import(data: object) {
         GameWindowManager.clear()
         try {

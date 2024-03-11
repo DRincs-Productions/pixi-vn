@@ -19,7 +19,7 @@ export class GameStepManager {
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
-    public static stepsHistory: (IHistoryLabelEvent | IHistoryStep)[] = []
+    private static stepsHistory: (IHistoryLabelEvent | IHistoryStep)[] = []
     private static openedLabels: {
         label: LabelTagType,
         currentStepIndex: number,
@@ -33,6 +33,9 @@ export class GameStepManager {
         }
         return null
     }
+    /**
+     * currentLabelStepIndex is the current step index of the current label that occurred during the progression of the steps.
+     */
     public static get currentLabelStepIndex(): number | null {
         if (GameStepManager.openedLabels.length > 0) {
             return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].currentStepIndex
@@ -93,13 +96,6 @@ export class GameStepManager {
 
         steps = steps.reverse()
         return steps
-    }
-    /**
-     * Add a label to the history.
-     */
-    public static clear() {
-        GameStepManager.stepsHistory = []
-        GameStepManager.openedLabels = []
     }
     /**
      * Add a label to the history.
@@ -215,18 +211,45 @@ export class GameStepManager {
         GameStepManager.closeAllLabels()
         GameStepManager.runLabel(label)
     }
+
+    /**
+     * Add a label to the history.
+     */
+    public static clear() {
+        GameStepManager.stepsHistory = []
+        GameStepManager.openedLabels = []
+    }
+
+    /* Export and Import Methods */
+
+    /**
+     * Export the history to a JSON string.
+     * @returns The history in a JSON string.
+     */
     public static exportJson(): string {
         return JSON.stringify(this.export())
     }
+    /**
+     * Export the history to an object.
+     * @returns The history in an object.
+     */
     public static export(): ExportedStep {
         return {
             stepsHistory: GameStepManager.stepsHistory,
             openedLabels: GameStepManager.openedLabels,
         }
     }
+    /**
+     * Import the history from a JSON string.
+     * @param dataString The history in a JSON string.
+     */
     public static importJson(dataString: string) {
         GameStepManager.import(JSON.parse(dataString))
     }
+    /**
+     * Import the history from an object.
+     * @param data The history in an object.
+     */
     public static import(data: object) {
         GameStepManager.clear()
         try {
