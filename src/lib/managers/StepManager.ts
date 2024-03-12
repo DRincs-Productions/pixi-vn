@@ -41,6 +41,15 @@ export class GameStepManager {
         }
         return null
     }
+    /**
+     * lastHistoryStep is the last history step that occurred during the progression of the steps.
+     */
+    private static get lastHistoryStep(): IHistoryStep | null {
+        if (GameStepManager.stepsHistory.length > 0) {
+            return GameStepManager.stepsHistory[GameStepManager.stepsHistory.length - 1]
+        }
+        return null
+    }
 
     /* Edit History Methods */
 
@@ -257,20 +266,33 @@ export class GameStepManager {
 
     public static goBack(steps: number) {
         if (steps <= 0) {
+            console.error("steps must be greater than 0")
+            return
+        }
+        if (GameStepManager.stepsHistory.length == 0) {
+            console.error("No stepsHistory")
+            return
+        }
+        GameStepManager.goBackInstrnal(steps)
+        let lastHistoryStep = GameStepManager.lastHistoryStep
+        if (lastHistoryStep) {
+            GameStepManager.openedLabels = createExportElement(lastHistoryStep.openedLabels)
+            GameStorageManager.import(createExportElement(lastHistoryStep.storage))
+            GameWindowManager.import(createExportElement(lastHistoryStep.canvas))
+        }
+        else {
+            console.error("No lastHistoryStep")
+        }
+    }
+    private static goBackInstrnal(steps: number) {
+        if (steps <= 0) {
             return
         }
         if (GameStepManager.stepsHistory.length == 0) {
             return
         }
-        let laStep = GameStepManager.stepsHistory[GameStepManager.stepsHistory.length - 1]
-        // if step is IHistoryLabelEvent
-        if (typeof laStep === "object" && "type" in laStep) {
-            GameStepManager.stepsHistory.pop()
-            if (GameStepManager.stepsHistory.length == 0) {
-                return
-            }
-        }
         GameStepManager.stepsHistory.pop()
+        GameStepManager.goBackInstrnal(steps - 1)
     }
 
     /**
