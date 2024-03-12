@@ -4,7 +4,7 @@ import { StorageElementType } from "../types/StorageElementType"
 
 export class GameStorageManager {
     private static oidsUsed: string[] = []
-    private static storage: { [key: string]: StorageElementType } = {}
+    public static storage: { [key: string]: StorageElementType } = {}
     private constructor() { }
     public static get keysSystem() {
         return {

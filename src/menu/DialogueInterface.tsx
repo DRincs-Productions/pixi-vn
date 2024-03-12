@@ -58,7 +58,7 @@ export default function DialogueInterface() {
                 dialogueWindowHeight={windowSize.y + 50}
                 fullscreen={text ? false : true}
                 menu={menu}
-                afterClick={nextOnClick}
+                afterClick={() => setUpdate((p) => p + 1)}
             />}
             <Box
                 sx={{

@@ -151,8 +151,8 @@ export class GameStepManager {
             let n = currentLabel.steps.length
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
-                GameStepManager.addStepHistory(nextStep)
                 await nextStep()
+                GameStepManager.addStepHistory(nextStep)
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeLabel()

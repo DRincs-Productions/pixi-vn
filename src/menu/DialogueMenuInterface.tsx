@@ -1,4 +1,5 @@
 import { Box, Grid } from '@mui/joy';
+import { useState } from 'react';
 import DialogueMenuButton from '../components/DialogueMenuButton';
 import { RunModeLabelEnum } from '../lib/enums/LabelEventEnum';
 import { clearMenuOptions } from '../lib/functions/DialogueUtility';
@@ -20,6 +21,7 @@ export default function DialogueMenuInterface(props: IProps) {
         fullscreen = true,
         afterClick,
     } = props;
+    const [loading, setLoading] = useState(false)
     const height = GameWindowManager.enlargedHeight - dialogueWindowHeight
 
     return (
@@ -55,11 +57,20 @@ export default function DialogueMenuInterface(props: IProps) {
                         >
                             <DialogueMenuButton
                                 key={index}
+                                loading={loading}
                                 onClick={() => {
                                     if (item.type == RunModeLabelEnum.OpenByCall) {
+                                        setLoading(true)
                                         clearMenuOptions()
                                         GameStepManager.callLabel(item.label)
-                                        afterClick && afterClick()
+                                            .then(() => {
+                                                afterClick && afterClick()
+                                                setLoading(false)
+                                            })
+                                            .catch((e) => {
+                                                setLoading(false)
+                                                console.error(e)
+                                            })
                                     }
                                 }}
                                 sx={{
