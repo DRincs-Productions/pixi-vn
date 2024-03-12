@@ -67,9 +67,6 @@ export class TintingTestLabel extends Label {
     override get steps(): StepLabelType[] {
         return [
             async () => {
-                // holder to store the aliens
-                const aliens: AlienTintingTest[] = [];
-
                 const totalDudes = 100;
 
                 for (let i = 0; i < totalDudes; i++) {
@@ -98,9 +95,6 @@ export class TintingTestLabel extends Label {
 
                     // create a random speed for the dude between 2 - 4
                     dude.speed = 2 + Math.random() * 2;
-
-                    // finally we push the dude into the aliens array so it it can be easily accessed later
-                    aliens.push(dude);
 
                     GameWindowManager.addCanvasElement("alien" + i, dude);
                     GameWindowManager.addTicker("alien" + i, new TintingTestTicker());
