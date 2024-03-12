@@ -14,6 +14,7 @@ import { GameWindowManager } from '../lib/managers/WindowManager';
 import { MunuOptionsType } from '../lib/types/MunuOptionsType';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 import DialogueMenuInterface from './DialogueMenuInterface';
+import QuickActions from './QuickActions';
 
 export default function DialogueInterface() {
     const [windowSize, setWindowSize] = useState({
@@ -28,21 +29,19 @@ export default function DialogueInterface() {
     const [loading, setLoading] = useState(false)
     const [text, setText] = useState<DialogueModelBase | undefined>(undefined)
     const [menu, setMenu] = useState<MunuOptionsType | undefined>(undefined)
+    const [update, setUpdate] = useState(0)
     useEffect(() => {
         let dial = getDialogue()
         setText(dial)
-        let menu = getMenuOptions()
-        setMenu(menu)
-    }, [])
+        let m = getMenuOptions()
+        setMenu(m)
+    }, [update])
 
     function nextOnClick() {
         setLoading(true)
         GameStepManager.runNextStep()
             .then(() => {
-                let dialogue = getDialogue()
-                setText(dialogue)
-                let options = getMenuOptions()
-                setMenu(options)
+                setUpdate((p) => p + 1)
                 setLoading(false)
             })
             .catch((e) => {
@@ -54,6 +53,7 @@ export default function DialogueInterface() {
 
     return (
         <>
+            <QuickActions afterBack={() => setUpdate((p) => p + 1)} />
             {menu && <DialogueMenuInterface
                 dialogueWindowHeight={windowSize.y + 50}
                 fullscreen={text ? false : true}
