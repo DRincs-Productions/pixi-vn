@@ -269,7 +269,7 @@ export class GameStepManager {
             console.error("steps must be greater than 0")
             return
         }
-        if (GameStepManager.stepsHistory.length == 0) {
+        if (GameStepManager.stepsHistory.length <= 1) {
             console.error("No stepsHistory")
             return
         }
