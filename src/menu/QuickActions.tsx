@@ -1,5 +1,6 @@
 import { Grid } from '@mui/joy';
 import TextMenuButton from '../components/TextMenuButton';
+import { GameStepManager } from '../lib/managers/StepManager';
 
 export default function QuickActions() {
     return (
@@ -21,7 +22,11 @@ export default function QuickActions() {
             <Grid
                 paddingY={0}
             >
-                <TextMenuButton>
+                <TextMenuButton
+                    onClick={() => {
+                        GameStepManager.goBack()
+                    }}
+                >
                     Back
                 </TextMenuButton>
             </Grid>

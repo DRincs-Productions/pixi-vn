@@ -264,7 +264,7 @@ export class GameStepManager {
 
     /* Go Back & Refresh Methods */
 
-    public static goBack(steps: number) {
+    public static goBack(steps: number = 1) {
         if (steps <= 0) {
             console.error("steps must be greater than 0")
             return
