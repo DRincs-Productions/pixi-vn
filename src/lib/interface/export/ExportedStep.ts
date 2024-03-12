@@ -1,4 +1,3 @@
-import { IHistoryLabelEvent } from "../IHistoryLabelEvent"
 import { IHistoryStep } from "../IHistoryStep"
 import { IOpenedLabel } from "../IOpenedLabel"
 
@@ -6,6 +5,6 @@ import { IOpenedLabel } from "../IOpenedLabel"
  * Interface exported step data
  */
 export interface ExportedStep {
-    stepsHistory: (IHistoryLabelEvent | IHistoryStep)[]
+    stepsHistory: IHistoryStep[]
     openedLabels: IOpenedLabel[]
 }
