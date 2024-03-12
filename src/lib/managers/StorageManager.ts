@@ -1,3 +1,4 @@
+import { createExportElement } from "../functions/ExportUtility"
 import { ExportedStorage } from "../interface/export/ExportedStorage"
 import { StorageElementType } from "../types/StorageElementType"
 
@@ -51,8 +52,8 @@ export class GameStorageManager {
     }
     public static export(): ExportedStorage {
         return {
-            storage: GameStorageManager.storage,
-            stepOidUsedList: GameStorageManager.oidsUsed
+            storage: createExportElement(GameStorageManager.storage),
+            stepOidUsedList: createExportElement(GameStorageManager.oidsUsed),
         }
     }
     public static importJson(dataString: string) {

@@ -1,5 +1,6 @@
 import { Label } from "../classes/Label"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
+import { createExportElement } from "../functions/ExportUtility"
 import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
 import { IHistoryStep } from "../interface/IHistoryStep"
 import { IOpenedLabel } from "../interface/IOpenedLabel"
@@ -55,7 +56,7 @@ export class GameStepManager {
             step: stepHistory,
             canvas: GameWindowManager.export(),
             stepIndex: GameStepManager.currentLabelStepIndex || 0,
-            openedLabels: [...GameStepManager.openedLabels],
+            openedLabels: createExportElement(GameStepManager.openedLabels),
         }
         GameStepManager.stepsHistory.push(historyStep)
     }
@@ -97,6 +98,16 @@ export class GameStepManager {
             GameStepManager.closeLabel()
         }
     }
+    /**
+     * Increase the current step index of the current label.
+     */
+    private static increaseCurrentStepIndex() {
+        let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
+        GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
+            ...item,
+            currentStepIndex: item.currentStepIndex + 1,
+        }
+    }
 
     /* Run Methods */
 
@@ -109,11 +120,7 @@ export class GameStepManager {
             console.error("No openedLabels")
             return
         }
-        let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
-        GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
-            ...item,
-            currentStepIndex: item.currentStepIndex + 1,
-        }
+        GameStepManager.increaseCurrentStepIndex()
         return await GameStepManager.runCurrentStep()
     }
     /**
@@ -135,8 +142,8 @@ export class GameStepManager {
             let n = currentLabel.steps.length
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
-                await nextStep()
                 GameStepManager.addStepHistory(nextStep)
+                await nextStep()
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeLabel()
