@@ -1,4 +1,5 @@
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
+import { IOpenedLabel } from "./IOpenedLabel";
 import { ExportedCanvas } from "./export/ExportedCanvas";
 import { ExportedStorage } from "./export/ExportedStorage";
 
@@ -15,4 +16,5 @@ export interface IHistoryStep {
     step: StepHistoryDataType,
     stepIndex: number,
     canvas: ExportedCanvas,
+    openedLabels: IOpenedLabel[],
 }

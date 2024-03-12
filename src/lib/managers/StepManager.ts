@@ -1,8 +1,7 @@
 import { Label } from "../classes/Label"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
-import { HistoryLabelEventEnum } from "../enums/LabelEventEnum"
+import { createExportElement } from "../functions/ExportUtility"
 import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
-import { IHistoryLabelEvent } from "../interface/IHistoryLabelEvent"
 import { IHistoryStep } from "../interface/IHistoryStep"
 import { IOpenedLabel } from "../interface/IOpenedLabel"
 import { ExportedStep } from "../interface/export/ExportedStep"
@@ -20,14 +19,15 @@ export class GameStepManager {
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
-    private static stepsHistory: (IHistoryLabelEvent | IHistoryStep)[] = []
+    private static stepsHistory: IHistoryStep[] = []
     private static openedLabels: IOpenedLabel[] = []
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
     private static get currentLabel(): LabelTagType | null {
         if (GameStepManager.openedLabels.length > 0) {
-            return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].label
+            let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
+            return item.label
         }
         return null
     }
@@ -36,7 +36,17 @@ export class GameStepManager {
      */
     private static get currentLabelStepIndex(): number | null {
         if (GameStepManager.openedLabels.length > 0) {
-            return GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].currentStepIndex
+            let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
+            return item.currentStepIndex
+        }
+        return null
+    }
+    /**
+     * lastHistoryStep is the last history step that occurred during the progression of the steps.
+     */
+    private static get lastHistoryStep(): IHistoryStep | null {
+        if (GameStepManager.stepsHistory.length > 0) {
+            return GameStepManager.stepsHistory[GameStepManager.stepsHistory.length - 1]
         }
         return null
     }
@@ -55,6 +65,22 @@ export class GameStepManager {
             step: stepHistory,
             canvas: GameWindowManager.export(),
             stepIndex: GameStepManager.currentLabelStepIndex || 0,
+            openedLabels: createExportElement(GameStepManager.openedLabels),
+        }
+        let lastStepData = GameStepManager.lastHistoryStep
+        if (lastStepData) {
+            if (lastStepData.openedLabels.length === historyStep.openedLabels.length) {
+                try {
+                    let lastStepDataOpenedLabelsString = JSON.stringify(lastStepData.openedLabels)
+                    let historyStepOpenedLabelsString = JSON.stringify(historyStep.openedLabels)
+                    if (lastStepDataOpenedLabelsString === historyStepOpenedLabelsString) {
+                        return
+                    }
+                }
+                catch (e) {
+                    console.error(e)
+                }
+            }
         }
         GameStepManager.stepsHistory.push(historyStep)
     }
@@ -62,17 +88,11 @@ export class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static pushNewLabel(label: LabelTagType, type: HistoryLabelEventEnum) {
+    private static pushNewLabel(label: LabelTagType) {
         let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
             throw new Error("Label not found")
         }
-        let historyLabel: IHistoryLabelEvent = {
-            label: label,
-            type: type,
-            labelClassName: currentLabel.constructor.name,
-        }
-        GameStepManager.stepsHistory.push(historyLabel)
         GameStepManager.openedLabels.push({
             label: label,
             currentStepIndex: 0,
@@ -92,12 +112,6 @@ export class GameStepManager {
             console.error("Label not found")
             return
         }
-        let historyLabel: IHistoryLabelEvent = {
-            label: GameStepManager.currentLabel,
-            type: HistoryLabelEventEnum.End,
-            labelClassName: currentLabel.constructor.name,
-        }
-        GameStepManager.stepsHistory.push(historyLabel)
         GameStepManager.openedLabels.pop()
     }
     /**
@@ -106,6 +120,16 @@ export class GameStepManager {
     private static closeAllLabels() {
         while (GameStepManager.openedLabels.length > 0) {
             GameStepManager.closeLabel()
+        }
+    }
+    /**
+     * Increase the current step index of the current label.
+     */
+    private static increaseCurrentStepIndex() {
+        let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
+        GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
+            ...item,
+            currentStepIndex: item.currentStepIndex + 1,
         }
     }
 
@@ -120,10 +144,7 @@ export class GameStepManager {
             console.error("No openedLabels")
             return
         }
-        GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
-            ...GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1],
-            currentStepIndex: GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1].currentStepIndex + 1,
-        }
+        GameStepManager.increaseCurrentStepIndex()
         return await GameStepManager.runCurrentStep()
     }
     /**
@@ -169,7 +190,7 @@ export class GameStepManager {
                 label = label.constructor as typeof Label
             }
             let labelName = label.name
-            GameStepManager.pushNewLabel(labelName, HistoryLabelEventEnum.OpenByCall)
+            GameStepManager.pushNewLabel(labelName)
         }
         catch (e) {
             console.error(e)
@@ -189,7 +210,7 @@ export class GameStepManager {
                 label = label.constructor as typeof Label
             }
             let labelName = label.name
-            GameStepManager.pushNewLabel(labelName, HistoryLabelEventEnum.OpenByJump)
+            GameStepManager.pushNewLabel(labelName)
         }
         catch (e) {
             console.error(e)
@@ -256,6 +277,39 @@ export class GameStepManager {
         return steps
     }
 
+    /* Go Back & Refresh Methods */
+
+    public static goBack(steps: number = 1) {
+        if (steps <= 0) {
+            console.error("steps must be greater than 0")
+            return
+        }
+        if (GameStepManager.stepsHistory.length <= 1) {
+            console.error("No stepsHistory")
+            return
+        }
+        GameStepManager.goBackInstrnal(steps)
+        let lastHistoryStep = GameStepManager.lastHistoryStep
+        if (lastHistoryStep) {
+            GameStepManager.openedLabels = createExportElement(lastHistoryStep.openedLabels)
+            GameStorageManager.import(createExportElement(lastHistoryStep.storage))
+            GameWindowManager.import(createExportElement(lastHistoryStep.canvas))
+        }
+        else {
+            console.error("No lastHistoryStep")
+        }
+    }
+    private static goBackInstrnal(steps: number) {
+        if (steps <= 0) {
+            return
+        }
+        if (GameStepManager.stepsHistory.length == 0) {
+            return
+        }
+        GameStepManager.stepsHistory.pop()
+        GameStepManager.goBackInstrnal(steps - 1)
+    }
+
     /**
      * Add a label to the history.
      */
@@ -298,7 +352,7 @@ export class GameStepManager {
         GameStepManager.clear()
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                GameStepManager.stepsHistory = (data as ExportedStep)["stepsHistory"] as (IHistoryLabelEvent | IHistoryStep)[]
+                GameStepManager.stepsHistory = (data as ExportedStep)["stepsHistory"] as IHistoryStep[]
             }
             else {
                 console.log("No stepsHistory data found")

@@ -18,11 +18,8 @@ export function setDialogue(text: string): void {
  * @returns Dialogue to be shown in the game
  */
 export function getDialogue(): DialogueModelBase | undefined {
-    let d = GameStorageManager.getVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
-    if (d instanceof DialogueModelBase) {
-        return d
-    }
-    return undefined
+    let d = GameStorageManager.getVariable<DialogueModelBase>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
+    return d
 }
 
 /**

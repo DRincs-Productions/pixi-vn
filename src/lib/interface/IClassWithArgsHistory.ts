@@ -13,3 +13,11 @@ export interface IClassWithArgsHistory<TArgs extends TickerArgsType> {
     priority?: UPDATE_PRIORITY,
     duration?: number
 }
+
+export interface IClassWithArgsHistoryForExport<TArgs extends TickerArgsType> {
+    className: TickerTagType,
+    args: TArgs
+    canvasElementTags: string[],
+    priority?: UPDATE_PRIORITY,
+    duration?: number
+}

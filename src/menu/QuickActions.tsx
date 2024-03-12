@@ -1,7 +1,13 @@
 import { Grid } from '@mui/joy';
 import TextMenuButton from '../components/TextMenuButton';
+import { GameStepManager } from '../lib/managers/StepManager';
 
-export default function QuickActions() {
+type IProps = {
+    afterBack?: () => void
+}
+
+export default function QuickActions(props: IProps) {
+    const { afterBack } = props
     return (
         <Grid
             container
@@ -21,7 +27,12 @@ export default function QuickActions() {
             <Grid
                 paddingY={0}
             >
-                <TextMenuButton>
+                <TextMenuButton
+                    onClick={() => {
+                        GameStepManager.goBack()
+                        afterBack && afterBack()
+                    }}
+                >
                     Back
                 </TextMenuButton>
             </Grid>

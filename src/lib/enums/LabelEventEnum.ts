@@ -12,5 +12,4 @@ export enum HistoryLabelEventEnum {
     End = "end",
     OpenByCall = RunModeLabelEnum.OpenByCall,
     OpenByJump = RunModeLabelEnum.OpenByJump,
-    OpenMenu = "openmenu",
 }

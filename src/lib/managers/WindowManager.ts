@@ -2,6 +2,7 @@ import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
+import { createExportElement } from "../functions/ExportUtility";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
@@ -499,9 +500,9 @@ export class GameWindowManager {
             currentElements[tag] = exportCanvasElement(GameWindowManager._children[tag])
         }
         return {
-            currentTickers: GameWindowManager._currentTickers,
-            currentElements: currentElements,
-            childrenTagsOrder: GameWindowManager.childrenTagsOrder,
+            currentTickers: createExportElement(GameWindowManager._currentTickers),
+            currentElements: createExportElement(currentElements),
+            childrenTagsOrder: createExportElement(GameWindowManager.childrenTagsOrder),
         }
     }
     /**

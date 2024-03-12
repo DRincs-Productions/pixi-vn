@@ -2,7 +2,6 @@ import { Route, Routes } from 'react-router-dom';
 import AppImports from './AppImports';
 import DialogueInterface from './menu/DialogueInterface';
 import MainMenu from './menu/MainMenu';
-import QuickActions from './menu/QuickActions';
 
 function App() {
 
@@ -13,10 +12,7 @@ function App() {
             </Routes>
             <Routes>
                 <Route key={"game"} path={"game"}
-                    element={<>
-                        <QuickActions />
-                        <DialogueInterface />
-                    </>}
+                    element={<DialogueInterface />}
                 />
             </Routes>
         </AppImports>

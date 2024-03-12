@@ -1,11 +1,11 @@
 import { SupportedCanvasElementMemory } from "../../types/SupportedCanvasElement";
-import { IClassWithArgsHistory } from "../IClassWithArgsHistory";
+import { IClassWithArgsHistoryForExport } from "../IClassWithArgsHistory";
 
 /**
  * Interface exported canvas
  */
 export interface ExportedCanvas {
-    currentTickers: IClassWithArgsHistory<any>[]
+    currentTickers: IClassWithArgsHistoryForExport<any>[]
     currentElements: { [tag: string]: SupportedCanvasElementMemory }
     childrenTagsOrder: string[]
 }
