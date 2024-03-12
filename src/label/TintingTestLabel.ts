@@ -100,7 +100,6 @@ export class TintingTestLabel extends Label {
                     GameWindowManager.addTicker("alien" + i, new TintingTestTicker());
                 }
             },
-            () => GameWindowManager.removeCanvasElements(),
         ]
     }
 }

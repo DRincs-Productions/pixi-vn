@@ -67,6 +67,21 @@ export class GameStepManager {
             stepIndex: GameStepManager.currentLabelStepIndex || 0,
             openedLabels: createExportElement(GameStepManager.openedLabels),
         }
+        let lastStepData = GameStepManager.lastHistoryStep
+        if (lastStepData) {
+            if (lastStepData.openedLabels.length === historyStep.openedLabels.length) {
+                try {
+                    let lastStepDataOpenedLabelsString = JSON.stringify(lastStepData.openedLabels)
+                    let historyStepOpenedLabelsString = JSON.stringify(historyStep.openedLabels)
+                    if (lastStepDataOpenedLabelsString === historyStepOpenedLabelsString) {
+                        return
+                    }
+                }
+                catch (e) {
+                    console.error(e)
+                }
+            }
+        }
         GameStepManager.stepsHistory.push(historyStep)
     }
     /**
