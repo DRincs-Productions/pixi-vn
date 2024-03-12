@@ -53,6 +53,12 @@ export function getMemoryContainer<T extends Container>(element: T): ICanvasCont
         x: element.x,
         y: element.y,
         boundsArea: element.boundsArea,
+
+        cursor: element.cursor,
+        eventMode: element.eventMode,
+        interactive: element.interactive,
+        interactiveChildren: element.interactiveChildren,
+        hitArea: element.hitArea
     }
 }
 
@@ -90,4 +96,10 @@ export function setMemoryContainer<T extends Container>(element: T | Container, 
     memory.x && (element.x = memory.x)
     memory.y && (element.y = memory.y)
     memory.boundsArea && (element.boundsArea = memory.boundsArea)
+
+    memory.cursor && (element.cursor = memory.cursor)
+    memory.eventMode && (element.eventMode = memory.eventMode)
+    memory.interactive && (element.interactive = memory.interactive)
+    memory.interactiveChildren && (element.interactiveChildren = memory.interactiveChildren)
+    memory.hitArea && (element.hitArea = memory.hitArea)
 }

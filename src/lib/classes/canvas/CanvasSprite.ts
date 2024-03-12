@@ -91,7 +91,7 @@ export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element:
         let className = memory.onEvents[event]
         let instance = getEventTypeByClassName(className)
         if (instance) {
-            element.onEvent(event as CanvasEventNamesType, instance)
+            element.onEvent(event, instance)
         }
     }
 }
