@@ -28,9 +28,6 @@ export class GameStepManager {
     private static get currentLabel(): LabelTagType | null {
         if (GameStepManager.openedLabels.length > 0) {
             let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
-            if (item === HistoryLabelEventEnum.OpenByJump) {
-                return null
-            }
             return item.label
         }
         return null
@@ -41,9 +38,6 @@ export class GameStepManager {
     private static get currentLabelStepIndex(): number | null {
         if (GameStepManager.openedLabels.length > 0) {
             let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
-            if (item === HistoryLabelEventEnum.OpenByJump) {
-                return null
-            }
             return item.currentStepIndex
         }
         return null
@@ -63,6 +57,7 @@ export class GameStepManager {
             step: stepHistory,
             canvas: GameWindowManager.export(),
             stepIndex: GameStepManager.currentLabelStepIndex || 0,
+            openedLabels: [...GameStepManager.openedLabels],
         }
         GameStepManager.stepsHistory.push(historyStep)
     }
@@ -129,10 +124,6 @@ export class GameStepManager {
             return
         }
         let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
-        if (item === HistoryLabelEventEnum.OpenByJump) {
-            console.error("No openedLabels")
-            return
-        }
         GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
             ...item,
             currentStepIndex: item.currentStepIndex + 1,
@@ -196,7 +187,7 @@ export class GameStepManager {
      * @param label 
      */
     public static async jumpLabel(label: typeof Label | Label) {
-        GameStepManager.openedLabels.push(HistoryLabelEventEnum.OpenByJump)
+        GameStepManager.closeAllLabels()
         try {
             if (label instanceof Label) {
                 label = label.constructor as typeof Label
@@ -281,16 +272,12 @@ export class GameStepManager {
         let laStep = GameStepManager.stepsHistory[GameStepManager.stepsHistory.length - 1]
         // if step is IHistoryLabelEvent
         if (typeof laStep === "object" && "type" in laStep) {
-            if (laStep.type === HistoryLabelEventEnum.End) {
-                return GameStepManager.goBack(steps - 1)
-            }
-            else if (laStep.type === HistoryLabelEventEnum.OpenByJump) {
-                return GameStepManager.goBack(steps - 1)
-            }
-            else if (laStep.type === HistoryLabelEventEnum.OpenByCall) {
-                return GameStepManager.goBack(steps - 1)
+            GameStepManager.stepsHistory.pop()
+            if (GameStepManager.stepsHistory.length == 0) {
+                return
             }
         }
+        GameStepManager.stepsHistory.pop()
     }
 
     /**

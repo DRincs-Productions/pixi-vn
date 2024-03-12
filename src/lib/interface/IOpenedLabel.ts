@@ -1,10 +1,6 @@
-import { HistoryLabelEventEnum } from "../enums/LabelEventEnum";
 import { LabelTagType } from "../types/LabelTagType";
 
-interface IOpenedLabelBase {
+export interface IOpenedLabel {
     label: LabelTagType,
     currentStepIndex: number,
 }
-
-
-export type IOpenedLabel = IOpenedLabelBase | HistoryLabelEventEnum.OpenByJump
