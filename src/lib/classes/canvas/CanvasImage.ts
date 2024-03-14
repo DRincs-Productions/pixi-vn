@@ -1,3 +1,4 @@
+import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getTexture } from "../../functions/ImageUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
 import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
@@ -6,6 +7,7 @@ import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * The class for the image.
  * Must use refreshImage() to load the image.
  */
+canvasElementDecorator()
 export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
     constructor(image: string) {
         super()

@@ -1,4 +1,5 @@
 import { Container, ContainerEvents, EventEmitter, Text } from "pixi.js";
+import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
@@ -12,6 +13,7 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * This class is responsible for storing a PIXI Text.
  * And allow to save your memory in a game save.
  */
+canvasElementDecorator()
 export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
     get memory(): ICanvasTextMemory {
         return getMemoryText(this)

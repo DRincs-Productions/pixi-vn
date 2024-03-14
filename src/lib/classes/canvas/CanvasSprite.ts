@@ -1,4 +1,5 @@
 import { ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
 import { getTexture } from "../../functions/ImageUtility";
@@ -15,6 +16,7 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * This class is responsible for storing a PIXI Sprite.
  * And allow to save your memory in a game save.
  */
+canvasElementDecorator()
 export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements ICanvasBase<Memory | ICanvasSpriteMemory> {
     get memory(): Memory | ICanvasSpriteMemory {
         return getMemorySprite(this)
