@@ -12,7 +12,7 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * This class is responsible for storing a PIXI Text.
  * And allow to save your memory in a game save.
  */
-canvasElementDecorator()
+@canvasElementDecorator()
 export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
     get memory(): ICanvasTextMemory {
         return getMemoryText(this)

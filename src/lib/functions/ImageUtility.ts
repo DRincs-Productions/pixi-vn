@@ -14,7 +14,8 @@ import { STRING_ERRORS } from './ErrorUtility';
  * @returns the container of the image.
  */
 export async function showImage(tag: string, imageUrl: string): Promise<CanvasImage> {
-    let image = new CanvasImage(imageUrl)
+    let image = new CanvasImage()
+    image.imageLink = imageUrl
     GameWindowManager.addCanvasElement(tag, image)
     return image.refreshImage().then(() => image)
 }
@@ -28,7 +29,8 @@ export async function showImage(tag: string, imageUrl: string): Promise<CanvasIm
  * @returns the container of the image.
  */
 export function addImage(tag: string, imageUrl: string): CanvasImage {
-    let image = new CanvasImage(imageUrl)
+    let image = new CanvasImage()
+    image.imageLink = imageUrl
     GameWindowManager.addCanvasElement(tag, image)
     return image
 }

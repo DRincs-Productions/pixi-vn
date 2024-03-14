@@ -7,19 +7,15 @@ import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * The class for the image.
  * Must use refreshImage() to load the image.
  */
-canvasElementDecorator()
+@canvasElementDecorator()
 export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
-    constructor(image: string) {
-        super()
-        this.imageLink = image
-    }
     override get memory(): ICanvasImageMemory {
         return getMemoryCanvasImage(this)
     }
     override set memory(memory: ICanvasImageMemory) {
         setMemoryCanvasImage(this, memory)
     }
-    imageLink: string;
+    imageLink: string = ""
     async refreshImage() {
         return getTexture(this.imageLink)
             .then((texture) => {

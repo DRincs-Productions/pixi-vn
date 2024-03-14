@@ -8,7 +8,7 @@ import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerM
  * This class is responsible for storing a PIXI Container.
  * And allow to save your memory in a game save.
  */
-canvasElementDecorator()
+@canvasElementDecorator()
 export class CanvasContainer extends Container implements ICanvasBase<ICanvasContainerMemory> {
     get memory(): ICanvasContainerMemory {
         let memory = getMemoryContainer(this)

@@ -1,13 +1,37 @@
 import { Assets, Rectangle, Texture, TextureSourceLike, Ticker } from "pixi.js";
 import { Label } from "../lib/classes/Label";
-import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
+import { CanvasSprite, setMemorySprite } from "../lib/classes/canvas/CanvasSprite";
 import { TickerBase } from "../lib/classes/ticker/TickerBase";
+import { canvasElementDecorator } from "../lib/decorators/CanvasElementDecorator";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { tickerDecorator } from "../lib/decorators/TickerDecorator";
+import { ICanvasSpriteBaseMemory } from "../lib/interface/canvas/ICanvasSpriteMemory";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
-class AlienTintingTest extends CanvasSprite {
+interface IAlienTintingMemory extends ICanvasSpriteBaseMemory {
+    direction: number
+    turningSpeed: number
+    speed: number
+}
+
+@canvasElementDecorator()
+class AlienTintingTest extends CanvasSprite<IAlienTintingMemory> {
+    override get memory() {
+        return {
+            ...super.memory,
+            direction: this.direction,
+            turningSpeed: this.turningSpeed,
+            speed: this.speed,
+            className: "AlienTintingTest",
+        }
+    }
+    override set memory(memory: IAlienTintingMemory) {
+        setMemorySprite(this, memory)
+        this.direction = memory.direction
+        this.turningSpeed = memory.turningSpeed
+        this.speed = memory.speed
+    }
     direction: number = 0
     turningSpeed: number = 0
     speed: number = 0
