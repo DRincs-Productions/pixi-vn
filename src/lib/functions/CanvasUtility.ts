@@ -1,11 +1,8 @@
-import { Container, Texture } from "pixi.js";
-import { CanvasContainer, getMemoryContainer } from "../classes/canvas/CanvasContainer";
-import { CanvasImage, getMemoryCanvasImage } from "../classes/canvas/CanvasImage";
-import { CanvasSprite, getMemorySprite } from "../classes/canvas/CanvasSprite";
-import { CanvasText, getMemoryText } from "../classes/canvas/CanvasText";
-import { ICanvasContainerMemory } from "../interface/canvas/ICanvasContainerMemory";
+import { Texture } from "pixi.js";
+import { getCanvasElementInstanceByClassName } from "../decorators/CanvasElementDecorator";
+import { ICanvasBase } from "../interface/ICanvasBase";
+import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ITextureMemory } from "../interface/canvas/ITextureMemory";
-import { SupportedCanvasElement, SupportedCanvasElementMemory } from "../types/SupportedCanvasElement";
 
 /**
  * Get the memory object of the PixiJS texture
@@ -25,30 +22,10 @@ export function getTextureMemory(texture: Texture): ITextureMemory {
  * @param element Canvas element
  * @returns Memory object of the canvas
  */
-export function exportCanvasElement<T extends Container>(
+export function exportCanvasElement<T extends ICanvasBase<any>>(
     element: T,
-): SupportedCanvasElementMemory {
-    let temp: SupportedCanvasElementMemory
-    if (element instanceof CanvasText) {
-        temp = getMemoryText(element)
-    }
-    else if (element instanceof CanvasImage) {
-        temp = getMemoryCanvasImage(element)
-    }
-    else if (element instanceof CanvasSprite) {
-        temp = getMemorySprite(element)
-    }
-    else if (element instanceof Container) {
-        temp = getMemoryContainer(element)
-        element.children.forEach(child => {
-            (temp as ICanvasContainerMemory).elements.push(exportCanvasElement(child))
-        })
-    }
-    else {
-        throw new Error("Invalid class name")
-    }
-
-    return temp
+): ICanvasBaseMemory {
+    return element.memory
 }
 
 /**
@@ -56,28 +33,12 @@ export function exportCanvasElement<T extends Container>(
  * @param memory Memory object of the canvas
  * @returns Canvas element
  */
-export function importCanvasElement(
-    memory: SupportedCanvasElementMemory,
-): SupportedCanvasElement {
-    let element: SupportedCanvasElement
-    if (memory.className === "CanvasText") {
-        element = new CanvasText()
+export function importCanvasElement<T extends ICanvasBase<any>>(
+    memory: ICanvasBaseMemory,
+): T {
+    let element = getCanvasElementInstanceByClassName<T>(memory.className)
+    if (element) {
         element.memory = memory
-    }
-    else if (memory.className === "CanvasImage") {
-        element = new CanvasImage(memory.textureImage.image)
-        element.memory = memory
-    }
-    else if (memory.className === "CanvasSprite") {
-        element = new CanvasSprite()
-        element.memory = memory
-    }
-    else if (memory.className === "CanvasContainer") {
-        element = new CanvasContainer()
-        element.memory = memory
-        memory.elements.forEach(child => {
-            (element as CanvasContainer).addCanvasChild(importCanvasElement(child))
-        })
     }
     else {
         throw new Error("Invalid class name")

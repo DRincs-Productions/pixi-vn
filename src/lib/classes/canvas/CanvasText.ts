@@ -5,7 +5,6 @@ import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
-import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
 import { CanvasEvent } from "../CanvasEvent";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
@@ -25,7 +24,7 @@ export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
     get onEvents() {
         return this._onEvents
     }
-    addCanvasChild<U extends SupportedCanvasElement[]>(...children: U): U[0] {
+    addCanvasChild<U extends ICanvasBase<any>[]>(...children: U): U[0] {
         return super.addChild(...children)
     }
     /**
@@ -44,7 +43,7 @@ export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<SupportedCanvasElement>).fn(event, this)
+                (instance as CanvasEvent<ICanvasBase<any>>).fn(event, this)
             })
         }
         return this

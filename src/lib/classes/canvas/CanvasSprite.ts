@@ -8,7 +8,6 @@ import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
 import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
-import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
 import { CanvasEvent } from "../CanvasEvent";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
@@ -34,7 +33,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<SupportedCanvasElement>).fn(event, this)
+                (instance as CanvasEvent<ICanvasBase<any>>).fn(event, this)
             })
         }
         return this

@@ -14,7 +14,7 @@ export function canvasElementDecorator(name?: CanvasElementTagType) {
     }
 }
 
-export function getEventTypeByClassName<T extends typeof ICanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
+export function getCanvasElementTypeByClassName<T extends typeof ICanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasName]
         if (!eventType) {
@@ -30,7 +30,7 @@ export function getEventTypeByClassName<T extends typeof ICanvasBase<any>>(canva
     }
 }
 
-export function getEventInstanceByClassName<T extends ICanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
+export function getCanvasElementInstanceByClassName<T extends ICanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasName]
         if (!eventType) {

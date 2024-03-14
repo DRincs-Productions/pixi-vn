@@ -1,5 +1,4 @@
 import { ContainerOptions } from "pixi.js";
-import { SupportedCanvasElementMemory } from "../../types/SupportedCanvasElement";
 import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
 
 /**
@@ -7,5 +6,5 @@ import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
  */
 export interface ICanvasContainerMemory extends ContainerOptions, ICanvasBaseMemory {
     className: "CanvasContainer",
-    elements: SupportedCanvasElementMemory[],
+    elements: ICanvasBaseMemory[],
 }

@@ -3,13 +3,14 @@ import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
 import { createExportElement } from "../functions/ExportUtility";
+import { ICanvasBase } from "../interface/ICanvasBase";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
+import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ExportedCanvas } from "../interface/export/ExportedCanvas";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
-import { SupportedCanvasElement, SupportedCanvasElementMemory } from "../types/SupportedCanvasElement";
 import { TickerTagType } from "../types/TickerTagType";
 
 /**
@@ -173,7 +174,7 @@ export class GameWindowManager {
     static get currentCanvasElements() {
         return GameWindowManager._children
     }
-    private static _children: { [tag: string]: SupportedCanvasElement } = {}
+    private static _children: { [tag: string]: ICanvasBase<any> } = {}
     /**
      * The order of the children tags.
      */
@@ -184,7 +185,7 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @param canvasElement The canvas elements to be added.
      */
-    public static addCanvasElement(tag: string, canvasElement: SupportedCanvasElement) {
+    public static addCanvasElement(tag: string, canvasElement: ICanvasBase<any>) {
         if (GameWindowManager._children[tag]) {
             GameWindowManager.removeCanvasElement(tag)
         }
@@ -216,7 +217,7 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @returns The canvas element.
      */
-    public static getCanvasElement<T extends SupportedCanvasElement>(tag: string): T | undefined {
+    public static getCanvasElement<T extends ICanvasBase<any>>(tag: string): T | undefined {
         return GameWindowManager._children[tag] as T | undefined
     }
     /**
@@ -495,7 +496,7 @@ export class GameWindowManager {
      * @returns The object.
      */
     public static export(): ExportedCanvas {
-        let currentElements: { [tag: string]: SupportedCanvasElementMemory } = {}
+        let currentElements: { [tag: string]: ICanvasBaseMemory } = {}
         for (let tag in GameWindowManager._children) {
             currentElements[tag] = exportCanvasElement(GameWindowManager._children[tag])
         }
