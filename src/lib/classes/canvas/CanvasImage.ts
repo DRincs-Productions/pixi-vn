@@ -1,5 +1,6 @@
+import { Sprite, Texture, TextureSourceLike } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
-import { getTexture } from "../../functions/ImageUtility";
+import { getTexture } from "../../functions/TextureUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
 import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
@@ -10,12 +11,22 @@ import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
 @canvasElementDecorator()
 export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
     override get memory(): ICanvasImageMemory {
-        return getMemoryCanvasImage(this)
+        return {
+            ...getMemorySprite(this),
+            className: "CanvasImage",
+            textureImage: { image: this.imageLink },
+        }
     }
     override set memory(memory: ICanvasImageMemory) {
-        setMemoryCanvasImage(this, memory)
+        setMemorySprite(this, memory)
     }
     imageLink: string = ""
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
+        let sprite = Sprite.from(source, skipCache)
+        let mySprite = new CanvasImage()
+        mySprite.texture = sprite.texture
+        return mySprite
+    }
     async refreshImage() {
         return getTexture(this.imageLink)
             .then((texture) => {
@@ -30,17 +41,4 @@ export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
                 console.error("Error loading image")
             })
     }
-}
-
-export function getMemoryCanvasImage(element: CanvasImage): ICanvasImageMemory {
-    let temp = getMemorySprite(element as any)
-    return {
-        ...temp,
-        className: "CanvasImage",
-        textureImage: { image: element.imageLink },
-    }
-}
-
-export function setMemoryCanvasImage(element: CanvasImage, memory: ICanvasImageMemory) {
-    setMemorySprite(element, memory)
 }
