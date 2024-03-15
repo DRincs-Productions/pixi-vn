@@ -27,7 +27,7 @@ export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
         mySprite.texture = sprite.texture
         return mySprite
     }
-    async refreshImage() {
+    async load() {
         return getTexture(this.imageLink)
             .then((texture) => {
                 if (typeof texture === "string") {

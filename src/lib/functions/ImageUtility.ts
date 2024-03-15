@@ -1,33 +1,20 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
 import { CanvasImage } from '../classes/canvas/CanvasImage';
-import { TickerBase } from '../classes/ticker/TickerBase';
 import { TickerFadeAlpha } from '../classes/ticker/TickerFadeAlpha';
 import { GameWindowManager } from '../managers/WindowManager';
 import { STRING_ERRORS } from './ErrorUtility';
 import { getTexture } from './TextureUtility';
 
 /**
- * Show a image in the canvas.
- * If exist a image with the same tag, then the image is replaced.
- * If the image not exist, then a error is shown in canvas.
- * @param tag is the unique tag of the image. You can use this tag to refer to this image
- * @param imageUrl is the url of the image.
- * @returns the container of the image.
- */
-export async function showImage(tag: string, imageUrl: string): Promise<CanvasImage> {
-    let image = new CanvasImage()
-    image.imageLink = imageUrl
-    GameWindowManager.addCanvasElement(tag, image)
-    return image.refreshImage().then(() => image)
-}
-
-/**
  * Add a image in the canvas.
  * Is the same that showImage, but the image is not shown.
- * If you want to show the image, then you need to use the function CanvasImage.refreshImage().
+ * If you want to show the image, then you need to use the function CanvasImage.load().
  * @param tag is the unique tag of the image. You can use this tag to refer to this image
  * @param imageUrl is the url of the image.
  * @returns the container of the image.
+ * @example
+ * let alien = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
+ * await alien.load()
  */
 export function addImage(tag: string, imageUrl: string): CanvasImage {
     let image = new CanvasImage()
@@ -53,7 +40,7 @@ export async function showCanvasImages(canvasImages: CanvasImage[] | CanvasImage
     return Promise.all(promises).then((textures) => {
         return textures.map((texture, index) => {
             if (typeof texture === "string") {
-                canvasImages[index].refreshImage()
+                canvasImages[index].load()
                 console.error(STRING_ERRORS.IMAGE_NOT_FOUND, canvasImages[index].imageLink)
                 return canvasImages[index]
             }
@@ -72,20 +59,6 @@ export function removeImage(tag: string | string[]) {
 }
 
 /**
- * Show a image in the canvas with a effect.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
- * @param imageUrl The url of the image.
- * @param effect The effect(Ticker) to show the image.
- * @returns The sprite of the image.
- */
-export async function showImageWithEffect(tag: string, imageUrl: string, effect: TickerBase<any>): Promise<CanvasImage> {
-    return showImage(tag, imageUrl).then((image) => {
-        GameWindowManager.addTicker(tag, effect)
-        return image
-    })
-}
-
-/**
  * Show a image in the canvas with a disolve effect.
  * Disolve effect is a effect that the image is shown with a fade in.
  * If exist a image with the same tag, then the image is replaced. And the first image is removed after the effect is done.
@@ -100,13 +73,17 @@ export async function showImageWithDisolveEffect(
     tag: string, imageUrl: string,
     speed: number,
     priority?: UPDATE_PRIORITY,
-): Promise<CanvasImage> {
+): Promise<void> {
     if (!GameWindowManager.getCanvasElement(tag)) {
+        let image = addImage(tag, imageUrl)
+        image.alpha = 0
         let effect = new TickerFadeAlpha({
             speed: speed,
             type: "show",
+            startOnlyIfHaveTexture: true,
         }, 10000, priority)
-        return showImageWithEffect(tag, imageUrl, effect)
+        GameWindowManager.addTicker(tag, effect)
+        return image.load()
     }
 
     let specialTag = tag + "_temp_disolve"
@@ -114,15 +91,11 @@ export async function showImageWithDisolveEffect(
         speed: speed,
         type: "show",
         tagToRemoveAfter: specialTag,
+        startOnlyIfHaveTexture: true,
     }, 10000, priority)
     GameWindowManager.editTagCanvasElement(tag, specialTag)
-    return showImageWithEffect(tag, imageUrl, effect)
-        .then((image) => {
-            image.alpha = 0
-            return image
-        })
-        .catch((e) => {
-            GameWindowManager.editTagCanvasElement(specialTag, tag)
-            throw e
-        })
+    let image = addImage(tag, imageUrl)
+    image.alpha = 0
+    GameWindowManager.addTicker(tag, effect)
+    return image.load()
 }

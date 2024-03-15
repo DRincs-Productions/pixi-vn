@@ -52,11 +52,11 @@ export default function DialogueMenuInterface(props: IProps) {
                 {menu.map((item, index) => {
                     return (
                         <Grid
+                            key={index}
                             justifyContent="center"
                             alignItems="center"
                         >
                             <DialogueMenuButton
-                                key={index}
                                 loading={loading}
                                 onClick={() => {
                                     if (item.type == RunModeLabelEnum.OpenByCall) {
