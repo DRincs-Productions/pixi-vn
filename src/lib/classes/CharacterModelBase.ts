@@ -5,12 +5,12 @@ interface ICharacterModelBase {
     surname?: string
     age?: number
     icon?: string
-    color?: string
+    color?: string | number
 }
 
 export class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
-    constructor(id: string, props: ICharacterModelBase) {
-        super(id)
+    constructor(tag: string, props: ICharacterModelBase) {
+        super(tag)
         this.defaultName = props.name
         this.defaultSurname = props.surname
         this.defaultAge = props.age
@@ -38,6 +38,6 @@ export class CharacterModelBase extends StoredClassModel implements ICharacterMo
     set age(value: number | undefined) {
         this.updateStorage({ ...this, age: value })
     }
-    icon?: string | undefined
-    color?: string | undefined
+    icon?: string
+    color?: string | number
 }
