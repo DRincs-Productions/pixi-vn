@@ -1,13 +1,13 @@
 import { ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
-import { getTexture } from "../../functions/ImageUtility";
+import { getTexture } from "../../functions/TextureUtility";
 import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
 import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
-import { SupportedCanvasElement } from "../../types/SupportedCanvasElement";
 import { CanvasEvent } from "../CanvasEvent";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
@@ -15,6 +15,7 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * This class is responsible for storing a PIXI Sprite.
  * And allow to save your memory in a game save.
  */
+@canvasElementDecorator()
 export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements ICanvasBase<Memory | ICanvasSpriteMemory> {
     get memory(): Memory | ICanvasSpriteMemory {
         return getMemorySprite(this)
@@ -32,7 +33,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<SupportedCanvasElement>).fn(event, this)
+                (instance as CanvasEvent<ICanvasBase<any>>).fn(event, this)
             })
         }
         return this
@@ -48,7 +49,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     override on<T extends keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
         return super.on(event, fn, context)
     }
-    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite {
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite<any> {
         let sprite = Sprite.from(source, skipCache)
         let mySprite = new CanvasSprite()
         mySprite.texture = sprite.texture

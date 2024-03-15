@@ -1,9 +1,10 @@
-import { Assets, Texture, UPDATE_PRIORITY } from 'pixi.js';
+import { Texture, UPDATE_PRIORITY } from 'pixi.js';
 import { CanvasImage } from '../classes/canvas/CanvasImage';
 import { TickerBase } from '../classes/ticker/TickerBase';
 import { TickerFadeAlpha } from '../classes/ticker/TickerFadeAlpha';
 import { GameWindowManager } from '../managers/WindowManager';
 import { STRING_ERRORS } from './ErrorUtility';
+import { getTexture } from './TextureUtility';
 
 /**
  * Show a image in the canvas.
@@ -14,7 +15,8 @@ import { STRING_ERRORS } from './ErrorUtility';
  * @returns the container of the image.
  */
 export async function showImage(tag: string, imageUrl: string): Promise<CanvasImage> {
-    let image = new CanvasImage(imageUrl)
+    let image = new CanvasImage()
+    image.imageLink = imageUrl
     GameWindowManager.addCanvasElement(tag, image)
     return image.refreshImage().then(() => image)
 }
@@ -28,7 +30,8 @@ export async function showImage(tag: string, imageUrl: string): Promise<CanvasIm
  * @returns the container of the image.
  */
 export function addImage(tag: string, imageUrl: string): CanvasImage {
-    let image = new CanvasImage(imageUrl)
+    let image = new CanvasImage()
+    image.imageLink = imageUrl
     GameWindowManager.addCanvasElement(tag, image)
     return image
 }
@@ -58,35 +61,6 @@ export async function showCanvasImages(canvasImages: CanvasImage[] | CanvasImage
             return canvasImages[index]
         })
     })
-}
-
-/**
- * Get a texture from a url.
- * @param imageUrl is the url of the image.
- * @returns the texture of the image, or a text with the error.
- */
-export async function getTexture(imageUrl: string): Promise<Texture | string> {
-    if (Assets.cache.has(imageUrl)) {
-        return Assets.get(imageUrl)
-    }
-    return Assets.load(imageUrl)
-        .then((texture) => {
-            if (!texture) {
-                console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-                return STRING_ERRORS.IMAGE_NOT_FOUND
-            }
-            // if texture not is a Texture, then it is a TextureResource
-            if (!(texture instanceof Texture)) {
-                console.error(STRING_ERRORS.FILE_NOT_IS_IMAGE, imageUrl)
-                return STRING_ERRORS.FILE_NOT_IS_IMAGE
-            }
-
-            return texture
-        })
-        .catch(() => {
-            console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
-            return STRING_ERRORS.IMAGE_NOT_FOUND
-        })
 }
 
 /**
