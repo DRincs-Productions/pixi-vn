@@ -1,4 +1,5 @@
 import { Grid } from '@mui/joy';
+import { useNavigate } from 'react-router-dom';
 import TextMenuButton from '../components/TextMenuButton';
 import { GameStepManager } from '../lib/managers/StepManager';
 
@@ -8,6 +9,7 @@ type IProps = {
 
 export default function QuickActions(props: IProps) {
     const { afterBack } = props
+    const navigate = useNavigate();
     return (
         <Grid
             container
@@ -29,7 +31,7 @@ export default function QuickActions(props: IProps) {
             >
                 <TextMenuButton
                     onClick={() => {
-                        GameStepManager.goBack()
+                        GameStepManager.goBack(navigate)
                         afterBack && afterBack()
                     }}
                 >

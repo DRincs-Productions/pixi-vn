@@ -279,7 +279,13 @@ export class GameStepManager {
 
     /* Go Back & Refresh Methods */
 
-    public static goBack(steps: number = 1) {
+    /**
+     * Go back to the last step and add it to the history.
+     * @param navigate The navigate function.
+     * @param steps The number of steps to go back.
+     * @returns 
+     */
+    public static goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
             console.error("steps must be greater than 0")
             return
@@ -294,6 +300,7 @@ export class GameStepManager {
             GameStepManager.openedLabels = createExportElement(lastHistoryStep.openedLabels)
             GameStorageManager.import(createExportElement(lastHistoryStep.storage))
             GameWindowManager.import(createExportElement(lastHistoryStep.canvas))
+            navigate(lastHistoryStep.path)
         }
         else {
             console.error("No lastHistoryStep")
