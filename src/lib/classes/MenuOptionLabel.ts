@@ -1,4 +1,4 @@
-import { RunModeLabelEnum } from "../enums/LabelEventEnum"
+import { RunModeLabelEnum } from "../enums/RunModeLabelEnum"
 import { Label } from "./Label"
 
 /**

@@ -1,7 +1,7 @@
 import { Box, Grid } from '@mui/joy';
 import { useState } from 'react';
 import DialogueMenuButton from '../components/DialogueMenuButton';
-import { RunModeLabelEnum } from '../lib/enums/LabelEventEnum';
+import { RunModeLabelEnum } from '../lib/enums/RunModeLabelEnum';
 import { clearMenuOptions } from '../lib/functions/DialogueUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';

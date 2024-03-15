@@ -1,7 +1,7 @@
 import { CharacterModelBase } from "../classes/CharacterModelBase";
 import { DialogueModelBase } from "../classes/DialogueModelBase";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
-import { RunModeLabelEnum } from "../enums/LabelEventEnum";
+import { RunModeLabelEnum } from "../enums/RunModeLabelEnum";
 import { GameStorageManager } from "../managers/StorageManager";
 import { MunuOptionsType } from "../types/MunuOptionsType";
 
