@@ -7,7 +7,8 @@ import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
 import { useEffect, useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
-import { DialogueModelBase } from '../lib/classes/DialogueModelBase';
+import { CharacterModelBase } from '../lib/classes/CharacterModelBase';
+import { getCharacterByTag } from '../lib/decorators/CharacterDecorator';
 import { getDialogue, getMenuOptions } from '../lib/functions/DialogueUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
@@ -27,12 +28,24 @@ export default function DialogueInterface() {
     })
 
     const [loading, setLoading] = useState(false)
-    const [text, setText] = useState<DialogueModelBase | undefined>(undefined)
+    const [text, setText] = useState<string | undefined>(undefined)
+    const [character, setCharacter] = useState<CharacterModelBase | undefined>(undefined)
     const [menu, setMenu] = useState<MunuOptionsType | undefined>(undefined)
     const [update, setUpdate] = useState(0)
     useEffect(() => {
         let dial = getDialogue()
-        setText(dial)
+        if (dial) {
+            setText(dial.text)
+            let c: CharacterModelBase | undefined = dial.characterTag ? getCharacterByTag(dial.characterTag) : undefined
+            if (!c && dial.characterTag) {
+                c = new CharacterModelBase(dial.characterTag, { name: dial.characterTag })
+            }
+            setCharacter(c)
+        }
+        else {
+            setText(undefined)
+            setCharacter(undefined)
+        }
         let m = getMenuOptions()
         setMenu(m)
     }, [update])
@@ -88,7 +101,7 @@ export default function DialogueInterface() {
                         pointerEvents: "auto",
                     }}
                 >
-                    <AspectRatio
+                    {character?.icon && <AspectRatio
                         flex
                         ratio="1"
                         maxHeight={"20%"}
@@ -98,32 +111,34 @@ export default function DialogueInterface() {
                         }}
                     >
                         <img
-                            src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286"
-                            srcSet="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=286&dpr=2 2x"
+                            src={character?.icon}
                             loading="lazy"
                             alt=""
                         />
-                    </AspectRatio>
-                    <DragHandleDivider
+                    </AspectRatio>}
+                    {character?.icon && <DragHandleDivider
                         orientation="vertical"
                         onMouseDown={(e) => resizeWindowsHandler(e, imageSize, setImageSize)}
                         sx={{
                             width: 0,
                             left: -8,
                         }}
-                    />
+                    />}
                     <CardContent>
-                        <Typography fontSize="xl" fontWeight="lg"
+                        {character && <Typography fontSize="xl" fontWeight="lg"
                             sx={{
                                 position: "absolute",
                                 top: 7,
+                                color: character.color,
                             }}
+
                         >
-                            Alex Morrison
+                            {character.name + (character.surname ? " " + character.surname : "")}
                         </Typography>
+                        }
                         <Sheet
                             sx={{
-                                marginTop: 3,
+                                marginTop: character ? 3 : undefined,
                                 bgcolor: 'background.level1',
                                 borderRadius: 'sm',
                                 p: 1.5,
@@ -133,7 +148,7 @@ export default function DialogueInterface() {
                                 overflow: 'auto',
                             }}
                         >
-                            {text.text}
+                            {text}
                         </Sheet>
                     </CardContent>
                 </Card>}

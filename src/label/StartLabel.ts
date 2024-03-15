@@ -5,6 +5,7 @@ import { setDialogue, setMenuOptions } from "../lib/functions/DialogueUtility";
 import { GameStepManager } from "../lib/managers/StepManager";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
+import { liam } from "../values/characters";
 import { EventsTestLabel } from "./EventsTestLabel";
 import { ShowImageTest } from "./ShowImageTest";
 import { TickerTestLabel } from "./TickerTestLabel";
@@ -16,7 +17,7 @@ export class StartLabel extends Label {
         return [
             () => {
                 GameWindowManager.clear()
-                setDialogue("Which test do you want to perform?")
+                setDialogue({ character: liam, text: "Which test do you want to perform?" })
                 setMenuOptions([
                     new MenuOptionLabel("Events Test", EventsTestLabel),
                     new MenuOptionLabel("Show Image Test", ShowImageTest),
