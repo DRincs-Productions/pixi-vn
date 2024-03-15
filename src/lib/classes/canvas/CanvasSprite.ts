@@ -49,7 +49,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     override on<T extends keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
         return super.on(event, fn, context)
     }
-    static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite<any> {
         let sprite = Sprite.from(source, skipCache)
         let mySprite = new CanvasSprite()
         mySprite.texture = sprite.texture
