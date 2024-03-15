@@ -125,17 +125,20 @@ export default function DialogueInterface() {
                         }}
                     />}
                     <CardContent>
-                        <Typography fontSize="xl" fontWeight="lg"
+                        {character && <Typography fontSize="xl" fontWeight="lg"
                             sx={{
                                 position: "absolute",
                                 top: 7,
+                                color: character.color,
                             }}
+
                         >
-                            Alex Morrison
+                            {character.name + (character.surname ? " " + character.surname : "")}
                         </Typography>
+                        }
                         <Sheet
                             sx={{
-                                marginTop: 3,
+                                marginTop: character ? 3 : undefined,
                                 bgcolor: 'background.level1',
                                 borderRadius: 'sm',
                                 p: 1.5,

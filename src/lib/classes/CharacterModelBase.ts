@@ -5,7 +5,7 @@ interface ICharacterModelBase {
     surname?: string
     age?: number
     icon?: string
-    color?: string | number
+    color?: string
 }
 
 export class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
@@ -39,5 +39,5 @@ export class CharacterModelBase extends StoredClassModel implements ICharacterMo
         this.updateStorage({ ...this, age: value })
     }
     icon?: string
-    color?: string | number
+    color?: string
 }
