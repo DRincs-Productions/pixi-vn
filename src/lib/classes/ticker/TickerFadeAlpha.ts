@@ -11,11 +11,12 @@ import { TickerBase } from "./TickerBase";
  * - type: The type of the fade, default is "hide"
  * - limit: The limit of the fade, default is 0 for hide and 1 for show
  * - tagToRemoveAfter?: The tag to remove after the fade is done
+ * - startOnlyIfHaveTexture?: If true, the fade only starts if the canvas element have a texture
  * @param duration The duration of the ticker
  * @param priority The priority of the ticker
  */
 @tickerDecorator()
-export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number, tagToRemoveAfter?: string[] | string }> {
+export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number, tagToRemoveAfter?: string[] | string, startOnlyIfHaveTexture?: boolean }> {
     /**
      * The method that will be called every frame to fade the alpha of the canvas element of the canvas.
      * @param delta The delta time
@@ -28,7 +29,8 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
             speed?: number,
             type?: "hide" | "show",
             limit?: number,
-            tagToRemoveAfter?: string[] | string
+            tagToRemoveAfter?: string[] | string,
+            startOnlyIfHaveTexture?: boolean,
         },
         tags: string[]
     ): void {
@@ -45,21 +47,31 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
         if (type === "show" && limit > 1) {
             limit = 1
         }
-        tags.forEach((tag) => {
-            let element = GameWindowManager.getCanvasElement(tag)
-            if (element && element instanceof CanvasSprite) {
-                if (type === "show" && element.alpha < limit) {
-                    element.alpha += speed * t.deltaTime
+        tags
+            .filter((tag) => {
+                let element = GameWindowManager.getCanvasElement(tag)
+                if (args.startOnlyIfHaveTexture) {
+                    if (element && element instanceof CanvasSprite && element.texture?.label == "EMPTY") {
+                        return false
+                    }
                 }
-                else if (type === "hide" && element.alpha > limit) {
-                    element.alpha -= speed * t.deltaTime
+                return true
+            })
+            .forEach((tag) => {
+                let element = GameWindowManager.getCanvasElement(tag)
+                if (element && element instanceof CanvasSprite) {
+                    if (type === "show" && element.alpha < limit) {
+                        element.alpha += speed * t.deltaTime
+                    }
+                    else if (type === "hide" && element.alpha > limit) {
+                        element.alpha -= speed * t.deltaTime
+                    }
+                    else {
+                        element.alpha = limit
+                        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tag, this)
+                        GameWindowManager.removeCanvasElement(removeElementAfter)
+                    }
                 }
-                else {
-                    element.alpha = limit
-                    GameWindowManager.removeAssociationBetweenTickerCanvasElement(tag, this)
-                    GameWindowManager.removeCanvasElement(removeElementAfter)
-                }
-            }
-        })
+            })
     }
 }

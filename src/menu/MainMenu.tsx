@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom';
 import MenuButton from '../components/MenuButton';
 import { StartLabel } from '../label/StartLabel';
 import { clearAllGameDatas } from '../lib/functions/GameUtility';
-import { showImage } from '../lib/functions/ImageUtility';
+import { addImage } from '../lib/functions/ImageUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
 
@@ -12,7 +12,8 @@ export default function MainMenu() {
     const navigate = useNavigate();
     useEffect(() => {
         clearAllGameDatas()
-        showImage("background_main_menu", "https://andreannaking.com/wp-content/uploads/2021/12/Download-Beautiful-Nature-Landscape-Hd-Wallpaper-Full-HD-Wallpapers.jpg")
+        let bg = addImage("background_main_menu", "https://andreannaking.com/wp-content/uploads/2021/12/Download-Beautiful-Nature-Landscape-Hd-Wallpaper-Full-HD-Wallpapers.jpg")
+        bg.load()
     })
 
     return (
