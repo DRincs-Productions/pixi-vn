@@ -1,3 +1,4 @@
+import { CharacterModelBase } from "../classes/CharacterModelBase";
 import { DialogueModelBase } from "../classes/DialogueModelBase";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { RunModeLabelEnum } from "../enums/LabelEventEnum";
@@ -8,8 +9,27 @@ import { MunuOptionsType } from "../types/MunuOptionsType";
  * Set the dialogue to be shown in the game
  * @param text Text of the dialogue
  */
-export function setDialogue(text: string): void {
-    let dialogue = new DialogueModelBase(text)
+export function setDialogue(props: {
+    character: string | CharacterModelBase,
+    text: string,
+} | string): void {
+    let text = ''
+    let characterTag: string | undefined = undefined
+    if (typeof props === 'string') {
+        text = props
+    }
+    else {
+        text = props.text
+        if (props.character) {
+            if (typeof props.character === 'string') {
+                characterTag = props.character
+            }
+            else {
+                characterTag = props.character.id
+            }
+        }
+    }
+    let dialogue = new DialogueModelBase(text, characterTag)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue)
 }
 
