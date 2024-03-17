@@ -10,12 +10,10 @@ function App() {
         <AppImports>
             <Routes>
                 <Route key={"main_menu"} path={"/"} element={<MainMenu />} />
-            </Routes>
-            <Routes>
-                <Route key={"game"} path={"game"}
+                <Route key={"game"} path={"/game"}
                     element={<DialogueInterface />}
                 />
-                <Route key={"history"} path={"history"}
+                <Route key={"history"} path={"/history"}
                     element={<HistoryInterface />}
                 />
             </Routes>

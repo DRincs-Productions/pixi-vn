@@ -1,7 +1,5 @@
-import EditNoteRoundedIcon from "@mui/icons-material/EditNoteRounded";
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import { Box, IconButton, Input, List, ListDivider, ListItem, Sheet, Stack, Typography } from "@mui/joy";
-import React from "react";
+import { Box, CssVarsProvider, Input, Sheet, Stack, Typography } from "@mui/joy";
 
 export type UserProps = {
     name: string;
@@ -30,6 +28,7 @@ export type ChatProps = {
 };
 
 import Avatar from '@mui/joy/Avatar';
+import { getDialogueHistory } from "../lib/functions/DialogueUtility";
 
 export const users: UserProps[] = [
     {
@@ -305,76 +304,52 @@ export const chats: ChatProps[] = [
 
 export default function HistoryInterface() {
     return (
-        <Sheet
-            sx={{
-                height: "100%",
-                width: "100%",
-                pointerEvents: "auto",
-            }}
-        >
-            <Box
+        <CssVarsProvider disableTransitionOnChange>
+            <Sheet
+                component="main"
                 sx={{
-                    position: "absolute",
+                    // height: "calc(100vh - 55px)", // 55px is the height of the NavBar
+                    height: "100%",
+                    width: "100%",
+                    display: "grid",
+                    gridTemplateColumns: "auto",
+                    gridTemplateRows: "auto 1fr auto",
+                    pointerEvents: "auto",
                 }}
             >
                 <Stack
-                    direction="row"
-                    spacing={1}
-                    alignItems="center"
-                    justifyContent="space-between"
-                    p={2}
-                    pb={1.5}
+                    sx={{
+                        // backgroundColor: "background.surface",
+                        px: { xs: 2, md: 4 },
+                        py: 2,
+                        borderBottom: "1px solid",
+                        borderColor: "divider",
+                    }}
                 >
-                    <Typography
-                        fontSize={{ xs: "md", md: "lg" }}
-                        component="h1"
-                        fontWeight="lg"
-                    >
-                        History
-                    </Typography>
-                    <IconButton
-                        variant="plain"
-                        aria-label="edit"
-                        color="neutral"
-                        size="sm"
-                    >
-                        <EditNoteRoundedIcon />
-                    </IconButton>
-                </Stack>
-                <Box sx={{ px: 2, pb: 1.5 }}>
+                    <Stack sx={{ mb: 2 }}>
+                        <Typography level="h2">Rental properties</Typography>
+                    </Stack>
                     <Input
-                        size="sm"
-                        startDecorator={<SearchRoundedIcon />}
                         placeholder="Search"
+                        value={"Melbourne"}
+                        startDecorator={<SearchRoundedIcon />}
                         aria-label="Search"
                     />
-                </Box>
-            </Box>
-            <Sheet
-                sx={{
-                    height: "100%",
-                    overflowY: "auto",
-                    position: "absolute",
-                    paddingTop: 10,
-                }}
-            >
-                <List>
-                    {chats.map((chat) => (
-                        <React.Fragment>
-                            <ListItem>
-                                <Stack direction="row" spacing={1.5}>
-                                    <Avatar size="sm" />
-                                    <Box sx={{ flex: 1 }}>
-                                        <Typography level="title-sm">{chat.sender.name}</Typography>
-                                        <Typography level="body-sm">{chat.messages[0].content}</Typography>
-                                    </Box>
-                                </Stack>
-                            </ListItem>
-                            <ListDivider sx={{ margin: 0 }} />
-                        </React.Fragment>
-                    ))}
-                </List>
+                </Stack>
+                <Stack spacing={2} sx={{ px: { xs: 2, md: 4 }, pt: 2, minHeight: 0 }}>
+                    <Stack spacing={2} sx={{ overflow: "auto" }}>
+                        {getDialogueHistory().map((dialogue) => (
+                            <Stack direction="row" spacing={1.5}>
+                                <Avatar size="sm" />
+                                <Box sx={{ flex: 1 }}>
+                                    <Typography level="title-sm">{dialogue?.characterTag}</Typography>
+                                    <Typography level="body-sm">{dialogue?.text}</Typography>
+                                </Box>
+                            </Stack>
+                        ))}
+                    </Stack>
+                </Stack>
             </Sheet>
-        </Sheet>
+        </CssVarsProvider>
     );
 }

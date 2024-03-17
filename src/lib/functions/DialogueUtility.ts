@@ -2,6 +2,7 @@ import { CharacterModelBase } from "../classes/CharacterModelBase";
 import { DialogueModelBase } from "../classes/DialogueModelBase";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { RunModeLabelEnum } from "../enums/RunModeLabelEnum";
+import { GameStepManager } from "../managers/StepManager";
 import { GameStorageManager } from "../managers/StorageManager";
 import { MunuOptionsType } from "../types/MunuOptionsType";
 
@@ -38,8 +39,7 @@ export function setDialogue(props: {
  * @returns Dialogue to be shown in the game
  */
 export function getDialogue(): DialogueModelBase | undefined {
-    let d = GameStorageManager.getVariable<DialogueModelBase>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
-    return d
+    return GameStorageManager.getVariable<DialogueModelBase>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
 }
 
 /**
@@ -98,4 +98,11 @@ export function getMenuOptions(): MunuOptionsType | undefined {
  */
 export function clearMenuOptions(): void {
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
+}
+
+export function getDialogueHistory() {
+    let a: (DialogueModelBase | undefined)[] = GameStepManager.stepsHistory.map((step) => {
+        return step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as DialogueModelBase | undefined
+    })
+    return a.filter((d) => d !== undefined)
 }

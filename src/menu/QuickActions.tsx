@@ -41,7 +41,9 @@ export default function QuickActions(props: IProps) {
             <Grid
                 paddingY={0}
             >
-                <TextMenuButton>
+                <TextMenuButton
+                    to="/history"
+                >
                     History
                 </TextMenuButton>
             </Grid>

@@ -5,6 +5,7 @@ interface IProps extends LinkProps<LinkTypeMap['defaultComponent'], {
     component?: React.ElementType;
     focusVisible?: boolean;
 }> {
+    to?: string;
 }
 
 export default function TextMenuButton(props: IProps) {

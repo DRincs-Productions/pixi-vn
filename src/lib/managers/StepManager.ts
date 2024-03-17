@@ -19,14 +19,20 @@ export class GameStepManager {
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
-    private static stepsHistory: IHistoryStep[] = []
-    private static openedLabels: IOpenedLabel[] = []
+    private static _stepsHistory: IHistoryStep[] = []
+    static get stepsHistory() {
+        return GameStepManager._stepsHistory
+    }
+    private static _openedLabels: IOpenedLabel[] = []
+    static get openedLabels() {
+        return GameStepManager._openedLabels
+    }
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
     private static get currentLabel(): LabelTagType | null {
-        if (GameStepManager.openedLabels.length > 0) {
-            let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
+        if (GameStepManager._openedLabels.length > 0) {
+            let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
             return item.label
         }
         return null
@@ -35,8 +41,8 @@ export class GameStepManager {
      * currentLabelStepIndex is the current step index of the current label that occurred during the progression of the steps.
      */
     private static get currentLabelStepIndex(): number | null {
-        if (GameStepManager.openedLabels.length > 0) {
-            let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
+        if (GameStepManager._openedLabels.length > 0) {
+            let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
             return item.currentStepIndex
         }
         return null
@@ -45,8 +51,8 @@ export class GameStepManager {
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
      */
     private static get lastHistoryStep(): IHistoryStep | null {
-        if (GameStepManager.stepsHistory.length > 0) {
-            return GameStepManager.stepsHistory[GameStepManager.stepsHistory.length - 1]
+        if (GameStepManager._stepsHistory.length > 0) {
+            return GameStepManager._stepsHistory[GameStepManager._stepsHistory.length - 1]
         }
         return null
     }
@@ -65,7 +71,7 @@ export class GameStepManager {
             step: stepHistory,
             canvas: GameWindowManager.export(),
             stepIndex: GameStepManager.currentLabelStepIndex || 0,
-            openedLabels: createExportElement(GameStepManager.openedLabels),
+            openedLabels: createExportElement(GameStepManager._openedLabels),
         }
         let lastStepData = GameStepManager.lastHistoryStep
         if (lastStepData) {
@@ -82,7 +88,7 @@ export class GameStepManager {
                 }
             }
         }
-        GameStepManager.stepsHistory.push(historyStep)
+        GameStepManager._stepsHistory.push(historyStep)
     }
     /**
      * Add a label to the history.
@@ -93,7 +99,7 @@ export class GameStepManager {
         if (!currentLabel) {
             throw new Error("Label not found")
         }
-        GameStepManager.openedLabels.push({
+        GameStepManager._openedLabels.push({
             label: label,
             currentStepIndex: 0,
         })
@@ -112,13 +118,13 @@ export class GameStepManager {
             console.error("Label not found")
             return
         }
-        GameStepManager.openedLabels.pop()
+        GameStepManager._openedLabels.pop()
     }
     /**
      * Close all labels and add them to the history.
      */
     private static closeAllLabels() {
-        while (GameStepManager.openedLabels.length > 0) {
+        while (GameStepManager._openedLabels.length > 0) {
             GameStepManager.closeLabel()
         }
     }
@@ -126,8 +132,8 @@ export class GameStepManager {
      * Increase the current step index of the current label.
      */
     private static increaseCurrentStepIndex() {
-        let item = GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1]
-        GameStepManager.openedLabels[GameStepManager.openedLabels.length - 1] = {
+        let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
+        GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1] = {
             ...item,
             currentStepIndex: item.currentStepIndex + 1,
         }
@@ -140,7 +146,7 @@ export class GameStepManager {
      * @returns
      */
     public static async runNextStep() {
-        if (GameStepManager.openedLabels.length === 0) {
+        if (GameStepManager._openedLabels.length === 0) {
             console.error("No openedLabels")
             return
         }
@@ -254,17 +260,17 @@ export class GameStepManager {
     private static removeLastHistoryNodes(itemNumber: number) {
         // TODO: implement
         for (let i = 0; i < itemNumber; i++) {
-            GameStepManager.stepsHistory.pop()
+            GameStepManager._stepsHistory.pop()
         }
     }
     /**
      * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
      */
     private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
-        let length = GameStepManager.stepsHistory.length
+        let length = GameStepManager._stepsHistory.length
         let steps: StepHistoryDataType[] = []
         for (let i = length - 1; i >= 0; i--) {
-            let element = GameStepManager.stepsHistory[i]
+            let element = GameStepManager._stepsHistory[i]
             if (typeof element === "object" && "step" in element) {
                 steps.push(element.step)
             }
@@ -290,14 +296,14 @@ export class GameStepManager {
             console.error("steps must be greater than 0")
             return
         }
-        if (GameStepManager.stepsHistory.length <= 1) {
+        if (GameStepManager._stepsHistory.length <= 1) {
             console.error("No stepsHistory")
             return
         }
         GameStepManager.goBackInstrnal(steps)
         let lastHistoryStep = GameStepManager.lastHistoryStep
         if (lastHistoryStep) {
-            GameStepManager.openedLabels = createExportElement(lastHistoryStep.openedLabels)
+            GameStepManager._openedLabels = createExportElement(lastHistoryStep.openedLabels)
             GameStorageManager.import(createExportElement(lastHistoryStep.storage))
             GameWindowManager.import(createExportElement(lastHistoryStep.canvas))
             navigate(lastHistoryStep.path)
@@ -310,10 +316,10 @@ export class GameStepManager {
         if (steps <= 0) {
             return
         }
-        if (GameStepManager.stepsHistory.length == 0) {
+        if (GameStepManager._stepsHistory.length == 0) {
             return
         }
-        GameStepManager.stepsHistory.pop()
+        GameStepManager._stepsHistory.pop()
         GameStepManager.goBackInstrnal(steps - 1)
     }
 
@@ -321,8 +327,8 @@ export class GameStepManager {
      * Add a label to the history.
      */
     public static clear() {
-        GameStepManager.stepsHistory = []
-        GameStepManager.openedLabels = []
+        GameStepManager._stepsHistory = []
+        GameStepManager._openedLabels = []
     }
 
     /* Export and Import Methods */
@@ -340,8 +346,8 @@ export class GameStepManager {
      */
     public static export(): ExportedStep {
         return {
-            stepsHistory: GameStepManager.stepsHistory,
-            openedLabels: GameStepManager.openedLabels,
+            stepsHistory: GameStepManager._stepsHistory,
+            openedLabels: GameStepManager._openedLabels,
         }
     }
     /**
@@ -359,13 +365,13 @@ export class GameStepManager {
         GameStepManager.clear()
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                GameStepManager.stepsHistory = (data as ExportedStep)["stepsHistory"] as IHistoryStep[]
+                GameStepManager._stepsHistory = (data as ExportedStep)["stepsHistory"] as IHistoryStep[]
             }
             else {
                 console.log("No stepsHistory data found")
             }
             if (data.hasOwnProperty("openedLabels")) {
-                GameStepManager.openedLabels = (data as ExportedStep)["openedLabels"] as IOpenedLabel[]
+                GameStepManager._openedLabels = (data as ExportedStep)["openedLabels"] as IOpenedLabel[]
             }
             else {
                 console.log("No openedLabels data found")
