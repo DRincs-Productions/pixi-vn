@@ -1,6 +1,8 @@
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { Box, CssVarsProvider, Input, Sheet, Stack, Typography } from "@mui/joy";
 import Avatar from '@mui/joy/Avatar';
+import { CharacterModelBase } from "../lib/classes/CharacterModelBase";
+import { getCharacterByTag } from "../lib/decorators/CharacterDecorator";
 import { getDialogueHistory } from "../lib/functions/DialogueUtility";
 
 export default function HistoryInterface() {
@@ -9,7 +11,6 @@ export default function HistoryInterface() {
             <Sheet
                 component="main"
                 sx={{
-                    // height: "calc(100vh - 55px)", // 55px is the height of the NavBar
                     height: "100%",
                     width: "100%",
                     display: "grid",
@@ -20,34 +21,47 @@ export default function HistoryInterface() {
             >
                 <Stack
                     sx={{
-                        // backgroundColor: "background.surface",
-                        px: { xs: 2, md: 4 },
+                        px: 2,
                         py: 2,
                         borderBottom: "1px solid",
                         borderColor: "divider",
                     }}
                 >
                     <Stack sx={{ mb: 2 }}>
-                        <Typography level="h2">Rental properties</Typography>
+                        <Typography level="h2">History</Typography>
                     </Stack>
                     <Input
                         placeholder="Search"
-                        value={"Melbourne"}
+                        value={""}
                         startDecorator={<SearchRoundedIcon />}
                         aria-label="Search"
                     />
                 </Stack>
-                <Stack spacing={2} sx={{ px: { xs: 2, md: 4 }, pt: 2, minHeight: 0 }}>
+                <Stack
+                    spacing={2}
+                    sx={{
+                        px: 2,
+                        py: 2,
+                        minHeight: 0
+                    }}>
                     <Stack spacing={2} sx={{ overflow: "auto" }}>
-                        {getDialogueHistory().map((dialogue) => (
-                            <Stack direction="row" spacing={1.5}>
-                                <Avatar size="sm" />
+                        {getDialogueHistory().map((dialogue, index) => {
+                            let character = dialogue.characterTag ? getCharacterByTag(dialogue.characterTag) ?? new CharacterModelBase(dialogue.characterTag, { name: dialogue.characterTag }) : undefined
+                            return <Stack
+                                direction="row"
+                                spacing={1.5}
+                                key={index}
+                            >
+                                <Avatar
+                                    size="sm"
+                                    src={character?.icon}
+                                />
                                 <Box sx={{ flex: 1 }}>
-                                    <Typography level="title-sm">{dialogue?.characterTag}</Typography>
-                                    <Typography level="body-sm">{dialogue?.text}</Typography>
+                                    <Typography level="title-sm">{character?.name}</Typography>
+                                    <Typography level="body-sm">{dialogue.text}</Typography>
                                 </Box>
                             </Stack>
-                        ))}
+                        })}
                     </Stack>
                 </Stack>
             </Sheet>

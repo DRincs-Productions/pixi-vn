@@ -100,9 +100,13 @@ export function clearMenuOptions(): void {
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
 }
 
+/**
+ * Get the history of the dialogues
+ * @returns the history of the dialogues
+ */
 export function getDialogueHistory() {
     let a: (DialogueModelBase | undefined)[] = GameStepManager.stepsHistory.map((step) => {
         return step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as DialogueModelBase | undefined
     })
-    return a.filter((d) => d !== undefined)
+    return a.filter((d) => d !== undefined) as DialogueModelBase[]
 }
