@@ -5,8 +5,18 @@ import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
 import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
 /**
- * The class for the image.
- * Must use refreshImage() to load the image.
+ * This class is a extension of the CanvasSprite class, it has the same properties and methods,
+ * but it has some features that make texture management easier.
+ * You need to use CanvasImage.load() to show the image in the canvas.
+ * This class is used for functions like addImage, showCanvasImages and showImageWithDisolveEffect.
+ * @example
+ * ```typescript
+ * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
+ * alien.anchor.set(0.5);
+ * alien.x = 100
+ * alien.y = 100
+ * await alien.load()
+ * ```
  */
 @canvasElementDecorator()
 export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
@@ -27,6 +37,10 @@ export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
         mySprite.texture = sprite.texture
         return mySprite
     }
+    /**
+     * Load the image in the canvas.
+     * @returns a promise that resolves when the image is loaded.
+     */
     async load() {
         return getTexture(this.imageLink)
             .then((texture) => {

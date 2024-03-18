@@ -54,7 +54,7 @@ export async function showCanvasImages(canvasImages: CanvasImage[] | CanvasImage
  * Remove a image from the canvas.
  * @param tag is the unique tag of the image. You can use this tag to refer to this image
  */
-export function removeImage(tag: string | string[]) {
+export function removeCanvasElement(tag: string | string[]) {
     GameWindowManager.removeCanvasElement(tag)
 }
 

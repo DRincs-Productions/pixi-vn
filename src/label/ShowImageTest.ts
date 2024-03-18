@@ -3,7 +3,7 @@ import { CanvasImage } from "../lib/classes/canvas/CanvasImage";
 import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
-import { addImage, removeImage, showCanvasImages, showImageWithDisolveEffect } from "../lib/functions/ImageUtility";
+import { addImage, removeCanvasElement, showCanvasImages, showImageWithDisolveEffect } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
@@ -23,8 +23,8 @@ export class ShowImageTest extends Label {
                 bunny1.load()
             },
             () => {
-                removeImage(["bunny1", "bunny2"])
-                setDialogue("You can also remove a image from the canvas with the function removeImage.")
+                removeCanvasElement(["bunny1", "bunny2"])
+                setDialogue("You can also remove a image from the canvas with the function removeCanvasElement.")
             },
             async () => {
                 setDialogue("If you want to show more images at the same time, you can use the function showCanvasImages.")
@@ -37,7 +37,7 @@ export class ShowImageTest extends Label {
                 await showCanvasImages([alien1, alien2])
             },
             async () => {
-                removeImage(["alien1", "alien2"])
+                removeCanvasElement(["alien1", "alien2"])
                 let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
                 GameWindowManager.addTicker("alien", new TickerRotate({ speed: 0.1 }))
                 alien.anchor.set(0.5);
