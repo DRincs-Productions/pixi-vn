@@ -274,7 +274,7 @@ export class GameStepManager {
         let steps: StepHistoryDataType[] = []
         for (let i = length - 1; i >= 0; i--) {
             let element = GameStepManager._stepsHistory[i]
-            if (typeof element === "object" && "step" in element) {
+            if (typeof element === "object" && "stepSha1" in element) {
                 steps.push(element.stepSha1)
             }
             else {
