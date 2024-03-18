@@ -7,4 +7,5 @@ export interface ISaveData {
     stepData: ExportedStep
     storageData: ExportedStorage
     canvasData: ExportedCanvas
+    path: string
 }

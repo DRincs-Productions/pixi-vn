@@ -14,6 +14,7 @@ export function getSaveData(): ISaveData {
         stepData: GameStepManager.export(),
         storageData: GameStorageManager.export(),
         canvasData: GameWindowManager.export(),
+        path: window.location.pathname,
     };
 }
 
@@ -30,16 +31,17 @@ export function loadSaveJson() {
  * Load the save data
  * @param data The save data
  */
-export function loadSave(data: ISaveData) {
+export function loadSave(data: ISaveData, navigate: (path: string) => void) {
     GameStepManager.import(data.stepData);
     GameStorageManager.import(data.storageData);
     GameWindowManager.import(data.canvasData);
+    navigate(data.path);
 }
 
 /**
  * Load the save data from a JSON string
  * @param dataString The save data as a JSON string
  */
-export function loadSaveJsonString(dataString: string) {
-    loadSave(JSON.parse(dataString));
+export function loadSaveJsonString(dataString: string, navigate: (path: string) => void) {
+    loadSave(JSON.parse(dataString), navigate);
 }
