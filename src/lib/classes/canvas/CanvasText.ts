@@ -1,6 +1,7 @@
 import { Container, ContainerEvents, EventEmitter, Text } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
+import { getTextStyle } from "../../functions/TextureUtility";
 import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
@@ -75,7 +76,7 @@ export function getMemoryText<T extends CanvasText>(element: T | CanvasText): IC
         anchor: { x: element.anchor.x, y: element.anchor.y },
         text: element.text,
         resolution: element.resolution,
-        style: element.style,
+        style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
     }

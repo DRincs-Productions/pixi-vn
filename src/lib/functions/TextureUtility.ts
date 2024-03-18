@@ -31,11 +31,17 @@ export async function getTexture(imageUrl: string): Promise<Texture | string> {
 }
 
 export function getTextStyle(style: TextStyle): TextStyleOptions {
+    let fill = style.fill
+    if (fill instanceof Object) {
+        // TODO: FillGradient and FillPattern are not supported yet
+        console.error("[Pixi'VM] CanvasText.style.fill is a FillGradient or FillPattern, this is not supported yet.", fill)
+        fill = "#00FF00"
+    }
     return {
         align: style.align,
         breakWords: style.breakWords,
         dropShadow: style.dropShadow,
-        fill: style.fill,
+        fill: fill,
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontStyle: style.fontStyle,
