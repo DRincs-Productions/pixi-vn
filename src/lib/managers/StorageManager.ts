@@ -9,6 +9,7 @@ export class GameStorageManager {
     public static get keysSystem() {
         return {
             CURRENT_DIALOGUE_MEMORY_KEY: "current_dialogue_memory_key",
+            LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "last_dialogue_added_in_step_memory_key",
             CURRENT_MENU_OPTIONS_MEMORY_KEY: "current_menu_options_memory_key",
         }
     }
