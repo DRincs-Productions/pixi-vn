@@ -42,6 +42,35 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
     get onEvents() {
         return this._onEvents
     }
+    /**
+     * is same function as on(), but it keeps in memory the children.
+     * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
+     * @param eventClass The class that extends CanvasEvent.
+     * @returns 
+     * @exemple
+     * ```typescript
+     * \@eventDecorator()
+     * export class EventTest extends CanvasEvent<CanvasSprite> {
+     *     override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
+     *         if (event === 'pointerdown') {
+     *             sprite.scale.x *= 1.25;
+     *             sprite.scale.y *= 1.25;
+     *         }
+     *     }
+     * }
+     * ```
+     * 
+     * ```typescript
+     * let sprite = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
+     * await sprite.load()
+     *
+     * sprite.eventMode = 'static';
+     * sprite.cursor = 'pointer';
+     * sprite.onEvent('pointerdown', EventTest);
+     *
+     * GameWindowManager.addCanvasElement("bunny", sprite);
+     * ```
+     */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
         let instance = getEventInstanceByClassName(className)

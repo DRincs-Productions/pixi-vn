@@ -33,21 +33,8 @@ export class CanvasContainer extends Container implements ICanvasBase<ICanvasCon
     set memory(value: ICanvasContainerMemory) {
         setMemoryContainer(this, value)
         value.elements.forEach(child => {
-            this.addCanvasChild(importCanvasElement(child))
+            this.addChild(importCanvasElement(child))
         })
-    }
-    addCanvasChild<U extends ICanvasBase<any>[]>(...children: U): U[0] {
-        return super.addChild(...children)
-    }
-    /**
-     * addChild() does not keep in memory the children, use addCanvasChild() instead
-     * @deprecated
-     * @param children 
-     * @returns 
-     */
-    override addChild<U extends Container[]>(...children: U): U[0] {
-        console.warn("addChild() does not keep in memory the children, use addCanvasChild() instead")
-        return super.addChild(...children)
     }
 }
 
