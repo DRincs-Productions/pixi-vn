@@ -22,7 +22,7 @@ export function getSaveData(): ISaveData {
  * Get the save data as a JSON string
  * @returns The save data as a JSON string
  */
-export function loadSaveJson() {
+export function getSaveJson() {
     const saveData = getSaveData();
     return JSON.stringify(saveData);
 }

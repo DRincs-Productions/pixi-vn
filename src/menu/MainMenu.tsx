@@ -7,8 +7,14 @@ import { clearAllGameDatas } from '../lib/functions/GameUtility';
 import { addImage } from '../lib/functions/ImageUtility';
 import { GameStepManager } from '../lib/managers/StepManager';
 import { GameWindowManager } from '../lib/managers/WindowManager';
+import { loadGameSave } from '../utility/ActionsUtility';
 
-export default function MainMenu() {
+type IProps = {
+    updateInterface: () => void
+}
+
+export default function MainMenu(props: IProps) {
+    const { updateInterface } = props
     const navigate = useNavigate();
     useEffect(() => {
         clearAllGameDatas()
@@ -42,7 +48,9 @@ export default function MainMenu() {
             </Grid>
             <Grid>
                 <MenuButton
-                    disabled
+                    onClick={() => {
+                        loadGameSave(navigate, updateInterface)
+                    }}
                 >
                     Load
                 </MenuButton>
