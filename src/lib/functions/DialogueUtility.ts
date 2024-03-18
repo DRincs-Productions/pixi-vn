@@ -32,6 +32,7 @@ export function setDialogue(props: {
     }
     let dialogue = new DialogueModelBase(text, characterTag)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue)
+    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
 }
 
 /**
@@ -105,8 +106,10 @@ export function clearMenuOptions(): void {
  * @returns the history of the dialogues
  */
 export function getDialogueHistory() {
-    let a: (DialogueModelBase | undefined)[] = GameStepManager.stepsHistory.map((step) => {
+    let list: (DialogueModelBase | undefined)[] = GameStepManager.stepsHistory.map((step, index) => {
+        if (step.storage.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] !== index)
+            return undefined
         return step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as DialogueModelBase | undefined
     })
-    return a.filter((d) => d !== undefined) as DialogueModelBase[]
+    return list.filter((d) => d !== undefined) as DialogueModelBase[]
 }

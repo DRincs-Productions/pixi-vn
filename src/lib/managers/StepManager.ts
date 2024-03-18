@@ -23,6 +23,9 @@ export class GameStepManager {
     static get stepsHistory() {
         return GameStepManager._stepsHistory
     }
+    static get lastStepIndex() {
+        return GameStepManager.stepsHistory.length
+    }
     private static _openedLabels: IOpenedLabel[] = []
     static get openedLabels() {
         return GameStepManager._openedLabels
