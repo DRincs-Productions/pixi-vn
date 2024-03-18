@@ -116,10 +116,7 @@ export function getMemorySprite<T extends CanvasSprite<any>>(element: T | Canvas
 export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory) {
     setMemoryContainer(element, memory)
     getTexture(memory.textureImage.image).then((texture) => {
-        if (typeof texture === "string") {
-            console.error("Error loading image")
-        }
-        else {
+        if (texture) {
             element.texture = texture
         }
     })

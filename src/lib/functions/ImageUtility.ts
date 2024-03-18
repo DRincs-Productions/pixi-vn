@@ -2,7 +2,6 @@ import { Texture, UPDATE_PRIORITY } from 'pixi.js';
 import { CanvasImage } from '../classes/canvas/CanvasImage';
 import { TickerFadeAlpha } from '../classes/ticker/TickerFadeAlpha';
 import { GameWindowManager } from '../managers/WindowManager';
-import { STRING_ERRORS } from './ErrorUtility';
 import { getTexture } from './TextureUtility';
 
 /**
@@ -32,19 +31,18 @@ export async function showCanvasImages(canvasImages: CanvasImage[] | CanvasImage
     if (!Array.isArray(canvasImages)) {
         return [canvasImages]
     }
-    let promises: Promise<string | Texture>[] = Array<Promise<string | Texture>>(canvasImages.length)
+    let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasImages.length)
     for (let i = 0; i < canvasImages.length; i++) {
         promises[i] = getTexture(canvasImages[i].imageLink)
     }
     // wait for all promises
     return Promise.all(promises).then((textures) => {
         return textures.map((texture, index) => {
-            if (typeof texture === "string") {
-                canvasImages[index].load()
-                console.error(STRING_ERRORS.IMAGE_NOT_FOUND, canvasImages[index].imageLink)
+            if (texture) {
+                canvasImages[index].texture = texture
                 return canvasImages[index]
             }
-            canvasImages[index].texture = texture
+            canvasImages[index].load()
             return canvasImages[index]
         })
     })

@@ -44,15 +44,12 @@ export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
     async load() {
         return getTexture(this.imageLink)
             .then((texture) => {
-                if (typeof texture === "string") {
-                    console.error("Error loading image")
-                }
-                else {
+                if (texture) {
                     this.texture = texture
                 }
             })
-            .catch(() => {
-                console.error("Error loading image")
+            .catch((e) => {
+                console.error("[Pixi'VM] Error into CanvasImage.load()", e)
             })
     }
 }
