@@ -5,8 +5,21 @@ import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 
 /**
- * This class is responsible for storing a PIXI Container.
- * And allow to save your memory in a game save.
+ * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods, 
+ * but it has the ability to be saved and loaded by the Pixi'VM library
+ * @example
+ * ```typescript
+ *  const container = new CanvasContainer();
+ *  GameWindowManager.addCanvasElement(container);
+ *  const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+ *  for (let i = 0; i < 25; i++)
+ *  {
+ *      const bunny = new CanvasSprite(texture);
+ *      bunny.x = (i % 5) * 40;
+ *      bunny.y = Math.floor(i / 5) * 40;
+ *      container.addChild(bunny);
+ *  }
+ * ```
  */
 @canvasElementDecorator()
 export class CanvasContainer extends Container implements ICanvasBase<ICanvasContainerMemory> {
