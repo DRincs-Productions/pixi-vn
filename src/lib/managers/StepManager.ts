@@ -1,7 +1,7 @@
 import { Label } from "../classes/Label"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
 import { createExportElement } from "../functions/ExportUtility"
-import { convertStepLabelToStepHistoryData } from "../functions/StepLabelUtility"
+import { getStepSha1 } from "../functions/StepLabelUtility"
 import { IHistoryStep } from "../interface/IHistoryStep"
 import { IOpenedLabel } from "../interface/IOpenedLabel"
 import { ExportedStep } from "../interface/export/ExportedStep"
@@ -66,12 +66,12 @@ export class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static addStepHistory(step: StepLabelType) {
-        let stepHistory: StepHistoryDataType = convertStepLabelToStepHistoryData(step)
+    private static async addStepHistory(step: StepLabelType) {
+        let stepHistory: StepHistoryDataType = await getStepSha1(step)
         let historyStep: IHistoryStep = {
             path: window.location.pathname,
             storage: GameStorageManager.export(),
-            step: stepHistory,
+            stepSha1: stepHistory,
             canvas: GameWindowManager.export(),
             stepIndex: GameStepManager.currentLabelStepIndex || 0,
             openedLabels: createExportElement(GameStepManager._openedLabels),
@@ -176,7 +176,7 @@ export class GameStepManager {
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
                 await nextStep()
-                GameStepManager.addStepHistory(nextStep)
+                await GameStepManager.addStepHistory(nextStep)
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeLabel()
@@ -275,7 +275,7 @@ export class GameStepManager {
         for (let i = length - 1; i >= 0; i--) {
             let element = GameStepManager._stepsHistory[i]
             if (typeof element === "object" && "step" in element) {
-                steps.push(element.step)
+                steps.push(element.stepSha1)
             }
             else {
                 break

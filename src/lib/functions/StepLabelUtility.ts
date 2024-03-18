@@ -1,13 +1,15 @@
-import { StepHistoryDataType } from "../types/StepHistoryDataType"
-import { StepLabelType } from "../types/StepLabelType"
+import { sha1 } from 'crypto-hash';
+import { StepHistoryDataType } from "../types/StepHistoryDataType";
+import { StepLabelType } from "../types/StepLabelType";
 
 /**
  * Convert StepLabel to StepHistoryData
  * @param step
  * @returns
  */
-export function convertStepLabelToStepHistoryData(step: StepLabelType): StepHistoryDataType {
-    return step.toString().toLocaleLowerCase()
+export async function getStepSha1(step: StepLabelType): Promise<StepHistoryDataType> {
+    let sha1String = await sha1(step.toString().toLocaleLowerCase())
+    return sha1String
 }
 /**
  * Check if two steps are equal
@@ -16,11 +18,5 @@ export function convertStepLabelToStepHistoryData(step: StepLabelType): StepHist
  * @returns
  */
 export function checkIfStepsIsEqual(step1: StepHistoryDataType | StepLabelType, step2: StepHistoryDataType | StepLabelType): boolean {
-    if (typeof step1 === "function") {
-        step1 = convertStepLabelToStepHistoryData(step1)
-    }
-    if (typeof step2 === "function") {
-        step2 = convertStepLabelToStepHistoryData(step2)
-    }
-    return step1.toLocaleLowerCase() === step2.toLocaleLowerCase()
+    return step1 === step2
 }
