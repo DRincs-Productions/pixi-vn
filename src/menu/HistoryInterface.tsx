@@ -51,14 +51,18 @@ export default function HistoryInterface() {
                         aria-label="Search"
                     />
                 </Stack>
-                <Stack
-                    spacing={2}
+                <Box
                     sx={{
+                        display: 'flex',
+                        flex: 1,
+                        minHeight: 0,
                         px: 2,
-                        py: 2,
-                        minHeight: 0
-                    }}>
-                    <Stack spacing={2} sx={{ overflow: "auto" }}>
+                        py: 3,
+                        overflowY: 'scroll',
+                        flexDirection: 'column-reverse',
+                    }}
+                >
+                    <Stack spacing={2} justifyContent="flex-end">
                         {getDialogueHistory().map((dialogue, index) => {
                             let character = dialogue.characterTag ? getCharacterByTag(dialogue.characterTag) ?? new CharacterModelBase(dialogue.characterTag, { name: dialogue.characterTag }) : undefined
                             return <Stack
@@ -77,8 +81,8 @@ export default function HistoryInterface() {
                             </Stack>
                         })}
                     </Stack>
-                </Stack>
+                </Box>
             </Sheet>
-        </CssVarsProvider>
+        </CssVarsProvider >
     );
 }
