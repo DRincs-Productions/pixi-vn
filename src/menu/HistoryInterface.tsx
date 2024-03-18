@@ -57,7 +57,7 @@ export default function HistoryInterface() {
                                     src={character?.icon}
                                 />
                                 <Box sx={{ flex: 1 }}>
-                                    <Typography level="title-sm">{character?.name}</Typography>
+                                    {character?.name && <Typography level="title-sm">{character?.name + (character?.surname ? " " + character.surname : "")}</Typography>}
                                     <Typography level="body-sm">{dialogue.text}</Typography>
                                 </Box>
                             </Stack>
