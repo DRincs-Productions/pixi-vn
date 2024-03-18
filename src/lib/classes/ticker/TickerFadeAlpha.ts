@@ -1,7 +1,6 @@
-import { Ticker } from "pixi.js";
+import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { GameWindowManager } from "../../managers/WindowManager";
-import { CanvasSprite } from "../canvas/CanvasSprite";
 import { TickerBase } from "./TickerBase";
 
 /**
@@ -51,7 +50,7 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
             .filter((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
                 if (args.startOnlyIfHaveTexture) {
-                    if (element && element instanceof CanvasSprite && element.texture?.label == "EMPTY") {
+                    if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
                     }
                 }
@@ -59,7 +58,7 @@ export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" |
             })
             .forEach((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
-                if (element && element instanceof CanvasSprite) {
+                if (element && element instanceof Container) {
                     if (type === "show" && element.alpha < limit) {
                         element.alpha += speed * t.deltaTime
                     }
