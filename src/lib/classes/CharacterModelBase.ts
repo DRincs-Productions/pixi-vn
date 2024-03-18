@@ -1,6 +1,6 @@
 import { StoredClassModel } from "./StoredClassModel"
 
-interface ICharacterModelBase {
+export interface ICharacterModelBase {
     name: string
     surname?: string
     age?: number
@@ -8,6 +8,29 @@ interface ICharacterModelBase {
     color?: string
 }
 
+/**
+ * CharacterModelBase is a class that is used to create a character model.
+ * I suggest you extend this class to create your own character models.
+ * You must use the saveCharacter function to save the character in the game.
+ * @example
+ * ```typescript
+ * export const liam = new CharacterModelBase('liam', {
+ *     name: 'Liam',
+ *     surname: 'Smith',
+ *     age: 25,
+ *     icon: "https://pixijs.com/assets/eggHead.png",
+ *     color: "#9e2e12"
+ * });
+ * export const alice = new CharacterModelBase('alice', {
+ *     name: 'Alice',
+ *     surname: 'Smith',
+ *     age: 25,
+ *     icon: "https://pixijs.com/assets/eggHead.png",
+ *     color: "#9e2e12"
+ * });
+ * saveCharacter([liam, alice]);
+ * ```
+ */
 export class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
     constructor(tag: string, props: ICharacterModelBase) {
         super(tag)
