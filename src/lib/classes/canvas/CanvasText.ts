@@ -1,4 +1,4 @@
-import { Container, ContainerEvents, EventEmitter, Text } from "pixi.js";
+import { ContainerEvents, EventEmitter, Text } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextStyle } from "../../functions/TextureUtility";
@@ -30,19 +30,6 @@ export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
     private _onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
     get onEvents() {
         return this._onEvents
-    }
-    addCanvasChild<U extends ICanvasBase<any>[]>(...children: U): U[0] {
-        return super.addChild(...children)
-    }
-    /**
-     * addChild() does not keep in memory the children, use addCanvasChild() instead
-     * @deprecated
-     * @param children 
-     * @returns 
-     */
-    override addChild<U extends Container[]>(...children: U): U[0] {
-        console.warn("addChild() does not keep in memory the children, use addCanvasChild() instead")
-        return super.addChild(...children)
     }
     /**
      * is same function as on(), but it keeps in memory the children.
