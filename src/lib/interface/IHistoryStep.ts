@@ -13,7 +13,7 @@ import { ExportedStorage } from "./export/ExportedStorage";
 export interface IHistoryStep {
     path: string,
     storage: ExportedStorage,
-    step: StepHistoryDataType,
+    stepSha1: StepHistoryDataType,
     stepIndex: number,
     canvas: ExportedCanvas,
     openedLabels: IOpenedLabel[],

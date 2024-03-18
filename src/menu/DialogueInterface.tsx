@@ -17,7 +17,12 @@ import { resizeWindowsHandler } from '../utility/ComponentUtility';
 import DialogueMenuInterface from './DialogueMenuInterface';
 import QuickActions from './QuickActions';
 
-export default function DialogueInterface() {
+type IProps = {
+    upadateInterface: number
+}
+
+export default function DialogueInterface(props: IProps) {
+    const { upadateInterface } = props
     const [windowSize, setWindowSize] = useState({
         x: 0,
         y: 300 * GameWindowManager.screenScale,
@@ -48,7 +53,7 @@ export default function DialogueInterface() {
         }
         let m = getMenuOptions()
         setMenu(m)
-    }, [update])
+    }, [upadateInterface, update])
 
     function nextOnClick() {
         setLoading(true)
@@ -66,7 +71,7 @@ export default function DialogueInterface() {
 
     return (
         <>
-            <QuickActions afterBack={() => setUpdate((p) => p + 1)} />
+            <QuickActions afterLoad={() => setUpdate((p) => p + 1)} />
             {menu && <DialogueMenuInterface
                 dialogueWindowHeight={windowSize.y + 50}
                 fullscreen={text ? false : true}
