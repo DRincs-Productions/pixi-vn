@@ -2,11 +2,14 @@ import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { Box, CssVarsProvider, IconButton, Input, Sheet, Stack, Typography } from "@mui/joy";
 import Avatar from '@mui/joy/Avatar';
+import { useState } from 'react';
 import { CharacterModelBase } from "../lib/classes/CharacterModelBase";
 import { getCharacterByTag } from "../lib/decorators/CharacterDecorator";
 import { getDialogueHistory } from "../lib/functions/DialogueUtility";
 
 export default function HistoryInterface() {
+    const [searchString, setSearchString] = useState("")
+
     return (
         <CssVarsProvider disableTransitionOnChange>
             <Sheet
@@ -46,7 +49,8 @@ export default function HistoryInterface() {
                     </Stack>
                     <Input
                         placeholder="Search"
-                        value={""}
+                        value={searchString}
+                        onChange={(e) => setSearchString(e.target.value)}
                         startDecorator={<SearchRoundedIcon />}
                         aria-label="Search"
                     />
@@ -63,23 +67,35 @@ export default function HistoryInterface() {
                     }}
                 >
                     <Stack spacing={2} justifyContent="flex-end">
-                        {getDialogueHistory().map((dialogue, index) => {
-                            let character = dialogue.characterTag ? getCharacterByTag(dialogue.characterTag) ?? new CharacterModelBase(dialogue.characterTag, { name: dialogue.characterTag }) : undefined
-                            return <Stack
-                                direction="row"
-                                spacing={1.5}
-                                key={index}
-                            >
-                                <Avatar
-                                    size="sm"
-                                    src={character?.icon}
-                                />
-                                <Box sx={{ flex: 1 }}>
-                                    {character?.name && <Typography level="title-sm">{character?.name + (character?.surname ? " " + character.surname : "")}</Typography>}
-                                    <Typography level="body-sm">{dialogue.text}</Typography>
-                                </Box>
-                            </Stack>
-                        })}
+                        {getDialogueHistory()
+                            .map((dialogue) => {
+                                let character = dialogue.characterTag ? getCharacterByTag(dialogue.characterTag) ?? new CharacterModelBase(dialogue.characterTag, { name: dialogue.characterTag }) : undefined
+                                return {
+                                    character: character?.name ? character.name + (character.surname ? " " + character.surname : "") : undefined,
+                                    text: dialogue.text,
+                                    icon: character?.icon,
+                                }
+                            })
+                            .filter((data) => {
+                                if (!searchString) return true
+                                return data.character?.toLowerCase().includes(searchString.toLowerCase()) || data.text.toLowerCase().includes(searchString.toLowerCase())
+                            })
+                            .map((data, index) => {
+                                return <Stack
+                                    direction="row"
+                                    spacing={1.5}
+                                    key={index}
+                                >
+                                    <Avatar
+                                        size="sm"
+                                        src={data.icon}
+                                    />
+                                    <Box sx={{ flex: 1 }}>
+                                        {data.character && <Typography level="title-sm">{data.character}</Typography>}
+                                        <Typography level="body-sm">{data.text}</Typography>
+                                    </Box>
+                                </Stack>
+                            })}
                     </Stack>
                 </Box>
             </Sheet>
