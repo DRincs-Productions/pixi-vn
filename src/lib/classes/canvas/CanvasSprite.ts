@@ -12,8 +12,23 @@ import { CanvasEvent } from "../CanvasEvent";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
- * This class is responsible for storing a PIXI Sprite.
- * And allow to save your memory in a game save.
+ * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
+ * but it has the ability to be saved and loaded by the Pixi'VM library.
+ * @example
+ * ```typescript
+ * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+ * const sprite = CanvasSprite.from(texture);
+ *
+ * sprite.anchor.set(0.5);
+ * sprite.x = GameWindowManager.screen.width / 2;
+ * sprite.y = GameWindowManager.screen.height / 2;
+ *
+ * sprite.eventMode = 'static';
+ * sprite.cursor = 'pointer';
+ * sprite.onEvent('pointerdown', EventTest);
+ *
+ * GameWindowManager.addCanvasElement("bunny", sprite);
+ * ```
  */
 @canvasElementDecorator()
 export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements ICanvasBase<Memory | ICanvasSpriteMemory> {

@@ -9,8 +9,14 @@ import { CanvasEvent } from "../CanvasEvent";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
- * This class is responsible for storing a PIXI Text.
- * And allow to save your memory in a game save.
+ * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
+ * but it has the ability to be saved and loaded by the Pixi'VM library.
+ * @example
+ * ```typescript
+ * const text = new CanvasText();
+ * text.text = "Hello World"
+ * GameWindowManager.addCanvasElement("text", text);
+ * ```
  */
 @canvasElementDecorator()
 export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
