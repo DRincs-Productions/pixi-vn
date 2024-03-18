@@ -13,7 +13,7 @@ import { TickerBase } from "./TickerBase";
  * - startOnlyIfHaveTexture?: If true, the fade only starts if the canvas element have a texture
  * @param duration The duration of the ticker
  * @param priority The priority of the ticker
- * @exemple
+ * @example
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
  * await bunny.load()

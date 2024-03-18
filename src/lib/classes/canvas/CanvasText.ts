@@ -36,7 +36,7 @@ export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
      * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
      * @param eventClass The class that extends CanvasEvent.
      * @returns 
-     * @exemple
+     * @example
      * ```typescript
      * \@eventDecorator()
      * export class EventTest extends CanvasEvent<CanvasText> {

@@ -14,7 +14,7 @@ import { TickerBase } from "./TickerBase";
  * - startOnlyIfHaveTexture?: If true, the rotation only starts if the canvas element have a texture
  * @param duration The duration of the ticker
  * @param priority The priority of the ticker
- * @exemple
+ * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * GameWindowManager.addCanvasElement("alien", alien);

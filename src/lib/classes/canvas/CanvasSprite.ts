@@ -47,7 +47,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
      * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
      * @param eventClass The class that extends CanvasEvent.
      * @returns 
-     * @exemple
+     * @example
      * ```typescript
      * \@eventDecorator()
      * export class EventTest extends CanvasEvent<CanvasSprite> {

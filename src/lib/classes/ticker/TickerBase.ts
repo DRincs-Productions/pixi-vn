@@ -10,7 +10,7 @@ export type TickerArgsType = { [tag: string]: StorageElementType }
  * This class should be extended and the fn method should be overridden.
  * You must use the tickerDecorator to register the ticker in the game.
  * In Ren'Py is a transform.
- * @exemple
+ * @example
  * ```typescript
  * \@tickerDecorator() // this is equivalent to tickerDecorator("TickerRotate")
  * export class TickerRotate extends TickerBase<{ speed?: number }> {
