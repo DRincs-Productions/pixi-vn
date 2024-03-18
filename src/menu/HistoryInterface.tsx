@@ -1,5 +1,6 @@
+import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
-import { Box, CssVarsProvider, Input, Sheet, Stack, Typography } from "@mui/joy";
+import { Box, CssVarsProvider, IconButton, Input, Sheet, Stack, Typography } from "@mui/joy";
 import Avatar from '@mui/joy/Avatar';
 import { CharacterModelBase } from "../lib/classes/CharacterModelBase";
 import { getCharacterByTag } from "../lib/decorators/CharacterDecorator";
@@ -19,6 +20,19 @@ export default function HistoryInterface() {
                     pointerEvents: "auto",
                 }}
             >
+                <IconButton
+                    sx={{
+                        position: "absolute",
+                        top: 0,
+                        right: 0,
+                        m: 2,
+                    }}
+                    onClick={() => {
+                        window.history.back();
+                    }}
+                >
+                    <CloseIcon />
+                </IconButton>
                 <Stack
                     sx={{
                         px: 2,
