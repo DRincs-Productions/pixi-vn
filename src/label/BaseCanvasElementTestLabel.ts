@@ -1,10 +1,12 @@
-import { Assets } from "pixi.js";
+import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 import { Label } from "../lib/classes/Label";
 import { CanvasContainer } from "../lib/classes/canvas/CanvasContainer";
 import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
+import { CanvasText } from "../lib/classes/canvas/CanvasText";
 import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../lib/decorators/LabelDecorator";
 import { clearDialogue } from "../lib/functions/DialogueUtility";
+import { removeCanvasElement } from "../lib/functions/ImageUtility";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 
@@ -41,6 +43,81 @@ export class BaseCanvasElementTestLabel extends Label {
 
                 GameWindowManager.addTicker("container", new TickerRotate({ speed: 0.01 }));
             },
+            async () => {
+                removeCanvasElement("container");
+
+                const basicText = new CanvasText({ text: 'Basic text in pixi' });
+
+                basicText.x = 50;
+                basicText.y = 100;
+
+                GameWindowManager.addCanvasElement("basicText", basicText);
+
+                // Create gradient fill
+                const fill = new FillGradient(0, 0, 0, 36 * 1.7 * 7);
+
+                const colors = [0xffffff, 0x00ff99].map((color) => Color.shared.setValue(color).toNumber());
+
+                colors.forEach((number, index) => {
+                    const ratio = index / colors.length;
+
+                    fill.addColorStop(ratio, number);
+                });
+
+                const style = new TextStyle({
+                    fontFamily: 'Arial',
+                    fontSize: 36,
+                    fontStyle: 'italic',
+                    fontWeight: 'bold',
+                    fill: { fill },
+                    stroke: { color: '#4a1850', width: 5, join: 'round' },
+                    dropShadow: {
+                        color: '#000000',
+                        blur: 4,
+                        angle: Math.PI / 6,
+                        distance: 6,
+                    },
+                    wordWrap: true,
+                    wordWrapWidth: 440,
+                });
+
+                const richText = new CanvasText({
+                    text: 'Rich text with a lot of options and across multiple lines',
+                    style,
+                });
+
+                richText.x = 50;
+                richText.y = 220;
+
+                GameWindowManager.addCanvasElement("richText", richText);
+
+                const skewStyle = new TextStyle({
+                    fontFamily: 'Arial',
+                    dropShadow: {
+                        alpha: 0.8,
+                        angle: 2.1,
+                        blur: 4,
+                        color: '0x111111',
+                        distance: 10,
+                    },
+                    fill: '#ffffff',
+                    stroke: { color: '#004620', width: 12, join: 'round' },
+                    fontSize: 60,
+                    fontWeight: 'lighter',
+                });
+
+                const skewText = new CanvasText({
+                    text: 'SKEW IS COOL',
+                    style: skewStyle,
+                });
+
+                skewText.skew.set(0.65, -0.3);
+                skewText.anchor.set(0.5, 0.5);
+                skewText.x = 300;
+                skewText.y = 480;
+
+                GameWindowManager.addCanvasElement("skewText", skewText);
+            }
         ]
     }
 }

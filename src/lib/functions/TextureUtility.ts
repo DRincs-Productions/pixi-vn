@@ -1,4 +1,4 @@
-import { Assets, Texture } from 'pixi.js';
+import { Assets, TextStyle, TextStyleOptions, Texture } from 'pixi.js';
 import { STRING_ERRORS } from './ErrorUtility';
 
 /**
@@ -28,4 +28,28 @@ export async function getTexture(imageUrl: string): Promise<Texture | string> {
             console.error(STRING_ERRORS.IMAGE_NOT_FOUND, imageUrl)
             return STRING_ERRORS.IMAGE_NOT_FOUND
         })
+}
+
+export function getTextStyle(style: TextStyle): TextStyleOptions {
+    return {
+        align: style.align,
+        breakWords: style.breakWords,
+        dropShadow: style.dropShadow,
+        fill: style.fill,
+        fontFamily: style.fontFamily,
+        fontSize: style.fontSize,
+        fontStyle: style.fontStyle,
+        fontVariant: style.fontVariant,
+        fontWeight: style.fontWeight,
+        leading: style.leading,
+        letterSpacing: style.letterSpacing,
+        lineHeight: style.lineHeight,
+        padding: style.padding,
+        stroke: style.stroke,
+        textBaseline: style.textBaseline,
+        trim: style.trim,
+        whiteSpace: style.whiteSpace,
+        wordWrap: style.wordWrap,
+        wordWrapWidth: style.wordWrapWidth,
+    }
 }
