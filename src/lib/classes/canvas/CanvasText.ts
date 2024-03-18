@@ -44,6 +44,35 @@ export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
         console.warn("addChild() does not keep in memory the children, use addCanvasChild() instead")
         return super.addChild(...children)
     }
+    /**
+     * is same function as on(), but it keeps in memory the children.
+     * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
+     * @param eventClass The class that extends CanvasEvent.
+     * @returns 
+     * @exemple
+     * ```typescript
+     * \@eventDecorator()
+     * export class EventTest extends CanvasEvent<CanvasText> {
+     *     override fn(event: CanvasEventNamesType, text: CanvasText): void {
+     *         if (event === 'pointerdown') {
+     *             text.scale.x *= 1.25;
+     *             text.scale.y *= 1.25;
+     *         }
+     *     }
+     * }
+     * ```
+     * 
+     * ```typescript
+     * const text = new CanvasText();
+     * text.text = "Hello World"
+     *
+     * text.eventMode = 'static';
+     * text.cursor = 'pointer';
+     * text.onEvent('pointerdown', EventTest);
+     *
+     * GameWindowManager.addCanvasElement("text", text);
+     * ```
+     */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
         let instance = getEventInstanceByClassName(className)
