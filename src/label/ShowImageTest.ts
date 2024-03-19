@@ -1,11 +1,11 @@
-import { Label } from "../lib/classes/Label";
-import { CanvasImage } from "../lib/classes/canvas/CanvasImage";
-import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
-import { labelDecorator } from "../lib/decorators/LabelDecorator";
-import { clearDialogue, setDialogue } from "../lib/functions/DialogueUtility";
-import { addImage, removeImage, showCanvasImages, showImageWithDisolveEffect } from "../lib/functions/ImageUtility";
-import { GameWindowManager } from "../lib/managers/WindowManager";
-import { StepLabelType } from "../lib/types/StepLabelType";
+import { Label } from "../../lib/classes/Label";
+import { CanvasImage } from "../../lib/classes/canvas/CanvasImage";
+import { TickerRotate } from "../../lib/classes/ticker/TickerRotate";
+import { labelDecorator } from "../../lib/decorators/LabelDecorator";
+import { clearDialogue, setDialogue } from "../../lib/functions/DialogueUtility";
+import { addImage, removeImage, showCanvasImages, showImageWithDisolveEffect } from "../../lib/functions/ImageUtility";
+import { GameWindowManager } from "../../lib/managers/WindowManager";
+import { StepLabelType } from "../../lib/types/StepLabelType";
 
 @labelDecorator()
 export class ShowImageTest extends Label {

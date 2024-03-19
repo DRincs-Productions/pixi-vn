@@ -1,13 +1,13 @@
 import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "pixi.js";
-import { Label } from "../lib/classes/Label";
-import { CanvasSprite, getMemorySprite, setMemorySprite } from "../lib/classes/canvas/CanvasSprite";
-import { TickerBase } from "../lib/classes/ticker/TickerBase";
-import { canvasElementDecorator } from "../lib/decorators/CanvasElementDecorator";
-import { labelDecorator } from "../lib/decorators/LabelDecorator";
-import { tickerDecorator } from "../lib/decorators/TickerDecorator";
-import { ICanvasSpriteBaseMemory } from "../lib/interface/canvas/ICanvasSpriteMemory";
-import { GameWindowManager } from "../lib/managers/WindowManager";
-import { StepLabelType } from "../lib/types/StepLabelType";
+import { Label } from "../../lib/classes/Label";
+import { CanvasSprite, getMemorySprite, setMemorySprite } from "../../lib/classes/canvas/CanvasSprite";
+import { TickerBase } from "../../lib/classes/ticker/TickerBase";
+import { canvasElementDecorator } from "../../lib/decorators/CanvasElementDecorator";
+import { labelDecorator } from "../../lib/decorators/LabelDecorator";
+import { tickerDecorator } from "../../lib/decorators/TickerDecorator";
+import { ICanvasSpriteBaseMemory } from "../../lib/interface/canvas/ICanvasSpriteMemory";
+import { GameWindowManager } from "../../lib/managers/WindowManager";
+import { StepLabelType } from "../../lib/types/StepLabelType";
 
 interface IAlienTintingMemory extends ICanvasSpriteBaseMemory {
     direction: number

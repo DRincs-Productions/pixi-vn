@@ -1,15 +1,15 @@
 import { Assets } from "pixi.js";
-import { Label } from "../lib/classes/Label";
-import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
-import { TickerFadeAlpha } from "../lib/classes/ticker/TickerFadeAlpha";
-import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
-import { labelDecorator } from "../lib/decorators/LabelDecorator";
-import { setDialogue } from "../lib/functions/DialogueUtility";
-import { removeImage } from "../lib/functions/ImageUtility";
-import { GameWindowManager } from "../lib/managers/WindowManager";
-import { Pause } from "../lib/types/PauseType";
-import { Repeat } from "../lib/types/RepeatType";
-import { StepLabelType } from "../lib/types/StepLabelType";
+import { Label } from "../../lib/classes/Label";
+import { CanvasSprite } from "../../lib/classes/canvas/CanvasSprite";
+import { TickerFadeAlpha } from "../../lib/classes/ticker/TickerFadeAlpha";
+import { TickerRotate } from "../../lib/classes/ticker/TickerRotate";
+import { labelDecorator } from "../../lib/decorators/LabelDecorator";
+import { setDialogue } from "../../lib/functions/DialogueUtility";
+import { removeImage } from "../../lib/functions/ImageUtility";
+import { GameWindowManager } from "../../lib/managers/WindowManager";
+import { Pause } from "../../lib/types/PauseType";
+import { Repeat } from "../../lib/types/RepeatType";
+import { StepLabelType } from "../../lib/types/StepLabelType";
 
 const alien1Tag = "alien1"
 const alien2Tag = "alien2"

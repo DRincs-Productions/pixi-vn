@@ -1,10 +1,10 @@
-import { Label } from "../lib/classes/Label";
-import { MenuOptionLabel } from "../lib/classes/MenuOptionLabel";
-import { labelDecorator } from "../lib/decorators/LabelDecorator";
-import { setDialogue, setMenuOptions } from "../lib/functions/DialogueUtility";
-import { GameStepManager } from "../lib/managers/StepManager";
-import { GameWindowManager } from "../lib/managers/WindowManager";
-import { StepLabelType } from "../lib/types/StepLabelType";
+import { Label } from "../../lib/classes/Label";
+import { MenuOptionLabel } from "../../lib/classes/MenuOptionLabel";
+import { labelDecorator } from "../../lib/decorators/LabelDecorator";
+import { setDialogue, setMenuOptions } from "../../lib/functions/DialogueUtility";
+import { GameStepManager } from "../../lib/managers/StepManager";
+import { GameWindowManager } from "../../lib/managers/WindowManager";
+import { StepLabelType } from "../../lib/types/StepLabelType";
 import { liam } from "../values/characters";
 import { EventsTestLabel } from "./EventsTestLabel";
 import { ShowImageTest } from "./ShowImageTest";

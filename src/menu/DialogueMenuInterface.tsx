@@ -1,11 +1,11 @@
 import { Box, Grid } from '@mui/joy';
 import { useState } from 'react';
+import { RunModeLabelEnum } from '../../lib/enums/RunModeLabelEnum';
+import { clearMenuOptions } from '../../lib/functions/DialogueUtility';
+import { GameStepManager } from '../../lib/managers/StepManager';
+import { GameWindowManager } from '../../lib/managers/WindowManager';
+import { MunuOptionsType } from '../../lib/types/MunuOptionsType';
 import DialogueMenuButton from '../components/DialogueMenuButton';
-import { RunModeLabelEnum } from '../lib/enums/RunModeLabelEnum';
-import { clearMenuOptions } from '../lib/functions/DialogueUtility';
-import { GameStepManager } from '../lib/managers/StepManager';
-import { GameWindowManager } from '../lib/managers/WindowManager';
-import { MunuOptionsType } from '../lib/types/MunuOptionsType';
 
 type IProps = {
     menu: MunuOptionsType,

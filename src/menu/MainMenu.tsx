@@ -1,12 +1,12 @@
 import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { clearAllGameDatas } from '../../lib/functions/GameUtility';
+import { addImage } from '../../lib/functions/ImageUtility';
+import { GameStepManager } from '../../lib/managers/StepManager';
+import { GameWindowManager } from '../../lib/managers/WindowManager';
 import MenuButton from '../components/MenuButton';
 import { StartLabel } from '../label/StartLabel';
-import { clearAllGameDatas } from '../lib/functions/GameUtility';
-import { addImage } from '../lib/functions/ImageUtility';
-import { GameStepManager } from '../lib/managers/StepManager';
-import { GameWindowManager } from '../lib/managers/WindowManager';
 import { loadGameSave } from '../utility/ActionsUtility';
 
 type IProps = {
