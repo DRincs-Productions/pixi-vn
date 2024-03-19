@@ -2,11 +2,11 @@ import { ContainerEvents, EventEmitter, Text } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextStyle } from "../../functions/TextureUtility";
-import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { CanvasEvent } from "../CanvasEvent";
+import { CanvasBase } from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
@@ -20,7 +20,7 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * ```
  */
 @canvasElementDecorator()
-export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
+export class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
     get memory(): ICanvasTextMemory {
         return getMemoryText(this)
     }
@@ -66,7 +66,7 @@ export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<ICanvasBase<any>>).fn(event, this)
+                (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
             })
         }
         return this

@@ -1,9 +1,9 @@
 import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
+import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
 import { createExportElement } from "../functions/ExportUtility";
-import { ICanvasBase } from "../interface/ICanvasBase";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITicker } from "../interface/ITicker";
 import { ITickersStep, ITickersSteps } from "../interface/ITickersSteps";
@@ -174,7 +174,7 @@ export class GameWindowManager {
     static get currentCanvasElements() {
         return GameWindowManager._children
     }
-    private static _children: { [tag: string]: ICanvasBase<any> } = {}
+    private static _children: { [tag: string]: CanvasBase<any> } = {}
     /**
      * The order of the children tags.
      */
@@ -185,7 +185,7 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @param canvasElement The canvas elements to be added.
      */
-    public static addCanvasElement(tag: string, canvasElement: ICanvasBase<any>) {
+    public static addCanvasElement(tag: string, canvasElement: CanvasBase<any>) {
         if (GameWindowManager._children[tag]) {
             GameWindowManager.removeCanvasElement(tag)
         }
@@ -217,7 +217,7 @@ export class GameWindowManager {
      * @param tag The tag of the canvas element.
      * @returns The canvas element.
      */
-    public static getCanvasElement<T extends ICanvasBase<any>>(tag: string): T | undefined {
+    public static getCanvasElement<T extends CanvasBase<any>>(tag: string): T | undefined {
         return GameWindowManager._children[tag] as T | undefined
     }
     /**

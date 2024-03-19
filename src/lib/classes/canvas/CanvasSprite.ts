@@ -3,12 +3,12 @@ import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator"
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
-import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
 import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { CanvasEvent } from "../CanvasEvent";
+import { CanvasBase } from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
@@ -31,7 +31,7 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * ```
  */
 @canvasElementDecorator()
-export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements ICanvasBase<Memory | ICanvasSpriteMemory> {
+export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
     get memory(): Memory | ICanvasSpriteMemory {
         return getMemorySprite(this)
     }
@@ -77,7 +77,7 @@ export class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICa
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<ICanvasBase<any>>).fn(event, this)
+                (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
             })
         }
         return this

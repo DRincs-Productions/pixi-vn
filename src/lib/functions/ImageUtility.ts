@@ -12,8 +12,10 @@ import { getTexture } from './TextureUtility';
  * @param imageUrl is the url of the image.
  * @returns the container of the image.
  * @example
+ * ```typescript
  * let alien = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
  * await alien.load()
+ * ```
  */
 export function addImage(tag: string, imageUrl: string): CanvasImage {
     let image = new CanvasImage()

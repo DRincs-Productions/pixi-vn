@@ -1,9 +1,9 @@
-import { ICanvasBase } from "../interface/ICanvasBase"
+import { CanvasBase } from "../classes/canvas/CanvasBase"
 import { CanvasElementTagType } from "../types/CanvasElementTagType"
 
-export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof ICanvasBase<any> } = {}
+export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof CanvasBase<any> } = {}
 export function canvasElementDecorator(name?: CanvasElementTagType) {
-    return function (target: typeof ICanvasBase<any>) {
+    return function (target: typeof CanvasBase<any>) {
         if (!name) {
             name = target.name
         }
@@ -14,7 +14,7 @@ export function canvasElementDecorator(name?: CanvasElementTagType) {
     }
 }
 
-export function getCanvasElementTypeByClassName<T extends typeof ICanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
+export function getCanvasElementTypeByClassName<T extends typeof CanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasName]
         if (!eventType) {
@@ -30,7 +30,7 @@ export function getCanvasElementTypeByClassName<T extends typeof ICanvasBase<any
     }
 }
 
-export function getCanvasElementInstanceByClassName<T extends ICanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
+export function getCanvasElementInstanceByClassName<T extends CanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasName]
         if (!eventType) {

@@ -87,7 +87,7 @@ export class GameStepManager {
                     }
                 }
                 catch (e) {
-                    console.error(e)
+                    console.error("[Pixi'VM] Error comparing openedLabels", e)
                 }
             }
         }

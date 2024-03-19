@@ -1,3 +1,4 @@
+@@ -1, 21 + 0, 0 @@
 import { Container } from "pixi.js";
 import { ICanvasBaseMemory } from "./canvas/ICanvasBaseMemory";
 

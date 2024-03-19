@@ -1,8 +1,8 @@
 import { Container, ContainerOptions } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { exportCanvasElement, importCanvasElement } from "../../functions/CanvasUtility";
-import { ICanvasBase } from "../../interface/ICanvasBase";
 import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
+import { CanvasBase } from "./CanvasBase";
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods, 
@@ -22,11 +22,11 @@ import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerM
  * ```
  */
 @canvasElementDecorator()
-export class CanvasContainer extends Container implements ICanvasBase<ICanvasContainerMemory> {
+export class CanvasContainer extends Container implements CanvasBase<ICanvasContainerMemory> {
     get memory(): ICanvasContainerMemory {
         let memory = getMemoryContainer(this)
         this.children.forEach(child => {
-            memory.elements.push(exportCanvasElement(child as ICanvasBase<any>))
+            memory.elements.push(exportCanvasElement(child as CanvasBase<any>))
         })
         return memory
     }
