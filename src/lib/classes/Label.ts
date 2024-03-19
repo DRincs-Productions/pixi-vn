@@ -4,17 +4,36 @@ import { StepLabelType } from "../types/StepLabelType"
 
 /**
  * Label is a class that contains a list of steps, which will be performed as the game continues.
+ * You must use the labelDecorator to register the label in the game.
  * For Ren'py this is the equivalent of a label.
+ * @example
+ * ```typescript
+ * \@labelDecorator() // this is equivalent to labelDecorator("StartLabel")
+ * export class StartLabel extends Label {
+ *     override get steps(): StepLabelType[] {
+ *         return [
+ *             () => {
+ *                 GameWindowManager.clear()
+ *                 setDialogue({ character: liam, text: "Which test do you want to perform?" })
+ *                 setMenuOptions([
+ *                     new MenuOptionLabel("Events Test", EventsTestLabel),
+ *                     new MenuOptionLabel("Show Image Test", ShowImageTest),
+ *                 ])
+ *             },
+ *             () => GameStepManager.jumpLabel(StartLabel),
+ *         ]
+ *     }
+ * }
+ * GameStepManager.callLabel(StartLabel)
+ * ```
  */
 export class Label {
     /**
      * Get the steps of the label.
+     * This class should be extended and the steps method should be overridden.
      * Every time you update this list will also be updated when the other game versions load.
      */
-    public get steps(): StepLabelType[] {
-        console.warn("This method should be overridden")
-        throw new Error("This method should be overridden")
-    }
+    public get steps(): StepLabelType[] { throw new Error("[Pixi'VM] The method Label.steps must be overridden") }
     /**
      * Get the corresponding steps number
      * @param externalSteps

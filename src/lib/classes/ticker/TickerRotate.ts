@@ -1,9 +1,8 @@
-import { Ticker } from "pixi.js";
+import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { TickerProgrationType } from "../../interface/ITickerProgration";
 import { GameWindowManager } from "../../managers/WindowManager";
-import { CanvasSprite } from "../canvas/CanvasSprite";
 import { TickerBase } from "./TickerBase";
 
 /**
@@ -15,6 +14,15 @@ import { TickerBase } from "./TickerBase";
  * - startOnlyIfHaveTexture?: If true, the rotation only starts if the canvas element have a texture
  * @param duration The duration of the ticker
  * @param priority The priority of the ticker
+ * @example
+ * ```typescript
+ * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
+ * GameWindowManager.addCanvasElement("alien", alien);
+ * const ticker = new TickerRotate({
+ *    speed: 0.1,
+ *    clockwise: true,
+ * }),
+ * GameWindowManager.addTicker("alien", ticker)
  */
 @tickerDecorator()
 export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, startOnlyIfHaveTexture?: boolean, }> {
@@ -40,7 +48,7 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
             .filter((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
                 if (args.startOnlyIfHaveTexture) {
-                    if (element && element instanceof CanvasSprite && element.texture?.label == "EMPTY") {
+                    if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
                     }
                 }
@@ -48,7 +56,7 @@ export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boole
             })
             .forEach((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
-                if (element && element instanceof CanvasSprite) {
+                if (element && element instanceof Container) {
                     if (clockwise)
                         element.rotation += speed * t.deltaTime
                     else

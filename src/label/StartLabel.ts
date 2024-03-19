@@ -6,6 +6,7 @@ import { GameStepManager } from "../lib/managers/StepManager";
 import { GameWindowManager } from "../lib/managers/WindowManager";
 import { StepLabelType } from "../lib/types/StepLabelType";
 import { liam } from "../values/characters";
+import { BaseCanvasElementTestLabel } from "./BaseCanvasElementTestLabel";
 import { EventsTestLabel } from "./EventsTestLabel";
 import { ShowImageTest } from "./ShowImageTest";
 import { TickerTestLabel } from "./TickerTestLabel";
@@ -23,6 +24,7 @@ export class StartLabel extends Label {
                     new MenuOptionLabel("Show Image Test", ShowImageTest),
                     new MenuOptionLabel("Ticker Test", TickerTestLabel),
                     new MenuOptionLabel("Tinting Test", TintingTestLabel),
+                    new MenuOptionLabel("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
                 ])
             },
             () => GameStepManager.jumpLabel(StartLabel),

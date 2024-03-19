@@ -1,19 +1,26 @@
-import { Container, ContainerEvents, EventEmitter, Text } from "pixi.js";
+import { ContainerEvents, EventEmitter, Text } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
-import { ICanvasBase } from "../../interface/ICanvasBase";
+import { getTextStyle } from "../../functions/TextureUtility";
 import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import { CanvasEvent } from "../CanvasEvent";
+import { CanvasBase } from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
- * This class is responsible for storing a PIXI Text.
- * And allow to save your memory in a game save.
+ * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
+ * but it has the ability to be saved and loaded by the Pixi'VM library.
+ * @example
+ * ```typescript
+ * const text = new CanvasText();
+ * text.text = "Hello World"
+ * GameWindowManager.addCanvasElement("text", text);
+ * ```
  */
 @canvasElementDecorator()
-export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
+export class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
     get memory(): ICanvasTextMemory {
         return getMemoryText(this)
     }
@@ -24,26 +31,42 @@ export class CanvasText extends Text implements ICanvasBase<ICanvasTextMemory> {
     get onEvents() {
         return this._onEvents
     }
-    addCanvasChild<U extends ICanvasBase<any>[]>(...children: U): U[0] {
-        return super.addChild(...children)
-    }
     /**
-     * addChild() does not keep in memory the children, use addCanvasChild() instead
-     * @deprecated
-     * @param children 
+     * is same function as on(), but it keeps in memory the children.
+     * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
+     * @param eventClass The class that extends CanvasEvent.
      * @returns 
+     * @example
+     * ```typescript
+     * \@eventDecorator()
+     * export class EventTest extends CanvasEvent<CanvasText> {
+     *     override fn(event: CanvasEventNamesType, text: CanvasText): void {
+     *         if (event === 'pointerdown') {
+     *             text.scale.x *= 1.25;
+     *             text.scale.y *= 1.25;
+     *         }
+     *     }
+     * }
+     * ```
+     * 
+     * ```typescript
+     * const text = new CanvasText();
+     * text.text = "Hello World"
+     *
+     * text.eventMode = 'static';
+     * text.cursor = 'pointer';
+     * text.onEvent('pointerdown', EventTest);
+     *
+     * GameWindowManager.addCanvasElement("text", text);
+     * ```
      */
-    override addChild<U extends Container[]>(...children: U): U[0] {
-        console.warn("addChild() does not keep in memory the children, use addCanvasChild() instead")
-        return super.addChild(...children)
-    }
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
         let instance = getEventInstanceByClassName(className)
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<ICanvasBase<any>>).fn(event, this)
+                (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
             })
         }
         return this
@@ -69,7 +92,7 @@ export function getMemoryText<T extends CanvasText>(element: T | CanvasText): IC
         anchor: { x: element.anchor.x, y: element.anchor.y },
         text: element.text,
         resolution: element.resolution,
-        style: element.style,
+        style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
     }

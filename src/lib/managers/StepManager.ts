@@ -87,7 +87,7 @@ export class GameStepManager {
                     }
                 }
                 catch (e) {
-                    console.error(e)
+                    console.error("[Pixi'VM] Error comparing openedLabels", e)
                 }
             }
         }
@@ -100,7 +100,7 @@ export class GameStepManager {
     private static pushNewLabel(label: LabelTagType) {
         let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
-            throw new Error("Label not found")
+            throw new Error("[Pixi'VM] Label not found")
         }
         GameStepManager._openedLabels.push({
             label: label,
@@ -113,12 +113,12 @@ export class GameStepManager {
      */
     private static closeLabel() {
         if (!GameStepManager.currentLabel) {
-            console.warn("No label to close")
+            console.warn("[Pixi'VM] No label to close")
             return
         }
         let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
         if (!currentLabel) {
-            console.error("Label not found")
+            console.error("[Pixi'VM] Label not found")
             return
         }
         GameStepManager._openedLabels.pop()
@@ -147,10 +147,25 @@ export class GameStepManager {
     /**
      * Execute the next step and add it to the history.
      * @returns
+     * @example
+     * ```typescript
+     *     function nextOnClick() {
+     *     setLoading(true)
+     *     GameStepManager.runNextStep()
+     *         .then(() => {
+     *             setUpdate((p) => p + 1)
+     *             setLoading(false)
+     *         })
+     *         .catch((e) => {
+     *             setLoading(false)
+     *             console.error(e)
+     *         })
+     * }
+     * ```
      */
     public static async runNextStep() {
         if (GameStepManager._openedLabels.length === 0) {
-            console.error("No openedLabels")
+            console.warn("[Pixi'VM] There are no labels to run")
             return
         }
         GameStepManager.increaseCurrentStepIndex()
@@ -164,12 +179,12 @@ export class GameStepManager {
         if (GameStepManager.currentLabel) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
-                console.error("No lasteStepsLength")
+                console.error("[Pixi'VM] currentLabelStepIndex is null")
                 return
             }
             let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
             if (!currentLabel) {
-                console.error("Label not found")
+                console.error("[Pixi'VM] Label not found")
                 return
             }
             let n = currentLabel.steps.length
@@ -183,7 +198,7 @@ export class GameStepManager {
                 await GameStepManager.runNextStep()
             }
             else {
-                console.warn("No next step")
+                console.warn("[Pixi'VM] There are no steps to run")
             }
         }
     }
@@ -192,6 +207,10 @@ export class GameStepManager {
      * Is a call function in Ren'Py.
      * @param label The label to execute.
      * @returns
+     * @example
+     * ```typescript
+     * GameStepManager.callLabel(StartLabel)
+     * ```
      */
     public static async callLabel(label: typeof Label | Label) {
         try {
@@ -202,7 +221,7 @@ export class GameStepManager {
             GameStepManager.pushNewLabel(labelName)
         }
         catch (e) {
-            console.error(e)
+            console.error("[Pixi'VM] Error calling label", e)
             return
         }
         return await GameStepManager.runCurrentStep()
@@ -211,8 +230,13 @@ export class GameStepManager {
      * Execute the label, close all labels and add them to the history.
      * Is a jump function in Ren'Py.
      * @param label 
+     * @returns
+     * @example
+     * ```typescript
+     * GameStepManager.jumpLabel(StartLabel)
+     * ```
      */
-    public static async jumpLabel(label: typeof Label | Label) {
+    public static async jumpLabel(label: typeof Label | Label): Promise<void> {
         GameStepManager.closeAllLabels()
         try {
             if (label instanceof Label) {
@@ -222,7 +246,7 @@ export class GameStepManager {
             GameStepManager.pushNewLabel(labelName)
         }
         catch (e) {
-            console.error(e)
+            console.error("[Pixi'VM] Error jumping label", e)
             return
         }
         return await GameStepManager.runCurrentStep()
@@ -230,61 +254,61 @@ export class GameStepManager {
 
     /* After Update Methods */
 
-    /**
-     * After the update or code edit, some steps or labels may no longer match.
-     * - In case of step mismatch, the game will be updated to the last matching step.
-     * - In case of label mismatch, the game gives an error.
-     * @returns 
-     */
-    public static afterUpdate() {
-        // TODO: implement
-        if (!GameStepManager.currentLabel) {
-            // TODO: implement
-            return
-        }
-        let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
-        if (!currentLabel) {
-            console.error("Label not found")
-            return
-        }
-        let oldSteps = GameStepManager.stepsAfterLastHistoryLabel
-        let currentStepIndex = currentLabel.getCorrespondingStepsNumber(oldSteps)
-        let stepToRemove = oldSteps.length - currentStepIndex
-        GameStepManager.removeLastHistoryNodes(stepToRemove)
-        GameStepManager.loadLastStep()
-    }
-    public static loadLastStep() {
-        // TODO: implement
-    }
-    /**
-     * Remove a number of items from the last of the history.
-     * @param itemNumber The number of items to remove from the last of the history.
-     */
-    private static removeLastHistoryNodes(itemNumber: number) {
-        // TODO: implement
-        for (let i = 0; i < itemNumber; i++) {
-            GameStepManager._stepsHistory.pop()
-        }
-    }
-    /**
-     * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
-     */
-    private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
-        let length = GameStepManager._stepsHistory.length
-        let steps: StepHistoryDataType[] = []
-        for (let i = length - 1; i >= 0; i--) {
-            let element = GameStepManager._stepsHistory[i]
-            if (typeof element === "object" && "stepSha1" in element) {
-                steps.push(element.stepSha1)
-            }
-            else {
-                break
-            }
-        }
+    // /**
+    //  * After the update or code edit, some steps or labels may no longer match.
+    //  * - In case of step mismatch, the game will be updated to the last matching step.
+    //  * - In case of label mismatch, the game gives an error.
+    //  * @returns 
+    //  */
+    // private static afterUpdate() {
+    //     // TODO: implement
+    //     if (!GameStepManager.currentLabel) {
+    //         // TODO: implement
+    //         return
+    //     }
+    //     let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
+    //     if (!currentLabel) {
+    //         console.error("Label not found")
+    //         return
+    //     }
+    //     let oldSteps = GameStepManager.stepsAfterLastHistoryLabel
+    //     let currentStepIndex = currentLabel.getCorrespondingStepsNumber(oldSteps)
+    //     let stepToRemove = oldSteps.length - currentStepIndex
+    //     GameStepManager.removeLastHistoryNodes(stepToRemove)
+    //     GameStepManager.loadLastStep()
+    // }
+    // private static loadLastStep() {
+    //     // TODO: implement
+    // }
+    // /**
+    //  * Remove a number of items from the last of the history.
+    //  * @param itemNumber The number of items to remove from the last of the history.
+    //  */
+    // private static removeLastHistoryNodes(itemNumber: number) {
+    //     // TODO: implement
+    //     for (let i = 0; i < itemNumber; i++) {
+    //         GameStepManager._stepsHistory.pop()
+    //     }
+    // }
+    // /**
+    //  * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
+    //  */
+    // private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
+    //     let length = GameStepManager._stepsHistory.length
+    //     let steps: StepHistoryDataType[] = []
+    //     for (let i = length - 1; i >= 0; i--) {
+    //         let element = GameStepManager._stepsHistory[i]
+    //         if (typeof element === "object" && "stepSha1" in element) {
+    //             steps.push(element.stepSha1)
+    //         }
+    //         else {
+    //             break
+    //         }
+    //     }
 
-        steps = steps.reverse()
-        return steps
-    }
+    //     steps = steps.reverse()
+    //     return steps
+    // }
 
     /* Go Back & Refresh Methods */
 
@@ -293,14 +317,21 @@ export class GameStepManager {
      * @param navigate The navigate function.
      * @param steps The number of steps to go back.
      * @returns 
+     * @example
+     * ```typescript
+     * export function goBack(navigate: (path: string) => void, afterBack?: () => void) {
+     *     GameStepManager.goBack(navigate)
+     *     afterBack && afterBack()
+     * }
+     * ```
      */
     public static goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
-            console.error("steps must be greater than 0")
+            console.warn("[Pixi'VM] Steps must be greater than 0")
             return
         }
         if (GameStepManager._stepsHistory.length <= 1) {
-            console.error("No stepsHistory")
+            console.warn("[Pixi'VM] No steps to go back")
             return
         }
         GameStepManager.goBackInstrnal(steps)
@@ -312,7 +343,7 @@ export class GameStepManager {
             navigate(lastHistoryStep.path)
         }
         else {
-            console.error("No lastHistoryStep")
+            console.error("[Pixi'VM] Error going back")
         }
     }
     private static goBackInstrnal(steps: number) {
@@ -371,17 +402,17 @@ export class GameStepManager {
                 GameStepManager._stepsHistory = (data as ExportedStep)["stepsHistory"] as IHistoryStep[]
             }
             else {
-                console.log("No stepsHistory data found")
+                console.warn("[Pixi'VM] No stepsHistory data found")
             }
             if (data.hasOwnProperty("openedLabels")) {
                 GameStepManager._openedLabels = (data as ExportedStep)["openedLabels"] as IOpenedLabel[]
             }
             else {
-                console.log("No openedLabels data found")
+                console.warn("[Pixi'VM] No openedLabels data found")
             }
         }
         catch (e) {
-            console.error("Error importing data", e)
+            console.error("[Pixi'VM] Error importing data", e)
         }
     }
 }
