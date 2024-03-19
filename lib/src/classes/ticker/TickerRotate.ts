@@ -1,10 +1,10 @@
 import { Ticker } from "pixi.js";
-import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { TickerProgrationType } from "../../interface/ITickerProgration";
 import { GameWindowManager } from "../../managers/WindowManager";
-import { CanvasSprite } from "../canvas/CanvasSprite";
-import { TickerBase } from "./TickerBase";
+import { CanvasSprite } from "../canvas";
+import TickerBase from "./TickerBase";
+import { tickerDecorator } from "../../decorators";
 
 /**
  * A ticker that rotates the canvas element of the canvas.
@@ -17,7 +17,7 @@ import { TickerBase } from "./TickerBase";
  * @param priority The priority of the ticker
  */
 @tickerDecorator()
-export class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, startOnlyIfHaveTexture?: boolean, }> {
+export default class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, startOnlyIfHaveTexture?: boolean, }> {
     /**
      * The method that will be called every frame to rotate the canvas element of the canvas.
      * @param delta The delta time

@@ -1,10 +1,10 @@
 import { RunModeLabelEnum } from "../enums/RunModeLabelEnum"
-import { Label } from "./Label"
+import Label from "./Label"
 
 /**
  * MunuOptionLabel is a class that contains a Label and a text that will be displayed in the menu.
  */
-export class MenuOptionLabel {
+export default class MenuOptionLabel {
     text: string
     label: typeof Label
     type: RunModeLabelEnum

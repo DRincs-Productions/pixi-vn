@@ -1,4 +1,4 @@
-import { CanvasEvent } from "../classes/CanvasEvent"
+import { CanvasEvent } from "../classes"
 import { ICanvasBase } from "../interface/ICanvasBase"
 import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
 import { EventTagType } from "../types/EventTagType"
@@ -14,7 +14,7 @@ export const registeredEvents: { [name: EventTagType]: typeof CanvasEvent<Canvas
  * @param name is th identifier of the event, by default is the name of the class
  * @returns 
  */
-export function eventDecorator(name?: EventTagType) {
+export default function eventDecorator(name?: EventTagType) {
     return function (target: typeof CanvasEvent<any>) {
         if (!name) {
             name = target.name

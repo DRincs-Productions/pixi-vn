@@ -2,7 +2,7 @@ import { ICanvasBase } from "../interface/ICanvasBase"
 import { CanvasElementTagType } from "../types/CanvasElementTagType"
 
 export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof ICanvasBase<any> } = {}
-export function canvasElementDecorator(name?: CanvasElementTagType) {
+export default function canvasElementDecorator(name?: CanvasElementTagType) {
     return function (target: typeof ICanvasBase<any>) {
         if (!name) {
             name = target.name

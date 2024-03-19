@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase"
+import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase"
 import { TickerTagType } from "../types/TickerTagType"
 
 /**
@@ -13,7 +13,7 @@ export const registeredTickers: { [name: TickerTagType]: typeof TickerBase } = {
  * @param name is th identifier of the label, by default is the name of the class
  * @returns 
  */
-export function tickerDecorator(name?: TickerTagType) {
+export default function tickerDecorator(name?: TickerTagType) {
     return function (target: typeof TickerBase<any>) {
         if (!name) {
             name = target.name

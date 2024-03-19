@@ -1,4 +1,4 @@
-import { Label } from "../classes/Label"
+import { Label } from "../classes"
 import { LabelTagType } from "../types/LabelTagType"
 
 export const registeredLabels: { [key: LabelTagType]: typeof Label } = {}
@@ -9,7 +9,7 @@ export const registeredLabels: { [key: LabelTagType]: typeof Label } = {}
  * @param name is th identifier of the label, by default is the name of the class
  * @returns 
  */
-export function labelDecorator(name?: LabelTagType) {
+export default function labelDecorator(name?: LabelTagType) {
     return function (target: typeof Label) {
         if (!name) {
             name = target.name

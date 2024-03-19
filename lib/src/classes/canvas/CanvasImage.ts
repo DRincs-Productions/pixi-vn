@@ -1,15 +1,15 @@
 import { Sprite, Texture, TextureSourceLike } from "pixi.js";
-import { canvasElementDecorator } from "../../decorators/CanvasElementDecorator";
 import { getTexture } from "../../functions/TextureUtility";
 import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
-import { CanvasSprite, getMemorySprite, setMemorySprite } from "./CanvasSprite";
+import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
+import { canvasElementDecorator } from "../../decorators";
 
 /**
  * The class for the image.
  * Must use refreshImage() to load the image.
  */
 @canvasElementDecorator()
-export class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
+export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
     override get memory(): ICanvasImageMemory {
         return {
             ...getMemorySprite(this),

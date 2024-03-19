@@ -1,4 +1,4 @@
-import { StoredClassModel } from "./StoredClassModel"
+import StoredClassModel from "./StoredClassModel"
 
 interface ICharacterModelBase {
     name: string
@@ -8,7 +8,7 @@ interface ICharacterModelBase {
     color?: string
 }
 
-export class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
+export default class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
     constructor(tag: string, props: ICharacterModelBase) {
         super(tag)
         this.defaultName = props.name

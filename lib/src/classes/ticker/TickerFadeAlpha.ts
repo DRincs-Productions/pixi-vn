@@ -1,8 +1,8 @@
 import { Ticker } from "pixi.js";
-import { tickerDecorator } from "../../decorators/TickerDecorator";
 import { GameWindowManager } from "../../managers/WindowManager";
-import { CanvasSprite } from "../canvas/CanvasSprite";
-import { TickerBase } from "./TickerBase";
+import { CanvasSprite } from "../canvas";
+import TickerBase from "./TickerBase";
+import { tickerDecorator } from "../../decorators";
 
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
@@ -16,7 +16,7 @@ import { TickerBase } from "./TickerBase";
  * @param priority The priority of the ticker
  */
 @tickerDecorator()
-export class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number, tagToRemoveAfter?: string[] | string, startOnlyIfHaveTexture?: boolean }> {
+export default class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number, tagToRemoveAfter?: string[] | string, startOnlyIfHaveTexture?: boolean }> {
     /**
      * The method that will be called every frame to fade the alpha of the canvas element of the canvas.
      * @param delta The delta time

@@ -4,7 +4,7 @@ import { GameStorageManager } from "../managers/StorageManager"
  * StoredClassModel is a abstract class that contains the methods to store a class in the game.
  * I suggest you extend this class to create your own stored class.
  */
-export abstract class StoredClassModel {
+export default abstract class StoredClassModel {
     id: string
     constructor(id: string) {
         this.id = id

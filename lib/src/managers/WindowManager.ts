@@ -1,5 +1,5 @@
 import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
-import { TickerArgsType, TickerBase } from "../classes/ticker/TickerBase";
+import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
 import { createExportElement } from "../functions/ExportUtility";

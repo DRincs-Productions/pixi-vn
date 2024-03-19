@@ -1,11 +1,11 @@
-import { CharacterModelBase } from "../classes/CharacterModelBase"
+import { CharacterModelBase } from "../classes"
 
 export const registeredCharacters: { [tag: string]: CharacterModelBase } = {}
 /**
  * CharacterDecorator is a decorator that register a character in the game.
  * @returns
  */
-export function saveCharacter<T extends CharacterModelBase = CharacterModelBase>(character: T | T[]) {
+export default function saveCharacter<T extends CharacterModelBase = CharacterModelBase>(character: T | T[]) {
     if (Array.isArray(character)) {
         character.forEach(c => saveCharacter(c))
         return

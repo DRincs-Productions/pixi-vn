@@ -1,4 +1,4 @@
-import { CanvasText } from "../classes/canvas/CanvasText";
+import { CanvasText } from "../classes/canvas"
 
 /**
  * List of string errors that can be shown in the canvas.
