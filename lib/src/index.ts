@@ -6,4 +6,5 @@ export * from './functions';
 export * from './interface';
 export * from './interface/canvas';
 export * from './interface/export';
+export * from './managers';
 

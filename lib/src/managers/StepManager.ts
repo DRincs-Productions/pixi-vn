@@ -8,13 +8,13 @@ import IOpenedLabel from "../interface/IOpenedLabel"
 import { LabelTagType } from "../types/LabelTagType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
-import { GameStorageManager } from "./StorageManager"
-import { GameWindowManager } from "./WindowManager"
+import GameStorageManager from "./StorageManager"
+import GameWindowManager from "./WindowManager"
 
 /**
  * GameHistoryManager is a class that contains the history of the game.
  */
-export class GameStepManager {
+export default class GameStepManager {
     private constructor() { }
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.

@@ -1,8 +1,8 @@
+import { ExportedStorage } from "pixi-vm"
 import { createExportElement } from "../functions/ExportUtility"
-import { ExportedStorage } from "../interface/export/ExportedStorage"
 import { StorageElementType } from "../types/StorageElementType"
 
-export class GameStorageManager {
+export default class GameStorageManager {
     private static oidsUsed: string[] = []
     private static storage: { [key: string]: StorageElementType } = {}
     private constructor() { }
