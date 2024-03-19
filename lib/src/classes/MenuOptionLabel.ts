@@ -2,7 +2,11 @@ import { RunModeLabelEnum } from "../enums/RunModeLabelEnum"
 import Label from "./Label"
 
 /**
- * MunuOptionLabel is a class that contains a Label and a text that will be displayed in the menu.
+ * MenuOptionLabel is a class that contains a Label and a text that will be displayed in the menu.
+ * @example
+ * ```typescript
+ * new MenuOptionLabel("Events Test", EventsTestLabel)
+ * ```
  */
 export default class MenuOptionLabel {
     text: string
