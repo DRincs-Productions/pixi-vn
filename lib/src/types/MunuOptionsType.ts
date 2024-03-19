@@ -1,4 +1,4 @@
-import { MenuOptionLabel } from "../classes/MenuOptionLabel"
+import { MenuOptionLabel } from "../classes";
 
 /**
  * Munu is a type that contains a list of Label that a player can choose from.

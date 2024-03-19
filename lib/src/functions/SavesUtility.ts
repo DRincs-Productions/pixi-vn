@@ -1,5 +1,5 @@
 import { PIXIVM_VERSION } from "../constants";
-import { ISaveData } from "../interface/ISaveData";
+import ISaveData from "../interface/ISaveData";
 import { GameStepManager } from "../managers/StepManager";
 import { GameStorageManager } from "../managers/StorageManager";
 import { GameWindowManager } from "../managers/WindowManager";

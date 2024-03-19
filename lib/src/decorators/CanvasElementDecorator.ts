@@ -1,4 +1,4 @@
-import { ICanvasBase } from "../interface/ICanvasBase"
+import ICanvasBase from "../interface/ICanvasBase"
 import { CanvasElementTagType } from "../types/CanvasElementTagType"
 
 export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof ICanvasBase<any> } = {}

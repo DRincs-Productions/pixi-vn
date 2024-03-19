@@ -1,7 +1,7 @@
 import { Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
-import { TickerProgrationType } from "../../interface/ITickerProgration";
+import { TickerProgrationType } from "../../interface/TickerProgrationType";
 import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasSprite } from "../canvas";
 import TickerBase from "./TickerBase";

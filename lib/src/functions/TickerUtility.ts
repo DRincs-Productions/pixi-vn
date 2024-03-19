@@ -1,4 +1,4 @@
-import { TickerProgrationType } from "../interface/ITickerProgration"
+import { TickerProgrationType } from "../interface/TickerProgrationType"
 
 /**
  * This function updates the progression of the ticker.

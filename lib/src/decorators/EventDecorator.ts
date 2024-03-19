@@ -1,5 +1,5 @@
 import { CanvasEvent } from "../classes"
-import { ICanvasBase } from "../interface/ICanvasBase"
+import ICanvasBase from "../interface/ICanvasBase"
 import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
 import { EventTagType } from "../types/EventTagType"
 
