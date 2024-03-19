@@ -99,7 +99,7 @@ export class GameWindowManager {
             element.appendChild(GameWindowManager.app.canvas as HTMLCanvasElement)
         }
         else {
-            console.error("Manager is not initialized")
+            console.error("[Pixi'VM] GameWindowManager is not initialized")
         }
     }
     /**
@@ -323,7 +323,7 @@ export class GameWindowManager {
         }
         let t = geTickerInstanceByClassName<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)
         if (!t) {
-            console.error(`Ticker ${tickerName} not found`)
+            console.error(`[Pixi'VM] Ticker ${tickerName} not found`)
             return
         }
         GameWindowManager.removeAssociationBetweenTickerCanvasElement(canvasElementTag, ticker)
@@ -370,7 +370,7 @@ export class GameWindowManager {
      */
     static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
         if (steps.length == 0) {
-            console.error("Steps is empty")
+            console.warn("[Pixi'VM] The steps of the tickers is empty")
             return
         }
         let alredyExists = GameWindowManager._currentTickersSteps[tag] !== undefined
@@ -381,7 +381,7 @@ export class GameWindowManager {
                     return s
                 }
                 if (!s.duration) {
-                    console.warn("Duration is not defined, so it will be set to 1000")
+                    console.warn("[Pixi'VM] Duration is not defined, so it will be set to 1000")
                     s.duration = 1000
                 }
                 if (s.hasOwnProperty("type") && (s as PauseType).type === PauseValueType) {
@@ -405,7 +405,7 @@ export class GameWindowManager {
             step = GameWindowManager._currentTickersSteps[tag].steps[0]
             GameWindowManager._currentTickersSteps[tag].currentStepNumber = 0
             if (step === Repeat) {
-                console.error("TikersSteps has a RepeatType in the first step")
+                console.error("[Pixi'VM] TikersSteps has a RepeatType in the first step")
                 return
             }
         }
@@ -419,7 +419,7 @@ export class GameWindowManager {
         }
         let ticker = geTickerInstanceByClassName<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
         if (!ticker) {
-            console.error(`Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
+            console.error(`[Pixi'VM] Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
             return
         }
         GameWindowManager.addTicker(tag, ticker)
@@ -585,7 +585,7 @@ export class GameWindowManager {
                 })
             }
             else {
-                console.error("The data does not have the properties childrenTagsOrder and currentElements")
+                console.error("[Pixi'VM] The data does not have the properties childrenTagsOrder and currentElements")
                 return
             }
             if (data.hasOwnProperty("currentTickers")) {
@@ -597,13 +597,13 @@ export class GameWindowManager {
                         GameWindowManager.addTicker(tags, ticker)
                     }
                     else {
-                        console.error(`Ticker ${t.className} not found`)
+                        console.error(`[Pixi'VM] Ticker ${t.className} not found`)
                     }
                 })
             }
         }
         catch (e) {
-            console.error("Error importing data", e)
+            console.error("[Pixi'VM] Error importing data", e)
         }
     }
 }
