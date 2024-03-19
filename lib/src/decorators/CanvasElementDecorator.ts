@@ -2,6 +2,11 @@ import CanvasBase from "../classes/canvas/CanvasBase"
 import { CanvasElementTagType } from "../types/CanvasElementTagType"
 
 export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof CanvasBase<any> } = {}
+/**
+ * Is a decorator that register a canvas element in the game.
+ * @param name Name of the canvas element, by default it will use the class name. If the name is already registered, it will show a warning
+ * @returns 
+ */
 export default function canvasElementDecorator(name?: CanvasElementTagType) {
     return function (target: typeof CanvasBase<any>) {
         if (!name) {

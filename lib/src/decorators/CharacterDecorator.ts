@@ -2,10 +2,17 @@ import { CharacterModelBase } from "../classes"
 
 export const registeredCharacters: { [tag: string]: CharacterModelBase } = {}
 /**
- * CharacterDecorator is a decorator that register a character in the game.
- * @returns
+ * Is a function that saves the character. If the character already exists, it will be overwritten.
+ * @param character is the character to save
+ * @returns 
+ * @example
+ * ```typescript
+ * export const liam = new CharacterModelBase('liam', { name: 'Liam'});
+ * export const alice = new CharacterModelBase('alice', { name: 'Alice'});
+ * saveCharacter([liam, alice]);
+ * ```
  */
-export default function saveCharacter<T extends CharacterModelBase = CharacterModelBase>(character: T | T[]) {
+export function saveCharacter<T extends CharacterModelBase = CharacterModelBase>(character: T | T[]) {
     if (Array.isArray(character)) {
         character.forEach(c => saveCharacter(c))
         return
@@ -20,6 +27,10 @@ export default function saveCharacter<T extends CharacterModelBase = CharacterMo
  * is a function that returns the character by the tag
  * @param tag is the tag of the character
  * @returns the character
+ * @example
+ * ```typescript
+ * const liam = getCharacterByTag('liam');
+ * ```
  */
 export function getCharacterByTag<T extends CharacterModelBase>(tag: string): T | undefined {
     try {

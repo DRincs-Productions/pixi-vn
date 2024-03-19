@@ -8,7 +8,7 @@ import { EventTagType } from "../types/EventTagType"
  */
 export const registeredEvents: { [name: EventTagType]: typeof CanvasEvent<CanvasEventNamesType> } = {}
 /**
- * EventDecorator is a decorator that register a event in the game.
+ * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
  * Thanks to this decoration the game has the possibility of updating the events to the latest modification and saving the game.
  * @param name is th identifier of the event, by default is the name of the class
