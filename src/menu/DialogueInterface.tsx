@@ -11,7 +11,7 @@ import { getCharacterByTag } from '../../lib/decorators/CharacterDecorator';
 import { getDialogue, getMenuOptions } from '../../lib/functions/DialogueUtility';
 import { GameStepManager } from '../../lib/managers/StepManager';
 import { GameWindowManager } from '../../lib/managers/WindowManager';
-import { MunuOptionsType } from '../../lib/types/MunuOptionsType';
+import { MenuOptionsType } from '../../lib/types/MenuOptionsType';
 import DragHandleDivider from '../components/DragHandleDivider';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 import DialogueMenuInterface from './DialogueMenuInterface';
@@ -35,7 +35,7 @@ export default function DialogueInterface(props: IProps) {
     const [loading, setLoading] = useState(false)
     const [text, setText] = useState<string | undefined>(undefined)
     const [character, setCharacter] = useState<CharacterModelBase | undefined>(undefined)
-    const [menu, setMenu] = useState<MunuOptionsType | undefined>(undefined)
+    const [menu, setMenu] = useState<MenuOptionsType | undefined>(undefined)
     const [update, setUpdate] = useState(0)
     useEffect(() => {
         let dial = getDialogue()

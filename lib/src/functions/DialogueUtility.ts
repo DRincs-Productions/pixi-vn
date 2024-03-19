@@ -3,7 +3,7 @@ import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { RunModeLabelEnum } from "../enums/RunModeLabelEnum";
 import { GameStepManager } from "../managers/StepManager";
 import { GameStorageManager } from "../managers/StorageManager";
-import { MunuOptionsType } from "../types/MunuOptionsType";
+import { MenuOptionsType } from "../types/MenuOptionsType";
 
 /**
  * Set the dialogue to be shown in the game
@@ -71,7 +71,7 @@ export function clearDialogue(): void {
  * ])
  * ```
  */
-export function setMenuOptions(options: MunuOptionsType): void {
+export function setMenuOptions(options: MenuOptionsType): void {
     let value: {
         text: string
         label: string
@@ -89,14 +89,14 @@ export function setMenuOptions(options: MunuOptionsType): void {
  * Get the options to be shown in the game
  * @returns Options to be shown in the game
  */
-export function getMenuOptions(): MunuOptionsType | undefined {
+export function getMenuOptions(): MenuOptionsType | undefined {
     let d = GameStorageManager.getVariable<{
         text: string
         label: string
         type: RunModeLabelEnum
     }[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
-        let options: MunuOptionsType = []
+        let options: MenuOptionsType = []
         d.forEach((option) => {
             let label = getLabelTypeByClassName(option.label)
             if (label) {
