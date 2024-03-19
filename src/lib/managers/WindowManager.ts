@@ -23,8 +23,8 @@ export class GameWindowManager {
     private static _app: Application | undefined = undefined
     /**
      * The PIXI Application instance.
+     * It not recommended to use this property directly.
      */
-
     static get app() {
         if (!GameWindowManager._app) {
             throw new Error("[Pixi'VM] GameWindowManager.app is undefined")
@@ -44,8 +44,8 @@ export class GameWindowManager {
      * You can use React or other framework to put elements in this div.
      */
     static htmlLayout: HTMLElement
-    static width: number
-    static height: number
+    static canvasWidth: number
+    static canvasHeight: number
     static get screen() {
         return GameWindowManager.app.screen
     }
@@ -57,10 +57,20 @@ export class GameWindowManager {
      * @param width The width of the canvas
      * @param height The height of the canvas
      * @param options The options of PIXI Application
+     * @example
+     * ```typescript
+     * const body = document.body
+     * if (!body) {
+     *     throw new Error('body element not found')
+     * }
+     * await GameWindowManager.initialize(body, 1920, 1080, {
+     *     backgroundColor: "#303030"
+     * })
+     * ```
      */
     public static async initialize(element: HTMLElement, width: number, height: number, options?: Partial<ApplicationOptions>): Promise<void> {
-        GameWindowManager.width = width
-        GameWindowManager.height = height
+        GameWindowManager.canvasWidth = width
+        GameWindowManager.canvasHeight = height
         GameWindowManager._app = new Application()
         return GameWindowManager.app.init({
             resolution: window.devicePixelRatio || 1,
@@ -95,6 +105,18 @@ export class GameWindowManager {
     /**
      * Initialize the interface div and add it into a html element.
      * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
+     * @example
+     * ```typescript
+     * const root = document.getElementById('root')
+     * if (!root) {
+     *     throw new Error('root element not found')
+     * }
+     * GameWindowManager.initializeHTMLLayout(root)
+     * const reactRoot = createRoot(GameWindowManager.htmlLayout)
+     * reactRoot.render(
+     *     <App />
+     * )
+     * ```
      */
     public static initializeHTMLLayout(element: HTMLElement) {
         let div = document.createElement('div')
@@ -113,33 +135,33 @@ export class GameWindowManager {
     public static get screenScale() {
         let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
         let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-        return Math.min(screenWidth / GameWindowManager.width, screenHeight / GameWindowManager.height)
+        return Math.min(screenWidth / GameWindowManager.canvasWidth, screenHeight / GameWindowManager.canvasHeight)
     }
     /**
      * This method returns the width of the screen enlarged by the scale.
      */
-    public static get enlargedWidth() {
-        return Math.floor(GameWindowManager.screenScale * GameWindowManager.width)
+    public static get screenWidth() {
+        return Math.floor(GameWindowManager.screenScale * GameWindowManager.canvasWidth)
     }
     /**
      * This method returns the height of the screen enlarged by the scale.
      */
-    public static get enlargedHeight() {
-        return Math.floor(GameWindowManager.screenScale * GameWindowManager.height)
+    public static get screenHeight() {
+        return Math.floor(GameWindowManager.screenScale * GameWindowManager.canvasHeight)
     }
     /**
      * This method returns the horizontal margin of the screen.
      */
     public static get horizontalMargin() {
         let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
-        return (screenWidth - GameWindowManager.enlargedWidth) / 2
+        return (screenWidth - GameWindowManager.screenWidth) / 2
     }
     /**
      * This method returns the vertical margin of the screen.
      */
     public static get verticalMargin() {
         let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
-        return (screenHeight - GameWindowManager.enlargedHeight) / 2
+        return (screenHeight - GameWindowManager.screenHeight) / 2
     }
     /**
      * This method is called when the screen is resized.
@@ -148,8 +170,8 @@ export class GameWindowManager {
         // now we use css trickery to set the sizes and margins
         if (GameWindowManager.isInitialized) {
             let style = GameWindowManager.app.canvas.style;
-            style.width = `${GameWindowManager.enlargedWidth}px`;
-            style.height = `${GameWindowManager.enlargedHeight}px`;
+            style.width = `${GameWindowManager.screenWidth}px`;
+            style.height = `${GameWindowManager.screenHeight}px`;
             (style as any).marginLeft = `${GameWindowManager.horizontalMargin}px`;
             (style as any).marginRight = `${GameWindowManager.horizontalMargin}px`;
             (style as any).marginTop = `${GameWindowManager.verticalMargin}px`;
@@ -157,8 +179,8 @@ export class GameWindowManager {
         }
 
         if (GameWindowManager.htmlLayout) {
-            GameWindowManager.htmlLayout.style.width = `${GameWindowManager.enlargedWidth}px`
-            GameWindowManager.htmlLayout.style.height = `${GameWindowManager.enlargedHeight}px`
+            GameWindowManager.htmlLayout.style.width = `${GameWindowManager.screenWidth}px`
+            GameWindowManager.htmlLayout.style.height = `${GameWindowManager.screenHeight}px`
             GameWindowManager.htmlLayout.style.marginLeft = `${GameWindowManager.horizontalMargin}px`
             GameWindowManager.htmlLayout.style.marginRight = `${GameWindowManager.horizontalMargin}px`
             GameWindowManager.htmlLayout.style.marginTop = `${GameWindowManager.verticalMargin}px`
@@ -184,6 +206,12 @@ export class GameWindowManager {
      * If there is a canvas element with the same tag, it will be removed.
      * @param tag The tag of the canvas element.
      * @param canvasElement The canvas elements to be added.
+     * @example
+     * ```typescript
+     * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+     * const sprite = CanvasSprite.from(texture);
+     * GameWindowManager.addCanvasElement("bunny", sprite);
+     * ```
      */
     public static addCanvasElement(tag: string, canvasElement: CanvasBase<any>) {
         if (GameWindowManager._children[tag]) {
@@ -198,6 +226,10 @@ export class GameWindowManager {
      * And remove all tickers that are not connected to any canvas element.
      * @param tag The tag of the canvas element to be removed.
      * @returns 
+     * @example
+     * ```typescript
+     * GameWindowManager.removeCanvasElement("bunny");
+     * ```
      */
     public static removeCanvasElement(tag: string | string[]) {
         if (typeof tag === "string") {
@@ -216,6 +248,10 @@ export class GameWindowManager {
      * Get a canvas element by the tag.
      * @param tag The tag of the canvas element.
      * @returns The canvas element.
+     * @example
+     * ```typescript
+     * const sprite = GameWindowManager.getCanvasElement<CanvasSprite>("bunny");
+     * ```
      */
     public static getCanvasElement<T extends CanvasBase<any>>(tag: string): T | undefined {
         return GameWindowManager._children[tag] as T | undefined
@@ -275,6 +311,10 @@ export class GameWindowManager {
      * @param duration The time to be used in the ticker. This number is in milliseconds. If it is undefined, the ticker will run forever.
      * @param priority The priority to be used in the ticker.
      * @returns 
+     * @example
+     * ```typescript
+     * GameWindowManager.addTicker("alien", new TickerRotate({ speed: 0.2 }))
+     * ```
      */
     static addTicker<TArgs extends TickerArgsType>(canvasElementTag: string | string[], ticker: TickerBase<TArgs>) {
         let tickerName: TickerTagType = ticker.constructor.name
@@ -318,6 +358,15 @@ export class GameWindowManager {
      * @param tag The tag of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
      * @returns
+     * @example
+     * ```typescript
+     * GameWindowManager.addTickersSteps("alien", [
+     *     new TickerRotate({ speed: 0.1, clockwise: true }, 2000),
+     *     Pause(500),
+     *     new TickerRotate({ speed: 0.2, clockwise: false }, 2000),
+     *     Repeat,
+     * ])
+     * ```
      */
     static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
         if (steps.length == 0) {
@@ -398,6 +447,10 @@ export class GameWindowManager {
      * And remove the ticker if there is no canvas element connected to it.
      * @param tag The tag of the canvas element that will use the ticker.
      * @param ticker The ticker class to be removed.
+     * @example
+     * ```typescript
+     * GameWindowManager.removeAssociationBetweenTickerCanvasElement("alien", TickerRotate)
+     * ```
      */
     public static removeAssociationBetweenTickerCanvasElement(tag: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
         let tickerName: TickerTagType

@@ -4,7 +4,7 @@ import { StorageElementType } from "../types/StorageElementType"
 
 export class GameStorageManager {
     private static oidsUsed: string[] = []
-    public static storage: { [key: string]: StorageElementType } = {}
+    private static storage: { [key: string]: StorageElementType } = {}
     private constructor() { }
     public static get keysSystem() {
         return {
@@ -13,6 +13,10 @@ export class GameStorageManager {
             CURRENT_MENU_OPTIONS_MEMORY_KEY: "current_menu_options_memory_key",
         }
     }
+    /**
+     * Get a new oid that is not used yet
+     * @returns A new oid that is not used yet
+     */
     public static getNewOid(): string {
         let oid = ""
         do {
@@ -21,6 +25,12 @@ export class GameStorageManager {
         GameStorageManager.oidsUsed.push(oid)
         return oid
     }
+    /**
+     * Set a variable in the storage
+     * @param key The key of the variable
+     * @param value The value of the variable. If undefined, the variable will be removed
+     * @returns
+     */
     public static setVariable(key: string, value: StorageElementType) {
         key = key.toLowerCase()
         if (value === undefined) {
@@ -31,6 +41,11 @@ export class GameStorageManager {
         }
         GameStorageManager.storage[key] = value
     }
+    /**
+     * Get a variable from the storage
+     * @param key The key of the variable
+     * @returns The value of the variable. If the variable does not exist, it will return undefined
+     */
     public static getVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase()
         if (GameStorageManager.storage.hasOwnProperty(key)) {
@@ -38,12 +53,21 @@ export class GameStorageManager {
         }
         return undefined
     }
+    /**
+     * Remove a variable from the storage
+     * @param key The key of the variable
+     * @returns
+     */
     public static removeVariable(key: string) {
         key = key.toLowerCase()
         if (GameStorageManager.storage.hasOwnProperty(key)) {
             delete GameStorageManager.storage[key]
         }
     }
+    /**
+     * Clear the storage and the oidsUsed
+     * @returns
+     */
     public static clear() {
         GameStorageManager.oidsUsed = []
         GameStorageManager.storage = {}
