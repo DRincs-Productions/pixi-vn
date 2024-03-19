@@ -8,6 +8,14 @@ import { MunuOptionsType } from "../types/MunuOptionsType";
 /**
  * Set the dialogue to be shown in the game
  * @param text Text of the dialogue
+ * @example
+ * ```typescript
+ * setDialogue("Hello World")
+ * setDialogue({
+ *       character: "characterTag",
+ *       text: "Hello World"
+ * })
+ * ```
  */
 export function setDialogue(props: {
     character: string | CharacterModelBase,
@@ -52,6 +60,16 @@ export function clearDialogue(): void {
 /**
  * Set the options to be shown in the game
  * @param options Options to be shown in the game
+ * @example
+ * ```typescript
+ * setMenuOptions([
+ *     new MenuOptionLabel("Events Test", EventsTestLabel),
+ *     new MenuOptionLabel("Show Image Test", ShowImageTest),
+ *     new MenuOptionLabel("Ticker Test", TickerTestLabel),
+ *     new MenuOptionLabel("Tinting Test", TintingTestLabel),
+ *     new MenuOptionLabel("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
+ * ])
+ * ```
  */
 export function setMenuOptions(options: MunuOptionsType): void {
     let value: {

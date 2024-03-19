@@ -1,13 +1,5 @@
+import { CanvasEvent, CanvasSprite, eventDecorator, Label, labelDecorator, setDialogue } from "pixi-vm";
 import { Assets, Texture } from "pixi.js";
-import { CanvasEvent } from "../../lib/classes/CanvasEvent";
-import { Label } from "../../lib/classes/Label";
-import { CanvasSprite } from '../../lib/classes/canvas/CanvasSprite';
-import { eventDecorator } from "../../lib/decorators/EventDecorator";
-import { labelDecorator } from "../../lib/decorators/LabelDecorator";
-import { clearDialogue, setDialogue } from "../../lib/functions/DialogueUtility";
-import { GameWindowManager } from '../../lib/managers/WindowManager';
-import { CanvasEventNamesType } from "../../lib/types/CanvasEventNamesType";
-import { StepLabelType } from "../../lib/types/StepLabelType";
 
 @eventDecorator()
 export class EventTest extends CanvasEvent<CanvasSprite> {
