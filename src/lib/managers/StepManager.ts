@@ -147,6 +147,21 @@ export class GameStepManager {
     /**
      * Execute the next step and add it to the history.
      * @returns
+     * @example
+     * ```typescript
+     *     function nextOnClick() {
+     *     setLoading(true)
+     *     GameStepManager.runNextStep()
+     *         .then(() => {
+     *             setUpdate((p) => p + 1)
+     *             setLoading(false)
+     *         })
+     *         .catch((e) => {
+     *             setLoading(false)
+     *             console.error(e)
+     *         })
+     * }
+     * ```
      */
     public static async runNextStep() {
         if (GameStepManager._openedLabels.length === 0) {
@@ -192,6 +207,10 @@ export class GameStepManager {
      * Is a call function in Ren'Py.
      * @param label The label to execute.
      * @returns
+     * @example
+     * ```typescript
+     * GameStepManager.callLabel(StartLabel)
+     * ```
      */
     public static async callLabel(label: typeof Label | Label) {
         try {
@@ -211,8 +230,13 @@ export class GameStepManager {
      * Execute the label, close all labels and add them to the history.
      * Is a jump function in Ren'Py.
      * @param label 
+     * @returns
+     * @example
+     * ```typescript
+     * GameStepManager.jumpLabel(StartLabel)
+     * ```
      */
-    public static async jumpLabel(label: typeof Label | Label) {
+    public static async jumpLabel(label: typeof Label | Label): Promise<void> {
         GameStepManager.closeAllLabels()
         try {
             if (label instanceof Label) {
@@ -230,61 +254,61 @@ export class GameStepManager {
 
     /* After Update Methods */
 
-    /**
-     * After the update or code edit, some steps or labels may no longer match.
-     * - In case of step mismatch, the game will be updated to the last matching step.
-     * - In case of label mismatch, the game gives an error.
-     * @returns 
-     */
-    public static afterUpdate() {
-        // TODO: implement
-        if (!GameStepManager.currentLabel) {
-            // TODO: implement
-            return
-        }
-        let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
-        if (!currentLabel) {
-            console.error("Label not found")
-            return
-        }
-        let oldSteps = GameStepManager.stepsAfterLastHistoryLabel
-        let currentStepIndex = currentLabel.getCorrespondingStepsNumber(oldSteps)
-        let stepToRemove = oldSteps.length - currentStepIndex
-        GameStepManager.removeLastHistoryNodes(stepToRemove)
-        GameStepManager.loadLastStep()
-    }
-    public static loadLastStep() {
-        // TODO: implement
-    }
-    /**
-     * Remove a number of items from the last of the history.
-     * @param itemNumber The number of items to remove from the last of the history.
-     */
-    private static removeLastHistoryNodes(itemNumber: number) {
-        // TODO: implement
-        for (let i = 0; i < itemNumber; i++) {
-            GameStepManager._stepsHistory.pop()
-        }
-    }
-    /**
-     * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
-     */
-    private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
-        let length = GameStepManager._stepsHistory.length
-        let steps: StepHistoryDataType[] = []
-        for (let i = length - 1; i >= 0; i--) {
-            let element = GameStepManager._stepsHistory[i]
-            if (typeof element === "object" && "stepSha1" in element) {
-                steps.push(element.stepSha1)
-            }
-            else {
-                break
-            }
-        }
+    // /**
+    //  * After the update or code edit, some steps or labels may no longer match.
+    //  * - In case of step mismatch, the game will be updated to the last matching step.
+    //  * - In case of label mismatch, the game gives an error.
+    //  * @returns 
+    //  */
+    // private static afterUpdate() {
+    //     // TODO: implement
+    //     if (!GameStepManager.currentLabel) {
+    //         // TODO: implement
+    //         return
+    //     }
+    //     let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
+    //     if (!currentLabel) {
+    //         console.error("Label not found")
+    //         return
+    //     }
+    //     let oldSteps = GameStepManager.stepsAfterLastHistoryLabel
+    //     let currentStepIndex = currentLabel.getCorrespondingStepsNumber(oldSteps)
+    //     let stepToRemove = oldSteps.length - currentStepIndex
+    //     GameStepManager.removeLastHistoryNodes(stepToRemove)
+    //     GameStepManager.loadLastStep()
+    // }
+    // private static loadLastStep() {
+    //     // TODO: implement
+    // }
+    // /**
+    //  * Remove a number of items from the last of the history.
+    //  * @param itemNumber The number of items to remove from the last of the history.
+    //  */
+    // private static removeLastHistoryNodes(itemNumber: number) {
+    //     // TODO: implement
+    //     for (let i = 0; i < itemNumber; i++) {
+    //         GameStepManager._stepsHistory.pop()
+    //     }
+    // }
+    // /**
+    //  * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
+    //  */
+    // private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
+    //     let length = GameStepManager._stepsHistory.length
+    //     let steps: StepHistoryDataType[] = []
+    //     for (let i = length - 1; i >= 0; i--) {
+    //         let element = GameStepManager._stepsHistory[i]
+    //         if (typeof element === "object" && "stepSha1" in element) {
+    //             steps.push(element.stepSha1)
+    //         }
+    //         else {
+    //             break
+    //         }
+    //     }
 
-        steps = steps.reverse()
-        return steps
-    }
+    //     steps = steps.reverse()
+    //     return steps
+    // }
 
     /* Go Back & Refresh Methods */
 
@@ -293,6 +317,13 @@ export class GameStepManager {
      * @param navigate The navigate function.
      * @param steps The number of steps to go back.
      * @returns 
+     * @example
+     * ```typescript
+     * export function goBack(navigate: (path: string) => void, afterBack?: () => void) {
+     *     GameStepManager.goBack(navigate)
+     *     afterBack && afterBack()
+     * }
+     * ```
      */
     public static goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
