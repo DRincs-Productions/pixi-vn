@@ -1,8 +1,8 @@
 import { SpriteOptions } from "pixi.js";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
-import { ICanvasBaseMemory } from "./ICanvasBaseMemory";
-import { ITextureMemory } from "./ITextureMemory";
+import ICanvasBaseMemory from "./ICanvasBaseMemory";
+import ITextureMemory from "./ITextureMemory";
 
 export interface ICanvasSpriteBaseMemory extends SpriteOptions, ICanvasBaseMemory {
     textureImage: ITextureMemory,
@@ -12,6 +12,6 @@ export interface ICanvasSpriteBaseMemory extends SpriteOptions, ICanvasBaseMemor
 /**
  * Interface for the canvas sprite memory
  */
-export interface ICanvasSpriteMemory extends ICanvasSpriteBaseMemory {
+export default interface ICanvasSpriteMemory extends ICanvasSpriteBaseMemory {
     className: "CanvasSprite",
 }

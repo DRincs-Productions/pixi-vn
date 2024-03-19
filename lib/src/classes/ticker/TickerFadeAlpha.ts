@@ -1,8 +1,8 @@
 import { Ticker } from "pixi.js";
+import { tickerDecorator } from "../../decorators";
 import { GameWindowManager } from "../../managers/WindowManager";
 import { CanvasSprite } from "../canvas";
 import TickerBase from "./TickerBase";
-import { tickerDecorator } from "../../decorators";
 
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.

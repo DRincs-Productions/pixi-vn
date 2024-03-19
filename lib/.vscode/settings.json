@@ -1,0 +1,25 @@
+{
+    // Formatter
+    "[javascript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features",
+        "editor.formatOnSave": true
+    },
+    "[typescript]": {
+        "editor.defaultFormatter": "vscode.typescript-language-features",
+        "editor.formatOnSave": true
+    },
+    // reorganise imports
+    "editor.codeActionsOnSave": {
+        "source.organizeImports": "explicit"
+    },
+    // references
+    "javascript.referencesCodeLens.enabled": true,
+    "javascript.referencesCodeLens.showOnAllFunctions": true,
+    "typescript.referencesCodeLens.enabled": true,
+    "typescript.referencesCodeLens.showOnAllFunctions": true,
+    // move file
+    "javascript.updateImportsOnFileMove.enabled": "always",
+    "typescript.updateImportsOnFileMove.enabled": "always",
+    // olther
+    "extensions.ignoreRecommendations": false,
+}

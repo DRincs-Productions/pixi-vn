@@ -1,8 +1,8 @@
-import { ExportedCanvas } from "./export/ExportedCanvas";
-import { ExportedStep } from "./export/ExportedStep";
-import { ExportedStorage } from "./export/ExportedStorage";
+import ExportedCanvas from "./export/ExportedCanvas"
+import ExportedStep from "./export/ExportedStep"
+import ExportedStorage from "./export/ExportedStorage"
 
-export interface ISaveData {
+export default interface ISaveData {
     version: string
     stepData: ExportedStep
     storageData: ExportedStorage

@@ -1,7 +1,7 @@
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
-import { IOpenedLabel } from "./IOpenedLabel";
-import { ExportedCanvas } from "./export/ExportedCanvas";
-import { ExportedStorage } from "./export/ExportedStorage";
+import ExportedCanvas from "./export/ExportedCanvas";
+import ExportedStorage from "./export/ExportedStorage";
+import IOpenedLabel from "./IOpenedLabel";
 
 /**
  * IHistoryStep is a interface that contains:
@@ -10,7 +10,7 @@ import { ExportedStorage } from "./export/ExportedStorage";
  * - the step data.
  * - the canvas that occurred during the progression of the steps.
  */
-export interface IHistoryStep {
+export default interface IHistoryStep {
     path: string,
     storage: ExportedStorage,
     stepSha1: StepHistoryDataType,

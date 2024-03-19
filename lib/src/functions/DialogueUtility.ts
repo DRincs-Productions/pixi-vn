@@ -1,5 +1,4 @@
-import { CharacterModelBase } from "../classes/CharacterModelBase";
-import { DialogueModelBase } from "../classes/DialogueModelBase";
+import { CharacterModelBase, DialogueModelBase } from "../classes";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { RunModeLabelEnum } from "../enums/RunModeLabelEnum";
 import { GameStepManager } from "../managers/StepManager";

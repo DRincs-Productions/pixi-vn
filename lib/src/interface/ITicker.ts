@@ -1,7 +1,7 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import { TickerArgsType } from "../classes/ticker/TickerBase";
 
-export interface ITicker<TArgs extends TickerArgsType> {
+export default interface ITicker<TArgs extends TickerArgsType> {
     /**
      * Arguments to pass to the ticker
      */

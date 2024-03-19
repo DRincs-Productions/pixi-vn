@@ -1,6 +1,6 @@
 /**
  * Interface for the canvas base memory
  */
-export interface ICanvasBaseMemory {
+export default interface ICanvasBaseMemory {
     className: string,
 }

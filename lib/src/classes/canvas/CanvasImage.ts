@@ -1,8 +1,8 @@
 import { Sprite, Texture, TextureSourceLike } from "pixi.js";
-import { getTexture } from "../../functions/TextureUtility";
-import { ICanvasImageMemory } from "../../interface/canvas/ICanvasImageMemory";
-import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 import { canvasElementDecorator } from "../../decorators";
+import { getTexture } from "../../functions/TextureUtility";
+import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
+import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
 /**
  * The class for the image.

@@ -1,15 +1,15 @@
 import { ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { canvasElementDecorator } from "../../decorators";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
-import { ICanvasBase } from "../../interface/ICanvasBase";
-import { ICanvasBaseMemory } from "../../interface/canvas/ICanvasBaseMemory";
-import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../../interface/canvas/ICanvasSpriteMemory";
+import ICanvasBaseMemory from "../../interface/canvas/ICanvasBaseMemory";
+import ICanvasSpriteMemory, { ICanvasSpriteBaseMemory } from "../../interface/canvas/ICanvasSpriteMemory";
+import ICanvasBase from "../../interface/ICanvasBase";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
-import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 import CanvasEvent from "../CanvasEvent";
-import { canvasElementDecorator } from "../../decorators";
+import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
  * This class is responsible for storing a PIXI Sprite.

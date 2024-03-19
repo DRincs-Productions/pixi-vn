@@ -1,6 +1,6 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
-import { CanvasImage } from '../classes/canvas/CanvasImage';
-import { TickerFadeAlpha } from '../classes/ticker/TickerFadeAlpha';
+import { CanvasImage } from '../classes/canvas';
+import { TickerFadeAlpha } from '../classes/ticker';
 import { GameWindowManager } from '../managers/WindowManager';
 import { STRING_ERRORS } from './ErrorUtility';
 import { getTexture } from './TextureUtility';

@@ -1,8 +1,8 @@
 import { Container, ContainerOptions } from "pixi.js";
-import { exportCanvasElement, importCanvasElement } from "../../functions/CanvasUtility";
-import { ICanvasBase } from "../../interface/ICanvasBase";
-import { ICanvasContainerMemory } from "../../interface/canvas/ICanvasContainerMemory";
 import { canvasElementDecorator } from "../../decorators";
+import { exportCanvasElement, importCanvasElement } from "../../functions/CanvasUtility";
+import ICanvasBase from "../../interface/ICanvasBase";
+import ICanvasContainerMemory from "../../interface/canvas/ICanvasContainerMemory";
 
 /**
  * This class is responsible for storing a PIXI Container.

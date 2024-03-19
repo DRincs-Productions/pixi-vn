@@ -1,12 +1,12 @@
 import { Container, ContainerEvents, EventEmitter, Text } from "pixi.js";
+import { canvasElementDecorator } from "../../decorators";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
-import { ICanvasBase } from "../../interface/ICanvasBase";
-import { ICanvasTextMemory } from "../../interface/canvas/ICanvasTextTextMemory";
+import ICanvasBase from "../../interface/ICanvasBase";
+import ICanvasTextMemory from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
-import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 import CanvasEvent from "../CanvasEvent";
-import { canvasElementDecorator } from "../../decorators";
+import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
  * This class is responsible for storing a PIXI Text.
