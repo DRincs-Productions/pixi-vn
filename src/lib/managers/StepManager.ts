@@ -100,7 +100,7 @@ export class GameStepManager {
     private static pushNewLabel(label: LabelTagType) {
         let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
-            throw new Error("Label not found")
+            throw new Error("[Pixi'VM] Label not found")
         }
         GameStepManager._openedLabels.push({
             label: label,

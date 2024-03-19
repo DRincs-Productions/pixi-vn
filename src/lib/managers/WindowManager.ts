@@ -27,7 +27,7 @@ export class GameWindowManager {
 
     static get app() {
         if (!GameWindowManager._app) {
-            throw new Error("Manager.app is undefined")
+            throw new Error("[Pixi'VM] GameWindowManager.app is undefined")
         }
         return GameWindowManager._app
     }
