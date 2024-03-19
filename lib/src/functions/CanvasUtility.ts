@@ -1,6 +1,6 @@
 import { Texture } from "pixi.js";
+import { CanvasBase } from "../classes/canvas/CanvasBase";
 import { getCanvasElementInstanceByClassName } from "../decorators/CanvasElementDecorator";
-import { ICanvasBase } from "../interface/ICanvasBase";
 import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
 import { ITextureMemory } from "../interface/canvas/ITextureMemory";
 
@@ -22,7 +22,7 @@ export function getTextureMemory(texture: Texture): ITextureMemory {
  * @param element Canvas element
  * @returns Memory object of the canvas
  */
-export function exportCanvasElement<T extends ICanvasBase<any>>(
+export function exportCanvasElement<T extends CanvasBase<any>>(
     element: T,
 ): ICanvasBaseMemory {
     return element.memory
@@ -33,7 +33,7 @@ export function exportCanvasElement<T extends ICanvasBase<any>>(
  * @param memory Memory object of the canvas
  * @returns Canvas element
  */
-export function importCanvasElement<T extends ICanvasBase<any>>(
+export function importCanvasElement<T extends CanvasBase<any>>(
     memory: ICanvasBaseMemory,
 ): T {
     let element = getCanvasElementInstanceByClassName<T>(memory.className)
@@ -41,7 +41,7 @@ export function importCanvasElement<T extends ICanvasBase<any>>(
         element.memory = memory
     }
     else {
-        throw new Error("Invalid class name")
+        throw new Error("[Pixi'VM] The element could not be created")
     }
 
     return element

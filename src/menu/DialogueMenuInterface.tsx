@@ -22,7 +22,7 @@ export default function DialogueMenuInterface(props: IProps) {
         afterClick,
     } = props;
     const [loading, setLoading] = useState(false)
-    const height = GameWindowManager.enlargedHeight - dialogueWindowHeight
+    const height = GameWindowManager.screenHeight - dialogueWindowHeight
 
     return (
         <Box

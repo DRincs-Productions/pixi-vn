@@ -5,7 +5,6 @@ import { TickerFadeAlpha } from "../../lib/classes/ticker/TickerFadeAlpha";
 import { TickerRotate } from "../../lib/classes/ticker/TickerRotate";
 import { labelDecorator } from "../../lib/decorators/LabelDecorator";
 import { setDialogue } from "../../lib/functions/DialogueUtility";
-import { removeImage } from "../../lib/functions/ImageUtility";
 import { GameWindowManager } from "../../lib/managers/WindowManager";
 import { Pause } from "../../lib/types/PauseType";
 import { Repeat } from "../../lib/types/RepeatType";
@@ -56,7 +55,7 @@ export class TickerTestLabel extends Label {
             },
             () => setDialogue(`Since ${alien1Tag} have a different speed, it will perform a different RotateTicker`),
             () => {
-                removeImage(alien1Tag)
+                removeCanvasElement(alien1Tag)
                 setDialogue(`I have remove the image with the tag ${alien1Tag}`)
             },
             () => setDialogue(`Since ${alien1Tag} is removed, the RotateTicker connected to it will not be performed`),
@@ -65,7 +64,7 @@ export class TickerTestLabel extends Label {
                 setDialogue(`I have removed the RotateTicker connected to ${alien2Tag}`)
             },
             async () => {
-                removeImage(alien2Tag)
+                removeCanvasElement(alien2Tag)
                 let duration = 7000
                 const texture = await Assets.load('https://pixijs.com/assets/eggHead.png');
                 const alien = CanvasSprite.from(texture);

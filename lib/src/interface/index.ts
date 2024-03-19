@@ -1,4 +1,3 @@
-export { default as ICanvasBase } from './ICanvasBase';
 export { IClassWithArgsHistory, IClassWithArgsHistoryForExport } from './IClassWithArgsHistory';
 export { default as IHistoryStep } from './IHistoryStep';
 export { default as IOpenedLabel } from './IOpenedLabel';

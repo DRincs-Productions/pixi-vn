@@ -1,7 +1,6 @@
-import { Ticker } from "pixi.js";
+import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { GameWindowManager } from "../../managers/WindowManager";
-import { CanvasSprite } from "../canvas";
 import TickerBase from "./TickerBase";
 
 /**
@@ -14,6 +13,18 @@ import TickerBase from "./TickerBase";
  * - startOnlyIfHaveTexture?: If true, the fade only starts if the canvas element have a texture
  * @param duration The duration of the ticker
  * @param priority The priority of the ticker
+ * @example
+ * ```typescript
+ * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
+ * await bunny.load()
+ * GameWindowManager.addCanvasElement("bunny", bunny);
+ * // ...
+ * const ticker = new TickerFadeAlpha({
+ *     speed: 0.01,
+ *     type: "hide",
+ * }),
+ * GameWindowManager.addTicker("bunny", ticker)
+ * ```
  */
 @tickerDecorator()
 export default class TickerFadeAlpha extends TickerBase<{ speed: number, type?: "hide" | "show", limit?: number, tagToRemoveAfter?: string[] | string, startOnlyIfHaveTexture?: boolean }> {
@@ -51,7 +62,7 @@ export default class TickerFadeAlpha extends TickerBase<{ speed: number, type?: 
             .filter((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
                 if (args.startOnlyIfHaveTexture) {
-                    if (element && element instanceof CanvasSprite && element.texture?.label == "EMPTY") {
+                    if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
                     }
                 }
@@ -59,7 +70,7 @@ export default class TickerFadeAlpha extends TickerBase<{ speed: number, type?: 
             })
             .forEach((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
-                if (element && element instanceof CanvasSprite) {
+                if (element && element instanceof Container) {
                     if (type === "show" && element.alpha < limit) {
                         element.alpha += speed * t.deltaTime
                     }

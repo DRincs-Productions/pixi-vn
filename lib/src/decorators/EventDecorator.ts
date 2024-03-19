@@ -1,5 +1,5 @@
 import { CanvasEvent } from "../classes"
-import ICanvasBase from "../interface/ICanvasBase"
+import CanvasBase from "../classes/canvas/CanvasBase"
 import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
 import { EventTagType } from "../types/EventTagType"
 
@@ -31,7 +31,7 @@ export default function eventDecorator(name?: EventTagType) {
  * @param eventName The name of the class.
  * @returns The event type.
  */
-export function getEventTypeByClassName<T = typeof CanvasEvent<ICanvasBase<any>>>(eventName: EventTagType): T | undefined {
+export function getEventTypeByClassName<T = typeof CanvasEvent<CanvasBase<any>>>(eventName: EventTagType): T | undefined {
     try {
         let eventType = registeredEvents[eventName]
         if (!eventType) {
@@ -52,7 +52,7 @@ export function getEventTypeByClassName<T = typeof CanvasEvent<ICanvasBase<any>>
  * @param eventName The name of the class.
  * @returns The event instance.
  */
-export function getEventInstanceByClassName<T = CanvasEvent<ICanvasBase<any>>>(eventName: EventTagType): T | undefined {
+export function getEventInstanceByClassName<T = CanvasEvent<CanvasBase<any>>>(eventName: EventTagType): T | undefined {
     try {
         let eventType = registeredEvents[eventName]
         if (!eventType) {

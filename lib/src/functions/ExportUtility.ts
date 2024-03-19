@@ -9,6 +9,6 @@ export function createExportElement<T>(element: T): T {
         return JSON.parse(elementString)
     }
     catch (e) {
-        throw new Error("The element could not be created")
+        throw new Error("[Pixi'VM] The element could not be created")
     }
 }

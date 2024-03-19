@@ -5,18 +5,33 @@ import { getTextureMemory } from "../../functions/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasBaseMemory from "../../interface/canvas/ICanvasBaseMemory";
 import ICanvasSpriteMemory, { ICanvasSpriteBaseMemory } from "../../interface/canvas/ICanvasSpriteMemory";
-import ICanvasBase from "../../interface/ICanvasBase";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
 import { EventTagType } from "../../types/EventTagType";
 import CanvasEvent from "../CanvasEvent";
+import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 /**
- * This class is responsible for storing a PIXI Sprite.
- * And allow to save your memory in a game save.
+ * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
+ * but it has the ability to be saved and loaded by the Pixi'VM library.
+ * @example
+ * ```typescript
+ * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+ * const sprite = CanvasSprite.from(texture);
+ *
+ * sprite.anchor.set(0.5);
+ * sprite.x = GameWindowManager.screen.width / 2;
+ * sprite.y = GameWindowManager.screen.height / 2;
+ *
+ * sprite.eventMode = 'static';
+ * sprite.cursor = 'pointer';
+ * sprite.onEvent('pointerdown', EventTest);
+ *
+ * GameWindowManager.addCanvasElement("bunny", sprite);
+ * ```
  */
 @canvasElementDecorator()
-export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements ICanvasBase<Memory | ICanvasSpriteMemory> {
+export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
     get memory(): Memory | ICanvasSpriteMemory {
         return getMemorySprite(this)
     }
@@ -27,13 +42,42 @@ export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemo
     get onEvents() {
         return this._onEvents
     }
+    /**
+     * is same function as on(), but it keeps in memory the children.
+     * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
+     * @param eventClass The class that extends CanvasEvent.
+     * @returns 
+     * @example
+     * ```typescript
+     * \@eventDecorator()
+     * export class EventTest extends CanvasEvent<CanvasSprite> {
+     *     override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
+     *         if (event === 'pointerdown') {
+     *             sprite.scale.x *= 1.25;
+     *             sprite.scale.y *= 1.25;
+     *         }
+     *     }
+     * }
+     * ```
+     * 
+     * ```typescript
+     * let sprite = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
+     * await sprite.load()
+     *
+     * sprite.eventMode = 'static';
+     * sprite.cursor = 'pointer';
+     * sprite.onEvent('pointerdown', EventTest);
+     *
+     * GameWindowManager.addCanvasElement("bunny", sprite);
+     * ```
+     */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let className = eventClass.name
         let instance = getEventInstanceByClassName(className)
         this._onEvents[event] = className
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<ICanvasBase<any>>).fn(event, this)
+                (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
             })
         }
         return this
@@ -72,10 +116,7 @@ export function getMemorySprite<T extends CanvasSprite<any>>(element: T | Canvas
 export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory) {
     setMemoryContainer(element, memory)
     getTexture(memory.textureImage.image).then((texture) => {
-        if (typeof texture === "string") {
-            console.error("Error loading image")
-        }
-        else {
+        if (texture) {
             element.texture = texture
         }
     })
