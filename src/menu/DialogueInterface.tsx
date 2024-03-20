@@ -5,7 +5,7 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
-import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getDialogue, getMenuOptions } from 'pixi-vm';
+import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getDialogue, getMenuOptions, MenuOptionsType } from 'pixi-vm';
 import { useEffect, useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';

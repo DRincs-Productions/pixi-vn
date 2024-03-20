@@ -1,4 +1,4 @@
-import { CanvasEvent, CanvasSprite, clearDialogue, eventDecorator, GameWindowManager, Label, labelDecorator, setDialogue } from "pixi-vm";
+import { CanvasEvent, CanvasEventNamesType, CanvasSprite, clearDialogue, eventDecorator, GameWindowManager, Label, labelDecorator, setDialogue, StepLabelType } from "pixi-vm";
 import { Assets, Texture } from "pixi.js";
 
 @eventDecorator()

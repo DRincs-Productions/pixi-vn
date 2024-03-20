@@ -1,4 +1,4 @@
-import { CanvasSprite, GameWindowManager, Label, labelDecorator, removeCanvasElement, setDialogue, TickerFadeAlpha, TickerRotate } from "pixi-vm";
+import { CanvasSprite, GameWindowManager, Label, labelDecorator, Pause, removeCanvasElement, Repeat, setDialogue, StepLabelType, TickerFadeAlpha, TickerRotate } from "pixi-vm";
 import { Assets } from "pixi.js";
 
 const alien1Tag = "alien1"

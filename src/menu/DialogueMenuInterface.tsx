@@ -1,5 +1,5 @@
 import { Box, Grid } from '@mui/joy';
-import { clearMenuOptions, GameStepManager, GameWindowManager } from 'pixi-vm';
+import { clearMenuOptions, GameStepManager, GameWindowManager, MenuOptionsType } from 'pixi-vm';
 import { useState } from 'react';
 import DialogueMenuButton from '../components/DialogueMenuButton';
 
