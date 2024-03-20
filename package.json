@@ -11,11 +11,11 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@drincs/pixi-vm": "^0.0.0",
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.10",
     "@mui/joy": "^5.0.0-beta.28",
-    "pixi.js": "^8.0.2",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-router-dom": "^6.22.1",

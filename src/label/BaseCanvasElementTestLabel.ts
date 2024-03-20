@@ -1,4 +1,4 @@
-import { CanvasContainer, CanvasSprite, CanvasText, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, StepLabelType, TickerRotate } from "pixi-vm";
+import { CanvasContainer, CanvasSprite, CanvasText, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, StepLabelType, TickerRotate } from "@drincs/pixi-vm";
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 
 @labelDecorator()

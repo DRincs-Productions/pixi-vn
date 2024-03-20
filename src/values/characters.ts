@@ -1,4 +1,4 @@
-import { CharacterModelBase, saveCharacter } from "pixi-vm";
+import { CharacterModelBase, saveCharacter } from "@drincs/pixi-vm";
 
 export const liam = new CharacterModelBase('liam', {
     name: 'Liam',

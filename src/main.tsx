@@ -1,4 +1,4 @@
-import { GameWindowManager } from 'pixi-vm'
+import { GameWindowManager } from '@drincs/pixi-vm'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
