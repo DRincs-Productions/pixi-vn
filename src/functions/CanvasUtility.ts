@@ -1,8 +1,7 @@
 import { Texture } from "pixi.js";
-import { CanvasBase } from "../classes/canvas/CanvasBase";
+import { CanvasBase } from "../classes/canvas";
 import { getCanvasElementInstanceByClassName } from "../decorators/CanvasElementDecorator";
-import { ICanvasBaseMemory } from "../interface/canvas/ICanvasBaseMemory";
-import { ITextureMemory } from "../interface/canvas/ITextureMemory";
+import { ICanvasBaseMemory, ITextureMemory } from "../interface/canvas";
 
 /**
  * Get the memory object of the PixiJS texture
