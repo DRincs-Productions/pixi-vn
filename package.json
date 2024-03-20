@@ -23,6 +23,7 @@
   },
   "homepage": "https://github.com/DRincs-Productions/pixi-vm#readme",
   "devDependencies": {
+    "@types/css-font-loading-module": "^0.0.13",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2"
