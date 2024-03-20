@@ -1,14 +1,5 @@
+import { CanvasContainer, CanvasSprite, CanvasText, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, StepLabelType, TickerRotate } from "pixi-vm";
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
-import { Label } from "../lib/classes/Label";
-import { CanvasContainer } from "../lib/classes/canvas/CanvasContainer";
-import { CanvasSprite } from "../lib/classes/canvas/CanvasSprite";
-import { CanvasText } from "../lib/classes/canvas/CanvasText";
-import { TickerRotate } from "../lib/classes/ticker/TickerRotate";
-import { labelDecorator } from "../lib/decorators/LabelDecorator";
-import { clearDialogue } from "../lib/functions/DialogueUtility";
-import { removeCanvasElement } from "../lib/functions/ImageUtility";
-import { GameWindowManager } from "../lib/managers/WindowManager";
-import { StepLabelType } from "../lib/types/StepLabelType";
 
 @labelDecorator()
 export class BaseCanvasElementTestLabel extends Label {

@@ -5,14 +5,9 @@ import Card from '@mui/joy/Card';
 import CardContent from '@mui/joy/CardContent';
 import Sheet from '@mui/joy/Sheet';
 import Typography from '@mui/joy/Typography';
+import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getDialogue, getMenuOptions, MenuOptionsType } from 'pixi-vm';
 import { useEffect, useState } from 'react';
 import DragHandleDivider from '../components/DragHandleDivider';
-import { CharacterModelBase } from '../lib/classes/CharacterModelBase';
-import { getCharacterByTag } from '../lib/decorators/CharacterDecorator';
-import { getDialogue, getMenuOptions } from '../lib/functions/DialogueUtility';
-import { GameStepManager } from '../lib/managers/StepManager';
-import { GameWindowManager } from '../lib/managers/WindowManager';
-import { MunuOptionsType } from '../lib/types/MunuOptionsType';
 import { resizeWindowsHandler } from '../utility/ComponentUtility';
 import DialogueMenuInterface from './DialogueMenuInterface';
 import QuickActions from './QuickActions';
@@ -35,7 +30,7 @@ export default function DialogueInterface(props: IProps) {
     const [loading, setLoading] = useState(false)
     const [text, setText] = useState<string | undefined>(undefined)
     const [character, setCharacter] = useState<CharacterModelBase | undefined>(undefined)
-    const [menu, setMenu] = useState<MunuOptionsType | undefined>(undefined)
+    const [menu, setMenu] = useState<MenuOptionsType | undefined>(undefined)
     const [update, setUpdate] = useState(0)
     useEffect(() => {
         let dial = getDialogue()

@@ -1,14 +1,10 @@
 import { Box, Grid } from '@mui/joy';
+import { clearMenuOptions, GameStepManager, GameWindowManager, LabelRunModeEnum, MenuOptionsType } from 'pixi-vm';
 import { useState } from 'react';
 import DialogueMenuButton from '../components/DialogueMenuButton';
-import { RunModeLabelEnum } from '../lib/enums/RunModeLabelEnum';
-import { clearMenuOptions } from '../lib/functions/DialogueUtility';
-import { GameStepManager } from '../lib/managers/StepManager';
-import { GameWindowManager } from '../lib/managers/WindowManager';
-import { MunuOptionsType } from '../lib/types/MunuOptionsType';
 
 type IProps = {
-    menu: MunuOptionsType,
+    menu: MenuOptionsType,
     dialogueWindowHeight: number,
     fullscreen?: boolean,
     afterClick?: () => void,
@@ -59,7 +55,7 @@ export default function DialogueMenuInterface(props: IProps) {
                             <DialogueMenuButton
                                 loading={loading}
                                 onClick={() => {
-                                    if (item.type == RunModeLabelEnum.OpenByCall) {
+                                    if (item.type == LabelRunModeEnum.OpenByCall) {
                                         setLoading(true)
                                         clearMenuOptions()
                                         GameStepManager.callLabel(item.label)
