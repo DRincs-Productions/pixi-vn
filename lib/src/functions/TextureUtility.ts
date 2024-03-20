@@ -33,7 +33,7 @@ export function getTextStyle(style: TextStyle): TextStyleOptions {
     let fill = style.fill
     if (fill instanceof Object) {
         // TODO: FillGradient and FillPattern are not supported yet
-        console.error("[Pixi'VM] CanvasText.style.fill is a FillGradient or FillPattern, this is not supported yet.", fill)
+        console.warn("[Pixi'VM] CanvasText.style.fill is a FillGradient or FillPattern, this is not supported yet.", fill)
         fill = "#00FF00"
     }
     return {
