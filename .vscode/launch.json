@@ -5,18 +5,16 @@
     // bash: https://docs.microsoft.com/it-it/windows/dev-environment/javascript/nodejs-on-wsl
     "version": "0.2.0",
     "configurations": [
-        // jest debug
         {
-            "name": "Debug Jest Tests",
-            "type": "node",
-            "request": "launch",
-            "runtimeExecutable": "${workspaceFolder}/node_modules/.bin/jest",
-            "args": [
-                "--runInBand"
-            ],
-            "cwd": "${workspaceFolder}",
-            "console": "integratedTerminal",
-            "internalConsoleOptions": "neverOpen"
-        },
+          "type": "node",
+          "request": "launch",
+          "name": "Debug Current Test File",
+          "autoAttachChildProcesses": true,
+          "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+          "program": "${workspaceRoot}/node_modules/vitest/vitest.mjs",
+          "args": ["run", "${relativeFile}"],
+          "smartStep": true,
+          "console": "integratedTerminal"
+        }
     ]
 }

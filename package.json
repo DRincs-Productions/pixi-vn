@@ -25,6 +25,7 @@
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/css-font-loading-module": "^0.0.13",
+    "jsdom": "^24.0.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
     "typescript": "^5.4.2",

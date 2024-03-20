@@ -1,4 +1,4 @@
-import { test } from 'vitest';
+import { expect, test } from 'vitest';
 import { GameWindowManager } from './src';
 
 test('aaaa', async () => {
