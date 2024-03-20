@@ -1,6 +1,6 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
-import { GameWindowManager } from "../../managers/WindowManager";
+import { GameWindowManager } from "../../managers";
 import TickerBase from "./TickerBase";
 
 /**

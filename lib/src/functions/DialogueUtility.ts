@@ -1,8 +1,7 @@
 import { CharacterModelBase, DialogueModelBase } from "../classes";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { RunModeLabelEnum } from "../enums/RunModeLabelEnum";
-import { GameStepManager } from "../managers/StepManager";
-import { GameStorageManager } from "../managers/StorageManager";
+import { GameStepManager, GameStorageManager } from "../managers";
 import { MenuOptionsType } from "../types/MenuOptionsType";
 
 /**

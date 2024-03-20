@@ -472,7 +472,7 @@ export default class GameWindowManager {
         for (let timeout in GameWindowManager.currentTickersTimeouts) {
             let t = GameWindowManager.currentTickersTimeouts[timeout].tags.filter((e) => !tag.includes(e))
             if (t.length == 0) {
-                GameWindowManager.removeTickerTimeoutInfo(parseInt(timeout))
+                GameWindowManager.removeTickerTimeoutInfo(timeout)
             }
             else {
                 GameWindowManager.currentTickersTimeouts[timeout].tags = t
@@ -509,7 +509,10 @@ export default class GameWindowManager {
             ticker: ticker,
         }
     }
-    private static removeTickerTimeoutInfo(timeout: number) {
+    private static removeTickerTimeoutInfo(timeout: NodeJS.Timeout | string) {
+        if (typeof timeout !== "string") {
+            timeout = timeout.toString()
+        }
         if (GameWindowManager.currentTickersTimeouts[timeout]) {
             delete GameWindowManager.currentTickersTimeouts[timeout]
         }
@@ -524,7 +527,7 @@ export default class GameWindowManager {
         })
         GameWindowManager._currentTickers = []
         for (let timeout in GameWindowManager.currentTickersTimeouts) {
-            GameWindowManager.removeTickerTimeoutInfo(parseInt(timeout))
+            GameWindowManager.removeTickerTimeoutInfo(timeout)
         }
     }
 

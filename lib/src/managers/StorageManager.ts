@@ -1,5 +1,5 @@
-import { ExportedStorage } from "pixi-vm"
 import { createExportElement } from "../functions/ExportUtility"
+import { ExportedStorage } from "../interface/export"
 import { StorageElementType } from "../types/StorageElementType"
 
 export default class GameStorageManager {

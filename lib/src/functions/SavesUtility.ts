@@ -1,8 +1,6 @@
 import { PIXIVM_VERSION } from "../constants";
 import ISaveData from "../interface/ISaveData";
-import { GameStepManager } from "../managers/StepManager";
-import { GameStorageManager } from "../managers/StorageManager";
-import { GameWindowManager } from "../managers/WindowManager";
+import { GameStepManager, GameStorageManager, GameWindowManager } from "../managers";
 
 /**
  * Get the save data

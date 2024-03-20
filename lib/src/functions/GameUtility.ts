@@ -1,6 +1,4 @@
-import { GameStepManager } from "../managers/StepManager";
-import { GameStorageManager } from "../managers/StorageManager";
-import { GameWindowManager } from "../managers/WindowManager";
+import { GameStepManager, GameStorageManager, GameWindowManager } from "../managers";
 
 /**
  * Clear all game data. This function is used to reset the game.
