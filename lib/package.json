@@ -1,6 +1,6 @@
 {
-  "name": "pixi-vm",
-  "version": "0.0.1",
+  "name": "@drincs/pixi-vm",
+  "version": "0.1.0",
   "description": "Pixi'VM is a npm package that is used to create visual novels using pixi.js.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
