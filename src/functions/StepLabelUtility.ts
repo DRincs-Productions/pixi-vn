@@ -1,4 +1,4 @@
-import { sha1 } from 'crypto-hash';
+import sha1 from 'crypto-js/sha1';
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
 import { StepLabelType } from "../types/StepLabelType";
 
@@ -7,9 +7,9 @@ import { StepLabelType } from "../types/StepLabelType";
  * @param step
  * @returns
  */
-export async function getStepSha1(step: StepLabelType): Promise<StepHistoryDataType> {
-    let sha1String = await sha1(step.toString().toLocaleLowerCase())
-    return sha1String
+export function getStepSha1(step: StepLabelType): StepHistoryDataType {
+    let sha1String = sha1(step.toString().toLocaleLowerCase())
+    return sha1String.toString()
 }
 /**
  * Check if two steps are equal

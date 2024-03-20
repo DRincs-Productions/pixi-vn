@@ -66,8 +66,8 @@ export default class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static async addStepHistory(step: StepLabelType) {
-        let stepHistory: StepHistoryDataType = await getStepSha1(step)
+    private static addStepHistory(step: StepLabelType) {
+        let stepHistory: StepHistoryDataType = getStepSha1(step)
         let historyStep: IHistoryStep = {
             path: window.location.pathname,
             storage: GameStorageManager.export(),
@@ -191,7 +191,7 @@ export default class GameStepManager {
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
                 await nextStep()
-                await GameStepManager.addStepHistory(nextStep)
+                GameStepManager.addStepHistory(nextStep)
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeLabel()
