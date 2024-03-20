@@ -1,5 +1,5 @@
+import { GameWindowManager } from 'pixi-vm'
 import { createRoot } from 'react-dom/client'
-import { GameWindowManager } from '../lib/managers/WindowManager'
 import App from './App'
 import './index.css'
 

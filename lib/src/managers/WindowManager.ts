@@ -15,7 +15,6 @@ import { TickerTagType } from "../types/TickerTagType";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
- * This implementation was followed: https://www.pixijselementals.com/#letterbox-scale
  */
 export default class GameWindowManager {
     private constructor() { }
