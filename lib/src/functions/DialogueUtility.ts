@@ -1,6 +1,6 @@
 import { CharacterModelBase, DialogueModelBase } from "../classes";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
-import { RunModeLabelEnum } from "../enums/RunModeLabelEnum";
+import { LabelRunModeEnum } from "../enums/LabelRunModeEnum";
 import { GameStepManager, GameStorageManager } from "../managers";
 import { MenuOptionsType } from "../types/MenuOptionsType";
 
@@ -74,7 +74,7 @@ export function setMenuOptions(options: MenuOptionsType): void {
     let value: {
         text: string
         label: string
-        type: RunModeLabelEnum
+        type: LabelRunModeEnum
     }[] = options.map((option) => {
         return {
             ...option,
@@ -92,7 +92,7 @@ export function getMenuOptions(): MenuOptionsType | undefined {
     let d = GameStorageManager.getVariable<{
         text: string
         label: string
-        type: RunModeLabelEnum
+        type: LabelRunModeEnum
     }[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
         let options: MenuOptionsType = []

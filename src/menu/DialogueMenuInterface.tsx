@@ -55,7 +55,7 @@ export default function DialogueMenuInterface(props: IProps) {
                             <DialogueMenuButton
                                 loading={loading}
                                 onClick={() => {
-                                    if (item.type == RunModeLabelEnum.OpenByCall) {
+                                    if (item.type == LabelRunModeEnum.OpenByCall) {
                                         setLoading(true)
                                         clearMenuOptions()
                                         GameStepManager.callLabel(item.label)

@@ -1,4 +1,4 @@
-import { RunModeLabelEnum } from "../enums/RunModeLabelEnum"
+import { LabelRunModeEnum } from "../enums/LabelRunModeEnum"
 import Label from "./Label"
 
 /**
@@ -11,8 +11,8 @@ import Label from "./Label"
 export default class MenuOptionLabel {
     text: string
     label: typeof Label
-    type: RunModeLabelEnum
-    constructor(text: string, label: typeof Label, type: RunModeLabelEnum = RunModeLabelEnum.OpenByCall) {
+    type: LabelRunModeEnum
+    constructor(text: string, label: typeof Label, type: LabelRunModeEnum = LabelRunModeEnum.OpenByCall) {
         this.text = text
         this.label = label
         this.type = type
