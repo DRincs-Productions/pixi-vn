@@ -1,7 +1,7 @@
 {
-  "name": "@drincs/pixi-vm",
+  "name": "@drincs/pixi-vn",
   "version": "0.1.0",
-  "description": "Pixi'VM is a npm package that is used to create visual novels using pixi.js.",
+  "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
@@ -14,14 +14,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/DRincs-Productions/pixi-vm.git"
+    "url": "git+https://github.com/DRincs-Productions/pixi-vn.git"
   },
   "author": "DRincs-Productions",
   "license": "GPL-3.0",
   "bugs": {
-    "url": "https://github.com/DRincs-Productions/pixi-vm/issues"
+    "url": "https://github.com/DRincs-Productions/pixi-vn/issues"
   },
-  "homepage": "https://github.com/DRincs-Productions/pixi-vm#readme",
+  "homepage": "https://github.com/DRincs-Productions/pixi-vn#readme",
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/css-font-loading-module": "^0.0.13",
