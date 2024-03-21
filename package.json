@@ -34,5 +34,14 @@
   "dependencies": {
     "crypto-js": "^4.2.0",
     "pixi.js": "^8.0.2"
-  }
+  },
+  "keywords": [
+    "game",
+    "js",
+    "novel",
+    "pixi",
+    "pixi-js",
+    "visual",
+    "visual-novel"
+  ]
 }
