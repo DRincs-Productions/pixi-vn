@@ -1,4 +1,4 @@
-import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getDialogue, getMenuOptions, MenuOptionsType } from '@drincs/pixi-vm';
+import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getDialogue, getMenuOptions, MenuOptionsType } from '@drincs/pixi-vn';
 import { Button } from '@mui/joy';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';

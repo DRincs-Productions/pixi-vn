@@ -1,4 +1,4 @@
-import { addImage, clearAllGameDatas, GameStepManager, GameWindowManager } from '@drincs/pixi-vm';
+import { addImage, clearAllGameDatas, GameStepManager, GameWindowManager } from '@drincs/pixi-vn';
 import { Grid } from '@mui/joy';
 import { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';

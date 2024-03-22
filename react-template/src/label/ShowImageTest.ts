@@ -1,4 +1,4 @@
-import { addImage, CanvasImage, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, setDialogue, showCanvasImages, showImageWithDisolveEffect, StepLabelType, TickerRotate } from "@drincs/pixi-vm"
+import { addImage, CanvasImage, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, setDialogue, showCanvasImages, showImageWithDisolveEffect, StepLabelType, TickerRotate } from "@drincs/pixi-vn"
 
 @labelDecorator()
 export class ShowImageTest extends Label {
