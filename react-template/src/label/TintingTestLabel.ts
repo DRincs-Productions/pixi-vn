@@ -1,4 +1,4 @@
-import { canvasElementDecorator, CanvasSprite, GameWindowManager, ICanvasSpriteBaseMemory, ICanvasSpriteMemory, Label, labelDecorator, StepLabelType, TickerBase, tickerDecorator } from "@drincs/pixi-vm";
+import { canvasElementDecorator, CanvasSprite, GameWindowManager, ICanvasSpriteBaseMemory, ICanvasSpriteMemory, Label, labelDecorator, StepLabelType, TickerBase, tickerDecorator } from "@drincs/pixi-vn";
 import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "pixi.js";
 
 interface IAlienTintingMemory extends ICanvasSpriteBaseMemory {

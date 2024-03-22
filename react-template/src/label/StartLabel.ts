@@ -1,4 +1,4 @@
-import { GameStepManager, GameWindowManager, Label, labelDecorator, MenuOptionLabel, setDialogue, setMenuOptions, StepLabelType } from "@drincs/pixi-vm";
+import { GameStepManager, GameWindowManager, Label, labelDecorator, MenuOptionLabel, setDialogue, setMenuOptions, StepLabelType } from "@drincs/pixi-vn";
 import { liam } from "../values/characters";
 import { BaseCanvasElementTestLabel } from "./BaseCanvasElementTestLabel";
 import { EventsTestLabel } from "./EventsTestLabel";

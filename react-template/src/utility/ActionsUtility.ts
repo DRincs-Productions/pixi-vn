@@ -1,4 +1,4 @@
-import { GameStepManager, getSaveJson, loadSaveJsonString } from "@drincs/pixi-vm";
+import { GameStepManager, getSaveJson, loadSaveJsonString } from "@drincs/pixi-vn";
 
 export function saveGame() {
     const jsonString = getSaveJson()

@@ -1,4 +1,4 @@
-import { clearMenuOptions, GameStepManager, GameWindowManager, LabelRunModeEnum, MenuOptionsType } from '@drincs/pixi-vm';
+import { clearMenuOptions, GameStepManager, GameWindowManager, LabelRunModeEnum, MenuOptionsType } from '@drincs/pixi-vn';
 import { Box, Grid } from '@mui/joy';
 import { useState } from 'react';
 import DialogueMenuButton from '../components/DialogueMenuButton';

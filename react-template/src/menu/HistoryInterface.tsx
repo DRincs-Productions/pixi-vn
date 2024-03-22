@@ -1,4 +1,4 @@
-import { CharacterModelBase, getCharacterByTag, getDialogueHistory } from '@drincs/pixi-vm';
+import { CharacterModelBase, getCharacterByTag, getDialogueHistory } from '@drincs/pixi-vn';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { Box, CssVarsProvider, IconButton, Input, Sheet, Stack, Typography } from "@mui/joy";
