@@ -37,8 +37,8 @@ export default class CharacterModelBase extends StoredClassModel implements ICha
         this.defaultName = props.name
         this.defaultSurname = props.surname
         this.defaultAge = props.age
-        this.icon = props.icon
-        this.color = props.color
+        this._icon = props.icon
+        this._color = props.color
     }
     private defaultName: string = ""
     get name(): string {
@@ -61,6 +61,12 @@ export default class CharacterModelBase extends StoredClassModel implements ICha
     set age(value: number | undefined) {
         this.updateStorage({ ...this, age: value })
     }
-    icon?: string
-    color?: string
+    private _icon?: string
+    get icon(): string | undefined {
+        return this._icon
+    }
+    private _color?: string | undefined
+    get color(): string | undefined {
+        return this._color
+    }
 }
