@@ -1,3 +1,4 @@
+import { GameStorageManager } from "../managers"
 import StoredClassModel from "./StoredClassModel"
 
 export interface ICharacterModelBase {
@@ -33,7 +34,7 @@ export interface ICharacterModelBase {
  */
 export default class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
     constructor(tag: string, props: ICharacterModelBase) {
-        super(tag)
+        super(GameStorageManager.keysSystem.CHARACTER_PREKEY + tag)
         this.defaultName = props.name
         this.defaultSurname = props.surname
         this.defaultAge = props.age
