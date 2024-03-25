@@ -93,7 +93,7 @@ export default class GameWindowManager {
      * Add the canvas into a html element.
      * @param element it is the html element where I will put the canvas. Example: document.body
      */
-    public static addCanvasIntoElement(element: HTMLElement) {
+    private static addCanvasIntoElement(element: HTMLElement) {
         if (GameWindowManager.isInitialized) {
             element.appendChild(GameWindowManager.app.canvas as HTMLCanvasElement)
         }
