@@ -86,4 +86,4 @@ body {
 
 ## Wiki
 
-For more information, visit the [Wiki](https://github.com/DRincs-Productions/pixi-vn/wiki)
+For more information, visit the [Wiki](https://pixivn.readthedocs.io/)
