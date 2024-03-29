@@ -3,12 +3,13 @@
  * @param element The element to be copied
  * @returns The copied element
  */
-export function createExportElement<T>(element: T): T {
+export function createExportableElement<T>(element: T): T {
     try {
         let elementString = JSON.stringify(element)
         return JSON.parse(elementString)
     }
     catch (e) {
-        throw new Error("[Pixi'VM] The element could not be created")
+        console.error("[Pixi'VN] Error creating exportable element", e)
+        throw new Error("[Pixi'VN] Error creating exportable element")
     }
 }

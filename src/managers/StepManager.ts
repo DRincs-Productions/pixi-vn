@@ -1,6 +1,6 @@
 import { Label } from "../classes"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
-import { createExportElement } from "../functions/ExportUtility"
+import { createExportableElement } from "../functions/ExportUtility"
 import { getStepSha1 } from "../functions/StepLabelUtility"
 import ExportedStep from "../interface/export/ExportedStep"
 import IHistoryStep from "../interface/IHistoryStep"
@@ -74,7 +74,7 @@ export default class GameStepManager {
             stepSha1: stepHistory,
             canvas: GameWindowManager.export(),
             stepIndex: GameStepManager.currentLabelStepIndex || 0,
-            openedLabels: createExportElement(GameStepManager._openedLabels),
+            openedLabels: createExportableElement(GameStepManager._openedLabels),
         }
         let lastStepData = GameStepManager.lastHistoryStep
         if (lastStepData) {
@@ -337,9 +337,9 @@ export default class GameStepManager {
         GameStepManager.goBackInstrnal(steps)
         let lastHistoryStep = GameStepManager.lastHistoryStep
         if (lastHistoryStep) {
-            GameStepManager._openedLabels = createExportElement(lastHistoryStep.openedLabels)
-            GameStorageManager.import(createExportElement(lastHistoryStep.storage))
-            GameWindowManager.import(createExportElement(lastHistoryStep.canvas))
+            GameStepManager._openedLabels = createExportableElement(lastHistoryStep.openedLabels)
+            GameStorageManager.import(createExportableElement(lastHistoryStep.storage))
+            GameWindowManager.import(createExportableElement(lastHistoryStep.canvas))
             navigate(lastHistoryStep.path)
         }
         else {

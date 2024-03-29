@@ -3,7 +3,7 @@ import CanvasBase from "../classes/canvas/CanvasBase";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
-import { createExportElement } from "../functions/ExportUtility";
+import { createExportableElement } from "../functions/ExportUtility";
 import { ITicker, ITickersSteps } from "../interface";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITickersStep } from "../interface/ITickersSteps";
@@ -556,9 +556,9 @@ export default class GameWindowManager {
             currentElements[tag] = exportCanvasElement(GameWindowManager._children[tag])
         }
         return {
-            currentTickers: createExportElement(GameWindowManager._currentTickers),
-            currentElements: createExportElement(currentElements),
-            childrenTagsOrder: createExportElement(GameWindowManager.childrenTagsOrder),
+            currentTickers: createExportableElement(GameWindowManager._currentTickers),
+            currentElements: createExportableElement(currentElements),
+            childrenTagsOrder: createExportableElement(GameWindowManager.childrenTagsOrder),
         }
     }
     /**
