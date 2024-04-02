@@ -16,14 +16,14 @@ import { GameStorageManager } from "../managers"
  *         return this.getStorageProperty<string>("name") || this.defaultName
  *     }
  *     set name(value: string) {
- *         this.updateStorageProperty({ ...this, name: value })
+ *         this.updateStorageProperty<string>("name", value)
  *     }
  *     private defaultSurname?: string
  *     get surname(): string | undefined {
  *         return this.getStorageProperty<string>("surname") || this.defaultSurname
  *     }
  *     set surname(value: string | undefined) {
- *         this.updateStorageProperty({ ...this, surname: value })
+ *         this.updateStorageProperty<string>("surname", value)
  *     }
  * }
  * ```
@@ -36,12 +36,12 @@ export default abstract class StoredClassModel {
     private get nameClass(): string {
         return this.constructor.name + "Storage"
     }
-    updateStorageProperty(value: typeof this): void {
+    updateStorageProperty<T>(key: string, value: T | undefined): void {
         let storage = GameStorageManager.getVariable<{ [key: string]: any }>(this.nameClass)
         if (!storage) {
             storage = {}
         }
-        storage[this.id] = value
+        storage[this.id] = { ...storage[this.id], [key]: value }
         GameStorageManager.setVariable(this.nameClass, storage)
     }
     getStorageProperty<T>(key: string): T | undefined {
