@@ -111,7 +111,7 @@ export default class GameStepManager {
      * Close the current label and add it to the history.
      * @returns 
      */
-    private static closeLabel() {
+    static closeCurrentLabel() {
         if (!GameStepManager.currentLabel) {
             console.warn("[Pixi'VN] No label to close")
             return
@@ -126,9 +126,9 @@ export default class GameStepManager {
     /**
      * Close all labels and add them to the history.
      */
-    private static closeAllLabels() {
+    static closeAllLabels() {
         while (GameStepManager._openedLabels.length > 0) {
-            GameStepManager.closeLabel()
+            GameStepManager.closeCurrentLabel()
         }
     }
     /**
@@ -194,7 +194,7 @@ export default class GameStepManager {
                 GameStepManager.addStepHistory(nextStep)
             }
             else if (n === lasteStepsLength) {
-                GameStepManager.closeLabel()
+                GameStepManager.closeCurrentLabel()
                 await GameStepManager.runNextStep()
             }
             else {
