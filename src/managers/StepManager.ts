@@ -12,7 +12,7 @@ import GameStorageManager from "./StorageManager"
 import GameWindowManager from "./WindowManager"
 
 /**
- * GameHistoryManager is a class that contains the history of the game.
+ * GameStepManager is a class that manages the steps and labels of the game.
  */
 export default class GameStepManager {
     private constructor() { }
