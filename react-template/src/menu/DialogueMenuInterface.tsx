@@ -1,4 +1,4 @@
-import { clearMenuOptions, GameStepManager, GameWindowManager, LabelRunModeEnum, MenuOptionsType } from '@drincs/pixi-vn';
+import { clearChoiceMenuOptions, GameStepManager, GameWindowManager, LabelRunModeEnum, MenuOptionsType } from '@drincs/pixi-vn';
 import { Box, Grid } from '@mui/joy';
 import { useState } from 'react';
 import DialogueMenuButton from '../components/DialogueMenuButton';
@@ -57,7 +57,7 @@ export default function DialogueMenuInterface(props: IProps) {
                                 onClick={() => {
                                     if (item.type == LabelRunModeEnum.OpenByCall) {
                                         setLoading(true)
-                                        clearMenuOptions()
+                                        clearChoiceMenuOptions()
                                         GameStepManager.callLabel(item.label)
                                             .then(() => {
                                                 afterClick && afterClick()

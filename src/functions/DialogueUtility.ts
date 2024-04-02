@@ -113,7 +113,7 @@ export function getMenuOptions(): MenuOptionsType | undefined {
 /**
  * Clear the options to be shown in the game
  */
-export function clearMenuOptions(): void {
+export function clearChoiceMenuOptions(): void {
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
 }
 
