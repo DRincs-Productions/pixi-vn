@@ -1,4 +1,4 @@
-import { GameStepManager, GameWindowManager, Label, labelDecorator, MenuOptionLabel, setDialogue, setMenuOptions, StepLabelType } from "@drincs/pixi-vn";
+import { GameStepManager, GameWindowManager, Label, labelDecorator, MenuOptionLabel, setChoiceMenuOptions, setDialogue, StepLabelType } from "@drincs/pixi-vn";
 import { liam } from "../values/characters";
 import { BaseCanvasElementTestLabel } from "./BaseCanvasElementTestLabel";
 import { EventsTestLabel } from "./EventsTestLabel";
@@ -13,7 +13,7 @@ export class StartLabel extends Label {
             () => {
                 GameWindowManager.clear()
                 setDialogue({ character: liam, text: "Which test do you want to perform?" })
-                setMenuOptions([
+                setChoiceMenuOptions([
                     new MenuOptionLabel("Events Test", EventsTestLabel),
                     new MenuOptionLabel("Show Image Test", ShowImageTest),
                     new MenuOptionLabel("Ticker Test", TickerTestLabel),

@@ -61,7 +61,7 @@ export function clearDialogue(): void {
  * @param options Options to be shown in the game
  * @example
  * ```typescript
- * setMenuOptions([
+ * setChoiceMenuOptions([
  *     new MenuOptionLabel("Events Test", EventsTestLabel),
  *     new MenuOptionLabel("Show Image Test", ShowImageTest),
  *     new MenuOptionLabel("Ticker Test", TickerTestLabel),
@@ -70,7 +70,7 @@ export function clearDialogue(): void {
  * ])
  * ```
  */
-export function setMenuOptions(options: MenuOptionsType): void {
+export function setChoiceMenuOptions(options: MenuOptionsType): void {
     let value: {
         text: string
         label: string
