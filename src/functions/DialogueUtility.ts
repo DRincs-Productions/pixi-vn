@@ -62,11 +62,11 @@ export function clearDialogue(): void {
  * @example
  * ```typescript
  * setChoiceMenuOptions([
- *     new MenuOptionLabel("Events Test", EventsTestLabel),
- *     new MenuOptionLabel("Show Image Test", ShowImageTest),
- *     new MenuOptionLabel("Ticker Test", TickerTestLabel),
- *     new MenuOptionLabel("Tinting Test", TintingTestLabel),
- *     new MenuOptionLabel("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
+ *     new ChoiceMenuOptionLabel("Events Test", EventsTestLabel),
+ *     new ChoiceMenuOptionLabel("Show Image Test", ShowImageTest),
+ *     new ChoiceMenuOptionLabel("Ticker Test", TickerTestLabel),
+ *     new ChoiceMenuOptionLabel("Tinting Test", TintingTestLabel),
+ *     new ChoiceMenuOptionLabel("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
  * ])
  * ```
  */

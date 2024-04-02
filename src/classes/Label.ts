@@ -16,8 +16,8 @@ import { StepLabelType } from "../types/StepLabelType"
  *                 GameWindowManager.clear()
  *                 setDialogue({ character: liam, text: "Which test do you want to perform?" })
  *                 setChoiceMenuOptions([
- *                     new MenuOptionLabel("Events Test", EventsTestLabel),
- *                     new MenuOptionLabel("Show Image Test", ShowImageTest),
+ *                     new ChoiceMenuOptionLabel("Events Test", EventsTestLabel),
+ *                     new ChoiceMenuOptionLabel("Show Image Test", ShowImageTest),
  *                 ])
  *             },
  *             () => GameStepManager.jumpLabel(StartLabel),
