@@ -8,9 +8,9 @@ export default class GameStorageManager {
     private constructor() { }
     public static get keysSystem() {
         return {
-            CURRENT_DIALOGUE_MEMORY_KEY: "current_dialogue_memory_key",
-            LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "last_dialogue_added_in_step_memory_key",
-            CURRENT_MENU_OPTIONS_MEMORY_KEY: "current_menu_options_memory_key",
+            CURRENT_DIALOGUE_MEMORY_KEY: "___current_dialogue_memory_key___",
+            LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "___last_dialogue_added_in_step_memory_key___",
+            CURRENT_MENU_OPTIONS_MEMORY_KEY: "___current_menu_options_memory_key___",
             CHARACTER_PREKEY: "___character___",
         }
     }
