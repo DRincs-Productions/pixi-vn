@@ -20,9 +20,9 @@ export default interface IHistoryStep {
      */
     stepSha1: StepHistoryDataType,
     /**
-     * The index of the step.
+     * The index of the label that occurred during the progression of the steps.
      */
-    stepIndex: number,
+    labelIndex: number,
     /**
      * The canvas that occurred during the progression of the steps.
      */
@@ -31,4 +31,8 @@ export default interface IHistoryStep {
      * The opened labels that occurred during the progression of the steps.
      */
     openedLabels: IOpenedLabel[],
+    /**
+     * The index of the step in the history.
+     */
+    index: number,
 }
