@@ -2,7 +2,7 @@ import { CharacterModelBase, DialogueModelBase } from "../classes";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { LabelRunModeEnum } from "../enums/LabelRunModeEnum";
 import { GameStepManager, GameStorageManager } from "../managers";
-import { MenuOptionsType } from "../types/MenuOptionsType";
+import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 
 /**
  * Set the dialogue to be shown in the game
@@ -61,16 +61,16 @@ export function clearDialogue(): void {
  * @param options Options to be shown in the game
  * @example
  * ```typescript
- * setMenuOptions([
- *     new MenuOptionLabel("Events Test", EventsTestLabel),
- *     new MenuOptionLabel("Show Image Test", ShowImageTest),
- *     new MenuOptionLabel("Ticker Test", TickerTestLabel),
- *     new MenuOptionLabel("Tinting Test", TintingTestLabel),
- *     new MenuOptionLabel("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
+ * setChoiceMenuOptions([
+ *     new ChoiceMenuOptionLabel("Events Test", EventsTestLabel),
+ *     new ChoiceMenuOptionLabel("Show Image Test", ShowImageTest),
+ *     new ChoiceMenuOptionLabel("Ticker Test", TickerTestLabel),
+ *     new ChoiceMenuOptionLabel("Tinting Test", TintingTestLabel),
+ *     new ChoiceMenuOptionLabel("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
  * ])
  * ```
  */
-export function setMenuOptions(options: MenuOptionsType): void {
+export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
     let value: {
         text: string
         label: string
@@ -88,14 +88,14 @@ export function setMenuOptions(options: MenuOptionsType): void {
  * Get the options to be shown in the game
  * @returns Options to be shown in the game
  */
-export function getMenuOptions(): MenuOptionsType | undefined {
+export function getChoiceMenuOptions(): ChoiceMenuOptionsType | undefined {
     let d = GameStorageManager.getVariable<{
         text: string
         label: string
         type: LabelRunModeEnum
     }[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
-        let options: MenuOptionsType = []
+        let options: ChoiceMenuOptionsType = []
         d.forEach((option) => {
             let label = getLabelTypeByClassName(option.label)
             if (label) {
@@ -113,7 +113,7 @@ export function getMenuOptions(): MenuOptionsType | undefined {
 /**
  * Clear the options to be shown in the game
  */
-export function clearMenuOptions(): void {
+export function clearChoiceMenuOptions(): void {
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
 }
 
