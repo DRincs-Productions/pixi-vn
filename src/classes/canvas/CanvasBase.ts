@@ -27,9 +27,9 @@ export default class CanvasBase<T2 extends ICanvasBaseMemory> extends Container 
     /**
      * This method return the memory of the canvas element.
      */
-    get memory(): T2 { throw new Error("[Pixi'VM] The method CanvasBase.memory must be overridden") }
+    get memory(): T2 { throw new Error("[Pixi'VN] The method CanvasBase.memory must be overridden") }
     /**
      * This method set the memory of the canvas element.
      */
-    set memory(_value: T2) { throw new Error("[Pixi'VM] The method CanvasBase.memory must be overridden") }
+    set memory(_value: T2) { throw new Error("[Pixi'VN] The method CanvasBase.memory must be overridden") }
 }

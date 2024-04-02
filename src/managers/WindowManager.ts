@@ -26,7 +26,7 @@ export default class GameWindowManager {
      */
     static get app() {
         if (!GameWindowManager._app) {
-            throw new Error("[Pixi'VM] GameWindowManager.app is undefined")
+            throw new Error("[Pixi'VN] GameWindowManager.app is undefined")
         }
         return GameWindowManager._app
     }
@@ -98,7 +98,7 @@ export default class GameWindowManager {
             element.appendChild(GameWindowManager.app.canvas as HTMLCanvasElement)
         }
         else {
-            console.error("[Pixi'VM] GameWindowManager is not initialized")
+            console.error("[Pixi'VN] GameWindowManager is not initialized")
         }
     }
     /**
@@ -322,7 +322,7 @@ export default class GameWindowManager {
         }
         let t = geTickerInstanceByClassName<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)
         if (!t) {
-            console.error(`[Pixi'VM] Ticker ${tickerName} not found`)
+            console.error(`[Pixi'VN] Ticker ${tickerName} not found`)
             return
         }
         GameWindowManager.removeAssociationBetweenTickerCanvasElement(canvasElementTag, ticker)
@@ -369,7 +369,7 @@ export default class GameWindowManager {
      */
     static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
         if (steps.length == 0) {
-            console.warn("[Pixi'VM] The steps of the tickers is empty")
+            console.warn("[Pixi'VN] The steps of the tickers is empty")
             return
         }
         let alredyExists = GameWindowManager._currentTickersSteps[tag] !== undefined
@@ -380,7 +380,7 @@ export default class GameWindowManager {
                     return s
                 }
                 if (!s.duration) {
-                    console.warn("[Pixi'VM] Duration is not defined, so it will be set to 1000")
+                    console.warn("[Pixi'VN] Duration is not defined, so it will be set to 1000")
                     s.duration = 1000
                 }
                 if (s.hasOwnProperty("type") && (s as PauseType).type === PauseValueType) {
@@ -404,7 +404,7 @@ export default class GameWindowManager {
             step = GameWindowManager._currentTickersSteps[tag].steps[0]
             GameWindowManager._currentTickersSteps[tag].currentStepNumber = 0
             if (step === Repeat) {
-                console.error("[Pixi'VM] TikersSteps has a RepeatType in the first step")
+                console.error("[Pixi'VN] TikersSteps has a RepeatType in the first step")
                 return
             }
         }
@@ -418,7 +418,7 @@ export default class GameWindowManager {
         }
         let ticker = geTickerInstanceByClassName<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
         if (!ticker) {
-            console.error(`[Pixi'VM] Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
+            console.error(`[Pixi'VN] Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
             return
         }
         GameWindowManager.addTicker(tag, ticker)
@@ -587,7 +587,7 @@ export default class GameWindowManager {
                 })
             }
             else {
-                console.error("[Pixi'VM] The data does not have the properties childrenTagsOrder and currentElements")
+                console.error("[Pixi'VN] The data does not have the properties childrenTagsOrder and currentElements")
                 return
             }
             if (data.hasOwnProperty("currentTickers")) {
@@ -599,13 +599,13 @@ export default class GameWindowManager {
                         GameWindowManager.addTicker(tags, ticker)
                     }
                     else {
-                        console.error(`[Pixi'VM] Ticker ${t.className} not found`)
+                        console.error(`[Pixi'VN] Ticker ${t.className} not found`)
                     }
                 })
             }
         }
         catch (e) {
-            console.error("[Pixi'VM] Error importing data", e)
+            console.error("[Pixi'VN] Error importing data", e)
         }
     }
 }

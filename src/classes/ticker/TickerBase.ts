@@ -51,5 +51,5 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
      * @param args The arguments that you passed when you added the ticker
      * @param tags The tags of the canvas elements that are connected to this ticker
      */
-    fn(_t: Ticker, _args: TArgs, _tags: string | string[]): void { throw new Error("[Pixi'VM] The method TickerBase.fn() must be overridden") }
+    fn(_t: Ticker, _args: TArgs, _tags: string | string[]): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
 }

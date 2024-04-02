@@ -40,7 +40,7 @@ export function importCanvasElement<T extends CanvasBase<any>>(
         element.memory = memory
     }
     else {
-        throw new Error("[Pixi'VM] The element " + memory.className + "could not be created")
+        throw new Error("[Pixi'VN] The element " + memory.className + "could not be created")
     }
 
     return element
