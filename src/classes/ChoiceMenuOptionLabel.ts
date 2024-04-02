@@ -1,4 +1,5 @@
 import { LabelRunModeEnum } from "../enums/LabelRunModeEnum"
+import { LabelTagType } from "../types/LabelTagType"
 import Label from "./Label"
 
 /**
@@ -35,6 +36,6 @@ export default class ChoiceMenuOptionLabel {
 
 export interface IStoratedChoiceMenuOptionLabel {
     text: string
-    label: string
+    label: LabelTagType
     type: LabelRunModeEnum
 }
