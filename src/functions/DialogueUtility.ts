@@ -87,11 +87,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
  * @returns Options to be shown in the game
  */
 export function getChoiceMenuOptions(): ChoiceMenuOptionsType | undefined {
-    let d = GameStorageManager.getVariable<{
-        text: string
-        label: string
-        type: LabelRunModeEnum
-    }[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+    let d = GameStorageManager.getVariable<IStoratedChoiceMenuOptionLabel[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
         let options: ChoiceMenuOptionsType = []
         d.forEach((option) => {
