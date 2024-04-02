@@ -1,4 +1,4 @@
-export { clearChoiceMenuOptions, clearDialogue, getDialogue, getDialogueHistory, getMenuOptions, setChoiceMenuOptions, setDialogue } from './DialogueUtility';
+export { clearChoiceMenuOptions, clearDialogue, getChoiceMenuOptions, getDialogue, getDialogueHistory, setChoiceMenuOptions, setDialogue } from './DialogueUtility';
 export { clearAllGameDatas } from './GameUtility';
 export { addImage, removeCanvasElement, showCanvasImages, showImageWithDissolveTransition } from './ImageUtility';
 export { getSaveData, getSaveJson, loadSaveData, loadSaveJson } from './SavesUtility';

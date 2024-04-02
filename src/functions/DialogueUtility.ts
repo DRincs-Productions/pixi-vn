@@ -88,7 +88,7 @@ export function setChoiceMenuOptions(options: MenuOptionsType): void {
  * Get the options to be shown in the game
  * @returns Options to be shown in the game
  */
-export function getMenuOptions(): MenuOptionsType | undefined {
+export function getChoiceMenuOptions(): MenuOptionsType | undefined {
     let d = GameStorageManager.getVariable<{
         text: string
         label: string

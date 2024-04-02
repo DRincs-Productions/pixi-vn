@@ -1,4 +1,4 @@
-import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getDialogue, getMenuOptions, MenuOptionsType } from '@drincs/pixi-vn';
+import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getChoiceMenuOptions, getDialogue, MenuOptionsType } from '@drincs/pixi-vn';
 import { Button } from '@mui/joy';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';
@@ -46,7 +46,7 @@ export default function DialogueInterface(props: IProps) {
             setText(undefined)
             setCharacter(undefined)
         }
-        let m = getMenuOptions()
+        let m = getChoiceMenuOptions()
         setMenu(m)
     }, [upadateInterface, update])
 
