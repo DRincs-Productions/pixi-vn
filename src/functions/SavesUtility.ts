@@ -78,5 +78,14 @@ export function loadSaveData(data: ISaveData, navigate: (path: string) => void) 
  * ```
  */
 export function loadSaveJson(dataString: string, navigate: (path: string) => void) {
-    loadSaveData(JSON.parse(dataString), navigate);
+    loadSaveData(jsonToSaveData(dataString), navigate);
+}
+
+/**
+ * Convert a JSON string to a save data
+ * @param json The JSON string
+ * @returns The save data
+ */
+export function jsonToSaveData(json: string): ISaveData {
+    return JSON.parse(json);
 }
