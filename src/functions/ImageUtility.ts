@@ -69,7 +69,7 @@ export function removeCanvasElement(tag: string | string[]) {
  * @param priority The priority of the effect
  * @returns The sprite of the image.
  */
-export async function showImageWithDisolveEffect(
+export async function showImageWithDissolveTransition(
     tag: string, imageUrl: string,
     speed: number,
     priority?: UPDATE_PRIORITY,

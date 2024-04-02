@@ -1,4 +1,4 @@
-import { addImage, CanvasImage, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, setDialogue, showCanvasImages, showImageWithDisolveEffect, StepLabelType, TickerRotate } from "@drincs/pixi-vn"
+import { addImage, CanvasImage, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, setDialogue, showCanvasImages, showImageWithDissolveTransition, StepLabelType, TickerRotate } from "@drincs/pixi-vn"
 
 @labelDecorator()
 export class ShowImageTest extends Label {
@@ -45,8 +45,8 @@ export class ShowImageTest extends Label {
                 await image.load()
             },
             () => {
-                showImageWithDisolveEffect("alien", 'https://pixijs.com/assets/eggHead.png', 0.01)
-                setDialogue("You can also show a image with a dissolve effect with the function showImageWithDisolveEffect")
+                showImageWithDissolveTransition("alien", 'https://pixijs.com/assets/eggHead.png', 0.01)
+                setDialogue("You can also show a image with a dissolve effect with the function showImageWithDissolveTransition")
             },
             () => {
                 let alien = GameWindowManager.getCanvasElement<CanvasImage>("alien")
