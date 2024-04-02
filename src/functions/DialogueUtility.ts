@@ -133,6 +133,7 @@ export function getDialogueHistory<T extends DialogueModelBase = DialogueModelBa
             if (lastRequiredChoices && step.openedLabels.length > 0) {
                 let lastLabel = step.openedLabels[step.openedLabels.length - 1]
                 choiceMade = lastRequiredChoices.find((choice) => choice.label === lastLabel.label)
+                lastRequiredChoices = undefined
             }
             list.push({
                 dialoge: dialoge,
