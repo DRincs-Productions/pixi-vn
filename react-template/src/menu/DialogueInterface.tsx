@@ -1,4 +1,4 @@
-import { CharacterModelBase, GameStepManager, GameWindowManager, getCharacterByTag, getChoiceMenuOptions, getDialogue, MenuOptionsType } from '@drincs/pixi-vn';
+import { CharacterModelBase, ChoiceMenuOptionsType, GameStepManager, GameWindowManager, getCharacterByTag, getChoiceMenuOptions, getDialogue } from '@drincs/pixi-vn';
 import { Button } from '@mui/joy';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';
@@ -30,7 +30,7 @@ export default function DialogueInterface(props: IProps) {
     const [loading, setLoading] = useState(false)
     const [text, setText] = useState<string | undefined>(undefined)
     const [character, setCharacter] = useState<CharacterModelBase | undefined>(undefined)
-    const [menu, setMenu] = useState<MenuOptionsType | undefined>(undefined)
+    const [menu, setMenu] = useState<ChoiceMenuOptionsType | undefined>(undefined)
     const [update, setUpdate] = useState(0)
     useEffect(() => {
         let dial = getDialogue()

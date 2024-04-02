@@ -1,10 +1,10 @@
-import { clearChoiceMenuOptions, GameStepManager, GameWindowManager, LabelRunModeEnum, MenuOptionsType } from '@drincs/pixi-vn';
+import { ChoiceMenuOptionsType, clearChoiceMenuOptions, GameStepManager, GameWindowManager, LabelRunModeEnum } from '@drincs/pixi-vn';
 import { Box, Grid } from '@mui/joy';
 import { useState } from 'react';
 import DialogueMenuButton from '../components/DialogueMenuButton';
 
 type IProps = {
-    menu: MenuOptionsType,
+    menu: ChoiceMenuOptionsType,
     dialogueWindowHeight: number,
     fullscreen?: boolean,
     afterClick?: () => void,

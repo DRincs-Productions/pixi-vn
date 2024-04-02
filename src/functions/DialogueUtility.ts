@@ -2,7 +2,7 @@ import { CharacterModelBase, DialogueModelBase } from "../classes";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { LabelRunModeEnum } from "../enums/LabelRunModeEnum";
 import { GameStepManager, GameStorageManager } from "../managers";
-import { MenuOptionsType } from "../types/MenuOptionsType";
+import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 
 /**
  * Set the dialogue to be shown in the game
@@ -70,7 +70,7 @@ export function clearDialogue(): void {
  * ])
  * ```
  */
-export function setChoiceMenuOptions(options: MenuOptionsType): void {
+export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
     let value: {
         text: string
         label: string
@@ -88,14 +88,14 @@ export function setChoiceMenuOptions(options: MenuOptionsType): void {
  * Get the options to be shown in the game
  * @returns Options to be shown in the game
  */
-export function getChoiceMenuOptions(): MenuOptionsType | undefined {
+export function getChoiceMenuOptions(): ChoiceMenuOptionsType | undefined {
     let d = GameStorageManager.getVariable<{
         text: string
         label: string
         type: LabelRunModeEnum
     }[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
-        let options: MenuOptionsType = []
+        let options: ChoiceMenuOptionsType = []
         d.forEach((option) => {
             let label = getLabelTypeByClassName(option.label)
             if (label) {
