@@ -21,6 +21,11 @@ export default class ChoiceMenuOptionLabel {
      * Type of the label to be opened
      */
     type: LabelRunModeEnum
+    /**
+     * @param text Text to be displayed in the menu
+     * @param label Label to be opened when the option is selected
+     * @param type Type of the label to be opened
+     */
     constructor(text: string, label: typeof Label, type: LabelRunModeEnum = LabelRunModeEnum.OpenByCall) {
         this.text = text
         this.label = label
