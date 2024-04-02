@@ -1,4 +1,4 @@
-import { GameStepManager, getSaveJson, loadSaveJsonString } from "@drincs/pixi-vn";
+import { GameStepManager, getSaveJson, loadSaveJson } from "@drincs/pixi-vn";
 
 export function saveGame() {
     const jsonString = getSaveJson()
@@ -24,7 +24,7 @@ export function loadGameSave(navigate: (path: string) => void, afterLoad?: () =>
             reader.onload = (e) => {
                 const jsonString = e.target?.result as string;
                 // load the save data from the JSON string
-                loadSaveJsonString(jsonString, navigate);
+                loadSaveJson(jsonString, navigate);
                 afterLoad && afterLoad();
             };
             reader.readAsText(file);

@@ -42,7 +42,7 @@ export function getSaveJson() {
  * @param data The save data
  * @param navigate The function to navigate to a path
  */
-export function loadSave(data: ISaveData, navigate: (path: string) => void) {
+export function loadSaveData(data: ISaveData, navigate: (path: string) => void) {
     GameStepManager.import(data.stepData);
     GameStorageManager.import(data.storageData);
     GameWindowManager.import(data.canvasData);
@@ -67,7 +67,7 @@ export function loadSave(data: ISaveData, navigate: (path: string) => void) {
  *             reader.onload = (e) => {
  *                 const jsonString = e.target?.result as string;
  *                 // load the save data from the JSON string
- *                 loadSaveJsonString(jsonString, navigate);
+ *                 loadSaveJson(jsonString, navigate);
  *                 afterLoad && afterLoad();
  *             };
  *             reader.readAsText(file);
@@ -77,6 +77,6 @@ export function loadSave(data: ISaveData, navigate: (path: string) => void) {
  * }
  * ```
  */
-export function loadSaveJsonString(dataString: string, navigate: (path: string) => void) {
-    loadSave(JSON.parse(dataString), navigate);
+export function loadSaveJson(dataString: string, navigate: (path: string) => void) {
+    loadSaveData(JSON.parse(dataString), navigate);
 }
