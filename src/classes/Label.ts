@@ -33,7 +33,7 @@ export default class Label {
      * This class should be extended and the steps method should be overridden.
      * Every time you update this list will also be updated when the other game versions load.
      */
-    public get steps(): StepLabelType[] { throw new Error("[Pixi'VM] The method Label.steps must be overridden") }
+    public get steps(): StepLabelType[] { throw new Error("[Pixi'VN] The method Label.steps must be overridden") }
     /**
      * Get the corresponding steps number
      * @param externalSteps

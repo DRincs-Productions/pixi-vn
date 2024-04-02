@@ -87,7 +87,7 @@ export default class GameStepManager {
                     }
                 }
                 catch (e) {
-                    console.error("[Pixi'VM] Error comparing openedLabels", e)
+                    console.error("[Pixi'VN] Error comparing openedLabels", e)
                 }
             }
         }
@@ -100,7 +100,7 @@ export default class GameStepManager {
     private static pushNewLabel(label: LabelTagType) {
         let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
-            throw new Error("[Pixi'VM] Label not found")
+            throw new Error("[Pixi'VN] Label not found")
         }
         GameStepManager._openedLabels.push({
             label: label,
@@ -113,12 +113,12 @@ export default class GameStepManager {
      */
     private static closeLabel() {
         if (!GameStepManager.currentLabel) {
-            console.warn("[Pixi'VM] No label to close")
+            console.warn("[Pixi'VN] No label to close")
             return
         }
         let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
         if (!currentLabel) {
-            console.error("[Pixi'VM] Label not found")
+            console.error("[Pixi'VN] Label not found")
             return
         }
         GameStepManager._openedLabels.pop()
@@ -165,7 +165,7 @@ export default class GameStepManager {
      */
     public static async runNextStep() {
         if (GameStepManager._openedLabels.length === 0) {
-            console.warn("[Pixi'VM] There are no labels to run")
+            console.warn("[Pixi'VN] There are no labels to run")
             return
         }
         GameStepManager.increaseCurrentStepIndex()
@@ -179,12 +179,12 @@ export default class GameStepManager {
         if (GameStepManager.currentLabel) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
-                console.error("[Pixi'VM] currentLabelStepIndex is null")
+                console.error("[Pixi'VN] currentLabelStepIndex is null")
                 return
             }
             let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
             if (!currentLabel) {
-                console.error("[Pixi'VM] Label not found")
+                console.error("[Pixi'VN] Label not found")
                 return
             }
             let n = currentLabel.steps.length
@@ -198,7 +198,7 @@ export default class GameStepManager {
                 await GameStepManager.runNextStep()
             }
             else {
-                console.warn("[Pixi'VM] There are no steps to run")
+                console.warn("[Pixi'VN] There are no steps to run")
             }
         }
     }
@@ -221,7 +221,7 @@ export default class GameStepManager {
             GameStepManager.pushNewLabel(labelName)
         }
         catch (e) {
-            console.error("[Pixi'VM] Error calling label", e)
+            console.error("[Pixi'VN] Error calling label", e)
             return
         }
         return await GameStepManager.runCurrentStep()
@@ -246,7 +246,7 @@ export default class GameStepManager {
             GameStepManager.pushNewLabel(labelName)
         }
         catch (e) {
-            console.error("[Pixi'VM] Error jumping label", e)
+            console.error("[Pixi'VN] Error jumping label", e)
             return
         }
         return await GameStepManager.runCurrentStep()
@@ -327,11 +327,11 @@ export default class GameStepManager {
      */
     public static goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
-            console.warn("[Pixi'VM] Steps must be greater than 0")
+            console.warn("[Pixi'VN] Steps must be greater than 0")
             return
         }
         if (GameStepManager._stepsHistory.length <= 1) {
-            console.warn("[Pixi'VM] No steps to go back")
+            console.warn("[Pixi'VN] No steps to go back")
             return
         }
         GameStepManager.goBackInstrnal(steps)
@@ -343,7 +343,7 @@ export default class GameStepManager {
             navigate(lastHistoryStep.path)
         }
         else {
-            console.error("[Pixi'VM] Error going back")
+            console.error("[Pixi'VN] Error going back")
         }
     }
     private static goBackInstrnal(steps: number) {
@@ -402,17 +402,17 @@ export default class GameStepManager {
                 GameStepManager._stepsHistory = (data as ExportedStep)["stepsHistory"] as IHistoryStep[]
             }
             else {
-                console.warn("[Pixi'VM] No stepsHistory data found")
+                console.warn("[Pixi'VN] No stepsHistory data found")
             }
             if (data.hasOwnProperty("openedLabels")) {
                 GameStepManager._openedLabels = (data as ExportedStep)["openedLabels"] as IOpenedLabel[]
             }
             else {
-                console.warn("[Pixi'VM] No openedLabels data found")
+                console.warn("[Pixi'VN] No openedLabels data found")
             }
         }
         catch (e) {
-            console.error("[Pixi'VM] Error importing data", e)
+            console.error("[Pixi'VN] Error importing data", e)
         }
     }
 }

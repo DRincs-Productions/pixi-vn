@@ -92,17 +92,17 @@ export default class GameStorageManager {
                 GameStorageManager.storage = (data as ExportedStorage)["storage"]
             }
             else {
-                console.warn("[Pixi'VM] No storage data found")
+                console.warn("[Pixi'VN] No storage data found")
             }
             if (data.hasOwnProperty("stepOidUsedList")) {
                 GameStorageManager.oidsUsed = (data as ExportedStorage)["stepOidUsedList"]
             }
             else {
-                console.warn("[Pixi'VM] No stepOidUsed data found")
+                console.warn("[Pixi'VN] No stepOidUsed data found")
             }
         }
         catch (e) {
-            console.error("[Pixi'VM] Error importing data", e)
+            console.error("[Pixi'VN] Error importing data", e)
         }
     }
 }

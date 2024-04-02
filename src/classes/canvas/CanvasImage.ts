@@ -49,7 +49,7 @@ export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
                 }
             })
             .catch((e) => {
-                console.error("[Pixi'VM] Error into CanvasImage.load()", e)
+                console.error("[Pixi'VN] Error into CanvasImage.load()", e)
             })
     }
 }

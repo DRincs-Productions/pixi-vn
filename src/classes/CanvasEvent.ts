@@ -18,5 +18,5 @@ import { CanvasEventNamesType } from "../types/CanvasEventNamesType";
  * ```
  */
 export default class CanvasEvent<C> {
-    fn(_event: CanvasEventNamesType, _element: C) { throw new Error("[Pixi'VM] The method CanvasEvent.fn() must be overridden") }
+    fn(_event: CanvasEventNamesType, _element: C) { throw new Error("[Pixi'VN] The method CanvasEvent.fn() must be overridden") }
 }
