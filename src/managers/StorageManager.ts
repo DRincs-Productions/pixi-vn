@@ -11,6 +11,7 @@ export default class GameStorageManager {
             CURRENT_DIALOGUE_MEMORY_KEY: "___current_dialogue_memory_key___",
             LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "___last_dialogue_added_in_step_memory_key___",
             CURRENT_MENU_OPTIONS_MEMORY_KEY: "___current_menu_options_memory_key___",
+            LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "___last_menu_options_added_in_step_memory_key___",
             CHARACTER_PREKEY: "___character___",
         }
     }

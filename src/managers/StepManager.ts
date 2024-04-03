@@ -23,7 +23,7 @@ export default class GameStepManager {
     static get stepsHistory() {
         return GameStepManager._stepsHistory
     }
-    private static _lastStepIndex: number = -1
+    private static _lastStepIndex: number = 0
     /**
      * lastStepIndex is the last step index that occurred during the progression of the steps. **Not is the length of the stepsHistory - 1.**
      */
@@ -31,12 +31,10 @@ export default class GameStepManager {
         return GameStepManager._lastStepIndex
     }
     /**
-     * is a method that increments the step index and returns it.
-     * @returns A new step index.
+     * Increase the last step index that occurred during the progression of the steps.
      */
-    private static useNewStepIndex(): number {
+    private static increaseLastStepIndex() {
         GameStepManager._lastStepIndex++
-        return GameStepManager._lastStepIndex
     }
     private static _openedLabels: IOpenedLabel[] = []
     static get openedLabels() {
@@ -87,7 +85,7 @@ export default class GameStepManager {
             canvas: GameWindowManager.export(),
             labelIndex: GameStepManager.currentLabelStepIndex || 0,
             openedLabels: createExportableElement(GameStepManager._openedLabels),
-            index: GameStepManager.useNewStepIndex(),
+            index: GameStepManager.lastStepIndex,
         }
         let lastStepData = GameStepManager.lastHistoryStep
         if (lastStepData) {
@@ -105,6 +103,7 @@ export default class GameStepManager {
             }
         }
         GameStepManager._stepsHistory.push(historyStep)
+        GameStepManager.increaseLastStepIndex()
     }
     /**
      * Add a label to the history.

@@ -1,7 +1,6 @@
 import { CharacterModelBase, DialogueModelBase } from "../classes";
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
-import { LabelRunModeEnum } from "../enums/LabelRunModeEnum";
 import { IDialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
@@ -80,6 +79,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
         }
     })
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
+    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
 }
 
 /**
@@ -117,24 +117,32 @@ export function clearChoiceMenuOptions(): void {
  */
 export function getDialogueHistory<T extends DialogueModelBase = DialogueModelBase>(): IDialogueHistory<T>[] {
     let list: IDialogueHistory<T>[] = []
-    let lastRequiredChoices: IStoratedChoiceMenuOptionLabel[] | undefined = undefined
-    GameStepManager.stepsHistory.forEach((step, index) => {
-        if (step.storage.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] === index) {
-            let dialoge = step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as T | undefined
-            let requiredChoices = step.storage.storage[GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY] as IStoratedChoiceMenuOptionLabel[] | undefined
-            let choiceMade: IStoratedChoiceMenuOptionLabel | undefined = undefined
-            if (requiredChoices) {
-                lastRequiredChoices = requiredChoices
+    GameStepManager.stepsHistory.forEach((step) => {
+        let dialoge: T | undefined = undefined
+        let requiredChoices: IStoratedChoiceMenuOptionLabel[] | undefined = undefined
+        if (step.storage.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
+            dialoge = step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as T | undefined
+        }
+        if (step.storage.storage[GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
+            requiredChoices = step.storage.storage[GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY] as IStoratedChoiceMenuOptionLabel[] | undefined
+        }
+        if (
+            list.length > 0 &&
+            list[list.length - 1].choices && !list[list.length - 1].choiceMade &&
+            step.openedLabels.length > 0
+        ) {
+            let oldChoices = list[list.length - 1].choices
+            if (oldChoices) {
+                let lastLabel = step.openedLabels[step.openedLabels.length - 1].label
+                list[list.length - 1].choiceMade = oldChoices.find((choice) => choice.label === lastLabel)
             }
-            if (lastRequiredChoices && step.openedLabels.length > 0) {
-                let lastLabel = step.openedLabels[step.openedLabels.length - 1]
-                choiceMade = lastRequiredChoices.find((choice) => choice.label === lastLabel.label)
-                lastRequiredChoices = undefined
-            }
+        }
+        if (dialoge || requiredChoices) {
             list.push({
                 dialoge: dialoge,
-                choiceMade: choiceMade,
-                choices: requiredChoices
+                choiceMade: undefined,
+                choices: requiredChoices,
+                stepIndex: step.index
             })
         }
     })

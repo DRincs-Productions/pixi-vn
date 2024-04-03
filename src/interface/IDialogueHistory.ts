@@ -14,4 +14,5 @@ export interface IDialogueHistory<T extends DialogueModelBase = DialogueModelBas
      * Choice made by the player
      */
     choiceMade?: IStoratedChoiceMenuOptionLabel
+    stepIndex: number
 }
