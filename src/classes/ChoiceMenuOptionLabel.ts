@@ -1,4 +1,5 @@
 import { LabelRunModeEnum } from "../enums/LabelRunModeEnum"
+import { LabelTagType } from "../types/LabelTagType"
 import Label from "./Label"
 
 /**
@@ -9,12 +10,32 @@ import Label from "./Label"
  * ```
  */
 export default class ChoiceMenuOptionLabel {
+    /**
+     * Text to be displayed in the menu
+     */
     text: string
+    /**
+     * Label to be opened when the option is selected
+     */
     label: typeof Label
+    /**
+     * Type of the label to be opened
+     */
     type: LabelRunModeEnum
+    /**
+     * @param text Text to be displayed in the menu
+     * @param label Label to be opened when the option is selected
+     * @param type Type of the label to be opened
+     */
     constructor(text: string, label: typeof Label, type: LabelRunModeEnum = LabelRunModeEnum.OpenByCall) {
         this.text = text
         this.label = label
         this.type = type
     }
+}
+
+export interface IStoratedChoiceMenuOptionLabel {
+    text: string
+    label: LabelTagType
+    type: LabelRunModeEnum
 }

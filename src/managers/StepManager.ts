@@ -12,7 +12,7 @@ import GameStorageManager from "./StorageManager"
 import GameWindowManager from "./WindowManager"
 
 /**
- * GameHistoryManager is a class that contains the history of the game.
+ * GameStepManager is a class that manages the steps and labels of the game.
  */
 export default class GameStepManager {
     private constructor() { }
@@ -23,8 +23,18 @@ export default class GameStepManager {
     static get stepsHistory() {
         return GameStepManager._stepsHistory
     }
+    private static _lastStepIndex: number = 0
+    /**
+     * lastStepIndex is the last step index that occurred during the progression of the steps. **Not is the length of the stepsHistory - 1.**
+     */
     static get lastStepIndex() {
-        return GameStepManager.stepsHistory.length
+        return GameStepManager._lastStepIndex
+    }
+    /**
+     * Increase the last step index that occurred during the progression of the steps.
+     */
+    private static increaseLastStepIndex() {
+        GameStepManager._lastStepIndex++
     }
     private static _openedLabels: IOpenedLabel[] = []
     static get openedLabels() {
@@ -41,7 +51,7 @@ export default class GameStepManager {
         return null
     }
     /**
-     * currentLabelStepIndex is the current step index of the current label that occurred during the progression of the steps.
+     * is the current step index of the current label that occurred during the progression of the steps.
      */
     private static get currentLabelStepIndex(): number | null {
         if (GameStepManager._openedLabels.length > 0) {
@@ -73,8 +83,9 @@ export default class GameStepManager {
             storage: GameStorageManager.export(),
             stepSha1: stepHistory,
             canvas: GameWindowManager.export(),
-            stepIndex: GameStepManager.currentLabelStepIndex || 0,
+            labelIndex: GameStepManager.currentLabelStepIndex || 0,
             openedLabels: createExportableElement(GameStepManager._openedLabels),
+            index: GameStepManager.lastStepIndex,
         }
         let lastStepData = GameStepManager.lastHistoryStep
         if (lastStepData) {
@@ -92,6 +103,7 @@ export default class GameStepManager {
             }
         }
         GameStepManager._stepsHistory.push(historyStep)
+        GameStepManager.increaseLastStepIndex()
     }
     /**
      * Add a label to the history.
@@ -382,6 +394,7 @@ export default class GameStepManager {
         return {
             stepsHistory: GameStepManager._stepsHistory,
             openedLabels: GameStepManager._openedLabels,
+            lastStepIndex: GameStepManager._lastStepIndex,
         }
     }
     /**
@@ -409,6 +422,12 @@ export default class GameStepManager {
             }
             else {
                 console.warn("[Pixi'VN] No openedLabels data found")
+            }
+            if (data.hasOwnProperty("lastStepIndex")) {
+                GameStepManager._lastStepIndex = (data as ExportedStep)["lastStepIndex"]
+            }
+            else {
+                console.warn("[Pixi'VN] No lastStepIndex data found")
             }
         }
         catch (e) {

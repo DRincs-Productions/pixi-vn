@@ -7,4 +7,5 @@ import IOpenedLabel from "../IOpenedLabel"
 export default interface ExportedStep {
     stepsHistory: IHistoryStep[]
     openedLabels: IOpenedLabel[]
+    lastStepIndex: number
 }

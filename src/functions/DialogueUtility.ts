@@ -1,6 +1,7 @@
 import { CharacterModelBase, DialogueModelBase } from "../classes";
+import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
-import { LabelRunModeEnum } from "../enums/LabelRunModeEnum";
+import { IDialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 
@@ -71,17 +72,14 @@ export function clearDialogue(): void {
  * ```
  */
 export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
-    let value: {
-        text: string
-        label: string
-        type: LabelRunModeEnum
-    }[] = options.map((option) => {
+    let value: IStoratedChoiceMenuOptionLabel[] = options.map((option) => {
         return {
             ...option,
             label: option.label.name
         }
     })
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
+    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
 }
 
 /**
@@ -89,11 +87,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
  * @returns Options to be shown in the game
  */
 export function getChoiceMenuOptions(): ChoiceMenuOptionsType | undefined {
-    let d = GameStorageManager.getVariable<{
-        text: string
-        label: string
-        type: LabelRunModeEnum
-    }[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+    let d = GameStorageManager.getVariable<IStoratedChoiceMenuOptionLabel[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
         let options: ChoiceMenuOptionsType = []
         d.forEach((option) => {
@@ -121,11 +115,36 @@ export function clearChoiceMenuOptions(): void {
  * Get the history of the dialogues
  * @returns the history of the dialogues
  */
-export function getDialogueHistory() {
-    let list: (DialogueModelBase | undefined)[] = GameStepManager.stepsHistory.map((step, index) => {
-        if (step.storage.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] !== index)
-            return undefined
-        return step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as DialogueModelBase | undefined
+export function getDialogueHistory<T extends DialogueModelBase = DialogueModelBase>(): IDialogueHistory<T>[] {
+    let list: IDialogueHistory<T>[] = []
+    GameStepManager.stepsHistory.forEach((step) => {
+        let dialoge: T | undefined = undefined
+        let requiredChoices: IStoratedChoiceMenuOptionLabel[] | undefined = undefined
+        if (step.storage.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
+            dialoge = step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as T | undefined
+        }
+        if (step.storage.storage[GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
+            requiredChoices = step.storage.storage[GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY] as IStoratedChoiceMenuOptionLabel[] | undefined
+        }
+        if (
+            list.length > 0 &&
+            list[list.length - 1].choices && !list[list.length - 1].choiceMade &&
+            step.openedLabels.length > 0
+        ) {
+            let oldChoices = list[list.length - 1].choices
+            if (oldChoices) {
+                let lastLabel = step.openedLabels[step.openedLabels.length - 1].label
+                list[list.length - 1].choiceMade = oldChoices.find((choice) => choice.label === lastLabel)
+            }
+        }
+        if (dialoge || requiredChoices) {
+            list.push({
+                dialoge: dialoge,
+                choiceMade: undefined,
+                choices: requiredChoices,
+                stepIndex: step.index
+            })
+        }
     })
-    return list.filter((d) => d !== undefined) as DialogueModelBase[]
+    return list
 }
