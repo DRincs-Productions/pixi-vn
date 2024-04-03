@@ -412,13 +412,13 @@ export default class GameStepManager {
         GameStepManager.clear()
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                GameStepManager._stepsHistory = (data as ExportedStep)["stepsHistory"] as IHistoryStep[]
+                GameStepManager._stepsHistory = (data as ExportedStep)["stepsHistory"]
             }
             else {
                 console.warn("[Pixi'VN] No stepsHistory data found")
             }
             if (data.hasOwnProperty("openedLabels")) {
-                GameStepManager._openedLabels = (data as ExportedStep)["openedLabels"] as IOpenedLabel[]
+                GameStepManager._openedLabels = (data as ExportedStep)["openedLabels"]
             }
             else {
                 console.warn("[Pixi'VN] No openedLabels data found")
