@@ -120,11 +120,11 @@ export function getDialogueHistory<T extends DialogueModelBase = DialogueModelBa
     GameStepManager.stepsHistory.forEach((step) => {
         let dialoge: T | undefined = undefined
         let requiredChoices: IStoratedChoiceMenuOptionLabel[] | undefined = undefined
-        if (step.storage.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
-            dialoge = step.storage.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as T | undefined
+        if (step.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
+            dialoge = step.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as T | undefined
         }
-        if (step.storage.storage[GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
-            requiredChoices = step.storage.storage[GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY] as IStoratedChoiceMenuOptionLabel[] | undefined
+        if (step.storage[GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
+            requiredChoices = step.storage[GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY] as IStoratedChoiceMenuOptionLabel[] | undefined
         }
         if (
             list.length > 0 &&
