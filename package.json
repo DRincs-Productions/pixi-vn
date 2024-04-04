@@ -25,6 +25,7 @@
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/css-font-loading-module": "^0.0.13",
+    "@types/deep-diff": "^1.0.5",
     "jsdom": "^24.0.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.0.2",
@@ -33,6 +34,7 @@
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
+    "deep-diff": "^1.0.2",
     "pixi.js": "^8.0.2"
   },
   "keywords": [
