@@ -1,3 +1,7 @@
+import deepDiff from "deep-diff";
+import { DialogueModelBase } from "../classes";
+import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
+import { LabelTagType } from "../types/LabelTagType";
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
 import ExportedCanvas from "./export/ExportedCanvas";
 import ExportedStorage from "./export/ExportedStorage";
@@ -6,7 +10,7 @@ import IOpenedLabel from "./IOpenedLabel";
 /**
  * IHistoryStep is a interface that contains the information of a step in the history.
  */
-export default interface IHistoryStep {
+export interface IHistoryStepData {
     /**
      * The browser path that occurred during the progression of the steps.
      */
@@ -15,10 +19,6 @@ export default interface IHistoryStep {
      * The storage that occurred during the progression of the steps.
      */
     storage: ExportedStorage,
-    /**
-     * The sha1 of the step function.
-     */
-    stepSha1: StepHistoryDataType,
     /**
      * The index of the label that occurred during the progression of the steps.
      */
@@ -31,8 +31,31 @@ export default interface IHistoryStep {
      * The opened labels that occurred during the progression of the steps.
      */
     openedLabels: IOpenedLabel[],
+}
+
+export default interface IHistoryStep<T extends DialogueModelBase = DialogueModelBase> {
+    /**
+     * The difference between the previous step and the current step.
+     */
+    diff: deepDiff.Diff<IHistoryStepData, IHistoryStepData>[]
+    /**
+     * The label tag of the current step.
+     */
+    currentLabel?: LabelTagType
+    /**
+     * The sha1 of the step function.
+     */
+    stepSha1: StepHistoryDataType,
     /**
      * The index of the step in the history.
      */
     index: number,
+    /**
+     * Dialogue to be shown in the game
+     */
+    dialoge?: T
+    /**
+     * List of choices asked of the player
+     */
+    choices?: IStoratedChoiceMenuOptionLabel[]
 }

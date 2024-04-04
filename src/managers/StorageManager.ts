@@ -3,7 +3,6 @@ import { ExportedStorage } from "../interface/export"
 import { StorageElementType } from "../types/StorageElementType"
 
 export default class GameStorageManager {
-    private static oidsUsed: string[] = []
     private static storage: { [key: string]: StorageElementType } = {}
     private constructor() { }
     public static get keysSystem() {
@@ -14,18 +13,6 @@ export default class GameStorageManager {
             LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "___last_menu_options_added_in_step_memory_key___",
             CHARACTER_PREKEY: "___character___",
         }
-    }
-    /**
-     * Get a new oid that is not used yet
-     * @returns A new oid that is not used yet
-     */
-    public static getNewOid(): string {
-        let oid = ""
-        do {
-            oid = Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15)
-        } while (GameStorageManager.oidsUsed.includes(oid))
-        GameStorageManager.oidsUsed.push(oid)
-        return oid
     }
     /**
      * Set a variable in the storage
@@ -71,17 +58,13 @@ export default class GameStorageManager {
      * @returns
      */
     public static clear() {
-        GameStorageManager.oidsUsed = []
         GameStorageManager.storage = {}
     }
     public static exportJson(): string {
         return JSON.stringify(this.export())
     }
     public static export(): ExportedStorage {
-        return {
-            storage: createExportableElement(GameStorageManager.storage),
-            stepOidUsedList: createExportableElement(GameStorageManager.oidsUsed),
-        }
+        return createExportableElement(GameStorageManager.storage)
     }
     public static importJson(dataString: string) {
         GameStorageManager.import(JSON.parse(dataString))
@@ -89,17 +72,11 @@ export default class GameStorageManager {
     public static import(data: object) {
         GameStorageManager.clear()
         try {
-            if (data.hasOwnProperty("storage")) {
-                GameStorageManager.storage = (data as ExportedStorage)["storage"]
+            if (data) {
+                GameStorageManager.storage = (data as ExportedStorage)
             }
             else {
                 console.warn("[Pixi'VN] No storage data found")
-            }
-            if (data.hasOwnProperty("stepOidUsedList")) {
-                GameStorageManager.oidsUsed = (data as ExportedStorage)["stepOidUsedList"]
-            }
-            else {
-                console.warn("[Pixi'VN] No stepOidUsed data found")
             }
         }
         catch (e) {
