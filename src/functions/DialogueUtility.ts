@@ -118,28 +118,21 @@ export function clearChoiceMenuOptions(): void {
 export function getDialogueHistory<T extends DialogueModelBase = DialogueModelBase>(): IDialogueHistory<T>[] {
     let list: IDialogueHistory<T>[] = []
     GameStepManager.stepsHistory.forEach((step) => {
-        let dialoge: T | undefined = undefined
-        let requiredChoices: IStoratedChoiceMenuOptionLabel[] | undefined = undefined
-        if (step.storage[GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
-            dialoge = step.storage[GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY] as T | undefined
-        }
-        if (step.storage[GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY] === step.index) {
-            requiredChoices = step.storage[GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY] as IStoratedChoiceMenuOptionLabel[] | undefined
-        }
+        let dialoge = step.dialoge
+        let requiredChoices = step.choices
         if (
             list.length > 0 &&
             list[list.length - 1].choices && !list[list.length - 1].choiceMade &&
-            step.openedLabels.length > 0
+            step.currentLabel
         ) {
             let oldChoices = list[list.length - 1].choices
             if (oldChoices) {
-                let lastLabel = step.openedLabels[step.openedLabels.length - 1].label
-                list[list.length - 1].choiceMade = oldChoices.find((choice) => choice.label === lastLabel)
+                list[list.length - 1].choiceMade = oldChoices.find((choice) => choice.label === step.currentLabel)
             }
         }
         if (dialoge || requiredChoices) {
             list.push({
-                dialoge: dialoge,
+                dialoge: dialoge as T,
                 choiceMade: undefined,
                 choices: requiredChoices,
                 stepIndex: step.index

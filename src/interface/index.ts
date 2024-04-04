@@ -1,6 +1,6 @@
 export { IClassWithArgsHistory, IClassWithArgsHistoryForExport } from './IClassWithArgsHistory';
 export { IDialogueHistory } from './IDialogueHistory';
-export { default as IHistoryStep } from './IHistoryStep';
+export { default as IHistoryStep, IHistoryStepData } from './IHistoryStep';
 export { default as IOpenedLabel } from './IOpenedLabel';
 export { default as ISaveData } from './ISaveData';
 export { default as ITicker } from './ITicker';

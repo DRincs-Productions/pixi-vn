@@ -1,9 +1,13 @@
-import { Label } from "../classes"
+import { diff } from "deep-diff"
+import { DialogueModelBase, Label } from "../classes"
+import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
+import { getDialogue } from "../functions"
+import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
 import { getStepSha1 } from "../functions/StepLabelUtility"
 import ExportedStep from "../interface/export/ExportedStep"
-import IHistoryStep from "../interface/IHistoryStep"
+import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
 import { LabelTagType } from "../types/LabelTagType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
@@ -43,12 +47,12 @@ export default class GameStepManager {
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    private static get currentLabel(): LabelTagType | null {
+    private static get currentLabel(): LabelTagType | undefined {
         if (GameStepManager._openedLabels.length > 0) {
             let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
             return item.label
         }
-        return null
+        return undefined
     }
     /**
      * is the current step index of the current label that occurred during the progression of the steps.
@@ -69,6 +73,26 @@ export default class GameStepManager {
         }
         return null
     }
+    private static _originalStepData: IHistoryStepData | undefined = undefined
+    private static get originalStepData(): IHistoryStepData {
+        if (!GameStepManager._originalStepData) {
+            return {
+                path: "",
+                storage: {},
+                canvas: {
+                    childrenTagsOrder: [],
+                    currentElements: {},
+                    currentTickers: [],
+                },
+                labelIndex: -1,
+                openedLabels: [],
+            }
+        }
+        return createExportableElement(GameStepManager._originalStepData)
+    }
+    private static set originalStepData(value: IHistoryStepData) {
+        GameStepManager._originalStepData = createExportableElement(value)
+    }
 
     /* Edit History Methods */
 
@@ -78,20 +102,17 @@ export default class GameStepManager {
      */
     private static addStepHistory(step: StepLabelType) {
         let stepHistory: StepHistoryDataType = getStepSha1(step)
-        let historyStep: IHistoryStep = {
+        let historyStep: IHistoryStepData = {
             path: window.location.pathname,
             storage: GameStorageManager.export(),
-            stepSha1: stepHistory,
             canvas: GameWindowManager.export(),
             labelIndex: GameStepManager.currentLabelStepIndex || 0,
             openedLabels: createExportableElement(GameStepManager._openedLabels),
-            index: GameStepManager.lastStepIndex,
         }
-        let lastStepData = GameStepManager.lastHistoryStep
-        if (lastStepData) {
-            if (lastStepData.openedLabels.length === historyStep.openedLabels.length) {
+        if (GameStepManager.originalStepData) {
+            if (GameStepManager.originalStepData.openedLabels.length === historyStep.openedLabels.length) {
                 try {
-                    let lastStepDataOpenedLabelsString = JSON.stringify(lastStepData.openedLabels)
+                    let lastStepDataOpenedLabelsString = JSON.stringify(GameStepManager.originalStepData.openedLabels)
                     let historyStepOpenedLabelsString = JSON.stringify(historyStep.openedLabels)
                     if (lastStepDataOpenedLabelsString === historyStepOpenedLabelsString) {
                         return
@@ -102,7 +123,26 @@ export default class GameStepManager {
                 }
             }
         }
-        GameStepManager._stepsHistory.push(historyStep)
+        let data = diff(GameStepManager.originalStepData, historyStep)
+        if (data) {
+            let dialoge: DialogueModelBase | undefined = undefined
+            let requiredChoices: IStoratedChoiceMenuOptionLabel[] | undefined = undefined
+            if (GameStorageManager.getVariable<number>(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
+                dialoge = getDialogue()
+            }
+            if (GameStorageManager.getVariable<number>(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
+                requiredChoices = GameStorageManager.getVariable<IStoratedChoiceMenuOptionLabel[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+            }
+            GameStepManager._stepsHistory.push({
+                diff: data,
+                currentLabel: GameStepManager.currentLabel,
+                dialoge: dialoge,
+                choices: requiredChoices,
+                stepSha1: stepHistory,
+                index: GameStepManager.lastStepIndex,
+            })
+            GameStepManager.originalStepData = historyStep
+        }
         GameStepManager.increaseLastStepIndex()
     }
     /**
@@ -346,27 +386,41 @@ export default class GameStepManager {
             console.warn("[Pixi'VN] No steps to go back")
             return
         }
-        GameStepManager.goBackInstrnal(steps)
-        let lastHistoryStep = GameStepManager.lastHistoryStep
-        if (lastHistoryStep) {
-            GameStepManager._openedLabels = createExportableElement(lastHistoryStep.openedLabels)
-            GameStorageManager.import(createExportableElement(lastHistoryStep.storage))
-            GameWindowManager.import(createExportableElement(lastHistoryStep.canvas))
-            navigate(lastHistoryStep.path)
+        let restoredStep = GameStepManager.goBackInternal(steps, GameStepManager.originalStepData)
+        if (restoredStep) {
+            GameStepManager._originalStepData = restoredStep
+            GameStepManager._openedLabels = createExportableElement(restoredStep.openedLabels)
+            GameStorageManager.import(createExportableElement(restoredStep.storage))
+            GameWindowManager.import(createExportableElement(restoredStep.canvas))
+            navigate(restoredStep.path)
         }
         else {
             console.error("[Pixi'VN] Error going back")
         }
     }
-    private static goBackInstrnal(steps: number) {
+    private static goBackInternal(steps: number, restoredStep: IHistoryStepData): IHistoryStepData {
         if (steps <= 0) {
-            return
+            return restoredStep
         }
         if (GameStepManager._stepsHistory.length == 0) {
-            return
+            return restoredStep
         }
-        GameStepManager._stepsHistory.pop()
-        GameStepManager.goBackInstrnal(steps - 1)
+        let lastHistoryStep = GameStepManager.lastHistoryStep
+        if (lastHistoryStep) {
+            try {
+                let result = restoreDeepDiffChanges(restoredStep, lastHistoryStep.diff)
+                GameStepManager._lastStepIndex = lastHistoryStep.index
+                GameStepManager._stepsHistory.pop()
+                return GameStepManager.goBackInternal(steps - 1, result)
+            }
+            catch (e) {
+                console.error("[Pixi'VN] Error applying diff", e)
+                return restoredStep
+            }
+        }
+        else {
+            return restoredStep
+        }
     }
 
     /**
@@ -395,6 +449,7 @@ export default class GameStepManager {
             stepsHistory: GameStepManager._stepsHistory,
             openedLabels: GameStepManager._openedLabels,
             lastStepIndex: GameStepManager._lastStepIndex,
+            originalStepData: GameStepManager._originalStepData,
         }
     }
     /**
@@ -428,6 +483,12 @@ export default class GameStepManager {
             }
             else {
                 console.warn("[Pixi'VN] No lastStepIndex data found")
+            }
+            if (data.hasOwnProperty("originalStepData")) {
+                GameStepManager._originalStepData = (data as ExportedStep)["originalStepData"]
+            }
+            else {
+                console.warn("[Pixi'VN] No originalStepData data found")
             }
         }
         catch (e) {
