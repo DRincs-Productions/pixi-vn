@@ -35,22 +35,22 @@ if (!body) {
     throw new Error('body element not found')
 }
 
-await GameWindowManager.initialize(body, 1920, 1080, {
+GameWindowManager.initialize(body, 1920, 1080, {
     backgroundColor: "#303030"
+}).then(() => {
+    // React setup with ReactDOM
+    const root = document.getElementById('root')
+    if (!root) {
+        throw new Error('root element not found')
+    }
+
+    GameWindowManager.initializeHTMLLayout(root)
+    const reactRoot = createRoot(GameWindowManager.htmlLayout)
+
+    reactRoot.render(
+        <App />
+    )
 })
-
-// React setup with ReactDOM
-const root = document.getElementById('root')
-if (!root) {
-    throw new Error('root element not found')
-}
-
-GameWindowManager.initializeHTMLLayout(root)
-const reactRoot = createRoot(GameWindowManager.htmlLayout)
-
-reactRoot.render(
-    <App />
-)
 ```
 
 This is the HTML file that will be used to load the application.
@@ -87,3 +87,7 @@ body {
 ## Wiki
 
 For more information, visit the [Wiki](https://pixivn.readthedocs.io/)
+
+## Why Pixi'VN?
+
+The reason why Pixi'VN was born is that current systems for creating a visual novel are based on dated systems and have many shortcomings.
