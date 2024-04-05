@@ -33,8 +33,8 @@ export interface ICharacterModelBase {
  * ```
  */
 export default class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
-    constructor(tag: string, props: ICharacterModelBase) {
-        super(GameStorageManager.keysSystem.CHARACTER_PREKEY + tag)
+    constructor(id: string, props: ICharacterModelBase) {
+        super(GameStorageManager.keysSystem.CHARACTER_PREKEY + id)
         this.defaultName = props.name
         this.defaultSurname = props.surname
         this.defaultAge = props.age

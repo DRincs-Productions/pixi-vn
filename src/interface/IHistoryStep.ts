@@ -1,7 +1,7 @@
 import deepDiff from "deep-diff";
 import { DialogueModelBase } from "../classes";
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
-import { LabelTagType } from "../types/LabelTagType";
+import { LabelIdType } from "../types/LabelIdType";
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
 import ExportedCanvas from "./export/ExportedCanvas";
 import ExportedStorage from "./export/ExportedStorage";
@@ -39,9 +39,9 @@ export default interface IHistoryStep<T extends DialogueModelBase = DialogueMode
      */
     diff: deepDiff.Diff<IHistoryStepData, IHistoryStepData>[]
     /**
-     * The label tag of the current step.
+     * The label id of the current step.
      */
-    currentLabel?: LabelTagType
+    currentLabel?: LabelIdType
     /**
      * The sha1 of the step function.
      */

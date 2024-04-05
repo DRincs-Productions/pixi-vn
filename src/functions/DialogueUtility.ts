@@ -12,17 +12,17 @@ import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
  * ```typescript
  * setDialogue("Hello World")
  * setDialogue({
- *       character: "characterTag",
+ *       character: "characterId",
  *       text: "Hello World"
  * })
  * ```
  */
-export function setDialogue(props: {
-    character: string | CharacterModelBase,
+export function setDialogue<T extends CharacterModelBase = CharacterModelBase>(props: {
+    character: string | T,
     text: string,
 } | string): void {
     let text = ''
-    let characterTag: string | undefined = undefined
+    let characterId: string | undefined = undefined
     if (typeof props === 'string') {
         text = props
     }
@@ -30,14 +30,14 @@ export function setDialogue(props: {
         text = props.text
         if (props.character) {
             if (typeof props.character === 'string') {
-                characterTag = props.character
+                characterId = props.character
             }
             else {
-                characterTag = props.character.id
+                characterId = props.character.id
             }
         }
     }
-    let dialogue = new DialogueModelBase(text, characterTag)
+    let dialogue = new DialogueModelBase(text, characterId)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
 }
@@ -46,8 +46,8 @@ export function setDialogue(props: {
  * Get the dialogue to be shown in the game
  * @returns Dialogue to be shown in the game
  */
-export function getDialogue(): DialogueModelBase | undefined {
-    return GameStorageManager.getVariable<DialogueModelBase>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY)
+export function getDialogue<T extends DialogueModelBase = DialogueModelBase>(): T | undefined {
+    return GameStorageManager.getVariable<DialogueModelBase>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
 }
 
 /**

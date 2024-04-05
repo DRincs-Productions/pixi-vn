@@ -1,6 +1,6 @@
 import { TextOptions } from "pixi.js";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
-import { EventTagType } from "../../types/EventTagType";
+import { EventIdType } from "../../types/EventIdType";
 import ICanvasBaseMemory from "./ICanvasBaseMemory";
 
 /**
@@ -8,5 +8,5 @@ import ICanvasBaseMemory from "./ICanvasBaseMemory";
  */
 export default interface ICanvasTextMemory extends TextOptions, ICanvasBaseMemory {
     className: "CanvasText",
-    onEvents: { [name: CanvasEventNamesType]: EventTagType }
+    onEvents: { [name: CanvasEventNamesType]: EventIdType }
 }

@@ -1,6 +1,6 @@
-import { LabelTagType } from "../types/LabelTagType";
+import { LabelIdType } from "../types/LabelIdType";
 
 export default interface IOpenedLabel {
-    label: LabelTagType,
+    label: LabelIdType,
     currentStepIndex: number,
 }

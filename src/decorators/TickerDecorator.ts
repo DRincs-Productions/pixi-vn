@@ -1,11 +1,11 @@
 import { UPDATE_PRIORITY } from "pixi.js"
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase"
-import { TickerTagType } from "../types/TickerTagType"
+import { TickerIdType } from "../types/TickerIdType"
 
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.
  */
-export const registeredTickers: { [name: TickerTagType]: typeof TickerBase } = {}
+export const registeredTickers: { [name: TickerIdType]: typeof TickerBase } = {}
 /**
  * Is a decorator that register a ticker in the game.
  * Is a required decorator for use the ticker in the game.
@@ -13,7 +13,7 @@ export const registeredTickers: { [name: TickerTagType]: typeof TickerBase } = {
  * @param name is th identifier of the label, by default is the name of the class
  * @returns 
  */
-export default function tickerDecorator(name?: TickerTagType) {
+export default function tickerDecorator(name?: TickerIdType) {
     return function (target: typeof TickerBase<any>) {
         if (!name) {
             name = target.name
@@ -30,7 +30,7 @@ export default function tickerDecorator(name?: TickerTagType) {
  * @param tickerName The name of the class.
  * @returns The ticker instance.
  */
-export function geTickerInstanceByClassName<TArgs extends TickerArgsType>(tickerName: TickerTagType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
+export function geTickerInstanceByClassName<TArgs extends TickerArgsType>(tickerName: TickerIdType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
     try {
         let ticker = registeredTickers[tickerName]
         if (!ticker) {
