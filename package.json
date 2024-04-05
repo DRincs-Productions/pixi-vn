@@ -21,7 +21,7 @@
   "bugs": {
     "url": "https://github.com/DRincs-Productions/pixi-vn/issues"
   },
-  "homepage": "https://github.com/DRincs-Productions/pixi-vn#readme",
+  "homepage": "https://pixivn.readthedocs.io",
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/css-font-loading-module": "^0.0.13",
