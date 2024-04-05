@@ -15,7 +15,7 @@ export default function labelDecorator(name?: LabelIdType) {
             name = target.name
         }
         if (registeredLabels[name]) {
-            console.warn(`Label ${name} already exists, it will be overwritten`)
+            console.warn(`[Pixi'VN] Label ${name} already exists, it will be overwritten`)
         }
         registeredLabels[name] = target
     }
@@ -30,14 +30,14 @@ export function getLabelTypeByClassName<T extends typeof Label>(labelName: Label
     try {
         let labelType = registeredLabels[labelName]
         if (!labelType) {
-            console.error(`Label ${labelName} not found`)
+            console.error(`[Pixi'VN] Label ${labelName} not found`)
             return
         }
         new labelType()
         return labelType as T
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting Label ${labelName}`, e)
         return
     }
 }
@@ -51,18 +51,18 @@ export function getLabelInstanceByClassName<T extends Label>(labelName: LabelIdT
     try {
         let labelType = registeredLabels[labelName]
         if (!labelType) {
-            console.error(`Label ${labelName} not found`)
+            console.error(`[Pixi'VN] Label ${labelName} not found`)
             return
         }
         let label = new labelType()
         let step = label.steps
         if (step.length = 0) {
-            console.warn(`Label ${labelName} has no steps`)
+            console.warn(`[Pixi'VN] Label ${labelName} has no steps`)
         }
         return label as T
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting Label ${labelName}`, e)
         return
     }
 }

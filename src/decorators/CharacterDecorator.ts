@@ -18,7 +18,7 @@ export function saveCharacter<T extends CharacterModelBase = CharacterModelBase>
         return
     }
     if (registeredCharacters[character.id]) {
-        console.warn(`Character id ${character.id} already exists, it will be overwritten`)
+        console.warn(`[Pixi'VN] Character id ${character.id} already exists, it will be overwritten`)
     }
     registeredCharacters[character.id] = character
 }
@@ -36,13 +36,13 @@ export function getCharacterById<T extends CharacterModelBase>(id: string): T | 
     try {
         let character = registeredCharacters[id]
         if (!character) {
-            console.error(`Character ${id} not found`)
+            console.error(`[Pixi'VN] Character ${id} not found`)
             return
         }
         return character as T
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting Character ${id}`, e)
         return
     }
 }

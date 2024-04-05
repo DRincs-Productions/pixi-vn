@@ -20,7 +20,7 @@ export default function eventDecorator(name?: EventIdType) {
             name = target.name
         }
         if (registeredEvents[name]) {
-            console.warn(`Event ${name} already exists, it will be overwritten`)
+            console.warn(`[Pixi'VN] Event ${name} already exists, it will be overwritten`)
         }
         registeredEvents[name] = target
     }
@@ -35,14 +35,14 @@ export function getEventTypeByClassName<T = typeof CanvasEvent<CanvasBase<any>>>
     try {
         let eventType = registeredEvents[eventName]
         if (!eventType) {
-            console.error(`Event ${eventName} not found`)
+            console.error(`[Pixi'VN] Event ${eventName} not found`)
             return
         }
         new eventType()
         return eventType as T
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting Event ${eventName}`, e)
         return
     }
 }
@@ -56,14 +56,14 @@ export function getEventInstanceByClassName<T = CanvasEvent<CanvasBase<any>>>(ev
     try {
         let eventType = registeredEvents[eventName]
         if (!eventType) {
-            console.error(`Event ${eventName} not found`)
+            console.error(`[Pixi'VN] Event ${eventName} not found`)
             return
         }
         let event = new eventType()
         return event as T
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting Event ${eventName}`, e)
         return
     }
 }

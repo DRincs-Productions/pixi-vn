@@ -19,7 +19,7 @@ export default function tickerDecorator(name?: TickerIdType) {
             name = target.name
         }
         if (registeredTickers[name]) {
-            console.warn(`Ticker ${name} already exists, it will be overwritten`)
+            console.warn(`[Pixi'VN] Ticker ${name} already exists, it will be overwritten`)
         }
         registeredTickers[name] = target
     }
@@ -34,13 +34,13 @@ export function geTickerInstanceByClassName<TArgs extends TickerArgsType>(ticker
     try {
         let ticker = registeredTickers[tickerName]
         if (!ticker) {
-            console.error(`Ticker ${tickerName} not found`)
+            console.error(`[Pixi'VN] Ticker ${tickerName} not found`)
             return
         }
         return new ticker(args, duration, priority)
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting Ticker ${tickerName}`, e)
         return
     }
 }

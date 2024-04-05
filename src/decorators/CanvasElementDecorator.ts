@@ -13,7 +13,7 @@ export default function canvasElementDecorator(name?: CanvasElementTagType) {
             name = target.name
         }
         if (registeredCanvasElement[name]) {
-            console.warn(`CanvasElement ${name} already registered`)
+            console.warn(`[Pixi'VN] CanvasElement ${name} already registered`)
         }
         registeredCanvasElement[name] = target
     }
@@ -23,14 +23,14 @@ export function getCanvasElementTypeByClassName<T extends typeof CanvasBase<any>
     try {
         let eventType = registeredCanvasElement[canvasName]
         if (!eventType) {
-            console.error(`CanvasElement ${canvasName} not found`)
+            console.error(`[Pixi'VN] CanvasElement ${canvasName} not found`)
             return
         }
         new eventType()
         return eventType as T
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting CanvasElement ${canvasName}`, e)
         return
     }
 }
@@ -39,14 +39,14 @@ export function getCanvasElementInstanceByClassName<T extends CanvasBase<any>>(c
     try {
         let eventType = registeredCanvasElement[canvasName]
         if (!eventType) {
-            console.error(`CanvasElement ${canvasName} not found`)
+            console.error(`[Pixi'VN] CanvasElement ${canvasName} not found`)
             return
         }
         let canvasElement = new eventType()
         return canvasElement as T
     }
     catch (e) {
-        console.error(e)
+        console.error(`[Pixi'VN] Error while getting CanvasElement ${canvasName}`, e)
         return
     }
 }
