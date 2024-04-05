@@ -17,8 +17,8 @@ import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
  * })
  * ```
  */
-export function setDialogue(props: {
-    character: string | CharacterModelBase,
+export function setDialogue<T extends CharacterModelBase = CharacterModelBase>(props: {
+    character: string | T,
     text: string,
 } | string): void {
     let text = ''
