@@ -1,12 +1,12 @@
 import { CanvasEvent } from "../classes"
 import CanvasBase from "../classes/canvas/CanvasBase"
 import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
-import { EventTagType } from "../types/EventTagType"
+import { EventIdType } from "../types/EventIdType"
 
 /**
  * Canvas Event Register
  */
-export const registeredEvents: { [name: EventTagType]: typeof CanvasEvent<CanvasEventNamesType> } = {}
+export const registeredEvents: { [name: EventIdType]: typeof CanvasEvent<CanvasEventNamesType> } = {}
 /**
  * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
@@ -14,7 +14,7 @@ export const registeredEvents: { [name: EventTagType]: typeof CanvasEvent<Canvas
  * @param name is th identifier of the event, by default is the name of the class
  * @returns 
  */
-export default function eventDecorator(name?: EventTagType) {
+export default function eventDecorator(name?: EventIdType) {
     return function (target: typeof CanvasEvent<any>) {
         if (!name) {
             name = target.name
@@ -31,7 +31,7 @@ export default function eventDecorator(name?: EventTagType) {
  * @param eventName The name of the class.
  * @returns The event type.
  */
-export function getEventTypeByClassName<T = typeof CanvasEvent<CanvasBase<any>>>(eventName: EventTagType): T | undefined {
+export function getEventTypeByClassName<T = typeof CanvasEvent<CanvasBase<any>>>(eventName: EventIdType): T | undefined {
     try {
         let eventType = registeredEvents[eventName]
         if (!eventType) {
@@ -52,7 +52,7 @@ export function getEventTypeByClassName<T = typeof CanvasEvent<CanvasBase<any>>>
  * @param eventName The name of the class.
  * @returns The event instance.
  */
-export function getEventInstanceByClassName<T = CanvasEvent<CanvasBase<any>>>(eventName: EventTagType): T | undefined {
+export function getEventInstanceByClassName<T = CanvasEvent<CanvasBase<any>>>(eventName: EventIdType): T | undefined {
     try {
         let eventType = registeredEvents[eventName]
         if (!eventType) {

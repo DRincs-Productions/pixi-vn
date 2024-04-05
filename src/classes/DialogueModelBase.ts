@@ -2,16 +2,16 @@
  * Base class for all dialogue models. I suggest you extend this class to create your own dialogue models.
  */
 export default class DialogueModelBase {
-    constructor(text: string, characterTag: string | undefined) {
+    constructor(text: string, characterId: string | undefined) {
         this.text = text
-        this.characterTag = characterTag
+        this.characterId = characterId
     }
     /**
      * The text of the dialogue.
      */
     text: string = ""
     /**
-     * The tag of the character that is speaking.
+     * The id of the character that is speaking.
      */
-    characterTag?: string
+    characterId?: string
 }

@@ -11,7 +11,7 @@ import { ICanvasBaseMemory } from "../interface/canvas";
 import { ExportedCanvas } from "../interface/export";
 import { PauseType, PauseValueType } from "../types/PauseType";
 import { Repeat, RepeatType } from "../types/RepeatType";
-import { TickerTagType } from "../types/TickerTagType";
+import { TickerIdType } from "../types/TickerIdType";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -316,7 +316,7 @@ export default class GameWindowManager {
      * ```
      */
     static addTicker<TArgs extends TickerArgsType>(canvasElementTag: string | string[], ticker: TickerBase<TArgs>) {
-        let tickerName: TickerTagType = ticker.constructor.name
+        let tickerName: TickerIdType = ticker.constructor.name
         if (typeof canvasElementTag === "string") {
             canvasElementTag = [canvasElementTag]
         }
@@ -452,7 +452,7 @@ export default class GameWindowManager {
      * ```
      */
     public static removeAssociationBetweenTickerCanvasElement(tag: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
-        let tickerName: TickerTagType
+        let tickerName: TickerIdType
         if (ticker instanceof TickerBase) {
             tickerName = ticker.constructor.name
         }

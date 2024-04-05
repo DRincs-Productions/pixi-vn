@@ -6,8 +6,8 @@ import { GameStorageManager } from "../managers"
  * @example
  * ```typescript
  * export class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
- *     constructor(tag: string, props: ICharacterModelBase) {
- *         super(tag)
+ *     constructor(id: string, props: ICharacterModelBase) {
+ *         super(id)
  *         this.defaultName = props.name
  *         this.defaultSurname = props.surname
  *     }

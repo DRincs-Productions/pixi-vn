@@ -2,7 +2,7 @@ import { Ticker, UPDATE_PRIORITY } from "pixi.js"
 import ITicker from "../../interface/ITicker"
 import { StorageElementType } from "../../types/StorageElementType"
 
-export type TickerArgsType = { [tag: string]: StorageElementType }
+export type TickerArgsType = { [id: string]: StorageElementType }
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.

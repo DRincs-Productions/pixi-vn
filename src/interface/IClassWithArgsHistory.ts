@@ -1,13 +1,13 @@
 import { TickerCallback, UPDATE_PRIORITY } from "pixi.js";
 import { TickerArgsType } from "../classes/ticker/TickerBase";
-import { TickerTagType } from "../types/TickerTagType";
+import { TickerIdType } from "../types/TickerIdType";
 
 /**
  * IClassWithArgsHistory is a class that contains the name of a class and the arguments that were used to create it.
  */
 export interface IClassWithArgsHistory<TArgs extends TickerArgsType> {
     fn: TickerCallback<any>,
-    className: TickerTagType,
+    className: TickerIdType,
     args: TArgs
     canvasElementTags: string[],
     priority?: UPDATE_PRIORITY,
@@ -15,7 +15,7 @@ export interface IClassWithArgsHistory<TArgs extends TickerArgsType> {
 }
 
 export interface IClassWithArgsHistoryForExport<TArgs extends TickerArgsType> {
-    className: TickerTagType,
+    className: TickerIdType,
     args: TArgs
     canvasElementTags: string[],
     priority?: UPDATE_PRIORITY,

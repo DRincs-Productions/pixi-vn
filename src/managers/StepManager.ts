@@ -9,7 +9,7 @@ import { getStepSha1 } from "../functions/StepLabelUtility"
 import ExportedStep from "../interface/export/ExportedStep"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
-import { LabelTagType } from "../types/LabelTagType"
+import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 import GameStorageManager from "./StorageManager"
@@ -47,7 +47,7 @@ export default class GameStepManager {
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    private static get currentLabel(): LabelTagType | undefined {
+    private static get currentLabel(): LabelIdType | undefined {
         if (GameStepManager._openedLabels.length > 0) {
             let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
             return item.label
@@ -149,7 +149,7 @@ export default class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static pushNewLabel(label: LabelTagType) {
+    private static pushNewLabel(label: LabelIdType) {
         let currentLabel = getLabelInstanceByClassName(label)
         if (!currentLabel) {
             throw new Error("[Pixi'VN] Label not found")

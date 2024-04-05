@@ -1,7 +1,7 @@
 import { Label } from "../classes"
-import { LabelTagType } from "../types/LabelTagType"
+import { LabelIdType } from "../types/LabelIdType"
 
-export const registeredLabels: { [key: LabelTagType]: typeof Label } = {}
+export const registeredLabels: { [key: LabelIdType]: typeof Label } = {}
 /**
  * Is a decorator that register a label in the game.
  * Is a required decorator for use the label in the game.
@@ -9,7 +9,7 @@ export const registeredLabels: { [key: LabelTagType]: typeof Label } = {}
  * @param name is th identifier of the label, by default is the name of the class
  * @returns 
  */
-export default function labelDecorator(name?: LabelTagType) {
+export default function labelDecorator(name?: LabelIdType) {
     return function (target: typeof Label) {
         if (!name) {
             name = target.name
@@ -26,7 +26,7 @@ export default function labelDecorator(name?: LabelTagType) {
  * @param labelName is the name of the label
  * @returns the label type
  */
-export function getLabelTypeByClassName<T extends typeof Label>(labelName: LabelTagType): T | undefined {
+export function getLabelTypeByClassName<T extends typeof Label>(labelName: LabelIdType): T | undefined {
     try {
         let labelType = registeredLabels[labelName]
         if (!labelType) {
@@ -47,7 +47,7 @@ export function getLabelTypeByClassName<T extends typeof Label>(labelName: Label
  * @param labelName is the name of the label
  * @returns the label
  */
-export function getLabelInstanceByClassName<T extends Label>(labelName: LabelTagType): T | undefined {
+export function getLabelInstanceByClassName<T extends Label>(labelName: LabelIdType): T | undefined {
     try {
         let labelType = registeredLabels[labelName]
         if (!labelType) {

@@ -4,7 +4,7 @@ import { getEventInstanceByClassName, getEventTypeByClassName } from "../../deco
 import { getTextStyle } from "../../functions/TextureUtility";
 import ICanvasTextMemory from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
-import { EventTagType } from "../../types/EventTagType";
+import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
@@ -27,7 +27,7 @@ export default class CanvasText extends Text implements CanvasBase<ICanvasTextMe
     set memory(value: ICanvasTextMemory) {
         setMemoryText(this, value)
     }
-    private _onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
+    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
     get onEvents() {
         return this._onEvents
     }

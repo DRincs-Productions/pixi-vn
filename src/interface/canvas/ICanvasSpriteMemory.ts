@@ -1,12 +1,12 @@
 import { SpriteOptions } from "pixi.js";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
-import { EventTagType } from "../../types/EventTagType";
+import { EventIdType } from "../../types/EventIdType";
 import ICanvasBaseMemory from "./ICanvasBaseMemory";
 import ITextureMemory from "./ITextureMemory";
 
 export interface ICanvasSpriteBaseMemory extends SpriteOptions, ICanvasBaseMemory {
     textureImage: ITextureMemory,
-    onEvents: { [name: CanvasEventNamesType]: EventTagType }
+    onEvents: { [name: CanvasEventNamesType]: EventIdType }
 }
 
 /**

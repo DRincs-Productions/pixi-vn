@@ -6,7 +6,7 @@ import { getTexture } from "../../functions/TextureUtility";
 import ICanvasBaseMemory from "../../interface/canvas/ICanvasBaseMemory";
 import ICanvasSpriteMemory, { ICanvasSpriteBaseMemory } from "../../interface/canvas/ICanvasSpriteMemory";
 import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
-import { EventTagType } from "../../types/EventTagType";
+import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
@@ -38,7 +38,7 @@ export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemo
     set memory(value: ICanvasSpriteMemory) {
         setMemorySprite(this, value)
     }
-    private _onEvents: { [name: CanvasEventNamesType]: EventTagType } = {}
+    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
     get onEvents() {
         return this._onEvents
     }
