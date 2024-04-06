@@ -14,7 +14,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 ### Installation
 
 ```bash
-npm install pixi-vn
+npm install @drincs/pixi-vn
 ```
 
 ### Usage
