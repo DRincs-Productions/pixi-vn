@@ -1,3 +1,4 @@
+import { CanvasContainer, CanvasImage, CanvasSprite, CanvasText } from "../classes/canvas"
 import CanvasBase from "../classes/canvas/CanvasBase"
 import { CanvasElementTagType } from "../types/CanvasElementTagType"
 
@@ -38,6 +39,21 @@ export function getCanvasElementTypeByClassName<T extends typeof CanvasBase<any>
 export function getCanvasElementInstanceByClassName<T extends CanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasName]
+        if (!eventType) {
+            if (canvasName === "CanvasContainer") {
+                eventType = CanvasContainer
+            }
+            else if (canvasName === "CanvasImage") {
+                eventType = CanvasImage
+            }
+            else if (canvasName === "CanvasSprite") {
+                eventType = CanvasSprite
+            }
+            else if (canvasName === "CanvasText") {
+                eventType = CanvasText
+            }
+        }
+
         if (!eventType) {
             console.error(`[Pixi'VN] CanvasElement ${canvasName} not found`)
             return

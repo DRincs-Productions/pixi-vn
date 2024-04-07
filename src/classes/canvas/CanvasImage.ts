@@ -1,5 +1,4 @@
 import { Sprite, Texture, TextureSourceLike } from "pixi.js";
-import { canvasElementDecorator } from "../../decorators";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
@@ -18,7 +17,6 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * await alien.load()
  * ```
  */
-@canvasElementDecorator()
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
     override get memory(): ICanvasImageMemory {
         return {

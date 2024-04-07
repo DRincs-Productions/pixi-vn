@@ -1,5 +1,4 @@
 import { Container, ContainerOptions } from "pixi.js";
-import { canvasElementDecorator } from "../../decorators";
 import { exportCanvasElement, importCanvasElement } from "../../functions/CanvasUtility";
 import ICanvasContainerMemory from "../../interface/canvas/ICanvasContainerMemory";
 import CanvasBase from "./CanvasBase";
@@ -21,7 +20,6 @@ import CanvasBase from "./CanvasBase";
  *  }
  * ```
  */
-@canvasElementDecorator()
 export default class CanvasContainer extends Container implements CanvasBase<ICanvasContainerMemory> {
     get memory(): ICanvasContainerMemory {
         let memory = getMemoryContainer(this)

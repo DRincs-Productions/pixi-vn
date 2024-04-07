@@ -1,5 +1,4 @@
 import { ContainerEvents, EventEmitter, Text } from "pixi.js";
-import { canvasElementDecorator } from "../../decorators";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextStyle } from "../../functions/TextureUtility";
 import ICanvasTextMemory from "../../interface/canvas/ICanvasTextTextMemory";
@@ -19,7 +18,6 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * GameWindowManager.addCanvasElement("text", text);
  * ```
  */
-@canvasElementDecorator()
 export default class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
     get memory(): ICanvasTextMemory {
         return getMemoryText(this)
