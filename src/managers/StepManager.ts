@@ -424,6 +424,13 @@ export default class GameStepManager {
     }
 
     /**
+     * Return true if it is possible to go back.
+     */
+    public static get canGoBack(): boolean {
+        return GameStepManager._stepsHistory.length > 1
+    }
+
+    /**
      * Add a label to the history.
      */
     public static clear() {
