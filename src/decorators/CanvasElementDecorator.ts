@@ -2,12 +2,7 @@ import { CanvasContainer, CanvasImage, CanvasSprite, CanvasText } from "../class
 import CanvasBase from "../classes/canvas/CanvasBase"
 import { CanvasElementTagType } from "../types/CanvasElementTagType"
 
-export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof CanvasBase<any> } = {
-    "CanvasContainer": CanvasContainer,
-    "CanvasImage": CanvasImage,
-    "CanvasSprite": CanvasSprite,
-    "CanvasText": CanvasText,
-}
+export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof CanvasBase<any> } = {}
 /**
  * Is a decorator that register a canvas element in the game.
  * @param name Name of the canvas element, by default it will use the class name. If the name is already registered, it will show a warning
@@ -44,6 +39,21 @@ export function getCanvasElementTypeByClassName<T extends typeof CanvasBase<any>
 export function getCanvasElementInstanceByClassName<T extends CanvasBase<any>>(canvasName: CanvasElementTagType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasName]
+        if (!eventType) {
+            if (canvasName === "CanvasContainer") {
+                eventType = CanvasContainer
+            }
+            else if (canvasName === "CanvasImage") {
+                eventType = CanvasImage
+            }
+            else if (canvasName === "CanvasSprite") {
+                eventType = CanvasSprite
+            }
+            else if (canvasName === "CanvasText") {
+                eventType = CanvasText
+            }
+        }
+
         if (!eventType) {
             console.error(`[Pixi'VN] CanvasElement ${canvasName} not found`)
             return
