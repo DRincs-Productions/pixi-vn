@@ -3,7 +3,7 @@ import ExportedStep from "./export/ExportedStep"
 import ExportedStorage from "./export/ExportedStorage"
 
 export default interface ISaveData {
-    version: string
+    pixivn_version: string
     stepData: ExportedStep
     storageData: ExportedStorage
     canvasData: ExportedCanvas

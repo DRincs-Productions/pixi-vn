@@ -1,1 +1,1 @@
-export const PIXIVM_VERSION = '0.1.4'
+export const PIXIVN_VERSION = '0.1.4'

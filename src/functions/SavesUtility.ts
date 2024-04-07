@@ -1,4 +1,4 @@
-import { PIXIVM_VERSION } from "../constants";
+import { PIXIVN_VERSION } from "../constants";
 import ISaveData from "../interface/ISaveData";
 import { GameStepManager, GameStorageManager, GameWindowManager } from "../managers";
 
@@ -8,7 +8,7 @@ import { GameStepManager, GameStorageManager, GameWindowManager } from "../manag
  */
 export function getSaveData(): ISaveData {
     return {
-        version: PIXIVM_VERSION,
+        pixivn_version: PIXIVN_VERSION,
         stepData: GameStepManager.export(),
         storageData: GameStorageManager.export(),
         canvasData: GameWindowManager.export(),
