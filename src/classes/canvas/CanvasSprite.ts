@@ -1,5 +1,4 @@
 import { ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
-import { canvasElementDecorator } from "../../decorators";
 import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
@@ -30,7 +29,6 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * GameWindowManager.addCanvasElement("bunny", sprite);
  * ```
  */
-@canvasElementDecorator()
 export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
     get memory(): Memory | ICanvasSpriteMemory {
         return getMemorySprite(this)

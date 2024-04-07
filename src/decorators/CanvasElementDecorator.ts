@@ -1,7 +1,13 @@
+import { CanvasContainer, CanvasImage, CanvasSprite, CanvasText } from "../classes/canvas"
 import CanvasBase from "../classes/canvas/CanvasBase"
 import { CanvasElementTagType } from "../types/CanvasElementTagType"
 
-export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof CanvasBase<any> } = {}
+export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof CanvasBase<any> } = {
+    "CanvasContainer": CanvasContainer,
+    "CanvasImage": CanvasImage,
+    "CanvasSprite": CanvasSprite,
+    "CanvasText": CanvasText,
+}
 /**
  * Is a decorator that register a canvas element in the game.
  * @param name Name of the canvas element, by default it will use the class name. If the name is already registered, it will show a warning
