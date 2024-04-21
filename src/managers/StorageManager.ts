@@ -22,7 +22,7 @@ export default class GameStorageManager {
      */
     public static setVariable(key: string, value: StorageElementType) {
         key = key.toLowerCase()
-        if (value === undefined) {
+        if (value === undefined || value === null) {
             if (GameStorageManager.storage.hasOwnProperty(key)) {
                 delete GameStorageManager.storage[key]
             }

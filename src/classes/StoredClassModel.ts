@@ -51,19 +51,29 @@ export default abstract class StoredClassModel {
      * @param value The value to set. If is undefined, the property will be removed from the storage.
      */
     setStorageProperty<T>(propertyName: string, value: T | undefined): void {
-        let storage = GameStorageManager.getVariable<{ [key: string]: any }>(this.categoryId + this.id)
+        let storage = GameStorageManager.getVariable<any>(this.categoryId)
         if (!storage) {
             storage = {}
         }
-        if (value) {
-            storage = { ...storage, [propertyName]: value }
+        // if storage not have a key with the id
+        if (!storage.hasOwnProperty(this.id)) {
+            storage[this.id] = {}
         }
-        else {
-            if (storage.hasOwnProperty(propertyName)) {
-                delete storage[propertyName]
+
+        if (value === undefined || value === null) {
+            if (storage[this.id].hasOwnProperty(propertyName)) {
+                delete storage[this.id][propertyName]
             }
         }
-        GameStorageManager.setVariable(this.categoryId + this.id, storage)
+        else {
+            storage[this.id] = { ...storage[this.id], [propertyName]: value }
+        }
+
+        if (Object.keys(storage[this.id]).length === 0) {
+            delete storage[this.id]
+        }
+
+        GameStorageManager.setVariable(this.categoryId, storage)
     }
     /**
      * Get a property from the storage.
@@ -71,9 +81,9 @@ export default abstract class StoredClassModel {
      * @returns The value of the property. If the property is not found, returns undefined.
      */
     getStorageProperty<T>(propertyName: string): T | undefined {
-        let storage = GameStorageManager.getVariable<any>(this.categoryId + this.id)
-        if (storage && storage.hasOwnProperty(propertyName)) {
-            return storage[propertyName]
+        let storage = GameStorageManager.getVariable<any>(this.categoryId)
+        if (storage && storage.hasOwnProperty(this.id) && storage[this.id].hasOwnProperty(propertyName)) {
+            return storage[this.id][propertyName]
         }
         return undefined
     }
