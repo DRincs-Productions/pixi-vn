@@ -12,6 +12,7 @@ export default class GameStorageManager {
             CURRENT_MENU_OPTIONS_MEMORY_KEY: "___current_menu_options_memory_key___",
             LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "___last_menu_options_added_in_step_memory_key___",
             CHARACTER_CATEGORY_KEY: "___character___",
+            FLAGS_CATEGORY_KEY: "___flags___",
         }
     }
     /**
