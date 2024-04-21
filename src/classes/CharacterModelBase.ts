@@ -46,21 +46,21 @@ export default class CharacterModelBase extends StoredClassModel implements ICha
         return this.getStorageProperty<string>("name") || this.defaultName
     }
     set name(value: string) {
-        this.updateStorageProperty<string>("name", value)
+        this.setStorageProperty<string>("name", value)
     }
     private defaultSurname?: string
     get surname(): string | undefined {
         return this.getStorageProperty<string>("surname") || this.defaultSurname
     }
     set surname(value: string | undefined) {
-        this.updateStorageProperty<string>("surname", value)
+        this.setStorageProperty<string>("surname", value)
     }
     private defaultAge?: number | undefined
     get age(): number | undefined {
         return this.getStorageProperty<number>("age") || this.defaultAge
     }
     set age(value: number | undefined) {
-        this.updateStorageProperty<number>("age", value)
+        this.setStorageProperty<number>("age", value)
     }
     private _icon?: string
     get icon(): string | undefined {
