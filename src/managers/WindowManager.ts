@@ -3,6 +3,7 @@ import CanvasBase from "../classes/canvas/CanvasBase";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
+import { asciiArtLog } from "../functions/EasterEgg";
 import { createExportableElement } from "../functions/ExportUtility";
 import { ITicker, ITickersSteps } from "../interface";
 import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
@@ -86,6 +87,8 @@ export default class GameWindowManager {
 
             // call it manually once so we are sure we are the correct size after starting
             GameWindowManager.resize()
+
+            asciiArtLog()
         });
     }
 
