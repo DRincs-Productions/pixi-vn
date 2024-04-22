@@ -74,8 +74,19 @@ export default class GameStepManager {
      */
     static get isLastGameStep(): boolean {
         let stepLabel = GameStepManager.currentLabel?.steps
-        if (stepLabel) {
-            return GameStepManager.currentLabelStepIndex === stepLabel.length
+        if (stepLabel && GameStepManager.currentLabelStepIndex === stepLabel.length) {
+            if (this.openedLabels.length <= 1) {
+                return true
+            }
+            else {
+                this.openedLabels.forEach((item) => {
+                    let label = getLabelInstanceByClassName(item.label)
+                    if (label && label.steps.length > item.currentStepIndex) {
+                        return false
+                    }
+                })
+                return true
+            }
         }
         return false
     }
