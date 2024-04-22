@@ -45,9 +45,9 @@ export default class GameStepManager {
         return GameStepManager._openedLabels
     }
     /**
-     * currentLabel is the current label that occurred during the progression of the steps.
+     * currentLabelId is the current label id that occurred during the progression of the steps.
      */
-    private static get currentLabel(): LabelIdType | undefined {
+    private static get currentLabelId(): LabelIdType | undefined {
         if (GameStepManager._openedLabels.length > 0) {
             let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
             return item.label
@@ -55,14 +55,29 @@ export default class GameStepManager {
         return undefined
     }
     /**
-     * is the current step index of the current label that occurred during the progression of the steps.
+     * currentLabel is the current label that occurred during the progression of the steps.
      */
+    static get currentLabel(): Label | undefined {
+        if (GameStepManager.currentLabelId) {
+            return getLabelInstanceByClassName(GameStepManager.currentLabelId)
+        }
+    }
     private static get currentLabelStepIndex(): number | null {
         if (GameStepManager._openedLabels.length > 0) {
             let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
             return item.currentStepIndex
         }
         return null
+    }
+    /**
+     * currentLabelStep is the current step that occurred during the progression of the steps. It can used to determine the game end.
+     */
+    static get isLastGameStep(): boolean {
+        let stepLabel = GameStepManager.currentLabel?.steps
+        if (stepLabel) {
+            return GameStepManager.currentLabelStepIndex === stepLabel.length
+        }
+        return false
     }
     /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
@@ -135,7 +150,7 @@ export default class GameStepManager {
             }
             GameStepManager._stepsHistory.push({
                 diff: data,
-                currentLabel: GameStepManager.currentLabel,
+                currentLabel: GameStepManager.currentLabelId,
                 dialoge: dialoge,
                 choices: requiredChoices,
                 stepSha1: stepHistory,
@@ -164,12 +179,11 @@ export default class GameStepManager {
      * @returns 
      */
     static closeCurrentLabel() {
-        if (!GameStepManager.currentLabel) {
+        if (!GameStepManager.currentLabelId) {
             console.warn("[Pixi'VN] No label to close")
             return
         }
-        let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
-        if (!currentLabel) {
+        if (!GameStepManager.currentLabel) {
             console.error("[Pixi'VN] Label not found")
             return
         }
@@ -228,13 +242,13 @@ export default class GameStepManager {
      * @returns 
      */
     private static async runCurrentStep() {
-        if (GameStepManager.currentLabel) {
+        if (GameStepManager.currentLabelId) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
                 console.error("[Pixi'VN] currentLabelStepIndex is null")
                 return
             }
-            let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
+            let currentLabel = GameStepManager.currentLabel
             if (!currentLabel) {
                 console.error("[Pixi'VN] Label not found")
                 return
