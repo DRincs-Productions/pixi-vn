@@ -1,5 +1,5 @@
 export function asciiArtLog() {
-    console.log(`
+    console.info(`
     ____  _      _ ___     ___   _ 
     |  _ \\(_)_  _(_| ) \\   / / \\ | |
     | |_) | \\ \\/ / |/ \\ \\ / /|  \\| |
