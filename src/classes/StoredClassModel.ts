@@ -28,7 +28,7 @@ import { GameStorageManager } from "../managers"
  * }
  * ```
  */
-export default abstract class StoredClassModel {
+export default class StoredClassModel {
     /**
      * @param categoryId The id of the category. For example if you are storing a character class, you can use "characters" as categoryId. so all instances of the character class will be stored in the "characters" category.
      * @param id The id of instance of the class. This id must be unique for the category.
