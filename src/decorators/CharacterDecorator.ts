@@ -46,3 +46,15 @@ export function getCharacterById<T extends CharacterBaseModel>(id: string): T | 
         return
     }
 }
+
+/**
+ * is a function that returns all characters
+ * @returns all characters
+ * @example
+ * ```typescript
+ * const allCharacters = getAllCharacters();
+ * ```
+ */
+export function getAllCharacters<T extends CharacterBaseModel>(): T[] {
+    return Object.values(registeredCharacters) as T[]
+}
