@@ -1,5 +1,5 @@
 import deepDiff from "deep-diff";
-import { DialogueModelBase } from "../classes";
+import { DialogueBaseModel } from "../classes";
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
@@ -33,7 +33,7 @@ export interface IHistoryStepData {
     openedLabels: IOpenedLabel[],
 }
 
-export default interface IHistoryStep<T extends DialogueModelBase = DialogueModelBase> {
+export default interface IHistoryStep<T extends DialogueBaseModel = DialogueBaseModel> {
     /**
      * The difference between the previous step and the current step.
      */

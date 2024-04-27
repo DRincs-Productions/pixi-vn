@@ -1,4 +1,4 @@
-import { CharacterModelBase, getCharacterByTag, getDialogueHistory } from '@drincs/pixi-vn';
+import { CharacterBaseModel, getCharacterByTag, getDialogueHistory } from '@drincs/pixi-vn';
 import CloseIcon from '@mui/icons-material/Close';
 import SearchRoundedIcon from "@mui/icons-material/SearchRounded";
 import { Box, CssVarsProvider, IconButton, Input, Sheet, Stack, Typography } from "@mui/joy";
@@ -67,7 +67,7 @@ export default function HistoryInterface() {
                     <Stack spacing={2} justifyContent="flex-end">
                         {getDialogueHistory()
                             .map((dialogue) => {
-                                let character = dialogue.characterTag ? getCharacterByTag(dialogue.characterTag) ?? new CharacterModelBase(dialogue.characterTag, { name: dialogue.characterTag }) : undefined
+                                let character = dialogue.characterTag ? getCharacterByTag(dialogue.characterTag) ?? new CharacterBaseModel(dialogue.characterTag, { name: dialogue.characterTag }) : undefined
                                 return {
                                     character: character?.name ? character.name + (character.surname ? " " + character.surname : "") : undefined,
                                     text: dialogue.text,

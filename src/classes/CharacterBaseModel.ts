@@ -1,7 +1,7 @@
 import { GameStorageManager } from "../managers"
 import StoredClassModel from "./StoredClassModel"
 
-export interface ICharacterModelBase {
+export interface ICharacterBaseModel {
     name: string
     surname?: string
     age?: number
@@ -10,19 +10,19 @@ export interface ICharacterModelBase {
 }
 
 /**
- * CharacterModelBase is a class that is used to create a character model.
+ * CharacterBaseModel is a class that is used to create a character model.
  * I suggest you extend this class to create your own character models.
  * You must use the saveCharacter function to save the character in the game.
  * @example
  * ```typescript
- * export const liam = new CharacterModelBase('liam', {
+ * export const liam = new CharacterBaseModel('liam', {
  *     name: 'Liam',
  *     surname: 'Smith',
  *     age: 25,
  *     icon: "https://pixijs.com/assets/eggHead.png",
  *     color: "#9e2e12"
  * });
- * export const alice = new CharacterModelBase('alice', {
+ * export const alice = new CharacterBaseModel('alice', {
  *     name: 'Alice',
  *     surname: 'Smith',
  *     age: 25,
@@ -32,8 +32,8 @@ export interface ICharacterModelBase {
  * saveCharacter([liam, alice]);
  * ```
  */
-export default class CharacterModelBase extends StoredClassModel implements ICharacterModelBase {
-    constructor(id: string, props: ICharacterModelBase) {
+export default class CharacterBaseModel extends StoredClassModel implements ICharacterBaseModel {
+    constructor(id: string, props: ICharacterBaseModel) {
         super(GameStorageManager.keysSystem.CHARACTER_CATEGORY_KEY, id)
         this.defaultName = props.name
         this.defaultSurname = props.surname

@@ -1,4 +1,4 @@
-import { CharacterModelBase, ChoiceMenuOptionsType, GameStepManager, GameWindowManager, getCharacterByTag, getChoiceMenuOptions, getDialogue } from '@drincs/pixi-vn';
+import { CharacterBaseModel, ChoiceMenuOptionsType, GameStepManager, GameWindowManager, getCharacterByTag, getChoiceMenuOptions, getDialogue } from '@drincs/pixi-vn';
 import { Button } from '@mui/joy';
 import AspectRatio from '@mui/joy/AspectRatio';
 import Box from '@mui/joy/Box';
@@ -29,16 +29,16 @@ export default function DialogueInterface(props: IProps) {
 
     const [loading, setLoading] = useState(false)
     const [text, setText] = useState<string | undefined>(undefined)
-    const [character, setCharacter] = useState<CharacterModelBase | undefined>(undefined)
+    const [character, setCharacter] = useState<CharacterBaseModel | undefined>(undefined)
     const [menu, setMenu] = useState<ChoiceMenuOptionsType | undefined>(undefined)
     const [update, setUpdate] = useState(0)
     useEffect(() => {
         let dial = getDialogue()
         if (dial) {
             setText(dial.text)
-            let c: CharacterModelBase | undefined = dial.characterTag ? getCharacterByTag(dial.characterTag) : undefined
+            let c: CharacterBaseModel | undefined = dial.characterTag ? getCharacterByTag(dial.characterTag) : undefined
             if (!c && dial.characterTag) {
-                c = new CharacterModelBase(dial.characterTag, { name: dial.characterTag })
+                c = new CharacterBaseModel(dial.characterTag, { name: dial.characterTag })
             }
             setCharacter(c)
         }

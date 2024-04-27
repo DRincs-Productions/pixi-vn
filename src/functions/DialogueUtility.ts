@@ -1,4 +1,4 @@
-import { CharacterModelBase, DialogueModelBase } from "../classes";
+import { CharacterBaseModel, DialogueBaseModel } from "../classes";
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { IDialogueHistory } from "../interface";
@@ -17,7 +17,7 @@ import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
  * })
  * ```
  */
-export function setDialogue<T extends CharacterModelBase = CharacterModelBase>(props: {
+export function setDialogue<T extends CharacterBaseModel = CharacterBaseModel>(props: {
     character: string | T,
     text: string,
 } | string): void {
@@ -37,7 +37,7 @@ export function setDialogue<T extends CharacterModelBase = CharacterModelBase>(p
             }
         }
     }
-    let dialogue = new DialogueModelBase(text, characterId)
+    let dialogue = new DialogueBaseModel(text, characterId)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
 }
@@ -46,8 +46,8 @@ export function setDialogue<T extends CharacterModelBase = CharacterModelBase>(p
  * Get the dialogue to be shown in the game
  * @returns Dialogue to be shown in the game
  */
-export function getDialogue<T extends DialogueModelBase = DialogueModelBase>(): T | undefined {
-    return GameStorageManager.getVariable<DialogueModelBase>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
+export function getDialogue<T extends DialogueBaseModel = DialogueBaseModel>(): T | undefined {
+    return GameStorageManager.getVariable<DialogueBaseModel>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
 }
 
 /**
@@ -115,7 +115,7 @@ export function clearChoiceMenuOptions(): void {
  * Get the history of the dialogues
  * @returns the history of the dialogues
  */
-export function getDialogueHistory<T extends DialogueModelBase = DialogueModelBase>(): IDialogueHistory<T>[] {
+export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel>(): IDialogueHistory<T>[] {
     let list: IDialogueHistory<T>[] = []
     GameStepManager.stepsHistory.forEach((step) => {
         let dialoge = step.dialoge
