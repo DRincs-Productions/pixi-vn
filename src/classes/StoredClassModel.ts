@@ -5,8 +5,8 @@ import { GameStorageManager } from "../managers"
  * I suggest you extend this class to create your own stored class.
  * @example
  * ```typescript
- * export class CharacterBaseModel extends StoredClassModel implements ICharacterBaseModel {
- *     constructor(id: string, props: ICharacterBaseModel) {
+ * export class CharacterBaseModel extends StoredClassModel implements CharacterBaseModelProps {
+ *     constructor(id: string, props: CharacterBaseModelProps) {
  *         super("___character___", id)
  *         this.defaultName = props.name
  *         this.defaultSurname = props.surname
