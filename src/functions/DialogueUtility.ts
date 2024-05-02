@@ -15,18 +15,21 @@ import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
  *       character: "characterId",
  *       text: "Hello World"
  * })
+ * setDialogue(new DialogueBaseModel("Hello World", character))
  * ```
  */
-export function setDialogue<T extends CharacterBaseModel = CharacterBaseModel>(props: {
-    character: string | T,
+export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBaseModel, TDialogue extends DialogueBaseModel = DialogueBaseModel>(props: {
+    character: string | TCharacter,
     text: string,
-} | string): void {
+} | string | TDialogue): void {
     let text = ''
     let characterId: string | undefined = undefined
+    let dialogue: TDialogue | DialogueBaseModel
     if (typeof props === 'string') {
         text = props
+        dialogue = new DialogueBaseModel(text, characterId)
     }
-    else {
+    else if (!(props instanceof DialogueBaseModel)) {
         text = props.text
         if (props.character) {
             if (typeof props.character === 'string') {
@@ -36,8 +39,12 @@ export function setDialogue<T extends CharacterBaseModel = CharacterBaseModel>(p
                 characterId = props.character.id
             }
         }
+        dialogue = new DialogueBaseModel(text, characterId)
     }
-    let dialogue = new DialogueBaseModel(text, characterId)
+    else {
+        dialogue = props
+    }
+
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
 }
