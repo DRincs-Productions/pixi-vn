@@ -42,13 +42,21 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
         this._color = props.color
     }
     private defaultName: string = ""
+    /***
+     * The name of the character.
+     * If you set undefined, it will return the default name.
+     */
     get name(): string {
         return this.getStorageProperty<string>("name") || this.defaultName
     }
-    set name(value: string) {
+    set name(value: string | undefined) {
         this.setStorageProperty<string>("name", value)
     }
     private defaultSurname?: string
+    /**
+     * The surname of the character.
+     * If you set undefined, it will return the default surname.
+     */
     get surname(): string | undefined {
         return this.getStorageProperty<string>("surname") || this.defaultSurname
     }
@@ -56,6 +64,10 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
         this.setStorageProperty<string>("surname", value)
     }
     private defaultAge?: number | undefined
+    /**
+     * The age of the character.
+     * If you set undefined, it will return the default age.
+     */
     get age(): number | undefined {
         return this.getStorageProperty<number>("age") || this.defaultAge
     }
@@ -63,10 +75,16 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
         this.setStorageProperty<number>("age", value)
     }
     private _icon?: string
+    /**
+     * The icon of the character.
+     */
     get icon(): string | undefined {
         return this._icon
     }
     private _color?: string | undefined
+    /**
+     * The color of the character.
+     */
     get color(): string | undefined {
         return this._color
     }
