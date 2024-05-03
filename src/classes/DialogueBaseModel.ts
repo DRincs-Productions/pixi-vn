@@ -3,6 +3,7 @@ import CharacterBaseModel from "./CharacterBaseModel"
 
 /**
  * Base class for all dialogue models.
+ * You can extend this class, but it is not reccomended. You can use the oltherParams property to store any other data you need.
  * @example
  * ```typescript
  * setDialogue(new DialogueBaseModel("Hello World", character))
