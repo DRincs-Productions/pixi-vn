@@ -1,7 +1,7 @@
-import { DialogueModel } from "../classes"
+import { DialogueBaseModel } from "../classes"
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel"
 
-export interface IDialogueHistory<T extends DialogueModel = DialogueModel> {
+export interface IDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel> {
     /**
      * Dialogue to be shown in the game
      */

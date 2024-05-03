@@ -1,4 +1,4 @@
-import { CharacterBaseModel, DialogueModel } from "../classes";
+import { CharacterBaseModel, DialogueBaseModel } from "../classes";
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { IDialogueHistory } from "../interface";
@@ -15,21 +15,21 @@ import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
  *       character: "characterId",
  *       text: "Hello World"
  * })
- * setDialogue(new DialogueModel("Hello World", character))
+ * setDialogue(new DialogueBaseModel("Hello World", character))
  * ```
  */
-export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBaseModel, TDialogue extends DialogueModel = DialogueModel>(props: {
+export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBaseModel, TDialogue extends DialogueBaseModel = DialogueBaseModel>(props: {
     character: string | TCharacter,
     text: string,
 } | string | TDialogue): void {
     let text = ''
     let characterId: string | undefined = undefined
-    let dialogue: TDialogue | DialogueModel
+    let dialogue: TDialogue | DialogueBaseModel
     if (typeof props === 'string') {
         text = props
-        dialogue = new DialogueModel(text, characterId)
+        dialogue = new DialogueBaseModel(text, characterId)
     }
-    else if (!(props instanceof DialogueModel)) {
+    else if (!(props instanceof DialogueBaseModel)) {
         text = props.text
         if (props.character) {
             if (typeof props.character === 'string') {
@@ -39,7 +39,7 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
                 characterId = props.character.id
             }
         }
-        dialogue = new DialogueModel(text, characterId)
+        dialogue = new DialogueBaseModel(text, characterId)
     }
     else {
         dialogue = props
@@ -53,8 +53,8 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
  * Get the dialogue to be shown in the game
  * @returns Dialogue to be shown in the game
  */
-export function getDialogue<T extends DialogueModel = DialogueModel>(): T | undefined {
-    return GameStorageManager.getVariable<DialogueModel>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
+export function getDialogue<T extends DialogueBaseModel = DialogueBaseModel>(): T | undefined {
+    return GameStorageManager.getVariable<DialogueBaseModel>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
 }
 
 /**
@@ -122,7 +122,7 @@ export function clearChoiceMenuOptions(): void {
  * Get the history of the dialogues
  * @returns the history of the dialogues
  */
-export function getDialogueHistory<T extends DialogueModel = DialogueModel>(): IDialogueHistory<T>[] {
+export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel>(): IDialogueHistory<T>[] {
     let list: IDialogueHistory<T>[] = []
     GameStepManager.stepsHistory.forEach((step) => {
         let dialoge = step.dialoge
