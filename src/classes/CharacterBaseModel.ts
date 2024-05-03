@@ -1,11 +1,29 @@
 import { GameStorageManager } from "../managers"
 import StoredClassModel from "./StoredClassModel"
 
+/**
+ * CharacterBaseModelProps is an interface that is used to create a character model.
+ */
 export interface CharacterBaseModelProps {
+    /**
+     * The name of the character.
+     */
     name: string
+    /**
+     * The surname of the character.
+     */
     surname?: string
+    /**
+     * The age of the character.
+     */
     age?: number
+    /**
+     * The icon of the character.
+     */
     icon?: string
+    /**
+     * The color of the character.
+     */
     color?: string
 }
 
@@ -33,6 +51,10 @@ export interface CharacterBaseModelProps {
  * ```
  */
 export default class CharacterBaseModel extends StoredClassModel implements CharacterBaseModelProps {
+    /**
+     * @param id The id of the character.
+     * @param props The properties of the character.
+     */
     constructor(id: string, props: CharacterBaseModelProps) {
         super(GameStorageManager.keysSystem.CHARACTER_CATEGORY_KEY, id)
         this.defaultName = props.name
