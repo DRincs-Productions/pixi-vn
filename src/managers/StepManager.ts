@@ -11,7 +11,7 @@ import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
-import { StepLabelType } from "../types/StepLabelType"
+import { StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 import GameStorageManager from "./StorageManager"
 import GameWindowManager from "./WindowManager"
 
@@ -223,15 +223,18 @@ export default class GameStepManager {
 
     /**
      * Execute the next step and add it to the history.
-     * @returns
+     * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
      *     function nextOnClick() {
      *     setLoading(true)
      *     GameStepManager.runNextStep()
-     *         .then(() => {
+     *         .then((result) => {
      *             setUpdate((p) => p + 1)
      *             setLoading(false)
+     *             if (result) {
+     *                 // your code
+     *             }
      *         })
      *         .catch((e) => {
      *             setLoading(false)
@@ -240,7 +243,7 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static async runNextStep() {
+    public static async runNextStep(): Promise<StepLabelResultType> {
         if (GameStepManager._openedLabels.length === 0) {
             console.warn("[Pixi'VN] There are no labels to run")
             return
@@ -250,9 +253,9 @@ export default class GameStepManager {
     }
     /**
      * Execute the current step and add it to the history.
-     * @returns 
+     * @returns StepLabelResultType or undefined.
      */
-    private static async runCurrentStep() {
+    private static async runCurrentStep(): Promise<StepLabelResultType> {
         if (GameStepManager.currentLabelId) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
@@ -267,12 +270,13 @@ export default class GameStepManager {
             let n = currentLabel.steps.length
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
-                await nextStep()
+                let result = await nextStep()
                 GameStepManager.addStepHistory(nextStep)
+                return result
             }
             else if (n === lasteStepsLength) {
                 GameStepManager.closeCurrentLabel()
-                await GameStepManager.runNextStep()
+                return await GameStepManager.runNextStep()
             }
             else {
                 console.warn("[Pixi'VN] There are no steps to run")
@@ -283,13 +287,24 @@ export default class GameStepManager {
      * Execute the label and add it to the history.
      * Is a call function in Ren'Py.
      * @param label The label to execute.
-     * @returns
+     * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.callLabel(StartLabel)
+     * GameStepManager.callLabel(StartLabel).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     * @example
+     * ```typescript
+     * // if you use it in a step label you should return the result.
+     * return GameStepManager.callLabel(StartLabel).then((result) => {
+     *     return result
+     * })
      * ```
      */
-    public static async callLabel(label: typeof Label | Label) {
+    public static async callLabel(label: typeof Label | Label): Promise<StepLabelResultType> {
         try {
             if (label instanceof Label) {
                 label = label.constructor as typeof Label
@@ -306,14 +321,25 @@ export default class GameStepManager {
     /**
      * Execute the label, close all labels and add them to the history.
      * Is a jump function in Ren'Py.
-     * @param label 
-     * @returns
+     * @param label The label to execute.
+     * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.jumpLabel(StartLabel)
+     * GameStepManager.jumpLabel(StartLabel).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     * @example
+     * ```typescript
+     * // if you use it in a step label you should return the result.
+     * return GameStepManager.jumpLabel(StartLabel).then((result) => {
+     *     return result
+     * })
      * ```
      */
-    public static async jumpLabel(label: typeof Label | Label): Promise<void> {
+    public static async jumpLabel(label: typeof Label | Label): Promise<StepLabelResultType> {
         GameStepManager.closeAllLabels()
         try {
             if (label instanceof Label) {
