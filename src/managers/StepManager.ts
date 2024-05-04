@@ -229,9 +229,12 @@ export default class GameStepManager {
      *     function nextOnClick() {
      *     setLoading(true)
      *     GameStepManager.runNextStep()
-     *         .then(() => {
+     *         .then((result) => {
      *             setUpdate((p) => p + 1)
      *             setLoading(false)
+     *             if (result) {
+     *                 // your code
+     *             }
      *         })
      *         .catch((e) => {
      *             setLoading(false)
@@ -287,7 +290,18 @@ export default class GameStepManager {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.callLabel(StartLabel)
+     * GameStepManager.callLabel(StartLabel).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     * @example
+     * ```typescript
+     * // if you use it in a step label you should return the result.
+     * return GameStepManager.callLabel(StartLabel).then((result) => {
+     *     return result
+     * })
      * ```
      */
     public static async callLabel(label: typeof Label | Label): Promise<StepLabelResultType> {
@@ -311,7 +325,18 @@ export default class GameStepManager {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.jumpLabel(StartLabel)
+     * GameStepManager.jumpLabel(StartLabel).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     * @example
+     * ```typescript
+     * // if you use it in a step label you should return the result.
+     * return GameStepManager.jumpLabel(StartLabel).then((result) => {
+     *     return result
+     * })
      * ```
      */
     public static async jumpLabel(label: typeof Label | Label): Promise<StepLabelResultType> {
