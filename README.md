@@ -9,6 +9,14 @@ Pixi'VN is based on [Pixi.js](https://pixijs.com/), a modern 2D rendering engine
 In addition to managing the Pixi.js "Canvas", Pixi'VN offers the possibility of adding an HTML Element with the same dimensions as the "Canvas" to add interactions with the user.
 This allows the use of systems such as React, Vue, Angular, etc. to create much more complex interfaces with excellent performance.
 
+## Why Pixi'VN?
+
+The reason why Pixi'VN was born is that current systems for creating a visual novel are based on dated systems and have many shortcomings.
+
+## Pivi'VN Templates
+
+* [Pixi’VN template (React + Vite + MUI joy)](https://github.com/DRincs-Productions/pixi-vn-react-template)
+
 ## Get Started
 
 ### Installation
@@ -87,7 +95,3 @@ body {
 ## Wiki
 
 For more information, visit the [Wiki](https://pixivn.readthedocs.io/)
-
-## Why Pixi'VN?
-
-The reason why Pixi'VN was born is that current systems for creating a visual novel are based on dated systems and have many shortcomings.
