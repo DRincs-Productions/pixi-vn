@@ -3,17 +3,11 @@ import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { TickerProgrationType } from "../../interface/TickerProgrationType";
 import { GameWindowManager } from "../../managers";
+import { TickerRotateProps } from "../../types/ticker/TickerRotateProps";
 import TickerBase from "./TickerBase";
 
 /**
  * A ticker that rotates the canvas element of the canvas.
- * @param args The arguments that are passed to the ticker
- * - speed: The speed of the rotation, default is 0.1
- * - clockwise: The direction of the rotation, default is true
- * - speedProgression: The progression of the speed
- * - startOnlyIfHaveTexture?: If true, the rotation only starts if the canvas element have a texture
- * @param duration The duration of the ticker
- * @param priority The priority of the ticker
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -25,7 +19,7 @@ import TickerBase from "./TickerBase";
  * GameWindowManager.addTicker("alien", ticker)
  */
 @tickerDecorator()
-export default class TickerRotate extends TickerBase<{ speed?: number, clockwise?: boolean, speedProgression?: TickerProgrationType, startOnlyIfHaveTexture?: boolean, }> {
+export default class TickerRotate extends TickerBase<TickerRotateProps> {
     /**
      * The method that will be called every frame to rotate the canvas element of the canvas.
      * @param delta The delta time

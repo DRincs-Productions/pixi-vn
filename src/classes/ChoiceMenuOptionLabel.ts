@@ -34,7 +34,7 @@ export default class ChoiceMenuOptionLabel {
     }
 }
 
-export interface IStoratedChoiceMenuOptionLabel {
+export type IStoratedChoiceMenuOptionLabel = {
     text: string
     label: LabelIdType
     type: LabelRunModeEnum

@@ -1,14 +1,11 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
-import TickerFadeAlphaProps from "../../interface/ticker/TickerFadeAlphaProps";
 import { GameWindowManager } from "../../managers";
+import { TickerFadeAlphaProps } from "../../types/ticker/TickerFadeAlphaProps";
 import TickerBase from "./TickerBase";
 
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
- * @param args The arguments that are passed to the ticker
- * @param duration The duration of the ticker
- * @param priority The priority of the ticker
  * @example
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")

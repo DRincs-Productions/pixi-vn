@@ -9,4 +9,5 @@ export * from './interface/canvas';
 export * from './interface/export';
 export * from './managers';
 export * from './types';
+export * from './types/ticker';
 

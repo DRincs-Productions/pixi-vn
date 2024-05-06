@@ -1,7 +1,7 @@
-type StorageElementPrimaryType = string | number | boolean | undefined | null | StorageElementInternalType[]
-type StorageElementInternalType = StorageElementPrimaryType | Record<string | number | symbol, StorageElementPrimaryType>
+type StorageElementPrimaryType = string | number | boolean | undefined | null | StorageElementPrimaryType[]
+type StorageElementInternalType = StorageElementPrimaryType | Record<string | number | symbol, StorageElementPrimaryType> | StorageElementInternalType[]
 
 /**
  * StorageElementType are all the types that can be stored in the storage
  */
-export type StorageElementType = StorageElementInternalType | InstanceType<new (...args: any) => any>
+export type StorageElementType = StorageElementInternalType | Record<string | number | symbol, StorageElementInternalType>

@@ -1,4 +1,4 @@
-export default interface TickerFadeAlphaProps {
+export type TickerFadeAlphaProps = {
     /**
      * The speed of the fade
      */
