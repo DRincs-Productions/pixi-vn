@@ -4,4 +4,4 @@ type StorageElementInternalType = StorageElementPrimaryType | Record<string | nu
 /**
  * StorageElementType are all the types that can be stored in the storage
  */
-export type StorageElementType = StorageElementInternalType | Record<string | number | symbol, StorageElementInternalType>
+export type StorageElementType = StorageElementInternalType | Record<string | number | symbol, StorageElementInternalType> | { [key: string | number | symbol]: StorageElementType }

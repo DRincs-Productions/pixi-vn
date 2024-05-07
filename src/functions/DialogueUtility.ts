@@ -1,5 +1,6 @@
 import { CharacterBaseModel, DialogueBaseModel } from "../classes";
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
+import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { IDialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
@@ -45,7 +46,7 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
         dialogue = props
     }
 
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as any)
+    GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueData)
     GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
 }
 
@@ -54,7 +55,7 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
  * @returns Dialogue to be shown in the game
  */
 export function getDialogue<T extends DialogueBaseModel = DialogueBaseModel>(): T | undefined {
-    return GameStorageManager.getVariable<any>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
+    return GameStorageManager.getVariable<DialogueData>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
 }
 
 /**
