@@ -1,7 +1,14 @@
-import { Sprite, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
+
+interface CanvasImageOptions extends SpriteOptions {
+    /**
+     * The image link to load in the canvas.
+     */
+    textureImage?: string;
+}
 
 /**
  * This class is a extension of the CanvasSprite class, it has the same properties and methods,
@@ -18,6 +25,12 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * ```
  */
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
+    constructor(options?: CanvasImageOptions | Texture | undefined) {
+        super(options)
+        if (options && typeof options === "object" && "textureImage" in options && options.textureImage) {
+            this.imageLink = options.textureImage
+        }
+    }
     override get memory(): ICanvasImageMemory {
         return {
             ...getMemorySprite(this),
