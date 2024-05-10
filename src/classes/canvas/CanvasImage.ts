@@ -17,6 +17,15 @@ interface CanvasImageOptions extends SpriteOptions {
  * This class is used for functions like addImage, showCanvasImages and showImageWithDissolveTransition.
  * @example
  * ```typescript
+ * let alien = new CanvasImage({ textureImage: 'https://pixijs.com/assets/eggHead.png' })
+ * alien.anchor.set(0.5);
+ * alien.x = 100
+ * alien.y = 100
+ * await alien.load()
+ * GameWindowManager.addCanvasElement("alien", alien)
+ * ```
+ * @example
+ * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
  * alien.x = 100
