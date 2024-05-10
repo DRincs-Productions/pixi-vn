@@ -1,7 +1,6 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
-import { TickerProgrationType } from "../../interface/TickerProgrationType";
 import { GameWindowManager } from "../../managers";
 import { TickerRotateProps } from "../../types/ticker/TickerRotateProps";
 import TickerBase from "./TickerBase";
@@ -28,12 +27,7 @@ export default class TickerRotate extends TickerBase<TickerRotateProps> {
      */
     override fn(
         t: Ticker,
-        args: {
-            speed?: number,
-            clockwise?: boolean,
-            speedProgression?: TickerProgrationType,
-            startOnlyIfHaveTexture?: boolean,
-        },
+        args: TickerRotateProps,
         tags: string[]
     ): void {
         let speed = args.speed === undefined ? 0.1 : args.speed

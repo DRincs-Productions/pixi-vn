@@ -2,7 +2,7 @@ export type TickerFadeAlphaProps = {
     /**
      * The speed of the fade
      */
-    speed: number
+    speed?: number
     /**
      * The type of the fade
      * @default "hide"
