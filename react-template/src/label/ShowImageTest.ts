@@ -1,4 +1,4 @@
-import { addImage, CanvasImage, clearDialogue, GameWindowManager, Label, labelDecorator, removeCanvasElement, setDialogue, showCanvasImages, showImageWithDissolveTransition, StepLabelType, TickerRotate } from "@drincs/pixi-vn"
+import { addImage, CanvasImage, clearDialogue, GameWindowManager, Label, labelDecorator, loadImages, removeCanvasElement, setDialogue, showImageWithDissolveTransition, StepLabelType, TickerRotate } from "@drincs/pixi-vn"
 
 @labelDecorator()
 export class ShowImageTest extends Label {
@@ -20,14 +20,14 @@ export class ShowImageTest extends Label {
                 setDialogue("You can also remove a image from the canvas with the function removeCanvasElement.")
             },
             async () => {
-                setDialogue("If you want to show more images at the same time, you can use the function showCanvasImages.")
+                setDialogue("If you want to show more images at the same time, you can use the function loadImages.")
                 let alien1 = addImage("alien1", 'https://pixijs.com/assets/eggHead.png')
                 alien1.x = 100
                 alien1.y = 100
                 let alien2 = addImage("alien2", 'https://pixijs.com/assets/flowerTop.png')
                 alien2.x = 300
                 alien2.y = 100
-                await showCanvasImages([alien1, alien2])
+                await loadImages([alien1, alien2])
             },
             async () => {
                 removeCanvasElement(["alien1", "alien2"])
