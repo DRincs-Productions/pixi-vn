@@ -10,10 +10,11 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * This class is used for functions like addImage, loadImages and showImageWithDissolveTransition.
  * @example
  * ```typescript
- * let alien = new CanvasImage('https://pixijs.com/assets/eggHead.png')
- * alien.anchor.set(0.5);
- * alien.x = 100
- * alien.y = 100
+ * let alien = new CanvasImage({
+ *     anchor: { x: 0.5, y: 0.5 },
+ *     x: 100,
+ *     y: 100,
+ * }, 'https://pixijs.com/assets/eggHead.png')
  * await alien.load()
  * GameWindowManager.addCanvasElement("alien", alien)
  * ```
