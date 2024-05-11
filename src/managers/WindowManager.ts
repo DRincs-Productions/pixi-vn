@@ -72,7 +72,7 @@ export default class GameWindowManager {
         GameWindowManager.canvasWidth = width
         GameWindowManager.canvasHeight = height
         GameWindowManager._app = new Application()
-        return await GameWindowManager.app.init({
+        return GameWindowManager.app.init({
             resolution: window.devicePixelRatio || 1,
             autoDensity: true,
             width: width,
