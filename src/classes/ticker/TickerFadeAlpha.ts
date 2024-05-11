@@ -29,13 +29,7 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
      */
     override fn(
         t: Ticker,
-        args: {
-            speed?: number,
-            type?: "hide" | "show",
-            limit?: number,
-            tagToRemoveAfter?: string[] | string,
-            startOnlyIfHaveTexture?: boolean,
-        },
+        args: TickerFadeAlphaProps,
         tags: string[]
     ): void {
         let type = args.type === undefined ? "hide" : args.type

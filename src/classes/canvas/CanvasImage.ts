@@ -1,13 +1,29 @@
-import { Sprite, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
+
+interface CanvasImageOptions extends SpriteOptions {
+    /**
+     * The image link to load in the canvas.
+     */
+    textureImage?: string;
+}
 
 /**
  * This class is a extension of the CanvasSprite class, it has the same properties and methods,
  * but it has some features that make texture management easier.
  * You need to use CanvasImage.load() to show the image in the canvas.
  * This class is used for functions like addImage, loadImages and showImageWithDissolveTransition.
+ * @example
+ * ```typescript
+ * let alien = new CanvasImage({ textureImage: 'https://pixijs.com/assets/eggHead.png' })
+ * alien.anchor.set(0.5);
+ * alien.x = 100
+ * alien.y = 100
+ * await alien.load()
+ * GameWindowManager.addCanvasElement("alien", alien)
+ * ```
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -18,6 +34,12 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * ```
  */
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
+    constructor(options?: CanvasImageOptions | Texture | undefined) {
+        super(options)
+        if (options && typeof options === "object" && "textureImage" in options && options.textureImage) {
+            this.imageLink = options.textureImage
+        }
+    }
     override get memory(): ICanvasImageMemory {
         return {
             ...getMemorySprite(this),
