@@ -16,6 +16,7 @@ import TickerBase from "./TickerBase";
  *    clockwise: true,
  * }),
  * GameWindowManager.addTicker("alien", ticker)
+ * ```
  */
 @tickerDecorator()
 export default class TickerRotate extends TickerBase<TickerRotateProps> {
