@@ -14,7 +14,7 @@ interface CanvasImageOptions extends SpriteOptions {
  * This class is a extension of the CanvasSprite class, it has the same properties and methods,
  * but it has some features that make texture management easier.
  * You need to use CanvasImage.load() to show the image in the canvas.
- * This class is used for functions like addImage, showCanvasImages and showImageWithDissolveTransition.
+ * This class is used for functions like addImage, loadImages and showImageWithDissolveTransition.
  * @example
  * ```typescript
  * let alien = new CanvasImage({ textureImage: 'https://pixijs.com/assets/eggHead.png' })

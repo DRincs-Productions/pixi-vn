@@ -29,7 +29,7 @@ export function addImage(tag: string, imageUrl: string): CanvasImage {
  * @param canvasImages is a list of images to show.
  * @returns the list of images.
  */
-export async function showCanvasImages(canvasImages: CanvasImage[] | CanvasImage): Promise<CanvasImage[]> {
+export async function loadImages(canvasImages: CanvasImage[] | CanvasImage): Promise<CanvasImage[]> {
     if (!Array.isArray(canvasImages)) {
         return [canvasImages]
     }
