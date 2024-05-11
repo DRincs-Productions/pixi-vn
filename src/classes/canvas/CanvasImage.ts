@@ -34,7 +34,7 @@ interface CanvasImageOptions extends SpriteOptions {
  * ```
  */
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
-    constructor(options?: CanvasImageOptions | Texture | undefined) {
+    constructor(options: CanvasImageOptions | Texture = Texture.EMPTY) {
         super(options)
         if (options && typeof options === "object" && "textureImage" in options && options.textureImage) {
             this.imageLink = options.textureImage
