@@ -1,14 +1,7 @@
-import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite, Texture, TextureSourceLike } from "pixi.js";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
-
-interface CanvasImageOptions extends SpriteOptions {
-    /**
-     * The image link to load in the canvas.
-     */
-    textureImage?: string;
-}
 
 /**
  * This class is a extension of the CanvasSprite class, it has the same properties and methods,
@@ -17,11 +10,11 @@ interface CanvasImageOptions extends SpriteOptions {
  * This class is used for functions like addImage, loadImages and showImageWithDissolveTransition.
  * @example
  * ```typescript
- * let alien = new CanvasImage({ textureImage: 'https://pixijs.com/assets/eggHead.png' })
+ * let alien = new CanvasImage()
  * alien.anchor.set(0.5);
  * alien.x = 100
  * alien.y = 100
- * await alien.load()
+ * await alien.load('https://pixijs.com/assets/eggHead.png')
  * GameWindowManager.addCanvasElement("alien", alien)
  * ```
  * @example
@@ -34,12 +27,6 @@ interface CanvasImageOptions extends SpriteOptions {
  * ```
  */
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
-    constructor(options: CanvasImageOptions | Texture = Texture.EMPTY) {
-        super(options)
-        if (options && typeof options === "object" && "textureImage" in options && options.textureImage) {
-            this.imageLink = options.textureImage
-        }
-    }
     override get memory(): ICanvasImageMemory {
         return {
             ...getMemorySprite(this),
@@ -58,10 +45,14 @@ export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
         return mySprite
     }
     /**
-     * Load the image in the canvas.
-     * @returns a promise that resolves when the image is loaded.
+     * Load the image from the link and set the texture of the sprite.
+     * @param image The link of the image. If it is not set, it will use the imageLink property.
+     * @returns A promise that resolves when the image is loaded.
      */
-    async load() {
+    async load(image?: string) {
+        if (!image) {
+            image = this.imageLink
+        }
         return getTexture(this.imageLink)
             .then((texture) => {
                 if (texture) {
