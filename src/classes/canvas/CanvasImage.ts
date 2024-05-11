@@ -1,4 +1,4 @@
-import { Sprite, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
@@ -10,11 +10,11 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * This class is used for functions like addImage, loadImages and showImageWithDissolveTransition.
  * @example
  * ```typescript
- * let alien = new CanvasImage()
+ * let alien = new CanvasImage('https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
  * alien.x = 100
  * alien.y = 100
- * await alien.load('https://pixijs.com/assets/eggHead.png')
+ * await alien.load()
  * GameWindowManager.addCanvasElement("alien", alien)
  * ```
  * @example
@@ -27,6 +27,12 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * ```
  */
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
+    constructor(imageLink?: string, options?: SpriteOptions | Texture | undefined) {
+        super(options)
+        if (imageLink) {
+            this.imageLink = imageLink
+        }
+    }
     override get memory(): ICanvasImageMemory {
         return {
             ...getMemorySprite(this),
