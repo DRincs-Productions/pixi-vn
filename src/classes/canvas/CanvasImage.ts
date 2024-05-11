@@ -27,7 +27,7 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * ```
  */
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
-    constructor(imageLink?: string, options?: SpriteOptions | Texture | undefined) {
+    constructor(options?: SpriteOptions | Texture | undefined, imageLink?: string) {
         super(options)
         if (imageLink) {
             this.imageLink = imageLink
@@ -50,7 +50,7 @@ export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
         mySprite.texture = sprite.texture
         return mySprite
     }
-    /**
+    /** 
      * Load the image from the link and set the texture of the sprite.
      * @param image The link of the image. If it is not set, it will use the imageLink property.
      * @returns A promise that resolves when the image is loaded.
