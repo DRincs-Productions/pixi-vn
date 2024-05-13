@@ -1,5 +1,5 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
-import { CanvasImage } from '../classes/canvas';
+import { CanvasBase, CanvasImage } from '../classes/canvas';
 import { TickerFadeAlpha } from '../classes/ticker';
 import { GameWindowManager } from '../managers';
 import { getTexture } from './TextureUtility';
@@ -63,39 +63,42 @@ export function removeCanvasElement(tag: string | string[]) {
  * Disolve effect is a effect that the image is shown with a fade in.
  * If exist a image with the same tag, then the image is replaced. And the first image is removed after the effect is done.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
- * @param imageUrl The url of the image.
+ * @param image The imageUrl or the canvas element
  * @param args The arguments of the effect
  * @param duration The duration of the effect
  * @param priority The priority of the effect
  * @returns The sprite of the image.
  */
-export async function showImageWithDissolveTransition(
-    tag: string, imageUrl: string,
+export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
+    tag: string,
+    image: T,
     speed: number,
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    if (!GameWindowManager.getCanvasElement(tag)) {
-        let image = addImage(tag, imageUrl)
-        image.alpha = 0
-        let effect = new TickerFadeAlpha({
-            speed: speed,
-            type: "show",
-            startOnlyIfHaveTexture: true,
-        }, 10000, priority)
-        GameWindowManager.addTicker(tag, effect)
-        return image.load()
+    let specialTag: string | undefined = undefined
+    if (GameWindowManager.getCanvasElement(tag)) {
+        specialTag = tag + "_temp_disolve"
+        GameWindowManager.editTagCanvasElement(tag, specialTag)
     }
 
-    let specialTag = tag + "_temp_disolve"
+    let canvasElement: CanvasBase<any>
+    if (typeof image === "string") {
+        canvasElement = addImage(tag, image)
+    }
+    else {
+        canvasElement = image
+    }
+    (image as CanvasBase<any>).alpha = 0
+
     let effect = new TickerFadeAlpha({
         speed: speed,
         type: "show",
         tagToRemoveAfter: specialTag,
         startOnlyIfHaveTexture: true,
     }, 10000, priority)
-    GameWindowManager.editTagCanvasElement(tag, specialTag)
-    let image = addImage(tag, imageUrl)
-    image.alpha = 0
     GameWindowManager.addTicker(tag, effect)
-    return image.load()
+    if (canvasElement instanceof CanvasImage) {
+        return canvasElement.load()
+    }
+    return
 }
