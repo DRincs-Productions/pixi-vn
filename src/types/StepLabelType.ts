@@ -1,16 +1,36 @@
 /**
- * StepLabel is a function that will be executed as the game continues.
+ * StepLabelPropsType is the type of the props that will be passed to the StepLabel.
+ * You can override this interface to add your own props.
+ * @example
+ * ```typescript
+ * declare module '@drincs/pixi-vn/dist' {
+ *     navigate: (route: string) => void
+ * }
+ * ```
  */
-export type StepLabelType = (() => StepLabelResultType | Promise<StepLabelResultType>)
+export interface StepLabelProps {
+    [key: string]: any
+}
 
 /**
  * StepLabelResultType is the return type of the StepLabel function.
  * It can be useful for returning to the information calling function to perform other operations that cannot be performed within the StepLabel.
+ * You can override this interface to add your own return types.
+ * @example
+ * ```typescript
+ * declare module '@drincs/pixi-vn/dist' {
+ *     newRoute: string
+ * }
+ * ```
  */
-export type StepLabelResultType = {
-    /**
-     * The new route to navigate to.
-     */
-    newRoute?: string,
+export interface StepLabelResult {
     [key: string]: any
-} | void
+}
+
+export type StepLabelResultType = StepLabelResult | void
+export type StepLabelPropsType = StepLabelProps
+
+/**
+ * StepLabel is a function that will be executed as the game continues.
+ */
+export type StepLabelType = ((props: StepLabelPropsType) => StepLabelResultType | Promise<StepLabelResultType>)
