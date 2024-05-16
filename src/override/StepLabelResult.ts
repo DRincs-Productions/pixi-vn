@@ -7,7 +7,8 @@
  * // pixi-vn.types.ts
  * declare module '@drincs/pixi-vn/dist/override' {
  *     interface StepLabelResult {
- *         newRoute: string
+ *         newRoute?: string,
+ *         [key: string]: any
  *     }
  * }
  * ```

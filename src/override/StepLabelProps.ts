@@ -6,7 +6,8 @@
  * // pixi-vn.types.ts
  * declare module '@drincs/pixi-vn/dist/override' {
  *     interface StepLabelProps {
- *         navigate: (route: string) => void
+ *         navigate: (route: string) => void,
+ *         [key: string]: any
  *     }
  * }
  * ```
