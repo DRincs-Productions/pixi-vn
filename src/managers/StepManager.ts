@@ -244,7 +244,7 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static async runNextStep(props: StepLabelPropsType): Promise<StepLabelResultType> {
+    public static async runNextStep(props?: StepLabelPropsType): Promise<StepLabelResultType> {
         if (GameStepManager._openedLabels.length === 0) {
             console.warn("[Pixi'VN] There are no labels to run")
             return
@@ -257,7 +257,7 @@ export default class GameStepManager {
      * @param props The props to pass to the step.
      * @returns StepLabelResultType or undefined.
      */
-    private static async runCurrentStep(props: StepLabelPropsType): Promise<StepLabelResultType> {
+    private static async runCurrentStep(props?: StepLabelPropsType): Promise<StepLabelResultType> {
         if (GameStepManager.currentLabelId) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
@@ -307,7 +307,7 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async callLabel(label: typeof Label | Label, props: StepLabelPropsType): Promise<StepLabelResultType> {
+    public static async callLabel(label: typeof Label | Label, props?: StepLabelPropsType): Promise<StepLabelResultType> {
         try {
             if (label instanceof Label) {
                 label = label.constructor as typeof Label
@@ -343,7 +343,7 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async jumpLabel(label: typeof Label | Label, props: StepLabelPropsType): Promise<StepLabelResultType> {
+    public static async jumpLabel(label: typeof Label | Label, props?: StepLabelPropsType): Promise<StepLabelResultType> {
         GameStepManager.closeAllLabels()
         try {
             if (label instanceof Label) {
