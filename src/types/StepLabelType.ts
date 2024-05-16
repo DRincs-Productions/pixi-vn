@@ -1,4 +1,4 @@
-import { StepLabelProps, StepLabelResult } from "../override"
+import { StepLabelProps, StepLabelResult } from '@drincs/pixi-vn/dist/override';
 
 export type StepLabelResultType = StepLabelResult | void
 export type StepLabelPropsType = StepLabelProps
