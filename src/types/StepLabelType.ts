@@ -5,7 +5,9 @@
  * ```typescript
  * // pixi-vn.types.ts
  * declare module '@drincs/pixi-vn/dist' {
- *     navigate: (route: string) => void
+ *     interface StepLabelProps {
+ *         navigate: (route: string) => void
+ *     }
  * }
  * ```
  */
@@ -21,7 +23,9 @@ export interface StepLabelProps {
  * ```typescript
  * // pixi-vn.types.ts
  * declare module '@drincs/pixi-vn/dist' {
- *     newRoute: string
+ *     interface StepLabelResult {
+ *         newRoute: string
+ *     }
  * }
  * ```
  */
