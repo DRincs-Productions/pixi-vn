@@ -3,6 +3,7 @@
  * You can override this interface to add your own props.
  * @example
  * ```typescript
+ * // pixi-vn.types.ts
  * declare module '@drincs/pixi-vn/dist' {
  *     navigate: (route: string) => void
  * }
@@ -18,6 +19,7 @@ export interface StepLabelProps {
  * You can override this interface to add your own return types.
  * @example
  * ```typescript
+ * // pixi-vn.types.ts
  * declare module '@drincs/pixi-vn/dist' {
  *     newRoute: string
  * }
