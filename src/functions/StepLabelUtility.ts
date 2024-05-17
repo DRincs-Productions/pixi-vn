@@ -17,6 +17,6 @@ export function getStepSha1(step: StepLabelType): StepHistoryDataType {
  * @param step2
  * @returns
  */
-export function checkIfStepsIsEqual(step1: StepHistoryDataType | StepLabelType, step2: StepHistoryDataType | StepLabelType): boolean {
+export function checkIfStepsIsEqual(step1: StepHistoryDataType | StepLabelType<any>, step2: StepHistoryDataType | StepLabelType<any>): boolean {
     return step1 === step2
 }

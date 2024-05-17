@@ -126,7 +126,7 @@ export default class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static addStepHistory(step: StepLabelType) {
+    private static addStepHistory(step: StepLabelType<any>) {
         let stepHistory: StepHistoryDataType = getStepSha1(step)
         let historyStep: IHistoryStepData = {
             path: window.location.pathname,
@@ -257,14 +257,14 @@ export default class GameStepManager {
      * @param props The props to pass to the step.
      * @returns StepLabelResultType or undefined.
      */
-    private static async runCurrentStep(props?: StepLabelPropsType): Promise<StepLabelResultType> {
+    private static async runCurrentStep<T extends {}>(props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         if (GameStepManager.currentLabelId) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
                 console.error("[Pixi'VN] currentLabelStepIndex is null")
                 return
             }
-            let currentLabel = GameStepManager.currentLabel
+            let currentLabel = GameStepManager.currentLabel as Label<T>
             if (!currentLabel) {
                 console.error("[Pixi'VN] Label not found")
                 return
@@ -307,10 +307,10 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async callLabel(label: typeof Label | Label, props?: StepLabelPropsType): Promise<StepLabelResultType> {
+    public static async callLabel<T extends {}>(label: typeof Label<T> | Label<T>, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         try {
             if (label instanceof Label) {
-                label = label.constructor as typeof Label
+                label = label.constructor as typeof Label<T>
             }
             let labelName = label.name
             GameStepManager.pushNewLabel(labelName)
@@ -319,7 +319,7 @@ export default class GameStepManager {
             console.error("[Pixi'VN] Error calling label", e)
             return
         }
-        return await GameStepManager.runCurrentStep(props)
+        return await GameStepManager.runCurrentStep<T>(props)
     }
     /**
      * Execute the label, close all labels and add them to the history.
@@ -343,11 +343,11 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async jumpLabel(label: typeof Label | Label, props?: StepLabelPropsType): Promise<StepLabelResultType> {
+    public static async jumpLabel<T extends {}>(label: typeof Label<T> | Label<T>, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         GameStepManager.closeAllLabels()
         try {
             if (label instanceof Label) {
-                label = label.constructor as typeof Label
+                label = label.constructor as typeof Label<T>
             }
             let labelName = label.name
             GameStepManager.pushNewLabel(labelName)
@@ -356,7 +356,7 @@ export default class GameStepManager {
             console.error("[Pixi'VN] Error jumping label", e)
             return
         }
-        return await GameStepManager.runCurrentStep(props)
+        return await GameStepManager.runCurrentStep<T>(props)
     }
 
     /* After Update Methods */

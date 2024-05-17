@@ -27,13 +27,13 @@ import { StepLabelType } from "../types/StepLabelType"
  * GameStepManager.callLabel(StartLabel)
  * ```
  */
-export default class Label {
+export default class Label<T extends {} = {}> {
     /**
      * Get the steps of the label.
      * This class should be extended and the steps method should be overridden.
      * Every time you update this list will also be updated when the other game versions load.
      */
-    public get steps(): StepLabelType[] { throw new Error("[Pixi'VN] The method Label.steps must be overridden") }
+    public get steps(): StepLabelType<T>[] { throw new Error("[Pixi'VN] The method Label.steps must be overridden") }
     /**
      * Get the corresponding steps number
      * @param externalSteps
