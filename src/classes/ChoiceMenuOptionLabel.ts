@@ -9,7 +9,7 @@ import Label from "./Label"
  * new ChoiceMenuOptionLabel("Events Test", EventsTestLabel)
  * ```
  */
-export default class ChoiceMenuOptionLabel {
+export default class ChoiceMenuOptionLabel<T extends {} = {}> {
     /**
      * Text to be displayed in the menu
      */
@@ -17,7 +17,7 @@ export default class ChoiceMenuOptionLabel {
     /**
      * Label to be opened when the option is selected
      */
-    label: typeof Label
+    label: typeof Label<T>
     /**
      * Type of the label to be opened
      */
@@ -27,7 +27,7 @@ export default class ChoiceMenuOptionLabel {
      * @param label Label to be opened when the option is selected
      * @param type Type of the label to be opened
      */
-    constructor(text: string, label: typeof Label, type: LabelRunModeType = "call") {
+    constructor(text: string, label: typeof Label<T>, type: LabelRunModeType = "call") {
         this.text = text
         this.label = label
         this.type = type
