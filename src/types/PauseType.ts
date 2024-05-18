@@ -1,4 +1,4 @@
-export const PauseValueType = "Pause"
+export const PauseValueType = "pause"
 export type PauseType = {
     type: typeof PauseValueType,
     duration: number,

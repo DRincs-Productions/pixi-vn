@@ -1,2 +1,2 @@
-export type RepeatType = "Repeat"
-export const Repeat: RepeatType = "Repeat"
+export type RepeatType = "repeat"
+export const Repeat: RepeatType = "repeat"
