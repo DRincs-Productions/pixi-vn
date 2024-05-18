@@ -1,5 +1,5 @@
 import { checkIfStepsIsEqual } from "../functions/StepLabelUtility"
-import { StorageElementType } from "../types"
+import { StorageObjectType } from "../types"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 
@@ -28,7 +28,7 @@ import { StepLabelType } from "../types/StepLabelType"
  * GameStepManager.callLabel(StartLabel)
  * ```
  */
-export default class Label<T extends StorageElementType = {}> {
+export default class Label<T extends StorageObjectType = {}> {
     /**
      * Get the steps of the label.
      * This class should be extended and the steps method should be overridden.

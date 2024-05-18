@@ -1,4 +1,4 @@
-import { LabelRunModeType, StorageElementType } from "../types"
+import { LabelRunModeType, StorageElementType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import Label from "./Label"
 
@@ -9,7 +9,7 @@ import Label from "./Label"
  * new ChoiceMenuOptionLabel("Events Test", EventsTestLabel)
  * ```
  */
-export default class ChoiceMenuOptionLabel<T extends StorageElementType = {}> {
+export default class ChoiceMenuOptionLabel<T extends StorageObjectType = {}> {
     /**
      * Text to be displayed in the menu
      */
@@ -25,7 +25,7 @@ export default class ChoiceMenuOptionLabel<T extends StorageElementType = {}> {
     /**
      * Properties to be passed to the label
      */
-    props: StorageElementType = {}
+    props: StorageObjectType = {}
     /**
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected
