@@ -1,4 +1,4 @@
-import { LabelRunModeType } from "../types"
+import { LabelRunModeType, StorageElementType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import Label from "./Label"
 
@@ -9,7 +9,7 @@ import Label from "./Label"
  * new ChoiceMenuOptionLabel("Events Test", EventsTestLabel)
  * ```
  */
-export default class ChoiceMenuOptionLabel<T extends {} = {}> {
+export default class ChoiceMenuOptionLabel<T extends StorageElementType = {}> {
     /**
      * Text to be displayed in the menu
      */
@@ -23,14 +23,22 @@ export default class ChoiceMenuOptionLabel<T extends {} = {}> {
      */
     type: LabelRunModeType
     /**
+     * Properties to be passed to the label
+     */
+    props: StorageElementType = {}
+    /**
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected
      * @param type Type of the label to be opened
+     * @param props Properties to be passed to the label, when the label is called. it cannot contain functions or classes.
      */
-    constructor(text: string, label: typeof Label<T>, type: LabelRunModeType = "call") {
+    constructor(text: string, label: typeof Label<T>, type: LabelRunModeType = "call", props?: T) {
         this.text = text
         this.label = label
         this.type = type
+        if (props) {
+            this.props = props
+        }
     }
 }
 
@@ -38,4 +46,5 @@ export type IStoratedChoiceMenuOptionLabel = {
     text: string
     label: LabelIdType
     type: LabelRunModeType
+    props: StorageElementType
 }
