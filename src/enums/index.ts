@@ -1,1 +1,0 @@
-export { LabelRunModeEnum } from './LabelRunModeEnum';
