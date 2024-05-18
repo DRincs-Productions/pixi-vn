@@ -9,7 +9,7 @@ import Label from "./Label"
  * new ChoiceMenuOptionLabel("Events Test", EventsTestLabel)
  * ```
  */
-export default class ChoiceMenuOptionLabel<T extends StorageObjectType = {}> {
+export default class ChoiceMenuOptionLabel<T extends StorageObjectType> {
     /**
      * Text to be displayed in the menu
      */

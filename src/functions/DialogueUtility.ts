@@ -4,7 +4,6 @@ import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { IDialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
-import { StorageObjectType } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 
 /**
@@ -95,10 +94,10 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
  * Get the options to be shown in the game
  * @returns Options to be shown in the game
  */
-export function getChoiceMenuOptions<T extends StorageObjectType = {}>(): ChoiceMenuOptionsType<T> | undefined {
+export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = ChoiceMenuOptionsType>(): TChoice | undefined {
     let d = GameStorageManager.getVariable<IStoratedChoiceMenuOptionLabel[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
-        let options: ChoiceMenuOptionsType<T> = []
+        let options: ChoiceMenuOptionsType = []
         d.forEach((option) => {
             let label = getLabelTypeByClassName(option.label)
             if (label) {
@@ -108,7 +107,7 @@ export function getChoiceMenuOptions<T extends StorageObjectType = {}>(): Choice
                 } as any)
             }
         })
-        return options
+        return options as TChoice
     }
     return undefined
 }
