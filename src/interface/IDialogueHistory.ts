@@ -1,5 +1,5 @@
 import { DialogueBaseModel } from "../classes"
-import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption"
+import { HistoryChoiceMenuOption } from "../classes/ChoiceMenuOption"
 
 export interface IDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel> {
     /**
@@ -9,11 +9,11 @@ export interface IDialogueHistory<T extends DialogueBaseModel = DialogueBaseMode
     /**
      * List of choices asked of the player
      */
-    choices?: IStoratedChoiceMenuOptionLabel[]
+    choices?: HistoryChoiceMenuOption[]
     /**
-     * Choice made by the player
+     * The player made a choice
      */
-    choiceMade?: IStoratedChoiceMenuOptionLabel
+    playerMadeChoice?: boolean
     /**
      * The index of the step in the history.
      */

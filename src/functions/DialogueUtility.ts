@@ -1,5 +1,5 @@
 import { CharacterBaseModel, DialogueBaseModel } from "../classes";
-import { ChoiceMenuOptionClose, IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption";
+import { ChoiceMenuOptionClose, HistoryChoiceMenuOption, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import CloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
@@ -82,7 +82,7 @@ export function clearDialogue(): void {
  * ```
  */
 export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
-    let value: IStoratedChoiceMenuOptionLabel[] = options.map((option) => {
+    let value: IStoratedChoiceMenuOption[] = options.map((option) => {
         if (option instanceof ChoiceMenuOptionClose) {
             return {
                 text: option.text,
@@ -103,7 +103,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
  * @returns Options to be shown in the game
  */
 export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = ChoiceMenuOptionsType>(): TChoice | undefined {
-    let d = GameStorageManager.getVariable<IStoratedChoiceMenuOptionLabel[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+    let d = GameStorageManager.getVariable<IStoratedChoiceMenuOption[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
         let options: ChoiceMenuOptionsType = []
         d.forEach((option, index) => {
@@ -113,6 +113,8 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
                 options.push({
                     text: option.text,
                     label: itemLabel,
+                    type: Close,
+                    props: {}
                 })
                 return
             }
@@ -149,31 +151,33 @@ export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseMod
         let requiredChoices = step.choices
         if (
             list.length > 0 &&
-            list[list.length - 1].choices && !list[list.length - 1].choiceMade &&
+            list[list.length - 1].choices &&
+            !list[list.length - 1].playerMadeChoice &&
             step.currentLabel
         ) {
             let oldChoices = list[list.length - 1].choices
             if (oldChoices) {
-                let choiceMade = undefined
+                let choiceMade = false
                 if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
-                    choiceMade = oldChoices[step.choiceIndexMade]
+                    oldChoices[step.choiceIndexMade].isMadeChoice = true
+                    choiceMade = true
                 }
-                else {
-                    choiceMade = oldChoices.find((choice) => {
-                        if (choice.type === Close) {
-                            return false
-                        }
-                        return choice.label === step.currentLabel
-                    })
-                }
-                list[list.length - 1].choiceMade = choiceMade
+                list[list.length - 1].playerMadeChoice = choiceMade
+                list[list.length - 1].choices = oldChoices
             }
         }
         if (dialoge || requiredChoices) {
+            let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice) => {
+                return {
+                    text: choice.text,
+                    type: choice.type,
+                    isMadeChoice: false
+                }
+            })
             list.push({
                 dialoge: dialoge as T,
-                choiceMade: undefined,
-                choices: requiredChoices,
+                playerMadeChoice: false,
+                choices: choices,
                 stepIndex: step.index
             })
         }

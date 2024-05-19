@@ -1,4 +1,4 @@
-import { CloseType, LabelRunModeType, StorageElementType, StorageObjectType } from "../types"
+import { Close, CloseType, LabelRunModeType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import CloseLabel from "./CloseLabel"
 import Label from "./Label"
@@ -61,6 +61,14 @@ export class ChoiceMenuOptionClose {
      */
     text: string
     /**
+     * Type of the label to be opened
+     */
+    type: CloseType = Close
+    /**
+     * Properties to be passed to the label
+     */
+    props: StorageObjectType = {}
+    /**
      * @param text Text to be displayed in the menu
      */
     constructor(text: string) {
@@ -68,12 +76,18 @@ export class ChoiceMenuOptionClose {
     }
 }
 
-export type IStoratedChoiceMenuOptionLabel = {
+export type IStoratedChoiceMenuOption = {
     text: string
     label: LabelIdType
     type: LabelRunModeType
-    props: StorageElementType
+    props: StorageObjectType
 } | {
     text: string
     type: CloseType
+}
+
+export type HistoryChoiceMenuOption = {
+    text: string
+    type: CloseType | LabelRunModeType
+    isMadeChoice: boolean
 }

@@ -1,6 +1,6 @@
 import { diff } from "deep-diff"
 import { DialogueBaseModel, Label } from "../classes"
-import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption"
+import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import CloseLabel from "../classes/CloseLabel"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
 import { getDialogue } from "../functions"
@@ -153,12 +153,12 @@ export default class GameStepManager {
         let data = diff(GameStepManager.originalStepData, historyStep)
         if (data) {
             let dialoge: DialogueBaseModel | undefined = undefined
-            let requiredChoices: IStoratedChoiceMenuOptionLabel[] | undefined = undefined
+            let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
             if (GameStorageManager.getVariable<number>(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
                 dialoge = getDialogue()
             }
             if (GameStorageManager.getVariable<number>(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
-                requiredChoices = GameStorageManager.getVariable<IStoratedChoiceMenuOptionLabel[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+                requiredChoices = GameStorageManager.getVariable<IStoratedChoiceMenuOption[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
             }
             GameStepManager._stepsHistory.push({
                 diff: data,

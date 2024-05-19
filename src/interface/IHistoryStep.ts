@@ -1,6 +1,6 @@
 import deepDiff from "deep-diff";
 import { DialogueBaseModel } from "../classes";
-import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption";
+import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
 import ExportedCanvas from "./export/ExportedCanvas";
@@ -57,7 +57,7 @@ export default interface IHistoryStep<T extends DialogueBaseModel = DialogueBase
     /**
      * List of choices asked of the player
      */
-    choices?: IStoratedChoiceMenuOptionLabel[]
+    choices?: IStoratedChoiceMenuOption[]
     /**
      * The choice made by the player
      */
