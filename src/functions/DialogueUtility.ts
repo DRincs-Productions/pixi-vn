@@ -107,7 +107,7 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
         let options: ChoiceMenuOptionsType = []
         d.forEach((option, index) => {
             if (option.type === Close) {
-                let itemLabel = new Label()
+                let itemLabel = new Label() // to edit
                 itemLabel.choiseIndex = index
                 options.push({
                     text: option.text,
@@ -153,7 +153,19 @@ export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseMod
         ) {
             let oldChoices = list[list.length - 1].choices
             if (oldChoices) {
-                list[list.length - 1].choiceMade = oldChoices.find((choice) => choice.label === step.currentLabel)
+                let choiceMade = undefined
+                if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
+                    choiceMade = oldChoices[step.choiceIndexMade]
+                }
+                else {
+                    choiceMade = oldChoices.find((choice) => {
+                        if (choice.type === Close) {
+                            return false
+                        }
+                        return choice.label === step.currentLabel
+                    })
+                }
+                list[list.length - 1].choiceMade = choiceMade
             }
         }
         if (dialoge || requiredChoices) {

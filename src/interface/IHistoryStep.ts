@@ -58,4 +58,8 @@ export default interface IHistoryStep<T extends DialogueBaseModel = DialogueBase
      * List of choices asked of the player
      */
     choices?: IStoratedChoiceMenuOptionLabel[]
+    /**
+     * The choice made by the player
+     */
+    choiceIndexMade?: number
 }

@@ -126,7 +126,7 @@ export default class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static addStepHistory(step: StepLabelType<any>) {
+    private static addStepHistory(step: StepLabelType<any>, choiseMade?: number) {
         let stepHistory: StepHistoryDataType = getStepSha1(step)
         let historyStep: IHistoryStepData = {
             path: window.location.pathname,
@@ -166,6 +166,7 @@ export default class GameStepManager {
                 choices: requiredChoices,
                 stepSha1: stepHistory,
                 index: GameStepManager.lastStepIndex,
+                choiceIndexMade: choiseMade
             })
             GameStepManager.originalStepData = historyStep
         }
@@ -255,9 +256,10 @@ export default class GameStepManager {
     /**
      * Execute the current step and add it to the history.
      * @param props The props to pass to the step.
+     * @param choiseMade The choise made by the player.
      * @returns StepLabelResultType or undefined.
      */
-    private static async runCurrentStep<T extends {}>(props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    private static async runCurrentStep<T extends {}>(props?: StepLabelPropsType<T>, choiseMade?: number): Promise<StepLabelResultType> {
         if (GameStepManager.currentLabelId) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
@@ -273,7 +275,7 @@ export default class GameStepManager {
             if (n > lasteStepsLength) {
                 let nextStep = currentLabel.steps[lasteStepsLength]
                 let result = await nextStep(props)
-                GameStepManager.addStepHistory(nextStep)
+                GameStepManager.addStepHistory(nextStep, choiseMade)
                 return result
             }
             else if (n === lasteStepsLength) {
@@ -308,8 +310,10 @@ export default class GameStepManager {
      * ```
      */
     public static async callLabel<T extends {}>(label: typeof Label<T> | Label<T>, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+        let choiseMade: number | undefined = undefined
         try {
             if (label instanceof Label) {
+                choiseMade = label.choiseIndex
                 label = label.constructor as typeof Label<T>
             }
             let labelName = label.name
@@ -319,7 +323,7 @@ export default class GameStepManager {
             console.error("[Pixi'VN] Error calling label", e)
             return
         }
-        return await GameStepManager.runCurrentStep<T>(props)
+        return await GameStepManager.runCurrentStep<T>(props, choiseMade)
     }
     /**
      * Execute the label, close all labels and add them to the history.

@@ -54,7 +54,7 @@ export class ChoiceMenuOptionClose {
     /**
      * Label to be opened when the option is selected
      */
-    label: Label = new Label()
+    label: Label = new Label() // to edit
     /**
      * Text to be displayed in the menu
      */
