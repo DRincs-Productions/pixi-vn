@@ -1,6 +1,6 @@
 import { diff } from "deep-diff"
 import { DialogueBaseModel, Label } from "../classes"
-import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel"
+import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
 import { getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"

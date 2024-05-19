@@ -1,5 +1,5 @@
 import { DialogueBaseModel } from "../classes"
-import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel"
+import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption"
 
 export interface IDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel> {
     /**

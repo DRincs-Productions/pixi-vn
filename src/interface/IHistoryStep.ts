@@ -1,6 +1,6 @@
 import deepDiff from "deep-diff";
 import { DialogueBaseModel } from "../classes";
-import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
+import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
 import ExportedCanvas from "./export/ExportedCanvas";

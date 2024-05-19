@@ -1,15 +1,15 @@
-import { LabelRunModeType, StorageElementType, StorageObjectType } from "../types"
+import { CloseType, LabelRunModeType, StorageElementType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import Label from "./Label"
 
 /**
- * ChoiceMenuOptionLabel is a class that contains a Label and a text that will be displayed in the menu.
+ * ChoiceMenuOption is a class that contains a Label and a text that will be displayed in the menu.
  * @example
  * ```typescript
- * new ChoiceMenuOptionLabel("Events Test", EventsTestLabel)
+ * new ChoiceMenuOption("Events Test", EventsTestLabel)
  * ```
  */
-export default class ChoiceMenuOptionLabel<T extends StorageObjectType> {
+export default class ChoiceMenuOption<T extends StorageObjectType> {
     /**
      * Text to be displayed in the menu
      */
@@ -42,9 +42,33 @@ export default class ChoiceMenuOptionLabel<T extends StorageObjectType> {
     }
 }
 
+/**
+ * ChoiceMenuOptionClose is a class that contains a text that will be displayed in the menu.
+ * It is used to close the menu.
+ * @example
+ * ```typescript
+ * new ChoiceMenuOptionClose("Return")
+ * ```
+ */
+export class ChoiceMenuOptionClose {
+    /**
+     * Text to be displayed in the menu
+     */
+    text: string
+    /**
+     * @param text Text to be displayed in the menu
+     */
+    constructor(text: string) {
+        this.text = text
+    }
+}
+
 export type IStoratedChoiceMenuOptionLabel = {
     text: string
     label: LabelIdType
     type: LabelRunModeType
     props: StorageElementType
+} | {
+    text: string
+    type: CloseType
 }

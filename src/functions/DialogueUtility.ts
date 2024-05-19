@@ -1,9 +1,10 @@
 import { CharacterBaseModel, DialogueBaseModel } from "../classes";
-import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOptionLabel";
+import { ChoiceMenuOptionClose, IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
 import { IDialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
+import { Close } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 
 /**
@@ -71,16 +72,22 @@ export function clearDialogue(): void {
  * @example
  * ```typescript
  * setChoiceMenuOptions([
- *     new ChoiceMenuOptionLabel("Events Test", EventsTestLabel),
- *     new ChoiceMenuOptionLabel("Show Image Test", ShowImageTest),
- *     new ChoiceMenuOptionLabel("Ticker Test", TickerTestLabel),
- *     new ChoiceMenuOptionLabel("Tinting Test", TintingTestLabel),
- *     new ChoiceMenuOptionLabel("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
+ *     new ChoiceMenuOption("Events Test", EventsTestLabel),
+ *     new ChoiceMenuOption("Show Image Test", ShowImageTest),
+ *     new ChoiceMenuOption("Ticker Test", TickerTestLabel),
+ *     new ChoiceMenuOption("Tinting Test", TintingTestLabel),
+ *     new ChoiceMenuOption("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
  * ])
  * ```
  */
 export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
     let value: IStoratedChoiceMenuOptionLabel[] = options.map((option) => {
+        if (option instanceof ChoiceMenuOptionClose) {
+            return {
+                text: option.text,
+                type: Close
+            }
+        }
         return {
             ...option,
             label: option.label.name
@@ -99,12 +106,18 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
     if (d) {
         let options: ChoiceMenuOptionsType = []
         d.forEach((option) => {
+            if (option.type === Close) {
+                options.push({
+                    text: option.text,
+                })
+                return
+            }
             let label = getLabelTypeByClassName(option.label)
             if (label) {
                 options.push({
                     ...option,
                     label: label
-                } as any)
+                })
             }
         })
         return options as TChoice
