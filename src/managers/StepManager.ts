@@ -369,6 +369,22 @@ export default class GameStepManager {
         }
         return await GameStepManager.runCurrentStep<T>(props)
     }
+    /**
+     * When the player is in a choice menu, can use this function to exit to the choice menu.
+     * @param props The props to pass to the step.
+     * @returns StepLabelResultType or undefined.
+     * @example
+     * ```typescript
+     * GameStepManager.exitToChoiceMenu(yourParams).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     */
+    public static async exitToChoiceMenu<T extends {}>(props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+        return GameStepManager.runNextStep(props)
+    }
 
     /* After Update Methods */
 
