@@ -1,6 +1,7 @@
 import { diff } from "deep-diff"
 import { DialogueBaseModel, Label } from "../classes"
 import { IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption"
+import CloseLabel from "../classes/CloseLabel"
 import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
 import { getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
@@ -312,6 +313,9 @@ export default class GameStepManager {
     public static async callLabel<T extends {}>(label: typeof Label<T> | Label<T>, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         let choiseMade: number | undefined = undefined
         try {
+            if (label instanceof CloseLabel) {
+                return GameStepManager.runNextStep(props)
+            }
             if (label instanceof Label) {
                 choiseMade = label.choiseIndex
                 label = label.constructor as typeof Label<T>
@@ -350,6 +354,9 @@ export default class GameStepManager {
     public static async jumpLabel<T extends {}>(label: typeof Label<T> | Label<T>, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         GameStepManager.closeAllLabels()
         try {
+            if (label instanceof CloseLabel) {
+                return GameStepManager.runNextStep(props)
+            }
             if (label instanceof Label) {
                 label = label.constructor as typeof Label<T>
             }

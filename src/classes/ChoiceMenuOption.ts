@@ -1,5 +1,6 @@
 import { CloseType, LabelRunModeType, StorageElementType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
+import CloseLabel from "./CloseLabel"
 import Label from "./Label"
 
 /**
@@ -54,7 +55,7 @@ export class ChoiceMenuOptionClose {
     /**
      * Label to be opened when the option is selected
      */
-    label: Label = new Label() // to edit
+    label: Label = new CloseLabel()
     /**
      * Text to be displayed in the menu
      */
