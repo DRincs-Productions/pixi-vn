@@ -52,4 +52,5 @@ export default class Label<T extends StorageObjectType = {}> {
         })
         return res
     }
+    choiseIndex?: number
 }

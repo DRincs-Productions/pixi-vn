@@ -17,7 +17,7 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
     /**
      * Label to be opened when the option is selected
      */
-    label: typeof Label<T>
+    label: Label<T>
     /**
      * Type of the label to be opened
      */
@@ -34,7 +34,7 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      */
     constructor(text: string, label: typeof Label<T>, type: LabelRunModeType = "call", props?: T) {
         this.text = text
-        this.label = label
+        this.label = new label()
         this.type = type
         if (props) {
             this.props = props
@@ -51,6 +51,10 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
  * ```
  */
 export class ChoiceMenuOptionClose {
+    /**
+     * Label to be opened when the option is selected
+     */
+    label: Label = new Label()
     /**
      * Text to be displayed in the menu
      */

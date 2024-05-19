@@ -1,4 +1,4 @@
-import { CharacterBaseModel, DialogueBaseModel } from "../classes";
+import { CharacterBaseModel, DialogueBaseModel, Label } from "../classes";
 import { ChoiceMenuOptionClose, IStoratedChoiceMenuOptionLabel } from "../classes/ChoiceMenuOption";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
@@ -90,7 +90,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
         }
         return {
             ...option,
-            label: option.label.name
+            label: option.label.constructor.name,
         }
     })
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
@@ -105,18 +105,23 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
     let d = GameStorageManager.getVariable<IStoratedChoiceMenuOptionLabel[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
         let options: ChoiceMenuOptionsType = []
-        d.forEach((option) => {
+        d.forEach((option, index) => {
             if (option.type === Close) {
+                let itemLabel = new Label()
+                itemLabel.choiseIndex = index
                 options.push({
                     text: option.text,
+                    label: itemLabel,
                 })
                 return
             }
             let label = getLabelTypeByClassName(option.label)
             if (label) {
+                let itemLabel = new label()
+                itemLabel.choiseIndex = index
                 options.push({
                     ...option,
-                    label: label
+                    label: itemLabel
                 })
             }
         })
