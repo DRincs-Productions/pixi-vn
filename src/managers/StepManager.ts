@@ -375,14 +375,14 @@ export default class GameStepManager {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.exitToChoiceMenu(yourParams).then((result) => {
+     * GameStepManager.closeChoiceMenu(yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
      * })
      * ```
      */
-    public static async exitToChoiceMenu<T extends {}>(props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async closeChoiceMenu<T extends {}>(props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         return GameStepManager.runNextStep(props)
     }
 
