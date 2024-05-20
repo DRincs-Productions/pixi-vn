@@ -3,7 +3,7 @@ import { ChoiceMenuOptionClose, HistoryChoiceMenuOption, IStoratedChoiceMenuOpti
 import CloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
-import { IDialogueHistory } from "../interface";
+import { DialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
 import { Close } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
@@ -142,8 +142,8 @@ export function clearChoiceMenuOptions(): void {
  * Get the history of the dialogues
  * @returns the history of the dialogues
  */
-export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel>(): IDialogueHistory<T>[] {
-    let list: IDialogueHistory<T>[] = []
+export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel>(): DialogueHistory<T>[] {
+    let list: DialogueHistory<T>[] = []
     GameStepManager.stepsHistory.forEach((step) => {
         let dialoge = step.dialoge
         let requiredChoices = step.choices

@@ -1,5 +1,5 @@
+export { default as DialogueHistory } from './DialogueHistory';
 export { IClassWithArgsHistory, IClassWithArgsHistoryForExport } from './IClassWithArgsHistory';
-export { DialogueHistory as IDialogueHistory } from './IDialogueHistory';
 export { default as IHistoryStep, IHistoryStepData } from './IHistoryStep';
 export { default as IOpenedLabel } from './IOpenedLabel';
 export { default as ISaveData } from './ISaveData';

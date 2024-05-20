@@ -1,7 +1,7 @@
 import { DialogueBaseModel } from "../classes"
 import { HistoryChoiceMenuOption } from "../classes/ChoiceMenuOption"
 
-export interface DialogueHistory<T extends DialogueBaseModel = DialogueBaseModel> {
+export default interface DialogueHistory<T extends DialogueBaseModel = DialogueBaseModel> {
     /**
      * Dialogue to be shown in the game
      */
