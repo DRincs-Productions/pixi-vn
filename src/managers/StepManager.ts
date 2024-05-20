@@ -1,8 +1,8 @@
 import { diff } from "deep-diff"
 import { DialogueBaseModel, Label } from "../classes"
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
-import CloseLabel from "../classes/CloseLabel"
-import { getLabelInstanceByClassName } from "../decorators/LabelDecorator"
+import { CLOSE_LABEL_ID } from "../classes/CloseLabel"
+import { getLabelById } from "../decorators/LabelDecorator"
 import { getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
@@ -60,7 +60,7 @@ export default class GameStepManager {
      */
     static get currentLabel(): Label | undefined {
         if (GameStepManager.currentLabelId) {
-            return getLabelInstanceByClassName(GameStepManager.currentLabelId)
+            return getLabelById(GameStepManager.currentLabelId)
         }
     }
     private static get currentLabelStepIndex(): number | null {
@@ -81,7 +81,7 @@ export default class GameStepManager {
             }
             else {
                 this.openedLabels.forEach((item) => {
-                    let label = getLabelInstanceByClassName(item.label)
+                    let label = getLabelById(item.label)
                     if (label && label.steps.length > item.currentStepIndex) {
                         return false
                     }
@@ -178,9 +178,9 @@ export default class GameStepManager {
      * @param label The label to add to the history.
      */
     private static pushNewLabel(label: LabelIdType) {
-        let currentLabel = getLabelInstanceByClassName(label)
+        let currentLabel = getLabelById(label)
         if (!currentLabel) {
-            throw new Error("[Pixi'VN] Label not found")
+            throw new Error(`[Pixi'VN] Label ${label} not found`)
         }
         GameStepManager._openedLabels.push({
             label: label,
@@ -197,7 +197,7 @@ export default class GameStepManager {
             return
         }
         if (!GameStepManager.currentLabel) {
-            console.error("[Pixi'VN] Label not found")
+            console.error("[Pixi'VN] currentLabel not found")
             return
         }
         GameStepManager._openedLabels.pop()
@@ -269,7 +269,7 @@ export default class GameStepManager {
             }
             let currentLabel = GameStepManager.currentLabel as Label<T>
             if (!currentLabel) {
-                console.error("[Pixi'VN] Label not found")
+                console.error("[Pixi'VN] currentLabel not found")
                 return
             }
             let n = currentLabel.steps.length
@@ -291,12 +291,12 @@ export default class GameStepManager {
     /**
      * Execute the label and add it to the history.
      * Is a call function in Ren'Py.
-     * @param label The label to execute.
+     * @param label The label to execute or the id of the label
      * @param props The props to pass to the label.
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.callLabel(StartLabel, yourParams).then((result) => {
+     * GameStepManager.callLabel(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -305,23 +305,32 @@ export default class GameStepManager {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return GameStepManager.callLabel(StartLabel).then((result) => {
+     * return GameStepManager.callLabel(startLabel).then((result) => {
      *     return result
      * })
      * ```
      */
-    public static async callLabel<T extends {}>(label: typeof Label<T> | Label<T>, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async callLabel<T extends {} = {}>(label: Label<T> | LabelIdType, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         let choiseMade: number | undefined = undefined
+        let labelId: LabelIdType
+        if (typeof label === 'string') {
+            labelId = label
+        }
+        else {
+            labelId = label.id
+            if (typeof label.choiseIndex === "number") {
+                choiseMade = label.choiseIndex
+            }
+        }
         try {
-            if (label instanceof CloseLabel) {
+            if (labelId === CLOSE_LABEL_ID) {
                 return GameStepManager.runNextStep(props)
             }
-            if (label instanceof Label) {
-                choiseMade = label.choiseIndex
-                label = label.constructor as typeof Label<T>
+            let tempLabel = getLabelById<Label<T>>(labelId)
+            if (!tempLabel) {
+                throw new Error(`[Pixi'VN] Label ${labelId} not found`)
             }
-            let labelName = label.name
-            GameStepManager.pushNewLabel(labelName)
+            GameStepManager.pushNewLabel(tempLabel.id)
         }
         catch (e) {
             console.error("[Pixi'VN] Error calling label", e)
@@ -333,11 +342,11 @@ export default class GameStepManager {
      * Execute the label, close all labels and add them to the history.
      * Is a jump function in Ren'Py.
      * @param label The label to execute.
-     * @param props The props to pass to the label.
+     * @param props The props to pass to the label or the id of the label
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.jumpLabel(StartLabel, yourParams).then((result) => {
+     * GameStepManager.jumpLabel(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -346,22 +355,33 @@ export default class GameStepManager {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return GameStepManager.jumpLabel(StartLabel).then((result) => {
+     * return GameStepManager.jumpLabel(startLabel).then((result) => {
      *     return result
      * })
      * ```
      */
-    public static async jumpLabel<T extends {}>(label: typeof Label<T> | Label<T>, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         GameStepManager.closeAllLabels()
+        let choiseMade: number | undefined = undefined
+        let labelId: LabelIdType
+        if (typeof label === 'string') {
+            labelId = label
+        }
+        else {
+            labelId = label.id
+            if (typeof label.choiseIndex === "number") {
+                choiseMade = label.choiseIndex
+            }
+        }
         try {
-            if (label instanceof CloseLabel) {
+            if (labelId === CLOSE_LABEL_ID) {
                 return GameStepManager.runNextStep(props)
             }
-            if (label instanceof Label) {
-                label = label.constructor as typeof Label<T>
+            let tempLabel = getLabelById<Label<T>>(labelId)
+            if (!tempLabel) {
+                throw new Error(`[Pixi'VN] Label ${labelId} not found`)
             }
-            let labelName = label.name
-            GameStepManager.pushNewLabel(labelName)
+            GameStepManager.pushNewLabel(tempLabel.id)
         }
         catch (e) {
             console.error("[Pixi'VN] Error jumping label", e)

@@ -1,68 +1,34 @@
 import { Label } from "../classes"
+import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
-export const registeredLabels: { [key: LabelIdType]: typeof Label } = {}
+export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
+
 /**
- * Is a decorator that register a label in the game.
- * Is a required decorator for use the label in the game.
- * Thanks to this decoration the game has the possibility of updating the labels to the latest modification and saving the game.
- * @param name is th identifier of the label, by default is the name of the class
- * @returns 
+ * Creates a new label and registers it in the system
+ * @param id The id of the label, it must be unique
+ * @param steps The steps of the label
+ * @returns The created label
  */
-export default function labelDecorator(name?: LabelIdType) {
-    return function (target: typeof Label) {
-        if (!name) {
-            name = target.name
-        }
-        if (registeredLabels[name]) {
-            console.warn(`[Pixi'VN] Label ${name} already exists, it will be overwritten`)
-        }
-        registeredLabels[name] = target
+export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[]): Label<T> {
+    if (registeredLabels[id]) {
+        console.warn(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
     }
+    let label = new Label<T>(id, steps)
+    registeredLabels[id] = label
+    return label
 }
 
 /**
- * is a function that returns the type of the label
- * @param labelName is the name of the label
- * @returns the label type
+ * Gets a label by its id
+ * @param id The id of the label
+ * @returns The label or undefined if it does not exist
  */
-export function getLabelTypeByClassName<T extends typeof Label>(labelName: LabelIdType): T | undefined {
-    try {
-        let labelType = registeredLabels[labelName]
-        if (!labelType) {
-            console.error(`[Pixi'VN] Label ${labelName} not found`)
-            return
-        }
-        new labelType()
-        return labelType as T
-    }
-    catch (e) {
-        console.error(`[Pixi'VN] Error while getting Label ${labelName}`, e)
+export function getLabelById<T = Label<any>>(id: LabelIdType): T | undefined {
+    let label = registeredLabels[id]
+    if (!label) {
+        console.error(`[Pixi'VN] Label ${id} not found`)
         return
     }
-}
-
-/**
- * is a function that returns the instance of the label
- * @param labelName is the name of the label
- * @returns the label
- */
-export function getLabelInstanceByClassName<T extends Label>(labelName: LabelIdType): T | undefined {
-    try {
-        let labelType = registeredLabels[labelName]
-        if (!labelType) {
-            console.error(`[Pixi'VN] Label ${labelName} not found`)
-            return
-        }
-        let label = new labelType()
-        let step = label.steps
-        if (step.length = 0) {
-            console.warn(`[Pixi'VN] Label ${labelName} has no steps`)
-        }
-        return label as T
-    }
-    catch (e) {
-        console.error(`[Pixi'VN] Error while getting Label ${labelName}`, e)
-        return
-    }
+    return label as T
 }

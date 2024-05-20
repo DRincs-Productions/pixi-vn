@@ -1,8 +1,8 @@
-import { CharacterBaseModel, DialogueBaseModel } from "../classes";
+import { CharacterBaseModel, DialogueBaseModel, Label } from "../classes";
 import { ChoiceMenuOptionClose, HistoryChoiceMenuOption, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import CloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
-import { getLabelTypeByClassName } from "../decorators/LabelDecorator";
+import { getLabelById } from "../decorators";
 import { IDialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
 import { Close } from "../types";
@@ -74,9 +74,9 @@ export function clearDialogue(): void {
  * ```typescript
  * setChoiceMenuOptions([
  *     new ChoiceMenuOption("Events Test", EventsTestLabel),
- *     new ChoiceMenuOption("Show Image Test", ShowImageTest),
+ *     new ChoiceMenuOption("Show Image Test", ShowImageTest, "call", { image: "imageId" }),
  *     new ChoiceMenuOption("Ticker Test", TickerTestLabel),
- *     new ChoiceMenuOption("Tinting Test", TintingTestLabel),
+ *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, "jump"),
  *     new ChoiceMenuOption("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
  * ])
  * ```
@@ -91,7 +91,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
         }
         return {
             ...option,
-            label: option.label.constructor.name,
+            label: option.label.id,
         }
     })
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
@@ -108,8 +108,7 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
         let options: ChoiceMenuOptionsType = []
         d.forEach((option, index) => {
             if (option.type === Close) {
-                let itemLabel = new CloseLabel()
-                itemLabel.choiseIndex = index
+                let itemLabel = new CloseLabel(index)
                 options.push({
                     text: option.text,
                     label: itemLabel,
@@ -118,10 +117,9 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
                 })
                 return
             }
-            let label = getLabelTypeByClassName(option.label)
+            let label = getLabelById(option.label)
             if (label) {
-                let itemLabel = new label()
-                itemLabel.choiseIndex = index
+                let itemLabel = new Label(label.id, label.steps, index)
                 options.push({
                     ...option,
                     label: itemLabel
@@ -159,7 +157,7 @@ export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseMod
             if (oldChoices) {
                 let choiceMade = false
                 if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
-                    oldChoices[step.choiceIndexMade].isMadeChoice = true
+                    oldChoices[step.choiceIndexMade].isResponse = true
                     choiceMade = true
                 }
                 list[list.length - 1].playerMadeChoice = choiceMade
@@ -171,7 +169,7 @@ export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseMod
                 return {
                     text: choice.text,
                     type: choice.type,
-                    isMadeChoice: false
+                    isResponse: false
                 }
             })
             list.push({

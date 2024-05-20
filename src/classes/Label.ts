@@ -1,40 +1,61 @@
 import { checkIfStepsIsEqual } from "../functions/StepLabelUtility"
-import { StorageObjectType } from "../types"
+import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 
 /**
  * Label is a class that contains a list of steps, which will be performed as the game continues.
- * You must use the labelDecorator to register the label in the game.
  * For Ren'py this is the equivalent of a label.
  * @example
  * ```typescript
- * \@labelDecorator() // this is equivalent to labelDecorator("StartLabel")
- * export class StartLabel extends Label {
- *     override get steps(): StepLabelType[] {
- *         return [
- *             () => {
- *                 GameWindowManager.clear()
- *                 setDialogue({ character: liam, text: "Which test do you want to perform?" })
- *                 setChoiceMenuOptions([
- *                     new ChoiceMenuOption("Events Test", EventsTestLabel),
- *                     new ChoiceMenuOption("Show Image Test", ShowImageTest),
- *                 ])
- *             },
- *             () => GameStepManager.jumpLabel(StartLabel),
- *         ]
- *     }
- * }
+ * const START_LABEL_ID = "StartLabel"
+ * 
+ * export const startLabel = newLabel(START_LABEL_ID,
+ *     [
+ *         (props) => {
+ *             GameWindowManager.clear()
+ *             setDialogue({ character: liam, text: "Which test do you want to perform?" })
+ *             setChoiceMenuOptions([
+ *                 new ChoiceMenuOption("Events Test", eventsTestLabel),
+ *                 new ChoiceMenuOption("Show Image Test", showImageTest),
+ *             ])
+ *         },
+ *         (props) => GameStepManager.jumpLabel(START_LABEL_ID, props),
+ *     ]
+ * )
+ * 
  * GameStepManager.callLabel(StartLabel)
  * ```
  */
-export default class Label<T extends StorageObjectType = {}> {
+export default class Label<T extends {} = {}> {
+    /**
+     * @param id is the id of the label
+     * @param steps is the list of steps that the label will perform
+     */
+    constructor(id: LabelIdType, steps: StepLabelType<T>[], choiseIndex?: number) {
+        this._id = id
+        this._steps = steps
+        this._choiseIndex = choiseIndex
+    }
+
+    private _id: LabelIdType
+    /**
+     * Get the id of the label
+     */
+    public get id(): LabelIdType {
+        return this._id
+    }
+
+    private _steps: StepLabelType<T>[]
     /**
      * Get the steps of the label.
      * This class should be extended and the steps method should be overridden.
      * Every time you update this list will also be updated when the other game versions load.
      */
-    public get steps(): StepLabelType<T>[] { throw new Error("[Pixi'VN] The method Label.steps must be overridden") }
+    public get steps(): StepLabelType<T>[] {
+        return this._steps
+    }
+
     /**
      * Get the corresponding steps number
      * @param externalSteps
@@ -52,5 +73,9 @@ export default class Label<T extends StorageObjectType = {}> {
         })
         return res
     }
-    choiseIndex?: number
+
+    private _choiseIndex: number | undefined
+    public get choiseIndex(): number | undefined {
+        return this._choiseIndex
+    }
 }
