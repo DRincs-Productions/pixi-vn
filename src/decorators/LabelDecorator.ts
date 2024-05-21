@@ -8,13 +8,14 @@ export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
  * Creates a new label and registers it in the system
  * @param id The id of the label, it must be unique
  * @param steps The steps of the label
+ * @param onStepRun is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
  * @returns The created label
  */
-export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[]): Label<T> {
+export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[], onStepRun?: () => void | Promise<void>): Label<T> {
     if (registeredLabels[id]) {
         console.warn(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
     }
-    let label = new Label<T>(id, steps)
+    let label = new Label<T>(id, steps, onStepRun)
     registeredLabels[id] = label
     return label
 }

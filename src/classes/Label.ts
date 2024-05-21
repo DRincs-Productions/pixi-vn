@@ -31,10 +31,13 @@ export default class Label<T extends {} = {}> {
     /**
      * @param id is the id of the label
      * @param steps is the list of steps that the label will perform
+     * @param onStepRun is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
+     * @param choiseIndex is the index of the choice that the label will perform
      */
-    constructor(id: LabelIdType, steps: StepLabelType<T>[], choiseIndex?: number) {
+    constructor(id: LabelIdType, steps: StepLabelType<T>[], onStepRun?: () => void | Promise<void>, choiseIndex?: number) {
         this._id = id
         this._steps = steps
+        this._onStepRun = onStepRun
         this._choiseIndex = choiseIndex
     }
 
@@ -72,6 +75,22 @@ export default class Label<T extends {} = {}> {
             }
         })
         return res
+    }
+
+    private _onStepRun: (() => void | Promise<void>) | undefined
+    /**
+     * Get the function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
+     * @returns Promise<void> or void
+     * @example
+     * ```typescript
+     * newLabel("id", [], () => {
+     *     Assets.load('path/to/image1.png')
+     *     Assets.load('path/to/image2.png')
+     * })
+     * ```
+     */
+    public get onStepRun(): (() => void | Promise<void>) | undefined {
+        return this._onStepRun
     }
 
     private _choiseIndex: number | undefined
