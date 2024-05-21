@@ -31,8 +31,8 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
     /**
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected or the id of the label
-     * @param type Type of the label to be opened
-     * @param props Properties to be passed to the label, when the label is called. it cannot contain functions or classes.
+     * @param type Type of the label to be opened. @default "call"
+     * @param props Properties to be passed to the label, when the label is called. it cannot contain functions or classes. @default {}
      */
     constructor(text: string, label: Label<T> | LabelIdType, type: LabelRunModeType = "call", props?: T) {
         if (typeof label === 'string') {
