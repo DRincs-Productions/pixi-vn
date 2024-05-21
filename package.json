@@ -23,7 +23,7 @@
   },
   "homepage": "https://pixi-vn.web.app/",
   "devDependencies": {
-    "@drincs/pixi-vn": "^0.4.8",
+    "@drincs/pixi-vn": "^0.5.3",
     "@types/crypto-js": "^4.2.2",
     "@types/css-font-loading-module": "^0.0.13",
     "@types/deep-diff": "^1.0.5",
