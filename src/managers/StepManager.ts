@@ -246,7 +246,7 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static async runNextStep(props?: StepLabelPropsType): Promise<StepLabelResultType> {
+    public static async runNextStep(props: StepLabelPropsType): Promise<StepLabelResultType> {
         if (GameStepManager._openedLabels.length === 0) {
             console.warn("[Pixi'VN] There are no labels to run")
             return
@@ -260,7 +260,7 @@ export default class GameStepManager {
      * @param choiseMade The choise made by the player.
      * @returns StepLabelResultType or undefined.
      */
-    private static async runCurrentStep<T extends {}>(props?: StepLabelPropsType<T>, choiseMade?: number): Promise<StepLabelResultType> {
+    private static async runCurrentStep<T extends {}>(props: StepLabelPropsType<T>, choiseMade?: number): Promise<StepLabelResultType> {
         if (GameStepManager.currentLabelId) {
             let lasteStepsLength = GameStepManager.currentLabelStepIndex
             if (lasteStepsLength === null) {
@@ -310,7 +310,7 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async callLabel<T extends {} = {}>(label: Label<T> | LabelIdType, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async callLabel<T extends {} = {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         let choiseMade: number | undefined = undefined
         let labelId: LabelIdType
         if (typeof label === 'string') {
@@ -360,7 +360,7 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         GameStepManager.closeAllLabels()
         let choiseMade: number | undefined = undefined
         let labelId: LabelIdType
@@ -402,7 +402,7 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async closeChoiceMenu<T extends {}>(props?: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async closeChoiceMenu<T extends {}>(props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         return GameStepManager.runNextStep(props)
     }
 
