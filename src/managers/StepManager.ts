@@ -262,8 +262,8 @@ export default class GameStepManager {
      */
     private static async runCurrentStep<T extends {}>(props: StepLabelPropsType<T>, choiseMade?: number): Promise<StepLabelResultType> {
         if (GameStepManager.currentLabelId) {
-            let lasteStepsLength = GameStepManager.currentLabelStepIndex
-            if (lasteStepsLength === null) {
+            let lastStepsLength = GameStepManager.currentLabelStepIndex
+            if (lastStepsLength === null) {
                 console.error("[Pixi'VN] currentLabelStepIndex is null")
                 return
             }
@@ -273,13 +273,13 @@ export default class GameStepManager {
                 return
             }
             let n = currentLabel.steps.length
-            if (n > lasteStepsLength) {
-                let nextStep = currentLabel.steps[lasteStepsLength]
-                let result = await nextStep(props)
-                GameStepManager.addStepHistory(nextStep, choiseMade)
+            if (n > lastStepsLength) {
+                let step = currentLabel.steps[lastStepsLength]
+                let result = await step(props)
+                GameStepManager.addStepHistory(step, choiseMade)
                 return result
             }
-            else if (n === lasteStepsLength) {
+            else if (n === lastStepsLength) {
                 GameStepManager.closeCurrentLabel()
                 return await GameStepManager.runNextStep(props)
             }
