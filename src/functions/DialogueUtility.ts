@@ -102,7 +102,7 @@ export function setChoiceMenuOptions<T extends {} = {}>(options: ChoiceMenuOptio
  * Get the options to be shown in the game
  * @returns Options to be shown in the game
  */
-export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = ChoiceMenuOptionsType>(): TChoice | undefined {
+export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }>>(): TChoice | undefined {
     let d = GameStorageManager.getVariable<IStoratedChoiceMenuOption[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
         let options: ChoiceMenuOptionsType = []
