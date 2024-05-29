@@ -81,7 +81,7 @@ export function clearDialogue(): void {
  * ])
  * ```
  */
-export function setChoiceMenuOptions(options: ChoiceMenuOptionsType): void {
+export function setChoiceMenuOptions<T extends {} = {}>(options: ChoiceMenuOptionsType<T>): void {
     let value: IStoratedChoiceMenuOption[] = options.map((option) => {
         if (option instanceof ChoiceMenuOptionClose) {
             return {
