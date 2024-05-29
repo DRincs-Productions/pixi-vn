@@ -1,6 +1,6 @@
 import { CharacterBaseModel, DialogueBaseModel, Label } from "../classes";
 import { ChoiceMenuOptionClose, HistoryChoiceMenuOption, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
-import CloseLabel from "../classes/CloseLabel";
+import newCloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
 import { DialogueHistory } from "../interface";
@@ -108,7 +108,7 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
         let options: ChoiceMenuOptionsType = []
         d.forEach((option, index) => {
             if (option.type === Close) {
-                let itemLabel = new CloseLabel(index)
+                let itemLabel = newCloseLabel(index)
                 options.push({
                     text: option.text,
                     label: itemLabel,

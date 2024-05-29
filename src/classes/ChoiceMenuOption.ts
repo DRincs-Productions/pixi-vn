@@ -1,7 +1,7 @@
 import { getLabelById } from "../decorators"
 import { Close, CloseType, LabelRunModeType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
-import CloseLabel from "./CloseLabel"
+import newCloseLabel from "./CloseLabel"
 import Label from "./Label"
 
 /**
@@ -65,7 +65,7 @@ export class ChoiceMenuOptionClose {
     /**
      * Label to be opened when the option is selected
      */
-    label: Label = new CloseLabel()
+    label: Label = newCloseLabel()
     /**
      * Text to be displayed in the menu
      */
