@@ -1,7 +1,7 @@
 import { diff } from "deep-diff"
 import { DialogueBaseModel, Label } from "../classes"
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
-import { CLOSE_LABEL_ID } from "../classes/CloseLabel"
+import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import { getLabelById } from "../decorators/LabelDecorator"
 import { getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
@@ -324,7 +324,8 @@ export default class GameStepManager {
         }
         try {
             if (labelId === CLOSE_LABEL_ID) {
-                return GameStepManager.runNextStep(props)
+                let closeLabel = newCloseLabel(choiseMade)
+                return GameStepManager.closeChoiceMenu(closeLabel, props)
             }
             let tempLabel = getLabelById<Label<T>>(labelId)
             if (!tempLabel) {
@@ -375,7 +376,8 @@ export default class GameStepManager {
         }
         try {
             if (labelId === CLOSE_LABEL_ID) {
-                return GameStepManager.runNextStep(props)
+                let closeLabel = newCloseLabel(choiseMade)
+                return GameStepManager.closeChoiceMenu(closeLabel, props)
             }
             let tempLabel = getLabelById<Label<T>>(labelId)
             if (!tempLabel) {
@@ -387,7 +389,7 @@ export default class GameStepManager {
             console.error("[Pixi'VN] Error jumping label", e)
             return
         }
-        return await GameStepManager.runCurrentStep<T>(props)
+        return await GameStepManager.runCurrentStep<T>(props, choiseMade)
     }
     /**
      * When the player is in a choice menu, can use this function to exit to the choice menu.
@@ -402,7 +404,12 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async closeChoiceMenu<T extends {}>(props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async closeChoiceMenu<T extends {}>(label: Label<T>, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+        let choiseMade: number | undefined = undefined
+        if (typeof label.choiseIndex === "number") {
+            choiseMade = label.choiseIndex
+        }
+        GameStepManager.addStepHistory(() => { }, choiseMade)
         return GameStepManager.runNextStep(props)
     }
 
