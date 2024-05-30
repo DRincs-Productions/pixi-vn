@@ -108,7 +108,7 @@ export default class GameWindowManager {
      * Initialize the interface div and add it into a html element.
      * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
      * @example
-     * ```typescript
+     * ```tsx
      * const root = document.getElementById('root')
      * if (!root) {
      *     throw new Error('root element not found')
