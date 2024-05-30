@@ -141,7 +141,11 @@ export default class GameStepManager {
                 try {
                     let lastStepDataOpenedLabelsString = JSON.stringify(GameStepManager.originalStepData.openedLabels)
                     let historyStepOpenedLabelsString = JSON.stringify(historyStep.openedLabels)
-                    if (lastStepDataOpenedLabelsString === historyStepOpenedLabelsString) {
+                    if (
+                        lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
+                        GameStepManager.originalStepData.path === historyStep.path &&
+                        GameStepManager.originalStepData.labelIndex === historyStep.labelIndex
+                    ) {
                         return
                     }
                 }
