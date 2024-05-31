@@ -230,6 +230,7 @@ export default class GameStepManager {
     /**
      * Execute the next step and add it to the history.
      * @param props The props to pass to the step.
+     * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
@@ -250,13 +251,13 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static async runNextStep(props: StepLabelPropsType): Promise<StepLabelResultType> {
+    public static async runNextStep(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
         if (GameStepManager._openedLabels.length === 0) {
             console.warn("[Pixi'VN] There are no labels to run")
             return
         }
         GameStepManager.increaseCurrentStepIndex()
-        return await GameStepManager.runCurrentStep(props)
+        return await GameStepManager.runCurrentStep(props, choiseMade)
     }
     /**
      * Execute the current step and add it to the history.
@@ -285,7 +286,7 @@ export default class GameStepManager {
             }
             else if (n === lastStepsLength) {
                 GameStepManager.closeCurrentLabel()
-                return await GameStepManager.runNextStep(props)
+                return await GameStepManager.runNextStep(props, choiseMade)
             }
             else {
                 console.warn("[Pixi'VN] There are no steps to run")
@@ -413,8 +414,7 @@ export default class GameStepManager {
         if (typeof label.choiseIndex === "number") {
             choiseMade = label.choiseIndex
         }
-        GameStepManager.addStepHistory(() => { }, choiseMade)
-        return GameStepManager.runNextStep(props)
+        return GameStepManager.runNextStep(props, choiseMade)
     }
 
     /* After Update Methods */
