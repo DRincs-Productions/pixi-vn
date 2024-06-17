@@ -11,7 +11,7 @@ export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
  * @param onStepRun is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
  * @returns The created label
  */
-export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[], onStepRun?: () => void | Promise<void>): Label<T> {
+export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), onStepRun?: () => void | Promise<void>): Label<T> {
     if (registeredLabels[id]) {
         console.warn(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
     }

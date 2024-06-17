@@ -34,7 +34,7 @@ export default class Label<T extends {} = {}> {
      * @param onStepRun is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
      * @param choiseIndex is the index of the choice that the label will perform
      */
-    constructor(id: LabelIdType, steps: StepLabelType<T>[], onStepRun?: () => void | Promise<void>, choiseIndex?: number) {
+    constructor(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), onStepRun?: () => void | Promise<void>, choiseIndex?: number) {
         this._id = id
         this._steps = steps
         this._onStepRun = onStepRun
@@ -49,13 +49,16 @@ export default class Label<T extends {} = {}> {
         return this._id
     }
 
-    private _steps: StepLabelType<T>[]
+    private _steps: StepLabelType<T>[] | (() => StepLabelType<T>[])
     /**
      * Get the steps of the label.
      * This class should be extended and the steps method should be overridden.
      * Every time you update this list will also be updated when the other game versions load.
      */
     public get steps(): StepLabelType<T>[] {
+        if (typeof this._steps === "function") {
+            return this._steps()
+        }
         return this._steps
     }
 
