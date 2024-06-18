@@ -71,34 +71,6 @@ export default class GameStepManager {
         return null
     }
     /**
-     * currentLabelStep is the current step that occurred during the progression of the steps. It can used to determine the game end.
-     */
-    static get isLastGameStep(): boolean {
-        if (GameStepManager._openedLabels.length === 0) {
-            return true
-        }
-        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
-        let currentLabel = GameStepManager.currentLabel
-        if (!currentLabel || currentLabelStepIndex === null) {
-            return true
-        }
-        let stepsLength = currentLabel.steps.length
-        if (stepsLength > currentLabelStepIndex) {
-            return false
-        }
-        return GameStepManager._openedLabels.every((item) => {
-            let label = getLabelById(item.label)
-            if (!label) {
-                throw new Error(`[Pixi'VN] Label ${label} not found`)
-            }
-            let stepsLength = label.steps.length
-            if (stepsLength > item.currentStepIndex) {
-                return false
-            }
-            return true
-        })
-    }
-    /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
      */
     private static get lastHistoryStep(): IHistoryStep | null {
@@ -231,6 +203,9 @@ export default class GameStepManager {
             currentStepIndex: item.currentStepIndex + 1,
         }
     }
+    private static restorLastLabelList() {
+        GameStepManager._openedLabels = GameStepManager.originalStepData.openedLabels
+    }
 
     /* Run Methods */
 
@@ -259,14 +234,6 @@ export default class GameStepManager {
      * ```
      */
     public static async runNextStep(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
-        if (GameStepManager._openedLabels.length === 0) {
-            console.warn("[Pixi'VN] There are no labels to run")
-            return
-        }
-        if (GameStepManager.isLastGameStep) {
-            console.warn("[Pixi'VN] There are no steps to run")
-            return
-        }
         GameStepManager.increaseCurrentStepIndex()
         return await GameStepManager.runCurrentStep(props, choiseMade)
     }
@@ -278,8 +245,8 @@ export default class GameStepManager {
      */
     private static async runCurrentStep<T extends {}>(props: StepLabelPropsType<T>, choiseMade?: number): Promise<StepLabelResultType> {
         if (GameStepManager.currentLabelId) {
-            let lastStepsLength = GameStepManager.currentLabelStepIndex
-            if (lastStepsLength === null) {
+            let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
+            if (currentLabelStepIndex === null) {
                 console.error("[Pixi'VN] currentLabelStepIndex is null")
                 return
             }
@@ -288,19 +255,20 @@ export default class GameStepManager {
                 console.error("[Pixi'VN] currentLabel not found")
                 return
             }
-            let n = currentLabel.steps.length
-            if (n > lastStepsLength) {
-                let step = currentLabel.steps[lastStepsLength]
+            if (currentLabel.steps.length > currentLabelStepIndex) {
+                let step = currentLabel.steps[currentLabelStepIndex]
                 let result = await step(props)
                 GameStepManager.addStepHistory(step, choiseMade)
                 return result
             }
-            else if (!GameStepManager.isLastGameStep) {
+            else if (GameStepManager.openedLabels.length > 1) {
                 GameStepManager.closeCurrentLabel()
                 return await GameStepManager.runNextStep(props, choiseMade)
             }
             else {
-                console.error("[Pixi'VN] There are no steps to run")
+                GameStepManager.restorLastLabelList()
+                console.error("[Pixi'VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game")
+                return
             }
         }
     }
