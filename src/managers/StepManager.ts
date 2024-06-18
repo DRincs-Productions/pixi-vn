@@ -294,8 +294,7 @@ export default class GameStepManager {
         }
     }
     /**
-     * Execute the label and add it to the history.
-     * Is a call function in Ren'Py.
+     * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
      * @param label The label to execute or the id of the label
      * @param props The props to pass to the label.
      * @returns StepLabelResultType or undefined.
@@ -345,8 +344,7 @@ export default class GameStepManager {
         return await GameStepManager.runCurrentStep<T>(props, choiseMade)
     }
     /**
-     * Execute the label, close all labels and add them to the history.
-     * Is a jump function in Ren'Py.
+     * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
      * @param label The label to execute.
      * @param props The props to pass to the label or the id of the label
      * @returns StepLabelResultType or undefined.
@@ -367,7 +365,7 @@ export default class GameStepManager {
      * ```
      */
     public static async jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
-        GameStepManager.closeAllLabels()
+        GameStepManager.closeCurrentLabel()
         let choiseMade: number | undefined = undefined
         let labelId: LabelIdType
         if (typeof label === 'string') {
