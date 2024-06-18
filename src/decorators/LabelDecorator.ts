@@ -5,7 +5,8 @@ import { LabelIdType } from "../types/LabelIdType"
 export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
 
 /**
- * Creates a new label and registers it in the system
+ * Creates a new label and registers it in the system.
+ * **This function must be called at least once at system startup to register the label, otherwise the system cannot be used.**
  * @param id The id of the label, it must be unique
  * @param steps The steps of the label
  * @param onStepRun is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
