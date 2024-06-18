@@ -207,7 +207,7 @@ export default class GameStepManager {
         GameStepManager._openedLabels.pop()
     }
     /**
-     * Close all labels and add them to the history.
+     * Close all labels and add them to the history. **Attention: This method can cause an unhandled game ending.**
      */
     static closeAllLabels() {
         while (GameStepManager._openedLabels.length > 0) {
