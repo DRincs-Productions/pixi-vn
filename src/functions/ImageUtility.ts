@@ -88,7 +88,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     else {
         canvasElement = image
     }
-    (image as CanvasBase<any>).alpha = 0
+    canvasElement.alpha = 0
 
     let effect = new TickerFadeAlpha({
         speed: speed,
