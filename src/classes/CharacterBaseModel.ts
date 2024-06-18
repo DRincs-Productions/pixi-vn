@@ -1,3 +1,4 @@
+import { saveCharacter } from "../decorators"
 import { GameStorageManager } from "../managers"
 import StoredClassModel from "./StoredClassModel"
 

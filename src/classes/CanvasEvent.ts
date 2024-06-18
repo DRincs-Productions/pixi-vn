@@ -1,3 +1,4 @@
+import { eventDecorator } from "../decorators";
 import { CanvasEventNamesType } from "../types/CanvasEventNamesType";
 
 /**

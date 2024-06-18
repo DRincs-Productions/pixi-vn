@@ -1,4 +1,5 @@
 import { Container } from "pixi.js";
+import { canvasElementDecorator } from "../../decorators";
 import { ICanvasBaseMemory } from "../../interface/canvas";
 
 /**

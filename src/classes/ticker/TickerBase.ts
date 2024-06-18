@@ -1,4 +1,5 @@
 import { Ticker, UPDATE_PRIORITY } from "pixi.js"
+import { tickerDecorator } from "../../decorators"
 import ITicker from "../../interface/ITicker"
 import { StorageElementType } from "../../types/StorageElementType"
 
