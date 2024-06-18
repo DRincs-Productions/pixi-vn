@@ -74,22 +74,29 @@ export default class GameStepManager {
      * currentLabelStep is the current step that occurred during the progression of the steps. It can used to determine the game end.
      */
     static get isLastGameStep(): boolean {
-        let stepLabel = GameStepManager.currentLabel?.steps
-        if (stepLabel && GameStepManager.currentLabelStepIndex === stepLabel.length) {
-            if (this.openedLabels.length <= 1) {
-                return true
-            }
-            else {
-                this.openedLabels.forEach((item) => {
-                    let label = getLabelById(item.label)
-                    if (label && label.steps.length > item.currentStepIndex) {
-                        return false
-                    }
-                })
-                return true
-            }
+        if (GameStepManager._openedLabels.length === 0) {
+            return true
         }
-        return false
+        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
+        let currentLabel = GameStepManager.currentLabel
+        if (!currentLabel || currentLabelStepIndex === null) {
+            return true
+        }
+        let stepsLength = currentLabel.steps.length
+        if (stepsLength > currentLabelStepIndex) {
+            return false
+        }
+        return GameStepManager._openedLabels.every((item) => {
+            let label = getLabelById(item.label)
+            if (!label) {
+                throw new Error(`[Pixi'VN] Label ${label} not found`)
+            }
+            let stepsLength = label.steps.length
+            if (stepsLength > item.currentStepIndex) {
+                return false
+            }
+            return true
+        })
     }
     /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
@@ -272,7 +279,7 @@ export default class GameStepManager {
                 console.error("[Pixi'VN] currentLabelStepIndex is null")
                 return
             }
-            let currentLabel = GameStepManager.currentLabel as Label<T>
+            let currentLabel = GameStepManager.currentLabel as Label<T> | undefined
             if (!currentLabel) {
                 console.error("[Pixi'VN] currentLabel not found")
                 return
@@ -284,7 +291,7 @@ export default class GameStepManager {
                 GameStepManager.addStepHistory(step, choiseMade)
                 return result
             }
-            else if (n === lastStepsLength) {
+            else if (!GameStepManager.isLastGameStep) {
                 GameStepManager.closeCurrentLabel()
                 return await GameStepManager.runNextStep(props, choiseMade)
             }
@@ -590,25 +597,25 @@ export default class GameStepManager {
                 GameStepManager._stepsHistory = (data as ExportedStep)["stepsHistory"]
             }
             else {
-                console.warn("[Pixi'VN] No stepsHistory data found")
+                console.warn("[Pixi'VN] Could not import stepsHistory data, so will be ignored")
             }
             if (data.hasOwnProperty("openedLabels")) {
                 GameStepManager._openedLabels = (data as ExportedStep)["openedLabels"]
             }
             else {
-                console.warn("[Pixi'VN] No openedLabels data found")
+                console.warn("[Pixi'VN] Could not import openedLabels data, so will be ignored")
             }
             if (data.hasOwnProperty("lastStepIndex")) {
                 GameStepManager._lastStepIndex = (data as ExportedStep)["lastStepIndex"]
             }
             else {
-                console.warn("[Pixi'VN] No lastStepIndex data found")
+                console.warn("[Pixi'VN] Could not import lastStepIndex data, so will be ignored")
             }
             if (data.hasOwnProperty("originalStepData")) {
                 GameStepManager._originalStepData = (data as ExportedStep)["originalStepData"]
             }
             else {
-                console.warn("[Pixi'VN] No originalStepData data found")
+                console.warn("[Pixi'VN] Could not import originalStepData data, so will be ignored")
             }
         }
         catch (e) {
