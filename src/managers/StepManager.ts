@@ -263,6 +263,10 @@ export default class GameStepManager {
             console.warn("[Pixi'VN] There are no labels to run")
             return
         }
+        if (GameStepManager.isLastGameStep) {
+            console.warn("[Pixi'VN] There are no steps to run")
+            return
+        }
         GameStepManager.increaseCurrentStepIndex()
         return await GameStepManager.runCurrentStep(props, choiseMade)
     }
@@ -296,7 +300,7 @@ export default class GameStepManager {
                 return await GameStepManager.runNextStep(props, choiseMade)
             }
             else {
-                console.warn("[Pixi'VN] There are no steps to run")
+                console.error("[Pixi'VN] There are no steps to run")
             }
         }
     }
