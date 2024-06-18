@@ -30,7 +30,7 @@ export interface CharacterBaseModelProps {
 /**
  * CharacterBaseModel is a class that is used to create a character model.
  * I suggest you extend this class to create your own character models.
- * You must use the saveCharacter function to save the character in the game.
+ * You must use the {@link saveCharacter} function to save the character in the game.
  * @example
  * ```typescript
  * export const liam = new CharacterBaseModel('liam', {

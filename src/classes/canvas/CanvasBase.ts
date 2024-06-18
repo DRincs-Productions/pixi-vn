@@ -5,7 +5,7 @@ import { ICanvasBaseMemory } from "../../interface/canvas";
  * This class is used to create a canvas element to add into a Pixi Application.
  * You can use GameWindowManager.addCanvasElement() to add this element into the application.
  * This class should be implemented and the memory method should be overridden.
- * You must use the canvasElementDecorator to register the canvas in the game.
+ * You must use the {@link canvasElementDecorator} to register the canvas in the game.
  * In Ren'Py is a displayable.
  * @example
  * ```typescript
