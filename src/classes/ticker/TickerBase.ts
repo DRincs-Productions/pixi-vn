@@ -1,4 +1,5 @@
 import { Ticker, UPDATE_PRIORITY } from "pixi.js"
+import { tickerDecorator } from "../../decorators"
 import ITicker from "../../interface/ITicker"
 import { StorageElementType } from "../../types/StorageElementType"
 
@@ -8,7 +9,7 @@ export type TickerArgsType = { [id: string]: StorageElementType }
  * A class is used to create a ticker element to add into a Pixi Application.
  * You can use GameWindowManager.addTicker() to add this element into the application.
  * This class should be extended and the fn method should be overridden.
- * You must use the tickerDecorator to register the ticker in the game.
+ * You must use the {@link tickerDecorator} to register the ticker in the game.
  * In Ren'Py is a transform.
  * @example
  * ```typescript
