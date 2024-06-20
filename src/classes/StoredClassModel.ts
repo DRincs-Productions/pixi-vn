@@ -50,7 +50,7 @@ export default class StoredClassModel {
      * @param propertyName The name of the property to set.
      * @param value The value to set. If is undefined, the property will be removed from the storage.
      */
-    setStorageProperty<T>(propertyName: string, value: T | undefined): void {
+    protected setStorageProperty<T>(propertyName: string, value: T | undefined): void {
         let storage = GameStorageManager.getVariable<any>(this.categoryId)
         if (!storage) {
             storage = {}
@@ -80,7 +80,7 @@ export default class StoredClassModel {
      * @param propertyName The name of the property to get.
      * @returns The value of the property. If the property is not found, returns undefined.
      */
-    getStorageProperty<T>(propertyName: string): T | undefined {
+    protected getStorageProperty<T>(propertyName: string): T | undefined {
         let storage = GameStorageManager.getVariable<any>(this.categoryId)
         if (storage && storage.hasOwnProperty(this.id) && storage[this.id].hasOwnProperty(propertyName)) {
             return storage[this.id][propertyName]
