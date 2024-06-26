@@ -4,11 +4,15 @@
 name: Node.js Package
 
 on:
-  release:
-    types: [created]
+  push:
+    tags:
+      - 'v*'
+
+run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
 
 jobs:
   build:
+    name: Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -19,6 +23,7 @@ jobs:
       - run: npm test
 
   publish-npm:
+    name: Publish to NPM
     needs: build
     runs-on: ubuntu-latest
     steps:
@@ -33,3 +38,15 @@ jobs:
       - run: npm publish -f
         env:
           NODE_AUTH_TOKEN: ${{secrets.NPM_TOKEN}}
+
+  create-release:
+    name: Create Release
+    needs: publish-npm
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: actions/checkout@v3
+    - uses: ncipollo/release-action@v1
+      with:
+        body: "Release ${{ github.ref }}"
