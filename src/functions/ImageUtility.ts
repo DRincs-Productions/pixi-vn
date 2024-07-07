@@ -67,7 +67,7 @@ export function removeCanvasElement(tag: string | string[]) {
  * @param args The arguments of the effect
  * @param duration The duration of the effect
  * @param priority The priority of the effect
- * @returns The sprite of the image.
+ * @returns A promise that is resolved when the image is loaded.
  */
 export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
