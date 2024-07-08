@@ -13,7 +13,7 @@ import TickerBase from "./TickerBase";
  * GameWindowManager.addCanvasElement("bunny", bunny);
  * // ...
  * const ticker = new TickerFadeAlpha({
- *     speed: 0.01,
+ *     duration: 4, // 4 seconds
  *     type: "hide",
  * }),
  * GameWindowManager.addTicker("bunny", ticker)
@@ -33,7 +33,8 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
         tags: string[]
     ): void {
         let type = args.type === undefined ? "hide" : args.type
-        let speed = args.speed === undefined ? 0.1 : args.speed
+        let duration = args.duration === undefined ? 1 : args.duration
+        let speed = 1 / (duration * 60)
         let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
         let removeElementAfter = args.tagToRemoveAfter || []
         if (typeof removeElementAfter === "string") {

@@ -64,15 +64,14 @@ export function removeCanvasElement(tag: string | string[]) {
  * If exist a image with the same tag, then the image is replaced. And the first image is removed after the effect is done.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
  * @param image The imageUrl or the canvas element
- * @param args The arguments of the effect
- * @param duration The duration of the effect
+ * @param duration The duration of the effect, in seconds
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
  */
 export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    speed: number,
+    duration: number,
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let specialTag: string | undefined = undefined
@@ -91,7 +90,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     canvasElement.alpha = 0
 
     let effect = new TickerFadeAlpha({
-        speed: speed,
+        duration: duration,
         type: "show",
         tagToRemoveAfter: specialTag,
         startOnlyIfHaveTexture: true,

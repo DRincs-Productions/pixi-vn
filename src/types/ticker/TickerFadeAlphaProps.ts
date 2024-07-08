@@ -1,8 +1,9 @@
 export type TickerFadeAlphaProps = {
     /**
-     * The speed of the fade
+     * The duration of the fade, in seconds.
+     * @default 1
      */
-    speed?: number
+    duration?: number
     /**
      * The type of the fade
      * @default "hide"
@@ -15,10 +16,12 @@ export type TickerFadeAlphaProps = {
     limit?: number
     /**
      * The tag to remove after the fade is done
+     * @default []
      */
     tagToRemoveAfter?: string[] | string
     /**
      * If true, the fade only starts if the canvas element have a texture
+     * @default false
      */
     startOnlyIfHaveTexture?: boolean
 }
