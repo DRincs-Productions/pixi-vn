@@ -51,6 +51,18 @@ export async function loadImage(canvasImages: CanvasImage[] | CanvasImage): Prom
 }
 
 /**
+ * Add and show a image in the canvas. This function is a combination of {@link addImage} and {@link loadImage}.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param imageUrl The url of the image.
+ * @returns A promise that is resolved when the image is loaded.
+ */
+export async function showImage(tag: string, imageUrl: string): Promise<CanvasImage> {
+    let image = addImage(tag, imageUrl)
+    await image.load()
+    return image
+}
+
+/**
  * Remove a image from the canvas.
  * @param tag is the unique tag of the image. You can use this tag to refer to this image
  */
