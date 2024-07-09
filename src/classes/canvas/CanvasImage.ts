@@ -1,4 +1,5 @@
 import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
@@ -7,7 +8,7 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * This class is a extension of the CanvasSprite class, it has the same properties and methods,
  * but it has some features that make texture management easier.
  * You need to use CanvasImage.load() to show the image in the canvas.
- * This class is used for functions like addImage, loadImages and showWithDissolveTransition.
+ * This class is used for functions like {@link addImage}, {@link loadImage} and {@link showWithDissolveTransition}.
  * @example
  * ```typescript
  * let alien = new CanvasImage({
