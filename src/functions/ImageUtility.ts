@@ -99,6 +99,9 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     else {
         canvasElement = image
     }
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
     canvasElement.alpha = 0
 
     let effect = new TickerFadeAlpha({
@@ -123,13 +126,12 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
  * @returns A promise that is resolved when the image is removed.
  */
 export async function removeWithDissolveTransition(
-    tag: string,
+    tag: string | string[],
     duration: number,
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    let canvasElement = GameWindowManager.getCanvasElement(tag)
-    if (!canvasElement) {
-        return
+    if (typeof tag === "string") {
+        tag = [tag]
     }
     let effect = new TickerFadeAlpha({
         duration: duration,
