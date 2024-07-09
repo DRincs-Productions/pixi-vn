@@ -98,6 +98,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     }
     else {
         canvasElement = image
+        GameWindowManager.addCanvasElement(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -111,9 +112,6 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
         startOnlyIfHaveTexture: true,
     }, 10000, priority)
     GameWindowManager.addTicker(tag, effect)
-    if (canvasElement instanceof CanvasImage) {
-        return canvasElement.load()
-    }
     return
 }
 
