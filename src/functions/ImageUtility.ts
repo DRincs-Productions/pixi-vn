@@ -110,7 +110,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
         type: "show",
         tagToRemoveAfter: specialTag,
         startOnlyIfHaveTexture: true,
-    }, 10000, priority)
+    }, 10, priority)
     GameWindowManager.addTicker(tag, effect)
     return
 }
@@ -136,7 +136,7 @@ export async function removeWithDissolveTransition(
         type: 'hide',
         tagToRemoveAfter: tag,
         startOnlyIfHaveTexture: true,
-    }, 10000, priority)
+    }, 10, priority)
     GameWindowManager.addTicker(tag, effect)
 }
 

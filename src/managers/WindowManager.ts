@@ -367,9 +367,9 @@ export default class GameWindowManager {
      * @example
      * ```typescript
      * GameWindowManager.addTickersSteps("alien", [
-     *     new TickerRotate({ speed: 0.1, clockwise: true }, 2000),
-     *     Pause(500),
-     *     new TickerRotate({ speed: 0.2, clockwise: false }, 2000),
+     *     new TickerRotate({ speed: 0.1, clockwise: true }, 2), // 2 seconds
+     *     Pause(1), // 1 second
+     *     new TickerRotate({ speed: 0.2, clockwise: false }, 2),
      *     Repeat,
      * ])
      * ```
