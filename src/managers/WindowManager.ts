@@ -286,6 +286,10 @@ export default class GameWindowManager {
             GameWindowManager._children[newTag] = GameWindowManager._children[oldTag]
             delete GameWindowManager._children[oldTag]
         }
+        if (GameWindowManager._currentTickersSteps[oldTag]) {
+            GameWindowManager._currentTickersSteps[newTag] = GameWindowManager._currentTickersSteps[oldTag]
+            delete GameWindowManager._currentTickersSteps[oldTag]
+        }
     }
 
     /** Edit Tickers Methods */
