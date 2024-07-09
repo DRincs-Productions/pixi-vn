@@ -139,3 +139,27 @@ export async function removeWithDissolveTransition(
     }, 10000, priority)
     GameWindowManager.addTicker(tag, effect)
 }
+
+export async function showWithFadeTransition<T extends CanvasBase<any> | string = string>(
+    tag: string,
+    image: T,
+    duration: number,
+    priority?: UPDATE_PRIORITY,
+): Promise<void> {
+    if (!GameWindowManager.getCanvasElement(tag)) {
+        return showWithDissolveTransition(tag, image, duration, priority)
+    }
+
+    GameWindowManager.addTickersSteps("tag",
+        [
+            new TickerFadeAlpha({
+                duration: duration,
+                type: "hide",
+            }, duration),
+            new TickerFadeAlpha({
+                duration: duration,
+                type: "show"
+            }, duration),
+        ]
+    )
+}
