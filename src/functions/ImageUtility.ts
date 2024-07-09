@@ -113,3 +113,29 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     }
     return
 }
+
+/**
+ * Remove a image from the canvas with a disolve effect.
+ * Disolve effect is a effect that the image is removed with a fade out.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param duration The duration of the effect, in seconds
+ * @param priority The priority of the effect
+ * @returns A promise that is resolved when the image is removed.
+ */
+export async function removeWithDissolveTransition(
+    tag: string,
+    duration: number,
+    priority?: UPDATE_PRIORITY,
+): Promise<void> {
+    let canvasElement = GameWindowManager.getCanvasElement(tag)
+    if (!canvasElement) {
+        return
+    }
+    let effect = new TickerFadeAlpha({
+        duration: duration,
+        type: 'hide',
+        tagToRemoveAfter: tag,
+        startOnlyIfHaveTexture: true,
+    }, 10000, priority)
+    GameWindowManager.addTicker(tag, effect)
+}
