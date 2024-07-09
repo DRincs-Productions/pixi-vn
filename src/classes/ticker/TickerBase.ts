@@ -39,7 +39,7 @@ export type TickerArgsType = { [id: string]: StorageElementType }
 export default class TickerBase<TArgs extends TickerArgsType> implements ITicker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
-     * @param duration The duration of the ticker. If is undefined, the ticker will be called every frame.
+     * @param duration The duration of the ticker in seconds. If is undefined, the ticker will be called every frame.
      * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
      */
     constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {

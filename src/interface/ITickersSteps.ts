@@ -9,7 +9,7 @@ export interface ITickersStep<TArgs extends TickerArgsType> extends ITicker<TArg
      */
     ticker: string,
     /**
-     * Duration in milliseconds
+     * Duration in seconds
      */
     duration: number,
 }

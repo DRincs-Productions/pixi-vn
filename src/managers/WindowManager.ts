@@ -314,7 +314,7 @@ export default class GameWindowManager {
      * @param canvasEslementTag The tag of the canvas element that will use the ticker.
      * @param ticker The ticker class to be run.
      * @param args The arguments to be used in the ticker.
-     * @param duration The time to be used in the ticker. This number is in milliseconds. If it is undefined, the ticker will run forever.
+     * @param duration The time to be used in the ticker. This number is in seconds. If it is undefined, the ticker will run forever.
      * @param priority The priority to be used in the ticker.
      * @returns 
      * @example
@@ -347,7 +347,7 @@ export default class GameWindowManager {
             let timeout = setTimeout(() => {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
                 GameWindowManager.nextTickerStep(canvasElementTag)
-            }, ticker.duration);
+            }, ticker.duration * 1000);
             GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerName, timeout.toString())
         }
     }
@@ -382,22 +382,22 @@ export default class GameWindowManager {
         let alredyExists = GameWindowManager._currentTickersSteps[tag] !== undefined
         GameWindowManager._currentTickersSteps[tag] = {
             currentStepNumber: 0,
-            steps: steps.map((s) => {
-                if (s === Repeat) {
-                    return s
+            steps: steps.map((step) => {
+                if (step === Repeat) {
+                    return step
                 }
-                if (!s.duration) {
-                    console.warn("[Pixi'VN] Duration is not defined, so it will be set to 1000")
-                    s.duration = 1000
+                if (!step.duration) {
+                    console.warn("[Pixi'VN] Duration is not defined, so it will be set to 1 second")
+                    step.duration = 1
                 }
-                if (s.hasOwnProperty("type") && (s as PauseType).type === PauseValueType) {
-                    return s as PauseType
+                if (step.hasOwnProperty("type") && (step as PauseType).type === PauseValueType) {
+                    return step as PauseType
                 }
-                let tickerName = s.constructor.name
+                let tickerName = step.constructor.name
                 return {
                     ticker: tickerName,
-                    args: (s as ITicker<TArgs>).args,
-                    duration: s.duration,
+                    args: (step as ITicker<TArgs>).args,
+                    duration: step.duration,
                 }
             })
         }
@@ -419,7 +419,7 @@ export default class GameWindowManager {
             let timeout = setTimeout(() => {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
                 GameWindowManager.nextTickerStep(tag)
-            }, step.duration);
+            }, step.duration * 1000);
             GameWindowManager.addTickerTimeoutInfo(tag, "steps", timeout.toString())
             return
         }
