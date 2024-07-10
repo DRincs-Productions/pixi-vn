@@ -292,12 +292,27 @@ export default class GameWindowManager {
             GameWindowManager._currentTickersSteps[newTag] = GameWindowManager._currentTickersSteps[oldTag]
             delete GameWindowManager._currentTickersSteps[oldTag]
         }
-        GameWindowManager.currentTickersTimeouts = Object.fromEntries(Object.entries(GameWindowManager.currentTickersTimeouts).map(([timeout, { tags, ticker }]) => {
-            if (tags.includes(oldTag)) {
-                tags = tags.map((t) => t === oldTag ? newTag : t)
+        for (let id in GameWindowManager._currentTickers) {
+            let ticker = GameWindowManager._currentTickers[id]
+            if (ticker.canvasElementTags.includes(oldTag)) {
+                ticker.canvasElementTags = ticker.canvasElementTags.map((t) => t === oldTag ? newTag : t)
+                if (ticker.args.hasOwnProperty("tagToRemoveAfter")) {
+                    let tagToRemoveAfter = ticker.args.tagToRemoveAfter
+                    if (typeof tagToRemoveAfter === "string") {
+                        tagToRemoveAfter = [tagToRemoveAfter]
+                    }
+                    if (Array.isArray(tagToRemoveAfter)) {
+                        ticker.args.tagToRemoveAfter = tagToRemoveAfter.map((t) => t === oldTag ? newTag : t)
+                    }
+                }
             }
-            return [timeout, { tags, ticker }]
-        }))
+        }
+        for (let timeout in GameWindowManager.currentTickersTimeouts) {
+            let TickerTimeout = GameWindowManager.currentTickersTimeouts[timeout]
+            if (TickerTimeout.tags.includes(oldTag)) {
+                TickerTimeout.tags = TickerTimeout.tags.map((t) => t === oldTag ? newTag : t)
+            }
+        }
     }
 
     /** Edit Tickers Methods */

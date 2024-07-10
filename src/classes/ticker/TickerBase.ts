@@ -3,7 +3,10 @@ import { tickerDecorator } from "../../decorators"
 import ITicker from "../../interface/ITicker"
 import { StorageElementType } from "../../types/StorageElementType"
 
-export type TickerArgsType = { [id: string]: StorageElementType }
+export type TickerArgsType = { [id: string]: StorageElementType } | {
+    tagToRemoveAfter?: string[] | string,
+    [id: string]: StorageElementType
+}[]
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.
