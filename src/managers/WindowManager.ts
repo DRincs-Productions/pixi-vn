@@ -326,6 +326,9 @@ export default class GameWindowManager {
     public static get currentTickersList() {
         return Object.values(GameWindowManager._currentTickers)
     }
+    private static get currentTickersWithoutCreatedBySteps() {
+        return Object.fromEntries(Object.entries(GameWindowManager._currentTickers).filter(([_, ticker]) => !ticker.createdBySteps))
+    }
     private static _currentTickers: { [id: string]: IClassWithArgsHistory<any> } = {}
     /**
      * The steps of the tickers
@@ -380,6 +383,7 @@ export default class GameWindowManager {
             canvasElementTags: canvasElementTag,
             priority: ticker.priority,
             duration: ticker.duration,
+            createdBySteps: false
         }
         let id = GameWindowManager.generateTickerId(tickerHistory)
         GameWindowManager.pushTicker(id, tickerHistory, ticker)
@@ -486,6 +490,7 @@ export default class GameWindowManager {
             canvasElementTags: [tag],
             priority: ticker.priority,
             duration: ticker.duration,
+            createdBySteps: true,
         }
         let id = GameWindowManager.generateTickerId(tickerHistory)
         GameWindowManager.pushTicker(id, tickerHistory, ticker)
@@ -672,8 +677,8 @@ export default class GameWindowManager {
             currentElements[tag] = exportCanvasElement(GameWindowManager._children[tag])
         }
         return {
-            // TODO export currentTickersSteps
-            currentTickers: createExportableElement(GameWindowManager._currentTickers),
+            currentTickers: createExportableElement(GameWindowManager.currentTickersWithoutCreatedBySteps),
+            currentTickersSteps: createExportableElement(GameWindowManager._currentTickersSteps),
             currentElements: createExportableElement(currentElements),
             childrenTagsOrder: createExportableElement(GameWindowManager.childrenTagsOrder),
         }
@@ -721,6 +726,7 @@ export default class GameWindowManager {
                     }
                 }
             }
+            // TODO currentTickersSteps
         }
         catch (e) {
             console.error("[Pixi'VN] Error importing data", e)

@@ -12,6 +12,10 @@ export interface IClassWithArgsHistory<TArgs extends TickerArgsType> {
     canvasElementTags: string[],
     priority?: UPDATE_PRIORITY,
     duration?: number
+    /**
+     * If this ticker was created by steps
+     */
+    createdBySteps: boolean
 }
 
 export interface IClassWithArgsHistoryForExport<TArgs extends TickerArgsType> {

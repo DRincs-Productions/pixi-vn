@@ -89,6 +89,7 @@ export default class GameStepManager {
                     childrenTagsOrder: [],
                     currentElements: {},
                     currentTickers: {},
+                    currentTickersSteps: {},
                 },
                 labelIndex: -1,
                 openedLabels: [],
