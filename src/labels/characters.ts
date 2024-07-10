@@ -1,4 +1,5 @@
-import { CharacterBaseModel, saveCharacter } from "..";
+import { CharacterBaseModel } from "../classes";
+import { saveCharacter } from "../decorators";
 
 export const juliette = new CharacterBaseModel('___pixivn_juliette___', {
     name: 'Juliette',

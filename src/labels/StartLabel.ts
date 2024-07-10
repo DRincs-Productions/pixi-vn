@@ -2,6 +2,7 @@ import { ChoiceMenuOption } from "../classes";
 import { newLabel } from "../decorators";
 import { setChoiceMenuOptions, setDialogue } from "../functions";
 import { GameStepManager, GameWindowManager } from "../managers";
+import { juliette } from "./characters";
 import { imagesAnimationsTest } from "./ShowImageTest";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
