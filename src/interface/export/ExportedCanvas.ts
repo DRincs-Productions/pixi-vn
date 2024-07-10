@@ -5,7 +5,7 @@ import { IClassWithArgsHistoryForExport } from "../IClassWithArgsHistory";
  * Interface exported canvas
  */
 export default interface ExportedCanvas {
-    currentTickers: IClassWithArgsHistoryForExport<any>[]
+    currentTickers: { [id: string]: IClassWithArgsHistoryForExport<any> }
     currentElements: { [tag: string]: ICanvasBaseMemory }
     childrenTagsOrder: string[]
 }

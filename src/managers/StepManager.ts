@@ -88,7 +88,7 @@ export default class GameStepManager {
                 canvas: {
                     childrenTagsOrder: [],
                     currentElements: {},
-                    currentTickers: [],
+                    currentTickers: {},
                 },
                 labelIndex: -1,
                 openedLabels: [],
