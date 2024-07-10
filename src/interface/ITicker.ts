@@ -7,7 +7,7 @@ export default interface ITicker<TArgs extends TickerArgsType> {
      */
     args: TArgs,
     /**
-     * Duration in milliseconds
+     * Duration in seconds to run the ticker
      */
     duration?: number,
     /**
