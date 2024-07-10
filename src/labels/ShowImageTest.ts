@@ -1,7 +1,7 @@
 import { ChoiceMenuOption } from "../classes"
 import { CanvasImage } from "../classes/canvas"
 import { TickerFadeAlpha } from "../classes/ticker"
-import { Repeat } from "../constants"
+import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition } from "../functions"
 import { GameStepManager, GameWindowManager } from "../managers"
@@ -38,6 +38,12 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
 
 const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
     () => {
+        setDialogue({
+            character: juliette, text: "Here's what's going to happen:" +
+                " - Egg Head and Flower Top will disappear with a dissolve effect. If you go next, Egg Head reappears with a dissolve effect without stopping the dissolve effect, and Flower Top will appear with a dissolve effect." +
+                " - Helmlok will disappear with a fade effect and reappear with a fade effect, and repeat." +
+                " - Skully will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect."
+        })
         removeWithDissolveTransition(["eggHead", "flowerTop"], { duration: 2 })
         GameWindowManager.addTickersSteps("helmlok",
             [
@@ -50,6 +56,20 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
                     type: "show"
                 }, 1),
                 Repeat,
+            ]
+        )
+        GameWindowManager.addTickersSteps("skully",
+            [
+                new TickerFadeAlpha({
+                    duration: 0.5,
+                    type: "hide",
+                    limit: 0.3,
+                }, 1),
+                Pause(0.5),
+                new TickerFadeAlpha({
+                    duration: 1,
+                    type: "show",
+                }, 1),
             ]
         )
     },
