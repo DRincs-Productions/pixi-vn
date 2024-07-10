@@ -1,5 +1,10 @@
 import { Assets, Texture } from "pixi.js";
-import { CanvasEvent, CanvasEventNamesType, CanvasSprite, clearDialogue, eventDecorator, GameWindowManager, newLabel, setDialogue } from "../pixi-vn/src";
+import { CanvasEvent } from "../classes";
+import { CanvasSprite } from "../classes/canvas";
+import { eventDecorator, newLabel } from "../decorators";
+import { clearDialogue, setDialogue } from "../functions";
+import { GameWindowManager } from "../managers";
+import { CanvasEventNamesType } from "../types";
 
 @eventDecorator()
 export class EventTest extends CanvasEvent<CanvasSprite> {

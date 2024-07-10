@@ -1,5 +1,10 @@
-import { addImage, CanvasImage, ChoiceMenuOption, GameStepManager, GameWindowManager, loadImage, newLabel, removeWithDissolveTransition, Repeat, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, TickerFadeAlpha } from "../pixi-vn/src";
-import { juliette } from "../values/characters";
+import { ChoiceMenuOption } from "../classes"
+import { CanvasImage } from "../classes/canvas"
+import { TickerFadeAlpha } from "../classes/ticker"
+import { newLabel } from "../decorators"
+import { addImage, loadImage, removeWithDissolveTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition } from "../functions"
+import { GameStepManager, GameWindowManager } from "../managers"
+import { Repeat } from "../types"
 
 const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
 export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [

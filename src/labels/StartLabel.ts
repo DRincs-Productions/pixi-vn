@@ -1,5 +1,7 @@
-import { ChoiceMenuOption, GameStepManager, GameWindowManager, newLabel, setChoiceMenuOptions, setDialogue } from "../pixi-vn/src";
-import { juliette } from "../values/characters";
+import { ChoiceMenuOption } from "../classes";
+import { newLabel } from "../decorators";
+import { setChoiceMenuOptions, setDialogue } from "../functions";
+import { GameStepManager, GameWindowManager } from "../managers";
 import { imagesAnimationsTest } from "./ShowImageTest";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",

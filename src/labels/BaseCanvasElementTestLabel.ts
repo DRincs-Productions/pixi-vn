@@ -1,5 +1,9 @@
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
-import { CanvasContainer, CanvasSprite, CanvasText, clearDialogue, GameWindowManager, newLabel, removeCanvasElement, TickerRotate } from "../pixi-vn/src";
+import { CanvasContainer, CanvasSprite, CanvasText } from "../classes/canvas";
+import { TickerRotate } from "../classes/ticker";
+import { newLabel } from "../decorators";
+import { clearDialogue, removeCanvasElement } from "../functions";
+import { GameWindowManager } from "../managers";
 
 export const baseCanvasElementTestLabel = newLabel("BaseCanvasElementTestLabel",
     [
