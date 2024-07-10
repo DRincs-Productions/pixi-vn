@@ -227,25 +227,25 @@ export default class GameWindowManager {
     /**
      * Remove a canvas element from the canvas.
      * And remove all tickers that are not connected to any canvas element.
-     * @param tag The tag of the canvas element to be removed.
+     * @param tags The tag of the canvas element to be removed.
      * @returns 
      * @example
      * ```typescript
      * GameWindowManager.removeCanvasElement("bunny");
      * ```
      */
-    public static removeCanvasElement(tag: string | string[]) {
-        if (typeof tag === "string") {
-            tag = [tag]
+    public static removeCanvasElement(tags: string | string[]) {
+        if (typeof tags === "string") {
+            tags = [tags]
         }
-        tag.forEach((t) => {
-            if (GameWindowManager._children[t]) {
-                GameWindowManager.app.stage.removeChild(GameWindowManager._children[t])
-                delete GameWindowManager._children[t]
+        tags.forEach((tag) => {
+            if (GameWindowManager._children[tag]) {
+                GameWindowManager.app.stage.removeChild(GameWindowManager._children[tag])
+                delete GameWindowManager._children[tag]
+                GameWindowManager.removeTicker(tag)
             }
         })
-        GameWindowManager.removeTickersWithoutAssociatedCanvasElement()
-        GameWindowManager.childrenTagsOrder = GameWindowManager.childrenTagsOrder.filter((t) => !tag.includes(t))
+        GameWindowManager.childrenTagsOrder = GameWindowManager.childrenTagsOrder.filter((t) => !tags.includes(t))
     }
     /**
      * Get a canvas element by the tag.
@@ -358,7 +358,10 @@ export default class GameWindowManager {
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
-                GameWindowManager.removeAssociationBetweenTickerCanvasElement(canvasElementTag, ticker)
+                let tickerTimeoutInfo = GameWindowManager.currentTickersTimeouts[timeout.toString()]
+                if (tickerTimeoutInfo) {
+                    GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerTimeoutInfo.tags, tickerTimeoutInfo.ticker)
+                }
             }, ticker.duration * 1000);
             GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerName, timeout.toString())
         }
@@ -484,9 +487,12 @@ export default class GameWindowManager {
      * GameWindowManager.removeAssociationBetweenTickerCanvasElement("alien", TickerRotate)
      * ```
      */
-    public static removeAssociationBetweenTickerCanvasElement(tags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any>) {
+    public static removeAssociationBetweenTickerCanvasElement(tags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string) {
         let tickerName: TickerIdType
-        if (ticker instanceof TickerBase) {
+        if (typeof ticker === "string") {
+            tickerName = ticker
+        }
+        else if (ticker instanceof TickerBase) {
             tickerName = ticker.constructor.name
         }
         else {
