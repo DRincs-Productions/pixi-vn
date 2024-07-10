@@ -462,7 +462,13 @@ export default class GameWindowManager {
         if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
             let timeout = setTimeout(() => {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
-                GameWindowManager.nextTickerStep(tag)
+                let tickerTimeoutInfo = GameWindowManager.currentTickersTimeouts[timeout.toString()]
+                if (tickerTimeoutInfo) {
+                    GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerTimeoutInfo.tags, tickerTimeoutInfo.ticker)
+                    tickerTimeoutInfo.tags.forEach((tag) => {
+                        GameWindowManager.nextTickerStep(tag)
+                    })
+                }
             }, step.duration * 1000);
             GameWindowManager.addTickerTimeoutInfo(tag, "steps", timeout.toString())
             return
