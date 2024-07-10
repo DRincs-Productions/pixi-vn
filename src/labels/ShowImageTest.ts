@@ -1,7 +1,10 @@
 import { ChoiceMenuOption } from "../classes"
+import { CanvasImage } from "../classes/canvas"
+import { TickerFadeAlpha } from "../classes/ticker"
+import { Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition } from "../functions"
-import { GameStepManager } from "../managers"
+import { GameStepManager, GameWindowManager } from "../managers"
 import { juliette } from "./characters"
 
 const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
@@ -35,24 +38,27 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
 
 const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
     () => {
-        removeWithDissolveTransition(["eggHead"], { duration: 2 })
-        // GameWindowManager.addTickersSteps("helmlok",
-        //     [
-        //         new TickerFadeAlpha({
-        //             duration: 1,
-        //             type: "hide",
-        //         }, 1),
-        //         new TickerFadeAlpha({
-        //             duration: 1,
-        //             type: "show"
-        //         }, 1),
-        //         Repeat,
-        //     ]
-        // )
+        removeWithDissolveTransition(["eggHead", "flowerTop"], { duration: 2 })
+        GameWindowManager.addTickersSteps("helmlok",
+            [
+                new TickerFadeAlpha({
+                    duration: 1,
+                    type: "hide",
+                }, 1),
+                new TickerFadeAlpha({
+                    duration: 1,
+                    type: "show"
+                }, 1),
+                Repeat,
+            ]
+        )
     },
     async () => {
         showWithDissolveTransition('eggHead', "https://pixijs.com/assets/eggHead.png", { duration: 0.5 })
-        // let flowerTop = new CanvasImage({ x: 300, y: 100 }, "https://pixijs.com/assets/flowerTop.png")
-        // showWithDissolveTransition('flowerTop', flowerTop, { duration: 1 })
+        let flowerTopOld = GameWindowManager.getCanvasElement<CanvasImage>("flowerTop")
+        if (flowerTopOld)
+            flowerTopOld.alpha = 0
+        let flowerTop = new CanvasImage({ x: 300, y: 100 }, "https://pixijs.com/assets/flowerTop.png")
+        showWithDissolveTransition('flowerTop', flowerTop, { duration: 1 })
     }
 ])
