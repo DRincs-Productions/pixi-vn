@@ -486,6 +486,7 @@ export default class GameWindowManager {
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
+                GameWindowManager.removeAssociationBetweenTickerCanvasElement(tag, ticker)
                 GameWindowManager.nextTickerStep(tag)
             }, ticker.duration * 1000);
             GameWindowManager.addTickerTimeoutInfo(tag, tickerName, timeout.toString())
