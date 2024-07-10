@@ -19,7 +19,7 @@ export default function tickerDecorator(name?: TickerIdType) {
             name = target.name
         }
         if (registeredTickers[name]) {
-            console.warn(`[Pixi'VN] Ticker ${name} already exists, it will be overwritten`)
+            console.info(`[Pixi'VN] Ticker ${name} already exists, it will be overwritten`)
         }
         registeredTickers[name] = target
     }

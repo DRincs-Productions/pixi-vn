@@ -18,7 +18,7 @@ export function saveCharacter<T extends CharacterBaseModel = CharacterBaseModel>
         return
     }
     if (registeredCharacters[character.id]) {
-        console.warn(`[Pixi'VN] Character id ${character.id} already exists, it will be overwritten`)
+        console.info(`[Pixi'VN] Character id ${character.id} already exists, it will be overwritten`)
     }
     registeredCharacters[character.id] = character
 }

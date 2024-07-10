@@ -20,7 +20,7 @@ export default function eventDecorator(name?: EventIdType) {
             name = target.name
         }
         if (registeredEvents[name]) {
-            console.warn(`[Pixi'VN] Event ${name} already exists, it will be overwritten`)
+            console.info(`[Pixi'VN] Event ${name} already exists, it will be overwritten`)
         }
         registeredEvents[name] = target
     }
