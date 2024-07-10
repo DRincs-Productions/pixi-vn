@@ -1,0 +1,1 @@
+export { pixivnTestStartLabel } from './StartLabel';
