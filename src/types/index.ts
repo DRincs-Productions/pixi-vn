@@ -1,9 +1,9 @@
-export { CanvasEventNamesType } from './CanvasEventNamesType';
-export { ChoiceMenuOptionsType } from './ChoiceMenuOptionsType';
-export { Close, CloseType } from './CloseType';
-export { default as LabelRunModeType } from './LabelRunModeType';
-export { Pause, PauseType, PauseValueType } from './PauseType';
-export { Repeat, RepeatType } from './RepeatType';
-export { StepLabelPropsType, StepLabelResultType, StepLabelType } from './StepLabelType';
-export { StorageElementType, StorageObjectType } from './StorageElementType';
+export type { default as CanvasEventNamesType } from './CanvasEventNamesType';
+export type { ChoiceMenuOptionsType } from './ChoiceMenuOptionsType';
+export type { Close, CloseType } from './CloseType';
+export type { default as LabelRunModeType } from './LabelRunModeType';
+export type { Pause, PauseType, PauseValueType } from './PauseType';
+export type { Repeat, RepeatType } from './RepeatType';
+export type { StepLabelPropsType, StepLabelResultType, StepLabelType } from './StepLabelType';
+export type { StorageElementType, StorageObjectType } from './StorageElementType';
 
