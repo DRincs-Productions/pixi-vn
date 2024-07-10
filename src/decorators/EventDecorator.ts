@@ -1,6 +1,6 @@
 import { CanvasEvent } from "../classes"
 import CanvasBase from "../classes/canvas/CanvasBase"
-import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
+import { CanvasEventNamesType } from "../types"
 import { EventIdType } from "../types/EventIdType"
 
 /**

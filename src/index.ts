@@ -2,6 +2,7 @@ export { Assets } from "pixi.js";
 export * from './classes';
 export * from './classes/canvas';
 export * from './classes/ticker';
+export { Repeat } from './constants';
 export * from './decorators';
 export * from './functions';
 export * from './interface';

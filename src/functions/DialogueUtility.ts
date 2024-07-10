@@ -1,11 +1,11 @@
 import { CharacterBaseModel, DialogueBaseModel, Label } from "../classes";
-import { ChoiceMenuOptionClose, HistoryChoiceMenuOption, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
+import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import newCloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
 import { DialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
-import { Close } from "../types";
+import { Close, HistoryChoiceMenuOption } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 
 /**

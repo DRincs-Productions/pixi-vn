@@ -1,10 +1,10 @@
 import { Assets } from "pixi.js";
 import { CanvasSprite } from "../classes/canvas";
 import { TickerFadeAlpha, TickerRotate } from "../classes/ticker";
+import { Pause, Repeat } from "../constants";
 import { newLabel } from "../decorators";
 import { removeCanvasElement, setDialogue } from "../functions";
 import { GameWindowManager } from "../managers";
-import { Pause, Repeat } from "../types";
 
 const alien1Tag = "alien1"
 const alien2Tag = "alien2"

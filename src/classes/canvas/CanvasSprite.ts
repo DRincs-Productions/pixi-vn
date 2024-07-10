@@ -4,7 +4,7 @@ import { getTextureMemory } from "../../functions/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasBaseMemory from "../../interface/canvas/ICanvasBaseMemory";
 import ICanvasSpriteMemory, { ICanvasSpriteBaseMemory } from "../../interface/canvas/ICanvasSpriteMemory";
-import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
+import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";

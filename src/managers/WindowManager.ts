@@ -1,6 +1,7 @@
 import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
+import { Repeat } from "../constants";
 import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
 import { asciiArtLog } from "../functions/EasterEgg";
@@ -10,8 +11,8 @@ import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
 import { ITickersStep } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas";
 import { ExportedCanvas } from "../interface/export";
-import { PauseType, PauseValueType } from "../types/PauseType";
-import { Repeat, RepeatType } from "../types/RepeatType";
+import { PauseType } from "../types/PauseType";
+import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
 
 /**
@@ -401,7 +402,7 @@ export default class GameWindowManager {
                     console.warn("[Pixi'VN] Duration is not defined, so it will be set to 1 second")
                     step.duration = 1
                 }
-                if (step.hasOwnProperty("type") && (step as PauseType).type === PauseValueType) {
+                if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
                     return step as PauseType
                 }
                 let tickerName = step.constructor.name
@@ -424,7 +425,7 @@ export default class GameWindowManager {
                 return
             }
         }
-        if (step.hasOwnProperty("type") && (step as PauseType).type === PauseValueType) {
+        if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
             let timeout = setTimeout(() => {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
                 GameWindowManager.nextTickerStep(tag)

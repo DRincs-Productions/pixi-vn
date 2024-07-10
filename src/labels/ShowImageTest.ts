@@ -1,10 +1,10 @@
 import { ChoiceMenuOption } from "../classes"
 import { CanvasImage } from "../classes/canvas"
 import { TickerFadeAlpha } from "../classes/ticker"
+import { Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition } from "../functions"
 import { GameStepManager, GameWindowManager } from "../managers"
-import { Repeat } from "../types"
 import { juliette } from "./characters"
 
 const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
