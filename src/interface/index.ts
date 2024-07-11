@@ -7,4 +7,5 @@ export type { default as ITicker } from './ITicker';
 export type { default as ITickersSteps } from './ITickersSteps';
 export type { default as TickerHistory, TickerHistoryForExport } from './TickerHistory';
 export type { TickerProgrationType } from './TickerProgrationType';
+export type { default as TickerTimeoutHistory } from './TickerTimeoutHistory';
 
