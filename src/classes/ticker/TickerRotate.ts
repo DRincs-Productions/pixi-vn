@@ -21,14 +21,8 @@ import TickerBase from "./TickerBase";
  */
 @tickerDecorator()
 export default class TickerRotate extends TickerBase<TickerRotateProps> {
-    /**
-     * The method that will be called every frame to rotate the canvas element of the canvas.
-     * @param delta The delta time
-     * @param args The arguments that are passed to the ticker
-     * @param tags The tags of the canvas element that are connected to this ticker
-     */
     override fn(
-        t: Ticker,
+        ticker: Ticker,
         args: TickerRotateProps,
         tags: string[]
     ): void {
@@ -48,9 +42,9 @@ export default class TickerRotate extends TickerBase<TickerRotateProps> {
                 let element = GameWindowManager.getCanvasElement(tag)
                 if (element && element instanceof Container) {
                     if (clockwise)
-                        element.rotation += speed * t.deltaTime
+                        element.rotation += speed * ticker.deltaTime
                     else
-                        element.rotation -= speed * t.deltaTime
+                        element.rotation -= speed * ticker.deltaTime
                 }
             })
         if (args.speedProgression)

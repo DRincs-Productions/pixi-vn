@@ -19,14 +19,8 @@ import TickerBase from "./TickerBase";
  */
 @tickerDecorator()
 export default class TickerMove extends TickerBase<TickerMoveProps> {
-    /**
-     * The method that will be called every frame to move the canvas element of the canvas.
-     * @param t The ticker that is calling this method
-     * @param args The arguments that are passed to the ticker
-     * @param tags The tags of the canvas element that are connected to this ticker
-     */
     override fn(
-        t: Ticker,
+        ticker: Ticker,
         args: TickerMoveProps,
         tags: string[]
     ): void {
@@ -45,9 +39,9 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
             .forEach((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
                 if (element && element instanceof Container) {
-                    let xDistance = destination.x - element.x
+                    let xDistance = (destination.x - element.x) > 0 ? 1 : -1
                     if (xDistance != 0) {
-                        element.x += xDistance / speed * t.deltaTime
+                        element.x += xDistance * speed * ticker.deltaTime
                         let newDistance = destination.x - element.x
                         if (xDistance < 0 && newDistance > 0 ||
                             xDistance > 0 && newDistance < 0
@@ -57,7 +51,7 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
                     }
                     let yDistance = destination.y - element.y
                     if (yDistance != 0) {
-                        element.y += yDistance / speed * t.deltaTime
+                        element.y += yDistance * speed * ticker.deltaTime
                         let newDistance = destination.y - element.y
                         if (yDistance < 0 && newDistance > 0 ||
                             yDistance > 0 && newDistance < 0

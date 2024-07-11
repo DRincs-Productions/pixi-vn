@@ -1,6 +1,6 @@
 import { ChoiceMenuOption } from "../classes"
 import { CanvasImage } from "../classes/canvas"
-import { TickerFadeAlpha, TickerRotate } from "../classes/ticker"
+import { TickerFadeAlpha, TickerMove, TickerRotate } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
@@ -33,6 +33,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Dissolve effect", imagesDissolveTest),
             new ChoiceMenuOption("Fade effect", imagesFadeTest),
             new ChoiceMenuOption("Rotate", imagesRotateTest),
+            new ChoiceMenuOption("Move", imagesMoveTest),
         ])
     },
     (props) => GameStepManager.jumpLabel(IMAGE_ANIMAIONS_TEST_LABEL, props),
@@ -152,6 +153,7 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
         GameWindowManager.addTicker("flowerTop", new TickerRotate({
             speed: 0.1,
             clockwise: false,
+            speedProgression: { amt: 0.1, limit: 0.5, type: "linear" }
         }))
         GameWindowManager.addTickersSteps("helmlok", [
             new TickerRotate({
@@ -174,6 +176,42 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
                 speed: 0.1,
                 clockwise: false,
             }),
+        ])
+    }
+])
+
+const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
+    () => {
+        GameWindowManager.addTicker("eggHead", new TickerMove({
+            destination: { x: 500, y: 100 },
+            speed: 0.1,
+        }))
+        GameWindowManager.addTicker("flowerTop", new TickerMove({
+            destination: { x: 500, y: 300 },
+            speed: 0.01,
+        }))
+        GameWindowManager.addTickersSteps("helmlok", [
+            new TickerMove({
+                destination: { x: 100, y: 500 },
+                speed: 0.1,
+            }),
+            new TickerMove({
+                destination: { x: 1700, y: 500 },
+                speed: 10 / (1 * 60),
+            }),
+            Repeat,
+        ])
+        GameWindowManager.addTickersSteps("skully", [
+            new TickerMove({
+                destination: { x: 500, y: 500 },
+                speed: 0.1,
+            }, 100),
+            Pause(0.5),
+            new TickerMove({
+                destination: { x: 100, y: 100 },
+                speed: 0.01,
+                speedProgression: { percentage: 0.05, type: "exponential" }
+            }, 100),
         ])
     }
 ])

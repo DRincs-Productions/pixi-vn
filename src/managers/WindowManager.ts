@@ -403,7 +403,7 @@ export default class GameWindowManager {
         tickerData.fn = (t: Ticker) => {
             let data = GameWindowManager._currentTickers[id]
             if (data) {
-                ticker?.fn(t, data.args, data.canvasElementTags)
+                ticker?.fn(t, data.args, data.canvasElementTags, id)
             }
         }
         GameWindowManager.app.ticker.add(tickerData.fn, undefined, tickerData.priority)
@@ -532,6 +532,10 @@ export default class GameWindowManager {
                 }
             }
         })
+    }
+    public static onEndOfTicker(tags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string, removeElementAfter: string | string[], _id: string) {
+        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tags, ticker)
+        GameWindowManager.removeCanvasElement(removeElementAfter)
     }
     /**
      * Remove a connection between a canvas element and a ticker.

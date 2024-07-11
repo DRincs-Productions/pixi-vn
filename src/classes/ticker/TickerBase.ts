@@ -1,6 +1,7 @@
 import { Ticker, UPDATE_PRIORITY } from "pixi.js"
 import { tickerDecorator } from "../../decorators"
 import ITicker from "../../interface/ITicker"
+import { GameWindowManager } from "../../managers"
 import { StorageElementType } from "../../types/StorageElementType"
 
 export type TickerArgsType = { [id: string]: StorageElementType } | {
@@ -19,11 +20,12 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  * \@tickerDecorator() // this is equivalent to tickerDecorator("TickerRotate")
  * export class TickerRotate extends TickerBase<{ speed?: number }> {
  *     override fn(
- *         t: Ticker,
- *         args: {
+ *         t: Ticker, // the ticker that is calling this method
+ *         args: { // the arguments that you passed when you added the ticker
  *             speed?: number,
  *         },
- *         tags: string[]
+ *         tags: string[], // the tags of the canvas elements that are connected to this ticker
+ *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the GameWindowManager.currentTickers
  *     ): void {
  *         let speed = args.speed === undefined ? 0.1 : args.speed
  *         tags.forEach((tag) => {
@@ -56,9 +58,10 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use GameWindowManager.addCanvasElement() to get the canvas element of the canvas, and edit them.
-     * @param t The ticker that is calling this method
-     * @param args The arguments that you passed when you added the ticker
-     * @param tags The tags of the canvas elements that are connected to this ticker
+     * @param _ticker The ticker that is calling this method
+     * @param _args The arguments that you passed when you added the ticker
+     * @param _tags The tags of the canvas elements that are connected to this ticker
+     * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link GameWindowManager.currentTickers}
      */
-    fn(_t: Ticker, _args: TArgs, _tags: string | string[]): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
+    fn(_ticker: Ticker, _args: TArgs, _tags: string | string[], _tickerId: string): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
 }
