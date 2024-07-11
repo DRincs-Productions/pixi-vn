@@ -84,6 +84,13 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
 
 const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
     () => {
+        setDialogue({
+            character: juliette, text: "Here's what's going to happen:" +
+                " - Egg Head will disappear with a dissolve effect. If you go next, Egg Head reappears with a dissolve effect with stopping the dissolve effect" +
+                " - Egg Head will appear instead of Flower Top." +
+                " - Helmlok will disappear with a fade effect and reappear with a fade effect, and repeat." +
+                " - Skully will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect."
+        })
         removeWithFadeTransition(["eggHead"], { duration: 2 })
         let eggHead = new CanvasImage({ x: 300, y: 100 }, "https://pixijs.com/assets/eggHead.png")
         showWithFadeTransition('flowerTop', eggHead, { duration: 1 })
