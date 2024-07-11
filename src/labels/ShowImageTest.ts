@@ -1,6 +1,6 @@
 import { ChoiceMenuOption } from "../classes"
 import { CanvasImage } from "../classes/canvas"
-import { TickerFadeAlpha } from "../classes/ticker"
+import { TickerFadeAlpha, TickerRotate } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
@@ -32,6 +32,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
         setChoiceMenuOptions([
             new ChoiceMenuOption("Dissolve effect", imagesDissolveTest),
             new ChoiceMenuOption("Fade effect", imagesFadeTest),
+            new ChoiceMenuOption("Rotate", imagesRotateTest),
         ])
     },
     (props) => GameStepManager.jumpLabel(IMAGE_ANIMAIONS_TEST_LABEL, props),
@@ -127,5 +128,52 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
         if (eggHeadOld)
             eggHeadOld.alpha = 0
         showWithFadeTransition('eggHead', "https://pixijs.com/assets/eggHead.png", { duration: 0.5 })
+    }
+])
+
+const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
+    () => {
+        let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
+        if (eggHead)
+            eggHead.anchor.set(0.5);
+        let flowerTop = GameWindowManager.getCanvasElement<CanvasImage>("flowerTop")
+        if (flowerTop)
+            flowerTop.anchor.set(0);
+        let helmlok = GameWindowManager.getCanvasElement<CanvasImage>("helmlok")
+        if (helmlok)
+            helmlok.anchor.set(1);
+        let skully = GameWindowManager.getCanvasElement<CanvasImage>("skully")
+        if (skully)
+            skully.anchor.set(0.5);
+        GameWindowManager.addTicker("eggHead", new TickerRotate({
+            speed: 0.1,
+            clockwise: true,
+        }))
+        GameWindowManager.addTicker("flowerTop", new TickerRotate({
+            speed: 0.1,
+            clockwise: false,
+        }))
+        GameWindowManager.addTickersSteps("helmlok", [
+            new TickerRotate({
+                speed: 0.1,
+                clockwise: true,
+            }),
+            new TickerRotate({
+                speed: 0.3,
+                clockwise: false,
+            }),
+            Repeat,
+        ])
+        GameWindowManager.addTickersSteps("skully", [
+            new TickerRotate({
+                speed: 0.1,
+                clockwise: true,
+            }),
+            Pause(0.5),
+            new TickerRotate({
+                speed: 0.1,
+                clockwise: false,
+            }),
+        ])
     }
 ])

@@ -6,10 +6,11 @@ import { TickerRotateProps } from "../../types/ticker/TickerRotateProps";
 import TickerBase from "./TickerBase";
 
 /**
- * A ticker that rotates the canvas element of the canvas.
+ * A ticker that rotates the canvas element of the canvas. For centre rotation, set the anchor of the canvas element to 0.5.
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
+ * alien.anchor.set(0.5);
  * GameWindowManager.addCanvasElement("alien", alien);
  * const ticker = new TickerRotate({
  *    speed: 0.1,
