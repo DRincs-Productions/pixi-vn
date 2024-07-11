@@ -15,7 +15,7 @@ export default interface TickerHistory<TArgs extends TickerArgsType> {
     /**
      * If this ticker was created by steps
      */
-    createdBySteps: boolean
+    createdByTicketStepsId?: string
 }
 
 export interface TickerHistoryForExport<TArgs extends TickerArgsType> {

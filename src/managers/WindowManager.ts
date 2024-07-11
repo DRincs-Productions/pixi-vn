@@ -326,7 +326,7 @@ export default class GameWindowManager {
         return Object.values(GameWindowManager._currentTickers)
     }
     private static get currentTickersWithoutCreatedBySteps() {
-        return Object.fromEntries(Object.entries(GameWindowManager._currentTickers).filter(([_, ticker]) => !ticker.createdBySteps))
+        return Object.fromEntries(Object.entries(GameWindowManager._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketStepsId))
     }
     private static _currentTickers: { [id: string]: TickerHistory<any> } = {}
     /**
@@ -382,7 +382,6 @@ export default class GameWindowManager {
             canvasElementTags: canvasElementTag,
             priority: ticker.priority,
             duration: ticker.duration,
-            createdBySteps: false
         }
         let id = GameWindowManager.generateTickerId(tickerHistory)
         GameWindowManager.pushTicker(id, tickerHistory, ticker)
@@ -497,7 +496,7 @@ export default class GameWindowManager {
             canvasElementTags: [tag],
             priority: ticker.priority,
             duration: ticker.duration,
-            createdBySteps: true,
+            createdByTicketStepsId: tag,
         }
         let id = GameWindowManager.generateTickerId(tickerHistory)
         GameWindowManager.pushTicker(id, tickerHistory, ticker)
