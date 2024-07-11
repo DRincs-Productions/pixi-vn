@@ -67,7 +67,7 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
                     }
                     else {
                         element.alpha = limit
-                        // TODO: GameWindowManager.removeAssociationBetweenTickerCanvasElement(tag, this)
+                        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tag, this)
                         GameWindowManager.removeCanvasElement(removeElementAfter)
                     }
                 }

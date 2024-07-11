@@ -7,8 +7,7 @@ import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
 import { asciiArtLog } from "../functions/EasterEgg";
 import { createExportableElement } from "../functions/ExportUtility";
-import { ITicker, ITickersSteps } from "../interface";
-import { IClassWithArgsHistory } from "../interface/IClassWithArgsHistory";
+import { ITicker, ITickersSteps, TickerHistory } from "../interface";
 import { ITickersStep } from "../interface/ITickersSteps";
 import { ICanvasBaseMemory } from "../interface/canvas";
 import { ExportedCanvas } from "../interface/export";
@@ -329,7 +328,7 @@ export default class GameWindowManager {
     private static get currentTickersWithoutCreatedBySteps() {
         return Object.fromEntries(Object.entries(GameWindowManager._currentTickers).filter(([_, ticker]) => !ticker.createdBySteps))
     }
-    private static _currentTickers: { [id: string]: IClassWithArgsHistory<any> } = {}
+    private static _currentTickers: { [id: string]: TickerHistory<any> } = {}
     /**
      * The steps of the tickers
      */
@@ -338,7 +337,7 @@ export default class GameWindowManager {
     }
     private static _currentTickersSteps: { [tag: string]: ITickersSteps } = {}
     static currentTickersTimeouts: { [timeout: string]: { tags: string[], ticker: string } } = {}
-    private static generateTickerId(tickerData: IClassWithArgsHistory<any>): string {
+    private static generateTickerId(tickerData: TickerHistory<any>): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)
         }
@@ -376,7 +375,7 @@ export default class GameWindowManager {
                 GameWindowManager.removeTicker(tag)
             }
         })
-        let tickerHistory: IClassWithArgsHistory<TArgs> = {
+        let tickerHistory: TickerHistory<TArgs> = {
             fn: () => { },
             className: tickerName,
             args: ticker.args,
@@ -398,7 +397,7 @@ export default class GameWindowManager {
             GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerName, timeout.toString())
         }
     }
-    private static pushTicker<TArgs extends TickerArgsType>(id: string, tickerData: IClassWithArgsHistory<TArgs>, ticker: TickerBase<TArgs>) {
+    private static pushTicker<TArgs extends TickerArgsType>(id: string, tickerData: TickerHistory<TArgs>, ticker: TickerBase<TArgs>) {
         GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementTags, tickerData)
         GameWindowManager._currentTickers[id] = tickerData
         tickerData.fn = (t: Ticker) => {
@@ -491,7 +490,7 @@ export default class GameWindowManager {
             return
         }
         let tickerName: TickerIdType = ticker.constructor.name
-        let tickerHistory: IClassWithArgsHistory<TArgs> = {
+        let tickerHistory: TickerHistory<TArgs> = {
             fn: () => { },
             className: tickerName,
             args: ticker.args,
