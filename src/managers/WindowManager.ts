@@ -242,7 +242,7 @@ export default class GameWindowManager {
             if (GameWindowManager._children[tag]) {
                 GameWindowManager.app.stage.removeChild(GameWindowManager._children[tag])
                 delete GameWindowManager._children[tag]
-                GameWindowManager.removeTicker(tag)
+                GameWindowManager.removeTickerByCanvasElement(tag)
             }
         })
         GameWindowManager.childrenTagsOrder = GameWindowManager.childrenTagsOrder.filter((t) => !tags.includes(t))
@@ -372,7 +372,7 @@ export default class GameWindowManager {
         // if exists a ticker steps for this tag, remove it
         canvasElementTag.forEach((tag) => {
             if (GameWindowManager._currentTickersSteps[tag]) {
-                GameWindowManager.removeTicker(tag)
+                GameWindowManager.removeTickerByCanvasElement(tag)
             }
         })
         let tickerHistory: TickerHistory<TArgs> = {
@@ -390,7 +390,7 @@ export default class GameWindowManager {
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
                 let tickerTimeoutInfo = GameWindowManager._currentTickersTimeouts[timeout.toString()]
                 if (tickerTimeoutInfo) {
-                    GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerTimeoutInfo.tags, tickerTimeoutInfo.ticker)
+                    GameWindowManager.removeTicker(id)
                 }
             }, ticker.duration * 1000);
             GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerName, timeout.toString(), true)
@@ -428,16 +428,12 @@ export default class GameWindowManager {
             console.warn("[Pixi'VN] The steps of the tickers is empty")
             return
         }
-        GameWindowManager.removeTicker(tag)
+        GameWindowManager.removeTickerByCanvasElement(tag)
         GameWindowManager._currentTickersSteps[tag] = {
             currentStepNumber: currentStepNumber,
             steps: steps.map((step) => {
                 if (step === Repeat) {
                     return step
-                }
-                if (!step.duration) {
-                    console.warn("[Pixi'VN] Duration is not defined, so it will be set to 1 second")
-                    step.duration = 1
                 }
                 if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
                     return step as PauseType
@@ -473,13 +469,12 @@ export default class GameWindowManager {
             let timeout = setTimeout(() => {
                 let tickerTimeoutInfo = GameWindowManager._currentTickersTimeouts[timeout.toString()]
                 if (tickerTimeoutInfo) {
-                    GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerTimeoutInfo.tags, tickerTimeoutInfo.ticker)
                     tickerTimeoutInfo.tags.forEach((tag) => {
                         GameWindowManager.nextTickerStep(tag)
                     })
                 }
                 GameWindowManager.removeTickerTimeoutInfo(timeout)
-            }, step.duration * 1000);
+            }, (step as PauseType).duration * 1000);
             GameWindowManager.addTickerTimeoutInfo(tag, "steps", timeout.toString(), false)
             return
         }
@@ -504,7 +499,7 @@ export default class GameWindowManager {
             let timeout = setTimeout(() => {
                 let tickerTimeoutInfo = GameWindowManager._currentTickersTimeouts[timeout.toString()]
                 if (tickerTimeoutInfo) {
-                    GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerTimeoutInfo.tags, tickerTimeoutInfo.ticker)
+                    GameWindowManager.removeTicker(id)
                     tickerTimeoutInfo.tags.forEach((tag) => {
                         GameWindowManager.nextTickerStep(tag)
                     })
@@ -514,27 +509,29 @@ export default class GameWindowManager {
             GameWindowManager.addTickerTimeoutInfo(tag, tickerName, timeout.toString(), false)
         }
     }
-    private static nextTickerStep(tag: string | string[]) {
-        if (typeof tag === "string") {
-            tag = [tag]
-        }
-        tag.forEach((tag) => {
-            if (GameWindowManager._currentTickersSteps[tag]) {
-                let steps = GameWindowManager._currentTickersSteps[tag]
-                if (steps.currentStepNumber + 1 < steps.steps.length) {
-                    steps.currentStepNumber++
-                    GameWindowManager._currentTickersSteps[tag] = steps
-                    GameWindowManager.runTickersSteps(tag)
-                }
-                else {
-                    GameWindowManager.removeTicker(tag)
-                }
+    private static nextTickerStep(tag: string) {
+        if (GameWindowManager._currentTickersSteps[tag]) {
+            let steps = GameWindowManager._currentTickersSteps[tag]
+            if (steps.currentStepNumber + 1 < steps.steps.length) {
+                steps.currentStepNumber++
+                GameWindowManager._currentTickersSteps[tag] = steps
+                GameWindowManager.runTickersSteps(tag)
             }
-        })
+            else {
+                GameWindowManager.removeTickerByCanvasElement(tag)
+            }
+        }
     }
-    public static onEndOfTicker(tags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string, removeElementAfter: string | string[], _id: string) {
-        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tags, ticker)
-        GameWindowManager.removeCanvasElement(removeElementAfter)
+    public static onEndOfTicker(canvasElementTags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string, canvasElementTagsToDelete: string | string[], tickerId: string) {
+        GameWindowManager.removeAssociationBetweenTickerCanvasElement(canvasElementTags, ticker)
+        GameWindowManager.removeCanvasElement(canvasElementTagsToDelete)
+        let tickerData = GameWindowManager._currentTickers[tickerId]
+        if (tickerData) {
+            if (tickerData.duration == undefined && tickerData.createdByTicketStepsId) {
+                GameWindowManager.nextTickerStep(tickerData.createdByTicketStepsId)
+            }
+            GameWindowManager.removeTicker(tickerId)
+        }
     }
     /**
      * Remove a connection between a canvas element and a ticker.
@@ -653,7 +650,7 @@ export default class GameWindowManager {
      * Remove all tickers from a canvas element.
      * @param tag The tag of the canvas element that will use the ticker.
      */
-    public static removeTicker(tag: string | string[]) {
+    private static removeTickerByCanvasElement(tag: string | string[]) {
         if (typeof tag === "string") {
             tag = [tag]
         }
@@ -671,6 +668,13 @@ export default class GameWindowManager {
             GameWindowManager.removeTickerTimeoutsByTag(tag, false)
             delete GameWindowManager._currentTickersSteps[tag]
         })
+    }
+    private static removeTicker(tickerId: string) {
+        let ticker = GameWindowManager._currentTickers[tickerId]
+        if (ticker) {
+            GameWindowManager.app.ticker.remove(ticker.fn)
+            delete GameWindowManager._currentTickers[tickerId]
+        }
     }
 
     /**

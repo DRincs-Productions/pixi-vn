@@ -44,7 +44,7 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
 export default class TickerBase<TArgs extends TickerArgsType> implements ITicker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
-     * @param duration The duration of the ticker in seconds. If is undefined, the ticker will be called every frame. @default undefined
+     * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
      * @param priority The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
      */
     constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {

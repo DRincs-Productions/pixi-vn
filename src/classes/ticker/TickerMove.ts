@@ -63,5 +63,6 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
             })
         if (args.speedProgression)
             updateTickerProgression(args, "speed", args.speedProgression)
+        // TODO: onEndOfTicker
     }
 }

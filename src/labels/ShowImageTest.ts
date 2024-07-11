@@ -194,10 +194,11 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
             new TickerMove({
                 destination: { x: 100, y: 500 },
                 speed: 0.1,
-            }),
+            }, 4),
             new TickerMove({
                 destination: { x: 1700, y: 500 },
-                speed: 10 / (1 * 60),
+                speed: 0.1,
+                speedProgression: { percentage: 0.05, type: "exponential" }
             }),
             Repeat,
         ])
@@ -205,13 +206,12 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
             new TickerMove({
                 destination: { x: 500, y: 500 },
                 speed: 0.1,
-            }, 100),
+            }, 3),
             Pause(0.5),
             new TickerMove({
                 destination: { x: 100, y: 100 },
                 speed: 0.01,
-                speedProgression: { percentage: 0.05, type: "exponential" }
-            }, 100),
+            }, 3),
         ])
     }
 ])
