@@ -413,6 +413,7 @@ export default class GameWindowManager {
      * Run a sequence of tickers. If exists a ticker with the same tag, it will be removed.
      * @param tag The tag of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
+     * @param currentStepNumber The current step number. It is used to continue the sequence of tickers.
      * @returns
      * @example
      * ```typescript
@@ -424,14 +425,14 @@ export default class GameWindowManager {
      * ])
      * ```
      */
-    static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[]) {
+    static addTickersSteps<TArgs extends TickerArgsType>(tag: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
             console.warn("[Pixi'VN] The steps of the tickers is empty")
             return
         }
         GameWindowManager.removeTicker(tag)
         GameWindowManager._currentTickersSteps[tag] = {
-            currentStepNumber: 0,
+            currentStepNumber: currentStepNumber,
             steps: steps.map((step) => {
                 if (step === Repeat) {
                     return step
@@ -452,6 +453,13 @@ export default class GameWindowManager {
             })
         }
         GameWindowManager.runTickersSteps(tag)
+    }
+    private static restoneTickersSteps(data: { [tag: string]: ITickersSteps }) {
+        for (let tag in data) {
+            let steps = data[tag]
+            GameWindowManager._currentTickersSteps[tag] = steps
+            GameWindowManager.runTickersSteps(tag)
+        }
     }
     private static runTickersSteps<TArgs extends TickerArgsType>(tag: string) {
         let step = GameWindowManager._currentTickersSteps[tag].steps[GameWindowManager._currentTickersSteps[tag].currentStepNumber]
@@ -726,7 +734,10 @@ export default class GameWindowManager {
                     }
                 }
             }
-            // TODO currentTickersSteps
+            if (data.hasOwnProperty("currentTickersSteps")) {
+                let currentTickersSteps = (data as ExportedCanvas)["currentTickersSteps"]
+                GameWindowManager.restoneTickersSteps(currentTickersSteps)
+            }
         }
         catch (e) {
             console.error("[Pixi'VN] Error importing data", e)
