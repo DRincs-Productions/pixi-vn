@@ -54,7 +54,7 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
                             element.x = destination.x
                         }
                     }
-                    let yDistance = destination.y - element.y
+                    let yDistance = (destination.y - element.y) > 0 ? 1 : -1
                     if (yDistance != 0) {
                         element.y += yDistance * speed * ticker.deltaTime
                         let newDistance = destination.y - element.y

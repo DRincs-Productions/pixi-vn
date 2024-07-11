@@ -24,7 +24,8 @@ export default class TickerRotate extends TickerBase<TickerRotateProps> {
     override fn(
         ticker: Ticker,
         args: TickerRotateProps,
-        tags: string[]
+        tags: string[],
+        tickerId: string
     ): void {
         let speed = args.speed === undefined ? 0.1 : args.speed
         let clockwise = args.clockwise === undefined ? true : args.clockwise
@@ -45,6 +46,9 @@ export default class TickerRotate extends TickerBase<TickerRotateProps> {
                         element.rotation += speed * ticker.deltaTime
                     else
                         element.rotation -= speed * ticker.deltaTime
+                    if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
+                        GameWindowManager.onEndOfTicker(tag, this, [], tickerId)
+                    }
                 }
             })
         if (args.speedProgression)

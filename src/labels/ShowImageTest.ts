@@ -136,16 +136,16 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
     () => {
         let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
-            eggHead.anchor.set(0.5);
+            eggHead.anchor.set(0);
         let flowerTop = GameWindowManager.getCanvasElement<CanvasImage>("flowerTop")
         if (flowerTop)
-            flowerTop.anchor.set(0);
+            flowerTop.anchor.set(0.5);
         let helmlok = GameWindowManager.getCanvasElement<CanvasImage>("helmlok")
         if (helmlok)
-            helmlok.anchor.set(1);
+            helmlok.anchor.set(0.5);
         let skully = GameWindowManager.getCanvasElement<CanvasImage>("skully")
         if (skully)
-            skully.anchor.set(0.5);
+            skully.anchor.set(1);
         GameWindowManager.addTicker("eggHead", new TickerRotate({
             speed: 0.1,
             clockwise: true,
@@ -153,7 +153,7 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
         GameWindowManager.addTicker("flowerTop", new TickerRotate({
             speed: 0.1,
             clockwise: false,
-            speedProgression: { amt: 0.1, limit: 0.5, type: "linear" }
+            speedProgression: { type: "exponential", percentage: 0.01, limit: 7 }
         }))
         GameWindowManager.addTickersSteps("helmlok", [
             new TickerRotate({
@@ -161,9 +161,10 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
                 clockwise: true,
             }, 2),
             new TickerRotate({
-                speed: 0.3,
+                speed: 5,
                 clockwise: false,
-            }, 5),
+                speedProgression: { type: "exponential", percentage: -0.05 }
+            }),
             Repeat,
         ])
         GameWindowManager.addTickersSteps("skully", [
@@ -184,33 +185,33 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
     () => {
         GameWindowManager.addTicker("eggHead", new TickerMove({
             destination: { x: 500, y: 100 },
-            speed: 0.1,
+            speed: 0.4,
         }))
         GameWindowManager.addTicker("flowerTop", new TickerMove({
             destination: { x: 500, y: 300 },
-            speed: 0.01,
+            speed: 0.3,
         }))
         GameWindowManager.addTickersSteps("helmlok", [
             new TickerMove({
                 destination: { x: 100, y: 500 },
-                speed: 0.1,
+                speed: 0.5,
             }),
             new TickerMove({
                 destination: { x: 1700, y: 500 },
                 speed: 0.1,
-                speedProgression: { percentage: 0.05, type: "exponential" }
+                speedProgression: { type: "linear", amt: 0.05, limit: 0.7 }
             }),
             Repeat,
         ])
         GameWindowManager.addTickersSteps("skully", [
             new TickerMove({
                 destination: { x: 500, y: 500 },
-                speed: 0.1,
+                speed: 0.5,
             }),
             Pause(0.5),
             new TickerMove({
                 destination: { x: 100, y: 100 },
-                speed: 0.01,
+                speed: 0.5,
             }),
         ])
     }
