@@ -22,10 +22,15 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
     override fn(
         ticker: Ticker,
         args: TickerMoveProps,
-        tags: string[]
+        tags: string[],
+        tickerId: string
     ): void {
         let speed = args.speed === undefined ? 0.1 : args.speed
         let destination = args.destination
+        let tagToRemoveAfter = args.tagToRemoveAfter || []
+        if (typeof tagToRemoveAfter === "string") {
+            tagToRemoveAfter = [tagToRemoveAfter]
+        }
         tags
             .filter((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
@@ -59,10 +64,12 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
                             element.y = destination.y
                         }
                     }
+                    if (element.x == destination.x && element.y == destination.y) {
+                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                    }
                 }
             })
         if (args.speedProgression)
             updateTickerProgression(args, "speed", args.speedProgression)
-        // TODO: onEndOfTicker
     }
 }

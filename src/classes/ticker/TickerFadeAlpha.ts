@@ -31,9 +31,9 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
         let duration = args.duration === undefined ? 1 : args.duration
         let speed = 1 / (duration * 60)
         let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
-        let removeElementAfter = args.tagToRemoveAfter || []
-        if (typeof removeElementAfter === "string") {
-            removeElementAfter = [removeElementAfter]
+        let tagToRemoveAfter = args.tagToRemoveAfter || []
+        if (typeof tagToRemoveAfter === "string") {
+            tagToRemoveAfter = [tagToRemoveAfter]
         }
         if (type === "hide" && limit < 0) {
             limit = 0
@@ -62,7 +62,7 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
                     }
                     else {
                         element.alpha = limit
-                        GameWindowManager.onEndOfTicker(tag, this, removeElementAfter, tickerId)
+                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

@@ -101,11 +101,11 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
                 new TickerFadeAlpha({
                     duration: 1,
                     type: "hide",
-                }, 1),
+                }),
                 new TickerFadeAlpha({
                     duration: 1,
                     type: "show"
-                }, 1),
+                }),
                 Repeat,
             ]
         )
@@ -115,12 +115,12 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
                     duration: 0.5,
                     type: "hide",
                     limit: 0.3,
-                }, 1),
+                }),
                 Pause(0.5),
                 new TickerFadeAlpha({
                     duration: 1,
                     type: "show",
-                }, 1),
+                }),
             ]
         )
     },
@@ -159,23 +159,23 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
             new TickerRotate({
                 speed: 0.1,
                 clockwise: true,
-            }),
+            }, 2),
             new TickerRotate({
                 speed: 0.3,
                 clockwise: false,
-            }),
+            }, 5),
             Repeat,
         ])
         GameWindowManager.addTickersSteps("skully", [
             new TickerRotate({
                 speed: 0.1,
                 clockwise: true,
-            }),
+            }, 3),
             Pause(0.5),
             new TickerRotate({
                 speed: 0.1,
                 clockwise: false,
-            }),
+            }, 7),
         ])
     }
 ])
@@ -194,7 +194,7 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
             new TickerMove({
                 destination: { x: 100, y: 500 },
                 speed: 0.1,
-            }, 4),
+            }),
             new TickerMove({
                 destination: { x: 1700, y: 500 },
                 speed: 0.1,
@@ -206,12 +206,12 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
             new TickerMove({
                 destination: { x: 500, y: 500 },
                 speed: 0.1,
-            }, 3),
+            }),
             Pause(0.5),
             new TickerMove({
                 destination: { x: 100, y: 100 },
                 speed: 0.01,
-            }, 3),
+            }),
         ])
     }
 ])
