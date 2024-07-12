@@ -3,7 +3,7 @@ import { TickerProgrationType } from "../../interface"
 export type TickerRotateProps = {
     /**
      * The speed of the rotation in pixels per second
-     * @default 0.1
+     * @default 1
      */
     speed?: number
     /**
@@ -21,7 +21,8 @@ export type TickerRotateProps = {
      */
     tagToRemoveAfter?: string[] | string
     /**
-     * If true, the rotation only starts if the canvas element have a texture
+     * If true, the effect only starts if the canvas element have a texture
+     * @default false
      */
     startOnlyIfHaveTexture?: boolean
 }

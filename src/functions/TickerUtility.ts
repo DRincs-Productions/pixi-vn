@@ -52,7 +52,7 @@ function getLinearProgression(number: number, progression: ITickerProgrationLine
             return progression.limit
         }
     }
-    return number + progression.amt
+    return number + (progression.amt / 60)
 }
 
 function getExponentialProgression(number: number, progression: ITickerProgrationExponential): number {

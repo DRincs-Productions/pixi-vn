@@ -28,7 +28,7 @@ export default class TickerRotate extends TickerBase<TickerRotateProps> {
         tags: string[],
         tickerId: string
     ): void {
-        let speed = args.speed === undefined ? 0.1 : args.speed
+        let speed = (args.speed === undefined ? 1 : args.speed) / 60
         let clockwise = args.clockwise === undefined ? true : args.clockwise
         let tagToRemoveAfter = args.tagToRemoveAfter || []
         if (typeof tagToRemoveAfter === "string") {

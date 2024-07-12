@@ -2,7 +2,7 @@ import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { GameWindowManager } from "../../managers";
-import { TickerMoveProps } from "../../types/ticker/TickerMoveProps";
+import { TickerMoveProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
 /**
@@ -26,8 +26,8 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
         tags: string[],
         tickerId: string
     ): void {
-        let xSpeed = 0.1
-        let ySpeed = 0.1
+        let xSpeed = 1
+        let ySpeed = 1
         if (args.speed) {
             if (typeof args.speed === "number") {
                 xSpeed = args.speed
@@ -38,6 +38,8 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
                 ySpeed = args.speed.y
             }
         }
+        xSpeed /= 60
+        ySpeed /= 60
         let destination = args.destination
         let tagToRemoveAfter = args.tagToRemoveAfter || []
         if (typeof tagToRemoveAfter === "string") {

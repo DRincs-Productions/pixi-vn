@@ -61,7 +61,11 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
                     else if (type === "hide" && element.alpha > limit) {
                         element.alpha -= speed * ticker.deltaTime
                     }
-                    else {
+                    if (type === "show" && element.alpha >= limit) {
+                        element.alpha = limit
+                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                    }
+                    else if (type === "hide" && element.alpha <= limit) {
                         element.alpha = limit
                         GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
