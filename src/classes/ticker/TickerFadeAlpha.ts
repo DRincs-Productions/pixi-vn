@@ -6,6 +6,7 @@ import TickerBase from "./TickerBase";
 
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
+ * This ticker can be used on all canvas elements that extend the {@link Container} class.
  * @example
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
@@ -60,7 +61,11 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
                     else if (type === "hide" && element.alpha > limit) {
                         element.alpha -= speed * ticker.deltaTime
                     }
-                    else {
+                    if (type === "show" && element.alpha >= limit) {
+                        element.alpha = limit
+                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                    }
+                    else if (type === "hide" && element.alpha <= limit) {
                         element.alpha = limit
                         GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }

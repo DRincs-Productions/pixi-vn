@@ -1,6 +1,7 @@
 export type TickerFadeAlphaProps = {
     /**
-     * The duration of the fade, in seconds. It is used to calculate the speed of the fade
+     * The duration of the fade, in seconds.
+     * in reality the duration is not exactly in seconds because it is based on the frame rate of the game.
      * @default 1
      */
     duration?: number
@@ -20,7 +21,7 @@ export type TickerFadeAlphaProps = {
      */
     tagToRemoveAfter?: string[] | string
     /**
-     * If true, the fade only starts if the canvas element have a texture
+     * If true, the effect only starts if the canvas element have a texture
      * @default false
      */
     startOnlyIfHaveTexture?: boolean

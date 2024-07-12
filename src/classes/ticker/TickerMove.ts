@@ -2,11 +2,12 @@ import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { GameWindowManager } from "../../managers";
-import { TickerMoveProps } from "../../types/ticker/TickerMoveProps";
+import { TickerMoveProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
 /**
  * A ticker that moves the canvas element of the canvas.
+ * This ticker can be used on all canvas elements that extend the {@link Container} class.
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -25,7 +26,20 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
         tags: string[],
         tickerId: string
     ): void {
-        let speed = args.speed === undefined ? 0.1 : args.speed
+        let xSpeed = 1
+        let ySpeed = 1
+        if (args.speed) {
+            if (typeof args.speed === "number") {
+                xSpeed = args.speed
+                ySpeed = args.speed
+            }
+            else {
+                xSpeed = args.speed.x
+                ySpeed = args.speed.y
+            }
+        }
+        xSpeed /= 60
+        ySpeed /= 60
         let destination = args.destination
         let tagToRemoveAfter = args.tagToRemoveAfter || []
         if (typeof tagToRemoveAfter === "string") {
@@ -46,7 +60,7 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
                 if (element && element instanceof Container) {
                     let xDistance = (destination.x - element.x) > 0 ? 1 : -1
                     if (xDistance != 0) {
-                        element.x += xDistance * speed * ticker.deltaTime
+                        element.x += xDistance * xSpeed * ticker.deltaTime
                         let newDistance = destination.x - element.x
                         if (xDistance < 0 && newDistance > 0 ||
                             xDistance > 0 && newDistance < 0
@@ -56,7 +70,7 @@ export default class TickerMove extends TickerBase<TickerMoveProps> {
                     }
                     let yDistance = (destination.y - element.y) > 0 ? 1 : -1
                     if (yDistance != 0) {
-                        element.y += yDistance * speed * ticker.deltaTime
+                        element.y += yDistance * ySpeed * ticker.deltaTime
                         let newDistance = destination.y - element.y
                         if (yDistance < 0 && newDistance > 0 ||
                             yDistance > 0 && newDistance < 0

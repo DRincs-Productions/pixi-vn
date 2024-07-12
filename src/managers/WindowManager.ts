@@ -14,6 +14,7 @@ import { ExportedCanvas } from "../interface/export";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
+import { tagToRemoveAfter } from '../types/ticker/TagToRemoveAfterType';
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -295,8 +296,8 @@ export default class GameWindowManager {
             let ticker = GameWindowManager._currentTickers[id]
             if (ticker.canvasElementTags.includes(oldTag)) {
                 ticker.canvasElementTags = ticker.canvasElementTags.map((t) => t === oldTag ? newTag : t)
-                if (ticker.args.hasOwnProperty("tagToRemoveAfter")) {
-                    let tagToRemoveAfter = ticker.args.tagToRemoveAfter
+                if (ticker.args.hasOwnProperty(tagToRemoveAfter)) {
+                    let tagToRemoveAfter: string | string[] = ticker.args.tagToRemoveAfter
                     if (typeof tagToRemoveAfter === "string") {
                         tagToRemoveAfter = [tagToRemoveAfter]
                     }
@@ -573,8 +574,7 @@ export default class GameWindowManager {
             let ticker = GameWindowManager._currentTickers[id]
             ticker.canvasElementTags = ticker.canvasElementTags.filter((e) => GameWindowManager._children[e])
             if (ticker.canvasElementTags.length === 0) {
-                GameWindowManager.app.ticker.remove(ticker.fn)
-                delete GameWindowManager._currentTickers[id]
+                GameWindowManager.removeTicker(id)
             }
         }
         for (let tag in GameWindowManager._currentTickersSteps) {
@@ -632,8 +632,8 @@ export default class GameWindowManager {
      */
     public static removeAllTickers() {
         GameWindowManager._currentTickersSteps = {}
-        GameWindowManager.currentTickersList.forEach((t) => {
-            GameWindowManager.app.ticker.remove(t.fn)
+        Object.keys(GameWindowManager._currentTickers).forEach((id) => {
+            GameWindowManager.removeTicker(id)
         })
         GameWindowManager._currentTickers = {}
         for (let timeout in GameWindowManager._currentTickersTimeouts) {
@@ -652,8 +652,7 @@ export default class GameWindowManager {
             for (let id in GameWindowManager._currentTickers) {
                 let ticker = GameWindowManager._currentTickers[id]
                 if (ticker.canvasElementTags.includes(tag)) {
-                    GameWindowManager.app.ticker.remove(ticker.fn)
-                    delete GameWindowManager._currentTickers[id]
+                    GameWindowManager.removeTicker(id)
                 }
             }
             if (GameWindowManager._currentTickersSteps[tag]) {
@@ -677,6 +676,10 @@ export default class GameWindowManager {
     private static removeTicker(tickerId: string) {
         let ticker = GameWindowManager._currentTickers[tickerId]
         if (ticker) {
+            if (ticker.args.hasOwnProperty(tagToRemoveAfter)) {
+                let tagToRemoveAfter: string | string[] = ticker.args.tagToRemoveAfter
+                GameWindowManager.removeCanvasElement(tagToRemoveAfter)
+            }
             GameWindowManager.app.ticker.remove(ticker.fn)
             delete GameWindowManager._currentTickers[tickerId]
         }
