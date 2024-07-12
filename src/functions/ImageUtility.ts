@@ -127,13 +127,12 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
  * @param tag The unique tag of the image. You can use this tag to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
- * @returns A promise that is resolved when the image is removed.
  */
-export async function removeWithDissolveTransition(
+export function removeWithDissolveTransition(
     tag: string | string[],
     props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
-): Promise<void> {
+): void {
     if (typeof tag === "string") {
         tag = [tag]
     }
@@ -207,12 +206,11 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
  * @param tag The unique tag of the image. You can use this tag to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
- * @returns A promise that is resolved when the image is removed.
  */
-export async function removeWithFadeTransition(
+export function removeWithFadeTransition(
     tag: string | string[],
     props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
-): Promise<void> {
-    return await removeWithDissolveTransition(tag, props, priority)
+): void {
+    return removeWithDissolveTransition(tag, props, priority)
 }
