@@ -186,6 +186,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
         new FadeAlphaTicker({
             ...props,
             type: "hide",
+            startOnlyIfHaveTexture: true,
         }),
     ])
     GameWindowManager.addTickersSteps(tag, [
@@ -193,6 +194,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
         new FadeAlphaTicker({
             ...props,
             type: "show",
+            startOnlyIfHaveTexture: true,
         })
     ])
 }
