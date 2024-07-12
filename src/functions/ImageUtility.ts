@@ -90,10 +90,10 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    let specialTag: string | undefined = undefined
+    let oldCanvasTag: string | undefined = undefined
     if (GameWindowManager.getCanvasElement(tag)) {
-        specialTag = tag + "_temp_disolve"
-        GameWindowManager.editTagCanvasElement(tag, specialTag)
+        oldCanvasTag = tag + "_temp_disolve"
+        GameWindowManager.editCanvasElementTag(tag, oldCanvasTag)
     }
 
     let canvasElement: CanvasBase<any>
@@ -112,7 +112,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     let effect = new FadeAlphaTicker({
         ...props,
         type: "show",
-        tagToRemoveAfter: specialTag,
+        tagToRemoveAfter: oldCanvasTag,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
     GameWindowManager.addTicker(tag, effect)
@@ -165,8 +165,8 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
         return showWithDissolveTransition(tag, image, props, priority)
     }
 
-    let specialTag = tag + "_temp_disolve"
-    GameWindowManager.editTagCanvasElement(tag, specialTag)
+    let oldCanvasTag = tag + "_temp_fade"
+    GameWindowManager.editCanvasElementTag(tag, oldCanvasTag)
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
@@ -181,7 +181,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     }
     canvasElement.alpha = 0
 
-    GameWindowManager.addTickersSteps(specialTag, [
+    GameWindowManager.addTickersSteps(oldCanvasTag, [
         new FadeAlphaTicker({
             ...props,
             type: "hide",
