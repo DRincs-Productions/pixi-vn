@@ -7,6 +7,7 @@ import TickerBase from "./TickerBase";
 
 /**
  * A ticker that rotates the canvas element of the canvas. For centre rotation, set the anchor of the canvas element to 0.5.
+ * This ticker can be used on all canvas elements that extend the {@link Container} class.
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -29,6 +30,10 @@ export default class TickerRotate extends TickerBase<TickerRotateProps> {
     ): void {
         let speed = args.speed === undefined ? 0.1 : args.speed
         let clockwise = args.clockwise === undefined ? true : args.clockwise
+        let tagToRemoveAfter = args.tagToRemoveAfter || []
+        if (typeof tagToRemoveAfter === "string") {
+            tagToRemoveAfter = [tagToRemoveAfter]
+        }
         tags
             .filter((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
@@ -47,7 +52,7 @@ export default class TickerRotate extends TickerBase<TickerRotateProps> {
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        GameWindowManager.onEndOfTicker(tag, this, [], tickerId)
+                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

@@ -1,10 +1,10 @@
 export type TickerProgrationType = ITickerProgrationLinear | ITickerProgrationExponential;
-type ITickerProgrationLinear = {
+export type ITickerProgrationLinear = {
     amt: number,
     limit?: number,
     type: "linear",
 }
-type ITickerProgrationExponential = {
+export type ITickerProgrationExponential = {
     percentage: number,
     limit?: number,
     type: "exponential",

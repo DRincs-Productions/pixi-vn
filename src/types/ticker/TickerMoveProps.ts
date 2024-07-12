@@ -5,7 +5,7 @@ export type TickerMoveProps = {
      * The speed of the movement in pixels per second
      * @default 0.1
      */
-    speed?: number
+    speed?: number | { x: number, y: number }
     /**
      * The destination of the movement
      */

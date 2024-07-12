@@ -4,6 +4,7 @@ import { TickerFadeAlpha } from '../classes/ticker';
 import { Pause } from '../constants';
 import { GameWindowManager } from '../managers';
 import { TickerFadeAlphaProps } from '../types/ticker';
+import { tagToRemoveAfterType } from '../types/ticker/TagToRemoveAfterType';
 import { getTexture } from './TextureUtility';
 
 /**
@@ -86,7 +87,7 @@ export function removeCanvasElement(tag: string | string[]) {
 export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<TickerFadeAlphaProps, "type" | "tagToRemoveAfter" | "startOnlyIfHaveTexture"> = {},
+    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let specialTag: string | undefined = undefined
@@ -130,7 +131,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
  */
 export async function removeWithDissolveTransition(
     tag: string | string[],
-    props: Omit<TickerFadeAlphaProps, "type" | "tagToRemoveAfter" | "startOnlyIfHaveTexture"> = {},
+    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     if (typeof tag === "string") {
@@ -158,7 +159,7 @@ export async function removeWithDissolveTransition(
 export async function showWithFadeTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<TickerFadeAlphaProps, "type" | "tagToRemoveAfter" | "startOnlyIfHaveTexture"> = {},
+    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     if (!GameWindowManager.getCanvasElement(tag)) {
@@ -208,7 +209,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
  */
 export async function removeWithFadeTransition(
     tag: string | string[],
-    props: Omit<TickerFadeAlphaProps, "type" | "tagToRemoveAfter" | "startOnlyIfHaveTexture"> = {},
+    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     return await removeWithDissolveTransition(tag, props, priority)

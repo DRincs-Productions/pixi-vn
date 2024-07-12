@@ -16,6 +16,11 @@ export type TickerRotateProps = {
      */
     speedProgression?: TickerProgrationType
     /**
+     * The tag to remove after the fade is done
+     * @default []
+     */
+    tagToRemoveAfter?: string[] | string
+    /**
      * If true, the rotation only starts if the canvas element have a texture
      */
     startOnlyIfHaveTexture?: boolean
