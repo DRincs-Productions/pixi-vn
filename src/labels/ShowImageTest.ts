@@ -1,6 +1,6 @@
 import { ChoiceMenuOption } from "../classes"
 import { CanvasImage } from "../classes/canvas"
-import { TickerFadeAlpha, TickerMove, TickerRotate, TickerZoom } from "../classes/ticker"
+import { FadeAlphaTicker, TickerMove, TickerRotate, TickerZoom } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
@@ -54,11 +54,11 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
         showWithDissolveTransition('flowerTop', eggHead, { duration: 1 })
         GameWindowManager.addTickersSteps("helmlok",
             [
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 1,
                     type: "hide",
                 }, 1),
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 1,
                     type: "show"
                 }, 1),
@@ -67,13 +67,13 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
         )
         GameWindowManager.addTickersSteps("skully",
             [
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 0.5,
                     type: "hide",
                     limit: 0.3,
                 }, 1),
                 Pause(0.5),
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 1,
                     type: "show",
                 }, 1),
@@ -99,11 +99,11 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
         showWithFadeTransition('flowerTop', eggHead, { duration: 1 })
         GameWindowManager.addTickersSteps("helmlok",
             [
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 1,
                     type: "hide",
                 }),
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 1,
                     type: "show"
                 }),
@@ -112,13 +112,13 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
         )
         GameWindowManager.addTickersSteps("skully",
             [
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 0.5,
                     type: "hide",
                     limit: 0.3,
                 }),
                 Pause(0.5),
-                new TickerFadeAlpha({
+                new FadeAlphaTicker({
                     duration: 1,
                     type: "show",
                 }),

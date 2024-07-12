@@ -1,4 +1,4 @@
-export type TickerFadeAlphaProps = {
+export type FadeAlphaTickerProps = {
     /**
      * The duration of the fade, in seconds.
      * in reality the duration is not exactly in seconds because it is based on the frame rate of the game.

@@ -1,9 +1,9 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
 import { CanvasBase, CanvasImage } from '../classes/canvas';
-import { TickerFadeAlpha } from '../classes/ticker';
+import { FadeAlphaTicker } from '../classes/ticker';
 import { Pause } from '../constants';
 import { GameWindowManager } from '../managers';
-import { TickerFadeAlphaProps } from '../types/ticker';
+import { FadeAlphaTickerProps } from '../types/ticker';
 import { tagToRemoveAfterType } from '../types/ticker/TagToRemoveAfterType';
 import { getTexture } from './TextureUtility';
 
@@ -77,7 +77,7 @@ export function removeCanvasElement(tag: string | string[]) {
  * Show a image in the canvas with a disolve effect.
  * Disolve effect is a effect that the image is shown with a fade in.
  * If exist a image with the same tag, then the image is replaced and the first image is removed after the effect is done.
- * This transition is done with a {@link TickerFadeAlpha} effect.
+ * This transition is done with a {@link FadeAlphaTicker} effect.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
  * @param image The imageUrl or the canvas element
  * @param props The properties of the effect
@@ -87,7 +87,7 @@ export function removeCanvasElement(tag: string | string[]) {
 export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let specialTag: string | undefined = undefined
@@ -109,7 +109,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     }
     canvasElement.alpha = 0
 
-    let effect = new TickerFadeAlpha({
+    let effect = new FadeAlphaTicker({
         ...props,
         type: "show",
         tagToRemoveAfter: specialTag,
@@ -122,7 +122,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
 /**
  * Remove a image from the canvas with a disolve effect.
  * Disolve effect is a effect that the image is removed with a fade out.
- * This transition is done with a {@link TickerFadeAlpha} effect.
+ * This transition is done with a {@link FadeAlphaTicker} effect.
  * This function is equivalent to {@link removeWithFadeTransition}.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
  * @param props The properties of the effect
@@ -131,13 +131,13 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
  */
 export async function removeWithDissolveTransition(
     tag: string | string[],
-    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     if (typeof tag === "string") {
         tag = [tag]
     }
-    let effect = new TickerFadeAlpha({
+    let effect = new FadeAlphaTicker({
         ...props,
         type: 'hide',
         tagToRemoveAfter: tag,
@@ -159,7 +159,7 @@ export async function removeWithDissolveTransition(
 export async function showWithFadeTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     if (!GameWindowManager.getCanvasElement(tag)) {
@@ -183,14 +183,14 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     canvasElement.alpha = 0
 
     GameWindowManager.addTickersSteps(specialTag, [
-        new TickerFadeAlpha({
+        new FadeAlphaTicker({
             ...props,
             type: "hide",
         }),
     ])
     GameWindowManager.addTickersSteps(tag, [
         Pause(props.duration || 1),
-        new TickerFadeAlpha({
+        new FadeAlphaTicker({
             ...props,
             type: "show",
         })
@@ -200,7 +200,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
 /**
  * Remove a image from the canvas with a fade effect.
  * Fade effect is a effect that the image is removed with a fade out.
- * This transition is done with a {@link TickerFadeAlpha} effect.
+ * This transition is done with a {@link FadeAlphaTicker} effect.
  * This function is equivalent to {@link removeWithDissolveTransition}.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
  * @param props The properties of the effect
@@ -209,7 +209,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
  */
 export async function removeWithFadeTransition(
     tag: string | string[],
-    props: Omit<TickerFadeAlphaProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     return await removeWithDissolveTransition(tag, props, priority)

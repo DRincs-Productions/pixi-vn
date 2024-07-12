@@ -1,6 +1,6 @@
 import { Assets } from "pixi.js";
 import { CanvasSprite } from "../classes/canvas";
-import { TickerFadeAlpha, TickerRotate } from "../classes/ticker";
+import { FadeAlphaTicker, TickerRotate } from "../classes/ticker";
 import { Pause, Repeat } from "../constants";
 import { newLabel } from "../decorators";
 import { removeCanvasElement, setDialogue } from "../functions";
@@ -127,11 +127,11 @@ export const tickerTestLabel = newLabel("TickerTestLabel",
             // )
             GameWindowManager.addTickersSteps(alien2Tag,
                 [
-                    new TickerFadeAlpha({
+                    new FadeAlphaTicker({
                         duration: 1,
                         type: "hide",
                     }, 3000),
-                    new TickerFadeAlpha({
+                    new FadeAlphaTicker({
                         duration: 1,
                         type: "show"
                     }, 3000),

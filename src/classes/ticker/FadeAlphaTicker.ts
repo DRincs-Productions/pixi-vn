@@ -1,7 +1,7 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { GameWindowManager } from "../../managers";
-import { TickerFadeAlphaProps } from "../../types/ticker/TickerFadeAlphaProps";
+import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";
 
 /**
@@ -13,7 +13,7 @@ import TickerBase from "./TickerBase";
  * await bunny.load()
  * GameWindowManager.addCanvasElement("bunny", bunny);
  * // ...
- * const ticker = new TickerFadeAlpha({
+ * const ticker = new FadeAlphaTicker({
  *     duration: 4, // 4 seconds
  *     type: "hide",
  * }),
@@ -21,10 +21,10 @@ import TickerBase from "./TickerBase";
  * ```
  */
 @tickerDecorator()
-export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
+export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     override fn(
         ticker: Ticker,
-        args: TickerFadeAlphaProps,
+        args: FadeAlphaTickerProps,
         tags: string[],
         tickerId: string
     ): void {
