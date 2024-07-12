@@ -1,6 +1,6 @@
 import { TickerProgrationType } from "../../interface"
 
-export type TickerMoveProps = {
+export type MoveTickerProps = {
     /**
      * The speed of the movement in pixels per second
      * @default 1

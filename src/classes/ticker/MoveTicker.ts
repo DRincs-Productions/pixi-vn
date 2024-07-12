@@ -2,7 +2,7 @@ import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { GameWindowManager } from "../../managers";
-import { TickerMoveProps } from "../../types/ticker";
+import { MoveTickerProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
 /**
@@ -12,17 +12,17 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * GameWindowManager.addCanvasElement("alien", alien);
- * const ticker = new TickerMove({
+ * const ticker = new MoveTicker({
  *    speed: 0.1,
  *    destination: { x: 100, y: 100 },
  * }),
  * ```
  */
 @tickerDecorator()
-export default class TickerMove extends TickerBase<TickerMoveProps> {
+export default class MoveTicker extends TickerBase<MoveTickerProps> {
     override fn(
         ticker: Ticker,
-        args: TickerMoveProps,
+        args: MoveTickerProps,
         tags: string[],
         tickerId: string
     ): void {

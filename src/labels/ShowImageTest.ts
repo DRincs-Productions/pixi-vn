@@ -1,6 +1,6 @@
 import { ChoiceMenuOption } from "../classes"
 import { CanvasImage } from "../classes/canvas"
-import { FadeAlphaTicker, TickerMove, TickerRotate, TickerZoom } from "../classes/ticker"
+import { FadeAlphaTicker, MoveTicker, TickerRotate, TickerZoom } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
@@ -198,21 +198,21 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
                 " - Helmlok will move to the right with a speed of 20 and a linear speed progression of -0.2, and then move to the left with a speed of 0.1 and a linear speed progression of 0.05." +
                 " - Skully will move to { x: 500, y: 500 } with a speed of 0.5, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 0.5."
         })
-        GameWindowManager.addTicker("eggHead", new TickerMove({
+        GameWindowManager.addTicker("eggHead", new MoveTicker({
             destination: { x: 500, y: 100 },
             speed: 24,
         }))
-        GameWindowManager.addTicker("flowerTop", new TickerMove({
+        GameWindowManager.addTicker("flowerTop", new MoveTicker({
             destination: { x: 500, y: 300 },
             speed: 18,
         }))
         GameWindowManager.addTickersSteps("helmlok", [
-            new TickerMove({
+            new MoveTicker({
                 destination: { x: 100, y: 500 },
                 speed: 1200,
                 speedProgression: { type: "linear", amt: -12, limit: 60 }
             }),
-            new TickerMove({
+            new MoveTicker({
                 destination: { x: 1700, y: 500 },
                 speed: 6,
                 speedProgression: { type: "linear", amt: 3 }
@@ -220,12 +220,12 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
             Repeat,
         ])
         GameWindowManager.addTickersSteps("skully", [
-            new TickerMove({
+            new MoveTicker({
                 destination: { x: 500, y: 500 },
                 speed: 60,
             }),
             Pause(0.5),
-            new TickerMove({
+            new MoveTicker({
                 destination: { x: 100, y: 100 },
                 speed: 60,
             }),
