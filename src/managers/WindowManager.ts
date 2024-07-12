@@ -402,7 +402,7 @@ export default class GameWindowManager {
         GameWindowManager.app.ticker.add(tickerData.fn, undefined, tickerData.priority)
     }
     /**
-     * Run a sequence of tickers. If exists a ticker with the same tag, it will be removed.
+     * Run a sequence of tickers. If exists a ticker steps with the same tag, it will be removed.
      * @param tag The tag of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
      * @param currentStepNumber The current step number. It is used to continue the sequence of tickers.

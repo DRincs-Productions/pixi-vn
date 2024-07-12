@@ -134,6 +134,13 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
 
 const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
     () => {
+        setDialogue({
+            character: juliette, text: "Here's what's going to happen:" +
+                " - Egg Head will rotate with a anchor set to 0." +
+                " - Flower Top will rotate with a anchor set to 0.5 and a exponential speed progression." +
+                " - Helmlok will rotate with a anchor set to 0.5, rotate 2 times, move to the right, rotate 5 times, and repeat." +
+                " - Skully will rotate with a anchor set to 1, rotate 3 times, wait for 0.5 seconds, rotate 7 times."
+        })
         let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
             eggHead.anchor.set(0);
@@ -183,6 +190,13 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
 
 const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
     () => {
+        setDialogue({
+            character: juliette, text: "Here's what's going to happen:" +
+                " - Egg Head will move to { x: 500, y: 100 } with a speed of 0.4." +
+                " - Flower Top will move to { x: 500, y: 300 } with a speed of 0.3." +
+                " - Helmlok will move to the right with a speed of 20 and a linear speed progression of -0.2, and then move to the left with a speed of 0.1 and a linear speed progression of 0.05." +
+                " - Skully will move to { x: 500, y: 500 } with a speed of 0.5, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 0.5."
+        })
         GameWindowManager.addTicker("eggHead", new TickerMove({
             destination: { x: 500, y: 100 },
             speed: 0.4,
@@ -194,12 +208,13 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
         GameWindowManager.addTickersSteps("helmlok", [
             new TickerMove({
                 destination: { x: 100, y: 500 },
-                speed: 0.5,
+                speed: 20,
+                speedProgression: { type: "linear", amt: -0.2, limit: 1 }
             }),
             new TickerMove({
                 destination: { x: 1700, y: 500 },
                 speed: 0.1,
-                speedProgression: { type: "linear", amt: 0.05, limit: 0.7 }
+                speedProgression: { type: "linear", amt: 0.05 }
             }),
             Repeat,
         ])
