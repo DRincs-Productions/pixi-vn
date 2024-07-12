@@ -1,6 +1,7 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
 import { CanvasBase, CanvasImage } from '../classes/canvas';
 import { TickerFadeAlpha } from '../classes/ticker';
+import { Pause } from '../constants';
 import { GameWindowManager } from '../managers';
 import { TickerFadeAlphaProps } from '../types/ticker';
 import { getTexture } from './TextureUtility';
@@ -157,17 +158,42 @@ export async function removeWithDissolveTransition(
 export async function showWithFadeTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<TickerFadeAlphaProps, "type" | "tagToRemoveAfter" | "startOnlyIfHaveTexture"> = { duration: 1 },
+    props: Omit<TickerFadeAlphaProps, "type" | "tagToRemoveAfter" | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     if (!GameWindowManager.getCanvasElement(tag)) {
         return showWithDissolveTransition(tag, image, props, priority)
     }
 
-    removeWithFadeTransition(tag, props, priority)
-    setTimeout(() => {
-        showWithFadeTransition(tag, image, props, priority)
-    }, (props.duration || 1) * 1000)
+    let specialTag = tag + "_temp_disolve"
+    GameWindowManager.editTagCanvasElement(tag, specialTag)
+
+    let canvasElement: CanvasBase<any>
+    if (typeof image === "string") {
+        canvasElement = addImage(tag, image)
+    }
+    else {
+        canvasElement = image
+        GameWindowManager.addCanvasElement(tag, canvasElement)
+    }
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+    canvasElement.alpha = 0
+
+    GameWindowManager.addTickersSteps(specialTag, [
+        new TickerFadeAlpha({
+            ...props,
+            type: "hide",
+        }),
+    ])
+    GameWindowManager.addTickersSteps(tag, [
+        Pause(props.duration || 1),
+        new TickerFadeAlpha({
+            ...props,
+            type: "show",
+        })
+    ])
 }
 
 /**

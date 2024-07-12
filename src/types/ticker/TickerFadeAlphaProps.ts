@@ -1,6 +1,6 @@
 export type TickerFadeAlphaProps = {
     /**
-     * The duration of the fade, in seconds.
+     * The duration of the fade, in seconds. It is used to calculate the speed of the fade
      * @default 1
      */
     duration?: number
