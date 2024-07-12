@@ -1,5 +1,5 @@
 import { TextOptions } from "pixi.js";
-import { CanvasEventNamesType } from "../../types/CanvasEventNamesType";
+import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import ICanvasBaseMemory from "./ICanvasBaseMemory";
 

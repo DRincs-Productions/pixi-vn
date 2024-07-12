@@ -21,24 +21,19 @@ import TickerBase from "./TickerBase";
  */
 @tickerDecorator()
 export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
-    /**
-     * The method that will be called every frame to fade the alpha of the canvas element of the canvas.
-     * @param delta The delta time
-     * @param args The arguments that are passed to the ticker
-     * @param tags The tags of the canvas element that are connected to this ticker
-     */
     override fn(
-        t: Ticker,
+        ticker: Ticker,
         args: TickerFadeAlphaProps,
-        tags: string[]
+        tags: string[],
+        tickerId: string
     ): void {
         let type = args.type === undefined ? "hide" : args.type
         let duration = args.duration === undefined ? 1 : args.duration
         let speed = 1 / (duration * 60)
         let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
-        let removeElementAfter = args.tagToRemoveAfter || []
-        if (typeof removeElementAfter === "string") {
-            removeElementAfter = [removeElementAfter]
+        let tagToRemoveAfter = args.tagToRemoveAfter || []
+        if (typeof tagToRemoveAfter === "string") {
+            tagToRemoveAfter = [tagToRemoveAfter]
         }
         if (type === "hide" && limit < 0) {
             limit = 0
@@ -60,15 +55,14 @@ export default class TickerFadeAlpha extends TickerBase<TickerFadeAlphaProps> {
                 let element = GameWindowManager.getCanvasElement(tag)
                 if (element && element instanceof Container) {
                     if (type === "show" && element.alpha < limit) {
-                        element.alpha += speed * t.deltaTime
+                        element.alpha += speed * ticker.deltaTime
                     }
                     else if (type === "hide" && element.alpha > limit) {
-                        element.alpha -= speed * t.deltaTime
+                        element.alpha -= speed * ticker.deltaTime
                     }
                     else {
                         element.alpha = limit
-                        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tag, this)
-                        GameWindowManager.removeCanvasElement(removeElementAfter)
+                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

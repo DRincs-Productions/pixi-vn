@@ -2,7 +2,7 @@ import { TickerProgrationType } from "../../interface"
 
 export type TickerMoveProps = {
     /**
-     * The speed of the movement
+     * The speed of the movement in pixels per second
      * @default 0.1
      */
     speed?: number
@@ -17,6 +17,11 @@ export type TickerMoveProps = {
      * The progression of the speed
      */
     speedProgression?: TickerProgrationType
+    /**
+     * The tag to remove after the fade is done
+     * @default []
+     */
+    tagToRemoveAfter?: string[] | string
     /**
      * If true, the rotation only starts if the canvas element have a texture
      */

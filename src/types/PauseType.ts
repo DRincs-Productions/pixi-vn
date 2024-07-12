@@ -1,11 +1,10 @@
-export const PauseValueType = "pause"
 export type PauseType = {
-    type: typeof PauseValueType,
+    /**
+     * The type of the value
+     */
+    type: "pause",
+    /**
+     * Duration in seconds
+     */
     duration: number,
-}
-export function Pause(duration: number): PauseType {
-    return {
-        type: PauseValueType,
-        duration: duration,
-    }
 }

@@ -3,18 +3,22 @@ import { TickerArgsType } from "../classes/ticker/TickerBase";
 import { TickerIdType } from "../types/TickerIdType";
 
 /**
- * IClassWithArgsHistory is a class that contains the name of a class and the arguments that were used to create it.
+ * TickerHistory is a class that contains the name of a class and the arguments that were used to create it.
  */
-export interface IClassWithArgsHistory<TArgs extends TickerArgsType> {
+export default interface TickerHistory<TArgs extends TickerArgsType> {
     fn: TickerCallback<any>,
     className: TickerIdType,
     args: TArgs
     canvasElementTags: string[],
     priority?: UPDATE_PRIORITY,
     duration?: number
+    /**
+     * If this ticker was created by steps
+     */
+    createdByTicketStepsId?: string
 }
 
-export interface IClassWithArgsHistoryForExport<TArgs extends TickerArgsType> {
+export interface TickerHistoryForExport<TArgs extends TickerArgsType> {
     className: TickerIdType,
     args: TArgs
     canvasElementTags: string[],

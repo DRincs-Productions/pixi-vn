@@ -19,7 +19,7 @@ export default function tickerDecorator(name?: TickerIdType) {
             name = target.name
         }
         if (registeredTickers[name]) {
-            console.warn(`[Pixi'VN] Ticker ${name} already exists, it will be overwritten`)
+            console.info(`[Pixi'VN] Ticker ${name} already exists, it will be overwritten`)
         }
         registeredTickers[name] = target
     }
@@ -27,8 +27,11 @@ export default function tickerDecorator(name?: TickerIdType) {
 
 /**
  * Get a ticker instance by the class name.
- * @param tickerName The name of the class.
- * @returns The ticker instance.
+ * @param tickerName The name of the ticker class.
+ * @param args The arguments that you want to pass to the ticker.
+ * @param duration The duration of the ticker. If is undefined, the ticker will be called every frame.
+ * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
+ * @returns The instance of the ticker
  */
 export function geTickerInstanceByClassName<TArgs extends TickerArgsType>(tickerName: TickerIdType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
     try {

@@ -1,5 +1,5 @@
 import { DialogueBaseModel } from "../classes"
-import { HistoryChoiceMenuOption } from "../classes/ChoiceMenuOption"
+import { HistoryChoiceMenuOption } from "../types"
 
 export default interface DialogueHistory<T extends DialogueBaseModel = DialogueBaseModel> {
     /**

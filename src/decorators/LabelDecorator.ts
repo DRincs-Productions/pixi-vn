@@ -14,7 +14,7 @@ export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
  */
 export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), onStepRun?: () => void | Promise<void>): Label<T> {
     if (registeredLabels[id]) {
-        console.warn(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
+        console.info(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
     }
     let label = new Label<T>(id, steps, onStepRun)
     registeredLabels[id] = label

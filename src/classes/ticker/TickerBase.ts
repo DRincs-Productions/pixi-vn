@@ -1,9 +1,13 @@
 import { Ticker, UPDATE_PRIORITY } from "pixi.js"
 import { tickerDecorator } from "../../decorators"
 import ITicker from "../../interface/ITicker"
+import { GameWindowManager } from "../../managers"
 import { StorageElementType } from "../../types/StorageElementType"
 
-export type TickerArgsType = { [id: string]: StorageElementType }
+export type TickerArgsType = { [id: string]: StorageElementType } | {
+    tagToRemoveAfter?: string[] | string,
+    [id: string]: StorageElementType
+}[]
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.
@@ -16,11 +20,12 @@ export type TickerArgsType = { [id: string]: StorageElementType }
  * \@tickerDecorator() // this is equivalent to tickerDecorator("TickerRotate")
  * export class TickerRotate extends TickerBase<{ speed?: number }> {
  *     override fn(
- *         t: Ticker,
- *         args: {
+ *         t: Ticker, // the ticker that is calling this method
+ *         args: { // the arguments that you passed when you added the ticker
  *             speed?: number,
  *         },
- *         tags: string[]
+ *         tags: string[], // the tags of the canvas elements that are connected to this ticker
+ *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the GameWindowManager.currentTickers
  *     ): void {
  *         let speed = args.speed === undefined ? 0.1 : args.speed
  *         tags.forEach((tag) => {
@@ -39,8 +44,8 @@ export type TickerArgsType = { [id: string]: StorageElementType }
 export default class TickerBase<TArgs extends TickerArgsType> implements ITicker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
-     * @param duration The duration of the ticker. If is undefined, the ticker will be called every frame.
-     * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
+     * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
+     * @param priority The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
      */
     constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
         this.args = args
@@ -53,9 +58,10 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use GameWindowManager.addCanvasElement() to get the canvas element of the canvas, and edit them.
-     * @param t The ticker that is calling this method
-     * @param args The arguments that you passed when you added the ticker
-     * @param tags The tags of the canvas elements that are connected to this ticker
+     * @param _ticker The ticker that is calling this method
+     * @param _args The arguments that you passed when you added the ticker
+     * @param _tags The tags of the canvas elements that are connected to this ticker
+     * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link GameWindowManager.currentTickers}
      */
-    fn(_t: Ticker, _args: TArgs, _tags: string | string[]): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
+    fn(_ticker: Ticker, _args: TArgs, _tags: string | string[], _tickerId: string): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
 }

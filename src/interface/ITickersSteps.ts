@@ -9,9 +9,9 @@ export interface ITickersStep<TArgs extends TickerArgsType> extends ITicker<TArg
      */
     ticker: string,
     /**
-     * Duration in milliseconds
+     * Duration in seconds. If is undefined, the step will end only when the animation is finished.
      */
-    duration: number,
+    duration?: number,
 }
 
 /**

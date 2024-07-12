@@ -1,6 +1,6 @@
 import { CanvasEvent } from "../classes"
 import CanvasBase from "../classes/canvas/CanvasBase"
-import { CanvasEventNamesType } from "../types/CanvasEventNamesType"
+import { CanvasEventNamesType } from "../types"
 import { EventIdType } from "../types/EventIdType"
 
 /**
@@ -20,7 +20,7 @@ export default function eventDecorator(name?: EventIdType) {
             name = target.name
         }
         if (registeredEvents[name]) {
-            console.warn(`[Pixi'VN] Event ${name} already exists, it will be overwritten`)
+            console.info(`[Pixi'VN] Event ${name} already exists, it will be overwritten`)
         }
         registeredEvents[name] = target
     }

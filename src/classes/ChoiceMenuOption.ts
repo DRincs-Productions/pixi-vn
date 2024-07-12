@@ -96,20 +96,3 @@ export type IStoratedChoiceMenuOption = {
     type: CloseType
 }
 
-/**
- * HistoryChoiceMenuOption is a type that contains the history information of a choice menu option.
- */
-export type HistoryChoiceMenuOption = {
-    /**
-     * Text to be displayed in the menu
-     */
-    text: string
-    /**
-     * Method used to open the label, or close the menu.
-     */
-    type: CloseType | LabelRunModeType
-    /**
-     * This choice is a response
-     */
-    isResponse: boolean
-}
