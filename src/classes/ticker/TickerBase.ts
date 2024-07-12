@@ -17,8 +17,8 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  * In Ren'Py is a transform.
  * @example
  * ```typescript
- * \@tickerDecorator() // this is equivalent to tickerDecorator("TickerRotate")
- * export class TickerRotate extends TickerBase<{ speed?: number }> {
+ * \@tickerDecorator() // this is equivalent to tickerDecorator("RotateTicker")
+ * export class RotateTicker extends TickerBase<{ speed?: number }> {
  *     override fn(
  *         t: Ticker, // the ticker that is calling this method
  *         args: { // the arguments that you passed when you added the ticker

@@ -358,7 +358,7 @@ export default class GameWindowManager {
      * @returns 
      * @example
      * ```typescript
-     * GameWindowManager.addTicker("alien", new TickerRotate({ speed: 0.2 }))
+     * GameWindowManager.addTicker("alien", new RotateTicker({ speed: 0.2 }))
      * ```
      */
     static addTicker<TArgs extends TickerArgsType>(canvasElementTag: string | string[], ticker: TickerBase<TArgs>) {
@@ -411,9 +411,9 @@ export default class GameWindowManager {
      * @example
      * ```typescript
      * GameWindowManager.addTickersSteps("alien", [
-     *     new TickerRotate({ speed: 0.1, clockwise: true }, 2), // 2 seconds
+     *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
      *     Pause(1), // 1 second
-     *     new TickerRotate({ speed: 0.2, clockwise: false }, 2),
+     *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
      *     Repeat,
      * ])
      * ```
@@ -535,7 +535,7 @@ export default class GameWindowManager {
      * @param ticker The ticker class to be removed.
      * @example
      * ```typescript
-     * GameWindowManager.removeAssociationBetweenTickerCanvasElement("alien", TickerRotate)
+     * GameWindowManager.removeAssociationBetweenTickerCanvasElement("alien", RotateTicker)
      * ```
      */
     public static removeAssociationBetweenTickerCanvasElement(tags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string) {

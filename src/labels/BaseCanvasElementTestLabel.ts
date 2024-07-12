@@ -1,6 +1,6 @@
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 import { CanvasContainer, CanvasSprite, CanvasText } from "../classes/canvas";
-import { TickerRotate } from "../classes/ticker";
+import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
 import { clearDialogue, removeCanvasElement } from "../functions";
 import { GameWindowManager } from "../managers";
@@ -34,7 +34,7 @@ export const baseCanvasElementTestLabel = newLabel("BaseCanvasElementTestLabel",
             container.pivot.x = container.width / 2;
             container.pivot.y = container.height / 2;
 
-            GameWindowManager.addTicker("container", new TickerRotate({ speed: 0.01 }));
+            GameWindowManager.addTicker("container", new RotateTicker({ speed: 0.01 }));
         },
         async () => {
             removeCanvasElement("container");

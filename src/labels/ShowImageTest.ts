@@ -1,6 +1,6 @@
 import { ChoiceMenuOption } from "../classes"
 import { CanvasImage } from "../classes/canvas"
-import { FadeAlphaTicker, MoveTicker, TickerRotate, TickerZoom } from "../classes/ticker"
+import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
@@ -154,21 +154,21 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
         let skully = GameWindowManager.getCanvasElement<CanvasImage>("skully")
         if (skully)
             skully.anchor.set(1);
-        GameWindowManager.addTicker("eggHead", new TickerRotate({
+        GameWindowManager.addTicker("eggHead", new RotateTicker({
             speed: 6,
             clockwise: true,
         }))
-        GameWindowManager.addTicker("flowerTop", new TickerRotate({
+        GameWindowManager.addTicker("flowerTop", new RotateTicker({
             speed: 6,
             clockwise: false,
             speedProgression: { type: "exponential", percentage: 0.01, limit: 300 }
         }))
         GameWindowManager.addTickersSteps("helmlok", [
-            new TickerRotate({
+            new RotateTicker({
                 speed: 6,
                 clockwise: true,
             }, 2),
-            new TickerRotate({
+            new RotateTicker({
                 speed: 100,
                 clockwise: false,
                 speedProgression: { type: "exponential", percentage: -0.05 }
@@ -176,12 +176,12 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
             Repeat,
         ])
         GameWindowManager.addTickersSteps("skully", [
-            new TickerRotate({
+            new RotateTicker({
                 speed: 6,
                 clockwise: true,
             }, 3),
             Pause(0.5),
-            new TickerRotate({
+            new RotateTicker({
                 speed: 6,
                 clockwise: false,
             }, 7),
@@ -248,35 +248,35 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
         let helmlok = GameWindowManager.getCanvasElement<CanvasImage>("helmlok")
         if (helmlok)
             helmlok.anchor.set(0.5);
-        GameWindowManager.addTicker("eggHead", new TickerZoom({
+        GameWindowManager.addTicker("eggHead", new ZoomTicker({
             speed: 3,
             limit: -0.5,
             type: "unzoom"
         }))
-        GameWindowManager.addTicker("flowerTop", new TickerZoom({
+        GameWindowManager.addTicker("flowerTop", new ZoomTicker({
             speed: 3,
             limit: 2,
         }))
         GameWindowManager.addTickersSteps("helmlok", [
-            new TickerZoom({
+            new ZoomTicker({
                 speed: 3,
                 limit: -1,
                 type: "unzoom"
             }),
-            new TickerZoom({
+            new ZoomTicker({
                 speed: 3,
                 limit: 1,
             }),
             Repeat,
         ])
         GameWindowManager.addTickersSteps("skully", [
-            new TickerZoom({
+            new ZoomTicker({
                 speed: 0.1,
                 limit: 5,
                 speedProgression: { type: "exponential", percentage: 0.02 }
             }),
             Pause(0.5),
-            new TickerZoom({
+            new ZoomTicker({
                 "type": "unzoom",
                 speed: 3,
                 limit: 1,

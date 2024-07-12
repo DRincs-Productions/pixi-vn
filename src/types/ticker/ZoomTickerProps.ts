@@ -1,6 +1,6 @@
 import { TickerProgrationType } from "../../interface"
 
-export type TickerZoomProps = {
+export type ZoomTickerProps = {
     /**
      * The speed of the zoom effect
      * @default 0.1

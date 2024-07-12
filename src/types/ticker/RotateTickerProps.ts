@@ -1,6 +1,6 @@
 import { TickerProgrationType } from "../../interface"
 
-export type TickerRotateProps = {
+export type RotateTickerProps = {
     /**
      * The speed of the rotation in pixels per second
      * @default 1

@@ -2,7 +2,7 @@ import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { GameWindowManager } from "../../managers";
-import { TickerRotateProps } from "../../types/ticker/TickerRotateProps";
+import { RotateTickerProps } from "../../types/ticker/RotateTickerProps";
 import TickerBase from "./TickerBase";
 
 /**
@@ -13,7 +13,7 @@ import TickerBase from "./TickerBase";
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
  * GameWindowManager.addCanvasElement("alien", alien);
- * const ticker = new TickerRotate({
+ * const ticker = new RotateTicker({
  *    speed: 0.1,
  *    clockwise: true,
  * }),
@@ -21,10 +21,10 @@ import TickerBase from "./TickerBase";
  * ```
  */
 @tickerDecorator()
-export default class TickerRotate extends TickerBase<TickerRotateProps> {
+export default class RotateTicker extends TickerBase<RotateTickerProps> {
     override fn(
         ticker: Ticker,
-        args: TickerRotateProps,
+        args: RotateTickerProps,
         tags: string[],
         tickerId: string
     ): void {

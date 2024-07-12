@@ -2,7 +2,7 @@ import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { GameWindowManager } from "../../managers";
-import { TickerZoomProps } from "../../types/ticker";
+import { ZoomTickerProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
 /**
@@ -13,17 +13,17 @@ import TickerBase from "./TickerBase";
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
  * GameWindowManager.addCanvasElement("alien", alien);
- * const ticker = new TickerZoom({
+ * const ticker = new ZoomTicker({
  *    speed: 0.1,
  * }),
  * GameWindowManager.addTicker("alien", ticker)
  * ```
  */
 @tickerDecorator()
-export default class TickerZoom extends TickerBase<TickerZoomProps> {
+export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     override fn(
         ticker: Ticker,
-        args: TickerZoomProps,
+        args: ZoomTickerProps,
         tags: string[],
         tickerId: string
     ): void {
