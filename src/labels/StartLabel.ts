@@ -3,6 +3,7 @@ import { newLabel } from "../decorators";
 import { setChoiceMenuOptions, setDialogue } from "../functions";
 import { GameStepManager, GameWindowManager } from "../managers";
 import { juliette } from "./characters";
+import { markdownTest } from "./MarkdownTest";
 import { imagesAnimationsTest } from "./ShowImageTest";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
@@ -34,6 +35,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
             setDialogue({ character: juliette, text: "Which test would you like to start with?" })
             setChoiceMenuOptions([
                 new ChoiceMenuOption("Images and Animations", imagesAnimationsTest),
+                new ChoiceMenuOption("Markdown Test", markdownTest),
             ])
         },
         (props) => GameStepManager.jumpLabel(RESTART_TEST_LABEL, props),
