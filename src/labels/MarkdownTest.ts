@@ -1,6 +1,6 @@
 import { newLabel } from "../decorators"
 import { setDialogue } from "../functions"
-import { juliette } from "./characters"
+import { juliette } from "./TestConstant"
 
 const MARKDOWN_TEST_LABEL = "___pixi_vn_markdown_test___"
 export const markdownTest = newLabel(MARKDOWN_TEST_LABEL, [

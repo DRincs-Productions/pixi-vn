@@ -2,9 +2,9 @@ import { ChoiceMenuOption } from "../classes";
 import { newLabel } from "../decorators";
 import { setChoiceMenuOptions, setDialogue } from "../functions";
 import { GameStepManager, GameWindowManager } from "../managers";
-import { juliette } from "./characters";
 import { markdownTest } from "./MarkdownTest";
 import { imagesAnimationsTest } from "./ShowImageTest";
+import { juliette } from "./TestConstant";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
     [
