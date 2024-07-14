@@ -61,15 +61,19 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
  * new ChoiceMenuOptionClose("Return")
  * ```
  */
-export class ChoiceMenuOptionClose {
+export class ChoiceMenuOptionClose<T extends {} = {}> {
     /**
      * Label to be opened when the option is selected
      */
-    label: Label = newCloseLabel()
+    label: Label<T> = newCloseLabel()
     /**
      * Text to be displayed in the menu
      */
     text: string
+    /**
+     * If true, the current label will be closed
+     */
+    closeCurrentLabel: boolean
     /**
      * Type of the label to be opened
      */
@@ -80,19 +84,43 @@ export class ChoiceMenuOptionClose {
     props: StorageObjectType = {}
     /**
      * @param text Text to be displayed in the menu
+     * @param closeCurrentLabel If true, the current label will be closed. @default false
      */
-    constructor(text: string) {
+    constructor(text: string, closeCurrentLabel: boolean = false) {
         this.text = text
+        this.closeCurrentLabel = closeCurrentLabel
     }
 }
 
 export type IStoratedChoiceMenuOption = {
+    /**
+     * Text to be displayed in the menu
+     */
     text: string
+    /**
+     * Label Id to be opened when the option is selected
+     */
     label: LabelIdType
+    /**
+     * Type of the label to be opened
+     */
     type: LabelRunModeType
+    /**
+     * Properties to be passed to the label
+     */
     props: StorageObjectType
 } | {
+    /**
+     * Text to be displayed in the menu
+     */
     text: string
+    /**
+     * Type of the label to be opened
+     */
     type: CloseType
+    /**
+     * If true, the current label will be closed
+     */
+    closeCurrentLabel: boolean
 }
 

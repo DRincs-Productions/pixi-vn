@@ -86,7 +86,8 @@ export function setChoiceMenuOptions<T extends {} = {}>(options: ChoiceMenuOptio
         if (option instanceof ChoiceMenuOptionClose) {
             return {
                 text: option.text,
-                type: Close
+                type: Close,
+                closeCurrentLabel: option.closeCurrentLabel,
             }
         }
         return {
@@ -113,7 +114,8 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
                     text: option.text,
                     label: itemLabel,
                     type: Close,
-                    props: {}
+                    closeCurrentLabel: option.closeCurrentLabel,
+                    props: {},
                 })
                 return
             }

@@ -1,6 +1,6 @@
 import { diff } from "deep-diff"
 import { DialogueBaseModel, Label } from "../classes"
-import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
+import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import { getLabelById } from "../decorators/LabelDecorator"
 import { getDialogue } from "../functions"
@@ -308,8 +308,15 @@ export default class GameStepManager {
         }
         try {
             if (labelId === CLOSE_LABEL_ID) {
-                let closeLabel = newCloseLabel(choiseMade)
-                return GameStepManager.closeChoiceMenu(closeLabel, props)
+                let closeCurrentLabel = newCloseLabel<T>(choiseMade)
+                let choice: ChoiceMenuOptionClose<T> = {
+                    label: closeCurrentLabel,
+                    text: "",
+                    closeCurrentLabel: false,
+                    type: "close",
+                    props: {},
+                }
+                return GameStepManager.closeChoiceMenu(choice, props)
             }
             let tempLabel = getLabelById<Label<T>>(labelId)
             if (!tempLabel) {
@@ -359,8 +366,15 @@ export default class GameStepManager {
         }
         try {
             if (labelId === CLOSE_LABEL_ID) {
-                let closeLabel = newCloseLabel(choiseMade)
-                return GameStepManager.closeChoiceMenu(closeLabel, props)
+                let closeCurrentLabel = newCloseLabel<T>(choiseMade)
+                let choice: ChoiceMenuOptionClose<T> = {
+                    label: closeCurrentLabel,
+                    text: "",
+                    closeCurrentLabel: false,
+                    type: "close",
+                    props: {},
+                }
+                return GameStepManager.closeChoiceMenu<T>(choice, props)
             }
             let tempLabel = getLabelById<Label<T>>(labelId)
             if (!tempLabel) {
@@ -376,7 +390,8 @@ export default class GameStepManager {
     }
     /**
      * When the player is in a choice menu, can use this function to exit to the choice menu.
-     * @param props The props to pass to the step.
+     * @param choice
+     * @param props
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
@@ -387,10 +402,14 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async closeChoiceMenu<T extends {}>(label: Label<T>, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public static async closeChoiceMenu<T extends {} = {}>(choice: ChoiceMenuOptionClose<T>, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+        let label: Label<T> = choice.label
         let choiseMade: number | undefined = undefined
         if (typeof label.choiseIndex === "number") {
             choiseMade = label.choiseIndex
+        }
+        if (choice.closeCurrentLabel) {
+            GameStepManager.closeCurrentLabel()
         }
         return GameStepManager.runNextStep(props, choiseMade)
     }

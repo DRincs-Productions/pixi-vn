@@ -1,4 +1,4 @@
-import { ChoiceMenuOption } from "../classes"
+import { ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes"
 import { CanvasImage } from "../classes/canvas"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
@@ -35,6 +35,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Rotate", imagesRotateTest),
             new ChoiceMenuOption("Move", imagesMoveTest),
             new ChoiceMenuOption("Zoom", imagesZoomTest),
+            new ChoiceMenuOptionClose("Cancel", true),
         ])
     },
     (props) => GameStepManager.jumpLabel(IMAGE_ANIMAIONS_TEST_LABEL, props),
