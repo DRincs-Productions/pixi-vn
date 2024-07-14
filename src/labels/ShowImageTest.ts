@@ -43,11 +43,11 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
 const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
     () => {
         setDialogue({
-            character: juliette, text: "Here's what's going to happen:" +
-                " - Egg Head will disappear with a dissolve effect. If you go next, Egg Head reappears with a dissolve effect without stopping the dissolve effect" +
-                " - Egg Head will appear instead of Flower Top." +
-                " - Helmlok will disappear with a fade effect and reappear with a fade effect, and repeat." +
-                " - Skully will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect."
+            character: juliette, text: `Here's what's going to happen:
+- Egg Head will disappear with a dissolve effect. If you go next, Egg Head reappears with a dissolve effect without stopping the dissolve effect
+- Egg Head will appear instead of Flower Top.
+- Helmlok will disappear with a fade effect and reappear with a fade effect, and repeat.
+- Skully will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
         })
         removeWithDissolveTransition(["eggHead"], { duration: 2 })
         let eggHead = new CanvasImage({ x: 300, y: 100 }, "https://pixijs.com/assets/eggHead.png")
@@ -88,11 +88,11 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
 const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
     () => {
         setDialogue({
-            character: juliette, text: "Here's what's going to happen:" +
-                " - Egg Head will disappear with a dissolve effect. If you go next, Egg Head reappears with a dissolve effect with stopping the dissolve effect" +
-                " - Egg Head will appear instead of Flower Top." +
-                " - Helmlok will disappear with a fade effect and reappear with a fade effect, and repeat." +
-                " - Skully will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect."
+            character: juliette, text: `Here's what's going to happen:
+- Egg Head will disappear with a dissolve effect. If you go next, Egg Head reappears with a dissolve effect with stopping the dissolve effect
+- Egg Head will appear instead of Flower Top.
+- Helmlok will disappear with a fade effect and reappear with a fade effect, and repeat.
+- Skully will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
         })
         removeWithFadeTransition(["eggHead"], { duration: 2 })
         let eggHead = new CanvasImage({ x: 300, y: 100 }, "https://pixijs.com/assets/eggHead.png")
@@ -136,11 +136,11 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
 const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
     () => {
         setDialogue({
-            character: juliette, text: "Here's what's going to happen:" +
-                " - Egg Head will rotate with a anchor set to 0." +
-                " - Flower Top will rotate with a anchor set to 0.5 and a exponential speed progression." +
-                " - Helmlok will rotate with a anchor set to 0.5, rotate 2 times, move to the right, rotate 5 times, and repeat." +
-                " - Skully will rotate with a anchor set to 1, rotate 3 times, wait for 0.5 seconds, rotate 7 times."
+            character: juliette, text: `Here's what's going to happen:
+- Egg Head will rotate with a anchor set to 0.
+- Flower Top will rotate with a anchor set to 0.5 and a exponential speed progression.
+- Helmlok will rotate with a anchor set to 0.5, rotate 2 times, move to the right, rotate 5 times, and repeat.
+- Skully will rotate with a anchor set to 1, rotate 3 times, wait for 0.5 seconds, rotate 7 times.`
         })
         let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
@@ -192,11 +192,11 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
 const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
     () => {
         setDialogue({
-            character: juliette, text: "Here's what's going to happen:" +
-                " - Egg Head will move to { x: 500, y: 100 } with a speed of 0.4." +
-                " - Flower Top will move to { x: 500, y: 300 } with a speed of 0.3." +
-                " - Helmlok will move to the right with a speed of 20 and a linear speed progression of -0.2, and then move to the left with a speed of 0.1 and a linear speed progression of 0.05." +
-                " - Skully will move to { x: 500, y: 500 } with a speed of 0.5, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 0.5."
+            character: juliette, text: `Here's what's going to happen:
+- Egg Head will move to { x: 500, y: 100 } with a speed of 0.4.
+- Flower Top will move to { x: 500, y: 300 } with a speed of 0.3.
+- Helmlok will move to the right with a speed of 20 and a linear speed progression of -0.2, and then move to the left with a speed of 0.1 and a linear speed progression of 0.05.
+- Skully will move to { x: 500, y: 500 } with a speed of 0.5, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 0.5.`
         })
         GameWindowManager.addTicker("eggHead", new MoveTicker({
             destination: { x: 500, y: 100 },
@@ -236,11 +236,11 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
 const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
     () => {
         setDialogue({
-            character: juliette, text: "Here's what's going to happen:" +
-                " - Egg Head will zoom out with a speed of 3 and a limit of -0.5." +
-                " - Flower Top will zoom in with a speed of 3 and a limit of 2." +
-                " - Helmlok will unzoom with a speed of 3 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat." +
-                " - Skully will zoom in with a speed of 0.1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1."
+            character: juliette, text: `Here's what's going to happen:
+- Egg Head will zoom out with a speed of 3 and a limit of -0.5.
+- Flower Top will zoom in with a speed of 3 and a limit of 2.
+- Helmlok will unzoom with a speed of 3 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
+- Skully will zoom in with a speed of 0.1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
         })
         let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
