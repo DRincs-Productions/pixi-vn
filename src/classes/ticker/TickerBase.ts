@@ -53,6 +53,7 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
         this.args = args
         this.duration = duration
         this.priority = priority
+        this.id = this.constructor.prototype.id
     }
     /**
      * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link geTickerInstanceById}

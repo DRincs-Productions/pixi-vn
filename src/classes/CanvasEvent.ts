@@ -21,6 +21,9 @@ import { EventIdType } from "../types/EventIdType";
  * ```
  */
 export default class CanvasEvent<C> {
+    constructor() {
+        this.id = this.constructor.prototype.id
+    }
     fn(_event: CanvasEventNamesType, _element: C) { throw new Error("[Pixi'VN] The method CanvasEvent.fn() must be overridden") }
     /**
      * Get the id of the event. This variable is used in the system to get the event by id, {@link getEventInstanceById}
