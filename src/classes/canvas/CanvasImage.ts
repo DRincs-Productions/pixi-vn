@@ -39,11 +39,12 @@ export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
         return {
             ...getMemorySprite(this),
             className: "CanvasImage",
-            textureImage: { image: this.imageLink },
+            imageLink: this.imageLink,
         }
     }
     override set memory(memory: ICanvasImageMemory) {
         setMemorySprite(this, memory)
+        this.imageLink = memory.imageLink
     }
     imageLink: string = ""
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {

@@ -5,4 +5,5 @@ import { ICanvasSpriteBaseMemory } from "./ICanvasSpriteMemory";
  */
 export default interface ICanvasImageMemory extends ICanvasSpriteBaseMemory {
     className: "CanvasImage",
+    imageLink: string,
 }
