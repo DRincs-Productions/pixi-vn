@@ -1,4 +1,4 @@
-import { ContainerChild, ContainerEvents, EventEmitter, Text } from "pixi.js";
+import { ContainerChild, ContainerEvents, EventEmitter, Text, TextOptions } from "pixi.js";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/EventDecorator";
 import { getTextStyle } from "../../functions/TextureUtility";
 import ICanvasTextMemory from "../../interface/canvas/ICanvasTextTextMemory";
@@ -7,6 +7,8 @@ import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
+
+export const CANVAS_TEXT_ID = "CanvasText"
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -19,6 +21,11 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * ```
  */
 export default class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
+    constructor(options?: TextOptions) {
+        super(options)
+        this.pixivnId = this.constructor.prototype.pixivnId
+    }
+    pixivnId: string = CANVAS_TEXT_ID
     get memory(): ICanvasTextMemory {
         return getMemoryText(this)
     }
@@ -86,7 +93,7 @@ export function getMemoryText<T extends CanvasText>(element: T | CanvasText): IC
     let temp = getMemoryContainer(element)
     return {
         ...temp,
-        className: "CanvasText",
+        pixivnId: element.pixivnId,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         text: element.text,
         resolution: element.resolution,

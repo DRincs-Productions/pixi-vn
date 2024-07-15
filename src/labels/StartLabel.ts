@@ -3,6 +3,7 @@ import { newLabel } from "../decorators";
 import { setChoiceMenuOptions, setDialogue } from "../functions";
 import { GameStepManager, GameWindowManager } from "../managers";
 import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
+import { customTickerCanvasElementTestLabel } from "./CustomTickerCanvasElementTestLabel";
 import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
 import { markdownTest } from "./MarkdownTest";
 import { juliette } from "./TestConstant";
@@ -37,6 +38,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
             setChoiceMenuOptions([
                 new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest),
                 new ChoiceMenuOption("Canvas Events Test Label", canvasEventsTestLabel),
+                new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel),
                 new ChoiceMenuOption("Markdown Test", markdownTest),
             ])
         },

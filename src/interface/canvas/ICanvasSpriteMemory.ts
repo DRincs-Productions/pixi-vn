@@ -13,5 +13,4 @@ export interface ICanvasSpriteBaseMemory extends SpriteOptions, ICanvasBaseMemor
  * Interface for the canvas sprite memory
  */
 export default interface ICanvasSpriteMemory extends ICanvasSpriteBaseMemory {
-    className: "CanvasSprite",
 }

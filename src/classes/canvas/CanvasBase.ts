@@ -1,5 +1,6 @@
 import { Container } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators";
+import { getCanvasElementInstanceById } from "../../decorators/CanvasElementDecorator";
 import { ICanvasBaseMemory } from "../../interface/canvas";
 
 /**
@@ -14,7 +15,7 @@ import { ICanvasBaseMemory } from "../../interface/canvas";
  * export class CanvasExample extends Container implements CanvasBase<ICanvasExampleMemory> {
  *     get memory(): ICanvasExampleMemory {
  *         return {
- *             className: "CanvasExample",
+ *             pixivnId: "CanvasExample",
  *             // ... other properties
  *         }
  *     }
@@ -33,4 +34,8 @@ export default class CanvasBase<T2 extends ICanvasBaseMemory> extends Container 
      * This method set the memory of the canvas element.
      */
     set memory(_value: T2) { throw new Error("[Pixi'VN] The method CanvasBase.memory must be overridden") }
+    /**
+     * Get the id of the canvas element. This variable is used in the system to get the canvas element by id, {@link getCanvasElementInstanceById}
+     */
+    pixivnId: string = "canvas_element_id_not_set"
 }

@@ -10,6 +10,8 @@ import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
+export const CANVAS_SPRITE_ID = "CanvasSprite"
+
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
  * but it has the ability to be saved and loaded by the Pixi'VN library.
@@ -30,6 +32,11 @@ import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
  * ```
  */
 export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
+    constructor(options?: SpriteOptions | Texture) {
+        super(options)
+        this.pixivnId = this.constructor.prototype.pixivnId
+    }
+    pixivnId: string = CANVAS_SPRITE_ID
     get memory(): Memory | ICanvasSpriteMemory {
         return getMemorySprite(this)
     }
@@ -103,7 +110,7 @@ export function getMemorySprite<T extends CanvasSprite<any>>(element: T | Canvas
     let temp = getMemoryContainer(element)
     return {
         ...temp,
-        className: "CanvasSprite",
+        pixivnId: element.pixivnId,
         textureImage: getTextureMemory((element as any).texture),
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,

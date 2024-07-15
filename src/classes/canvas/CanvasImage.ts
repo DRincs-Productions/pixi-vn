@@ -4,6 +4,8 @@ import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
+export const CANVAS_IMAGE_ID = "CanvasImage"
+
 /**
  * This class is a extension of the CanvasSprite class, it has the same properties and methods,
  * but it has some features that make texture management easier.
@@ -29,6 +31,7 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
  * ```
  */
 export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
+    pixivnId: string = CANVAS_IMAGE_ID
     constructor(options?: SpriteOptions | Texture | undefined, imageLink?: string) {
         super(options)
         if (imageLink) {
@@ -38,7 +41,7 @@ export default class CanvasImage extends CanvasSprite<ICanvasImageMemory> {
     override get memory(): ICanvasImageMemory {
         return {
             ...getMemorySprite(this),
-            className: "CanvasImage",
+            pixivnId: this.pixivnId,
             imageLink: this.imageLink,
         }
     }
