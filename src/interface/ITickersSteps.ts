@@ -1,9 +1,9 @@
+import { UPDATE_PRIORITY } from "pixi.js"
 import { TickerArgsType } from "../classes/ticker/TickerBase"
 import { PauseType } from "../types/PauseType"
 import { RepeatType } from "../types/RepeatType"
-import ITicker from "./ITicker"
 
-export interface ITickersStep<TArgs extends TickerArgsType> extends ITicker<TArgs> {
+export interface ITickersStep<TArgs extends TickerArgsType> {
     /**
      * Ticker class name
      */
@@ -12,6 +12,14 @@ export interface ITickersStep<TArgs extends TickerArgsType> extends ITicker<TArg
      * Duration in seconds. If is undefined, the step will end only when the animation is finished.
      */
     duration?: number,
+    /**
+     * Arguments to pass to the ticker
+     */
+    args: TArgs,
+    /**
+     * Priority of the ticker
+     */
+    priority?: UPDATE_PRIORITY
 }
 
 /**

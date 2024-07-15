@@ -128,8 +128,8 @@ export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element:
     }
     memory.roundPixels && (element.roundPixels = memory.roundPixels)
     for (let event in memory.onEvents) {
-        let className = memory.onEvents[event]
-        let instance = getEventTypeById(className)
+        let id = memory.onEvents[event]
+        let instance = getEventTypeById(id)
         if (instance) {
             element.onEvent(event, instance)
         }

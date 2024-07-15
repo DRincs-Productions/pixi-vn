@@ -1,8 +1,10 @@
 import { Ticker, UPDATE_PRIORITY } from "pixi.js"
 import { tickerDecorator } from "../../decorators"
+import { geTickerInstanceById } from "../../decorators/TickerDecorator"
 import ITicker from "../../interface/ITicker"
 import { GameWindowManager } from "../../managers"
 import { StorageElementType } from "../../types/StorageElementType"
+import { TickerIdType } from "../../types/TickerIdType"
 
 export type TickerArgsType = { [id: string]: StorageElementType } | {
     tagToRemoveAfter?: string[] | string,
@@ -52,6 +54,10 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
         this.duration = duration
         this.priority = priority
     }
+    /**
+     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link geTickerInstanceById}
+     */
+    id: TickerIdType = 'ticker_id_not_set'
     args: TArgs
     duration?: number
     priority?: UPDATE_PRIORITY

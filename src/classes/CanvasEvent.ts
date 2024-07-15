@@ -1,6 +1,7 @@
 import { eventDecorator } from "../decorators";
 import { getEventInstanceById } from "../decorators/EventDecorator";
 import { CanvasEventNamesType } from "../types";
+import { EventIdType } from "../types/EventIdType";
 
 /**
  * CanvasEvent is a class that is used to create a pixi event, and connect it to a canvas element, with on().
@@ -24,5 +25,5 @@ export default class CanvasEvent<C> {
     /**
      * Get the id of the event. This variable is used in the system to get the event by id, {@link getEventInstanceById}
      */
-    id: string = 'event_id_not_set'
+    id: EventIdType = 'event_id_not_set'
 }

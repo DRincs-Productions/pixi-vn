@@ -21,29 +21,30 @@ export default function tickerDecorator(name?: TickerIdType) {
         if (registeredTickers[name]) {
             console.info(`[Pixi'VN] Ticker ${name} already exists, it will be overwritten`)
         }
+        target.prototype.id = name
         registeredTickers[name] = target
     }
 }
 
 /**
- * Get a ticker instance by the class name.
- * @param tickerName The name of the ticker class.
+ * Get a ticker instance by the id.
+ * @param tickerId The id of the ticker.
  * @param args The arguments that you want to pass to the ticker.
  * @param duration The duration of the ticker. If is undefined, the ticker will be called every frame.
  * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
  * @returns The instance of the ticker
  */
-export function geTickerInstanceByClassName<TArgs extends TickerArgsType>(tickerName: TickerIdType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
+export function geTickerInstanceById<TArgs extends TickerArgsType>(tickerId: TickerIdType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
     try {
-        let ticker = registeredTickers[tickerName]
+        let ticker = registeredTickers[tickerId]
         if (!ticker) {
-            console.error(`[Pixi'VN] Ticker ${tickerName} not found`)
+            console.error(`[Pixi'VN] Ticker ${tickerId} not found`)
             return
         }
         return new ticker(args, duration, priority)
     }
     catch (e) {
-        console.error(`[Pixi'VN] Error while getting Ticker ${tickerName}`, e)
+        console.error(`[Pixi'VN] Error while getting Ticker ${tickerId}`, e)
         return
     }
 }

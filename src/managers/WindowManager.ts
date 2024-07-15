@@ -3,7 +3,7 @@ import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { Repeat } from "../constants";
-import { geTickerInstanceByClassName } from "../decorators/TickerDecorator";
+import { geTickerInstanceById } from "../decorators/TickerDecorator";
 import { exportCanvasElement, importCanvasElement } from "../functions/CanvasUtility";
 import { asciiArtLog } from "../functions/EasterEgg";
 import { createExportableElement } from "../functions/ExportUtility";
@@ -362,17 +362,17 @@ export default class GameWindowManager {
      * ```
      */
     static addTicker<TArgs extends TickerArgsType>(canvasElementTag: string | string[], ticker: TickerBase<TArgs>) {
-        let tickerName: TickerIdType = ticker.constructor.name
+        let tickerId: TickerIdType = ticker.id
         if (typeof canvasElementTag === "string") {
             canvasElementTag = [canvasElementTag]
         }
-        if (!geTickerInstanceByClassName<TArgs>(tickerName, ticker.args, ticker.duration, ticker.priority)) {
-            console.error(`[Pixi'VN] Ticker ${tickerName} not found`)
+        if (!geTickerInstanceById<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
+            console.error(`[Pixi'VN] Ticker ${tickerId} not found`)
             return
         }
         let tickerHistory: TickerHistory<TArgs> = {
             fn: () => { },
-            className: tickerName,
+            id: tickerId,
             args: createExportableElement(ticker.args),
             canvasElementTags: canvasElementTag,
             priority: ticker.priority,
@@ -388,7 +388,7 @@ export default class GameWindowManager {
                     GameWindowManager.removeTicker(id)
                 }
             }, ticker.duration * 1000);
-            GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerName, timeout.toString(), true)
+            GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerId, timeout.toString(), true)
         }
     }
     private static pushTicker<TArgs extends TickerArgsType>(id: string, tickerData: TickerHistory<TArgs>, ticker: TickerBase<TArgs>) {
@@ -433,9 +433,9 @@ export default class GameWindowManager {
                 if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
                     return step as PauseType
                 }
-                let tickerName = step.constructor.name
+                let tickerId = (step as ITicker<TArgs>).id
                 return {
-                    ticker: tickerName,
+                    ticker: tickerId,
                     args: createExportableElement((step as ITicker<TArgs>).args),
                     duration: step.duration,
                 }
@@ -473,15 +473,15 @@ export default class GameWindowManager {
             GameWindowManager.addTickerTimeoutInfo(tag, "steps", timeout.toString(), false)
             return
         }
-        let ticker = geTickerInstanceByClassName<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
+        let ticker = geTickerInstanceById<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
         if (!ticker) {
             console.error(`[Pixi'VN] Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
             return
         }
-        let tickerName: TickerIdType = ticker.constructor.name
+        let tickerName: TickerIdType = ticker.id
         let tickerHistory: TickerHistory<TArgs> = {
             fn: () => { },
-            className: tickerName,
+            id: tickerName,
             args: createExportableElement(ticker.args),
             canvasElementTags: [tag],
             priority: ticker.priority,
@@ -539,28 +539,28 @@ export default class GameWindowManager {
      * ```
      */
     public static removeAssociationBetweenTickerCanvasElement(tags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string) {
-        let tickerName: TickerIdType
+        let tickerId: TickerIdType
         if (typeof ticker === "string") {
-            tickerName = ticker
+            tickerId = ticker
         }
         else if (ticker instanceof TickerBase) {
-            tickerName = ticker.constructor.name
+            tickerId = ticker.id
         }
         else {
-            tickerName = ticker.name
+            tickerId = ticker.name
         }
         if (typeof tags === "string") {
             tags = [tags]
         }
         for (let id in GameWindowManager._currentTickers) {
             let ticker = GameWindowManager._currentTickers[id]
-            if (ticker.className === tickerName) {
+            if (ticker.id === tickerId) {
                 GameWindowManager._currentTickers[id].canvasElementTags = ticker.canvasElementTags.filter((e) => !tags.includes(e))
             }
         }
         for (let timeout in GameWindowManager._currentTickersTimeouts) {
             let TickerTimeout = GameWindowManager._currentTickersTimeouts[timeout]
-            if (TickerTimeout.ticker === tickerName && TickerTimeout.canBeDeletedBeforeEnd) {
+            if (TickerTimeout.ticker === tickerId && TickerTimeout.canBeDeletedBeforeEnd) {
                 GameWindowManager._currentTickersTimeouts[timeout].tags = TickerTimeout.tags.filter((t) => !tags.includes(t))
             }
         }
@@ -751,12 +751,12 @@ export default class GameWindowManager {
                 for (let id in currentTickers) {
                     let t = currentTickers[id]
                     let tags: string[] = t.canvasElementTags
-                    let ticker = geTickerInstanceByClassName(t.className, t.args, t.duration, t.priority)
+                    let ticker = geTickerInstanceById(t.id, t.args, t.duration, t.priority)
                     if (ticker) {
                         GameWindowManager.addTicker(tags, ticker)
                     }
                     else {
-                        console.error(`[Pixi'VN] Ticker ${t.className} not found`)
+                        console.error(`[Pixi'VN] Ticker ${t.id} not found`)
                     }
                 }
             }

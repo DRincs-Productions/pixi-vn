@@ -7,7 +7,7 @@ import { TickerIdType } from "../types/TickerIdType";
  */
 export default interface TickerHistory<TArgs extends TickerArgsType> {
     fn: TickerCallback<any>,
-    className: TickerIdType,
+    id: TickerIdType,
     args: TArgs
     canvasElementTags: string[],
     priority?: UPDATE_PRIORITY,
@@ -19,7 +19,7 @@ export default interface TickerHistory<TArgs extends TickerArgsType> {
 }
 
 export interface TickerHistoryForExport<TArgs extends TickerArgsType> {
-    className: TickerIdType,
+    id: TickerIdType,
     args: TArgs
     canvasElementTags: string[],
     priority?: UPDATE_PRIORITY,
