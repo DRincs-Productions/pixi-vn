@@ -1,5 +1,5 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text } from "pixi.js";
-import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
+import { getEventInstanceById, getEventTypeById } from "../../decorators/EventDecorator";
 import { getTextStyle } from "../../functions/TextureUtility";
 import ICanvasTextMemory from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types";
@@ -59,9 +59,9 @@ export default class CanvasText extends Text implements CanvasBase<ICanvasTextMe
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
-        let className = eventClass.name
-        let instance = getEventInstanceByClassName(className)
-        this._onEvents[event] = className
+        let id = eventClass.prototype.id
+        let instance = getEventInstanceById(id)
+        this._onEvents[event] = id
         if (instance) {
             super.on(event, () => {
                 (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
@@ -112,7 +112,7 @@ export function setMemoryText(element: CanvasText, memory: ICanvasTextMemory) {
     memory.roundPixels && (element.roundPixels = memory.roundPixels)
     for (let event in memory.onEvents) {
         let className = memory.onEvents[event]
-        let instance = getEventTypeByClassName(className)
+        let instance = getEventTypeById(className)
         if (instance) {
             element.onEvent(event as CanvasEventNamesType, instance)
         }

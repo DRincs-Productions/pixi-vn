@@ -1,5 +1,5 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
-import { getEventInstanceByClassName, getEventTypeByClassName } from "../../decorators/EventDecorator";
+import { getEventInstanceById, getEventTypeById } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasBaseMemory from "../../interface/canvas/ICanvasBaseMemory";
@@ -70,9 +70,9 @@ export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemo
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
-        let className = eventClass.name
-        let instance = getEventInstanceByClassName(className)
-        this._onEvents[event] = className
+        let id = eventClass.prototype.id
+        let instance = getEventInstanceById(id)
+        this._onEvents[event] = id
         if (instance) {
             super.on(event, () => {
                 (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
@@ -129,7 +129,7 @@ export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element:
     memory.roundPixels && (element.roundPixels = memory.roundPixels)
     for (let event in memory.onEvents) {
         let className = memory.onEvents[event]
-        let instance = getEventTypeByClassName(className)
+        let instance = getEventTypeById(className)
         if (instance) {
             element.onEvent(event, instance)
         }

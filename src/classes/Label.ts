@@ -1,3 +1,4 @@
+import { getLabelById } from "../decorators"
 import { checkIfStepsIsEqual } from "../functions/StepLabelUtility"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
@@ -43,7 +44,7 @@ export default class Label<T extends {} = {}> {
 
     private _id: LabelIdType
     /**
-     * Get the id of the label
+     * Get the id of the label. This variable is used in the system to get the label by id, {@link getLabelById}
      */
     public get id(): LabelIdType {
         return this._id

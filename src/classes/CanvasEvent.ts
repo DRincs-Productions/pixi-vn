@@ -1,4 +1,5 @@
 import { eventDecorator } from "../decorators";
+import { getEventInstanceById } from "../decorators/EventDecorator";
 import { CanvasEventNamesType } from "../types";
 
 /**
@@ -20,4 +21,8 @@ import { CanvasEventNamesType } from "../types";
  */
 export default class CanvasEvent<C> {
     fn(_event: CanvasEventNamesType, _element: C) { throw new Error("[Pixi'VN] The method CanvasEvent.fn() must be overridden") }
+    /**
+     * Get the id of the event. This variable is used in the system to get the event by id, {@link getEventInstanceById}
+     */
+    id: string = 'event_id_not_set'
 }
