@@ -15,7 +15,7 @@ import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
  * ```typescript
  * setDialogue("Hello World")
  * setDialogue({
- *       character: "characterId",
+ *       character: "character",
  *       text: "Hello World"
  * })
  * setDialogue(new DialogueBaseModel("Hello World", character))
@@ -26,23 +26,23 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
     text: string,
 } | string | TDialogue): void {
     let text = ''
-    let characterId: string | undefined = undefined
+    let character: string | undefined = undefined
     let dialogue: TDialogue | DialogueBaseModel
     if (typeof props === 'string') {
         text = props
-        dialogue = new DialogueBaseModel(text, characterId)
+        dialogue = new DialogueBaseModel(text, character)
     }
     else if (!(props instanceof DialogueBaseModel)) {
         text = props.text
         if (props.character) {
             if (typeof props.character === 'string') {
-                characterId = props.character
+                character = props.character
             }
             else {
-                characterId = props.character.id
+                character = props.character.id
             }
         }
-        dialogue = new DialogueBaseModel(text, characterId)
+        dialogue = new DialogueBaseModel(text, character)
     }
     else {
         dialogue = props

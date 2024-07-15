@@ -5,9 +5,10 @@ import { eventDecorator, newLabel } from "../decorators";
 import { clearDialogue, setDialogue } from "../functions";
 import { GameWindowManager } from "../managers";
 import { CanvasEventNamesType } from "../types";
+import { juliette } from "./TestConstant";
 
-@eventDecorator()
-export class EventTest extends CanvasEvent<CanvasSprite> {
+@eventDecorator("___pixi_vn_canvas_events_test_event1___")
+export class EventTest1 extends CanvasEvent<CanvasSprite> {
     override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
         if (event === 'pointerdown') {
             sprite.scale.x *= 1.25;
@@ -15,7 +16,7 @@ export class EventTest extends CanvasEvent<CanvasSprite> {
         }
     }
 }
-@eventDecorator()
+@eventDecorator("___pixi_vn_canvas_events_test_event2___")
 export class EventTest2 extends CanvasEvent<CanvasSprite> {
     textureButtonDown = Texture.from('https://pixijs.com/assets/button_down.png');
     textureButtonOver = Texture.from('https://pixijs.com/assets/button_over.png');
@@ -52,11 +53,17 @@ export class EventTest2 extends CanvasEvent<CanvasSprite> {
     }
 }
 
+const CANVAS_EVENTS_TEST_LABEL = "___pixi_vn_canvas_events_test___"
+
 /**
  * https://pixijs.com/examples/basic/tinting
  */
-export const eventsTestLabel = newLabel("EventsTestLabel",
+export const eventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
     [
+        () => setDialogue({
+            character: juliette,
+            text: "This is the test of clickable elements in a canvas."
+        }),
         async () => {
             // Load the bunny texture
             const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
@@ -76,7 +83,7 @@ export const eventsTestLabel = newLabel("EventsTestLabel",
             sprite.cursor = 'pointer';
 
             // Pointers normalize touch and mouse (good for mobile and desktop)
-            sprite.onEvent('pointerdown', EventTest);
+            sprite.onEvent('pointerdown', EventTest1);
 
             // Alternatively, use the mouse & touch events:
             // sprite.on('click', onClick); // mouse-only

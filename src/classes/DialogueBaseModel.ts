@@ -9,7 +9,7 @@ export type DialogueData = {
     /**
      * The id of the character that is speaking.
      */
-    characterId?: string
+    character?: string
     /**
      * Other parameters that can be stored in the dialogue.
      */
@@ -34,17 +34,17 @@ export default class DialogueBaseModel<TCharacter extends CharacterBaseModel = C
         if (typeof text === "string") {
             this.text = text
             if (typeof character === "string") {
-                this.characterId = character
+                this.character = character
             }
             else {
-                this.characterId = character?.id
+                this.character = character?.id
             }
             this.oltherParams = oltherParams
         }
         else {
             this.text = text.text
-            if (text.characterId) {
-                this.characterId = text.characterId
+            if (text.character) {
+                this.character = text.character
             }
             this.oltherParams = text.oltherParams || {}
         }
@@ -56,7 +56,7 @@ export default class DialogueBaseModel<TCharacter extends CharacterBaseModel = C
     /**
      * The id of the character that is speaking.
      */
-    characterId?: string
+    character?: string
     /**
      * Other parameters that can be stored in the dialogue.
      */
@@ -69,7 +69,7 @@ export default class DialogueBaseModel<TCharacter extends CharacterBaseModel = C
     export(): DialogueData {
         return {
             text: this.text,
-            characterId: this.characterId,
+            character: this.character,
             oltherParams: this.oltherParams
         }
     }
