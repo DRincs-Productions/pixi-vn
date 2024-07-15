@@ -2,10 +2,10 @@ import { Assets, Texture } from "pixi.js";
 import { CanvasEvent } from "../classes";
 import { CanvasSprite } from "../classes/canvas";
 import { eventDecorator, newLabel } from "../decorators";
-import { clearDialogue, setDialogue } from "../functions";
+import { setDialogue } from "../functions";
 import { GameWindowManager } from "../managers";
 import { CanvasEventNamesType } from "../types";
-import { juliette } from "./TestConstant";
+import { bunnyImage, bunnyName, juliette } from "./TestConstant";
 
 @eventDecorator("___pixi_vn_canvas_events_test_event1___")
 export class EventTest1 extends CanvasEvent<CanvasSprite> {
@@ -55,18 +55,20 @@ export class EventTest2 extends CanvasEvent<CanvasSprite> {
 
 const CANVAS_EVENTS_TEST_LABEL = "___pixi_vn_canvas_events_test___"
 
-/**
- * https://pixijs.com/examples/basic/tinting
- */
-export const eventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
+export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
     [
         () => setDialogue({
             character: juliette,
             text: "This is the test of clickable elements in a canvas."
         }),
         async () => {
+            setDialogue({
+                character: juliette,
+                text: `This is my friend, ${bunnyName}. It's small now, but if you try to click on it it will get bigger and bigger. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/click).)`
+            });
+
             // Load the bunny texture
-            const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+            const texture = await Assets.load(bunnyImage);
 
             // Create the bunny sprite
             const sprite = CanvasSprite.from(texture);
@@ -90,14 +92,13 @@ export const eventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             // sprite.on('tap', onClick); // touch-only
 
             GameWindowManager.addCanvasElement("bunny", sprite);
-
-            setDialogue("This is the test of clickable elements in a canvas. To make it possible to save the added events in a canvas element, use CanvasEvents.");
         },
-        () => setDialogue("To make the events in the canvas work. by default all elements in the gliaphic html interface are: pointerEvents = 'none'. to enable clicking on html elements, you will need to add the css pointerEvents = 'auto'"),
-        () => setDialogue("For performance reasons it is better to add the buttons in the html interface and not in the canvas."),
         async () => {
-            clearDialogue();
             GameWindowManager.clear();
+            setDialogue({
+                character: juliette,
+                text: `This is the test of buttons in a canvas. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/interactivity).)`
+            });
 
             // Load textures
             await Assets.load([

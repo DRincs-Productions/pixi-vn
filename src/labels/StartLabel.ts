@@ -2,6 +2,7 @@ import { ChoiceMenuOption } from "../classes";
 import { newLabel } from "../decorators";
 import { setChoiceMenuOptions, setDialogue } from "../functions";
 import { GameStepManager, GameWindowManager } from "../managers";
+import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
 import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
 import { markdownTest } from "./MarkdownTest";
 import { juliette } from "./TestConstant";
@@ -35,6 +36,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
             setDialogue({ character: juliette, text: "Which test would you like to start with?" })
             setChoiceMenuOptions([
                 new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest),
+                new ChoiceMenuOption("Canvas Events Test Label", canvasEventsTestLabel),
                 new ChoiceMenuOption("Markdown Test", markdownTest),
             ])
         },

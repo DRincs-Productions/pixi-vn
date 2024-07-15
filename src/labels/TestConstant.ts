@@ -18,3 +18,5 @@ export const helmlokImage = "https://pixijs.com/assets/helmlok.png"
 export const helmlokName = `<span style="color:blue">Helmlok</span>`
 export const skullyImage = "https://pixijs.com/assets/skully.png"
 export const skullyName = `<span style="color:red">Skully</span>`
+export const bunnyImage = "https://pixijs.com/assets/bunny.png"
+export const bunnyName = `Bunny`
