@@ -122,7 +122,7 @@ export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_
             }
             setDialogue({
                 character: juliette,
-                text: `This is a test of custom ticker and canvas element. In this test, we have created ${totalDudes} ${eggHeadName} with random tint, scale, position, direction, turning speed, and speed. With the custom ticker, we are moving the custom canvas element in a random direction.`
+                text: `This is a test of custom ticker and canvas element. In this test, we have created ${totalDudes} ${eggHeadName} with random tint, scale, position, direction, turning speed, and speed. With the custom ticker, we are moving the custom canvas element in a random direction. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/interactivity).)`
             });
         },
     ]
