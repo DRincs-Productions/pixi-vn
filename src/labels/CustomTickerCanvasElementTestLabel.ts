@@ -2,9 +2,10 @@ import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "p
 import { CanvasSprite } from "../classes/canvas";
 import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
+import { setDialogue } from "../functions";
 import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../interface/canvas";
 import { GameWindowManager } from "../managers";
-import { eggHeadImage } from "./TestConstant";
+import { eggHeadImage, eggHeadName, juliette } from "./TestConstant";
 
 interface IAlienTintingMemory extends ICanvasSpriteBaseMemory {
     direction: number
@@ -119,6 +120,10 @@ export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_
                 GameWindowManager.addCanvasElement("alien" + i, dude);
                 GameWindowManager.addTicker("alien" + i, new TintingTestTicker());
             }
+            setDialogue({
+                character: juliette,
+                text: `This is a test of custom ticker and canvas element. In this test, we have created ${totalDudes} ${eggHeadName} with random tint, scale, position, direction, turning speed, and speed. With the custom ticker, we are moving the custom canvas element in a random direction.`
+            });
         },
     ]
 )
