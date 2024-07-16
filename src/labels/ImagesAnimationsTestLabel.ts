@@ -4,7 +4,7 @@ import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classe
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
-import { moveIn, moveOut } from "../functions/ImageUtility"
+import { moveIn, moveOut, zoomIn } from "../functions/ImageUtility"
 import { GameStepManager, GameWindowManager } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -37,6 +37,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Move", imagesMoveTest),
             new ChoiceMenuOption("Zoom", imagesZoomTest),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest),
+            new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest),
             new ChoiceMenuOptionClose("Cancel", true),
         ])
     },
@@ -317,5 +318,24 @@ const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
         moveOut("flowerTop", { speed: 800, direction: "left" })
         moveOut("helmlok", { speed: 800, direction: "right" })
         moveOut("skully", { speed: 800, direction: "up" })
+    }
+])
+
+const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
+    async () => {
+        let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
+        let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
+        let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
+        let skully = new CanvasImage({ x: 300, y: 300 }, skullyImage)
+        zoomIn("eggHead", eggHead, { speed: 3, direction: "down" })
+        zoomIn("flowerTop", flowerTop, {
+            speed: 3, direction: "left",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
+        zoomIn("helmlok", helmlok, { speed: 3, direction: "right" })
+        zoomIn("skully", skully, {
+            speed: 3, direction: "up",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
     }
 ])

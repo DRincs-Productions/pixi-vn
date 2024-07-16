@@ -1,9 +1,9 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
-import { CanvasBase, CanvasImage } from '../classes/canvas';
-import { FadeAlphaTicker, MoveTicker } from '../classes/ticker';
+import { CanvasBase, CanvasImage, CanvasSprite } from '../classes/canvas';
+import { FadeAlphaTicker, MoveTicker, ZoomTicker } from '../classes/ticker';
 import { Pause } from '../constants';
 import { GameWindowManager } from '../managers';
-import { FadeAlphaTickerProps, MoveTickerProps } from '../types/ticker';
+import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from '../types/ticker';
 import { tagToRemoveAfterType } from '../types/ticker/TagToRemoveAfterType';
 import { getTexture } from './TextureUtility';
 
@@ -285,6 +285,7 @@ export function moveOut(
 ): void {
     let canvasElement = GameWindowManager.getCanvasElement(tag)
     if (!canvasElement) {
+        console.warn("[Pixi'VN] The canvas element is not found.")
         return
     }
 
@@ -307,6 +308,100 @@ export function moveOut(
         destination,
         startOnlyIfHaveTexture: true,
         tagToRemoveAfter: tag,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
+}
+
+type ZoomInOutProps = {
+    /**
+     * The direction of the zoom effect.
+     */
+    direction: "up" | "down" | "left" | "right",
+} & Omit<ZoomTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "anchorToSetAfter" | "type">
+
+export async function zoomIn<T extends CanvasSprite | string = string>(
+    tag: string,
+    image: T,
+    props: ZoomInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+) {
+    let canvasElement: CanvasSprite
+    if (typeof image === "string") {
+        canvasElement = addImage(tag, image)
+    }
+    else {
+        canvasElement = image
+        GameWindowManager.addCanvasElement(tag, canvasElement)
+    }
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+    let oldAnchor = { x: canvasElement.anchor.x, y: canvasElement.anchor.y }
+
+    if (props.direction == "up") {
+        canvasElement.anchor.y = 1
+        // canvasElement.y = GameWindowManager.canvasHeight
+    }
+    else if (props.direction == "down") {
+        canvasElement.anchor.y = 0
+    }
+    else if (props.direction == "left") {
+        canvasElement.anchor.x = 1
+    }
+    else if (props.direction == "right") {
+        canvasElement.anchor.x = 0
+    }
+    let limit = { x: canvasElement.scale.x, y: canvasElement.scale.y }
+    canvasElement.scale.set(0)
+
+    let effect = new ZoomTicker({
+        ...props,
+        anchorToSetAfter: oldAnchor,
+        startOnlyIfHaveTexture: true,
+        type: "zoom",
+        limit,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
+}
+
+export function zoomOut(
+    tag: string,
+    props: ZoomInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+) {
+    let canvasElement = GameWindowManager.getCanvasElement(tag)
+    if (!canvasElement) {
+        console.warn("[Pixi'VN] The canvas element is not found.")
+        return
+    }
+    if (!(canvasElement instanceof CanvasSprite)) {
+        console.error("[Pixi'VN] For zoom effect, the canvas element must be a sprite.")
+        return
+    }
+
+    let oldAnchor = { x: canvasElement.anchor.x, y: canvasElement.anchor.y }
+
+    if (props.direction == "up") {
+        canvasElement.anchor.y = 0
+    }
+    else if (props.direction == "down") {
+        canvasElement.anchor.y = 1
+    }
+    else if (props.direction == "left") {
+        canvasElement.anchor.x = 0
+    }
+    else if (props.direction == "right") {
+        canvasElement.anchor.x = 1
+    }
+
+    let effect = new ZoomTicker({
+        ...props,
+        anchorToSetAfter: oldAnchor,
+        startOnlyIfHaveTexture: true,
+        tagToRemoveAfter: tag,
+        type: "unzoom",
     }, priority)
 
     GameWindowManager.addTicker(tag, effect)
