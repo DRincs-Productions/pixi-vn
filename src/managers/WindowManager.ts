@@ -392,7 +392,7 @@ export default class GameWindowManager {
         }
     }
     private static pushTicker<TArgs extends TickerArgsType>(id: string, tickerData: TickerHistory<TArgs>, ticker: TickerBase<TArgs>) {
-        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementTags, tickerData)
+        GameWindowManager.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementTags, ticker)
         GameWindowManager._currentTickers[id] = tickerData
         tickerData.fn = (t: Ticker) => {
             let data = GameWindowManager._currentTickers[id]
@@ -547,7 +547,7 @@ export default class GameWindowManager {
             tickerId = ticker.id
         }
         else {
-            tickerId = ticker.name
+            tickerId = ticker.prototype.id
         }
         if (typeof tags === "string") {
             tags = [tags]

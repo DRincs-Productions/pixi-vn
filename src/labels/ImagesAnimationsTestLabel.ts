@@ -4,7 +4,7 @@ import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classe
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
-import { moveIn } from "../functions/ImageUtility"
+import { moveIn, moveOut } from "../functions/ImageUtility"
 import { GameStepManager, GameWindowManager } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -290,6 +290,13 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
 
 const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
     async () => {
+        setDialogue({
+            character: juliette, text: `Here's what's going to happen:
+- ${eggHeadName} will move in from the top with a speed of 800. If you go next, ${eggHeadName} will move out from the bottom with a speed of 800.
+- ${flowerTopName} will move in from the right with a speed of 800 and a speed progression of 0.02. If you go next, ${flowerTopName} will move out from the left with a speed of 800 and a speed progression of 0.02.
+- ${helmlokName} will move in from the left with a speed of 800. If you go next, ${helmlokName} will move out from the right with a speed of 800.
+- ${skullyName} will move in from the bottom with a speed of 800 and a speed progression of 0.02. If you go next, ${skullyName} will move out from the top with a speed of 800 and a speed progression of 0.02.`
+        })
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
         let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
@@ -304,5 +311,11 @@ const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
             speed: 800, direction: "up",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
+    },
+    () => {
+        moveOut("eggHead", { speed: 800, direction: "down" })
+        moveOut("flowerTop", { speed: 800, direction: "left" })
+        moveOut("helmlok", { speed: 800, direction: "right" })
+        moveOut("skully", { speed: 800, direction: "up" })
     }
 ])

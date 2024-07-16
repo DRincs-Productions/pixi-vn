@@ -258,3 +258,39 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
 
     GameWindowManager.addTicker(tag, effect)
 }
+
+export function moveOut(
+    tag: string,
+    props: Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination"> & {
+        direction: "up" | "down" | "left" | "right",
+    } = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+): void {
+    let canvasElement = GameWindowManager.getCanvasElement(tag)
+    if (!canvasElement) {
+        return
+    }
+
+    let destination = { x: canvasElement.x, y: canvasElement.y }
+    if (props.direction == "up") {
+        destination.y = -(canvasElement.height)
+    }
+    else if (props.direction == "down") {
+        destination.y = GameWindowManager.canvasHeight + canvasElement.height
+    }
+    else if (props.direction == "left") {
+        destination.x = -(canvasElement.width)
+    }
+    else if (props.direction == "right") {
+        destination.x = GameWindowManager.canvasWidth + canvasElement.width
+    }
+
+    let effect = new MoveTicker({
+        ...props,
+        destination,
+        startOnlyIfHaveTexture: true,
+        tagToRemoveAfter: tag,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
+}
