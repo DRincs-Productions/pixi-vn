@@ -1,9 +1,10 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
-import { CanvasBase, CanvasImage } from '../classes/canvas';
+import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite } from '../classes/canvas';
 import { FadeAlphaTicker, MoveTicker } from '../classes/ticker';
+import { ZoomInOutTicker } from '../classes/ticker/ZoomTicker';
 import { Pause } from '../constants';
 import { GameWindowManager } from '../managers';
-import { FadeAlphaTickerProps, MoveTickerProps } from '../types/ticker';
+import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from '../types/ticker';
 import { tagToRemoveAfterType } from '../types/ticker/TagToRemoveAfterType';
 import { getTexture } from './TextureUtility';
 
@@ -285,6 +286,7 @@ export function moveOut(
 ): void {
     let canvasElement = GameWindowManager.getCanvasElement(tag)
     if (!canvasElement) {
+        console.warn("[Pixi'VN] The canvas element is not found.")
         return
     }
 
@@ -306,6 +308,126 @@ export function moveOut(
         ...props,
         destination,
         startOnlyIfHaveTexture: true,
+        tagToRemoveAfter: tag,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
+}
+
+type ZoomInOutProps = {
+    /**
+     * The direction of the zoom effect.
+     */
+    direction: "up" | "down" | "left" | "right",
+} & Omit<ZoomTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "type">
+
+export async function zoomIn<T extends CanvasSprite | string = string>(
+    tag: string,
+    image: T,
+    props: ZoomInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+) {
+    let canvasElement: CanvasSprite
+    if (typeof image === "string") {
+        canvasElement = new CanvasImage({}, image)
+    }
+    else {
+        canvasElement = image
+    }
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+
+    let container = new CanvasContainer()
+    container.addChild(canvasElement)
+    container.height = GameWindowManager.canvasHeight
+    container.width = GameWindowManager.canvasWidth
+    GameWindowManager.addCanvasElement(tag, container)
+
+    if (props.direction == "up") {
+        container.pivot.y = GameWindowManager.canvasHeight
+        container.pivot.x = GameWindowManager.canvasWidth / 2
+        container.y = GameWindowManager.canvasHeight
+        container.x = GameWindowManager.canvasWidth / 2
+    }
+    else if (props.direction == "down") {
+        container.pivot.y = 0
+        container.pivot.x = GameWindowManager.canvasWidth / 2
+        container.y = 0
+        container.x = GameWindowManager.canvasWidth / 2
+    }
+    else if (props.direction == "left") {
+        container.pivot.x = GameWindowManager.canvasWidth
+        container.pivot.y = GameWindowManager.canvasHeight / 2
+        container.x = GameWindowManager.canvasWidth
+        container.y = GameWindowManager.canvasHeight / 2
+    }
+    else if (props.direction == "right") {
+        container.pivot.x = 0
+        container.pivot.y = GameWindowManager.canvasHeight / 2
+        container.x = 0
+        container.y = GameWindowManager.canvasHeight / 2
+    }
+    container.scale.set(0)
+
+    let effect = new ZoomInOutTicker({
+        ...props,
+        startOnlyIfHaveTexture: true,
+        type: "zoom",
+        limit: 1,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
+}
+
+export function zoomOut(
+    tag: string,
+    props: ZoomInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+) {
+    let canvasElement = GameWindowManager.getCanvasElement(tag)
+    if (!canvasElement) {
+        console.warn("[Pixi'VN] The canvas element is not found.")
+        return
+    }
+
+    let container = new CanvasContainer()
+    container.addChild(canvasElement)
+    container.height = GameWindowManager.canvasHeight
+    container.width = GameWindowManager.canvasWidth
+    GameWindowManager.addCanvasElement(tag, container)
+
+    if (props.direction == "up") {
+        container.pivot.y = GameWindowManager.canvasHeight
+        container.pivot.x = GameWindowManager.canvasWidth / 2
+        container.y = GameWindowManager.canvasHeight
+        container.x = GameWindowManager.canvasWidth / 2
+    }
+    else if (props.direction == "down") {
+        container.pivot.y = 0
+        container.pivot.x = GameWindowManager.canvasWidth / 2
+        container.y = 0
+        container.x = GameWindowManager.canvasWidth / 2
+    }
+    else if (props.direction == "left") {
+        container.pivot.x = GameWindowManager.canvasWidth
+        container.pivot.y = GameWindowManager.canvasHeight / 2
+        container.x = GameWindowManager.canvasWidth
+        container.y = GameWindowManager.canvasHeight / 2
+    }
+    else if (props.direction == "right") {
+        container.pivot.x = 0
+        container.pivot.y = GameWindowManager.canvasHeight / 2
+        container.x = 0
+        container.y = GameWindowManager.canvasHeight / 2
+    }
+    container.scale.set(1)
+
+    let effect = new ZoomInOutTicker({
+        ...props,
+        startOnlyIfHaveTexture: true,
+        type: "unzoom",
+        limit: 0,
         tagToRemoveAfter: tag,
     }, priority)
 
