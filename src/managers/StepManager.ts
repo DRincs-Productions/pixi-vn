@@ -3,7 +3,7 @@ import { DialogueBaseModel, Label } from "../classes"
 import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import { getLabelById } from "../decorators/LabelDecorator"
-import { getDialogue } from "../functions"
+import { getChoiceMenuOptions, getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
 import { getStepSha1 } from "../functions/StepLabelUtility"
@@ -210,6 +210,13 @@ export default class GameStepManager {
 
     /* Run Methods */
 
+    static get canGoNext(): boolean {
+        let options = getChoiceMenuOptions()
+        if (options && options.length > 0) {
+            return false
+        }
+        return true
+    }
     /**
      * Execute the next step and add it to the history.
      * @param props The props to pass to the step.
@@ -219,7 +226,7 @@ export default class GameStepManager {
      * ```typescript
      *     function nextOnClick() {
      *     setLoading(true)
-     *     GameStepManager.runNextStep(yourParams)
+     *     GameStepManager.goNext(yourParams)
      *         .then((result) => {
      *             setUpdate((p) => p + 1)
      *             setLoading(false)
@@ -234,7 +241,11 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static async runNextStep(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
+    public static async goNext(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
+        if (!GameStepManager.canGoNext) {
+            console.warn("[Pixi'VN] The player must make a choice")
+            return
+        }
         GameStepManager.increaseCurrentStepIndex()
         return await GameStepManager.runCurrentStep(props, choiseMade)
     }
@@ -264,7 +275,7 @@ export default class GameStepManager {
             }
             else if (GameStepManager.openedLabels.length > 1) {
                 GameStepManager.closeCurrentLabel()
-                return await GameStepManager.runNextStep(props, choiseMade)
+                return await GameStepManager.goNext(props, choiseMade)
             }
             else {
                 GameStepManager.restorLastLabelList()
@@ -411,7 +422,7 @@ export default class GameStepManager {
         if (choice.closeCurrentLabel) {
             GameStepManager.closeCurrentLabel()
         }
-        return GameStepManager.runNextStep(props, choiseMade)
+        return GameStepManager.goNext(props, choiseMade)
     }
 
     /* After Update Methods */
