@@ -215,12 +215,25 @@ export function removeWithFadeTransition(
     return removeWithDissolveTransition(tag, props, priority)
 }
 
+type MoveInOutProps = {
+    /**
+     * The direction of the movement.
+     */
+    direction: "up" | "down" | "left" | "right",
+} & Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination">
+
+/**
+ * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param image The imageUrl or the canvas element
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ * @returns A promise that is resolved when the image is loaded.
+ */
 export async function moveIn<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination"> & {
-        direction: "up" | "down" | "left" | "right",
-    } = { direction: "right" },
+    props: MoveInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let canvasElement: CanvasBase<any>
@@ -259,11 +272,15 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     GameWindowManager.addTicker(tag, effect)
 }
 
+/**
+ * Remove a image from the canvas with a move effect. The image is moved from the x and y position of the image to outside the canvas.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ */
 export function moveOut(
     tag: string,
-    props: Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination"> & {
-        direction: "up" | "down" | "left" | "right",
-    } = { direction: "right" },
+    props: MoveInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): void {
     let canvasElement = GameWindowManager.getCanvasElement(tag)
