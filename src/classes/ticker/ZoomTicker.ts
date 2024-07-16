@@ -132,18 +132,14 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
 
 
 export class ZoomInOutTicker extends ZoomTicker {
-    constructor(tagChild: string, props: ZoomTickerProps, duration?: number, priority?: UPDATE_PRIORITY) {
+    constructor(props: ZoomTickerProps, duration?: number, priority?: UPDATE_PRIORITY) {
         super(props, duration, priority)
-        this.tagChild = tagChild
     }
-    tagChild: string
-    override onEndOfTicker<T extends Container = Container<ContainerChild>>(conteinerTag: string, tickerId: string, element: T, tagToRemoveAfter: string[] | string): void {
-        let elementChild = GameWindowManager.getCanvasElement(this.tagChild)
-        element.removeChildren()
-        if (elementChild) {
-            GameWindowManager.addCanvasElement(this.tagChild, elementChild)
+    override onEndOfTicker<T extends Container = Container<ContainerChild>>(tag: string, tickerId: string, element: T, tagToRemoveAfter: string[] | string): void {
+        if (element.children.length > 0) {
+            let elementChild = element.children[0]
+            GameWindowManager.addCanvasElement(tag, elementChild as any)
         }
-        GameWindowManager.removeCanvasElement(conteinerTag)
-        super.onEndOfTicker(conteinerTag, tickerId, element, tagToRemoveAfter)
+        super.onEndOfTicker(tag, tickerId, element, tagToRemoveAfter)
     }
 }

@@ -329,11 +329,10 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
 ) {
     let canvasElement: CanvasSprite
     if (typeof image === "string") {
-        canvasElement = addImage(tag, image)
+        canvasElement = new CanvasImage({}, image)
     }
     else {
         canvasElement = image
-        GameWindowManager.addCanvasElement(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -343,8 +342,7 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     container.addChild(canvasElement)
     container.height = GameWindowManager.canvasHeight
     container.width = GameWindowManager.canvasWidth
-    let containerTag = tag + "_zoomIn_container"
-    GameWindowManager.addCanvasElement(containerTag, container)
+    GameWindowManager.addCanvasElement(tag, container)
 
     if (props.direction == "up") {
         container.pivot.y = GameWindowManager.canvasHeight
@@ -372,14 +370,14 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     }
     container.scale.set(0)
 
-    let effect = new ZoomInOutTicker(tag, {
+    let effect = new ZoomInOutTicker({
         ...props,
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
     }, priority)
 
-    GameWindowManager.addTicker(containerTag, effect)
+    GameWindowManager.addTicker(tag, effect)
 }
 
 export function zoomOut(
@@ -397,8 +395,7 @@ export function zoomOut(
     container.addChild(canvasElement)
     container.height = GameWindowManager.canvasHeight
     container.width = GameWindowManager.canvasWidth
-    let containerTag = tag + "_zoomOut_container"
-    GameWindowManager.addCanvasElement(containerTag, container)
+    GameWindowManager.addCanvasElement(tag, container)
 
     if (props.direction == "up") {
         container.pivot.y = GameWindowManager.canvasHeight
@@ -424,8 +421,9 @@ export function zoomOut(
         container.x = 0
         container.y = GameWindowManager.canvasHeight / 2
     }
+    container.scale.set(1)
 
-    let effect = new ZoomInOutTicker(tag, {
+    let effect = new ZoomInOutTicker({
         ...props,
         startOnlyIfHaveTexture: true,
         type: "unzoom",
@@ -433,5 +431,5 @@ export function zoomOut(
         tagToRemoveAfter: tag,
     }, priority)
 
-    GameWindowManager.addTicker(containerTag, effect)
+    GameWindowManager.addTicker(tag, effect)
 }

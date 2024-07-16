@@ -339,9 +339,15 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
         })
     },
     async () => {
-        zoomOut("eggHead", { speed: 1, direction: "down" })
-        zoomOut("flowerTop", { speed: 1, direction: "left" })
-        zoomOut("helmlok", { speed: 1, direction: "right" })
-        zoomOut("skully", { speed: 1, direction: "up" })
+        zoomOut("eggHead", {
+            speed: 3, direction: "down",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
+        zoomOut("flowerTop", { speed: 3, direction: "left" })
+        zoomOut("helmlok", { speed: 3, direction: "right" })
+        zoomOut("skully", {
+            speed: 3, direction: "up",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
     },
 ])
