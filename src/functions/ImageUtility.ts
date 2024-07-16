@@ -1,9 +1,9 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
 import { CanvasBase, CanvasImage } from '../classes/canvas';
-import { FadeAlphaTicker } from '../classes/ticker';
+import { FadeAlphaTicker, MoveTicker } from '../classes/ticker';
 import { Pause } from '../constants';
 import { GameWindowManager } from '../managers';
-import { FadeAlphaTickerProps } from '../types/ticker';
+import { FadeAlphaTickerProps, MoveTickerProps } from '../types/ticker';
 import { tagToRemoveAfterType } from '../types/ticker/TagToRemoveAfterType';
 import { getTexture } from './TextureUtility';
 
@@ -213,4 +213,48 @@ export function removeWithFadeTransition(
     priority?: UPDATE_PRIORITY,
 ): void {
     return removeWithDissolveTransition(tag, props, priority)
+}
+
+export async function moveIn<T extends CanvasBase<any> | string = string>(
+    tag: string,
+    image: T,
+    props: Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination"> & {
+        direction: "up" | "down" | "left" | "right",
+    } = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+): Promise<void> {
+    let canvasElement: CanvasBase<any>
+    if (typeof image === "string") {
+        canvasElement = addImage(tag, image)
+    }
+    else {
+        canvasElement = image
+        GameWindowManager.addCanvasElement(tag, canvasElement)
+    }
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+
+    let destination = { x: canvasElement.x, y: canvasElement.y }
+
+    if (props.direction == "up") {
+        canvasElement.y = GameWindowManager.canvasHeight + canvasElement.height
+    }
+    else if (props.direction == "down") {
+        canvasElement.y = -(canvasElement.height)
+    }
+    else if (props.direction == "left") {
+        canvasElement.x = GameWindowManager.canvasWidth + canvasElement.width
+    }
+    else if (props.direction == "right") {
+        canvasElement.x = -(canvasElement.width)
+    }
+
+    let effect = new MoveTicker({
+        ...props,
+        destination,
+        startOnlyIfHaveTexture: true,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
 }

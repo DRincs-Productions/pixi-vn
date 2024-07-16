@@ -4,6 +4,7 @@ import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classe
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
+import { moveIn } from "../functions/ImageUtility"
 import { GameStepManager, GameWindowManager } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -35,6 +36,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Rotate", imagesRotateTest),
             new ChoiceMenuOption("Move", imagesMoveTest),
             new ChoiceMenuOption("Zoom", imagesZoomTest),
+            new ChoiceMenuOption("Move in/out", imagesMoveInOutTest),
             new ChoiceMenuOptionClose("Cancel", true),
         ])
     },
@@ -283,5 +285,24 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
                 limit: 1,
             }),
         ])
+    }
+])
+
+const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
+    async () => {
+        let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
+        let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
+        let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
+        let skully = new CanvasImage({ x: 300, y: 300 }, skullyImage)
+        moveIn("eggHead", eggHead, { speed: 800, direction: "down" })
+        moveIn("flowerTop", flowerTop, {
+            speed: 800, direction: "left",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
+        moveIn("helmlok", helmlok, { speed: 800, direction: "right" })
+        moveIn("skully", skully, {
+            speed: 800, direction: "up",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
     }
 ])
