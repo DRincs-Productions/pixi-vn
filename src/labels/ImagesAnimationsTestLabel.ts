@@ -3,8 +3,7 @@ import { CanvasImage } from "../classes/canvas"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
-import { addImage, loadImage, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition } from "../functions"
-import { moveIn, moveOut, zoomIn } from "../functions/ImageUtility"
+import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { GameStepManager, GameWindowManager } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -323,6 +322,7 @@ const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
 
 const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
     async () => {
+        GameWindowManager.removeCanvasElements()
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
         let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
@@ -337,5 +337,11 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
             speed: 3, direction: "up",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
-    }
+    },
+    async () => {
+        zoomOut("eggHead", { speed: 1, direction: "down" })
+        zoomOut("flowerTop", { speed: 1, direction: "left" })
+        zoomOut("helmlok", { speed: 1, direction: "right" })
+        zoomOut("skully", { speed: 1, direction: "up" })
+    },
 ])

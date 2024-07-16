@@ -1,4 +1,4 @@
-import { Container, Sprite, Ticker } from "pixi.js";
+import { Container, ContainerChild, Sprite, Ticker, UPDATE_PRIORITY } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { GameWindowManager } from "../../managers";
@@ -46,8 +46,8 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
             tagToRemoveAfter = [tagToRemoveAfter]
         }
         let type = args.type || "zoom"
-        let xLimit = Infinity
-        let yLimit = Infinity
+        let xLimit = type === "zoom" ? Infinity : 0
+        let yLimit = type === "zoom" ? Infinity : 0
         if (args.limit) {
             if (typeof args.limit === "number") {
                 xLimit = args.limit
@@ -58,7 +58,6 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 yLimit = args.limit.y
             }
         }
-        let anchorToSetAfter = args.anchorToSetAfter
         tags
             .filter((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
@@ -96,7 +95,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         if (element.scale.x >= xLimit && element.scale.y >= yLimit) {
                             element.scale.x = xLimit
                             element.scale.y = yLimit
-                            GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                            this.onEndOfTicker(tag, tickerId, element, tagToRemoveAfter)
                         }
                     }
                     else if (type === "unzoom") {
@@ -109,23 +108,42 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         if (element.scale.x <= xLimit && element.scale.y <= yLimit) {
                             element.scale.x = xLimit
                             element.scale.y = yLimit
-                            GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                            this.onEndOfTicker(tag, tickerId, element, tagToRemoveAfter)
                         }
                     }
                     if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        if (element instanceof Sprite && anchorToSetAfter) {
-                            if (typeof anchorToSetAfter === "number") {
-                                element.anchor.set(anchorToSetAfter)
-                            }
-                            else {
-                                element.anchor.set(anchorToSetAfter.x, anchorToSetAfter.y)
-                            }
-                        }
-                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        this.onEndOfTicker(tag, tickerId, element, tagToRemoveAfter)
                     }
                 }
             })
         if (args.speedProgression)
             updateTickerProgression(args, "speed", args.speedProgression)
+    }
+
+    onEndOfTicker<T extends Container = Container>(
+        tag: string,
+        tickerId: string,
+        _element: T,
+        tagToRemoveAfter: string[] | string,
+    ): void {
+        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+    }
+}
+
+
+export class ZoomInOutTicker extends ZoomTicker {
+    constructor(tagChild: string, props: ZoomTickerProps, duration?: number, priority?: UPDATE_PRIORITY) {
+        super(props, duration, priority)
+        this.tagChild = tagChild
+    }
+    tagChild: string
+    override onEndOfTicker<T extends Container = Container<ContainerChild>>(conteinerTag: string, tickerId: string, element: T, tagToRemoveAfter: string[] | string): void {
+        let elementChild = GameWindowManager.getCanvasElement(this.tagChild)
+        element.removeChildren()
+        if (elementChild) {
+            GameWindowManager.addCanvasElement(this.tagChild, elementChild)
+        }
+        GameWindowManager.removeCanvasElement(conteinerTag)
+        super.onEndOfTicker(conteinerTag, tickerId, element, tagToRemoveAfter)
     }
 }

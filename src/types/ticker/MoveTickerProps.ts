@@ -2,7 +2,7 @@ import { TickerProgrationType } from "../../interface"
 
 export type MoveTickerProps = {
     /**
-     * The speed of the movement in pixels per second
+     * The speed of the movement
      * @default 1
      */
     speed?: number | { x: number, y: number }
