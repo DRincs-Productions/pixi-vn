@@ -58,6 +58,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 yLimit = args.limit.y
             }
         }
+        let anchorToSetAfter = args.anchorToSetAfter
         tags
             .filter((tag) => {
                 let element = GameWindowManager.getCanvasElement(tag)
@@ -112,6 +113,14 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         }
                     }
                     if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
+                        if (element instanceof Sprite && anchorToSetAfter) {
+                            if (typeof anchorToSetAfter === "number") {
+                                element.anchor.set(anchorToSetAfter)
+                            }
+                            else {
+                                element.anchor.set(anchorToSetAfter.x, anchorToSetAfter.y)
+                            }
+                        }
                         GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                 }

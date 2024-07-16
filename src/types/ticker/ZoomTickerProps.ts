@@ -1,3 +1,4 @@
+import { Sprite } from "pixi.js"
 import { TickerProgrationType } from "../../interface"
 
 export type ZoomTickerProps = {
@@ -34,4 +35,9 @@ export type ZoomTickerProps = {
      * @default false
      */
     startOnlyIfHaveTexture?: boolean
+    /**
+     * The anchor to set after the effect is done.
+     * This Works only if the canvas element extends {@link Sprite}
+     */
+    anchorToSetAfter?: { x: number, y: number } | number
 }
