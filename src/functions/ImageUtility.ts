@@ -1,9 +1,9 @@
 import { Texture, UPDATE_PRIORITY } from 'pixi.js';
 import { CanvasBase, CanvasImage } from '../classes/canvas';
-import { FadeAlphaTicker } from '../classes/ticker';
+import { FadeAlphaTicker, MoveTicker } from '../classes/ticker';
 import { Pause } from '../constants';
 import { GameWindowManager } from '../managers';
-import { FadeAlphaTickerProps } from '../types/ticker';
+import { FadeAlphaTickerProps, MoveTickerProps } from '../types/ticker';
 import { tagToRemoveAfterType } from '../types/ticker/TagToRemoveAfterType';
 import { getTexture } from './TextureUtility';
 
@@ -213,4 +213,101 @@ export function removeWithFadeTransition(
     priority?: UPDATE_PRIORITY,
 ): void {
     return removeWithDissolveTransition(tag, props, priority)
+}
+
+type MoveInOutProps = {
+    /**
+     * The direction of the movement.
+     */
+    direction: "up" | "down" | "left" | "right",
+} & Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination">
+
+/**
+ * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param image The imageUrl or the canvas element
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ * @returns A promise that is resolved when the image is loaded.
+ */
+export async function moveIn<T extends CanvasBase<any> | string = string>(
+    tag: string,
+    image: T,
+    props: MoveInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+): Promise<void> {
+    let canvasElement: CanvasBase<any>
+    if (typeof image === "string") {
+        canvasElement = addImage(tag, image)
+    }
+    else {
+        canvasElement = image
+        GameWindowManager.addCanvasElement(tag, canvasElement)
+    }
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+
+    let destination = { x: canvasElement.x, y: canvasElement.y }
+
+    if (props.direction == "up") {
+        canvasElement.y = GameWindowManager.canvasHeight + canvasElement.height
+    }
+    else if (props.direction == "down") {
+        canvasElement.y = -(canvasElement.height)
+    }
+    else if (props.direction == "left") {
+        canvasElement.x = GameWindowManager.canvasWidth + canvasElement.width
+    }
+    else if (props.direction == "right") {
+        canvasElement.x = -(canvasElement.width)
+    }
+
+    let effect = new MoveTicker({
+        ...props,
+        destination,
+        startOnlyIfHaveTexture: true,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
+}
+
+/**
+ * Remove a image from the canvas with a move effect. The image is moved from the x and y position of the image to outside the canvas.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ */
+export function moveOut(
+    tag: string,
+    props: MoveInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+): void {
+    let canvasElement = GameWindowManager.getCanvasElement(tag)
+    if (!canvasElement) {
+        return
+    }
+
+    let destination = { x: canvasElement.x, y: canvasElement.y }
+    if (props.direction == "up") {
+        destination.y = -(canvasElement.height)
+    }
+    else if (props.direction == "down") {
+        destination.y = GameWindowManager.canvasHeight + canvasElement.height
+    }
+    else if (props.direction == "left") {
+        destination.x = -(canvasElement.width)
+    }
+    else if (props.direction == "right") {
+        destination.x = GameWindowManager.canvasWidth + canvasElement.width
+    }
+
+    let effect = new MoveTicker({
+        ...props,
+        destination,
+        startOnlyIfHaveTexture: true,
+        tagToRemoveAfter: tag,
+    }, priority)
+
+    GameWindowManager.addTicker(tag, effect)
 }
