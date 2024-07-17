@@ -30,6 +30,16 @@ export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___"
     ]
 )
 
+const openWiki = newLabel("___pixi_vn_open_wiki___",
+    [
+        (props) => {
+            window.open("https://pixi-vn-react-template.web.app/")
+            GameStepManager.goNext(props)
+        },
+    ]
+)
+
+
 const RESTART_TEST_LABEL = "___pixi_vn_restart_test_label___"
 export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
     [
@@ -37,6 +47,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
             GameWindowManager.clear()
             setDialogue({ character: juliette, text: "Which test would you like to start with?" })
             setChoiceMenuOptions([
+                new ChoiceMenuOption("Open Pixi’VN Wiki", openWiki),
                 new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest),
                 new ChoiceMenuOption("Canvas Events Test Label", canvasEventsTestLabel),
                 new ChoiceMenuOption("Base Canvas Element Test", baseCanvasElementTestLabel),
