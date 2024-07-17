@@ -2,23 +2,32 @@ import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 import { CanvasContainer, CanvasSprite, CanvasText } from "../classes/canvas";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
-import { clearDialogue, removeCanvasElement } from "../functions";
+import { clearDialogue, removeCanvasElement, setDialogue } from "../functions";
 import { GameWindowManager } from "../managers";
+import { bunnyImage, juliette } from "./TestConstant";
 
-export const baseCanvasElementTestLabel = newLabel("BaseCanvasElementTestLabel",
+const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"
+
+export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
     [
         async () => {
             clearDialogue();
+            let number = 25
+            setDialogue({
+                character: juliette,
+                text: `Here's what's going to happen: I'm going to create ${number} bunnies (CanvasSprites) and put them in a CanvasContainer.`
+            })
+
             // Create and add a container to the stage
             const container = new CanvasContainer();
 
             GameWindowManager.addCanvasElement("container", container);
 
             // Load the bunny texture
-            const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+            const texture = await Assets.load(bunnyImage);
 
             // Create a 5x5 grid of bunnies in the container
-            for (let i = 0; i < 25; i++) {
+            for (let i = 0; i < number; i++) {
                 const bunny = new CanvasSprite(texture);
 
                 bunny.x = (i % 5) * 40;
@@ -34,10 +43,15 @@ export const baseCanvasElementTestLabel = newLabel("BaseCanvasElementTestLabel",
             container.pivot.x = container.width / 2;
             container.pivot.y = container.height / 2;
 
-            GameWindowManager.addTicker("container", new RotateTicker({ speed: 0.01 }));
+            GameWindowManager.addTicker("container", new RotateTicker({ speed: 1 }));
         },
         async () => {
             removeCanvasElement("container");
+            setDialogue({
+                character: juliette,
+                text: `Here's what's going to happen: I'm going to create some text elements with different styles and put them on the stage.
+But it will generate a warn message, because the FillGradient has not yet been managed by Pixi’VN.`
+            })
 
             const basicText = new CanvasText({ text: 'Basic text in pixi' });
 
