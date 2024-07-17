@@ -67,7 +67,6 @@ export function getMemoryContainer<T extends Container>(element: T): ICanvasCont
         position: { x: element.position.x, y: element.position.y },
         skew: { x: element.skew.x, y: element.skew.y },
         visible: element.visible,
-        culled: element.culled,
         x: element.x,
         y: element.y,
         boundsArea: element.boundsArea,
@@ -110,7 +109,6 @@ export function setMemoryContainer<T extends Container>(element: T | Container, 
     memory.position && (element.position.set(memory.position.x, memory.position.y))
     memory.skew && (element.skew.set(memory.skew.x, memory.skew.y))
     memory.visible && (element.visible = memory.visible)
-    memory.culled && (element.culled = memory.culled)
     memory.x && (element.x = memory.x)
     memory.y && (element.y = memory.y)
     memory.boundsArea && (element.boundsArea = memory.boundsArea)

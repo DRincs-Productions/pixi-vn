@@ -23,20 +23,20 @@
   },
   "homepage": "https://pixi-vn.web.app/",
   "devDependencies": {
-    "@drincs/pixi-vn": "^0.6.0",
+    "@drincs/pixi-vn": "^0.6.2",
     "@types/crypto-js": "^4.2.2",
     "@types/css-font-loading-module": "^0.0.13",
     "@types/deep-diff": "^1.0.5",
     "jsdom": "^24.1.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.1.0",
+    "tsup": "^8.1.1",
     "typescript": "^5.5.3",
-    "vitest": "^1.6.0"
+    "vitest": "^2.0.3"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
     "deep-diff": "^1.0.2",
-    "pixi.js": "^8.2.2"
+    "pixi.js": "^8.2.5"
   },
   "keywords": [
     "game",
