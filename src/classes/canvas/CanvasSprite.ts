@@ -34,7 +34,7 @@ export const CANVAS_SPRITE_ID = "CanvasSprite"
 export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
     constructor(options?: SpriteOptions | Texture) {
         super(options)
-        this.pixivnId = this.constructor.prototype.pixivnId
+        this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
     }
     pixivnId: string = CANVAS_SPRITE_ID
     get memory(): Memory | ICanvasSpriteMemory {

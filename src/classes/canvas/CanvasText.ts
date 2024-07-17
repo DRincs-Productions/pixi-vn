@@ -23,7 +23,7 @@ export const CANVAS_TEXT_ID = "CanvasText"
 export default class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
     constructor(options?: TextOptions) {
         super(options)
-        this.pixivnId = this.constructor.prototype.pixivnId
+        this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_TEXT_ID
     }
     pixivnId: string = CANVAS_TEXT_ID
     get memory(): ICanvasTextMemory {

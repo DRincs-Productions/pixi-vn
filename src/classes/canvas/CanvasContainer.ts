@@ -25,7 +25,7 @@ export const CANVAS_CONTAINER_ID = "CanvasContainer"
 export default class CanvasContainer extends Container implements CanvasBase<ICanvasContainerMemory> {
     constructor(options?: ContainerOptions) {
         super(options)
-        this.pixivnId = this.constructor.prototype.pixivnId
+        this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID
     }
     pixivnId: string = CANVAS_CONTAINER_ID
     get memory(): ICanvasContainerMemory {
