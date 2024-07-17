@@ -2,7 +2,7 @@ import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 import { CanvasContainer, CanvasSprite, CanvasText } from "../classes/canvas";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
-import { clearDialogue, removeCanvasElement, setDialogue } from "../functions";
+import { removeCanvasElement, setDialogue } from "../functions";
 import { GameWindowManager } from "../managers";
 import { bunnyImage, juliette } from "./TestConstant";
 
@@ -11,7 +11,6 @@ const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"
 export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
     [
         async () => {
-            clearDialogue();
             let number = 25
             setDialogue({
                 character: juliette,

@@ -83,7 +83,7 @@ export default class GameWindowManager {
         }).then(() => {
             GameWindowManager._isInitialized = true
             // Manager.app.ticker.add(Manager.update)
-            this.addCanvasIntoElement(element)
+            this.addCanvasIntoHTMLElement(element)
             // listen for the browser telling us that the screen size changed
             window.addEventListener("resize", GameWindowManager.resize)
 
@@ -98,7 +98,7 @@ export default class GameWindowManager {
      * Add the canvas into a html element.
      * @param element it is the html element where I will put the canvas. Example: document.body
      */
-    private static addCanvasIntoElement(element: HTMLElement) {
+    private static addCanvasIntoHTMLElement(element: HTMLElement) {
         if (GameWindowManager.isInitialized) {
             element.appendChild(GameWindowManager.app.canvas as HTMLCanvasElement)
         }
