@@ -1,4 +1,4 @@
-import { Assets, TextStyle, TextStyleOptions, Texture } from 'pixi.js';
+import { Assets, ColorSource, FillGradient, FillPattern, StrokeStyle, TextStyle, TextStyleOptions, Texture } from 'pixi.js';
 
 /**
  * Get a texture from a url.
@@ -29,18 +29,21 @@ export async function getTexture(imageUrl: string): Promise<Texture | void> {
         })
 }
 
-export function getTextStyle(style: TextStyle): TextStyleOptions {
-    let fill = style.fill
-    if (fill instanceof Object) {
-        // TODO: FillGradient and FillPattern are not supported yet
-        console.warn("[Pixi'VN] CanvasText.style.fill is a FillGradient or FillPattern, this is not supported yet.", fill)
-        fill = "#00FF00"
+function getFillGradientFillPattern(prop: ColorSource | FillGradient | FillPattern | StrokeStyle, propName: keyof TextStyle) {
+    if (!(prop instanceof Object)) {
+        return prop
     }
+    // TODO: FillGradient and FillPattern are not supported yet
+    console.warn(`[Pixi'VN] CanvasText.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop)
+    return undefined
+}
+
+export function getTextStyle(style: TextStyle): TextStyleOptions {
     return {
         align: style.align,
         breakWords: style.breakWords,
         dropShadow: style.dropShadow,
-        fill: fill,
+        fill: getFillGradientFillPattern(style.stroke, "fill"),
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontStyle: style.fontStyle,
@@ -50,7 +53,7 @@ export function getTextStyle(style: TextStyle): TextStyleOptions {
         letterSpacing: style.letterSpacing,
         lineHeight: style.lineHeight,
         padding: style.padding,
-        stroke: style.stroke,
+        stroke: getFillGradientFillPattern(style.stroke, "stroke"),
         textBaseline: style.textBaseline,
         trim: style.trim,
         whiteSpace: style.whiteSpace,
