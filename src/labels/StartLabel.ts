@@ -33,7 +33,7 @@ export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___"
 const openWiki = newLabel("___pixi_vn_open_wiki___",
     [
         (props) => {
-            window.open("https://pixi-vn-react-template.web.app/")
+            window.open("https://pixi-vn.web.app/")
             GameStepManager.goNext(props)
         },
     ]
