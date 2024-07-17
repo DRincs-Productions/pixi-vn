@@ -100,16 +100,9 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
                 text: `This is the test of buttons in a canvas. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/interactivity).)`
             });
 
-            // Load textures
-            await Assets.load([
-                'https://pixijs.com/assets/bg_button.jpg',
-                'https://pixijs.com/assets/button.png',
-                'https://pixijs.com/assets/button_down.png',
-                'https://pixijs.com/assets/button_over.png',
-            ]);
-
             // Create a background...
-            const background = CanvasSprite.from('https://pixijs.com/assets/bg_button.jpg');
+            const backgroundT = await Assets.load('https://pixijs.com/assets/bg_button.jpg');
+            const background = CanvasSprite.from(backgroundT);
 
             background.width = GameWindowManager.screen.width;
             background.height = GameWindowManager.screen.height;
@@ -118,7 +111,8 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             GameWindowManager.addCanvasElement("bg", background);
 
             // Create some textures from an image path
-            const textureButton = Texture.from('https://pixijs.com/assets/button.png');
+            const textureButtonT = await Assets.load('https://pixijs.com/assets/button.png');
+            const textureButton = CanvasSprite.from(textureButtonT);
 
             const buttons = [];
 
