@@ -49,7 +49,7 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             setDialogue({
                 character: juliette,
                 text: `Here's what's going to happen: I'm going to create some text elements with different styles and put them on the stage.
-But it will generate a warn message, because the FillGradient has not yet been managed by Pixi’VN.`
+But it will generate a warn message, because the FillGradient or FillPattern has not yet been supported by the Pixi’VN.`
             })
 
             const basicText = new CanvasText({ text: 'Basic text in pixi' });
