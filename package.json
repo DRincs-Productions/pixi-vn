@@ -29,14 +29,14 @@
     "@types/deep-diff": "^1.0.5",
     "jsdom": "^24.1.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.1.0",
+    "tsup": "^8.1.2",
     "typescript": "^5.5.3",
     "vitest": "^1.6.0"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
     "deep-diff": "^1.0.2",
-    "pixi.js": "^8.2.2"
+    "pixi.js": "^8.2.5"
   },
   "keywords": [
     "game",
