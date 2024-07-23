@@ -1,4 +1,5 @@
 import { Label } from "../classes"
+import { LabelProps } from "../interface"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
@@ -9,14 +10,14 @@ export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
  * **This function must be called at least once at system startup to register the label, otherwise the system cannot be used.**
  * @param id The id of the label, it must be unique
  * @param steps The steps of the label
- * @param onStepRun is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
+ * @param props The properties of the label
  * @returns The created label
  */
-export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), onStepRun?: () => void | Promise<void>): Label<T> {
+export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: Omit<LabelProps<T>, "choiseIndex">): Label<T> {
     if (registeredLabels[id]) {
         console.info(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
     }
-    let label = new Label<T>(id, steps, onStepRun)
+    let label = new Label<T>(id, steps, props)
     registeredLabels[id] = label
     return label
 }

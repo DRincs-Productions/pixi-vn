@@ -18,22 +18,19 @@ export class EventTest1 extends CanvasEvent<CanvasSprite> {
 }
 @eventDecorator("___pixi_vn_canvas_events_test_event2___")
 export class EventTest2 extends CanvasEvent<CanvasSprite> {
-    textureButtonDown = Texture.from('https://pixijs.com/assets/button_down.png');
-    textureButtonOver = Texture.from('https://pixijs.com/assets/button_over.png');
-    textureButton = Texture.from('https://pixijs.com/assets/button.png');
     override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
         if (event === 'pointerdown') {
             (sprite as any).isdown = true;
-            sprite.texture = this.textureButtonDown;
+            sprite.texture = Texture.from('https://pixijs.com/assets/button_down.png');
             sprite.alpha = 1;
         }
         else if (event === 'pointerup' || event === 'pointerupoutside') {
             (sprite as any).isdown = false;
             if ((sprite as any).isOver) {
-                sprite.texture = this.textureButtonOver;
+                sprite.texture = Texture.from('https://pixijs.com/assets/button_over.png');
             }
             else {
-                sprite.texture = this.textureButton;
+                sprite.texture = Texture.from('https://pixijs.com/assets/button.png');
             }
         }
         else if (event === 'pointerover') {
@@ -41,14 +38,14 @@ export class EventTest2 extends CanvasEvent<CanvasSprite> {
             if ((sprite as any).isdown) {
                 return;
             }
-            sprite.texture = this.textureButtonOver;
+            sprite.texture = Texture.from('https://pixijs.com/assets/button_over.png');
         }
         else if (event === 'pointerout') {
             (sprite as any).isOver = false;
             if ((sprite as any).isdown) {
                 return;
             }
-            sprite.texture = this.textureButton;
+            sprite.texture = Texture.from('https://pixijs.com/assets/button.png');
         }
     }
 }
@@ -153,5 +150,15 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             buttons[4].scale.set(0.8, 1.2);
             buttons[4].rotation = Math.PI;
         }
-    ]
+    ],
+    {
+        onStepStart: async () => {
+            await Assets.load([
+                'https://pixijs.com/assets/bg_button.jpg',
+                'https://pixijs.com/assets/button.png',
+                'https://pixijs.com/assets/button_down.png',
+                'https://pixijs.com/assets/button_over.png',
+            ]);
+        }
+    }
 )

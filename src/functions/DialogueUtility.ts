@@ -121,7 +121,10 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
             }
             let label = getLabelById(option.label)
             if (label) {
-                let itemLabel = new Label(label.id, label.steps, label.onStepRun, index)
+                let itemLabel = new Label(label.id, label.steps, {
+                    onStepStart: label.onStepStart,
+                    choiseIndex: index
+                })
                 options.push({
                     ...option,
                     label: itemLabel

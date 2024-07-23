@@ -268,6 +268,10 @@ export default class GameStepManager {
                 return
             }
             if (currentLabel.steps.length > currentLabelStepIndex) {
+                let onStepRun = currentLabel.onStepStart
+                if (onStepRun) {
+                    await onStepRun(currentLabelStepIndex, currentLabel)
+                }
                 let step = currentLabel.steps[currentLabelStepIndex]
                 let result = await step(props)
                 GameStepManager.addStepHistory(step, choiseMade)

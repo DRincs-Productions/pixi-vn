@@ -1,5 +1,6 @@
 import { getLabelById } from "../decorators"
 import { checkIfStepsIsEqual } from "../functions/StepLabelUtility"
+import { LabelProps } from "../interface"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
@@ -32,14 +33,13 @@ export default class Label<T extends {} = {}> {
     /**
      * @param id is the id of the label
      * @param steps is the list of steps that the label will perform
-     * @param onStepRun is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
-     * @param choiseIndex is the index of the choice that the label will perform
+     * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), onStepRun?: () => void | Promise<void>, choiseIndex?: number) {
+    constructor(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: LabelProps<T>) {
         this._id = id
         this._steps = steps
-        this._onStepRun = onStepRun
-        this._choiseIndex = choiseIndex
+        this._onStepStart = props?.onStepStart
+        this._choiseIndex = props?.choiseIndex
     }
 
     private _id: LabelIdType
@@ -81,20 +81,13 @@ export default class Label<T extends {} = {}> {
         return res
     }
 
-    private _onStepRun: (() => void | Promise<void>) | undefined
+    private _onStepStart: ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined
     /**
      * Get the function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
      * @returns Promise<void> or void
-     * @example
-     * ```typescript
-     * newLabel("id", [], () => {
-     *     Assets.load('path/to/image1.png')
-     *     Assets.load('path/to/image2.png')
-     * })
-     * ```
      */
-    public get onStepRun(): (() => void | Promise<void>) | undefined {
-        return this._onStepRun
+    public get onStepStart(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
+        return this._onStepStart
     }
 
     private _choiseIndex: number | undefined
