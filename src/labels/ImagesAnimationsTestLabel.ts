@@ -212,25 +212,25 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
         GameWindowManager.addTickersSteps("helmlok", [
             new MoveTicker({
                 destination: { x: 100, y: 500 },
-                speed: 1200,
-                speedProgression: { type: "linear", amt: -12, limit: 60 }
+                speed: 80,
+                speedProgression: { type: "linear", amt: -20, limit: 10 }
             }),
             new MoveTicker({
                 destination: { x: 1700, y: 500 },
-                speed: 6,
-                speedProgression: { type: "linear", amt: 3 }
+                speed: 10,
+                speedProgression: { type: "linear", amt: 20, limit: 80 }
             }),
             Repeat,
         ])
         GameWindowManager.addTickersSteps("skully", [
             new MoveTicker({
                 destination: { x: 500, y: 500 },
-                speed: 60,
+                speed: 40,
             }),
             Pause(0.5),
             new MoveTicker({
                 destination: { x: 100, y: 100 },
-                speed: 60,
+                speed: 40,
             }),
         ])
     }

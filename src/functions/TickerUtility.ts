@@ -6,9 +6,10 @@ import { ITickerProgrationExponential, ITickerProgrationLinear, TickerProgration
  * @param args The arguments that are passed to the ticker
  * @param propertyName The property name that will be updated 
  * @param progression The progression of the ticker
+ * @param amtConvert The function that converts the amount of progression
  * @returns 
  */
-export function updateTickerProgression<T extends {}>(args: T, propertyName: keyof T, progression: TickerProgrationType) {
+export function updateTickerProgression<T extends {}>(args: T, propertyName: keyof T, progression: TickerProgrationType, amtConvert?: (amt: number) => number) {
     if (args[propertyName] === undefined
         || !progression
         || args[propertyName] === progression.limit
@@ -33,8 +34,8 @@ export function updateTickerProgression<T extends {}>(args: T, propertyName: key
         typeof (args as any)[propertyName].y === "number"
     ) {
         if (progression.type === "linear") {
-            (args as any)[propertyName].x = getLinearProgression((args as any)[propertyName].x, progression);
-            (args as any)[propertyName].y = getLinearProgression((args as any)[propertyName].y, progression)
+            (args as any)[propertyName].x = getLinearProgression((args as any)[propertyName].x, progression, amtConvert);
+            (args as any)[propertyName].y = getLinearProgression((args as any)[propertyName].y, progression, amtConvert)
         }
         else if (progression.type === "exponential") {
             (args as any)[propertyName].x = getExponentialProgression((args as any)[propertyName].x, progression);
@@ -43,7 +44,7 @@ export function updateTickerProgression<T extends {}>(args: T, propertyName: key
     }
 }
 
-function getLinearProgression(number: number, progression: ITickerProgrationLinear): number {
+function getLinearProgression(number: number, progression: ITickerProgrationLinear, amtConvert?: ((amt: number) => number)): number {
     if (progression.limit !== undefined) {
         if (number > progression.limit && progression.amt > 0) {
             return progression.limit
@@ -51,6 +52,9 @@ function getLinearProgression(number: number, progression: ITickerProgrationLine
         else if (number < progression.limit && progression.amt < 0) {
             return progression.limit
         }
+    }
+    if (amtConvert) {
+        return number + amtConvert(progression.amt)
     }
     return number + (progression.amt / 60)
 }
