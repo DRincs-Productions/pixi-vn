@@ -77,7 +77,7 @@ export function clearDialogue(): void {
  *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
  *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
  *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
- *     new ChoiceMenuOption("Base Canvas Element Test Label", BaseCanvasElementTestLabel, {})
+ *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
  * ])
  * ```
  */
