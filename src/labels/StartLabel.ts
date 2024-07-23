@@ -30,10 +30,12 @@ export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___"
     ]
 )
 
-const openWiki = newLabel("___pixi_vn_open_wiki___",
+const openLink = newLabel<{
+    link: string
+}>("___pixi_vn_open_link___",
     [
         (props) => {
-            window.open("https://pixi-vn.web.app/")
+            window.open(props.link)
             GameStepManager.goNext(props)
         },
     ]
@@ -47,12 +49,13 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
             GameWindowManager.clear()
             setDialogue({ character: juliette, text: "Which test would you like to start with?" })
             setChoiceMenuOptions([
-                new ChoiceMenuOption("Open Pixi’VN Wiki", openWiki),
-                new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest),
-                new ChoiceMenuOption("Canvas Events Test Label", canvasEventsTestLabel),
-                new ChoiceMenuOption("Base Canvas Element Test", baseCanvasElementTestLabel),
-                new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel),
-                new ChoiceMenuOption("Markdown Test", markdownTest),
+                new ChoiceMenuOption("Open Pixi’VN Wiki", openLink, { link: "https://pixi-vn.web.app/" }),
+                new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest, {}),
+                new ChoiceMenuOption("Canvas Events Test Label", canvasEventsTestLabel, {}),
+                new ChoiceMenuOption("Base Canvas Element Test", baseCanvasElementTestLabel, {}),
+                new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),
+                new ChoiceMenuOption("Markdown Test", markdownTest, {}),
+                new ChoiceMenuOption("Open Pixi’VN Github Issues", openLink, { link: "https://github.com/DRincs-Productions/pixi-vn/issues" }),
             ])
         },
         (props) => GameStepManager.jumpLabel(RESTART_TEST_LABEL, props),

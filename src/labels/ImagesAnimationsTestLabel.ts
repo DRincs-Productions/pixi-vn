@@ -30,13 +30,13 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
     async () => {
         setDialogue({ character: juliette, text: "Here's what they can do." })
         setChoiceMenuOptions([
-            new ChoiceMenuOption("Dissolve effect", imagesDissolveTest),
-            new ChoiceMenuOption("Fade effect", imagesFadeTest),
-            new ChoiceMenuOption("Rotate", imagesRotateTest),
-            new ChoiceMenuOption("Move", imagesMoveTest),
-            new ChoiceMenuOption("Zoom", imagesZoomTest),
-            new ChoiceMenuOption("Move in/out", imagesMoveInOutTest),
-            new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest),
+            new ChoiceMenuOption("Dissolve effect", imagesDissolveTest, {}),
+            new ChoiceMenuOption("Fade effect", imagesFadeTest, {}),
+            new ChoiceMenuOption("Rotate", imagesRotateTest, {}),
+            new ChoiceMenuOption("Move", imagesMoveTest, {}),
+            new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
+            new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
+            new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
             new ChoiceMenuOptionClose("Cancel", true),
         ])
     },

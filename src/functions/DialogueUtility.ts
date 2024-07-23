@@ -73,15 +73,15 @@ export function clearDialogue(): void {
  * @example
  * ```typescript
  * setChoiceMenuOptions([
- *     new ChoiceMenuOption("Events Test", EventsTestLabel),
- *     new ChoiceMenuOption("Show Image Test", ShowImageTest, "call", { image: "imageId" }),
- *     new ChoiceMenuOption("Ticker Test", TickerTestLabel),
- *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, "jump"),
- *     new ChoiceMenuOption("Base Canvas Element Test Label", BaseCanvasElementTestLabel)
+ *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
+ *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+ *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
+ *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
+ *     new ChoiceMenuOption("Base Canvas Element Test Label", BaseCanvasElementTestLabel, {})
  * ])
  * ```
  */
-export function setChoiceMenuOptions<T extends {} = {}>(options: ChoiceMenuOptionsType<T>): void {
+export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void {
     let value: IStoratedChoiceMenuOption[] = options.map((option) => {
         if (option instanceof ChoiceMenuOptionClose) {
             return {

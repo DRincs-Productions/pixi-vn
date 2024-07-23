@@ -8,7 +8,7 @@ import Label from "./Label"
  * ChoiceMenuOption is a class that contains a Label and a text that will be displayed in the menu.
  * @example
  * ```typescript
- * new ChoiceMenuOption("Hello", HelloLabel)
+ * new ChoiceMenuOption("Hello", HelloLabel, {})
  * ```
  */
 export default class ChoiceMenuOption<T extends StorageObjectType> {
@@ -31,10 +31,10 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
     /**
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected or the id of the label
+     * @param props Properties to be passed to the label, when the label is called. It be converted to a JSON string, so it cannot contain functions or classes. @default {}
      * @param type Type of the label to be opened. @default "call"
-     * @param props Properties to be passed to the label, when the label is called. it cannot contain functions or classes. @default {}
      */
-    constructor(text: string, label: Label<T> | LabelIdType, type: LabelRunModeType = "call", props?: T) {
+    constructor(text: string, label: Label<T> | LabelIdType, props: T, type: LabelRunModeType = "call") {
         if (typeof label === 'string') {
             let tLabel = getLabelById(label)
             if (!tLabel) {
