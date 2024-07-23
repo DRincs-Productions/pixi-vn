@@ -28,7 +28,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         tags: string[],
         tickerId: string
     ): void {
-        let speed = (args.speed === undefined ? 1 : args.speed) / 60
+        let speed = this.speedConvert(args.speed === undefined ? 1 : args.speed)
         let clockwise = args.clockwise === undefined ? true : args.clockwise
         let tagToRemoveAfter = args.tagToRemoveAfter || []
         if (typeof tagToRemoveAfter === "string") {
@@ -57,6 +57,9 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                 }
             })
         if (args.speedProgression)
-            updateTickerProgression(args, "speed", args.speedProgression)
+            updateTickerProgression(args, "speed", args.speedProgression, this.speedConvert)
+    }
+    private speedConvert(speed: number): number {
+        return speed / 60
     }
 }

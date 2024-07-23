@@ -142,8 +142,8 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will rotate with a anchor set to 0.
 - ${flowerTopName} will rotate with a anchor set to 0.5 and a exponential speed progression.
-- ${helmlokName} will rotate with a anchor set to 0.5, rotate 2 times, move to the right, rotate 5 times, and repeat.
-- ${skullyName} will rotate with a anchor set to 1, rotate 3 times, wait for 0.5 seconds, rotate 7 times.`
+- ${helmlokName} will rotate with a anchor set to 0.5, rotate clockwise for 2 seconds, rotate counterclockwise with a exponential (-0.05) speed progression, and when it reaches 0, it will repeat.
+- ${skullyName} will rotate with a anchor set to 1, rotate 3 seconds clockwise, wait for 0.5 seconds, and rotate 7 seconds counterclockwise.`
         })
         let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
@@ -196,10 +196,10 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
     () => {
         setDialogue({
             character: juliette, text: `Here's what's going to happen:
-- ${eggHeadName} will move to { x: 500, y: 100 } with a speed of 0.4.
-- ${flowerTopName} will move to { x: 500, y: 300 } with a speed of 0.3.
-- ${helmlokName} will move to the right with a speed of 20 and a linear speed progression of -0.2, and then move to the left with a speed of 0.1 and a linear speed progression of 0.05.
-- ${skullyName} will move to { x: 500, y: 500 } with a speed of 0.5, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 0.5.`
+- ${eggHeadName} will move to { x: 500, y: 100 } with a speed of 24.
+- ${flowerTopName} will move to { x: 500, y: 300 } with a speed of 18.
+- ${helmlokName} will move to { x: 100, y: 500 } with a speed of 150 and a linear speed progression of -2 ( limit 10 ), and then move to { x: 1700, y: 500 } with a speed of 10 and a linear speed progression of 2 ( limit 150 ), and repeat.
+- ${skullyName} will move to { x: 500, y: 500 } with a speed of 40, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 40.`
         })
         GameWindowManager.addTicker("eggHead", new MoveTicker({
             destination: { x: 500, y: 100 },
@@ -212,13 +212,13 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
         GameWindowManager.addTickersSteps("helmlok", [
             new MoveTicker({
                 destination: { x: 100, y: 500 },
-                speed: 80,
-                speedProgression: { type: "linear", amt: -20, limit: 10 }
+                speed: 150,
+                speedProgression: { type: "linear", amt: -2, limit: 10 }
             }),
             new MoveTicker({
                 destination: { x: 1700, y: 500 },
                 speed: 10,
-                speedProgression: { type: "linear", amt: 20, limit: 80 }
+                speedProgression: { type: "linear", amt: 2, limit: 150 }
             }),
             Repeat,
         ])
@@ -292,36 +292,43 @@ const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
     async () => {
         setDialogue({
             character: juliette, text: `Here's what's going to happen:
-- ${eggHeadName} will move in from the top with a speed of 800. If you go next, ${eggHeadName} will move out from the bottom with a speed of 800.
-- ${flowerTopName} will move in from the right with a speed of 800 and a speed progression of 0.02. If you go next, ${flowerTopName} will move out from the left with a speed of 800 and a speed progression of 0.02.
-- ${helmlokName} will move in from the left with a speed of 800. If you go next, ${helmlokName} will move out from the right with a speed of 800.
-- ${skullyName} will move in from the bottom with a speed of 800 and a speed progression of 0.02. If you go next, ${skullyName} will move out from the top with a speed of 800 and a speed progression of 0.02.`
+- ${eggHeadName} will move in from the top with a speed of 80. If you go next, ${eggHeadName} will move out from the bottom with a speed of 80.
+- ${flowerTopName} will move in from the right with a speed of 80 and a speed progression of 0.02. If you go next, ${flowerTopName} will move out from the left with a speed of 80 and a speed progression of 0.02.
+- ${helmlokName} will move in from the left with a speed of 80. If you go next, ${helmlokName} will move out from the right with a speed of 80.
+- ${skullyName} will move in from the bottom with a speed of 80 and a speed progression of 0.02. If you go next, ${skullyName} will move out from the top with a speed of 80 and a speed progression of 0.02.`
         })
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
         let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
         let skully = new CanvasImage({ x: 300, y: 300 }, skullyImage)
-        moveIn("eggHead", eggHead, { speed: 800, direction: "down" })
+        moveIn("eggHead", eggHead, { speed: 80, direction: "down" })
         moveIn("flowerTop", flowerTop, {
-            speed: 800, direction: "left",
+            speed: 80, direction: "left",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
-        moveIn("helmlok", helmlok, { speed: 800, direction: "right" })
+        moveIn("helmlok", helmlok, { speed: 80, direction: "right" })
         moveIn("skully", skully, {
-            speed: 800, direction: "up",
+            speed: 80, direction: "up",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
     },
     () => {
-        moveOut("eggHead", { speed: 800, direction: "down" })
-        moveOut("flowerTop", { speed: 800, direction: "left" })
-        moveOut("helmlok", { speed: 800, direction: "right" })
-        moveOut("skully", { speed: 800, direction: "up" })
+        moveOut("eggHead", { speed: 80, direction: "down" })
+        moveOut("flowerTop", { speed: 80, direction: "left" })
+        moveOut("helmlok", { speed: 80, direction: "right" })
+        moveOut("skully", { speed: 80, direction: "up" })
     }
 ])
 
 const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
     async () => {
+        setDialogue({
+            character: juliette, text: `Here's what's going to happen:
+- ${eggHeadName} will zoom in with a speed of 3. If you go next, ${eggHeadName} will zoom out with a speed of 3.
+- ${flowerTopName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${flowerTopName} will zoom out with a speed of 3.
+- ${helmlokName} will zoom in with a speed of 3. If you go next, ${helmlokName} will zoom out with a speed of 1.
+- ${skullyName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${skullyName} will zoom out with a speed of 3 and a speed progression of 0.02.`
+        })
         GameWindowManager.removeCanvasElements()
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
@@ -344,7 +351,7 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
         zoomOut("flowerTop", { speed: 3, direction: "left" })
-        zoomOut("helmlok", { speed: 3, direction: "right" })
+        zoomOut("helmlok", { speed: 1, direction: "right" })
         zoomOut("skully", {
             speed: 3, direction: "up",
             speedProgression: { type: "exponential", percentage: 0.02 }

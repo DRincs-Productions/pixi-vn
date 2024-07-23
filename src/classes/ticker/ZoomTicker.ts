@@ -31,16 +31,14 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         let ySpeed = 0.1
         if (args.speed) {
             if (typeof args.speed === "number") {
-                xSpeed = args.speed
-                ySpeed = args.speed
+                xSpeed = this.speedConvert(args.speed)
+                ySpeed = this.speedConvert(args.speed)
             }
             else {
-                xSpeed = args.speed.x
-                ySpeed = args.speed.y
+                xSpeed = this.speedConvert(args.speed.x)
+                ySpeed = this.speedConvert(args.speed.y)
             }
         }
-        xSpeed /= 60
-        ySpeed /= 60
         let tagToRemoveAfter = args.tagToRemoveAfter || []
         if (typeof tagToRemoveAfter === "string") {
             tagToRemoveAfter = [tagToRemoveAfter]
@@ -117,7 +115,10 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 }
             })
         if (args.speedProgression)
-            updateTickerProgression(args, "speed", args.speedProgression)
+            updateTickerProgression(args, "speed", args.speedProgression, this.speedConvert)
+    }
+    private speedConvert(speed: number): number {
+        return speed / 60
     }
 
     onEndOfTicker<T extends Container = Container>(
