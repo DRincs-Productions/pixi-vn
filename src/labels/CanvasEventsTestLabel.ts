@@ -99,7 +99,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
 
             // Create a background...
             const backgroundT = await Assets.load('https://pixijs.com/assets/bg_button.jpg');
-            const background = CanvasSprite.from(backgroundT);
+            const background = new CanvasSprite(backgroundT);
 
             background.width = GameWindowManager.screen.width;
             background.height = GameWindowManager.screen.height;
@@ -108,8 +108,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             GameWindowManager.addCanvasElement("bg", background);
 
             // Create some textures from an image path
-            const textureButtonT = await Assets.load('https://pixijs.com/assets/button.png');
-            const textureButton = CanvasSprite.from(textureButtonT);
+            const textureButton = await Assets.load('https://pixijs.com/assets/button.png');
 
             const buttons = [];
 
@@ -152,7 +151,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
         }
     ],
     {
-        onStepStart: async () => {
+        onLoadStep: async () => {
             await Assets.load([
                 'https://pixijs.com/assets/bg_button.jpg',
                 'https://pixijs.com/assets/button.png',

@@ -39,6 +39,7 @@ export default class Label<T extends {} = {}> {
         this._id = id
         this._steps = steps
         this._onStepStart = props?.onStepStart
+        this._onLoadStep = props?.onLoadStep
         this._choiseIndex = props?.choiseIndex
     }
 
@@ -83,11 +84,27 @@ export default class Label<T extends {} = {}> {
 
     private _onStepStart: ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined
     /**
-     * Get the function that will be executed before any step is executed, is useful for example to make sure all images used have been cached
+     * Is a function that will be executed in {@link Label#onStepStart} and when the user goes back to it or when the user laods a save file.
      * @returns Promise<void> or void
      */
     public get onStepStart(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
-        return this._onStepStart
+        return async (stepIndex: number, label: Label<T>) => {
+            if (this._onLoadStep) {
+                await this._onLoadStep(stepIndex, label)
+            }
+            if (this._onStepStart) {
+                return await this._onStepStart(stepIndex, label)
+            }
+        }
+    }
+
+    private _onLoadStep: ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined
+    /**
+     * Get the function that will be executed a old step is reloaded. A step is reloaded when the user goes back to it or when the user laods a save file.
+     * @returns Promise<void> or void
+     */
+    public get onLoadStep(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
+        return this._onLoadStep
     }
 
     private _choiseIndex: number | undefined

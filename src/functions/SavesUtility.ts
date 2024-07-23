@@ -42,8 +42,8 @@ export function getSaveJson() {
  * @param data The save data
  * @param navigate The function to navigate to a path
  */
-export function loadSaveData(data: ISaveData, navigate: (path: string) => void) {
-    GameStepManager.import(data.stepData);
+export async function loadSaveData(data: ISaveData, navigate: (path: string) => void) {
+    await GameStepManager.import(data.stepData);
     GameStorageManager.import(data.storageData);
     GameWindowManager.import(data.canvasData);
     navigate(data.path);
@@ -77,8 +77,8 @@ export function loadSaveData(data: ISaveData, navigate: (path: string) => void) 
  * }
  * ```
  */
-export function loadSaveJson(dataString: string, navigate: (path: string) => void) {
-    loadSaveData(jsonToSaveData(dataString), navigate);
+export async function loadSaveJson(dataString: string, navigate: (path: string) => void) {
+    await loadSaveData(jsonToSaveData(dataString), navigate);
 }
 
 /**

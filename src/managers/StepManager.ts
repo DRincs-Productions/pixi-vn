@@ -502,7 +502,7 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static goBack(navigate: (path: string) => void, steps: number = 1) {
+    public static async goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
             console.warn("[Pixi'VN] Steps must be greater than 0")
             return
@@ -515,6 +515,9 @@ export default class GameStepManager {
         if (restoredStep) {
             GameStepManager._originalStepData = restoredStep
             GameStepManager._openedLabels = createExportableElement(restoredStep.openedLabels)
+            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onLoadStep) {
+                await GameStepManager.currentLabel.onLoadStep(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+            }
             GameStorageManager.import(createExportableElement(restoredStep.storage))
             GameWindowManager.import(createExportableElement(restoredStep.canvas))
             navigate(restoredStep.path)
@@ -588,14 +591,14 @@ export default class GameStepManager {
      * Import the history from a JSON string.
      * @param dataString The history in a JSON string.
      */
-    public static importJson(dataString: string) {
-        GameStepManager.import(JSON.parse(dataString))
+    public static async importJson(dataString: string) {
+        await GameStepManager.import(JSON.parse(dataString))
     }
     /**
      * Import the history from an object.
      * @param data The history in an object.
      */
-    public static import(data: object) {
+    public static async import(data: object) {
         GameStepManager.clear()
         try {
             if (data.hasOwnProperty("stepsHistory")) {
@@ -621,6 +624,10 @@ export default class GameStepManager {
             }
             else {
                 console.warn("[Pixi'VN] Could not import originalStepData data, so will be ignored")
+            }
+
+            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onLoadStep) {
+                await GameStepManager.currentLabel.onLoadStep(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
             }
         }
         catch (e) {
