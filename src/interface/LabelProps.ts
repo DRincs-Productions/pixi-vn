@@ -25,6 +25,13 @@ export default interface LabelProps<T extends {}> {
      */
     onLoadStep?: (stepIndex: number, label: Label<T>) => void | Promise<void>,
     /**
+     * Is a function that will be executed when the step ends.
+     * @param stepIndex Step index
+     * @param label Label
+     * @returns
+     */
+    onStepEnd?: (stepIndex: number, label: Label<T>) => void | Promise<void>,
+    /**
      * Is the index of the choice that the label will perform. This variable is used in the system.
      */
     choiseIndex?: number

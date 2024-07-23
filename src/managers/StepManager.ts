@@ -246,6 +246,9 @@ export default class GameStepManager {
             console.warn("[Pixi'VN] The player must make a choice")
             return
         }
+        if (GameStepManager.currentLabel && GameStepManager.currentLabel.onStepEnd) {
+            await GameStepManager.currentLabel.onStepEnd(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+        }
         GameStepManager.increaseCurrentStepIndex()
         return await GameStepManager.runCurrentStep(props, choiseMade)
     }
@@ -337,6 +340,10 @@ export default class GameStepManager {
             if (!tempLabel) {
                 throw new Error(`[Pixi'VN] Label ${labelId} not found`)
             }
+
+            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onStepEnd) {
+                await GameStepManager.currentLabel.onStepEnd(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+            }
             GameStepManager.pushNewLabel(tempLabel.id)
         }
         catch (e) {
@@ -394,6 +401,10 @@ export default class GameStepManager {
             let tempLabel = getLabelById<Label<T>>(labelId)
             if (!tempLabel) {
                 throw new Error(`[Pixi'VN] Label ${labelId} not found`)
+            }
+
+            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onStepEnd) {
+                await GameStepManager.currentLabel.onStepEnd(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
             }
             GameStepManager.pushNewLabel(tempLabel.id)
         }

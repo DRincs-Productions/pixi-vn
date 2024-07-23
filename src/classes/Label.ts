@@ -40,6 +40,7 @@ export default class Label<T extends {} = {}> {
         this._steps = steps
         this._onStepStart = props?.onStepStart
         this._onLoadStep = props?.onLoadStep
+        this._onStepEnd = props?.onStepEnd
         this._choiseIndex = props?.choiseIndex
     }
 
@@ -105,6 +106,15 @@ export default class Label<T extends {} = {}> {
      */
     public get onLoadStep(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
         return this._onLoadStep
+    }
+
+    private _onStepEnd: ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined
+    /**
+     * Is a function that will be executed when the step ends.
+     * @returns Promise<void> or void
+     */
+    public get onStepEnd(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
+        return this._onStepEnd
     }
 
     private _choiseIndex: number | undefined
