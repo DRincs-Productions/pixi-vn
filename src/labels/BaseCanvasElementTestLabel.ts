@@ -48,11 +48,17 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             removeCanvasElement("container");
             setDialogue({
                 character: juliette,
-                text: `Here's what's going to happen: I'm going to create some text elements with different styles and put them on the stage.
+                text: `Here's what's going to happen: I'm going to create some CanvasText with different styles and put them on the stage.
 But it will generate a warn message, because the FillGradient or FillPattern has not yet been supported by the Pixi’VN ( you can see the status of the issue here: [#76](https://github.com/DRincs-Productions/pixi-vn/issues/76)).`
             })
 
-            const basicText = new CanvasText({ text: 'Basic text in pixi' });
+            const basicStyle = new TextStyle({
+                fill: '#ffffff',
+            });
+            const basicText = new CanvasText({
+                text: 'Basic text in pixi',
+                style: basicStyle
+            });
 
             basicText.x = 50;
             basicText.y = 100;
@@ -78,7 +84,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
                 fill: { fill },
                 stroke: { color: '#4a1850', width: 5, join: 'round' },
                 dropShadow: {
-                    color: '#000000',
+                    color: '#ff5f74',
                     blur: 4,
                     angle: Math.PI / 6,
                     distance: 6,
