@@ -69,6 +69,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
 
             // Create the bunny sprite
             const sprite = CanvasSprite.from(texture);
+            sprite.scale.set(3);
 
             // Set the initial position
             sprite.anchor.set(0.5);
