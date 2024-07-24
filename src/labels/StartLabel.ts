@@ -8,6 +8,7 @@ import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
 import { customTickerCanvasElementTestLabel } from "./CustomTickerCanvasElementTestLabel";
 import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
 import { markdownTest } from "./MarkdownTest";
+import { stepLabelTestLAbel } from "./StepLabelTest";
 import { juliette } from "./TestConstant";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
@@ -55,6 +56,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Canvas Events Test", canvasEventsTestLabel, {}),
                 new ChoiceMenuOption("Base Canvas Element Test", baseCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),
+                new ChoiceMenuOption("Steps and Labels Test", stepLabelTestLAbel, {}),
                 new ChoiceMenuOption("Markdown Test", markdownTest, {}),
                 new ChoiceMenuOption("Open Pixi’VN Github Issues", openLink, { link: "https://github.com/DRincs-Productions/pixi-vn/issues" }),
             ])
