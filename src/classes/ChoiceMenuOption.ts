@@ -25,13 +25,33 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      */
     type: LabelRunModeType
     /**
-     * Properties to be passed to the label
+     * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
+     * @example
+     * ```tsx
+     * setChoiceMenuOptions([
+     *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
+     * ])
+     * return <List>
+     *     {getChoiceMenuOptions()?.map((item, index) => {
+     *         return (
+     *             <ChoiceButton
+     *                 disabled={item.props.disabled}
+     *                 onClick={() => {
+     *                     afterSelectChoice(item)
+     *                 }}
+     *             >
+     *                 {item.text}
+     *             </ChoiceButton>
+     *         )
+     *     })}
+     * </List>
+     * ```
      */
     props: StorageObjectType = {}
     /**
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected or the id of the label
-     * @param props Properties to be passed to the label, when the label is called. It be converted to a JSON string, so it cannot contain functions or classes. @default {}
+     * @param props Properties to be passed to the label and olther parameters that you can use when get all the choice menu options. It be converted to a JSON string, so it cannot contain functions or classes.
      * @param type Type of the label to be opened. @default "call"
      */
     constructor(text: string, label: Label<T> | LabelIdType, props: T, type: LabelRunModeType = "call") {
@@ -79,7 +99,27 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      */
     type: CloseType = Close
     /**
-     * Properties to be passed to the label
+     * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
+     * @example
+     * ```tsx
+     * setChoiceMenuOptions([
+     *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
+     * ])
+     * return <List>
+     *     {getChoiceMenuOptions()?.map((item, index) => {
+     *         return (
+     *             <ChoiceButton
+     *                 disabled={item.props.disabled}
+     *                 onClick={() => {
+     *                     afterSelectChoice(item)
+     *                 }}
+     *             >
+     *                 {item.text}
+     *             </ChoiceButton>
+     *         )
+     *     })}
+     * </List>
+     * ```
      */
     props: StorageObjectType = {}
     /**
@@ -106,7 +146,27 @@ export type IStoratedChoiceMenuOption = {
      */
     type: LabelRunModeType
     /**
-     * Properties to be passed to the label
+     * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
+     * @example
+     * ```tsx
+     * setChoiceMenuOptions([
+     *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
+     * ])
+     * return <List>
+     *     {getChoiceMenuOptions()?.map((item, index) => {
+     *         return (
+     *             <ChoiceButton
+     *                 disabled={item.props.disabled}
+     *                 onClick={() => {
+     *                     afterSelectChoice(item)
+     *                 }}
+     *             >
+     *                 {item.text}
+     *             </ChoiceButton>
+     *         )
+     *     })}
+     * </List>
+     * ```
      */
     props: StorageObjectType
 } | {
