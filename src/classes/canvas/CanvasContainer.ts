@@ -80,9 +80,6 @@ export function getMemoryContainer<T extends Container>(element: T): ICanvasCont
 }
 
 export function setMemoryContainer<T extends Container>(element: T | Container, memory: ContainerOptions) {
-    memory.width && (element.width = memory.width)
-    memory.height && (element.height = memory.height)
-
     memory.isRenderGroup && (element.isRenderGroup = memory.isRenderGroup)
     memory.blendMode && (element.blendMode = memory.blendMode)
     memory.tint && (element.tint = memory.tint)
@@ -118,4 +115,9 @@ export function setMemoryContainer<T extends Container>(element: T | Container, 
     memory.interactive && (element.interactive = memory.interactive)
     memory.interactiveChildren && (element.interactiveChildren = memory.interactiveChildren)
     memory.hitArea && (element.hitArea = memory.hitArea)
+
+    // end
+    // width and height must be set after the scale
+    memory.width && (element.width = memory.width)
+    memory.height && (element.height = memory.height)
 }
