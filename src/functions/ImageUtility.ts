@@ -334,15 +334,16 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     else {
         canvasElement = image
     }
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
 
     let container = new CanvasContainer()
     container.addChild(canvasElement)
     container.height = GameWindowManager.canvasHeight
     container.width = GameWindowManager.canvasWidth
     GameWindowManager.addCanvasElement(tag, container)
+
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
 
     if (props.direction == "up") {
         container.pivot.y = GameWindowManager.canvasHeight
