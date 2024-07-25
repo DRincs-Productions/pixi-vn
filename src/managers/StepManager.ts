@@ -109,7 +109,7 @@ export default class GameStepManager {
      */
     private static addStepHistory(step: StepLabelType<any>, choiseMade?: number) {
         let stepHistory: StepHistoryDataType = getStepSha1(step)
-        let historyStep: IHistoryStepData = {
+        let currentStepData: IHistoryStepData = {
             path: window.location.pathname,
             storage: GameStorageManager.export(),
             canvas: GameWindowManager.export(),
@@ -117,14 +117,14 @@ export default class GameStepManager {
             openedLabels: createExportableElement(GameStepManager._openedLabels),
         }
         if (GameStepManager.originalStepData) {
-            if (GameStepManager.originalStepData.openedLabels.length === historyStep.openedLabels.length) {
+            if (GameStepManager.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {
                     let lastStepDataOpenedLabelsString = JSON.stringify(GameStepManager.originalStepData.openedLabels)
-                    let historyStepOpenedLabelsString = JSON.stringify(historyStep.openedLabels)
+                    let historyStepOpenedLabelsString = JSON.stringify(currentStepData.openedLabels)
                     if (
                         lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
-                        GameStepManager.originalStepData.path === historyStep.path &&
-                        GameStepManager.originalStepData.labelIndex === historyStep.labelIndex
+                        GameStepManager.originalStepData.path === currentStepData.path &&
+                        GameStepManager.originalStepData.labelIndex === currentStepData.labelIndex
                     ) {
                         return
                     }
@@ -134,7 +134,7 @@ export default class GameStepManager {
                 }
             }
         }
-        let data = diff(GameStepManager.originalStepData, historyStep)
+        let data = diff(GameStepManager.originalStepData, currentStepData)
         if (data) {
             let dialoge: DialogueBaseModel | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
@@ -153,7 +153,7 @@ export default class GameStepManager {
                 index: GameStepManager.lastStepIndex,
                 choiceIndexMade: choiseMade
             })
-            GameStepManager.originalStepData = historyStep
+            GameStepManager.originalStepData = currentStepData
         }
         GameStepManager.increaseLastStepIndex()
     }
