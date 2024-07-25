@@ -101,6 +101,17 @@ export default class GameStepManager {
         GameStepManager._originalStepData = createExportableElement(value)
     }
 
+    private static get currentStepData(): IHistoryStepData {
+        let currentStepData: IHistoryStepData = {
+            path: window.location.pathname,
+            storage: GameStorageManager.export(),
+            canvas: GameWindowManager.export(),
+            labelIndex: GameStepManager.currentLabelStepIndex || 0,
+            openedLabels: createExportableElement(GameStepManager._openedLabels),
+        }
+        return currentStepData
+    }
+
     /* Edit History Methods */
 
     /**
@@ -109,13 +120,7 @@ export default class GameStepManager {
      */
     private static addStepHistory(step: StepLabelType<any>, choiseMade?: number) {
         let stepHistory: StepHistoryDataType = getStepSha1(step)
-        let currentStepData: IHistoryStepData = {
-            path: window.location.pathname,
-            storage: GameStorageManager.export(),
-            canvas: GameWindowManager.export(),
-            labelIndex: GameStepManager.currentLabelStepIndex || 0,
-            openedLabels: createExportableElement(GameStepManager._openedLabels),
-        }
+        let currentStepData: IHistoryStepData = GameStepManager.currentStepData
         if (GameStepManager.originalStepData) {
             if (GameStepManager.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {
