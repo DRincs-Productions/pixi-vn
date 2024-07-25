@@ -1,6 +1,6 @@
 {
   "name": "@drincs/pixi-vn",
-  "version": "0.6.4",
+  "version": "0.6.5",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.js",
   "module": "./dist/index.mjs",
@@ -23,15 +23,15 @@
   },
   "homepage": "https://pixi-vn.web.app/",
   "devDependencies": {
-    "@drincs/pixi-vn": "^0.6.2",
+    "@drincs/pixi-vn": "^0.6.4",
     "@types/crypto-js": "^4.2.2",
     "@types/css-font-loading-module": "^0.0.13",
     "@types/deep-diff": "^1.0.5",
-    "jsdom": "^24.1.0",
+    "jsdom": "^24.1.1",
     "ts-node": "^10.9.2",
-    "tsup": "^8.1.2",
-    "typescript": "^5.5.3",
-    "vitest": "^1.6.0"
+    "tsup": "^8.2.3",
+    "typescript": "^5.5.4",
+    "vitest": "^2.0.4"
   },
   "dependencies": {
     "crypto-js": "^4.2.0",
