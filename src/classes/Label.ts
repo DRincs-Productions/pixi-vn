@@ -1,9 +1,7 @@
-import { getLabelById } from "../decorators"
-import { checkIfStepsIsEqual } from "../functions/StepLabelUtility"
 import { LabelProps } from "../interface"
 import { LabelIdType } from "../types/LabelIdType"
-import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
+import LabelAbstract from "./LabelAbstract"
 
 /**
  * Label is a class that contains a list of steps, which will be performed as the game continues.
@@ -29,27 +27,15 @@ import { StepLabelType } from "../types/StepLabelType"
  * GameStepManager.callLabel(StartLabel)
  * ```
  */
-export default class Label<T extends {} = {}> {
+export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T> {
     /**
      * @param id is the id of the label
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: LabelProps<T>) {
-        this._id = id
+    constructor(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: LabelProps<Label<T>>) {
+        super(id, props)
         this._steps = steps
-        this._onStepStart = props?.onStepStart
-        this._onLoadStep = props?.onLoadStep
-        this._onStepEnd = props?.onStepEnd
-        this._choiseIndex = props?.choiseIndex
-    }
-
-    private _id: LabelIdType
-    /**
-     * Get the id of the label. This variable is used in the system to get the label by id, {@link getLabelById}
-     */
-    public get id(): LabelIdType {
-        return this._id
     }
 
     private _steps: StepLabelType<T>[] | (() => StepLabelType<T>[])
@@ -63,62 +49,5 @@ export default class Label<T extends {} = {}> {
             return this._steps()
         }
         return this._steps
-    }
-
-    /**
-     * Get the corresponding steps number
-     * @param externalSteps
-     * @returns Numer of corresponding steps, for example, if externalSteps is [ABC, DEF, GHI] and the steps of the label is [ABC, GHT], the result will be 1
-     */
-    public getCorrespondingStepsNumber(externalSteps: StepHistoryDataType[] | StepLabelType[]): number {
-        if (externalSteps.length === 0) {
-            return 0
-        }
-        let res: number = 0
-        externalSteps.forEach((step, index) => {
-            if (checkIfStepsIsEqual(step, this.steps[index])) {
-                res = index
-            }
-        })
-        return res
-    }
-
-    private _onStepStart: ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined
-    /**
-     * Is a function that will be executed in {@link Label#onStepStart} and when the user goes back to it or when the user laods a save file.
-     * @returns Promise<void> or void
-     */
-    public get onStepStart(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
-        return async (stepIndex: number, label: Label<T>) => {
-            if (this._onLoadStep) {
-                await this._onLoadStep(stepIndex, label)
-            }
-            if (this._onStepStart) {
-                return await this._onStepStart(stepIndex, label)
-            }
-        }
-    }
-
-    private _onLoadStep: ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined
-    /**
-     * Get the function that will be executed a old step is reloaded. A step is reloaded when the user goes back to it or when the user laods a save file.
-     * @returns Promise<void> or void
-     */
-    public get onLoadStep(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
-        return this._onLoadStep
-    }
-
-    private _onStepEnd: ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined
-    /**
-     * Is a function that will be executed when the step ends.
-     * @returns Promise<void> or void
-     */
-    public get onStepEnd(): ((stepIndex: number, label: Label<T>) => void | Promise<void>) | undefined {
-        return this._onStepEnd
-    }
-
-    private _choiseIndex: number | undefined
-    public get choiseIndex(): number | undefined {
-        return this._choiseIndex
     }
 }
