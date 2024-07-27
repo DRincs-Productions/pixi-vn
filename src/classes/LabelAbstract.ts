@@ -28,8 +28,6 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> {
 
     /**
      * Get the steps of the label.
-     * This class should be extended and the steps method should be overridden.
-     * Every time you update this list will also be updated when the other game versions load.
      */
     public abstract get steps(): StepLabelType<TProps>[]
 

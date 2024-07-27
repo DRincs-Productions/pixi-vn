@@ -41,8 +41,6 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
     private _steps: StepLabelType<T>[] | (() => StepLabelType<T>[])
     /**
      * Get the steps of the label.
-     * This class should be extended and the steps method should be overridden.
-     * Every time you update this list will also be updated when the other game versions load.
      */
     public get steps(): StepLabelType<T>[] {
         if (typeof this._steps === "function") {
