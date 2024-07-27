@@ -12,16 +12,19 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: StepLabelJsonType[], props?: LabelProps<LabelJson<T>>) {
+    constructor(id: LabelIdType, steps: StepLabelJsonType[] | (() => StepLabelJsonType[]), props?: LabelProps<LabelJson<T>>) {
         super(id, props)
         this._steps = steps
     }
 
-    private _steps: StepLabelJsonType[]
+    private _steps: StepLabelJsonType[] | (() => StepLabelJsonType[])
     /**
      * Get the steps of the label.
      */
     public get steps(): StepLabelType<T>[] {
+        if (typeof this._steps === "function") {
+            return this._steps().map(this.stepConverter)
+        }
         return this._steps.map(this.stepConverter)
     }
 
