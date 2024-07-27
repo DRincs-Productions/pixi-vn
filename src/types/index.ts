@@ -6,6 +6,7 @@ export type { default as HistoryChoiceMenuOption } from './HistoryChoiceMenuOpti
 export type { default as LabelRunModeType } from './LabelRunModeType';
 export type { PauseType } from './PauseType';
 export type { RepeatType } from './RepeatType';
+export type { default as StepLabelJsonType } from './StepLabelJsonType';
 export type { StepLabelPropsType, StepLabelResultType, StepLabelType } from './StepLabelType';
 export type { StorageElementType, StorageObjectType } from './StorageElementType';
 
