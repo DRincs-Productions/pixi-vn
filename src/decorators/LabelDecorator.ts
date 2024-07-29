@@ -13,7 +13,7 @@ export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
  * @param props The properties of the label
  * @returns The created label
  */
-export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: Omit<LabelProps<T>, "choiseIndex">): Label<T> {
+export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: Omit<LabelProps<Label<T>>, "choiseIndex">): Label<T> {
     if (registeredLabels[id]) {
         console.info(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
     }
