@@ -2,7 +2,7 @@
 
 Pixi’VN is a npm package that provides various features for creating visual novels, has functions to manage story steps, saving and loading, variable storage, dialogues, character,canvas management, and much more.
 
-Pixi’VN + [Templates](https://pixi-vn.web.app/start/getting-started.html#pivi-vn-templates) provides a complete solution and is in effect a visual novel engine.
+Pixi’VN + [Templates](#project-initialization) provides a complete solution and is in effect a visual novel engine.
 
 It is designed for web developers, with basic experience in JavaScript/TypeScript, who want to create a visual novel with a modern 2D rendering engine and their favorite JavaScript framework.
 
