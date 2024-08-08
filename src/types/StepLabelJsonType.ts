@@ -1,10 +1,16 @@
-import { ChoiceMenuOptionsType } from "../types"
+import { LabelRunModeType, StorageObjectType } from "../types"
+import { LabelIdType } from "./LabelIdType"
 
 /**
  * Step label JSON type
  */
 type StepLabelJsonType = {
-    currentChoiceMenuOptions?: ChoiceMenuOptionsType<{}>
+    currentChoiceMenuOptions?: {
+        text: string
+        label: LabelIdType
+        type: LabelRunModeType
+        props: StorageObjectType
+    }
     dialog?: {
         character: string,
         text: string,
