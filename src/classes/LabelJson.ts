@@ -4,6 +4,7 @@ import { GameStepManager } from "../managers"
 import { StepLabelJsonType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
+import ChoiceMenuOption from "./ChoiceMenuOption"
 import LabelAbstract from "./LabelAbstract"
 
 export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJson<T>, T> {
@@ -31,7 +32,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
     private stepConverter(step: StepLabelJsonType): StepLabelType<T> {
         return (props) => {
             if (step.currentChoiceMenuOptions) {
-                setChoiceMenuOptions(step.currentChoiceMenuOptions)
+                let options = step.currentChoiceMenuOptions.map((option) => {
+                    return new ChoiceMenuOption(option.text, option.label, option.props, option.type)
+                })
+                setChoiceMenuOptions(options)
             }
             else {
                 clearChoiceMenuOptions()

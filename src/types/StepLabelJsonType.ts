@@ -10,7 +10,7 @@ type StepLabelJsonType = {
         label: LabelIdType
         type: LabelRunModeType
         props: StorageObjectType
-    }
+    }[]
     dialog?: {
         character: string,
         text: string,
