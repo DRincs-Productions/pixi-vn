@@ -1,9 +1,8 @@
-import { LabelIdType } from "./LabelIdType";
 import StepLabelJsonType from "./StepLabelJsonType";
 
 /**
  * Label JSON type
  */
-type LabelJsonType = { [labelId: LabelIdType]: StepLabelJsonType[] }
+type LabelJsonType = { [labelId: string]: StepLabelJsonType[] }
 
 export default LabelJsonType
