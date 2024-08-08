@@ -2,6 +2,7 @@ export { clearChoiceMenuOptions, clearDialogue, getChoiceMenuOptions, getDialogu
 export { getFlag, setFlag } from './FlagsUtility';
 export { clearAllGameDatas } from './GameUtility';
 export { addImage, loadImage, moveIn, moveOut, removeCanvasElement, removeWithDissolveTransition, removeWithFadeTransition, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from './ImageUtility';
+export { importPixiVNJson } from './Importer';
 export { getSaveData, getSaveJson, loadSaveData, loadSaveJson } from './SavesUtility';
 export { getTexture } from './TextureUtility';
 

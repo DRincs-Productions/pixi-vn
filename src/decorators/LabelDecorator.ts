@@ -1,9 +1,10 @@
-import { Label } from "../classes"
+import { Label, LabelJson } from "../classes"
+import LabelAbstract from "../classes/LabelAbstract"
 import { LabelProps } from "../interface"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
-export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
+export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label<any> | LabelJson<any>) } = {}
 
 /**
  * Creates a new label and registers it in the system.
@@ -13,7 +14,7 @@ export const registeredLabels: { [key: LabelIdType]: Label<any> } = {}
  * @param props The properties of the label
  * @returns The created label
  */
-export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: Omit<LabelProps<T>, "choiseIndex">): Label<T> {
+export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: Omit<LabelProps<Label<T>>, "choiseIndex">): Label<T> {
     if (registeredLabels[id]) {
         console.info(`[Pixi'VN] Label ${id} already exists, it will be overwritten`)
     }
@@ -34,4 +35,12 @@ export function getLabelById<T = Label<any>>(id: LabelIdType): T | undefined {
         return
     }
     return label as T
+}
+
+/**
+ * Saves a label in the system
+ * @param label The label to be saved
+ */
+export function saveLabel<T extends LabelAbstract<any>>(label: T) {
+    registeredLabels[label.id] = label
 }
