@@ -1,5 +1,8 @@
 import { ChoiceMenuOptionsType } from "../types"
 
+/**
+ * Step label JSON type
+ */
 type StepLabelJsonType = {
     currentChoiceMenuOptions?: ChoiceMenuOptionsType<{}>
     dialog?: {
@@ -10,6 +13,7 @@ type StepLabelJsonType = {
         labelId: string,
         type: "jump" | "call",
     }
+    end?: "game_end" | "label_end"
 }
 
 export default StepLabelJsonType

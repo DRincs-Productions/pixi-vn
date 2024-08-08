@@ -16,10 +16,24 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      * Text to be displayed in the menu
      */
     text: string
+    private _label: Label<T> | LabelIdType
     /**
      * Label to be opened when the option is selected
      */
-    label: Label<T>
+    get label(): Label<T> {
+        let label = this._label
+        if (typeof label === "string") {
+            let res = getLabelById(label)
+            if (res) {
+                label = res
+            }
+            else {
+                console.error(`Label ${label} not found, so it will be closed`)
+                label = newCloseLabel()
+            }
+        }
+        return label
+    }
     /**
      * Type of the label to be opened
      */
@@ -55,17 +69,8 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      * @param type Type of the label to be opened. @default "call"
      */
     constructor(text: string, label: Label<T> | LabelIdType, props: T, type: LabelRunModeType = "call") {
-        if (typeof label === 'string') {
-            let tLabel = getLabelById(label)
-            if (!tLabel) {
-                throw new Error(`[Pixi'VN] Label ${label} not found`)
-            }
-            else {
-                label = tLabel
-            }
-        }
         this.text = text
-        this.label = label
+        this._label = label
         this.type = type
         if (props) {
             this.props = props
