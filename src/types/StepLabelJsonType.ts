@@ -12,7 +12,7 @@ type StepLabelJsonType = {
         /**
          * The text to be displayed.
          */
-        text: string
+        text: string | string[]
         /**
          * The label id to be opened.
          */

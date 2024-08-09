@@ -1,6 +1,6 @@
 import { PauseType, RepeatType } from "./types"
 
-export const PIXIVN_VERSION = '0.6.8'
+export const PIXIVN_VERSION = '0.6.9'
 export const Repeat: RepeatType = "repeat"
 /**
  * Pause the tickers for a duration.

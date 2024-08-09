@@ -33,7 +33,14 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return (props) => {
             if (step.currentChoiceMenuOptions) {
                 let options = step.currentChoiceMenuOptions.map((option) => {
-                    return new ChoiceMenuOption(option.text, option.label, option.props, option.type)
+                    let text: string = ""
+                    if (Array.isArray(option.text)) {
+                        text = option.text.join()
+                    }
+                    else {
+                        text = option.text
+                    }
+                    return new ChoiceMenuOption(text, option.label, option.props, option.type)
                 })
                 setChoiceMenuOptions(options)
             }
