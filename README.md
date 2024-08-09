@@ -23,21 +23,27 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
 ### First steps
 
 * [Characters](https://pixi-vn.web.app/start/character.html)
-* [Dialogue and Narration](https://pixi-vn.web.app/start/narration.html)
-* [Choice Menus](https://pixi-vn.web.app/start/choices.html)
-* [Label and Game Step](https://pixi-vn.web.app/start/labels.html)
-* [Game Storage](https://pixi-vn.web.app/start/storage.html)
-* [Flags Management](https://pixi-vn.web.app/start/flags.html)
+* Narration:
+  * [Dialogue](https://pixi-vn.web.app/start/dialogue.html)
+  * [Label and Game Step](https://pixi-vn.web.app/start/labels.html)
+  * [Choice Menus](https://pixi-vn.web.app/start/choices.html)
+  * [History](https://pixi-vn.web.app/start/history.html)
+* Storage:
+  * [Game Storage](https://pixi-vn.web.app/start/storage.html)
+  * [Flags Management](https://pixi-vn.web.app/start/flags.html)
+  * [Stored Classes](https://pixi-vn.web.app/start/stored-classes.html)
 * [Save and Load](https://pixi-vn.web.app/start/save.html)
-* [Images and Animations](https://pixi-vn.web.app/start/images.html)
+* Canvas:
+  * [Images and Transitions](https://pixi-vn.web.app/start/images.html)
+  * [Canvas Elements](https://pixi-vn.web.app/start/canvas-elements.html)
+  * [Animations and Effects](https://pixi-vn.web.app/start/animations-effects.html)
+  * [Tickers](https://pixi-vn.web.app/start/tickers.html)
 
-### Advanced topics
+## Advanced topics
 
-* [Canvas Elements](https://pixi-vn.web.app/advanced/canvas-elements.html)
-* [Animations and Effects](https://pixi-vn.web.app/advanced/animations-effects.html)
-* [Tickers](https://pixi-vn.web.app/advanced/tickers.html)
-* [Stored Classes](https://pixi-vn.web.app/advanced/stored-classes.html)
 * [Intecept Events](https://pixi-vn.web.app/advanced/intercept-events.html)
+* [Distribution](https://pixi-vn.web.app/advanced/distribution.html)
+* [Mobile distribution](https://pixi-vn.web.app/advanced/distribution%E2%80%90mobile.html)
 
 ## Prerequisites
 
