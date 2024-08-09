@@ -58,8 +58,8 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             }
 
             if (step.end === "game_end") {
-                // TODO end game
-                console.warn("[Pixi'VN] Game end not implemented")
+                GameStepManager.closeAllLabels()
+                GameStepManager.goNext(props)
             }
             else if (step.end === "label_end") {
                 GameStepManager.closeCurrentLabel()

@@ -291,6 +291,9 @@ export default class GameStepManager {
             }
             else {
                 GameStepManager.restorLastLabelList()
+                if (GameStepManager.gameEnd) {
+                    return await GameStepManager.gameEnd(props)
+                }
                 console.error("[Pixi'VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game")
                 return
             }
@@ -650,4 +653,15 @@ export default class GameStepManager {
             console.error("[Pixi'VN] Error importing data", e)
         }
     }
+
+    /**
+     * Function to be executed at the end of the game. It should be set in the game initialization.
+     * @example
+     * ```typescript
+     * GameStepManager.gameEnd = async (props) => {
+     *    props.navigate("/end")
+     * }
+     * ```
+     */
+    static gameEnd: StepLabelType | undefined = undefined
 }
