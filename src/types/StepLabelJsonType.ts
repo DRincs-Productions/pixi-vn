@@ -8,7 +8,7 @@ type StepLabelJsonType = {
     /**
      * Variable used to display a choice menu.
      */
-    currentChoiceMenuOptions?: {
+    choiceOptions?: {
         /**
          * The text to be displayed.
          */
@@ -52,6 +52,10 @@ type StepLabelJsonType = {
          */
         type: LabelRunModeType,
     }
+    /**
+     * If is true, the next step will be executed automatically.
+     */
+    goNextStep?: boolean
     /**
      * Variable used to end some elements of the narrative.
      * - game_end: ends the game

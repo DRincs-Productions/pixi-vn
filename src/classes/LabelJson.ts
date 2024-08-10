@@ -31,8 +31,8 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
 
     private stepConverter(step: StepLabelJsonType): StepLabelType<T> {
         return (props) => {
-            if (step.currentChoiceMenuOptions) {
-                let options = step.currentChoiceMenuOptions.map((option) => {
+            if (step.choiceOptions) {
+                let options = step.choiceOptions.map((option) => {
                     let text: string = ""
                     if (Array.isArray(option.text)) {
                         text = option.text.join()
