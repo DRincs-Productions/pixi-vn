@@ -8,7 +8,7 @@ type StepLabelJsonType = {
     /**
      * Variable used to display a choice menu.
      */
-    choiceOptions?: {
+    choices?: {
         /**
          * The text to be displayed.
          */
