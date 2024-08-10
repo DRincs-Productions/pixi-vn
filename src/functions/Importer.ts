@@ -1,6 +1,7 @@
 import { LabelJson } from "../classes";
 import { saveLabel } from "../decorators/LabelDecorator";
-import { LabelJsonType, StepLabelJsonType } from "../types";
+import { PixiVNJson } from "../interface";
+import { StepLabelJsonType } from "../types";
 
 /**
  * Import a Pixi'VN JSON to the system.
@@ -8,13 +9,7 @@ import { LabelJsonType, StepLabelJsonType } from "../types";
  * @param data The Pixi'VN JSON to be imported
  * @returns
  */
-export function importPixiVNJson(data: [LabelJsonType | string] | LabelJsonType | string) {
-    if (Array.isArray(data)) {
-        data.forEach((label) => {
-            importPixiVNJson(label)
-        })
-        return
-    }
+export function importPixiVNJson(data: PixiVNJson | string) {
     try {
         if (typeof data === "string") {
             data = JSON.parse(data)
@@ -28,7 +23,7 @@ export function importPixiVNJson(data: [LabelJsonType | string] | LabelJsonType 
         console.error("[Pixi'VN] Error parsing imported Pixi'VN JSON: data is not an object")
         return
     }
-    for (const labelId in data) {
+    for (const labelId in data.labels) {
         try {
             const steps: StepLabelJsonType[] = (data as any)[labelId]
             let label = new LabelJson(labelId, steps)
