@@ -7,11 +7,29 @@ export default class GameStorageManager {
     private constructor() { }
     public static get keysSystem() {
         return {
+            /**
+             * The key of the current dialogue memory
+             */
             CURRENT_DIALOGUE_MEMORY_KEY: "___current_dialogue_memory___",
+            /**
+             * The key of the last dialogue added in the step memory
+             */
             LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "___last_dialogue_added_in_step_memory___",
+            /**
+             * The key of the current menu options memory
+             */
             CURRENT_MENU_OPTIONS_MEMORY_KEY: "___current_menu_options_memory___",
+            /**
+             * The key of the last menu options added in the step memory
+             */
             LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "___last_menu_options_added_in_step_memory___",
+            /**
+             * The key of the characters memory
+             */
             CHARACTER_CATEGORY_KEY: "___character___",
+            /**
+             * The key of the flags memory
+             */
             FLAGS_CATEGORY_KEY: "___flags___",
         }
     }
