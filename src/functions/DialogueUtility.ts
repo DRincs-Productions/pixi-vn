@@ -7,6 +7,7 @@ import { DialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
 import { Close, HistoryChoiceMenuOption } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
+import { getFlag, setFlag } from "./FlagsUtility";
 
 /**
  * Set the dialogue to be shown in the game
@@ -46,6 +47,15 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
     }
     else {
         dialogue = props
+    }
+
+    if (getFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)) {
+        let glueDialogue = getDialogue<TDialogue>()
+        if (glueDialogue) {
+            dialogue.text = `${glueDialogue.text}${dialogue.text}`
+            dialogue = glueDialogue
+        }
+        setFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
     }
 
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueData)

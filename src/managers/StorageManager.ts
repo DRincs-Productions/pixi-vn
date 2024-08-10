@@ -31,6 +31,11 @@ export default class GameStorageManager {
              * The key of the flags memory
              */
             FLAGS_CATEGORY_KEY: "___flags___",
+            /**
+             * This variable is used to add the next dialog text into the current dialog memory.
+             * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
+             */
+            ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY: "___glue___",
         }
     }
     /**
