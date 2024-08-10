@@ -40,6 +40,11 @@ type StepLabelJsonType = {
         text: string,
     } | string
     /**
+     * This variable is used to add the next dialog text into the current dialog memory.
+     * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
+     */
+    glueEnabled?: boolean
+    /**
      * Variable used to open a label.
      */
     labelToOpen?: {

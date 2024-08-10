@@ -1,6 +1,6 @@
-import { clearChoiceMenuOptions, clearDialogue, setChoiceMenuOptions, setDialogue } from "../functions"
+import { clearChoiceMenuOptions, clearDialogue, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
 import { LabelProps } from "../interface"
-import { GameStepManager } from "../managers"
+import { GameStepManager, GameStorageManager } from "../managers"
 import { StepLabelJsonType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
@@ -48,6 +48,12 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 clearChoiceMenuOptions()
             }
 
+            if (step.glueEnabled) {
+                setFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, true)
+            }
+            else if (step.glueEnabled === false) {
+                setFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
+            }
             if (step.dialog) {
                 setDialogue(step.dialog)
             }
