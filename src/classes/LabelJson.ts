@@ -70,6 +70,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 }
             }
 
+            if (step.goNextStep) {
+                GameStepManager.goNext(props)
+            }
+
             if (step.end === "game_end") {
                 GameStepManager.closeAllLabels()
                 GameStepManager.goNext(props)
