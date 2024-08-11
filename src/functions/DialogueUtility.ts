@@ -24,8 +24,8 @@ import { getFlag, setFlag } from "./FlagsUtility";
  */
 export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBaseModel, TDialogue extends DialogueBaseModel = DialogueBaseModel>(props: {
     character: string | TCharacter,
-    text: string,
-} | string | TDialogue): void {
+    text: string | string[],
+} | string | string[] | TDialogue): void {
     let text = ''
     let character: string | undefined = undefined
     let dialogue: TDialogue | DialogueBaseModel
@@ -33,8 +33,17 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
         text = props
         dialogue = new DialogueBaseModel(text, character)
     }
+    else if (Array.isArray(props)) {
+        text = props.join()
+        dialogue = new DialogueBaseModel(text, character)
+    }
     else if (!(props instanceof DialogueBaseModel)) {
-        text = props.text
+        if (Array.isArray(props.text)) {
+            text = props.text.join()
+        }
+        else {
+            text = props.text
+        }
         if (props.character) {
             if (typeof props.character === 'string') {
                 character = props.character
