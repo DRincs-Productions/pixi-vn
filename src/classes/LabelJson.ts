@@ -1,4 +1,4 @@
-import { clearChoiceMenuOptions, clearDialogue, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
+import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
 import { LabelProps } from "../interface"
 import { GameStepManager, GameStorageManager } from "../managers"
 import { StepLabelJsonType } from "../types"
@@ -56,9 +56,6 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             }
             if (step.dialog) {
                 setDialogue(step.dialog)
-            }
-            else {
-                clearDialogue()
             }
 
             if (step.labelToOpen) {

@@ -62,7 +62,6 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
         let glueDialogue = getDialogue<TDialogue>()
         if (glueDialogue) {
             dialogue.text = `${glueDialogue.text}${dialogue.text}`
-            dialogue = glueDialogue
         }
         setFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
     }
