@@ -12,7 +12,7 @@ import { StepLabelJsonType } from "../types";
 export function importPixiVNJson(data: PixiVNJson | string) {
     try {
         if (typeof data === "string") {
-            data = JSON.parse(data)
+            data = JSON.parse(data) as PixiVNJson
         }
     }
     catch (e) {
@@ -23,14 +23,17 @@ export function importPixiVNJson(data: PixiVNJson | string) {
         console.error("[Pixi'VN] Error parsing imported Pixi'VN JSON: data is not an object")
         return
     }
-    for (const labelId in data.labels) {
-        try {
-            const steps: StepLabelJsonType[] = (data as any)[labelId]
-            let label = new LabelJson(labelId, steps)
-            saveLabel(label)
-        }
-        catch (e) {
-            console.error(`[Pixi'VN] Error creating JSON label ${labelId}`, e)
+    if (data.labels) {
+        let labels = data.labels
+        for (const labelId in labels) {
+            try {
+                const steps: StepLabelJsonType[] = labels[labelId]
+                let label = new LabelJson(labelId, steps)
+                saveLabel(label)
+            }
+            catch (e) {
+                console.error(`[Pixi'VN] Error creating JSON label ${labelId}`, e)
+            }
         }
     }
 }
