@@ -1,3 +1,4 @@
+import { initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
@@ -81,6 +82,8 @@ export default class GameWindowManager {
             height: height,
             ...options
         }).then(() => {
+            initDevtools({ app: GameWindowManager._app });
+
             GameWindowManager._isInitialized = true
             // Manager.app.ticker.add(Manager.update)
             this.addCanvasIntoHTMLElement(element)
