@@ -1,20 +1,6 @@
-import { Texture } from "pixi.js";
-import { CanvasBase } from "../classes/canvas";
-import { getCanvasElementInstanceById } from "../decorators/CanvasElementDecorator";
-import { ICanvasBaseMemory, ITextureMemory } from "../interface/canvas";
-
-/**
- * Get the memory object of the PixiJS texture
- * @param texture PixiJS Texture object
- * @returns Memory object of the texture
- */
-export function getTextureMemory(texture: Texture): ITextureMemory {
-    let sourceTexture = texture.source
-    let textureMemory: ITextureMemory = {
-        image: sourceTexture.label
-    }
-    return textureMemory
-}
+import { CanvasBase } from "../../classes/canvas";
+import { getCanvasElementInstanceById } from "../../decorators/CanvasElementDecorator";
+import { ICanvasBaseMemory } from "../../interface/canvas";
 
 /**
  * Export a Canvas element to a memory object
