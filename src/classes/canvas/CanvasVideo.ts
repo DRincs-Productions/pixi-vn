@@ -17,6 +17,12 @@ export default class CanvasVideo extends CanvasImage {
     override set memory(memory: ICanvasImageMemory) {
         super.memory = memory
     }
+    set videoLink(value: string) {
+        this.imageLink = value
+    }
+    get videoLink() {
+        return this.imageLink
+    }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = Sprite.from(source, skipCache)
         let mySprite = new CanvasVideo()
