@@ -5,8 +5,8 @@ import { getTexture } from '../TextureUtility';
 
 /**
  * Add a image in the canvas.
- * Is the same that showImage, but the image is not shown.
- * If you want to show the image, then you need to use the function CanvasImage.load().
+ * Is the same that {@link showImage}, but the image is not shown.
+ * If you want to show the image, then you need to use the function {@link CanvasImage.load()}.
  * @param tag is the unique tag of the image. You can use this tag to refer to this image
  * @param imageUrl is the url of the image.
  * @returns the container of the image.
