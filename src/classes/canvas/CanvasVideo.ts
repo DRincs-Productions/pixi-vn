@@ -1,21 +1,23 @@
 import { Sprite, Texture, TextureSourceLike } from "pixi.js";
-import { getTexture } from "../../functions";
-import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
+import ICanvasVideoMemory from "../../interface/canvas/ICanvasVideoMemory";
 import CanvasImage from "./CanvasImage";
 
 export const CANVAS_VIDEO_ID = "CanvasVideo"
 
-export default class CanvasVideo extends CanvasImage {
+export default class CanvasVideo extends CanvasImage<ICanvasVideoMemory> {
     pixivnId: string = CANVAS_VIDEO_ID
-    override get memory(): ICanvasImageMemory {
+    override get memory(): ICanvasVideoMemory {
         return {
             ...super.memory,
             pixivnId: this.pixivnId,
-            imageLink: this.imageLink,
+            loop: this.loop,
+            paused: this.paused,
         }
     }
-    override set memory(memory: ICanvasImageMemory) {
+    override set memory(memory: ICanvasVideoMemory) {
         super.memory = memory
+        this.loop = memory.loop
+        this.paused = memory.paused
     }
     set videoLink(value: string) {
         this.imageLink = value
@@ -29,34 +31,37 @@ export default class CanvasVideo extends CanvasImage {
         mySprite.texture = sprite.texture
         return mySprite
     }
-    /** 
-     * Load the image from the link and set the texture of the sprite.
-     * @param image The link of the image. If it is not set, it will use the imageLink property.
-     * @returns A promise that resolves when the image is loaded.
-     */
-    async load(image?: string) {
-        if (!image) {
-            image = this.imageLink
-        }
-        return getTexture(this.imageLink)
-            .then((texture) => {
-                if (texture) {
-                    this.texture = texture
-                }
-            })
-            .catch((e) => {
-                console.error("[Pixi'VN] Error into CanvasImage.load()", e)
-            })
+
+    override async load() {
+        await super.load()
+        this.loop = this._looop
+        this.paused = this._paused
     }
 
+    private _looop: boolean = false
+    get loop() {
+        return this.texture?.source?.resource?.loop || false
+    }
     set loop(value: boolean) {
-        if (value) {
-            (this.texture.source as any).onseeked = function () {
-                this.update()
-            };
+        this._looop = value
+        if (this.texture?.source?.resource) {
+            this.texture.source.resource.loop = value
         }
     }
-    get loop() {
-        return true
+
+    private _paused: boolean = false
+    get paused() {
+        return this.texture?.source?.resource?.paused || false
+    }
+    set paused(value: boolean) {
+        this._paused = value
+        if (this.texture?.source?.resource) {
+            if (value) {
+                this.texture.source.resource.pause()
+            }
+            else {
+                this.texture.source.resource.play()
+            }
+        }
     }
 }
