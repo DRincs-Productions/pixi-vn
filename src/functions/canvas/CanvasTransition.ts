@@ -1,12 +1,14 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite } from "../../classes"
+import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite, CanvasVideo } from "../../classes"
 import { FadeAlphaTicker, MoveTicker } from "../../classes/ticker"
 import { ZoomInOutTicker } from "../../classes/ticker/ZoomTicker"
 import { Pause } from "../../constants"
 import { GameWindowManager } from "../../managers"
 import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../../types/ticker"
 import { tagToRemoveAfterType } from "../../types/ticker/TagToRemoveAfterType"
+import { checkIfVideo } from "./CanvasUtility"
 import { addImage } from "./ImageUtility"
+import { addVideo } from "./VideoUtility"
 
 /**
  * Show a image in the canvas with a disolve effect.
@@ -14,7 +16,7 @@ import { addImage } from "./ImageUtility"
  * If exist a image with the same tag, then the image is replaced and the first image is removed after the effect is done.
  * This transition is done with a {@link FadeAlphaTicker} effect.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
- * @param image The imageUrl or the canvas element
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
@@ -33,7 +35,12 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
-        canvasElement = addImage(tag, image)
+        if (checkIfVideo(image)) {
+            canvasElement = addVideo(tag, image)
+        }
+        else {
+            canvasElement = addImage(tag, image)
+        }
     }
     else {
         canvasElement = image
@@ -85,7 +92,7 @@ export function removeWithDissolveTransition(
  * Fade effect is a effect that the image is shown with a fade in.
  * If exist a image with the same tag, the existing image is removed with a fade transition, and after the effect is done, the new image is shown with a fade transition.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
- * @param image The imageUrl or the canvas element
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
@@ -105,7 +112,12 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
-        canvasElement = addImage(tag, image)
+        if (checkIfVideo(image)) {
+            canvasElement = addVideo(tag, image)
+        }
+        else {
+            canvasElement = addImage(tag, image)
+        }
     }
     else {
         canvasElement = image
@@ -160,7 +172,7 @@ type MoveInOutProps = {
 /**
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
- * @param image The imageUrl or the canvas element
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
@@ -173,7 +185,12 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
 ): Promise<void> {
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
-        canvasElement = addImage(tag, image)
+        if (checkIfVideo(image)) {
+            canvasElement = addVideo(tag, image)
+        }
+        else {
+            canvasElement = addImage(tag, image)
+        }
     }
     else {
         canvasElement = image
@@ -258,7 +275,7 @@ type ZoomInOutProps = {
 /**
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
  * @param tag The unique tag of the image. You can use this tag to refer to this image
- * @param image The imageUrl or the canvas element
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  */
@@ -270,7 +287,12 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
 ) {
     let canvasElement: CanvasSprite
     if (typeof image === "string") {
-        canvasElement = new CanvasImage({}, image)
+        if (checkIfVideo(image)) {
+            canvasElement = new CanvasVideo({}, image)
+        }
+        else {
+            canvasElement = new CanvasImage({}, image)
+        }
     }
     else {
         canvasElement = image

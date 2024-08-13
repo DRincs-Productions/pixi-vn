@@ -1,4 +1,5 @@
 import { Texture } from "pixi.js";
+import { videoFormats } from "../../constants";
 import { ITextureMemory } from "../../interface/canvas";
 import { GameWindowManager } from "../../managers";
 
@@ -21,4 +22,12 @@ export function getTextureMemory(texture: Texture): ITextureMemory {
  */
 export function removeCanvasElement(tag: string | string[]) {
     GameWindowManager.removeCanvasElement(tag)
+}
+
+export function checkIfVideo(imageUrl: string): boolean {
+    if (imageUrl.match(new RegExp(`(${videoFormats.join('|')})$`))) {
+        return true
+    } else {
+        return false
+    }
 }
