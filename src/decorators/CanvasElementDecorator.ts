@@ -1,4 +1,4 @@
-import { CanvasContainer, CanvasImage, CanvasSprite, CanvasText } from "../classes/canvas"
+import { CanvasContainer, CanvasImage, CanvasSprite, CanvasText } from "../classes"
 import CanvasBase from "../classes/canvas/CanvasBase"
 import { CANVAS_CONTAINER_ID } from "../classes/canvas/CanvasContainer"
 import { CANVAS_IMAGE_ID } from "../classes/canvas/CanvasImage"

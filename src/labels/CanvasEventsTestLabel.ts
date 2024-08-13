@@ -1,6 +1,5 @@
 import { Assets, Texture } from "pixi.js";
-import { CanvasEvent } from "../classes";
-import { CanvasSprite } from "../classes/canvas";
+import { CanvasEvent, CanvasSprite } from "../classes";
 import { eventDecorator, newLabel } from "../decorators";
 import { setDialogue } from "../functions";
 import { GameWindowManager } from "../managers";

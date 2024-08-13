@@ -1,5 +1,5 @@
 import { Texture } from 'pixi.js';
-import { CanvasImage } from '../../classes/canvas';
+import { CanvasImage } from '../../classes';
 import { GameWindowManager } from '../../managers';
 import { getTexture } from '../TextureUtility';
 

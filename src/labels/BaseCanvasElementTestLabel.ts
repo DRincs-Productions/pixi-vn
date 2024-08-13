@@ -1,5 +1,5 @@
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
-import { CanvasContainer, CanvasSprite, CanvasText } from "../classes/canvas";
+import { CanvasContainer, CanvasSprite, CanvasText } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
 import { removeCanvasElement, setDialogue } from "../functions";

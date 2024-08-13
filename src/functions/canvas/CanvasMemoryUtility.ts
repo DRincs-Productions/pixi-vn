@@ -1,4 +1,4 @@
-import { CanvasBase } from "../../classes/canvas";
+import { CanvasBase } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/CanvasElementDecorator";
 import { ICanvasBaseMemory } from "../../interface/canvas";
 

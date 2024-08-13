@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite } from "../../classes/canvas"
+import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite } from "../../classes"
 import { FadeAlphaTicker, MoveTicker } from "../../classes/ticker"
 import { ZoomInOutTicker } from "../../classes/ticker/ZoomTicker"
 import { Pause } from "../../constants"
