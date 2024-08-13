@@ -1,4 +1,5 @@
 import { CanvasContainer, CanvasImage, CanvasSprite, CanvasText } from "../classes"
+import CanvasVideo, { CANVAS_VIDEO_ID } from "../classes/canvas/CanvasAVideo"
 import CanvasBase from "../classes/canvas/CanvasBase"
 import { CANVAS_CONTAINER_ID } from "../classes/canvas/CanvasContainer"
 import { CANVAS_IMAGE_ID } from "../classes/canvas/CanvasImage"
@@ -47,6 +48,9 @@ export function getCanvasElementInstanceById<T extends CanvasBase<any>>(canvasId
         if (!eventType) {
             if (canvasId === CANVAS_CONTAINER_ID) {
                 eventType = CanvasContainer
+            }
+            else if (canvasId === CANVAS_VIDEO_ID) {
+                eventType = CanvasVideo
             }
             else if (canvasId === CANVAS_IMAGE_ID) {
                 eventType = CanvasImage

@@ -255,6 +255,13 @@ type ZoomInOutProps = {
     direction: "up" | "down" | "left" | "right",
 } & Omit<ZoomTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "type">
 
+/**
+ * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param image The imageUrl or the canvas element
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ */
 export async function zoomIn<T extends CanvasSprite | string = string>(
     tag: string,
     image: T,
@@ -315,6 +322,13 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     GameWindowManager.addTicker(tag, effect)
 }
 
+/**
+ * Remove a image from the canvas with a zoom effect. The image is zoomed out to the center of the canvas.
+ * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ * @returns A promise that is resolved when the image is loaded.
+ */
 export function zoomOut(
     tag: string,
     props: ZoomInOutProps = { direction: "right" },
