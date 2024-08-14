@@ -364,7 +364,7 @@ export default class GameStepManager {
      * Check if the current step is already completed.
      * @returns True if the current step is already completed.
      */
-    public static currentStepLabelIsAlreadyOpened() {
+    public static isCurrentStepAlreadyOpened() {
         let currentLabel = GameStepManager.currentLabelId
         if (currentLabel) {
             let lastStep = GameStepManager.allOpenedLabels[currentLabel]
