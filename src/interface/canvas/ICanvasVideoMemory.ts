@@ -6,4 +6,5 @@ import ICanvasImageMemory from "./ICanvasImageMemory";
 export default interface ICanvasVideoMemory extends ICanvasImageMemory {
     loop: boolean,
     paused: boolean,
+    currentTime: number,
 }

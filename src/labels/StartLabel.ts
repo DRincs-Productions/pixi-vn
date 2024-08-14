@@ -10,6 +10,7 @@ import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
 import { markdownTest } from "./MarkdownTest";
 import { stepLabelTestLAbel } from "./StepLabelTest";
 import { juliette } from "./TestConstant";
+import { videoTest } from "./VideoTestLabel";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
     [
@@ -53,6 +54,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
             setChoiceMenuOptions([
                 new ChoiceMenuOption("Open Pixi’VN Wiki", openLink, { link: "https://pixi-vn.web.app/" }),
                 new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest, {}),
+                new ChoiceMenuOption("Video Test", videoTest, {}),
                 new ChoiceMenuOption("Canvas Events Test", canvasEventsTestLabel, {}),
                 new ChoiceMenuOption("Base Canvas Element Test", baseCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),

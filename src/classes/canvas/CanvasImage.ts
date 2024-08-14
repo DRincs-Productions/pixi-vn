@@ -7,9 +7,9 @@ import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 export const CANVAS_IMAGE_ID = "CanvasImage"
 
 /**
- * This class is a extension of the CanvasSprite class, it has the same properties and methods,
+ * This class is a extension of the {@link CanvasSprite} class, it has the same properties and methods,
  * but it has some features that make texture management easier.
- * You need to use CanvasImage.load() to show the image in the canvas.
+ * You need to use {@link CanvasImage.load()} to show the image in the canvas.
  * This class is used for functions like {@link addImage}, {@link loadImage} and {@link showWithDissolveTransition}.
  * @example
  * ```typescript
