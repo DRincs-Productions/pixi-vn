@@ -257,10 +257,9 @@ export default class GameStepManager {
             currentStepIndex: item.currentStepIndex + 1,
         }
     }
-    private static restorLastLabelList() {
+    private static restoreLastLabelList() {
         GameStepManager._openedLabels = GameStepManager.originalStepData.openedLabels
     }
-
     /**
      * Get the narrative history
      * @returns the history of the dialogues, choices and steps
@@ -305,7 +304,6 @@ export default class GameStepManager {
         })
         return list
     }
-
     /**
      * Delete the narrative history.
      * @param itemsNumber The number of items to delete. If undefined, all items will be deleted.
@@ -318,6 +316,63 @@ export default class GameStepManager {
         else {
             GameStepManager._stepsHistory = []
         }
+    }
+    /**
+     * Check if the label is already completed.
+     * @param label The label to check.
+     * @returns True if the label is already completed.
+     */
+    public static isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
+        let labelId: LabelIdType
+        if (typeof label === 'string') {
+            labelId = label
+        }
+        else {
+            labelId = label.id
+        }
+        let allOpenedLabels = GameStepManager.allOpenedLabels
+        let lastStep = allOpenedLabels[labelId]
+        if (lastStep) {
+            let currentLabel = getLabelById(labelId)
+            if (currentLabel) {
+                return currentLabel.steps.length <= lastStep
+            }
+        }
+        return false
+    }
+    /**
+     * Get the choices already made in the current step.
+     * @returns The choices already made in the current step. If there are no choices, it will return undefined.
+     */
+    public static getAlreadyCurrentStepMadeChoices(): number[] | undefined {
+        let choiceMenuOptions = getChoiceMenuOptions()
+        if (choiceMenuOptions) {
+            let alreadyMade: number[] = []
+            choiceMenuOptions.forEach((item, index) => {
+                let alreadyMadeChoice = GameStepManager.allChoicesMade.find((choice) => choice.label === item.label.id && choice.step === GameStepManager.currentLabelStepIndex)
+                if (alreadyMadeChoice) {
+                    alreadyMade.push(index)
+                }
+            })
+            return alreadyMade
+        }
+        else {
+            console.warn("[Pixi'VN] No choice menu options on current step")
+        }
+    }
+    /**
+     * Check if the current step is already completed.
+     * @returns True if the current step is already completed.
+     */
+    public static currentStepLabelIsAlreadyOpened() {
+        let currentLabel = GameStepManager.currentLabelId
+        if (currentLabel) {
+            let lastStep = GameStepManager.allOpenedLabels[currentLabel]
+            if (lastStep === GameStepManager.currentLabelStepIndex) {
+                return true
+            }
+        }
+        return false
     }
 
     /* Run Methods */
@@ -401,7 +456,7 @@ export default class GameStepManager {
                 return await GameStepManager.goNext(props, choiseMade)
             }
             else {
-                GameStepManager.restorLastLabelList()
+                GameStepManager.restoreLastLabelList()
                 if (GameStepManager.gameEnd) {
                     return await GameStepManager.gameEnd(props)
                 }
@@ -557,63 +612,6 @@ export default class GameStepManager {
             GameStepManager.closeCurrentLabel()
         }
         return GameStepManager.goNext(props, choiseMade)
-    }
-    /**
-     * Check if the label is already completed.
-     * @param label The label to check.
-     * @returns True if the label is already completed.
-     */
-    public static labelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
-        let labelId: LabelIdType
-        if (typeof label === 'string') {
-            labelId = label
-        }
-        else {
-            labelId = label.id
-        }
-        let allOpenedLabels = GameStepManager.allOpenedLabels
-        let lastStep = allOpenedLabels[labelId]
-        if (lastStep) {
-            let currentLabel = getLabelById(labelId)
-            if (currentLabel) {
-                return currentLabel.steps.length <= lastStep
-            }
-        }
-        return false
-    }
-    /**
-     * Get the choices already made in the current step.
-     * @returns The choices already made in the current step. If there are no choices, it will return undefined.
-     */
-    public static getAlreadyCurrentStepMadeChoices(): number[] | undefined {
-        let choiceMenuOptions = getChoiceMenuOptions()
-        if (choiceMenuOptions) {
-            let alreadyMade: number[] = []
-            choiceMenuOptions.forEach((item, index) => {
-                let alreadyMadeChoice = GameStepManager.allChoicesMade.find((choice) => choice.label === item.label.id && choice.step === GameStepManager.currentLabelStepIndex)
-                if (alreadyMadeChoice) {
-                    alreadyMade.push(index)
-                }
-            })
-            return alreadyMade
-        }
-        else {
-            console.warn("[Pixi'VN] No choice menu options on current step")
-        }
-    }
-    /**
-     * Check if the current step is already completed.
-     * @returns True if the current step is already completed.
-     */
-    public static currentStepLabelIsAlreadyOpened() {
-        let currentLabel = GameStepManager.currentLabelId
-        if (currentLabel) {
-            let lastStep = GameStepManager.allOpenedLabels[currentLabel]
-            if (lastStep === GameStepManager.currentLabelStepIndex) {
-                return true
-            }
-        }
-        return false
     }
 
     /* Go Back & Refresh Methods */
