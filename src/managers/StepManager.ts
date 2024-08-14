@@ -8,9 +8,11 @@ import { getChoiceMenuOptions, getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
 import { getStepSha1 } from "../functions/StepLabelUtility"
+import { NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
+import { HistoryChoiceMenuOption } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
@@ -259,11 +261,73 @@ export default class GameStepManager {
         GameStepManager._openedLabels = GameStepManager.originalStepData.openedLabels
     }
 
+    /**
+     * Get the narrative history
+     * @returns the history of the dialogues, choices and steps
+     */
+    static getNarrativeHistory<T extends DialogueBaseModel = DialogueBaseModel>(): NarrativeHistory<T>[] {
+        let list: NarrativeHistory<T>[] = []
+        GameStepManager.stepsHistory.forEach((step) => {
+            let dialoge = step.dialoge
+            let requiredChoices = step.choices
+            if (
+                list.length > 0 &&
+                list[list.length - 1].choices &&
+                !list[list.length - 1].playerMadeChoice &&
+                step.currentLabel
+            ) {
+                let oldChoices = list[list.length - 1].choices
+                if (oldChoices) {
+                    let choiceMade = false
+                    if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
+                        oldChoices[step.choiceIndexMade].isResponse = true
+                        choiceMade = true
+                    }
+                    list[list.length - 1].playerMadeChoice = choiceMade
+                    list[list.length - 1].choices = oldChoices
+                }
+            }
+            if (dialoge || requiredChoices) {
+                let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice) => {
+                    return {
+                        text: choice.text,
+                        type: choice.type,
+                        isResponse: false
+                    }
+                })
+                list.push({
+                    dialoge: dialoge as T,
+                    playerMadeChoice: false,
+                    choices: choices,
+                    stepIndex: step.index
+                })
+            }
+        })
+        return list
+    }
+
+    /**
+     * Delete the narrative history.
+     * @param itemsNumber The number of items to delete. If undefined, all items will be deleted.
+     */
+    removeNarrativeHistory(itemsNumber?: number) {
+        if (itemsNumber) {
+            // remove the first items
+            GameStepManager._stepsHistory.splice(0, itemsNumber)
+        }
+        else {
+            GameStepManager._stepsHistory = []
+        }
+    }
+
     /* Run Methods */
 
     static get canGoNext(): boolean {
         let options = getChoiceMenuOptions()
         if (options && options.length > 0) {
+            return false
+        }
+        if (GameStepManager._stepsHistory.length === 0) {
             return false
         }
         return true
