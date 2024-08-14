@@ -1,6 +1,6 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/EventDecorator";
-import { getTextureMemory } from "../../functions/CanvasUtility";
+import { getTextureMemory } from "../../functions/canvas/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
 import ICanvasBaseMemory from "../../interface/canvas/ICanvasBaseMemory";
 import ICanvasSpriteMemory, { ICanvasSpriteBaseMemory } from "../../interface/canvas/ICanvasSpriteMemory";

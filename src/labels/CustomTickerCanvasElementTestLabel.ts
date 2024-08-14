@@ -1,5 +1,5 @@
 import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "pixi.js";
-import { CanvasSprite } from "../classes/canvas";
+import { CanvasSprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
 import { setDialogue } from "../functions";

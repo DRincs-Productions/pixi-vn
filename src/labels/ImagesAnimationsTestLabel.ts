@@ -1,5 +1,4 @@
-import { ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes"
-import { CanvasImage } from "../classes/canvas"
+import { CanvasImage, ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
