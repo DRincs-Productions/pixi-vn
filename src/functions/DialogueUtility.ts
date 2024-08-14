@@ -3,9 +3,8 @@ import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } fr
 import newCloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
-import { DialogueHistory } from "../interface";
 import { GameStepManager, GameStorageManager } from "../managers";
-import { Close, HistoryChoiceMenuOption } from "../types";
+import { Close } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 import { getFlag, setFlag } from "./FlagsUtility";
 
@@ -152,49 +151,4 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
  */
 export function clearChoiceMenuOptions(): void {
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
-}
-
-/**
- * Get the history of the dialogues
- * @returns the history of the dialogues
- */
-export function getDialogueHistory<T extends DialogueBaseModel = DialogueBaseModel>(): DialogueHistory<T>[] {
-    let list: DialogueHistory<T>[] = []
-    GameStepManager.stepsHistory.forEach((step) => {
-        let dialoge = step.dialoge
-        let requiredChoices = step.choices
-        if (
-            list.length > 0 &&
-            list[list.length - 1].choices &&
-            !list[list.length - 1].playerMadeChoice &&
-            step.currentLabel
-        ) {
-            let oldChoices = list[list.length - 1].choices
-            if (oldChoices) {
-                let choiceMade = false
-                if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
-                    oldChoices[step.choiceIndexMade].isResponse = true
-                    choiceMade = true
-                }
-                list[list.length - 1].playerMadeChoice = choiceMade
-                list[list.length - 1].choices = oldChoices
-            }
-        }
-        if (dialoge || requiredChoices) {
-            let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice) => {
-                return {
-                    text: choice.text,
-                    type: choice.type,
-                    isResponse: false
-                }
-            })
-            list.push({
-                dialoge: dialoge as T,
-                playerMadeChoice: false,
-                choices: choices,
-                stepIndex: step.index
-            })
-        }
-    })
-    return list
 }

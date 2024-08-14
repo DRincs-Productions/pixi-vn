@@ -2,7 +2,7 @@ export { moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition
 export { removeCanvasElement } from './canvas/CanvasUtility';
 export { addImage, loadImage, showImage } from './canvas/ImageUtility';
 export { addVideo, loadVideo, showVideo } from './canvas/VideoUtility';
-export { clearChoiceMenuOptions, clearDialogue, getChoiceMenuOptions, getDialogue, getDialogueHistory, setChoiceMenuOptions, setDialogue } from './DialogueUtility';
+export { clearChoiceMenuOptions, clearDialogue, getChoiceMenuOptions, getDialogue, setChoiceMenuOptions, setDialogue } from './DialogueUtility';
 export { getFlag, setFlag } from './FlagsUtility';
 export { clearAllGameDatas } from './GameUtility';
 export { importPixiVNJson } from './Importer';

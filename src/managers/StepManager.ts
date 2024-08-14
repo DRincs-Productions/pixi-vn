@@ -2,31 +2,56 @@ import { diff } from "deep-diff"
 import { DialogueBaseModel, Label } from "../classes"
 import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
+import LabelAbstract from "../classes/LabelAbstract"
 import { getLabelById } from "../decorators/LabelDecorator"
 import { getChoiceMenuOptions, getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
 import { getStepSha1 } from "../functions/StepLabelUtility"
+import { NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
+import { HistoryChoiceMenuOption } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 import GameStorageManager from "./StorageManager"
 import GameWindowManager from "./WindowManager"
 
+type AllOpenedLabelsType = { [key: LabelIdType]: number }
+type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number }
+
 /**
  * GameStepManager is a class that manages the steps and labels of the game.
  */
 export default class GameStepManager {
     private constructor() { }
+    private static _stepsHistory: IHistoryStep[] = []
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
-    private static _stepsHistory: IHistoryStep[] = []
     static get stepsHistory() {
         return GameStepManager._stepsHistory
+    }
+    /**
+     * is a list of all labels that have been opened during the progression of the steps.
+     * the key is the label id and the biggest step opened.
+     */
+    private static get allOpenedLabels() {
+        return GameStorageManager.getVariable<AllOpenedLabelsType>(GameStorageManager.keysSystem.ALL_OPENED_LABELS_KEY) || {}
+    }
+    private static set allOpenedLabels(value: AllOpenedLabelsType) {
+        GameStorageManager.setVariable(GameStorageManager.keysSystem.ALL_OPENED_LABELS_KEY, value)
+    }
+    /**
+     * is a list of all choices made by the player during the progression of the steps.
+     */
+    private static get allChoicesMade() {
+        return GameStorageManager.getVariable<AllChoicesMadeType[]>(GameStorageManager.keysSystem.ALL_CHOICES_MADE_KEY) || []
+    }
+    private static set allChoicesMade(value: AllChoicesMadeType[]) {
+        GameStorageManager.setVariable(GameStorageManager.keysSystem.ALL_CHOICES_MADE_KEY, value)
     }
     private static _lastStepIndex: number = 0
     /**
@@ -165,6 +190,29 @@ export default class GameStepManager {
     /**
      * Add a label to the history.
      * @param label The label to add to the history.
+     * @param stepIndex The step index of the label.
+     * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
+     */
+    private static addLabelHistory(label: LabelIdType, stepIndex: number, choiseMade?: number) {
+        let allOpenedLabels = GameStepManager.allOpenedLabels
+        let oldStepIndex = GameStepManager.allOpenedLabels[label]
+        if (!oldStepIndex || oldStepIndex < stepIndex) {
+            allOpenedLabels[label] = stepIndex
+            GameStepManager.allOpenedLabels = allOpenedLabels
+        }
+
+        if (choiseMade !== undefined) {
+            let allChoicesMade = GameStepManager.allChoicesMade
+            let alredyMade = allChoicesMade.find((item) => item.label === label && item.step === stepIndex && item.choice === choiseMade)
+            if (!alredyMade) {
+                allChoicesMade.push({ label: label, step: stepIndex, choice: choiseMade })
+                GameStepManager.allChoicesMade = allChoicesMade
+            }
+        }
+    }
+    /**
+     * Add a label to the history.
+     * @param label The label to add to the history.
      */
     private static pushNewLabel(label: LabelIdType) {
         let currentLabel = getLabelById(label)
@@ -209,8 +257,122 @@ export default class GameStepManager {
             currentStepIndex: item.currentStepIndex + 1,
         }
     }
-    private static restorLastLabelList() {
+    private static restoreLastLabelList() {
         GameStepManager._openedLabels = GameStepManager.originalStepData.openedLabels
+    }
+    /**
+     * Get the narrative history
+     * @returns the history of the dialogues, choices and steps
+     */
+    static getNarrativeHistory<T extends DialogueBaseModel = DialogueBaseModel>(): NarrativeHistory<T>[] {
+        let list: NarrativeHistory<T>[] = []
+        GameStepManager.stepsHistory.forEach((step) => {
+            let dialoge = step.dialoge
+            let requiredChoices = step.choices
+            if (
+                list.length > 0 &&
+                list[list.length - 1].choices &&
+                !list[list.length - 1].playerMadeChoice &&
+                step.currentLabel
+            ) {
+                let oldChoices = list[list.length - 1].choices
+                if (oldChoices) {
+                    let choiceMade = false
+                    if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
+                        oldChoices[step.choiceIndexMade].isResponse = true
+                        choiceMade = true
+                    }
+                    list[list.length - 1].playerMadeChoice = choiceMade
+                    list[list.length - 1].choices = oldChoices
+                }
+            }
+            if (dialoge || requiredChoices) {
+                let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice) => {
+                    return {
+                        text: choice.text,
+                        type: choice.type,
+                        isResponse: false
+                    }
+                })
+                list.push({
+                    dialoge: dialoge as T,
+                    playerMadeChoice: false,
+                    choices: choices,
+                    stepIndex: step.index
+                })
+            }
+        })
+        return list
+    }
+    /**
+     * Delete the narrative history.
+     * @param itemsNumber The number of items to delete. If undefined, all items will be deleted.
+     */
+    removeNarrativeHistory(itemsNumber?: number) {
+        if (itemsNumber) {
+            // remove the first items
+            GameStepManager._stepsHistory.splice(0, itemsNumber)
+        }
+        else {
+            GameStepManager._stepsHistory = []
+        }
+    }
+    /**
+     * Check if the label is already completed.
+     * @param label The label to check.
+     * @returns True if the label is already completed.
+     */
+    public static isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
+        let labelId: LabelIdType
+        if (typeof label === 'string') {
+            labelId = label
+        }
+        else {
+            labelId = label.id
+        }
+        let allOpenedLabels = GameStepManager.allOpenedLabels
+        let lastStep = allOpenedLabels[labelId]
+        if (lastStep) {
+            let currentLabel = getLabelById(labelId)
+            if (currentLabel) {
+                return currentLabel.steps.length <= lastStep
+            }
+        }
+        return false
+    }
+    /**
+     * Get the choices already made in the current step.
+     * @returns The choices already made in the current step. If there are no choices, it will return undefined.
+     */
+    public static get alreadyCurrentStepMadeChoices(): number[] | undefined {
+        let choiceMenuOptions = getChoiceMenuOptions()
+        if (choiceMenuOptions) {
+            let alreadyMade: number[] = []
+            choiceMenuOptions.forEach((item, index) => {
+                let alreadyMadeChoice = GameStepManager.allChoicesMade.find((choice) => choice.label === item.label.id && choice.step === GameStepManager.currentLabelStepIndex)
+                if (alreadyMadeChoice) {
+                    alreadyMade.push(index)
+                }
+            })
+            return alreadyMade
+        }
+        else {
+            console.warn("[Pixi'VN] No choice menu options on current step")
+        }
+    }
+    /**
+     * Check if the current step is already completed.
+     * @returns True if the current step is already completed.
+     */
+    public static get isCurrentStepAlreadyOpened(): boolean {
+        let currentLabel = GameStepManager.currentLabelId
+        if (currentLabel) {
+            let lastStep = GameStepManager.allOpenedLabels[currentLabel]
+            if (lastStep === GameStepManager.currentLabelStepIndex) {
+                return true
+            }
+        }
+        return false
     }
 
     /* Run Methods */
@@ -218,6 +380,9 @@ export default class GameStepManager {
     static get canGoNext(): boolean {
         let options = getChoiceMenuOptions()
         if (options && options.length > 0) {
+            return false
+        }
+        if (GameStepManager._stepsHistory.length === 0) {
             return false
         }
         return true
@@ -282,6 +447,7 @@ export default class GameStepManager {
                 }
                 let step = currentLabel.steps[currentLabelStepIndex]
                 let result = await step(props)
+                GameStepManager.addLabelHistory(currentLabel.id, currentLabelStepIndex, choiseMade)
                 GameStepManager.addStepHistory(step, choiseMade)
                 return result
             }
@@ -290,7 +456,7 @@ export default class GameStepManager {
                 return await GameStepManager.goNext(props, choiseMade)
             }
             else {
-                GameStepManager.restorLastLabelList()
+                GameStepManager.restoreLastLabelList()
                 if (GameStepManager.gameEnd) {
                     return await GameStepManager.gameEnd(props)
                 }
@@ -447,64 +613,6 @@ export default class GameStepManager {
         }
         return GameStepManager.goNext(props, choiseMade)
     }
-
-    /* After Update Methods */
-
-    // /**
-    //  * After the update or code edit, some steps or labels may no longer match.
-    //  * - In case of step mismatch, the game will be updated to the last matching step.
-    //  * - In case of label mismatch, the game gives an error.
-    //  * @returns 
-    //  */
-    // private static afterUpdate() {
-    //     // TODO: implement
-    //     if (!GameStepManager.currentLabel) {
-    //         // TODO: implement
-    //         return
-    //     }
-    //     let currentLabel = getLabelInstanceByClassName(GameStepManager.currentLabel)
-    //     if (!currentLabel) {
-    //         console.error("Label not found")
-    //         return
-    //     }
-    //     let oldSteps = GameStepManager.stepsAfterLastHistoryLabel
-    //     let currentStepIndex = currentLabel.getCorrespondingStepsNumber(oldSteps)
-    //     let stepToRemove = oldSteps.length - currentStepIndex
-    //     GameStepManager.removeLastHistoryNodes(stepToRemove)
-    //     GameStepManager.loadLastStep()
-    // }
-    // private static loadLastStep() {
-    //     // TODO: implement
-    // }
-    // /**
-    //  * Remove a number of items from the last of the history.
-    //  * @param itemNumber The number of items to remove from the last of the history.
-    //  */
-    // private static removeLastHistoryNodes(itemNumber: number) {
-    //     // TODO: implement
-    //     for (let i = 0; i < itemNumber; i++) {
-    //         GameStepManager._stepsHistory.pop()
-    //     }
-    // }
-    // /**
-    //  * stepsAfterLastHistoryLabel is a list of steps that occurred after the last history label.
-    //  */
-    // private static get stepsAfterLastHistoryLabel(): StepHistoryDataType[] {
-    //     let length = GameStepManager._stepsHistory.length
-    //     let steps: StepHistoryDataType[] = []
-    //     for (let i = length - 1; i >= 0; i--) {
-    //         let element = GameStepManager._stepsHistory[i]
-    //         if (typeof element === "object" && "stepSha1" in element) {
-    //             steps.push(element.stepSha1)
-    //         }
-    //         else {
-    //             break
-    //         }
-    //     }
-
-    //     steps = steps.reverse()
-    //     return steps
-    // }
 
     /* Go Back & Refresh Methods */
 
