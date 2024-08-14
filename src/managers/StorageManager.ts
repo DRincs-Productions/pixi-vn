@@ -36,6 +36,14 @@ export default class GameStorageManager {
              * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
              */
             ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY: "___glue___",
+            /**
+             * The key of a list of all labels that have been opened during the progression of the steps.
+             */
+            ALL_OPENED_LABELS_KEY: "___all_opened_labels___",
+            /**
+             * The key of a list of all choices that have been made during the progression of the steps.
+             */
+            ALL_CHOICES_MADE_KEY: "___all_choices_made___",
         }
     }
     /**
