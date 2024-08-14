@@ -53,6 +53,8 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
             setDialogue({ character: juliette, text: "Which test would you like to start with?" })
             setChoiceMenuOptions([
                 new ChoiceMenuOption("Open Pixi’VN Wiki", openLink, { link: "https://pixi-vn.web.app/" }),
+                new ChoiceMenuOption("Open Pixi’VN Discord", openLink, { link: "https://discord.gg/E95FZWakzp" }),
+                new ChoiceMenuOption("Open Pixi’VN Github Issues", openLink, { link: "https://github.com/DRincs-Productions/pixi-vn/issues" }),
                 new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest, {}),
                 new ChoiceMenuOption("Video Test", videoTest, {}),
                 new ChoiceMenuOption("Canvas Events Test", canvasEventsTestLabel, {}),
@@ -60,7 +62,6 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Steps and Labels Test", stepLabelTestLAbel, {}),
                 new ChoiceMenuOption("Markdown Test", markdownTest, {}),
-                new ChoiceMenuOption("Open Pixi’VN Github Issues", openLink, { link: "https://github.com/DRincs-Productions/pixi-vn/issues" }),
             ])
         },
         (props) => GameStepManager.jumpLabel(RESTART_TEST_LABEL, props),

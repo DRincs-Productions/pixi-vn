@@ -344,7 +344,7 @@ export default class GameStepManager {
      * Get the choices already made in the current step.
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
      */
-    public static getAlreadyCurrentStepMadeChoices(): number[] | undefined {
+    public static get alreadyCurrentStepMadeChoices(): number[] | undefined {
         let choiceMenuOptions = getChoiceMenuOptions()
         if (choiceMenuOptions) {
             let alreadyMade: number[] = []
@@ -364,7 +364,7 @@ export default class GameStepManager {
      * Check if the current step is already completed.
      * @returns True if the current step is already completed.
      */
-    public static isCurrentStepAlreadyOpened() {
+    public static get isCurrentStepAlreadyOpened(): boolean {
         let currentLabel = GameStepManager.currentLabelId
         if (currentLabel) {
             let lastStep = GameStepManager.allOpenedLabels[currentLabel]
