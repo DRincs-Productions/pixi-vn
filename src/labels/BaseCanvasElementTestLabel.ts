@@ -3,7 +3,7 @@ import { CanvasContainer, CanvasSprite, CanvasText } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
 import { removeCanvasElement, setDialogue } from "../functions";
-import { GameWindowManager } from "../managers";
+import { canvas } from "../managers";
 import { bunnyImage, juliette } from "./TestConstant";
 
 const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"
@@ -20,7 +20,7 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             // Create and add a container to the stage
             const container = new CanvasContainer();
 
-            GameWindowManager.addCanvasElement("container", container);
+            canvas.addCanvasElement("container", container);
 
             // Load the bunny texture
             const texture = await Assets.load(bunnyImage);
@@ -35,14 +35,14 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             }
 
             // Move the container to the center
-            container.x = GameWindowManager.screen.width / 2;
-            container.y = GameWindowManager.screen.height / 2;
+            container.x = canvas.screen.width / 2;
+            container.y = canvas.screen.height / 2;
 
             // Center the bunny sprites in local container coordinates
             container.pivot.x = container.width / 2;
             container.pivot.y = container.height / 2;
 
-            GameWindowManager.addTicker("container", new RotateTicker({ speed: 1 }));
+            canvas.addTicker("container", new RotateTicker({ speed: 1 }));
         },
         async () => {
             removeCanvasElement("container");
@@ -63,7 +63,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             basicText.x = 50;
             basicText.y = 100;
 
-            GameWindowManager.addCanvasElement("basicText", basicText);
+            canvas.addCanvasElement("basicText", basicText);
 
             // Create gradient fill
             const fill = new FillGradient(0, 0, 0, 36 * 1.7 * 7);
@@ -101,7 +101,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             richText.x = 50;
             richText.y = 220;
 
-            GameWindowManager.addCanvasElement("richText", richText);
+            canvas.addCanvasElement("richText", richText);
 
             const skewStyle = new TextStyle({
                 fontFamily: 'Arial',
@@ -128,7 +128,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             skewText.x = 300;
             skewText.y = 480;
 
-            GameWindowManager.addCanvasElement("skewText", skewText);
+            canvas.addCanvasElement("skewText", skewText);
         }
     ]
 )

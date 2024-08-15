@@ -4,7 +4,7 @@ import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
 import { setDialogue } from "../functions";
 import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../interface/canvas";
-import { GameWindowManager } from "../managers";
+import { canvas } from "../managers";
 import { eggHeadImage, eggHeadName, juliette } from "./TestConstant";
 
 interface IAlienTintingMemory extends ICanvasSpriteBaseMemory {
@@ -51,9 +51,9 @@ export class TintingTestTicker extends TickerBase<{}> {
             const dudeBoundsPadding = 100;
             const dudeBounds = new Rectangle(-dudeBoundsPadding,
                 -dudeBoundsPadding,
-                GameWindowManager.screen.width + dudeBoundsPadding * 2,
-                GameWindowManager.screen.height + dudeBoundsPadding * 2);
-            let dude = GameWindowManager.getCanvasElement(tag)
+                canvas.screen.width + dudeBoundsPadding * 2,
+                canvas.screen.height + dudeBoundsPadding * 2);
+            let dude = canvas.getCanvasElement(tag)
             if (dude && dude instanceof AlienTintingTest) {
 
                 dude.direction += dude.turningSpeed * 0.01;
@@ -102,8 +102,8 @@ export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_
                 dude.scale.set(0.8 + Math.random() * 0.3);
 
                 // finally lets set the dude to be at a random position..
-                dude.x = Math.random() * GameWindowManager.screen.width;
-                dude.y = Math.random() * GameWindowManager.screen.height;
+                dude.x = Math.random() * canvas.screen.width;
+                dude.y = Math.random() * canvas.screen.height;
 
                 dude.tint = Math.random() * 0xFFFFFF;
 
@@ -117,8 +117,8 @@ export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_
                 // create a random speed for the dude between 2 - 4
                 dude.speed = 2 + Math.random() * 2;
 
-                GameWindowManager.addCanvasElement("alien" + i, dude);
-                GameWindowManager.addTicker("alien" + i, new TintingTestTicker());
+                canvas.addCanvasElement("alien" + i, dude);
+                canvas.addTicker("alien" + i, new TintingTestTicker());
             }
             setDialogue({
                 character: juliette,

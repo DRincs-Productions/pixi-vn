@@ -2,7 +2,7 @@ import { Assets, Texture } from "pixi.js";
 import { CanvasEvent, CanvasSprite } from "../classes";
 import { eventDecorator, newLabel } from "../decorators";
 import { setDialogue } from "../functions";
-import { GameWindowManager } from "../managers";
+import { canvas } from "../managers";
 import { CanvasEventNamesType } from "../types";
 import { bunnyImage, bunnyName, juliette } from "./TestConstant";
 
@@ -72,8 +72,8 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
 
             // Set the initial position
             sprite.anchor.set(0.5);
-            sprite.x = GameWindowManager.screen.width / 2;
-            sprite.y = GameWindowManager.screen.height / 2;
+            sprite.x = canvas.screen.width / 2;
+            sprite.y = canvas.screen.height / 2;
 
             // Opt-in to interactivity
             sprite.eventMode = 'static';
@@ -88,10 +88,10 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             // sprite.on('click', onClick); // mouse-only
             // sprite.on('tap', onClick); // touch-only
 
-            GameWindowManager.addCanvasElement("bunny", sprite);
+            canvas.addCanvasElement("bunny", sprite);
         },
         async () => {
-            GameWindowManager.clear();
+            canvas.clear();
             setDialogue({
                 character: juliette,
                 text: `This is the test of buttons in a canvas. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/interactivity).)`
@@ -101,11 +101,11 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             const backgroundT = await Assets.load('https://pixijs.com/assets/bg_button.jpg');
             const background = new CanvasSprite(backgroundT);
 
-            background.width = GameWindowManager.screen.width;
-            background.height = GameWindowManager.screen.height;
+            background.width = canvas.screen.width;
+            background.height = canvas.screen.height;
 
             // Add background to stage...
-            GameWindowManager.addCanvasElement("bg", background);
+            canvas.addCanvasElement("bg", background);
 
             // Create some textures from an image path
             const textureButton = await Assets.load('https://pixijs.com/assets/button.png');
@@ -136,7 +136,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
                     .onEvent('pointerout', EventTest2);
 
                 // Add it to the stage
-                GameWindowManager.addCanvasElement("button" + i, button);
+                canvas.addCanvasElement("button" + i, button);
 
                 // Add button to array
                 buttons.push(button);
