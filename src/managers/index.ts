@@ -1,3 +1,5 @@
+import GameSoundManager from './SoundManager';
+
 export {
     /**
      *  @deprecated use "import { canvas } from '@drincs/pixi-vn';"
@@ -20,3 +22,6 @@ export {
     default as canvas
 } from './WindowManager';
 
+const sound = new GameSoundManager()
+
+export { sound };

@@ -1,55 +1,116 @@
-import CanvasBase from "../classes/canvas/CanvasBase";
-import { geTickerInstanceById } from "../decorators/TickerDecorator";
-import { createExportableElement } from "../functions/ExportUtility";
-import { exportCanvasElement, importCanvasElement } from '../functions/canvas/CanvasMemoryUtility';
-import { ICanvasBaseMemory } from "../interface/canvas";
-import { ExportedCanvas } from "../interface/export";
+import { CompleteCallback, Filter, IMedia, IMediaContext, IMediaInstance, Options, PlayOptions, Sound, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
+import ExportedSounds from '../interface/export/ExportedSounds';
 
-export default class GameSoundManager {
-    private constructor() { }
-
-    static get currentCanvasElements() {
-        return GameSoundManager._children
-    }
-    private static _children: { [tag: string]: CanvasBase<any> } = {}
+export default class GameSoundManager extends SoundLibrary {
     private static childrenTagsOrder: string[] = []
-    public static addCanvasElement(tag: string, canvasElement: CanvasBase<any>) {
-        if (GameSoundManager._children[tag]) {
-            GameSoundManager.removeCanvasElement(tag)
-        }
-        GameSoundManager.app.stage.addChild(canvasElement)
-        GameSoundManager._children[tag] = canvasElement
-        GameSoundManager.childrenTagsOrder.push(tag)
+
+    override get context(): IMediaContext {
+        return sound.context
     }
-    public static removeCanvasElement(tags: string | string[]) {
-        if (typeof tags === "string") {
-            tags = [tags]
-        }
-        tags.forEach((tag) => {
-            if (GameSoundManager._children[tag]) {
-                GameSoundManager.app.stage.removeChild(GameSoundManager._children[tag])
-                delete GameSoundManager._children[tag]
-            }
-        })
-        GameSoundManager.childrenTagsOrder = GameSoundManager.childrenTagsOrder.filter((t) => !tags.includes(t))
+    override   get filtersAll(): Filter[] {
+        return sound.filtersAll
     }
-    public static getCanvasElement<T extends CanvasBase<any>>(tag: string): T | undefined {
-        return GameSoundManager._children[tag] as T | undefined
+    override  set filtersAll(filtersAll: Filter[]) {
+        sound.filtersAll = filtersAll
     }
-    public static removeCanvasElements() {
-        GameSoundManager.app.stage.removeChildren()
-        GameSoundManager._children = {}
+    override   get supported(): boolean {
+        return sound.supported
+    }
+    add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;
+    add(map: SoundSourceMap, globalOptions?: Options): SoundMap;
+    add(alias: any, options: any): any {
+        GameSoundManager.childrenTagsOrder.push(alias)
+        return sound.add(alias, options)
+    }
+    get useLegacy(): boolean {
+        return sound.useLegacy
+    }
+    set useLegacy(legacy: boolean) {
+        sound.useLegacy = legacy
+    }
+    get disableAutoPause(): boolean {
+        return sound.disableAutoPause
+    }
+    set disableAutoPause(autoPause: boolean) {
+        sound.disableAutoPause = autoPause
+    }
+    remove(alias: string): this {
+        GameSoundManager.childrenTagsOrder = GameSoundManager.childrenTagsOrder.filter((t) => t !== alias)
+        return sound.remove(alias) as this
+    }
+    get volumeAll(): number {
+        return sound.volumeAll
+    }
+    set volumeAll(volume: number) {
+        sound.volumeAll = volume
+    }
+    get speedAll(): number {
+        return sound.speedAll
+    }
+    set speedAll(speed: number) {
+        sound.speedAll = speed
+    }
+    togglePauseAll(): boolean {
+        return sound.togglePauseAll()
+    }
+    pauseAll(): this {
+        return sound.pauseAll() as this
+    }
+    resumeAll(): this {
+        return sound.resumeAll() as this
+    }
+    toggleMuteAll(): boolean {
+        return sound.toggleMuteAll()
+    }
+    muteAll(): this {
+        return sound.muteAll() as this
+    }
+    unmuteAll(): this {
+        return sound.unmuteAll() as this
+    }
+    removeAll(): this {
         GameSoundManager.childrenTagsOrder = []
+        return sound.removeAll() as this
     }
-    public static editCanvasElementTag(oldTag: string, newTag: string) {
-        if (GameSoundManager._children[oldTag]) {
-            GameSoundManager._children[newTag] = GameSoundManager._children[oldTag]
-            delete GameSoundManager._children[oldTag]
-        }
+    stopAll(): this {
+        return sound.stopAll() as this
+    }
+    exists(alias: string, assert?: boolean): boolean {
+        return sound.exists(alias, assert)
+    }
+    isPlaying(): boolean {
+        return sound.isPlaying()
+    }
+    find(alias: string): Sound {
+        return sound.find(alias)
+    }
+    play(alias: string, options?: PlayOptions | CompleteCallback | string): IMediaInstance | Promise<IMediaInstance> {
+        return sound.play(alias, options)
+    }
+    stop(alias: string): Sound {
+        return sound.stop(alias)
+    }
+    pause(alias: string): Sound {
+        return sound.pause(alias)
+    }
+    resume(alias: string): Sound {
+        return sound.resume(alias)
+    }
+    volume(alias: string, volume?: number): number {
+        return sound.volume(alias, volume)
+    }
+    speed(alias: string, speed?: number): number {
+        return sound.speed(alias, speed)
+    }
+    duration(alias: string): number {
+        return sound.duration(alias)
+    }
+    close(): this {
+        return sound.close() as this
     }
 
     static clear() {
-        GameSoundManager.removeCanvasElements()
+        sound.removeAll()
     }
 
     /* Export and Import Methods */
@@ -57,16 +118,21 @@ export default class GameSoundManager {
     public static exportJson(): string {
         return JSON.stringify(this.export())
     }
-    public static export(): ExportedCanvas {
-        let currentElements: { [tag: string]: ICanvasBaseMemory } = {}
-        for (let tag in GameSoundManager._children) {
-            currentElements[tag] = exportCanvasElement(GameSoundManager._children[tag])
+    public static export(): ExportedSounds {
+        let soundElements: { [key: string]: { media: IMedia, options: Options } } = {}
+        for (let tag of GameSoundManager.childrenTagsOrder) {
+            if (sound.exists(tag)) {
+                let item = sound.find(tag)
+                if (item.loop) {
+                    soundElements[tag] = {
+                        media: item.media,
+                        options: item.options,
+                    }
+                }
+            }
         }
         return {
-            currentTickers: createExportableElement(GameSoundManager.currentTickersWithoutCreatedBySteps),
-            currentTickersSteps: createExportableElement(GameSoundManager._currentTickersSteps),
-            currentElements: createExportableElement(currentElements),
-            childrenTagsOrder: createExportableElement(GameSoundManager.childrenTagsOrder),
+            sounds: soundElements
         }
     }
     public static importJson(dataString: string) {
@@ -75,38 +141,17 @@ export default class GameSoundManager {
     public static import(data: object) {
         GameSoundManager.clear()
         try {
-            if (data.hasOwnProperty("childrenTagsOrder") && data.hasOwnProperty("currentElements")) {
-                let currentElements = (data as ExportedCanvas)["currentElements"]
-                let childrenTagsOrder = (data as ExportedCanvas)["childrenTagsOrder"]
-                childrenTagsOrder.forEach((tag) => {
-                    if (currentElements[tag]) {
-                        let element = importCanvasElement(currentElements[tag])
-                        GameSoundManager.addCanvasElement(tag, element)
-                        GameSoundManager.childrenTagsOrder.push(tag)
-                    }
-                })
-            }
-            else {
-                console.error("[Pixi'VN] The data does not have the properties childrenTagsOrder and currentElements")
-                return
-            }
-            if (data.hasOwnProperty("currentTickers")) {
-                let currentTickers = (data as ExportedCanvas)["currentTickers"]
-                for (let id in currentTickers) {
-                    let t = currentTickers[id]
-                    let tags: string[] = t.canvasElementTags
-                    let ticker = geTickerInstanceById(t.id, t.args, t.duration, t.priority)
-                    if (ticker) {
-                        GameSoundManager.addTicker(tags, ticker)
-                    }
-                    else {
-                        console.error(`[Pixi'VN] Ticker ${t.id} not found`)
-                    }
+            if (data.hasOwnProperty("sounds") && data.hasOwnProperty("currentElements")) {
+                let sounds = (data as ExportedSounds)["sounds"]
+                for (let tag in sounds) {
+                    let item = sounds[tag]
+                    sound.add(tag, item.options)
+                    sound.find(tag).media = item.media
                 }
             }
-            if (data.hasOwnProperty("currentTickersSteps")) {
-                let currentTickersSteps = (data as ExportedCanvas)["currentTickersSteps"]
-                GameSoundManager.restoneTickersSteps(currentTickersSteps)
+            else {
+                console.error("[Pixi'VN] The data does not have the properties sounds")
+                return
             }
         }
         catch (e) {
