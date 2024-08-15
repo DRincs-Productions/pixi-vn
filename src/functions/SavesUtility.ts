@@ -1,6 +1,6 @@
 import { PIXIVN_VERSION } from "../constants";
 import ISaveData from "../interface/ISaveData";
-import { GameStepManager, GameStorageManager, GameWindowManager } from "../managers";
+import { canvas, narration, sound, storage } from "../managers";
 
 /**
  * Get the save data
@@ -9,9 +9,10 @@ import { GameStepManager, GameStorageManager, GameWindowManager } from "../manag
 export function getSaveData(): ISaveData {
     return {
         pixivn_version: PIXIVN_VERSION,
-        stepData: GameStepManager.export(),
-        storageData: GameStorageManager.export(),
-        canvasData: GameWindowManager.export(),
+        stepData: narration.export(),
+        storageData: storage.export(),
+        canvasData: canvas.export(),
+        soundData: sound.export(),
         path: window.location.pathname,
     };
 }
@@ -43,9 +44,10 @@ export function getSaveJson() {
  * @param navigate The function to navigate to a path
  */
 export async function loadSaveData(data: ISaveData, navigate: (path: string) => void) {
-    await GameStepManager.import(data.stepData);
-    GameStorageManager.import(data.storageData);
-    GameWindowManager.import(data.canvasData);
+    await narration.import(data.stepData);
+    storage.import(data.storageData);
+    canvas.import(data.canvasData);
+    sound.import(data.soundData);
     navigate(data.path);
 }
 

@@ -109,25 +109,23 @@ export default class GameSoundManager extends SoundLibrary {
         return sound.close() as this
     }
 
-    static clear() {
+    clear() {
         sound.removeAll()
     }
 
     /* Export and Import Methods */
 
-    public static exportJson(): string {
+    public exportJson(): string {
         return JSON.stringify(this.export())
     }
-    public static export(): ExportedSounds {
+    public export(): ExportedSounds {
         let soundElements: { [key: string]: { media: IMedia, options: Options } } = {}
         for (let tag of GameSoundManager.childrenTagsOrder) {
             if (sound.exists(tag)) {
                 let item = sound.find(tag)
-                if (item.loop) {
-                    soundElements[tag] = {
-                        media: item.media,
-                        options: item.options,
-                    }
+                soundElements[tag] = {
+                    media: item.media,
+                    options: item.options,
                 }
             }
         }
@@ -135,11 +133,11 @@ export default class GameSoundManager extends SoundLibrary {
             sounds: soundElements
         }
     }
-    public static importJson(dataString: string) {
-        GameSoundManager.import(JSON.parse(dataString))
+    public importJson(dataString: string) {
+        this.import(JSON.parse(dataString))
     }
-    public static import(data: object) {
-        GameSoundManager.clear()
+    public import(data: object) {
+        this.clear()
         try {
             if (data.hasOwnProperty("sounds") && data.hasOwnProperty("currentElements")) {
                 let sounds = (data as ExportedSounds)["sounds"]
