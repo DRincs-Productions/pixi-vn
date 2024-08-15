@@ -1,8 +1,17 @@
-import { IMedia, Options } from "@pixi/sound";
+import { Options } from "@pixi/sound";
+import { SoundFiltersMemory } from "../../types";
+
+export interface ExportedSound {
+    [key: string]: {
+        options: Options,
+        isPlaying: boolean,
+        filters: SoundFiltersMemory[]
+    }
+}
 
 /**
  * Interface exported sounds
  */
 export default interface ExportedSounds {
-    sounds: { [key: string]: { media: IMedia, options: Options } }
+    sounds: ExportedSound
 }

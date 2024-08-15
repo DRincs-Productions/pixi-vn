@@ -1,4 +1,8 @@
 export type { default as CharacterBaseModelProps } from './CharacterBaseModelProps';
+export type { default as ExportedCanvas } from './export/ExportedCanvas';
+export type { ExportedSound, default as ExportedSounds } from './export/ExportedSounds';
+export type { default as ExportedStep } from './export/ExportedStep';
+export type { default as ExportedStorage } from './export/ExportedStorage';
 export type { default as IHistoryStep, IHistoryStepData } from './IHistoryStep';
 export type { default as IOpenedLabel } from './IOpenedLabel';
 export type { default as ISaveData } from './ISaveData';
