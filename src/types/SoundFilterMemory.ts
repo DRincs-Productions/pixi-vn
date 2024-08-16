@@ -41,5 +41,5 @@ type TelephoneFilter = {
     type: "TelephoneFilter"
 }
 
-type SoundFiltersMemory = DistortionFilter | EqualizerFilter | MonoFilter | ReverbFilter | StereoFilter | StreamFilter | TelephoneFilter
-export default SoundFiltersMemory
+type SoundFilterMemory = DistortionFilter | EqualizerFilter | MonoFilter | ReverbFilter | StereoFilter | StreamFilter | TelephoneFilter
+export default SoundFilterMemory

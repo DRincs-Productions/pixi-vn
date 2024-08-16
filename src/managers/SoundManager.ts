@@ -1,5 +1,6 @@
-import { CompleteCallback, Filter, IMedia, IMediaContext, IMediaInstance, Options, PlayOptions, Sound, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
-import ExportedSounds from '../interface/export/ExportedSounds';
+import { CompleteCallback, Filter, IMediaContext, IMediaInstance, Options, PlayOptions, Sound, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
+import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/SoundUtility';
+import { ExportedSound, ExportedSounds } from '../interface';
 
 export default class GameSoundManager extends SoundLibrary {
     private static childrenTagsOrder: string[] = []
@@ -7,13 +8,13 @@ export default class GameSoundManager extends SoundLibrary {
     override get context(): IMediaContext {
         return sound.context
     }
-    override   get filtersAll(): Filter[] {
+    override get filtersAll(): Filter[] {
         return sound.filtersAll
     }
-    override  set filtersAll(filtersAll: Filter[]) {
+    override set filtersAll(filtersAll: Filter[]) {
         sound.filtersAll = filtersAll
     }
-    override   get supported(): boolean {
+    override get supported(): boolean {
         return sound.supported
     }
     add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;
@@ -119,13 +120,14 @@ export default class GameSoundManager extends SoundLibrary {
         return JSON.stringify(this.export())
     }
     public export(): ExportedSounds {
-        let soundElements: { [key: string]: { media: IMedia, options: Options } } = {}
+        let soundElements: ExportedSound = {}
         for (let tag of GameSoundManager.childrenTagsOrder) {
             if (sound.exists(tag)) {
                 let item = sound.find(tag)
                 soundElements[tag] = {
-                    media: item.media,
                     options: item.options,
+                    isPlaying: item.isPlaying,
+                    filters: FilterToFilterMemory(item.media.filters),
                 }
             }
         }
@@ -137,14 +139,22 @@ export default class GameSoundManager extends SoundLibrary {
         this.import(JSON.parse(dataString))
     }
     public import(data: object) {
+        this.stopAll()
         this.clear()
         try {
-            if (data.hasOwnProperty("sounds") && data.hasOwnProperty("currentElements")) {
+            if (data.hasOwnProperty("sounds")) {
                 let sounds = (data as ExportedSounds)["sounds"]
                 for (let tag in sounds) {
                     let item = sounds[tag]
-                    sound.add(tag, item.options)
-                    sound.find(tag).media = item.media
+                    let audio = sound.add(tag, item.options)
+                    if (item.filters) {
+                        audio.filters = FilterMemoryToFilter(item.filters)
+                    }
+                    if (item.isPlaying) {
+                        setTimeout(() => {
+                            sound.play(tag)
+                        }, 200)
+                    }
                 }
             }
             else {

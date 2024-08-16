@@ -7,7 +7,7 @@ export type { default as LabelJsonType } from './LabelJsonType';
 export type { default as LabelRunModeType } from './LabelRunModeType';
 export type { PauseType } from './PauseType';
 export type { RepeatType } from './RepeatType';
-export type { default as SoundFiltersMemory } from './SoundFiltersMemory';
+export type { default as SoundFilterMemory } from './SoundFilterMemory';
 export type { default as StepLabelJsonType } from './StepLabelJsonType';
 export type { StepLabelPropsType, StepLabelResultType, StepLabelType } from './StepLabelType';
 export type { StorageElementType, StorageObjectType } from './StorageElementType';

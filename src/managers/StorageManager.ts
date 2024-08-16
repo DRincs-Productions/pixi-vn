@@ -1,5 +1,5 @@
 import { createExportableElement } from "../functions/ExportUtility"
-import { ExportedStorage } from "../interface/export"
+import { ExportedStorage } from "../interface"
 import { StorageElementType } from "../types/StorageElementType"
 
 export default class GameStorageManager {

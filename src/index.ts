@@ -6,7 +6,6 @@ export * from './decorators';
 export * from './functions';
 export * from './interface';
 export * from './interface/canvas';
-export * from './interface/export';
 export * from './labels';
 export * from './managers';
 export * from './types';

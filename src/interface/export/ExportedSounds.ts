@@ -1,11 +1,11 @@
 import { Options } from "@pixi/sound";
-import { SoundFiltersMemory } from "../../types";
+import { SoundFilterMemory } from "../../types";
 
 export interface ExportedSound {
     [key: string]: {
         options: Options,
         isPlaying: boolean,
-        filters: SoundFiltersMemory[]
+        filters?: SoundFilterMemory[]
     }
 }
 
