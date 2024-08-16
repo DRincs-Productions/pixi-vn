@@ -132,7 +132,8 @@ export default class GameSoundManager extends SoundLibrary {
             }
         }
         return {
-            sounds: soundElements
+            sounds: soundElements,
+            childrenTagsOrder: GameSoundManager.childrenTagsOrder,
         }
     }
     public importJson(dataString: string) {
@@ -142,6 +143,14 @@ export default class GameSoundManager extends SoundLibrary {
         this.stopAll()
         this.clear()
         try {
+            if (data.hasOwnProperty("childrenTagsOrder")) {
+                GameSoundManager.childrenTagsOrder = (data as ExportedSounds)["childrenTagsOrder"]
+            }
+            else {
+                console.error("[Pixi'VN] The data does not have the properties childrenTagsOrder")
+                return
+            }
+
             if (data.hasOwnProperty("sounds")) {
                 let sounds = (data as ExportedSounds)["sounds"]
                 for (let tag in sounds) {
