@@ -8,6 +8,7 @@ export default class GameSoundManager extends SoundLibrary {
     override get context(): IMediaContext {
         return sound.context
     }
+    // TODO: Fix this
     override get filtersAll(): Filter[] {
         return sound.filtersAll
     }
@@ -134,7 +135,21 @@ export default class GameSoundManager extends SoundLibrary {
         return {
             sounds: soundElements,
             childrenTagsOrder: GameSoundManager.childrenTagsOrder,
+            filters: FilterToFilterMemory(sound.filtersAll)
         }
+    }
+    public removeOldSoundAndExport(): ExportedSounds {
+        // let childrenTagsOrder = []
+        // for (let tag of GameSoundManager.childrenTagsOrder) {
+        //     if (sound.exists(tag)) {
+        //         let s = sound.find(tag)
+        //         if (s.loop) {
+        //             childrenTagsOrder.push(tag)
+        //         }
+        //     }
+        // }
+        // GameSoundManager.childrenTagsOrder = childrenTagsOrder
+        return this.export()
     }
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString))
@@ -161,7 +176,9 @@ export default class GameSoundManager extends SoundLibrary {
                     }
                     if (item.isPlaying) {
                         setTimeout(() => {
-                            sound.play(tag)
+                            if (!sound.exists(tag) && !sound.find(tag).isPlaying) {
+                                sound.play(tag)
+                            }
                         }, 200)
                     }
                 }

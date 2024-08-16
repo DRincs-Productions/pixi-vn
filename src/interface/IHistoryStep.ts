@@ -4,6 +4,7 @@ import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepHistoryDataType } from "../types/StepHistoryDataType";
 import ExportedCanvas from "./export/ExportedCanvas";
+import ExportedSounds from "./export/ExportedSounds";
 import ExportedStorage from "./export/ExportedStorage";
 import IOpenedLabel from "./IOpenedLabel";
 
@@ -31,6 +32,10 @@ export interface IHistoryStepData {
      * The opened labels that occurred during the progression of the steps.
      */
     openedLabels: IOpenedLabel[],
+    /**
+     * The sound data that occurred during the progression of the steps.
+     */
+    sound: ExportedSounds,
 }
 
 export default interface IHistoryStep<T extends DialogueBaseModel = DialogueBaseModel> {

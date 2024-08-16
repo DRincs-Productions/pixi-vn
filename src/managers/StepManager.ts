@@ -1,4 +1,5 @@
 import { diff } from "deep-diff"
+import { canvas, sound, storage } from "."
 import { DialogueBaseModel, Label } from "../classes"
 import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
@@ -16,8 +17,6 @@ import { HistoryChoiceMenuOption } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
-import GameStorageManager from "./StorageManager"
-import GameWindowManager from "./WindowManager"
 
 type AllOpenedLabelsType = { [key: LabelIdType]: number }
 type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number }
@@ -39,19 +38,19 @@ export default class GameStepManager {
      * the key is the label id and the biggest step opened.
      */
     private static get allOpenedLabels() {
-        return GameStorageManager.getVariable<AllOpenedLabelsType>(GameStorageManager.keysSystem.ALL_OPENED_LABELS_KEY) || {}
+        return storage.getVariable<AllOpenedLabelsType>(storage.keysSystem.ALL_OPENED_LABELS_KEY) || {}
     }
     private static set allOpenedLabels(value: AllOpenedLabelsType) {
-        GameStorageManager.setVariable(GameStorageManager.keysSystem.ALL_OPENED_LABELS_KEY, value)
+        storage.setVariable(storage.keysSystem.ALL_OPENED_LABELS_KEY, value)
     }
     /**
      * is a list of all choices made by the player during the progression of the steps.
      */
     private static get allChoicesMade() {
-        return GameStorageManager.getVariable<AllChoicesMadeType[]>(GameStorageManager.keysSystem.ALL_CHOICES_MADE_KEY) || []
+        return storage.getVariable<AllChoicesMadeType[]>(storage.keysSystem.ALL_CHOICES_MADE_KEY) || []
     }
     private static set allChoicesMade(value: AllChoicesMadeType[]) {
-        GameStorageManager.setVariable(GameStorageManager.keysSystem.ALL_CHOICES_MADE_KEY, value)
+        storage.setVariable(storage.keysSystem.ALL_CHOICES_MADE_KEY, value)
     }
     private static _lastStepIndex: number = 0
     /**
@@ -116,6 +115,10 @@ export default class GameStepManager {
                     currentTickers: {},
                     currentTickersSteps: {},
                 },
+                sound: {
+                    childrenTagsOrder: [],
+                    sounds: {},
+                },
                 labelIndex: -1,
                 openedLabels: [],
             }
@@ -129,8 +132,9 @@ export default class GameStepManager {
     private static get currentStepData(): IHistoryStepData {
         let currentStepData: IHistoryStepData = {
             path: window.location.pathname,
-            storage: GameStorageManager.export(),
-            canvas: GameWindowManager.export(),
+            storage: storage.export(),
+            canvas: canvas.export(),
+            sound: sound.removeOldSoundAndExport(),
             labelIndex: GameStepManager.currentLabelStepIndex || 0,
             openedLabels: createExportableElement(GameStepManager._openedLabels),
         }
@@ -168,11 +172,11 @@ export default class GameStepManager {
         if (data) {
             let dialoge: DialogueBaseModel | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
-            if (GameStorageManager.getVariable<number>(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
+            if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
                 dialoge = getDialogue()
             }
-            if (GameStorageManager.getVariable<number>(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
-                requiredChoices = GameStorageManager.getVariable<IStoratedChoiceMenuOption[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+            if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
+                requiredChoices = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
             }
             GameStepManager._stepsHistory.push({
                 diff: data,
@@ -645,8 +649,9 @@ export default class GameStepManager {
             if (GameStepManager.currentLabel && GameStepManager.currentLabel.onLoadStep) {
                 await GameStepManager.currentLabel.onLoadStep(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
             }
-            GameStorageManager.import(createExportableElement(restoredStep.storage))
-            GameWindowManager.import(createExportableElement(restoredStep.canvas))
+            storage.import(createExportableElement(restoredStep.storage))
+            canvas.import(createExportableElement(restoredStep.canvas))
+            sound.import(createExportableElement(restoredStep.sound))
             navigate(restoredStep.path)
         }
         else {

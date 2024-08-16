@@ -15,4 +15,5 @@ export interface ExportedSound {
 export default interface ExportedSounds {
     sounds: ExportedSound
     childrenTagsOrder: string[]
+    filters?: SoundFilterMemory[]
 }
