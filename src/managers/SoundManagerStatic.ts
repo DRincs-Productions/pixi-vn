@@ -1,8 +1,6 @@
+import { ExportedSoundPlay } from "../interface/export/ExportedSounds"
+
 export default class SoundManagerStatic {
     static childrenTagsOrder: string[] = []
-    static payInStepIndex: {
-        [key: string]: {
-            stepIndex: number,
-        }
-    } = {}
+    static playInStepIndex: ExportedSoundPlay = {}
 }

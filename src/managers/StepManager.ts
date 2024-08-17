@@ -118,6 +118,7 @@ export default class GameStepManager {
                 sound: {
                     childrenTagsOrder: [],
                     sounds: {},
+                    playInStepIndex: {},
                 },
                 labelIndex: -1,
                 openedLabels: [],

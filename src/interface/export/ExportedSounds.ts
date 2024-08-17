@@ -4,8 +4,15 @@ import { SoundFilterMemory } from "../../types";
 export interface ExportedSound {
     [key: string]: {
         options: Options,
-        isPlaying: boolean,
         filters?: SoundFilterMemory[]
+    }
+}
+
+export interface ExportedSoundPlay {
+    [key: string]: {
+        stepIndex: number,
+        paused: boolean,
+        loop: boolean
     }
 }
 
@@ -16,4 +23,5 @@ export default interface ExportedSounds {
     sounds: ExportedSound
     childrenTagsOrder: string[]
     filters?: SoundFilterMemory[]
+    playInStepIndex: ExportedSoundPlay
 }

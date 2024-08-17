@@ -1,5 +1,6 @@
-import { CompleteCallback, Filter, filters, IMediaContext, IMediaInstance, Options, PlayOptions, Sound, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
-import PixiSound from '../classes/Sound';
+import { CompleteCallback, Filter, filters, IMediaContext, IMediaInstance, Options, Sound as PixiSound, PlayOptions, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
+import { narration } from '.';
+import { Sound } from '../classes';
 import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/SoundUtility';
 import { ExportedSound, ExportedSounds } from '../interface';
 import SoundManagerStatic from './SoundManagerStatic';
@@ -43,24 +44,24 @@ export default class GameSoundManager extends SoundLibrary {
 
         return options;
     }
-    override add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;
+    override add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | PixiSound): PixiSound;
     /**
      * @deprecated: Use `add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;` instead.
      */
     override add(map: SoundSourceMap, globalOptions?: Options): SoundMap;
-    public override add(alias: string | SoundSourceMap, sourceOptions?: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): any {
+    public override add(alias: string | SoundSourceMap, sourceOptions?: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | PixiSound): any {
         if (typeof alias === 'object') {
             throw new Error("[Pixi'VN] The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.")
         }
 
         !SoundManagerStatic.childrenTagsOrder.includes(alias) && SoundManagerStatic.childrenTagsOrder.push(alias)
 
-        if (sourceOptions instanceof Sound) {
+        if (sourceOptions instanceof PixiSound) {
             sourceOptions = sourceOptions.options
         }
 
         const options: Options = this.getOptions(sourceOptions || {});
-        const s: PixiSound = PixiSound.from(options);
+        const s: Sound = Sound.from(options);
         s.alias = alias;
         sound.add(alias, s);
     }
@@ -124,18 +125,52 @@ export default class GameSoundManager extends SoundLibrary {
         return sound.isPlaying()
     }
     override find(alias: string): Sound {
-        return sound.find(alias)
+        let item = sound.find(alias)
+        let newItem = new Sound(item.media, item.options)
+        newItem.alias = alias
+        return newItem
     }
     override play(alias: string, options?: PlayOptions | CompleteCallback | string): IMediaInstance | Promise<IMediaInstance> {
-        return sound.play(alias, options)
+        if (!this.exists(alias)) {
+            throw new Error(`[Pixi'VN] The sound alias "${alias}" is not found.`)
+        }
+        let sound = this.find(alias)
+        let loop = sound.loop
+        if (options && typeof options === 'object' && options?.loop !== undefined) {
+            loop = options.loop;
+        }
+        SoundManagerStatic.playInStepIndex[alias] = {
+            stepIndex: narration.lastStepIndex,
+            loop: loop,
+            paused: false
+        }
+        return sound.play(alias, options as any)
     }
     override stop(alias: string): Sound {
+        delete SoundManagerStatic.playInStepIndex[alias];
         return sound.stop(alias)
     }
     override  pause(alias: string): Sound {
+        let item = SoundManagerStatic.playInStepIndex[alias]
+        if (!item) {
+            throw new Error("[Pixi'VN] The alias is not found in the playInStepIndex.");
+        }
+        SoundManagerStatic.playInStepIndex[alias] = {
+            ...item,
+            paused: true
+        }
         return sound.pause(alias)
     }
     override resume(alias: string): Sound {
+        let item = SoundManagerStatic.playInStepIndex[alias]
+        if (!item) {
+            throw new Error("[Pixi'VN] The alias is not found in the playInStepIndex.");
+        }
+        SoundManagerStatic.playInStepIndex[alias] = {
+            loop: item.loop,
+            stepIndex: narration.lastStepIndex,
+            paused: false
+        }
         return sound.resume(alias)
     }
     override volume(alias: string, volume?: number): number {
@@ -167,7 +202,6 @@ export default class GameSoundManager extends SoundLibrary {
                 let item = sound.find(tag)
                 soundElements[tag] = {
                     options: item.options,
-                    isPlaying: item.isPlaying,
                     filters: FilterToFilterMemory(item.media.filters),
                 }
             }
@@ -175,7 +209,8 @@ export default class GameSoundManager extends SoundLibrary {
         return {
             sounds: soundElements,
             childrenTagsOrder: SoundManagerStatic.childrenTagsOrder,
-            filters: FilterToFilterMemory(sound.filtersAll)
+            filters: FilterToFilterMemory(sound.filtersAll),
+            playInStepIndex: SoundManagerStatic.playInStepIndex
         }
     }
     public removeOldSoundAndExport(): ExportedSounds {
@@ -212,23 +247,30 @@ export default class GameSoundManager extends SoundLibrary {
                     this.filtersAll = FilterMemoryToFilter(f)
                 }
             }
+
+            if (data.hasOwnProperty("playInStepIndex")) {
+                SoundManagerStatic.playInStepIndex = (data as ExportedSounds)["playInStepIndex"]
+            }
             else {
-                console.error("[Pixi'VN] The data does not have the properties filters")
+                console.error("[Pixi'VN] The data does not have the properties playInStepIndex")
                 return
             }
 
             if (data.hasOwnProperty("sounds")) {
                 let sounds = (data as ExportedSounds)["sounds"]
-                for (let tag in sounds) {
-                    let item = sounds[tag]
-                    let audio = sound.add(tag, item.options)
+                for (let alias in sounds) {
+                    let item = sounds[alias]
+                    let audio = sound.add(alias, item.options)
                     if (item.filters) {
                         audio.filters = FilterMemoryToFilter(item.filters)
                     }
-                    if (item.isPlaying) {
-                        setTimeout(() => {
-                            sound.play(tag)
-                        }, 200)
+                    if (alias in SoundManagerStatic.playInStepIndex) {
+                        let step = SoundManagerStatic.playInStepIndex[alias]
+                        if (step.loop) {
+                            sound.play(alias)
+                        } else if (step.stepIndex === narration.lastStepIndex - 1) {
+                            sound.play(alias)
+                        }
                     }
                 }
             }
