@@ -1,8 +1,8 @@
-import { CompleteCallback, Filter, filters, IMediaInstance, Options, PlayOptions, Sound } from "@pixi/sound";
+import { CompleteCallback, Filter, filters, IMediaInstance, Options, Sound as PixiSound, PlayOptions } from "@pixi/sound";
 import { narration } from "../managers";
 import SoundManagerStatic from "../managers/SoundManagerStatic";
 
-export default class SoundAudio extends Sound {
+export default class Sound extends PixiSound {
     alias?: string;
     override pause(): this {
         if (!this.alias) {
@@ -21,10 +21,9 @@ export default class SoundAudio extends Sound {
         return super.resume();
     }
     override set filters(f: Filter[]) {
-        f = f.filter(f => {
+        super.filters = f.filter(f => {
             return !(f instanceof filters.Filter);
         })
-        super.filters = f;
     }
     override destroy(): void {
         if (this.alias) {
@@ -45,6 +44,12 @@ export default class SoundAudio extends Sound {
         if (typeof source === 'string') {
             this.alias = source;
         }
+        if (!this.alias) {
+            throw new Error("[Pixi'VN] The alias is not defined.");
+        }
+        SoundManagerStatic.playrdInstoSteps[this.alias] = {
+            step: narration.lastStepIndex
+        }
         return super.play(source, callback);
     }
 
@@ -53,6 +58,6 @@ export default class SoundAudio extends Sound {
      */
     public static from(source: string | string[] | Options | ArrayBuffer | HTMLAudioElement | AudioBuffer): Sound {
         let s = Sound.from(source);
-        return new SoundAudio(s.media, s.options);
+        return new Sound(s.media, s.options);
     }
 }
