@@ -8,14 +8,14 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi'VN] The alias is not defined.");
         }
-        delete SoundManagerStatic.playrdInstoSteps[this.alias];
+        delete SoundManagerStatic.payInStepIndex[this.alias];
         return super.pause();
     }
     override resume(): this {
         if (!this.alias) {
             throw new Error("[Pixi'VN] The alias is not defined.");
         }
-        SoundManagerStatic.playrdInstoSteps[this.alias] = {
+        SoundManagerStatic.payInStepIndex[this.alias] = {
             stepIndex: narration.lastStepIndex
         }
         return super.resume();
@@ -27,7 +27,7 @@ export default class Sound extends PixiSound {
     }
     override destroy(): void {
         if (this.alias) {
-            delete SoundManagerStatic.playrdInstoSteps[this.alias];
+            delete SoundManagerStatic.payInStepIndex[this.alias];
         }
         return super.destroy();
     }
@@ -35,7 +35,7 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi'VN] The alias is not defined.");
         }
-        delete SoundManagerStatic.playrdInstoSteps[this.alias];
+        delete SoundManagerStatic.payInStepIndex[this.alias];
         return super.stop();
     }
     override play(alias: string, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance>;
@@ -47,7 +47,7 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi'VN] The alias is not defined.");
         }
-        SoundManagerStatic.playrdInstoSteps[this.alias] = {
+        SoundManagerStatic.payInStepIndex[this.alias] = {
             stepIndex: narration.lastStepIndex
         }
         return super.play(source, callback);
