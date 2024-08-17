@@ -386,9 +386,6 @@ export default class GameStepManager {
         if (options && options.length > 0) {
             return false
         }
-        if (GameStepManager._stepsHistory.length === 0) {
-            return false
-        }
         return true
     }
     /**
