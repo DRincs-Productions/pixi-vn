@@ -1,7 +1,7 @@
 export { Assets } from "pixi.js";
 export * from './classes';
 export * from './classes/ticker';
-export { Pause, Repeat } from './constants';
+export { Pause, Repeat, filters } from './constants';
 export * from './decorators';
 export * from './functions';
 export * from './interface';

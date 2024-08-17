@@ -1,4 +1,5 @@
-import { PauseType, RepeatType } from "./types"
+import { filters as f } from '@pixi/sound';
+import { PauseType, RepeatType } from "./types";
 
 export const PIXIVN_VERSION = '0.6.14'
 export const Repeat: RepeatType = "repeat"
@@ -12,6 +13,16 @@ export function Pause(duration: number): PauseType {
         type: "pause",
         duration: duration,
     }
+}
+
+export const filters = {
+    DistortionFilter: f.DistortionFilter,
+    EqualizerFilter: f.EqualizerFilter,
+    MonoFilter: f.MonoFilter,
+    ReverbFilter: f.ReverbFilter,
+    StereoFilter: f.StereoFilter,
+    StreamFilter: f.StreamFilter,
+    TelephoneFilter: f.TelephoneFilter,
 }
 
 export const videoFormats = [
