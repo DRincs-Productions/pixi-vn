@@ -16,7 +16,7 @@ export default class Sound extends PixiSound {
             throw new Error("[Pixi'VN] The alias is not defined.");
         }
         SoundManagerStatic.playrdInstoSteps[this.alias] = {
-            step: narration.lastStepIndex
+            stepIndex: narration.lastStepIndex
         }
         return super.resume();
     }
@@ -48,7 +48,7 @@ export default class Sound extends PixiSound {
             throw new Error("[Pixi'VN] The alias is not defined.");
         }
         SoundManagerStatic.playrdInstoSteps[this.alias] = {
-            step: narration.lastStepIndex
+            stepIndex: narration.lastStepIndex
         }
         return super.play(source, callback);
     }
@@ -57,7 +57,7 @@ export default class Sound extends PixiSound {
      * https://github.com/pixijs/sound/blob/main/src/Sound.ts#L235
      */
     public static from(source: string | string[] | Options | ArrayBuffer | HTMLAudioElement | AudioBuffer): Sound {
-        let s = Sound.from(source);
+        let s = PixiSound.from(source);
         return new Sound(s.media, s.options);
     }
 }
