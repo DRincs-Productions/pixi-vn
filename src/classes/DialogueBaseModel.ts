@@ -1,7 +1,7 @@
 import { CharacterInterface } from "../interface"
 import { StorageElementType } from "../types"
 
-export type DialogueData = {
+type DialogueProps = {
     /**
      * The text of the dialogue.
      */
@@ -24,13 +24,13 @@ export type DialogueData = {
  * setDialogue(new DialogueBaseModel("Hello World", character))
  * ```
  */
-export default class DialogueBaseModel<TCharacter extends CharacterInterface = CharacterInterface> implements DialogueData {
+export default class DialogueBaseModel<TCharacter extends CharacterInterface = CharacterInterface> {
     /**
      * @param text The text of the dialogue.
      * @param character The id of the character that is speaking. 
      * @param oltherParams Other parameters that can be stored in the dialogue.
      */
-    constructor(text: string | DialogueData, character?: string | TCharacter, oltherParams: { [key: string]: StorageElementType } = {}) {
+    constructor(text: string | DialogueProps, character?: string | TCharacter, oltherParams: { [key: string]: StorageElementType } = {}) {
         if (typeof text === "string") {
             this.text = text
             if (typeof character === "string") {
@@ -66,7 +66,7 @@ export default class DialogueBaseModel<TCharacter extends CharacterInterface = C
      * 
      * @returns The data of the dialogue.
      */
-    export(): DialogueData {
+    export(): DialogueProps {
         return {
             text: this.text,
             character: this.character,

@@ -2,7 +2,7 @@ import { CharacterStoredClass } from "../classes"
 
 /**
  * CharacterInterface is the interface that character must implement or extend.
- * So if you want user you Character class, you must override this interface, implement or extend it and extend the {@link CharacterStoredClass} class. 
+ * So if you want to create your own Character, you must override this interface, implement or extend it and extend the {@link CharacterStoredClass} class. 
  * You can override this interface to add your own props.
  * @example
  * ```typescript
