@@ -2,7 +2,7 @@ import { filters } from "../constants";
 import { newLabel } from "../decorators";
 import { setDialogue } from "../functions";
 import { narration, sound } from "../managers";
-import { juliette, loop1Audio } from "./TestConstant";
+import { juliette, musicalAudio } from "./TestConstant";
 
 const SOUND_TEST_LABEL = "___pixi_vn_sound_test___"
 
@@ -13,7 +13,7 @@ export const soundTestLabel = newLabel(SOUND_TEST_LABEL,
                 character: juliette,
                 text: "This is a sound test label. You should be hearing a loop1Audio sound."
             })
-            sound.add("audio", loop1Audio)
+            sound.add("audio", musicalAudio)
             sound.play("audio")
         },
         () => {
@@ -46,9 +46,9 @@ export const soundTestLabel = newLabel(SOUND_TEST_LABEL,
             })
             let s = sound.add("audio", {
                 loop: true,
-                url: loop1Audio,
+                url: musicalAudio,
             })
-            s.filters = [new filters.MonoFilter()]
+            s.filters = [new filters.ReverbFilter()]
             sound.play("audio")
         },
         (props) => {

@@ -1,4 +1,4 @@
-import { Filter, filters, IMediaInstance, Sound as PixiSound } from "@pixi/sound";
+import { IMediaInstance, Sound as PixiSound } from "@pixi/sound";
 import { SoundOptions, SoundPlayOptions } from "../interface";
 import { narration } from "../managers";
 import SoundManagerStatic from "../managers/SoundManagerStatic";
@@ -33,11 +33,6 @@ export default class Sound extends PixiSound {
             paused: false
         }
         return super.resume();
-    }
-    override set filters(f: Filter[]) {
-        super.filters = f.filter(f => {
-            return !(f instanceof filters.Filter);
-        })
     }
     override destroy(): void {
         if (this.alias) {
