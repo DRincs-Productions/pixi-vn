@@ -1,5 +1,4 @@
 export type { default as CharacterInterface } from './CharacterInterface';
-export type { default as DialogueInterface } from './DialogueInterface';
 export type { default as ExportedCanvas } from './export/ExportedCanvas';
 export type { ExportedSound, default as ExportedSounds } from './export/ExportedSounds';
 export type { default as ExportedStep } from './export/ExportedStep';

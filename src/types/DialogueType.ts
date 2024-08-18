@@ -1,7 +1,6 @@
-import DialogueInterface from "../override/DialogueInterface"
-import { StorageElementType } from "../types"
+import { StorageElementType } from "./StorageElementType"
 
-type DialogueData = {
+type DialogueType = {
     /**
      * The text of the dialogue.
      */
@@ -14,5 +13,5 @@ type DialogueData = {
      * Other parameters that can be stored in the dialogue.
      */
     oltherParams?: Record<string | number | symbol, StorageElementType>
-} & DialogueInterface
-export default DialogueData
+}
+export default DialogueType

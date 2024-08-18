@@ -1,11 +1,10 @@
 import { DialogueBaseModel, Label } from "../classes";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import newCloseLabel from "../classes/CloseLabel";
-import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
 import { CharacterInterface } from "../interface";
 import { narration, storage } from "../managers";
-import { Close } from "../types";
+import { Close, DialogueType } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 import { getFlag, setFlag } from "./FlagsUtility";
 
@@ -66,7 +65,7 @@ export function setDialogue<TCharacter extends CharacterInterface = CharacterInt
         setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
     }
 
-    storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueData)
+    storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType)
     storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
 }
 
@@ -75,7 +74,7 @@ export function setDialogue<TCharacter extends CharacterInterface = CharacterInt
  * @returns Dialogue to be shown in the game
  */
 export function getDialogue<T extends DialogueBaseModel = DialogueBaseModel>(): T | undefined {
-    return storage.getVariable<DialogueData>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
+    return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
 }
 
 /**
