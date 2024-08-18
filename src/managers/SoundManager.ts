@@ -1,4 +1,4 @@
-import { Filter, filters, IMediaContext, IMediaInstance, Sound as PixiSound, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
+import { Filter, filters, IMediaContext, IMediaInstance, Sound as PixiSound, sound, SoundLibrary, SoundMap } from '@pixi/sound';
 import { narration } from '.';
 import { Sound } from '../classes';
 import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/SoundUtility';
@@ -44,14 +44,17 @@ export default class GameSoundManager extends SoundLibrary {
 
         return options;
     }
-    override add(alias: string, options: SoundOptions | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;
+    override add(alias: string, options: SoundOptions | string): Sound;
     /**
      * @deprecated: Use `add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;` instead.
      */
-    override add(map: SoundSourceMap, globalOptions?: SoundOptions): SoundMap;
-    public override add(alias: string | SoundSourceMap, sourceOptions?: SoundOptions | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): (Sound | SoundMap) {
+    override add(map: any, globalOptions?: SoundOptions): SoundMap;
+    public override add(alias: string, sourceOptions?: SoundOptions | string): (Sound | SoundMap) {
         if (typeof alias === 'object') {
             throw new Error("[Pixi'VN] The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.")
+        }
+        if (this.exists(alias)) {
+            this.remove(alias)
         }
 
         if (sourceOptions instanceof PixiSound) {
@@ -241,7 +244,7 @@ export default class GameSoundManager extends SoundLibrary {
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString))
     }
-    public import(data: object) {
+    public import(data: object, lastStepIndex = narration.lastStepIndex) {
         this.clear()
         try {
             if (data.hasOwnProperty("childrenTagsOrder")) {
@@ -276,16 +279,17 @@ export default class GameSoundManager extends SoundLibrary {
                         let step = SoundManagerStatic.playInStepIndex[alias];
                         if (item.options.loop || (step.options && typeof step.options === 'object' && step.options.loop)) {
                             autoPlay = true
-                        } else if (step.stepIndex === narration.lastStepIndex - 1) {
+                        } else if (step.stepIndex === lastStepIndex) {
                             autoPlay = true
                         }
 
-                        let audio = this.add(alias, {
-                            autoPlay: autoPlay,
-                            ...item.options
+                        let s = this.add(alias, {
+                            ...item.options,
+                            autoPlay: false
                         })
-                        if (item.filters) {
-                            audio.filters = FilterMemoryToFilter(item.filters)
+
+                        if (autoPlay) {
+                            s.play()
                         }
                     }
                 }

@@ -649,7 +649,7 @@ export default class GameStepManager {
             }
             storage.import(createExportableElement(restoredStep.storage))
             canvas.import(createExportableElement(restoredStep.canvas))
-            sound.import(createExportableElement(restoredStep.sound))
+            sound.import(createExportableElement(restoredStep.sound), GameStepManager.lastStepIndex - 1)
             navigate(restoredStep.path)
         }
         else {
