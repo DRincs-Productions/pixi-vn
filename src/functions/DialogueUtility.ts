@@ -3,7 +3,7 @@ import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } fr
 import newCloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
-import { GameStepManager, GameStorageManager } from "../managers";
+import { GameStorageManager, narration } from "../managers";
 import { Close } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 import { getFlag, setFlag } from "./FlagsUtility";
@@ -66,7 +66,7 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
     }
 
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueData)
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
 }
 
 /**
@@ -113,7 +113,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void 
         }
     })
     GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
 }
 
 /**

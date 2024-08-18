@@ -20,11 +20,11 @@ import LabelAbstract from "./LabelAbstract"
  *                 new ChoiceMenuOption("Show Image Test", showImageTest),
  *             ])
  *         },
- *         (props) => GameStepManager.jumpLabel(START_LABEL_ID, props),
+ *         (props) => narration.jumpLabel(START_LABEL_ID, props),
  *     ]
  * )
  * 
- * GameStepManager.callLabel(StartLabel)
+ * narration.callLabel(StartLabel)
  * ```
  */
 export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T> {

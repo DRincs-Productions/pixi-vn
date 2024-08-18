@@ -1,6 +1,6 @@
 import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
 import { LabelProps } from "../interface"
-import { GameStepManager, GameStorageManager } from "../managers"
+import { GameStorageManager, narration } from "../managers"
 import { StepLabelJsonType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
@@ -60,23 +60,23 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
 
             if (step.labelToOpen) {
                 if (step.labelToOpen.type === "jump") {
-                    GameStepManager.jumpLabel(step.labelToOpen.labelId, props)
+                    narration.jumpLabel(step.labelToOpen.labelId, props)
                 }
                 else {
-                    GameStepManager.callLabel(step.labelToOpen.labelId, props)
+                    narration.callLabel(step.labelToOpen.labelId, props)
                 }
             }
 
             if (step.goNextStep) {
-                GameStepManager.goNext(props)
+                narration.goNext(props)
             }
 
             if (step.end === "game_end") {
-                GameStepManager.closeAllLabels()
-                GameStepManager.goNext(props)
+                narration.closeAllLabels()
+                narration.goNext(props)
             }
             else if (step.end === "label_end") {
-                GameStepManager.closeCurrentLabel()
+                narration.closeCurrentLabel()
             }
         }
     }
