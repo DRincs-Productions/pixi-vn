@@ -3,7 +3,7 @@ import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classe
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
-import { GameStepManager, GameWindowManager } from "../managers"
+import { canvas, narration } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
 const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
@@ -39,7 +39,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOptionClose("Cancel", true),
         ])
     },
-    (props) => GameStepManager.jumpLabel(IMAGE_ANIMAIONS_TEST_LABEL, props),
+    (props) => narration.jumpLabel(IMAGE_ANIMAIONS_TEST_LABEL, props),
 ])
 
 const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
@@ -54,7 +54,7 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
         removeWithDissolveTransition(["eggHead"], { duration: 2 })
         let eggHead = new CanvasImage({ x: 300, y: 100 }, eggHeadImage)
         showWithDissolveTransition('flowerTop', eggHead, { duration: 1 })
-        GameWindowManager.addTickersSteps("helmlok",
+        canvas.addTickersSteps("helmlok",
             [
                 new FadeAlphaTicker({
                     duration: 1,
@@ -67,7 +67,7 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
                 Repeat,
             ]
         )
-        GameWindowManager.addTickersSteps("skully",
+        canvas.addTickersSteps("skully",
             [
                 new FadeAlphaTicker({
                     duration: 0.5,
@@ -99,7 +99,7 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
         removeWithFadeTransition(["eggHead"], { duration: 2 })
         let eggHead = new CanvasImage({ x: 300, y: 100 }, eggHeadImage)
         showWithFadeTransition('flowerTop', eggHead, { duration: 1 })
-        GameWindowManager.addTickersSteps("helmlok",
+        canvas.addTickersSteps("helmlok",
             [
                 new FadeAlphaTicker({
                     duration: 1,
@@ -112,7 +112,7 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
                 Repeat,
             ]
         )
-        GameWindowManager.addTickersSteps("skully",
+        canvas.addTickersSteps("skully",
             [
                 new FadeAlphaTicker({
                     duration: 0.5,
@@ -128,7 +128,7 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
         )
     },
     async () => {
-        let eggHeadOld = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
+        let eggHeadOld = canvas.getCanvasElement<CanvasImage>("eggHead")
         if (eggHeadOld)
             eggHeadOld.alpha = 0
         showWithFadeTransition('eggHead', eggHeadImage, { duration: 0.5 })
@@ -144,28 +144,28 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
 - ${helmlokName} will rotate with a anchor set to 0.5, rotate clockwise for 2 seconds, rotate counterclockwise with a exponential (-0.05) speed progression, and when it reaches 0, it will repeat.
 - ${skullyName} will rotate with a anchor set to 1, rotate 3 seconds clockwise, wait for 0.5 seconds, and rotate 7 seconds counterclockwise.`
         })
-        let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
+        let eggHead = canvas.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
             eggHead.anchor.set(0);
-        let flowerTop = GameWindowManager.getCanvasElement<CanvasImage>("flowerTop")
+        let flowerTop = canvas.getCanvasElement<CanvasImage>("flowerTop")
         if (flowerTop)
             flowerTop.anchor.set(0.5);
-        let helmlok = GameWindowManager.getCanvasElement<CanvasImage>("helmlok")
+        let helmlok = canvas.getCanvasElement<CanvasImage>("helmlok")
         if (helmlok)
             helmlok.anchor.set(0.5);
-        let skully = GameWindowManager.getCanvasElement<CanvasImage>("skully")
+        let skully = canvas.getCanvasElement<CanvasImage>("skully")
         if (skully)
             skully.anchor.set(1);
-        GameWindowManager.addTicker("eggHead", new RotateTicker({
+        canvas.addTicker("eggHead", new RotateTicker({
             speed: 6,
             clockwise: true,
         }))
-        GameWindowManager.addTicker("flowerTop", new RotateTicker({
+        canvas.addTicker("flowerTop", new RotateTicker({
             speed: 6,
             clockwise: false,
             speedProgression: { type: "exponential", percentage: 0.01, limit: 300 }
         }))
-        GameWindowManager.addTickersSteps("helmlok", [
+        canvas.addTickersSteps("helmlok", [
             new RotateTicker({
                 speed: 6,
                 clockwise: true,
@@ -177,7 +177,7 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
             }),
             Repeat,
         ])
-        GameWindowManager.addTickersSteps("skully", [
+        canvas.addTickersSteps("skully", [
             new RotateTicker({
                 speed: 6,
                 clockwise: true,
@@ -200,15 +200,15 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
 - ${helmlokName} will move to { x: 100, y: 500 } with a speed of 150 and a linear speed progression of -2 ( limit 10 ), and then move to { x: 1700, y: 500 } with a speed of 10 and a linear speed progression of 2 ( limit 150 ), and repeat.
 - ${skullyName} will move to { x: 500, y: 500 } with a speed of 40, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 40.`
         })
-        GameWindowManager.addTicker("eggHead", new MoveTicker({
+        canvas.addTicker("eggHead", new MoveTicker({
             destination: { x: 500, y: 100 },
             speed: 24,
         }))
-        GameWindowManager.addTicker("flowerTop", new MoveTicker({
+        canvas.addTicker("flowerTop", new MoveTicker({
             destination: { x: 500, y: 300 },
             speed: 18,
         }))
-        GameWindowManager.addTickersSteps("helmlok", [
+        canvas.addTickersSteps("helmlok", [
             new MoveTicker({
                 destination: { x: 100, y: 500 },
                 speed: 150,
@@ -221,7 +221,7 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
             }),
             Repeat,
         ])
-        GameWindowManager.addTickersSteps("skully", [
+        canvas.addTickersSteps("skully", [
             new MoveTicker({
                 destination: { x: 500, y: 500 },
                 speed: 40,
@@ -244,22 +244,22 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
 - ${helmlokName} will unzoom with a speed of 3 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
 - ${skullyName} will zoom in with a speed of 0.1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
         })
-        let eggHead = GameWindowManager.getCanvasElement<CanvasImage>("eggHead")
+        let eggHead = canvas.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
             eggHead.scale.set(2)
-        let helmlok = GameWindowManager.getCanvasElement<CanvasImage>("helmlok")
+        let helmlok = canvas.getCanvasElement<CanvasImage>("helmlok")
         if (helmlok)
             helmlok.anchor.set(0.5);
-        GameWindowManager.addTicker("eggHead", new ZoomTicker({
+        canvas.addTicker("eggHead", new ZoomTicker({
             speed: 3,
             limit: -0.5,
             type: "unzoom"
         }))
-        GameWindowManager.addTicker("flowerTop", new ZoomTicker({
+        canvas.addTicker("flowerTop", new ZoomTicker({
             speed: 3,
             limit: 2,
         }))
-        GameWindowManager.addTickersSteps("helmlok", [
+        canvas.addTickersSteps("helmlok", [
             new ZoomTicker({
                 speed: 3,
                 limit: -1,
@@ -271,7 +271,7 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
             }),
             Repeat,
         ])
-        GameWindowManager.addTickersSteps("skully", [
+        canvas.addTickersSteps("skully", [
             new ZoomTicker({
                 speed: 0.1,
                 limit: 5,
@@ -328,7 +328,7 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
 - ${helmlokName} will zoom in with a speed of 3. If you go next, ${helmlokName} will zoom out with a speed of 1.
 - ${skullyName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${skullyName} will zoom out with a speed of 3 and a speed progression of 0.02.`
         })
-        GameWindowManager.removeCanvasElements()
+        canvas.removeCanvasElements()
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
         let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)

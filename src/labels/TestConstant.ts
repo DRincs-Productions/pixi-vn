@@ -20,3 +20,6 @@ export const skullyImage = "https://pixijs.com/assets/skully.png"
 export const skullyName = `<span style="color:red">Skully</span>`
 export const bunnyImage = "https://pixijs.com/assets/bunny.png"
 export const bunnyName = `Bunny`
+export const videoLink = "https://pixijs.com/assets/video.mp4"
+export const birdAudio = "https://pixijs.io/sound/examples/resources/bird.mp3"
+export const loop1Audio = "https://pixijs.io/sound/examples/resources/loops/loop1.mp3"
