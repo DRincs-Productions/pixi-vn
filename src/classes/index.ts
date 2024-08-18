@@ -6,6 +6,7 @@ export { default as CanvasSprite } from './canvas/CanvasSprite';
 export { default as CanvasText } from './canvas/CanvasText';
 export { default as CanvasEvent } from './CanvasEvent';
 export { default as CharacterBaseModel } from './CharacterBaseModel';
+export { default as CharacterStoredClass } from './CharacterStoredClass';
 export { default as ChoiceMenuOption, ChoiceMenuOptionClose } from './ChoiceMenuOption';
 export { default as DialogueBaseModel } from './DialogueBaseModel';
 export { default as Label } from './Label';

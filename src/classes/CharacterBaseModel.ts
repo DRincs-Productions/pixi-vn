@@ -1,7 +1,6 @@
 import { saveCharacter } from "../decorators"
 import CharacterBaseModelProps from "../interface/CharacterBaseModelProps"
-import { storage } from "../managers"
-import StoredClassModel from "./StoredClassModel"
+import CharacterStoredClass from "./CharacterStoredClass"
 
 /**
  * CharacterBaseModel is a class that is used to create a character model.
@@ -26,13 +25,13 @@ import StoredClassModel from "./StoredClassModel"
  * saveCharacter([liam, alice]);
  * ```
  */
-export default class CharacterBaseModel extends StoredClassModel {
+export default class CharacterBaseModel extends CharacterStoredClass {
     /**
      * @param id The id of the character.
      * @param props The properties of the character.
      */
     constructor(id: string, props: CharacterBaseModelProps) {
-        super(storage.keysSystem.CHARACTER_CATEGORY_KEY, id)
+        super(id)
         this.defaultName = props.name
         this.defaultSurname = props.surname
         this.defaultAge = props.age
