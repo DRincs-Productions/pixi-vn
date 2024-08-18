@@ -27,7 +27,7 @@ export default class Sound extends PixiSound {
             throw new Error("[Pixi'VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.playInStepIndex[this.alias] = {
-            loop: item.loop,
+            options: item.options,
             stepIndex: narration.lastStepIndex,
             paused: false
         }
@@ -52,24 +52,20 @@ export default class Sound extends PixiSound {
         return super.stop();
     }
     override play(alias: string, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance>;
-    override play(source?: string | PlayOptions | CompleteCallback, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance>;
-    override play(source?: any, options?: any): IMediaInstance | Promise<IMediaInstance> {
-        if (typeof source === 'string') {
-            this.alias = source;
+    override play(source?: string | PlayOptions, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance>;
+    override play(options?: string | PlayOptions, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance> {
+        if (typeof options === 'string') {
+            this.alias = options;
         }
         if (!this.alias) {
             throw new Error("[Pixi'VN] The alias is not defined.");
         }
-        let loop = this.loop
-        if (options?.loop !== undefined) {
-            loop = options.loop;
-        }
         SoundManagerStatic.playInStepIndex[this.alias] = {
             stepIndex: narration.lastStepIndex,
-            loop: loop,
+            options: options,
             paused: false
         }
-        return super.play(source, options);
+        return super.play(options, callback);
     }
 
     /**

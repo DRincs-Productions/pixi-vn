@@ -1,4 +1,4 @@
-import { CompleteCallback, Filter, filters, IMediaContext, IMediaInstance, Options, Sound as PixiSound, PlayOptions, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
+import { Filter, filters, IMediaContext, IMediaInstance, Options, Sound as PixiSound, PlayOptions, sound, SoundLibrary, SoundMap, SoundSourceMap } from '@pixi/sound';
 import { narration } from '.';
 import { Sound } from '../classes';
 import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/SoundUtility';
@@ -44,12 +44,12 @@ export default class GameSoundManager extends SoundLibrary {
 
         return options;
     }
-    override add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | PixiSound): PixiSound;
+    override add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;
     /**
      * @deprecated: Use `add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;` instead.
      */
     override add(map: SoundSourceMap, globalOptions?: Options): SoundMap;
-    public override add(alias: string | SoundSourceMap, sourceOptions?: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | PixiSound): any {
+    public override add(alias: string | SoundSourceMap, sourceOptions?: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): any {
         if (typeof alias === 'object') {
             throw new Error("[Pixi'VN] The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.")
         }
@@ -60,8 +60,13 @@ export default class GameSoundManager extends SoundLibrary {
             sourceOptions = sourceOptions.options
         }
 
-        const options: Options = this.getOptions(sourceOptions || {});
-        const s: Sound = Sound.from(options);
+        let s: Sound
+        if (sourceOptions instanceof Sound) {
+            s = sourceOptions
+        } else {
+            let options: Options = this.getOptions(sourceOptions || {});
+            s = Sound.from(options);
+        }
         s.alias = alias;
         sound.add(alias, s);
     }
@@ -130,21 +135,13 @@ export default class GameSoundManager extends SoundLibrary {
         newItem.alias = alias
         return newItem
     }
-    override play(alias: string, options?: PlayOptions | CompleteCallback | string): IMediaInstance | Promise<IMediaInstance> {
-        if (!this.exists(alias)) {
-            throw new Error(`[Pixi'VN] The sound alias "${alias}" is not found.`)
-        }
-        let sound = this.find(alias)
-        let loop = sound.loop
-        if (options && typeof options === 'object' && options?.loop !== undefined) {
-            loop = options.loop;
-        }
+    override play(alias: string, options?: PlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
         SoundManagerStatic.playInStepIndex[alias] = {
             stepIndex: narration.lastStepIndex,
-            loop: loop,
+            options: options,
             paused: false
         }
-        return sound.play(alias, options as any)
+        return sound.play(alias, options)
     }
     override stop(alias: string): Sound {
         delete SoundManagerStatic.playInStepIndex[alias];
@@ -167,7 +164,7 @@ export default class GameSoundManager extends SoundLibrary {
             throw new Error("[Pixi'VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.playInStepIndex[alias] = {
-            loop: item.loop,
+            options: item.options,
             stepIndex: narration.lastStepIndex,
             paused: false
         }
@@ -266,10 +263,10 @@ export default class GameSoundManager extends SoundLibrary {
                     }
                     if (alias in SoundManagerStatic.playInStepIndex) {
                         let step = SoundManagerStatic.playInStepIndex[alias]
-                        if (step.loop) {
-                            sound.play(alias)
+                        if (step.options && typeof step.options === 'object' && step.options.loop) {
+                            sound.play(alias, step.options)
                         } else if (step.stepIndex === narration.lastStepIndex - 1) {
-                            sound.play(alias)
+                            sound.play(alias, step.options)
                         }
                     }
                 }

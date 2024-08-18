@@ -1,4 +1,4 @@
-import { Options } from "@pixi/sound";
+import { Options, PlayOptions } from "@pixi/sound";
 import { SoundFilterMemory } from "../../types";
 
 export interface ExportedSound {
@@ -12,7 +12,7 @@ export interface ExportedSoundPlay {
     [key: string]: {
         stepIndex: number,
         paused: boolean,
-        loop: boolean
+        options?: PlayOptions | string
     }
 }
 
