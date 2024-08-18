@@ -84,6 +84,7 @@ export default class GameSoundManager extends SoundLibrary {
     }
     override remove(alias: string): this {
         SoundManagerStatic.childrenTagsOrder = SoundManagerStatic.childrenTagsOrder.filter((t) => t !== alias)
+        delete SoundManagerStatic.playInStepIndex[alias]
         return sound.remove(alias) as this
     }
     override get volumeAll(): number {
@@ -118,6 +119,7 @@ export default class GameSoundManager extends SoundLibrary {
     }
     override removeAll(): this {
         SoundManagerStatic.childrenTagsOrder = []
+        SoundManagerStatic.playInStepIndex = {}
         return sound.removeAll() as this
     }
     override stopAll(): this {
