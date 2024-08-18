@@ -1,5 +1,5 @@
 import { saveCharacter } from "../decorators"
-import { CharacterBaseModelProps } from "../interface"
+import CharacterBaseModelProps from "../interface/CharacterBaseModelProps"
 import { storage } from "../managers"
 import StoredClassModel from "./StoredClassModel"
 
@@ -26,7 +26,7 @@ import StoredClassModel from "./StoredClassModel"
  * saveCharacter([liam, alice]);
  * ```
  */
-export default class CharacterBaseModel extends StoredClassModel implements CharacterBaseModelProps {
+export default class CharacterBaseModel extends StoredClassModel {
     /**
      * @param id The id of the character.
      * @param props The properties of the character.

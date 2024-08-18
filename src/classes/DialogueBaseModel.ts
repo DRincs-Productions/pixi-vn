@@ -1,5 +1,5 @@
+import { CharacterInterface } from "../interface"
 import { StorageElementType } from "../types"
-import CharacterBaseModel from "./CharacterBaseModel"
 
 export type DialogueData = {
     /**
@@ -24,7 +24,7 @@ export type DialogueData = {
  * setDialogue(new DialogueBaseModel("Hello World", character))
  * ```
  */
-export default class DialogueBaseModel<TCharacter extends CharacterBaseModel = CharacterBaseModel> implements DialogueData {
+export default class DialogueBaseModel<TCharacter extends CharacterInterface = CharacterInterface> implements DialogueData {
     /**
      * @param text The text of the dialogue.
      * @param character The id of the character that is speaking. 

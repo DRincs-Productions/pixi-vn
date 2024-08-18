@@ -1,6 +1,6 @@
-import { CharacterBaseModel } from "../classes"
+import { CharacterInterface } from "../interface"
 
-export const registeredCharacters: { [id: string]: CharacterBaseModel } = {}
+export const registeredCharacters: { [id: string]: CharacterInterface } = {}
 /**
  * Is a function that saves the character. If the character already exists, it will be overwritten.
  * @param character is the character to save
@@ -12,7 +12,7 @@ export const registeredCharacters: { [id: string]: CharacterBaseModel } = {}
  * saveCharacter([liam, alice]);
  * ```
  */
-export function saveCharacter<T extends CharacterBaseModel = CharacterBaseModel>(character: T | T[]) {
+export function saveCharacter<T extends CharacterInterface = CharacterInterface>(character: T | T[]) {
     if (Array.isArray(character)) {
         character.forEach(c => saveCharacter(c))
         return
@@ -32,7 +32,7 @@ export function saveCharacter<T extends CharacterBaseModel = CharacterBaseModel>
  * const liam = getCharacterById('liam');
  * ```
  */
-export function getCharacterById<T extends CharacterBaseModel>(id: string): T | undefined {
+export function getCharacterById<T extends CharacterInterface>(id: string): T | undefined {
     try {
         let character = registeredCharacters[id]
         if (!character) {
@@ -55,6 +55,6 @@ export function getCharacterById<T extends CharacterBaseModel>(id: string): T | 
  * const allCharacters = getAllCharacters();
  * ```
  */
-export function getAllCharacters<T extends CharacterBaseModel>(): T[] {
+export function getAllCharacters<T extends CharacterInterface>(): T[] {
     return Object.values(registeredCharacters) as T[]
 }

@@ -1,8 +1,9 @@
-import { CharacterBaseModel, DialogueBaseModel, Label } from "../classes";
+import { DialogueBaseModel, Label } from "../classes";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import newCloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
+import { CharacterInterface } from "../interface";
 import { narration, storage } from "../managers";
 import { Close } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
@@ -21,7 +22,7 @@ import { getFlag, setFlag } from "./FlagsUtility";
  * setDialogue(new DialogueBaseModel("Hello World", character))
  * ```
  */
-export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBaseModel, TDialogue extends DialogueBaseModel = DialogueBaseModel>(props: {
+export function setDialogue<TCharacter extends CharacterInterface = CharacterInterface, TDialogue extends DialogueBaseModel = DialogueBaseModel>(props: {
     character: string | TCharacter,
     text: string | string[],
 } | string | string[] | TDialogue): void {
