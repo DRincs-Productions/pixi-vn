@@ -2,7 +2,7 @@ import { Ticker, UPDATE_PRIORITY } from "pixi.js"
 import { tickerDecorator } from "../../decorators"
 import { geTickerInstanceById } from "../../decorators/TickerDecorator"
 import ITicker from "../../interface/ITicker"
-import { GameWindowManager } from "../../managers"
+import { canvas } from "../../managers"
 import { StorageElementType } from "../../types/StorageElementType"
 import { TickerIdType } from "../../types/TickerIdType"
 
@@ -13,7 +13,7 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.
- * You can use GameWindowManager.addTicker() to add this element into the application.
+ * You can use {@link canvas.addTicker()} to add this element into the application.
  * This class should be extended and the fn method should be overridden.
  * You must use the {@link tickerDecorator} to register the ticker in the game.
  * In Ren'Py is a transform.
@@ -27,11 +27,11 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  *             speed?: number,
  *         },
  *         tags: string[], // the tags of the canvas elements that are connected to this ticker
- *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the GameWindowManager.currentTickers
+ *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the canvas.currentTickers
  *     ): void {
  *         let speed = args.speed === undefined ? 0.1 : args.speed
  *         tags.forEach((tag) => {
- *                 let element = GameWindowManager.getCanvasElement(tag)
+ *                 let element = canvas.getCanvasElement(tag)
  *                 if (element && element instanceof Container) {
  *                     if (clockwise)
  *                         element.rotation += speed * t.deltaTime
@@ -64,11 +64,11 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
     priority?: UPDATE_PRIORITY
     /**
      * The method that will be called every frame.
-     * This method should be overridden and you can use GameWindowManager.addCanvasElement() to get the canvas element of the canvas, and edit them.
+     * This method should be overridden and you can use {@link canvas.addCanvasElement()} to get the canvas element of the canvas, and edit them.
      * @param _ticker The ticker that is calling this method
      * @param _args The arguments that you passed when you added the ticker
      * @param _tags The tags of the canvas elements that are connected to this ticker
-     * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link GameWindowManager.currentTickers}
+     * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
     fn(_ticker: Ticker, _args: TArgs, _tags: string | string[], _tickerId: string): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
 }

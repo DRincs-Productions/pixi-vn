@@ -3,7 +3,7 @@ import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite, CanvasVideo } f
 import { FadeAlphaTicker, MoveTicker } from "../../classes/ticker"
 import { ZoomInOutTicker } from "../../classes/ticker/ZoomTicker"
 import { Pause } from "../../constants"
-import { GameWindowManager } from "../../managers"
+import { canvas } from "../../managers"
 import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../../types/ticker"
 import { tagToRemoveAfterType } from "../../types/ticker/TagToRemoveAfterType"
 import { checkIfVideo } from "./CanvasUtility"
@@ -28,9 +28,9 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let oldCanvasTag: string | undefined = undefined
-    if (GameWindowManager.getCanvasElement(tag)) {
+    if (canvas.getCanvasElement(tag)) {
         oldCanvasTag = tag + "_temp_disolve"
-        GameWindowManager.editCanvasElementTag(tag, oldCanvasTag)
+        canvas.editCanvasElementTag(tag, oldCanvasTag)
     }
 
     let canvasElement: CanvasBase<any>
@@ -44,7 +44,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     }
     else {
         canvasElement = image
-        GameWindowManager.addCanvasElement(tag, canvasElement)
+        canvas.addCanvasElement(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -57,7 +57,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
         tagToRemoveAfter: oldCanvasTag,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
-    GameWindowManager.addTicker(tag, effect)
+    canvas.addTicker(tag, effect)
     return
 }
 
@@ -84,7 +84,7 @@ export function removeWithDissolveTransition(
         tagToRemoveAfter: tag,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
-    GameWindowManager.addTicker(tag, effect)
+    canvas.addTicker(tag, effect)
 }
 
 /**
@@ -103,12 +103,12 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    if (!GameWindowManager.getCanvasElement(tag)) {
+    if (!canvas.getCanvasElement(tag)) {
         return showWithDissolveTransition(tag, image, props, priority)
     }
 
     let oldCanvasTag = tag + "_temp_fade"
-    GameWindowManager.editCanvasElementTag(tag, oldCanvasTag)
+    canvas.editCanvasElementTag(tag, oldCanvasTag)
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
@@ -121,21 +121,21 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     }
     else {
         canvasElement = image
-        GameWindowManager.addCanvasElement(tag, canvasElement)
+        canvas.addCanvasElement(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     canvasElement.alpha = 0
 
-    GameWindowManager.addTickersSteps(oldCanvasTag, [
+    canvas.addTickersSteps(oldCanvasTag, [
         new FadeAlphaTicker({
             ...props,
             type: "hide",
             startOnlyIfHaveTexture: true,
         }),
     ])
-    GameWindowManager.addTickersSteps(tag, [
+    canvas.addTickersSteps(tag, [
         Pause(props.duration || 1),
         new FadeAlphaTicker({
             ...props,
@@ -194,7 +194,7 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     }
     else {
         canvasElement = image
-        GameWindowManager.addCanvasElement(tag, canvasElement)
+        canvas.addCanvasElement(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -203,13 +203,13 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     let destination = { x: canvasElement.x, y: canvasElement.y }
 
     if (props.direction == "up") {
-        canvasElement.y = GameWindowManager.canvasHeight + canvasElement.height
+        canvasElement.y = canvas.canvasHeight + canvasElement.height
     }
     else if (props.direction == "down") {
         canvasElement.y = -(canvasElement.height)
     }
     else if (props.direction == "left") {
-        canvasElement.x = GameWindowManager.canvasWidth + canvasElement.width
+        canvasElement.x = canvas.canvasWidth + canvasElement.width
     }
     else if (props.direction == "right") {
         canvasElement.x = -(canvasElement.width)
@@ -221,7 +221,7 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
         startOnlyIfHaveTexture: true,
     }, priority)
 
-    GameWindowManager.addTicker(tag, effect)
+    canvas.addTicker(tag, effect)
 }
 
 /**
@@ -235,7 +235,7 @@ export function moveOut(
     props: MoveInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): void {
-    let canvasElement = GameWindowManager.getCanvasElement(tag)
+    let canvasElement = canvas.getCanvasElement(tag)
     if (!canvasElement) {
         console.warn("[Pixi'VN] The canvas element is not found.")
         return
@@ -246,13 +246,13 @@ export function moveOut(
         destination.y = -(canvasElement.height)
     }
     else if (props.direction == "down") {
-        destination.y = GameWindowManager.canvasHeight + canvasElement.height
+        destination.y = canvas.canvasHeight + canvasElement.height
     }
     else if (props.direction == "left") {
         destination.x = -(canvasElement.width)
     }
     else if (props.direction == "right") {
-        destination.x = GameWindowManager.canvasWidth + canvasElement.width
+        destination.x = canvas.canvasWidth + canvasElement.width
     }
 
     let effect = new MoveTicker({
@@ -262,7 +262,7 @@ export function moveOut(
         tagToRemoveAfter: tag,
     }, priority)
 
-    GameWindowManager.addTicker(tag, effect)
+    canvas.addTicker(tag, effect)
 }
 
 type ZoomInOutProps = {
@@ -300,37 +300,37 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
 
     let container = new CanvasContainer()
     container.addChild(canvasElement)
-    container.height = GameWindowManager.canvasHeight
-    container.width = GameWindowManager.canvasWidth
-    GameWindowManager.addCanvasElement(tag, container)
+    container.height = canvas.canvasHeight
+    container.width = canvas.canvasWidth
+    canvas.addCanvasElement(tag, container)
 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
     if (props.direction == "up") {
-        container.pivot.y = GameWindowManager.canvasHeight
-        container.pivot.x = GameWindowManager.canvasWidth / 2
-        container.y = GameWindowManager.canvasHeight
-        container.x = GameWindowManager.canvasWidth / 2
+        container.pivot.y = canvas.canvasHeight
+        container.pivot.x = canvas.canvasWidth / 2
+        container.y = canvas.canvasHeight
+        container.x = canvas.canvasWidth / 2
     }
     else if (props.direction == "down") {
         container.pivot.y = 0
-        container.pivot.x = GameWindowManager.canvasWidth / 2
+        container.pivot.x = canvas.canvasWidth / 2
         container.y = 0
-        container.x = GameWindowManager.canvasWidth / 2
+        container.x = canvas.canvasWidth / 2
     }
     else if (props.direction == "left") {
-        container.pivot.x = GameWindowManager.canvasWidth
-        container.pivot.y = GameWindowManager.canvasHeight / 2
-        container.x = GameWindowManager.canvasWidth
-        container.y = GameWindowManager.canvasHeight / 2
+        container.pivot.x = canvas.canvasWidth
+        container.pivot.y = canvas.canvasHeight / 2
+        container.x = canvas.canvasWidth
+        container.y = canvas.canvasHeight / 2
     }
     else if (props.direction == "right") {
         container.pivot.x = 0
-        container.pivot.y = GameWindowManager.canvasHeight / 2
+        container.pivot.y = canvas.canvasHeight / 2
         container.x = 0
-        container.y = GameWindowManager.canvasHeight / 2
+        container.y = canvas.canvasHeight / 2
     }
     container.scale.set(0)
 
@@ -341,7 +341,7 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
         limit: 1,
     }, priority)
 
-    GameWindowManager.addTicker(tag, effect)
+    canvas.addTicker(tag, effect)
 }
 
 /**
@@ -356,7 +356,7 @@ export function zoomOut(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
-    let canvasElement = GameWindowManager.getCanvasElement(tag)
+    let canvasElement = canvas.getCanvasElement(tag)
     if (!canvasElement) {
         console.warn("[Pixi'VN] The canvas element is not found.")
         return
@@ -364,33 +364,33 @@ export function zoomOut(
 
     let container = new CanvasContainer()
     container.addChild(canvasElement)
-    container.height = GameWindowManager.canvasHeight
-    container.width = GameWindowManager.canvasWidth
-    GameWindowManager.addCanvasElement(tag, container)
+    container.height = canvas.canvasHeight
+    container.width = canvas.canvasWidth
+    canvas.addCanvasElement(tag, container)
 
     if (props.direction == "up") {
-        container.pivot.y = GameWindowManager.canvasHeight
-        container.pivot.x = GameWindowManager.canvasWidth / 2
-        container.y = GameWindowManager.canvasHeight
-        container.x = GameWindowManager.canvasWidth / 2
+        container.pivot.y = canvas.canvasHeight
+        container.pivot.x = canvas.canvasWidth / 2
+        container.y = canvas.canvasHeight
+        container.x = canvas.canvasWidth / 2
     }
     else if (props.direction == "down") {
         container.pivot.y = 0
-        container.pivot.x = GameWindowManager.canvasWidth / 2
+        container.pivot.x = canvas.canvasWidth / 2
         container.y = 0
-        container.x = GameWindowManager.canvasWidth / 2
+        container.x = canvas.canvasWidth / 2
     }
     else if (props.direction == "left") {
-        container.pivot.x = GameWindowManager.canvasWidth
-        container.pivot.y = GameWindowManager.canvasHeight / 2
-        container.x = GameWindowManager.canvasWidth
-        container.y = GameWindowManager.canvasHeight / 2
+        container.pivot.x = canvas.canvasWidth
+        container.pivot.y = canvas.canvasHeight / 2
+        container.x = canvas.canvasWidth
+        container.y = canvas.canvasHeight / 2
     }
     else if (props.direction == "right") {
         container.pivot.x = 0
-        container.pivot.y = GameWindowManager.canvasHeight / 2
+        container.pivot.y = canvas.canvasHeight / 2
         container.x = 0
-        container.y = GameWindowManager.canvasHeight / 2
+        container.y = canvas.canvasHeight / 2
     }
     container.scale.set(1)
 
@@ -402,5 +402,5 @@ export function zoomOut(
         tagToRemoveAfter: tag,
     }, priority)
 
-    GameWindowManager.addTicker(tag, effect)
+    canvas.addTicker(tag, effect)
 }

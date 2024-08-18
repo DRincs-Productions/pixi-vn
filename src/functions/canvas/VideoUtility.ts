@@ -1,6 +1,6 @@
 import { Texture } from 'pixi.js';
 import CanvasVideo from '../../classes/canvas/CanvasAVideo';
-import { GameWindowManager } from '../../managers';
+import { canvas } from '../../managers';
 import { getTexture } from '../TextureUtility';
 
 /**
@@ -19,7 +19,7 @@ import { getTexture } from '../TextureUtility';
 export function addVideo(tag: string, videoUrl: string): CanvasVideo {
     let video = new CanvasVideo()
     video.videoLink = videoUrl
-    GameWindowManager.addCanvasElement(tag, video)
+    canvas.addCanvasElement(tag, video)
     return video
 }
 

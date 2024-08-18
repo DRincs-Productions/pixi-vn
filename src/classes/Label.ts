@@ -13,7 +13,7 @@ import LabelAbstract from "./LabelAbstract"
  * export const startLabel = newLabel(START_LABEL_ID,
  *     [
  *         (props) => {
- *             GameWindowManager.clear()
+ *             canvas.clear()
  *             setDialogue({ character: liam, text: "Which test do you want to perform?" })
  *             setChoiceMenuOptions([
  *                 new ChoiceMenuOption("Events Test", eventsTestLabel),

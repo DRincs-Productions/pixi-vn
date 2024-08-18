@@ -1,7 +1,7 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
-import { GameWindowManager } from "../../managers";
+import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
@@ -11,7 +11,7 @@ import TickerBase from "./TickerBase";
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
- * GameWindowManager.addCanvasElement("alien", alien);
+ * canvas.addCanvasElement("alien", alien);
  * const ticker = new MoveTicker({
  *    speed: 0.1,
  *    destination: { x: 100, y: 100 },
@@ -45,7 +45,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         }
         tags
             .filter((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -54,7 +54,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 return true
             })
             .forEach((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (element && element instanceof Container) {
                     let xDistance = (destination.x - element.x) > 0 ? 1 : -1
                     if (xDistance != 0) {
@@ -77,7 +77,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

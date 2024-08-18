@@ -11,7 +11,7 @@ export const CANVAS_CONTAINER_ID = "CanvasContainer"
  * @example
  * ```typescript
  *  const container = new CanvasContainer();
- *  GameWindowManager.addCanvasElement(container);
+ *  canvas.addCanvasElement(container);
  *  const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
  *  for (let i = 0; i < 25; i++)
  *  {

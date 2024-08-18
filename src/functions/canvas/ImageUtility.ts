@@ -1,6 +1,6 @@
 import { Texture } from 'pixi.js';
 import { CanvasImage } from '../../classes';
-import { GameWindowManager } from '../../managers';
+import { canvas } from '../../managers';
 import { getTexture } from '../TextureUtility';
 
 /**
@@ -19,7 +19,7 @@ import { getTexture } from '../TextureUtility';
 export function addImage(tag: string, imageUrl: string): CanvasImage {
     let image = new CanvasImage()
     image.imageLink = imageUrl
-    GameWindowManager.addCanvasElement(tag, image)
+    canvas.addCanvasElement(tag, image)
     return image
 }
 

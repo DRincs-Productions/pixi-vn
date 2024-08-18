@@ -1,6 +1,6 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
-import { GameWindowManager } from "../../managers";
+import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";
 
@@ -11,13 +11,13 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
  * await bunny.load()
- * GameWindowManager.addCanvasElement("bunny", bunny);
+ * canvas.addCanvasElement("bunny", bunny);
  * // ...
  * const ticker = new FadeAlphaTicker({
  *     duration: 4, // 4 seconds
  *     type: "hide",
  * }),
- * GameWindowManager.addTicker("bunny", ticker)
+ * canvas.addTicker("bunny", ticker)
  * ```
  */
 @tickerDecorator()
@@ -44,7 +44,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         }
         tags
             .filter((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -53,7 +53,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 return true
             })
             .forEach((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (element && element instanceof Container) {
                     if (type === "show" && element.alpha < limit) {
                         element.alpha += speed * ticker.deltaTime
@@ -63,11 +63,11 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     }
                     if (type === "show" && element.alpha >= limit) {
                         element.alpha = limit
-                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                     else if (type === "hide" && element.alpha <= limit) {
                         element.alpha = limit
-                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

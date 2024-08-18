@@ -1,7 +1,7 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
-import { GameWindowManager } from "../../managers";
+import { canvas } from "../../managers";
 import { RotateTickerProps } from "../../types/ticker/RotateTickerProps";
 import TickerBase from "./TickerBase";
 
@@ -12,12 +12,12 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
- * GameWindowManager.addCanvasElement("alien", alien);
+ * canvas.addCanvasElement("alien", alien);
  * const ticker = new RotateTicker({
  *    speed: 0.1,
  *    clockwise: true,
  * }),
- * GameWindowManager.addTicker("alien", ticker)
+ * canvas.addTicker("alien", ticker)
  * ```
  */
 @tickerDecorator()
@@ -36,7 +36,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         }
         tags
             .filter((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -45,14 +45,14 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                 return true
             })
             .forEach((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (element && element instanceof Container) {
                     if (clockwise)
                         element.rotation += speed * ticker.deltaTime
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

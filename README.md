@@ -104,7 +104,7 @@ For the following example, we will use React to create the interface and Pixi'VN
 ```tsx
 // main.tsx
 
-import { GameWindowManager } from '@drincs/pixi-vn'
+import { canvas, narration } from '@drincs/pixi-vn'
 import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
@@ -115,7 +115,7 @@ if (!body) {
     throw new Error('body element not found')
 }
 
-GameWindowManager.initialize(body, 1920, 1080, {
+canvas.initialize(body, 1920, 1080, {
     backgroundColor: "#303030"
 }).then(() => {
     // React setup with ReactDOM
@@ -124,13 +124,18 @@ GameWindowManager.initialize(body, 1920, 1080, {
         throw new Error('root element not found')
     }
 
-    GameWindowManager.initializeHTMLLayout(root)
-    const reactRoot = createRoot(GameWindowManager.htmlLayout)
+    canvas.initializeHTMLLayout(root)
+    const reactRoot = createRoot(canvas.htmlLayout)
 
     reactRoot.render(
         <App />
     )
 })
+
+// read more here: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game
+narration.gameEnd = async (props) => {
+    props.navigate("/")
+}
 ```
 
 This is the HTML file that will be used to load the application.

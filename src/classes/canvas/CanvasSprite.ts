@@ -21,14 +21,14 @@ export const CANVAS_SPRITE_ID = "CanvasSprite"
  * const sprite = CanvasSprite.from(texture);
  *
  * sprite.anchor.set(0.5);
- * sprite.x = GameWindowManager.screen.width / 2;
- * sprite.y = GameWindowManager.screen.height / 2;
+ * sprite.x = canvas.screen.width / 2;
+ * sprite.y = canvas.screen.height / 2;
  *
  * sprite.eventMode = 'static';
  * sprite.cursor = 'pointer';
  * sprite.onEvent('pointerdown', EventTest);
  *
- * GameWindowManager.addCanvasElement("bunny", sprite);
+ * canvas.addCanvasElement("bunny", sprite);
  * ```
  */
 export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
@@ -73,7 +73,7 @@ export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemo
      * sprite.cursor = 'pointer';
      * sprite.onEvent('pointerdown', EventTest);
      *
-     * GameWindowManager.addCanvasElement("bunny", sprite);
+     * canvas.addCanvasElement("bunny", sprite);
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {

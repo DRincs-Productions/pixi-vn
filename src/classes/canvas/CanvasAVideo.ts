@@ -17,7 +17,7 @@ export const CANVAS_VIDEO_ID = "CanvasVideo"
  *     y: 100,
  * }, 'https://pixijs.com/assets/video.mp4')
  * await film.load()
- * GameWindowManager.addCanvasElement("film", film)
+ * canvas.addCanvasElement("film", film)
  * ```
  * @example
  * ```typescript

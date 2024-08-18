@@ -2,10 +2,11 @@ import { Container } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators";
 import { getCanvasElementInstanceById } from "../../decorators/CanvasElementDecorator";
 import { ICanvasBaseMemory } from "../../interface/canvas";
+import { canvas } from "../../managers";
 
 /**
  * This class is used to create a canvas element to add into a Pixi Application.
- * You can use GameWindowManager.addCanvasElement() to add this element into the application.
+ * You can use {@link canvas.addCanvasElement()} to add this element into the application.
  * This class should be implemented and the memory method should be overridden.
  * You must use the {@link canvasElementDecorator} to register the canvas in the game.
  * In Ren'Py is a displayable.

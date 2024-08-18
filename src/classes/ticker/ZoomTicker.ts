@@ -1,7 +1,7 @@
 import { Container, ContainerChild, Sprite, Ticker, UPDATE_PRIORITY } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
-import { GameWindowManager } from "../../managers";
+import { canvas } from "../../managers";
 import { ZoomTickerProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
@@ -12,11 +12,11 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
- * GameWindowManager.addCanvasElement("alien", alien);
+ * canvas.addCanvasElement("alien", alien);
  * const ticker = new ZoomTicker({
  *    speed: 0.1,
  * }),
- * GameWindowManager.addTicker("alien", ticker)
+ * canvas.addTicker("alien", ticker)
  * ```
  */
 @tickerDecorator()
@@ -58,7 +58,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         }
         tags
             .filter((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -67,7 +67,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 return true
             })
             .forEach((tag) => {
-                let element = GameWindowManager.getCanvasElement(tag)
+                let element = canvas.getCanvasElement(tag)
                 if (element && element instanceof Container) {
                     if (
                         type === "zoom"
@@ -127,7 +127,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         _element: T,
         tagToRemoveAfter: string[] | string,
     ): void {
-        GameWindowManager.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
     }
 }
 
@@ -139,7 +139,7 @@ export class ZoomInOutTicker extends ZoomTicker {
     override onEndOfTicker<T extends Container = Container<ContainerChild>>(tag: string, tickerId: string, element: T, tagToRemoveAfter: string[] | string): void {
         if (element.children.length > 0) {
             let elementChild = element.children[0]
-            GameWindowManager.addCanvasElement(tag, elementChild as any)
+            canvas.addCanvasElement(tag, elementChild as any)
         }
         super.onEndOfTicker(tag, tickerId, element, tagToRemoveAfter)
     }

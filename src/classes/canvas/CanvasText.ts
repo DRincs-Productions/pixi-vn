@@ -17,7 +17,7 @@ export const CANVAS_TEXT_ID = "CanvasText"
  * ```typescript
  * const text = new CanvasText();
  * text.text = "Hello World"
- * GameWindowManager.addCanvasElement("text", text);
+ * canvas.addCanvasElement("text", text);
  * ```
  */
 export default class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
@@ -62,7 +62,7 @@ export default class CanvasText extends Text implements CanvasBase<ICanvasTextMe
      * text.cursor = 'pointer';
      * text.onEvent('pointerdown', EventTest);
      *
-     * GameWindowManager.addCanvasElement("text", text);
+     * canvas.addCanvasElement("text", text);
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
