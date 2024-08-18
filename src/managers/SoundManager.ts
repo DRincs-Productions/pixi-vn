@@ -288,6 +288,10 @@ export default class GameSoundManager extends SoundLibrary {
                             autoPlay: false
                         })
 
+                        if (item.filters) {
+                            s.filters = FilterMemoryToFilter(item.filters)
+                        }
+
                         if (autoPlay) {
                             s.play()
                         }
