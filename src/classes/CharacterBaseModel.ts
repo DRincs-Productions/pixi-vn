@@ -1,6 +1,6 @@
 import { saveCharacter } from "../decorators"
 import { CharacterBaseModelProps } from "../interface"
-import { GameStorageManager } from "../managers"
+import { storage } from "../managers"
 import StoredClassModel from "./StoredClassModel"
 
 /**
@@ -32,7 +32,7 @@ export default class CharacterBaseModel extends StoredClassModel implements Char
      * @param props The properties of the character.
      */
     constructor(id: string, props: CharacterBaseModelProps) {
-        super(GameStorageManager.keysSystem.CHARACTER_CATEGORY_KEY, id)
+        super(storage.keysSystem.CHARACTER_CATEGORY_KEY, id)
         this.defaultName = props.name
         this.defaultSurname = props.surname
         this.defaultAge = props.age

@@ -1,10 +1,10 @@
-import { GameStorageManager, canvas, narration, sound } from "../managers";
+import { canvas, narration, sound, storage } from "../managers";
 
 /**
  * Clear all game data. This function is used to reset the game.
  */
 export function clearAllGameDatas() {
-    GameStorageManager.clear();
+    storage.clear();
     canvas.clear();
     sound.clear();
     narration.clear();

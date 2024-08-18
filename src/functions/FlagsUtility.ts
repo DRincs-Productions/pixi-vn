@@ -1,4 +1,4 @@
-import { GameStorageManager } from "../managers"
+import { storage } from "../managers"
 
 /**
  * Set a flag to true or false. 
@@ -6,7 +6,7 @@ import { GameStorageManager } from "../managers"
  * @param value The value of the flag.
  */
 export function setFlag(name: string, value: boolean) {
-    let flags = GameStorageManager.getVariable<string[]>(GameStorageManager.keysSystem.FLAGS_CATEGORY_KEY) || []
+    let flags = storage.getVariable<string[]>(storage.keysSystem.FLAGS_CATEGORY_KEY) || []
     if (value) {
         if (!flags.includes(name)) {
             flags.push(name)
@@ -17,7 +17,7 @@ export function setFlag(name: string, value: boolean) {
             flags.splice(index, 1)
         }
     }
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.FLAGS_CATEGORY_KEY, flags)
+    storage.setVariable(storage.keysSystem.FLAGS_CATEGORY_KEY, flags)
 }
 
 /**
@@ -26,6 +26,6 @@ export function setFlag(name: string, value: boolean) {
  * @returns The value of the flag
  */
 export function getFlag(name: string): boolean {
-    let flags = GameStorageManager.getVariable<string[]>(GameStorageManager.keysSystem.FLAGS_CATEGORY_KEY) || []
+    let flags = storage.getVariable<string[]>(storage.keysSystem.FLAGS_CATEGORY_KEY) || []
     return flags.includes(name)
 }

@@ -1,4 +1,4 @@
-import { GameStorageManager } from "../managers"
+import { storage } from "../managers"
 
 /**
  * StoredClassModel is a abstract class that contains the methods to store a class in the game.
@@ -51,29 +51,29 @@ export default class StoredClassModel {
      * @param value The value to set. If is undefined, the property will be removed from the storage.
      */
     protected setStorageProperty<T>(propertyName: string, value: T | undefined): void {
-        let storage = GameStorageManager.getVariable<any>(this.categoryId)
-        if (!storage) {
-            storage = {}
+        let storageValue = storage.getVariable<any>(this.categoryId)
+        if (!storageValue) {
+            storageValue = {}
         }
         // if storage not have a key with the id
-        if (!storage.hasOwnProperty(this.id)) {
-            storage[this.id] = {}
+        if (!storageValue.hasOwnProperty(this.id)) {
+            storageValue[this.id] = {}
         }
 
         if (value === undefined || value === null) {
-            if (storage[this.id].hasOwnProperty(propertyName)) {
-                delete storage[this.id][propertyName]
+            if (storageValue[this.id].hasOwnProperty(propertyName)) {
+                delete storageValue[this.id][propertyName]
             }
         }
         else {
-            storage[this.id] = { ...storage[this.id], [propertyName]: value }
+            storageValue[this.id] = { ...storageValue[this.id], [propertyName]: value }
         }
 
-        if (Object.keys(storage[this.id]).length === 0) {
-            delete storage[this.id]
+        if (Object.keys(storageValue[this.id]).length === 0) {
+            delete storageValue[this.id]
         }
 
-        GameStorageManager.setVariable(this.categoryId, storage)
+        storageValue.setVariable(this.categoryId, storageValue)
     }
     /**
      * Get a property from the storage.
@@ -81,9 +81,9 @@ export default class StoredClassModel {
      * @returns The value of the property. If the property is not found, returns undefined.
      */
     protected getStorageProperty<T>(propertyName: string): T | undefined {
-        let storage = GameStorageManager.getVariable<any>(this.categoryId)
-        if (storage && storage.hasOwnProperty(this.id) && storage[this.id].hasOwnProperty(propertyName)) {
-            return storage[this.id][propertyName]
+        let storageValue = storage.getVariable<any>(this.categoryId)
+        if (storageValue && storageValue.hasOwnProperty(this.id) && storageValue[this.id].hasOwnProperty(propertyName)) {
+            return storageValue[this.id][propertyName]
         }
         return undefined
     }

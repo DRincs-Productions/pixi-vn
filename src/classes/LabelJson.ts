@@ -1,6 +1,6 @@
 import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
 import { LabelProps } from "../interface"
-import { GameStorageManager, narration } from "../managers"
+import { narration, storage } from "../managers"
 import { StepLabelJsonType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
@@ -49,10 +49,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             }
 
             if (step.glueEnabled) {
-                setFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, true)
+                setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, true)
             }
             else if (step.glueEnabled === false) {
-                setFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
+                setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
             }
             if (step.dialog) {
                 setDialogue(step.dialog)

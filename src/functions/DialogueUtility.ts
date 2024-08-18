@@ -3,7 +3,7 @@ import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } fr
 import newCloseLabel from "../classes/CloseLabel";
 import { DialogueData } from "../classes/DialogueBaseModel";
 import { getLabelById } from "../decorators";
-import { GameStorageManager, narration } from "../managers";
+import { narration, storage } from "../managers";
 import { Close } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 import { getFlag, setFlag } from "./FlagsUtility";
@@ -57,16 +57,16 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
         dialogue = props
     }
 
-    if (getFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)) {
+    if (getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)) {
         let glueDialogue = getDialogue<TDialogue>()
         if (glueDialogue) {
             dialogue.text = `${glueDialogue.text}${dialogue.text}`
         }
-        setFlag(GameStorageManager.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
+        setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
     }
 
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueData)
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
+    storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueData)
+    storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
 }
 
 /**
@@ -74,14 +74,14 @@ export function setDialogue<TCharacter extends CharacterBaseModel = CharacterBas
  * @returns Dialogue to be shown in the game
  */
 export function getDialogue<T extends DialogueBaseModel = DialogueBaseModel>(): T | undefined {
-    return GameStorageManager.getVariable<DialogueData>(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
+    return storage.getVariable<DialogueData>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
 }
 
 /**
  * Clear the dialogue to be shown in the game
  */
 export function clearDialogue(): void {
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, undefined)
+    storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, undefined)
 }
 
 /**
@@ -112,8 +112,8 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void 
             label: option.label.id,
         }
     })
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
+    storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
+    storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
 }
 
 /**
@@ -121,7 +121,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void 
  * @returns Options to be shown in the game
  */
 export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }>>(): TChoice | undefined {
-    let d = GameStorageManager.getVariable<IStoratedChoiceMenuOption[]>(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+    let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
     if (d) {
         let options: ChoiceMenuOptionsType = []
         d.forEach((option, index) => {
@@ -150,5 +150,5 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
  * Clear the options to be shown in the game
  */
 export function clearChoiceMenuOptions(): void {
-    GameStorageManager.setVariable(GameStorageManager.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
+    storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
 }
