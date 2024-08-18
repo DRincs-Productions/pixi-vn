@@ -42,7 +42,7 @@ export const soundTestLabel = newLabel(SOUND_TEST_LABEL,
         () => {
             setDialogue({
                 character: juliette,
-                text: "Now the sound should be playing again, with loop and MonoFilter"
+                text: "Now the sound should be playing again, with loop and ReverbFilter"
             })
             let s = sound.add("audio", {
                 loop: true,
