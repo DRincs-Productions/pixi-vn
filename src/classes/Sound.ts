@@ -1,4 +1,5 @@
-import { CompleteCallback, Filter, filters, IMediaInstance, Options, Sound as PixiSound, PlayOptions } from "@pixi/sound";
+import { Filter, filters, IMediaInstance, Sound as PixiSound } from "@pixi/sound";
+import { SoundOptions, SoundPlayOptions } from "../interface";
 import { narration } from "../managers";
 import SoundManagerStatic from "../managers/SoundManagerStatic";
 
@@ -51,9 +52,7 @@ export default class Sound extends PixiSound {
         delete SoundManagerStatic.playInStepIndex[this.alias];
         return super.stop();
     }
-    override play(alias: string, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance>;
-    override play(source?: string | PlayOptions, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance>;
-    override play(options?: string | PlayOptions, callback?: CompleteCallback): IMediaInstance | Promise<IMediaInstance> {
+    override play(options?: string | SoundPlayOptions): IMediaInstance | Promise<IMediaInstance> {
         if (typeof options === 'string') {
             this.alias = options;
         }
@@ -65,13 +64,13 @@ export default class Sound extends PixiSound {
             options: options,
             paused: false
         }
-        return super.play(options, callback);
+        return super.play(options);
     }
 
     /**
      * https://github.com/pixijs/sound/blob/main/src/Sound.ts#L235
      */
-    public static from(source: string | string[] | Options | ArrayBuffer | HTMLAudioElement | AudioBuffer): Sound {
+    public static from(source: string | string[] | SoundOptions | ArrayBuffer | HTMLAudioElement | AudioBuffer): Sound {
         let s = PixiSound.from(source);
         return new Sound(s.media, s.options);
     }

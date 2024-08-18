@@ -11,6 +11,7 @@ export type { default as ITickersSteps } from './ITickersSteps';
 export type { default as LabelProps } from './LabelProps';
 export type { default as NarrativeHistory } from './NarrativeHistory';
 export type { default as PixiVNJson } from './PixiVNJson';
+export type { default as SoundOptions, SoundPlayOptions } from './SoundOptions';
 export type { default as TickerHistory, TickerHistoryForExport } from './TickerHistory';
 export type { TickerProgrationType } from './TickerProgrationType';
 export type { default as TickerTimeoutHistory } from './TickerTimeoutHistory';

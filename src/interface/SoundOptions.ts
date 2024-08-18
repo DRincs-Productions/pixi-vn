@@ -1,5 +1,5 @@
 import { Options, PlayOptions } from "@pixi/sound";
 
-export default interface SoundOptions extends Omit<Options, "complete" | "loaded" | "sprites" | "source"> { }
+export default interface SoundOptions extends Options { }
 
-export interface SoundPlayOptions extends Omit<PlayOptions, "complete" | "loaded"> { }
+export interface SoundPlayOptions extends PlayOptions { }

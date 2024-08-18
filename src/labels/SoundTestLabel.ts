@@ -27,9 +27,9 @@ export const soundTestLabel = newLabel(SOUND_TEST_LABEL,
                 character: juliette,
                 text: "Now the sound should be playing again."
             })
-            sound.play("audio", {
-                loop: true
-            })
+            let s = sound.find("audio")
+            s.loop = true
+            s.play()
         },
         (props) => {
             sound.stop("audio")
