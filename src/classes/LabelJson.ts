@@ -98,7 +98,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                     else {
                         text = option.text
                     }
-                    return new ChoiceMenuOption(text, option.label, option.props, option.type)
+                    return new ChoiceMenuOption(text, option.label, option.props, {
+                        type: option.type,
+                        oneTime: option.oneTime
+                    })
                 })
                 setChoiceMenuOptions(options)
             }

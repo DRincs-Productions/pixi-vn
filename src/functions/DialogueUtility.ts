@@ -105,6 +105,7 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void 
                 text: option.text,
                 type: Close,
                 closeCurrentLabel: option.closeCurrentLabel,
+                oneTime: option.oneTime,
             }
         }
         return {
@@ -127,7 +128,10 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
         d.forEach((option, index) => {
             if (option.type === Close) {
                 let itemLabel = newCloseLabel(index)
-                let choice = new ChoiceMenuOptionClose(option.text, option.closeCurrentLabel)
+                let choice = new ChoiceMenuOptionClose(option.text, {
+                    closeCurrentLabel: option.closeCurrentLabel,
+                    oneTime: option.oneTime
+                })
                 choice.label = itemLabel
                 options.push(choice)
                 return
@@ -138,8 +142,20 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
                     onStepStart: label.onStepStart,
                     choiseIndex: index
                 })
-                options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, option.type))
+                options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, {
+                    type: option.type,
+                    oneTime: option.oneTime
+                }))
             }
+        })
+        options = options.filter((option, index) => {
+            if (option.oneTime) {
+                let alreadyChoices = narration.alreadyCurrentStepMadeChoices
+                if (alreadyChoices && alreadyChoices.includes(index)) {
+                    return false
+                }
+            }
+            return true
         })
         return options as TChoice
     }

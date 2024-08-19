@@ -21,6 +21,10 @@ export type PixiVNJsonChoice = {
      * The properties to be passed to the label.
      */
     props: StorageObjectType
+    /**
+     * If this is true, the choice can only be made once.
+     */
+    oneTime?: boolean
 }
 export type PixiVNJsonChoices = (PixiVNJsonChoice | PixiVNJsonIfElse<PixiVNJsonChoice>)[]
 

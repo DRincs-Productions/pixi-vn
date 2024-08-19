@@ -508,6 +508,7 @@ export default class GameStepManager {
                     text: "",
                     closeCurrentLabel: false,
                     type: "close",
+                    oneTime: false,
                     props: {},
                 }
                 return GameStepManager.closeChoiceMenu(choice, props)
@@ -570,6 +571,7 @@ export default class GameStepManager {
                     text: "",
                     closeCurrentLabel: false,
                     type: "close",
+                    oneTime: false,
                     props: {},
                 }
                 return GameStepManager.closeChoiceMenu<T>(choice, props)

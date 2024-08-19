@@ -4,6 +4,27 @@ import { LabelIdType } from "../types/LabelIdType"
 import newCloseLabel from "./CloseLabel"
 import Label from "./Label"
 
+type ChoiceMenuOptionOptions = {
+    /**
+     * Type of the label to be opened. @default "call"
+     */
+    type?: LabelRunModeType
+    /**
+     * If this is true, the choice can only be made once. @default false
+     */
+    oneTime?: boolean
+}
+type ChoiceMenuOptionCloseOptions = {
+    /**
+     * If true, the current label will be closed. @default false
+     */
+    closeCurrentLabel?: boolean
+    /**
+     * If this is true, the choice can only be made once. @default false
+     */
+    oneTime?: boolean
+}
+
 /**
  * ChoiceMenuOption is a class that contains a Label and a text that will be displayed in the menu.
  * @example
@@ -39,6 +60,10 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      */
     type: LabelRunModeType
     /**
+     * If this is true, the choice can only be made once.
+     */
+    oneTime: boolean
+    /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
@@ -66,12 +91,13 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected or the id of the label
      * @param props Properties to be passed to the label and olther parameters that you can use when get all the choice menu options. It be converted to a JSON string, so it cannot contain functions or classes.
-     * @param type Type of the label to be opened. @default "call"
+     * @param options Options
      */
-    constructor(text: string, label: Label<T> | LabelIdType, props: T, type: LabelRunModeType = "call") {
+    constructor(text: string, label: Label<T> | LabelIdType, props: T, options?: ChoiceMenuOptionOptions) {
         this.text = text
         this._label = label
-        this.type = type
+        this.type = options?.type || "call"
+        this.oneTime = options?.oneTime || false
         if (props) {
             this.props = props
         }
@@ -104,6 +130,10 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      */
     type: CloseType = Close
     /**
+     * If this is true, the choice can only be made once.
+     */
+    oneTime: boolean
+    /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
@@ -131,9 +161,10 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      * @param text Text to be displayed in the menu
      * @param closeCurrentLabel If true, the current label will be closed. @default false
      */
-    constructor(text: string, closeCurrentLabel: boolean = false) {
+    constructor(text: string, options?: ChoiceMenuOptionCloseOptions) {
         this.text = text
-        this.closeCurrentLabel = closeCurrentLabel
+        this.closeCurrentLabel = options?.closeCurrentLabel || false
+        this.oneTime = options?.oneTime || false
     }
 }
 
@@ -150,6 +181,10 @@ export type IStoratedChoiceMenuOption = {
      * Type of the label to be opened
      */
     type: LabelRunModeType
+    /**
+     * If this is true, the choice can only be made once.
+     */
+    oneTime: boolean
     /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
@@ -183,6 +218,10 @@ export type IStoratedChoiceMenuOption = {
      * Type of the label to be opened
      */
     type: CloseType
+    /**
+     * If this is true, the choice can only be made once.
+     */
+    oneTime: boolean
     /**
      * If true, the current label will be closed
      */
