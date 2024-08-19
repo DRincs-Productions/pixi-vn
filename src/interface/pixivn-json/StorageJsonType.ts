@@ -1,4 +1,4 @@
-import { StorageElementType } from "../StorageElementType"
+import { StorageElementType } from "../../types"
 
 export type GetStorageJsonType = {
     type: "get",

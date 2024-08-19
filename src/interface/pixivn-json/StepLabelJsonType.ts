@@ -1,5 +1,6 @@
-import { LabelRunModeType, OperationsJsonType, StorageObjectType } from ".."
-import { LabelIdType } from "../LabelIdType"
+import { LabelRunModeType, StorageObjectType } from "../../types"
+import { LabelIdType } from "../../types/LabelIdType"
+import OperationsJsonType from "./OperationsJsonType"
 
 /**
  * Step label JSON type
