@@ -1,10 +1,12 @@
-import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
+import { clearChoiceMenuOptions, moveIn, setChoiceMenuOptions, setDialogue, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
 import { getValueFromIfElse, setStorageJson } from "../functions/PixiVNJsonUtility"
-import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonStorageSet } from "../interface"
+import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
 import { PixiVNJsonDialog, PixiVNJsonDialogText } from "../interface/PixiVNJsonLabelStep"
-import { narration, storage } from "../managers"
+import { canvas, narration, sound, storage } from "../managers"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
+import CanvasVideo from "./canvas/CanvasAVideo"
+import CanvasImage from "./canvas/CanvasImage"
 import ChoiceMenuOption from "./ChoiceMenuOption"
 import LabelAbstract from "./LabelAbstract"
 
@@ -62,11 +64,11 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
     }
 
     private stepConverter(step: PixiVNJsonLabelStep): StepLabelType<T> {
-        return (props) => {
+        return async (props) => {
             if (step.operation) {
-                step.operation.forEach((operation) => {
-                    this.runOperation(operation)
-                })
+                for (let operation of step.operation) {
+                    await this.runOperation(operation)
+                }
             }
 
             let choices = getValueFromIfElse(step.choices)
@@ -126,10 +128,139 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         }
     }
 
-    private runOperation(origin: PixiVNJsonStorageSet | PixiVNJsonIfElse<PixiVNJsonStorageSet>): void {
+    private async runOperation(origin: PixiVNJsonOperation | PixiVNJsonIfElse<PixiVNJsonOperation>) {
         let operation = getValueFromIfElse(origin)
-        if (operation.type == "storage") {
-            setStorageJson(operation)
+        switch (operation.type) {
+            case "sound":
+                switch (operation.operationType) {
+                    case "add":
+                        sound.add(operation.alias, {
+                            ...operation.props,
+                            url: operation.url
+                        })
+                        break
+                    case "play":
+                        sound.play(operation.alias, operation.props)
+                        break
+                    case "remove":
+                        sound.remove(operation.alias)
+                        break
+                    case "pause":
+                        sound.pause(operation.alias)
+                        break
+                    case "resume":
+                        sound.resume(operation.alias)
+                        break
+                    case "volume":
+                        sound.volume(operation.alias, operation.value)
+                        break
+                }
+                break
+            case "image":
+                switch (operation.operationType) {
+                    case "show":
+                        if (operation.transition) {
+                            switch (operation.transition.type) {
+                                case "fade":
+                                    await showWithFadeTransition(operation.alias, operation.url, operation.transition.props, operation.transition.priority)
+                                    break
+                                case "dissolve":
+                                    await showWithDissolveTransition(operation.alias, operation.url, operation.transition.props, operation.transition.priority)
+                                    break
+                                case "movein":
+                                case "moveout":
+                                    await moveIn(operation.alias, operation.url, operation.transition.props, operation.transition.priority)
+                                    break
+                                case "zoomin":
+                                case "zoomout":
+                                    await zoomIn(operation.alias, operation.url, operation.transition.props, operation.transition.priority)
+                                    break
+                            }
+                        }
+                        else {
+                            await showImage(operation.alias, operation.url)
+                        }
+                        break
+                    case "edit":
+                        let image = canvas.getCanvasElement<CanvasImage>(operation.alias)
+                        if (image) {
+                            if (operation.props) {
+                                image.memory = operation.props
+                            }
+                        }
+                        else {
+                            console.error(`[Pixi'VN] Image with alias ${operation.alias} not found.`)
+                        }
+                        break
+                    case "remove":
+                        canvas.removeCanvasElement(operation.alias)
+                        break
+                }
+                break
+            case "video":
+                switch (operation.operationType) {
+                    case "show":
+                        if (operation.transition) {
+                            let video = new CanvasVideo()
+                            video.videoLink = operation.url
+                            switch (operation.transition.type) {
+                                case "fade":
+                                    await showWithFadeTransition(operation.alias, video, operation.transition.props, operation.transition.priority)
+                                    break
+                                case "dissolve":
+                                    await showWithDissolveTransition(operation.alias, video, operation.transition.props, operation.transition.priority)
+                                    break
+                                case "movein":
+                                case "moveout":
+                                    await moveIn(operation.alias, video, operation.transition.props, operation.transition.priority)
+                                    break
+                                case "zoomin":
+                                case "zoomout":
+                                    await zoomIn(operation.alias, video, operation.transition.props, operation.transition.priority)
+                                    break
+                            }
+                        }
+                        else {
+                            await showVideo(operation.alias, operation.url)
+                        }
+                        break
+                    case "edit":
+                        let video = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        if (video) {
+                            if (operation.props) {
+                                video.memory = operation.props
+                            }
+                        }
+                        else {
+                            console.error(`[Pixi'VN] Video with alias ${operation.alias} not found.`)
+                        }
+                        break
+                    case "remove":
+                        canvas.removeCanvasElement(operation.alias)
+                        break
+                    case "pause":
+                        let videoPause = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        if (videoPause) {
+                            videoPause.paused = true
+                        }
+                        else {
+                            console.error(`[Pixi'VN] Video with alias ${operation.alias} not found.`)
+                        }
+                        break
+                    case "resume":
+                        let videoResume = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        if (videoResume) {
+                            videoResume.paused = false
+                        }
+                        else {
+                            console.error(`[Pixi'VN] Video with alias ${operation.alias} not found.`)
+                        }
+                        break
+                }
+                break
+            case "storage":
+                setStorageJson(operation)
+                break
         }
     }
 }

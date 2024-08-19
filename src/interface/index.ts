@@ -15,6 +15,7 @@ export type { default as PixiVNJsonConditions } from './PixiVNJsonConditions';
 export type { default as PixiVNJsonIfElse } from './PixiVNJsonIfElse';
 export type { PixiVNJsonLabel, default as PixiVNJsonLabels } from './PixiVNJsonLabels';
 export type { PixiVNJsonDialogText, default as PixiVNJsonLabelStep } from './PixiVNJsonLabelStep';
+export type { PixiVNJsonCanvas, PixiVNJsonSound } from './PixiVNJsonMedia';
 export type { PixiVNJsonOperation, default as PixiVNJsonOperations } from './PixiVNJsonOperations';
 export type { PixiVNJsonStorageGet, PixiVNJsonStorageSet } from './PixiVNJsonStorage';
 export type { default as PixiVNJsonUnionCondition } from './PixiVNJsonUnionCondition';
