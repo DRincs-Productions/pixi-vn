@@ -1,4 +1,4 @@
-import PixiVNJsonLabels from "./PixiVNJsonLabel"
+import PixiVNJsonLabels from "./PixiVNJsonLabels"
 import { PixiVNJsonStorageSet } from "./PixiVNJsonStorage"
 
 /**
