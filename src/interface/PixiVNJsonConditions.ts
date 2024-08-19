@@ -1,6 +1,10 @@
 import { StorageElementType } from "../types"
 import { PixiVNJsonStorageGet } from "./PixiVNJsonStorage"
 
+/**
+ * Comparation for PixiVNJson.
+ * In this comparation, the values to be converted to string and compared.
+ */
 type PixiVNJsonComparation = {
     type: "compare",
     /**

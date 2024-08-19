@@ -23,18 +23,18 @@ export type PixiVNJsonChoices = {
     props: StorageObjectType
 }[]
 
-type PixiVNJsonDialogText = string | PixiVNJsonIfElse<string> | (string | PixiVNJsonIfElse<string>)[]
+export type PixiVNJsonDialogText = string | PixiVNJsonIfElse<string> | (string | PixiVNJsonIfElse<string>)[]
 
-export type PixiVNJsonDialog = {
+export type PixiVNJsonDialog<Text = string> = {
     /**
      * The character id that will speak.
      */
     character: string,
-    /**
+    /** 
      * The text to be displayed.
      */
-    text: PixiVNJsonDialogText,
-} | PixiVNJsonDialogText
+    text: Text,
+} | Text
 
 export type PixiVNJsonLabelToOpen = {
     /**
@@ -47,13 +47,11 @@ export type PixiVNJsonLabelToOpen = {
     type: LabelRunModeType,
 }
 
-export type PixiVNJsonLabelStepEnd = "game_end" | "label_end"
-
 /**
  * Steps of a {@link PixiVNJsonLabel}.
  * Order of operations:
  * 1. run all {@link PixiVNJsonLabelStep.operation}
- * 2. set {@link PixiVNJsonLabelStep.choices}, {@link PixiVNJsonLabelStep.dialog}, {@link PixiVNJsonLabelStep.glueEnabled}
+ * 2. set {@link PixiVNJsonLabelStep.choices}, {@link PixiVNJsonLabelStep.dialogue}, {@link PixiVNJsonLabelStep.glueEnabled}
  * 3. open {@link PixiVNJsonLabelStep.labelToOpen}
  * 4. go to next step if {@link PixiVNJsonLabelStep.goNextStep} is true
  * 5. end the label if {@link PixiVNJsonLabelStep.end} is "label_end"
@@ -67,7 +65,7 @@ type PixiVNJsonLabelStep = {
     /**
      * Variable used to display a dialog.
      */
-    dialog?: PixiVNJsonDialog | PixiVNJsonIfElse<PixiVNJsonDialog>
+    dialogue?: PixiVNJsonDialog<PixiVNJsonDialogText> | PixiVNJsonIfElse<PixiVNJsonDialog<PixiVNJsonDialogText>>
     /**
      * This variable is used to add the next dialog text into the current dialog memory.
      * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
@@ -86,7 +84,7 @@ type PixiVNJsonLabelStep = {
      * - game_end: ends the game
      * - label_end: ends the label
      */
-    end?: PixiVNJsonLabelStepEnd | PixiVNJsonIfElse<PixiVNJsonLabelStepEnd>
+    end?: "game_end" | "label_end" | PixiVNJsonIfElse<"game_end" | "label_end">
 }
 
 export default PixiVNJsonLabelStep
