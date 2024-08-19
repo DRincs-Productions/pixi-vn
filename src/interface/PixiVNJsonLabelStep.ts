@@ -1,5 +1,5 @@
-import { LabelRunModeType, StorageObjectType } from "../../types"
-import { LabelIdType } from "../../types/LabelIdType"
+import { LabelRunModeType, StorageObjectType } from "../types"
+import { LabelIdType } from "../types/LabelIdType"
 import PixiVNJsonOperations from "./PixiVNJsonOperations"
 
 /**

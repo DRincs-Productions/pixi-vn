@@ -5,7 +5,7 @@ export { addVideo, loadVideo, showVideo } from './canvas/VideoUtility';
 export { clearChoiceMenuOptions, clearDialogue, getChoiceMenuOptions, getDialogue, setChoiceMenuOptions, setDialogue } from './DialogueUtility';
 export { getFlag, setFlag } from './FlagsUtility';
 export { clearAllGameDatas } from './GameUtility';
-export { importPixiVNJson } from './pixivn-json/Importer';
+export { importPixiVNJson } from './Importer';
 export { getSaveData, getSaveJson, loadSaveData, loadSaveJson } from './SavesUtility';
 export { getTexture } from './TextureUtility';
 

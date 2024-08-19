@@ -1,4 +1,4 @@
-import { StorageElementType } from "../../types"
+import { StorageElementType } from "../types"
 
 export type PixiVNJsonStorageGet = {
     type: "get",
