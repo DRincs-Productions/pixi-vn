@@ -1,6 +1,3 @@
-export type { default as LabelJsonType } from '../pixivn-json/LabelJsonType';
-export type { default as OperationsJsonType } from '../pixivn-json/OperationsJsonType';
-export type { default as StepLabelJsonType } from '../pixivn-json/StepLabelJsonType';
 export type { default as PixiVNJson } from '../pixivn-json/types/PixiVNJson';
 export type { PixiVNJsonStorageGet, PixiVNJsonStorageSet } from '../pixivn-json/types/PixiVNJsonStorage';
 export type { default as CharacterInterface } from './CharacterInterface';

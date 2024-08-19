@@ -1,6 +1,7 @@
-import { Label, LabelJson } from "../classes"
+import { Label } from "../classes"
 import LabelAbstract from "../classes/LabelAbstract"
 import { LabelProps } from "../interface"
+import { LabelJson } from "../pixivn-json"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 

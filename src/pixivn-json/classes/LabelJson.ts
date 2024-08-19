@@ -3,9 +3,9 @@ import LabelAbstract from "../../classes/LabelAbstract"
 import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../../functions"
 import { LabelProps } from "../../interface"
 import { narration, storage } from "../../managers"
-import { StepLabelJsonType } from "../../types"
 import { LabelIdType } from "../../types/LabelIdType"
 import { StepLabelType } from "../../types/StepLabelType"
+import PixiVNJsonLabelStep from "../types/PixiVNJsonLabelStep"
 
 export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJson<T>, T> {
     /**
@@ -13,12 +13,12 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: StepLabelJsonType[] | (() => StepLabelJsonType[]), props?: LabelProps<LabelJson<T>>) {
+    constructor(id: LabelIdType, steps: PixiVNJsonLabelStep[] | (() => PixiVNJsonLabelStep[]), props?: LabelProps<LabelJson<T>>) {
         super(id, props)
         this._steps = steps
     }
 
-    private _steps: StepLabelJsonType[] | (() => StepLabelJsonType[])
+    private _steps: PixiVNJsonLabelStep[] | (() => PixiVNJsonLabelStep[])
     /**
      * Get the steps of the label.
      */
@@ -29,7 +29,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return this._steps.map(this.stepConverter)
     }
 
-    private stepConverter(step: StepLabelJsonType): StepLabelType<T> {
+    private stepConverter(step: PixiVNJsonLabelStep): StepLabelType<T> {
         return (props) => {
             if (step.choices) {
                 let options = step.choices.map((option) => {
