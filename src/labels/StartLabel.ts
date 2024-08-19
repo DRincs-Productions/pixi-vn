@@ -9,6 +9,7 @@ import { customTickerCanvasElementTestLabel } from "./CustomTickerCanvasElementT
 import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
 import { markdownTest } from "./MarkdownTest";
 import { soundTestLabel } from "./SoundTestLabel";
+import { spineTestLAbel } from "./SpineLabelTest";
 import { stepLabelTestLAbel } from "./StepLabelTest";
 import { juliette } from "./TestConstant";
 import { videoTest } from "./VideoTestLabel";
@@ -60,6 +61,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Video Test", videoTest, {}),
                 new ChoiceMenuOption("Canvas Events Test", canvasEventsTestLabel, {}),
                 new ChoiceMenuOption("Sound Test", soundTestLabel, {}),
+                new ChoiceMenuOption("Spine 2D Test", spineTestLAbel, {}),
                 new ChoiceMenuOption("Base Canvas Element Test", baseCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Steps and Labels Test", stepLabelTestLAbel, {}),
