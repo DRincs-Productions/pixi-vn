@@ -8,7 +8,6 @@ export * from './interface';
 export * from './interface/canvas';
 export * from './labels';
 export * from './managers';
-export * from './pixivn-json';
 export * from './types';
 export * from './types/ticker';
 

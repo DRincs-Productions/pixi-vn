@@ -1,6 +1,5 @@
 import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
-import { LabelProps } from "../interface"
-import PixiVNJsonLabelStep from "../interface/pixivn-json/PixiVNJsonLabelStep"
+import { LabelProps, PixiVNJsonLabelStep } from "../interface"
 import { narration, storage } from "../managers"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"

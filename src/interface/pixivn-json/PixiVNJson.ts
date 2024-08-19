@@ -1,5 +1,5 @@
-import { PixiVNJsonStorageSet } from "../../pixivn-json/types/PixiVNJsonStorage"
 import PixiVNJsonLabels from "./PixiVNJsonLabels"
+import { PixiVNJsonStorageSet } from "./PixiVNJsonStorage"
 
 /**
  * PixiVNJson It can be defined as a programming language to write a narrative written in json.

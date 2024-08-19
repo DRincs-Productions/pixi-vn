@@ -10,6 +10,7 @@ export { default as CharacterStoredClass } from './CharacterStoredClass';
 export { default as ChoiceMenuOption, ChoiceMenuOptionClose } from './ChoiceMenuOption';
 export { default as DialogueBaseModel } from './DialogueBaseModel';
 export { default as Label } from './Label';
+export { default as LabelJson } from './LabelJson';
 export { default as Sound } from './Sound';
 export { default as StoredClassModel } from './StoredClassModel';
 
