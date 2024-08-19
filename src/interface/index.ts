@@ -14,7 +14,7 @@ export type { default as LabelJsonType } from './pixivn-json/LabelJsonType';
 export type { default as OperationsJsonType } from './pixivn-json/OperationsJsonType';
 export type { default as PixiVNJson } from './pixivn-json/PixiVNJson';
 export type { default as StepLabelJsonType } from './pixivn-json/StepLabelJsonType';
-export type { GetStorageJsonType, SetFlagStorageJsonType, SetStorageJsonType } from './pixivn-json/StorageJsonType';
+export type { PixiVNJsonFlagSet, PixiVNJsonStorageGet, PixiVNJsonStorageSet } from './pixivn-json/Storage';
 export type { default as SoundOptions, SoundPlayOptions } from './SoundOptions';
 export type { default as TickerHistory, TickerHistoryForExport } from './TickerHistory';
 export type { TickerProgrationType } from './TickerProgrationType';

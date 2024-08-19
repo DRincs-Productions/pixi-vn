@@ -1,7 +1,7 @@
-import { SetFlagStorageJsonType, SetStorageJsonType } from "./StorageJsonType"
+import { PixiVNJsonFlagSet, PixiVNJsonStorageSet } from "./Storage"
 
 type OperationsJsonType = (
-    SetStorageJsonType | SetFlagStorageJsonType
+    PixiVNJsonStorageSet | PixiVNJsonFlagSet
 )[]
 
 export default OperationsJsonType

@@ -1,19 +1,19 @@
 import { StorageElementType } from "../../types"
 
-export type GetStorageJsonType = {
+export type PixiVNJsonStorageGet = {
     type: "get",
     key: string,
     storageType: "storage" | "flagStorage",
 }
 
-export type SetStorageJsonType = {
+export type PixiVNJsonStorageSet = {
     type: "set",
     key: string,
-    value: StorageElementType | GetStorageJsonType,
+    value: StorageElementType | PixiVNJsonStorageGet,
     storageType: "storage",
 }
 
-export type SetFlagStorageJsonType = {
+export type PixiVNJsonFlagSet = {
     type: "set",
     key: string,
     value: boolean,
