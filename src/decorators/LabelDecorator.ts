@@ -1,11 +1,10 @@
 import { Label } from "../classes"
 import LabelAbstract from "../classes/LabelAbstract"
 import { LabelProps } from "../interface"
-import { LabelJson } from "../pixivn-json"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
-export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label<any> | LabelJson<any>) } = {}
+export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label<any>) } = {}
 
 /**
  * Creates a new label and registers it in the system.

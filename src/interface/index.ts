@@ -1,5 +1,3 @@
-export type { default as PixiVNJson } from '../pixivn-json/types/PixiVNJson';
-export type { PixiVNJsonStorageGet, PixiVNJsonStorageSet } from '../pixivn-json/types/PixiVNJsonStorage';
 export type { default as CharacterInterface } from './CharacterInterface';
 export type { default as ExportedCanvas } from './export/ExportedCanvas';
 export type { ExportedSound, default as ExportedSounds } from './export/ExportedSounds';
