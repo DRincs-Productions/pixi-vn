@@ -6,8 +6,6 @@ export type { default as DialogueType } from './DialogueType';
 export type { default as HistoryChoiceMenuOption } from './HistoryChoiceMenuOption';
 export type { default as LabelRunModeType } from './LabelRunModeType';
 export type { PauseType } from './PauseType';
-export type { default as LabelJsonType } from './pixivn-json/LabelJsonType';
-export type { default as StepLabelJsonType } from './pixivn-json/StepLabelJsonType';
 export type { RepeatType } from './RepeatType';
 export type { default as SoundFilterMemory } from './SoundFilterMemory';
 export type { StepLabelPropsType, StepLabelResultType, StepLabelType } from './StepLabelType';

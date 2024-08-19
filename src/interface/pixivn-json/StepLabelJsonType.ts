@@ -1,10 +1,11 @@
-import { LabelRunModeType, StorageObjectType } from ".."
+import { LabelRunModeType, OperationsJsonType, StorageObjectType } from ".."
 import { LabelIdType } from "../LabelIdType"
 
 /**
  * Step label JSON type
  */
 type StepLabelJsonType = {
+    operation?: OperationsJsonType
     /**
      * Variable used to display a choice menu.
      */
