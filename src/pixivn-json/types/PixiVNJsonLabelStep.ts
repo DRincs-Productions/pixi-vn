@@ -1,11 +1,11 @@
-import { LabelRunModeType, StorageObjectType } from "../types"
-import { LabelIdType } from "../types/LabelIdType"
+import { LabelRunModeType, StorageObjectType } from "../../types"
+import { LabelIdType } from "../../types/LabelIdType"
 import OperationsJsonType from "./OperationsJsonType"
 
 /**
  * Step label JSON type
  */
-type StepLabelJsonType = {
+type PixiVNJsonLabelStep = {
     operation?: OperationsJsonType
     /**
      * Variable used to display a choice menu.
@@ -71,4 +71,4 @@ type StepLabelJsonType = {
     end?: "game_end" | "label_end"
 }
 
-export default StepLabelJsonType
+export default PixiVNJsonLabelStep
