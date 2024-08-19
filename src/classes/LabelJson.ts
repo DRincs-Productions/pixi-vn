@@ -1,7 +1,7 @@
 import { clearChoiceMenuOptions, moveIn, setChoiceMenuOptions, setDialogue, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
 import { getValueFromIfElse, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
-import { PixiVNJsonDialog, PixiVNJsonDialogText } from "../interface/PixiVNJsonLabelStep"
+import { PixiVNJsonChoice, PixiVNJsonChoices, PixiVNJsonDialog, PixiVNJsonDialogText } from "../interface/PixiVNJsonLabelStep"
 import { canvas, narration, sound, storage } from "../managers"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
@@ -63,6 +63,17 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return dialogue
     }
 
+    private getChoices(origin: PixiVNJsonChoices | PixiVNJsonIfElse<PixiVNJsonChoices> | undefined): PixiVNJsonChoice[] | undefined {
+        let choices = getValueFromIfElse(origin)
+        if (choices) {
+            let options: PixiVNJsonChoice[] = choices.map((option) => {
+                return getValueFromIfElse(option)
+            })
+            return options
+        }
+        return undefined
+    }
+
     private stepConverter(step: PixiVNJsonLabelStep): StepLabelType<T> {
         return async (props) => {
             if (step.operation) {
@@ -71,7 +82,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 }
             }
 
-            let choices = getValueFromIfElse(step.choices)
+            let choices = this.getChoices(step.choices)
             let glueEnabled = getValueFromIfElse(step.glueEnabled)
             let dialogue: PixiVNJsonDialog<string | string[]> | undefined = this.getDialogue(step.dialogue)
             let labelToOpen = getValueFromIfElse(step.labelToOpen)

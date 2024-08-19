@@ -4,7 +4,7 @@ import PixiVNJsonIfElse from "./PixiVNJsonIfElse"
 import { PixiVNJsonLabel } from "./PixiVNJsonLabels"
 import PixiVNJsonOperations from "./PixiVNJsonOperations"
 
-export type PixiVNJsonChoices = {
+export type PixiVNJsonChoice = {
     /**
      * The text to be displayed.
      */
@@ -21,7 +21,8 @@ export type PixiVNJsonChoices = {
      * The properties to be passed to the label.
      */
     props: StorageObjectType
-}[]
+}
+export type PixiVNJsonChoices = (PixiVNJsonChoice | PixiVNJsonIfElse<PixiVNJsonChoice>)[]
 
 export type PixiVNJsonDialogText = string | PixiVNJsonIfElse<string> | (string | PixiVNJsonIfElse<string>)[]
 
