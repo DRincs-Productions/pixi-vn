@@ -1,4 +1,4 @@
-import { PixiVNJsonFlagSet, PixiVNJsonStorageSet } from "./Storage"
+import { PixiVNJsonFlagSet, PixiVNJsonStorageSet } from "./PixiVNJsonStorage"
 
 type OperationsJsonType = (
     PixiVNJsonStorageSet | PixiVNJsonFlagSet

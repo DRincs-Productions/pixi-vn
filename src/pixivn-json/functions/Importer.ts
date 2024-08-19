@@ -1,7 +1,7 @@
-import { LabelJson } from "../classes";
-import { saveLabel } from "../decorators/LabelDecorator";
-import { PixiVNJson } from "../interface";
-import { StepLabelJsonType } from "../types";
+import { LabelJson } from "../../classes";
+import { saveLabel } from "../../decorators/LabelDecorator";
+import { PixiVNJson } from "../../interface";
+import { StepLabelJsonType } from "../../types";
 
 /**
  * Import a Pixi'VN JSON to the system.

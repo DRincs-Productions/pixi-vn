@@ -6,16 +6,18 @@ export type PixiVNJsonStorageGet = {
     storageType: "storage" | "flagStorage",
 }
 
-export type PixiVNJsonStorageSet = {
+type PixiVNJsonOnlyStorageSet = {
     type: "set",
     key: string,
     value: StorageElementType | PixiVNJsonStorageGet,
     storageType: "storage",
 }
 
-export type PixiVNJsonFlagSet = {
+type PixiVNJsonFlagSet = {
     type: "set",
     key: string,
     value: boolean,
     storageType: "flagStorage",
 }
+
+export type PixiVNJsonStorageSet = (PixiVNJsonOnlyStorageSet | PixiVNJsonFlagSet)
