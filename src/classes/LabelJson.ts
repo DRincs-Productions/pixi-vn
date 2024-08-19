@@ -1,11 +1,11 @@
-import ChoiceMenuOption from "../../classes/ChoiceMenuOption"
-import LabelAbstract from "../../classes/LabelAbstract"
-import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../../functions"
-import { LabelProps } from "../../interface"
-import { narration, storage } from "../../managers"
-import { LabelIdType } from "../../types/LabelIdType"
-import { StepLabelType } from "../../types/StepLabelType"
-import PixiVNJsonLabelStep from "../types/PixiVNJsonLabelStep"
+import { clearChoiceMenuOptions, setChoiceMenuOptions, setDialogue, setFlag } from "../functions"
+import { LabelProps } from "../interface"
+import PixiVNJsonLabelStep from "../interface/pixivn-json/PixiVNJsonLabelStep"
+import { narration, storage } from "../managers"
+import { LabelIdType } from "../types/LabelIdType"
+import { StepLabelType } from "../types/StepLabelType"
+import ChoiceMenuOption from "./ChoiceMenuOption"
+import LabelAbstract from "./LabelAbstract"
 
 export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJson<T>, T> {
     /**
