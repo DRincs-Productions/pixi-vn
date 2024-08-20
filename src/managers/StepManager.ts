@@ -43,7 +43,7 @@ export default class GameStepManager {
         storage.setVariable(storage.keysSystem.ALL_OPENED_LABELS_KEY, value)
     }
     /**
-     * Counter of execution times of the current step (). Current execution is also included.
+     * Counter of execution times of the current step. Current execution is also included.
      * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
      * You can restart the counter in this way:
      * ```typescript
