@@ -103,6 +103,15 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         oneTime: option.oneTime
                     })
                 })
+                options = options.filter((option, index) => {
+                    if (option.oneTime) {
+                        let alreadyChoices = narration.alreadyCurrentStepMadeChoices
+                        if (alreadyChoices && alreadyChoices.includes(index)) {
+                            return false
+                        }
+                    }
+                    return true
+                })
                 setChoiceMenuOptions(options)
             }
             else {

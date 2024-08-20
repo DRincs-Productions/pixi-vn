@@ -99,6 +99,15 @@ export function clearDialogue(): void {
  * ```
  */
 export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void {
+    options = options.filter((option, index) => {
+        if (option.oneTime) {
+            let alreadyChoices = narration.alreadyCurrentStepMadeChoices
+            if (alreadyChoices && alreadyChoices.includes(index)) {
+                return false
+            }
+        }
+        return true
+    })
     let value: IStoratedChoiceMenuOption[] = options.map((option) => {
         if (option instanceof ChoiceMenuOptionClose) {
             return {
@@ -147,15 +156,6 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
                     oneTime: option.oneTime
                 }))
             }
-        })
-        options = options.filter((option, index) => {
-            if (option.oneTime) {
-                let alreadyChoices = narration.alreadyCurrentStepMadeChoices
-                if (alreadyChoices && alreadyChoices.includes(index)) {
-                    return false
-                }
-            }
-            return true
         })
         return options as TChoice
     }
