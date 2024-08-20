@@ -8,4 +8,8 @@ export default defineConfig({
     splitting: false,
     sourcemap: true,
     clean: true,
+    minify: true,
+    bundle: true,
+    skipNodeModulesBundle: true,
+    entryPoints: ['src/index.ts'],
 });
