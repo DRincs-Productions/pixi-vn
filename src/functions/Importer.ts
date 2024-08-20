@@ -1,7 +1,6 @@
-import { LabelJson } from "../classes";
-import { saveLabel } from "../decorators/LabelDecorator";
-import { PixiVNJson } from "../interface";
-import { StepLabelJsonType } from "../types";
+import { LabelJson } from "../classes"
+import { saveLabel } from "../decorators/LabelDecorator"
+import { PixiVNJson, PixiVNJsonLabelStep } from "../interface"
 
 /**
  * Import a Pixi'VN JSON to the system.
@@ -27,7 +26,7 @@ export function importPixiVNJson(data: PixiVNJson | string) {
         let labels = data.labels
         for (const labelId in labels) {
             try {
-                const steps: StepLabelJsonType[] = labels[labelId]
+                const steps: PixiVNJsonLabelStep[] = labels[labelId]
                 let label = new LabelJson(labelId, steps)
                 saveLabel(label)
             }

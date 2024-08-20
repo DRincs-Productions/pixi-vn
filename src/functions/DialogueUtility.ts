@@ -99,12 +99,22 @@ export function clearDialogue(): void {
  * ```
  */
 export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void {
+    options = options.filter((option, index) => {
+        if (option.oneTime) {
+            let alreadyChoices = narration.alreadyCurrentStepMadeChoices
+            if (alreadyChoices && alreadyChoices.includes(index)) {
+                return false
+            }
+        }
+        return true
+    })
     let value: IStoratedChoiceMenuOption[] = options.map((option) => {
         if (option instanceof ChoiceMenuOptionClose) {
             return {
                 text: option.text,
                 type: Close,
                 closeCurrentLabel: option.closeCurrentLabel,
+                oneTime: option.oneTime,
             }
         }
         return {
@@ -127,7 +137,10 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
         d.forEach((option, index) => {
             if (option.type === Close) {
                 let itemLabel = newCloseLabel(index)
-                let choice = new ChoiceMenuOptionClose(option.text, option.closeCurrentLabel)
+                let choice = new ChoiceMenuOptionClose(option.text, {
+                    closeCurrentLabel: option.closeCurrentLabel,
+                    oneTime: option.oneTime
+                })
                 choice.label = itemLabel
                 options.push(choice)
                 return
@@ -138,7 +151,10 @@ export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = Cho
                     onStepStart: label.onStepStart,
                     choiseIndex: index
                 })
-                options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, option.type))
+                options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, {
+                    type: option.type,
+                    oneTime: option.oneTime
+                }))
             }
         })
         return options as TChoice

@@ -2,7 +2,6 @@ import deepDiff from "deep-diff";
 import { DialogueBaseModel } from "../classes";
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import { LabelIdType } from "../types/LabelIdType";
-import { StepHistoryDataType } from "../types/StepHistoryDataType";
 import ExportedCanvas from "./export/ExportedCanvas";
 import ExportedSounds from "./export/ExportedSounds";
 import ExportedStorage from "./export/ExportedStorage";
@@ -50,7 +49,7 @@ export default interface IHistoryStep<T extends DialogueBaseModel = DialogueBase
     /**
      * The sha1 of the step function.
      */
-    stepSha1: StepHistoryDataType,
+    stepSha1: string,
     /**
      * The index of the step in the history.
      */

@@ -10,6 +10,7 @@ import { checkIfVideo } from "./CanvasUtility"
 import { addImage } from "./ImageUtility"
 import { addVideo } from "./VideoUtility"
 
+export type ShowWithDissolveTransitionProps = Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture">
 /**
  * Show a image in the canvas with a disolve effect.
  * Disolve effect is a effect that the image is shown with a fade in.
@@ -24,7 +25,7 @@ import { addVideo } from "./VideoUtility"
 export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let oldCanvasTag: string | undefined = undefined
@@ -72,7 +73,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
  */
 export function removeWithDissolveTransition(
     tag: string | string[],
-    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): void {
     if (typeof tag === "string") {
@@ -87,6 +88,7 @@ export function removeWithDissolveTransition(
     canvas.addTicker(tag, effect)
 }
 
+export type ShowWithFadeTransitionProps = Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture">
 /**
  * Show a image in the canvas with a fade effect.
  * Fade effect is a effect that the image is shown with a fade in.
@@ -100,7 +102,7 @@ export function removeWithDissolveTransition(
 export async function showWithFadeTransition<T extends CanvasBase<any> | string = string>(
     tag: string,
     image: T,
-    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     if (!canvas.getCanvasElement(tag)) {
@@ -156,13 +158,13 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
  */
 export function removeWithFadeTransition(
     tag: string | string[],
-    props: Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture"> = {},
+    props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): void {
     return removeWithDissolveTransition(tag, props, priority)
 }
 
-type MoveInOutProps = {
+export type MoveInOutProps = {
     /**
      * The direction of the movement.
      */
@@ -265,7 +267,7 @@ export function moveOut(
     canvas.addTicker(tag, effect)
 }
 
-type ZoomInOutProps = {
+export type ZoomInOutProps = {
     /**
      * The direction of the zoom effect.
      */

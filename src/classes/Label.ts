@@ -1,7 +1,8 @@
-import { LabelProps } from "../interface"
-import { LabelIdType } from "../types/LabelIdType"
-import { StepLabelType } from "../types/StepLabelType"
-import LabelAbstract from "./LabelAbstract"
+import sha1 from 'crypto-js/sha1';
+import { LabelProps } from "../interface";
+import { LabelIdType } from "../types/LabelIdType";
+import { StepLabelType } from "../types/StepLabelType";
+import LabelAbstract from "./LabelAbstract";
 
 /**
  * Label is a class that contains a list of steps, which will be performed as the game continues.
@@ -47,5 +48,14 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
             return this._steps()
         }
         return this._steps
+    }
+
+    public getStepSha1(index: number): string | undefined {
+        if (index < 0 || index >= this.steps.length) {
+            return undefined
+        }
+        let step = this.steps[index]
+        let sha1String = sha1(step.toString().toLocaleLowerCase())
+        return sha1String.toString()
     }
 }

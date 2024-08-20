@@ -36,7 +36,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
-            new ChoiceMenuOptionClose("Cancel", true),
+            new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ])
     },
     (props) => narration.jumpLabel(IMAGE_ANIMAIONS_TEST_LABEL, props),
