@@ -133,7 +133,7 @@ canvas.initialize(body, 1920, 1080, {
 })
 
 // read more here: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game
-narration.gameEnd = async (props) => {
+narration.onGameEnd = async (props) => {
     props.navigate("/")
 }
 ```

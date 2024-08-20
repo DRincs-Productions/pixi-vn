@@ -519,8 +519,8 @@ export default class GameStepManager {
                 }
                 catch (e) {
                     console.error("[Pixi'VN] Error running step", e)
-                    if (GameStepManager._onStepError) {
-                        GameStepManager._onStepError(e)
+                    if (GameStepManager.onStepError) {
+                        GameStepManager.onStepError(e, props)
                     }
                     return
                 }
@@ -531,8 +531,8 @@ export default class GameStepManager {
             }
             else {
                 GameStepManager.restoreLastLabelList()
-                if (GameStepManager.gameEnd) {
-                    return await GameStepManager.gameEnd(props)
+                if (GameStepManager.onGameEnd) {
+                    return await GameStepManager.onGameEnd(props)
                 }
                 console.error("[Pixi'VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game")
                 return
@@ -843,23 +843,21 @@ export default class GameStepManager {
      * Function to be executed at the end of the game. It should be set in the game initialization.
      * @example
      * ```typescript
-     * narration.gameEnd = async (props) => {
+     * narration.onGameEnd = async (props) => {
      *    props.navigate("/end")
      * }
      * ```
      */
-    static gameEnd: StepLabelType | undefined = undefined
-    private static _onStepError: (error: any) => void | undefined
+    public static onGameEnd: StepLabelType | undefined = undefined
     /**
      * Function to be executed when an error occurs in the step.
      * @example
      * ```typescript
-     * narration.onStepError = (error) => {
-     *     // error report
+     * narration.onStepError = (error, props) => {
+     *    props.notify("An error occurred")
+     *    // send a notification to GlitchTip, Sentry, etc...
      * }
      * ```
      */
-    public static set onStepError(onStepError: (error: Error) => void) {
-        GameStepManager._onStepError = onStepError
-    }
+    public static onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined
 }
