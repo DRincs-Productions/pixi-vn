@@ -5,7 +5,7 @@ import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/Cho
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import LabelAbstract from "../classes/LabelAbstract"
 import { getLabelById } from "../decorators/LabelDecorator"
-import { getChoiceMenuOptions, getDialogue, getFlag, setFlag } from "../functions"
+import { getChoiceMenuOptions, getFlag, setFlag } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
 import { CharacterInterface, NarrativeHistory } from "../interface"
@@ -220,7 +220,7 @@ export default class GameStepManager {
             let dialoge: DialogueBaseModel | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
             if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
-                dialoge = getDialogue()
+                dialoge = GameStepManager.dialogue
             }
             if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
                 requiredChoices = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
