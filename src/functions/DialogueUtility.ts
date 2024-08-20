@@ -4,84 +4,31 @@ import newCloseLabel from "../classes/CloseLabel";
 import { getLabelById } from "../decorators";
 import { CharacterInterface } from "../interface";
 import { narration, storage } from "../managers";
-import { Close, DialogueType } from "../types";
+import { Close } from "../types";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
-import { getFlag, setFlag } from "./FlagsUtility";
 
 /**
- * Set the dialogue to be shown in the game
- * @param text Text of the dialogue
- * @example
- * ```typescript
- * setDialogue("Hello World")
- * setDialogue({
- *       character: "character",
- *       text: "Hello World"
- * })
- * setDialogue(new DialogueBaseModel("Hello World", character))
- * ```
+ * @deprecated Use narration.dialogue
  */
 export function setDialogue<TCharacter extends CharacterInterface = CharacterInterface, TDialogue extends DialogueBaseModel = DialogueBaseModel>(props: {
     character: string | TCharacter,
     text: string | string[],
 } | string | string[] | TDialogue): void {
-    let text = ''
-    let character: string | undefined = undefined
-    let dialogue: TDialogue | DialogueBaseModel
-    if (typeof props === 'string') {
-        text = props
-        dialogue = new DialogueBaseModel(text, character)
-    }
-    else if (Array.isArray(props)) {
-        text = props.join()
-        dialogue = new DialogueBaseModel(text, character)
-    }
-    else if (!(props instanceof DialogueBaseModel)) {
-        if (Array.isArray(props.text)) {
-            text = props.text.join()
-        }
-        else {
-            text = props.text
-        }
-        if (props.character) {
-            if (typeof props.character === 'string') {
-                character = props.character
-            }
-            else {
-                character = props.character.id
-            }
-        }
-        dialogue = new DialogueBaseModel(text, character)
-    }
-    else {
-        dialogue = props
-    }
-
-    if (getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)) {
-        let glueDialogue = getDialogue<TDialogue>()
-        if (glueDialogue) {
-            dialogue.text = `${glueDialogue.text}${dialogue.text}`
-        }
-        setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
-    }
-
-    storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType)
-    storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, narration.lastStepIndex)
+    narration.dialogue = props
 }
 
 /**
- * Get the dialogue to be shown in the game
- * @returns Dialogue to be shown in the game
+ * @deprecated Use narration.dialogue
  */
 export function getDialogue<T extends DialogueBaseModel = DialogueBaseModel>(): T | undefined {
-    return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as T
+    return narration.dialogue as T
 }
 
 /**
- * Clear the dialogue to be shown in the game
+ * @deprecated Use narration.dialogue = undefined
  */
 export function clearDialogue(): void {
-    storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, undefined)
+    narration.dialogue = undefined
 }
 
 /**
