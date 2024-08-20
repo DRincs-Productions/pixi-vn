@@ -1,6 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
-import PIXI, { ApplicationOptions, Container, Ticker } from "pixi.js";
+import * as PIXI from "pixi.js";
+import { ApplicationOptions, Container, Ticker } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { Repeat } from "../constants";
