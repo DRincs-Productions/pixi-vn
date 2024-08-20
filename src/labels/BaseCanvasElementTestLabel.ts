@@ -2,8 +2,8 @@ import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 import { CanvasContainer, CanvasSprite, CanvasText } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
-import { removeCanvasElement, setDialogue } from "../functions";
-import { canvas } from "../managers";
+import { removeCanvasElement } from "../functions";
+import { canvas, narration } from "../managers";
 import { bunnyImage, juliette } from "./TestConstant";
 
 const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"
@@ -12,10 +12,10 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
     [
         async () => {
             let number = 25
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `Here's what's going to happen: I'm going to create ${number} bunnies (CanvasSprites) and put them in a CanvasContainer.`
-            })
+            }
 
             // Create and add a container to the stage
             const container = new CanvasContainer();
@@ -46,11 +46,11 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
         },
         async () => {
             removeCanvasElement("container");
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `Here's what's going to happen: I'm going to create some CanvasText with different styles and put them on the stage.
 But it will generate a warn message, because the FillGradient or FillPattern has not yet been supported by the Pixi’VN ( you can see the status of the issue here: [#76](https://github.com/DRincs-Productions/pixi-vn/issues/76)).`
-            })
+            }
 
             const basicStyle = new TextStyle({
                 fill: '#ffffff',

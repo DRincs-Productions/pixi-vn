@@ -21,7 +21,7 @@ type DialogueProps = {
  * You can extend this class, but it is not reccomended. You can use the oltherParams property to store any other data you need.
  * @example
  * ```typescript
- * setDialogue(new DialogueBaseModel("Hello World", character))
+ * narration.dialogue = new DialogueBaseModel("Hello World", character)
  * ```
  */
 export default class DialogueBaseModel<TCharacter extends CharacterInterface = CharacterInterface> {

@@ -2,14 +2,14 @@ import { CanvasImage, ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
-import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, setDialogue, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, setChoiceMenuOptions, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { canvas, narration } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
 const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
 export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
     async () => {
-        setDialogue({ character: juliette, text: `These are my 4 puppets: ${eggHeadName}, ${flowerTopName}, ${helmlokName} and ${skullyName}. They can appear, disappear and animate at my will.` })
+        narration.dialogue = { character: juliette, text: `These are my 4 puppets: ${eggHeadName}, ${flowerTopName}, ${helmlokName} and ${skullyName}. They can appear, disappear and animate at my will.` }
         let eggHead = addImage("eggHead", eggHeadImage)
         await eggHead.load()
         eggHead.x = 100
@@ -27,7 +27,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
         await loadImage([helmlok, skully])
     },
     async () => {
-        setDialogue({ character: juliette, text: "Here's what they can do." })
+        narration.dialogue = { character: juliette, text: "Here's what they can do." }
         setChoiceMenuOptions([
             new ChoiceMenuOption("Dissolve effect", imagesDissolveTest, {}),
             new ChoiceMenuOption("Fade effect", imagesFadeTest, {}),
@@ -44,13 +44,13 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
 
 const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
     () => {
-        setDialogue({
+        narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will disappear with a dissolve effect. If you go next, ${eggHeadName} reappears with a dissolve effect without stopping the dissolve effect
 - ${eggHeadName} will appear instead of ${flowerTopName}.
 - ${helmlokName} will disappear with a fade effect and reappear with a fade effect, and repeat.
 - ${skullyName} will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
-        })
+        }
         removeWithDissolveTransition(["eggHead"], { duration: 2 })
         let eggHead = new CanvasImage({ x: 300, y: 100 }, eggHeadImage)
         showWithDissolveTransition('flowerTop', eggHead, { duration: 1 })
@@ -89,13 +89,13 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
 
 const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
     () => {
-        setDialogue({
+        narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will disappear with a dissolve effect. If you go next, ${eggHeadName} reappears with a dissolve effect with stopping the dissolve effect
 - ${eggHeadName} will appear instead of ${flowerTopName}.
 - ${helmlokName} will disappear with a fade effect and reappear with a fade effect, and repeat.
 - ${skullyName} will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
-        })
+        }
         removeWithFadeTransition(["eggHead"], { duration: 2 })
         let eggHead = new CanvasImage({ x: 300, y: 100 }, eggHeadImage)
         showWithFadeTransition('flowerTop', eggHead, { duration: 1 })
@@ -137,13 +137,13 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
 
 const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
     () => {
-        setDialogue({
+        narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will rotate with a anchor set to 0.
 - ${flowerTopName} will rotate with a anchor set to 0.5 and a exponential speed progression.
 - ${helmlokName} will rotate with a anchor set to 0.5, rotate clockwise for 2 seconds, rotate counterclockwise with a exponential (-0.05) speed progression, and when it reaches 0, it will repeat.
 - ${skullyName} will rotate with a anchor set to 1, rotate 3 seconds clockwise, wait for 0.5 seconds, and rotate 7 seconds counterclockwise.`
-        })
+        }
         let eggHead = canvas.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
             eggHead.anchor.set(0);
@@ -193,13 +193,13 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
 
 const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
     () => {
-        setDialogue({
+        narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will move to { x: 500, y: 100 } with a speed of 24.
 - ${flowerTopName} will move to { x: 500, y: 300 } with a speed of 18.
 - ${helmlokName} will move to { x: 100, y: 500 } with a speed of 150 and a linear speed progression of -2 ( limit 10 ), and then move to { x: 1700, y: 500 } with a speed of 10 and a linear speed progression of 2 ( limit 150 ), and repeat.
 - ${skullyName} will move to { x: 500, y: 500 } with a speed of 40, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 40.`
-        })
+        }
         canvas.addTicker("eggHead", new MoveTicker({
             destination: { x: 500, y: 100 },
             speed: 24,
@@ -237,13 +237,13 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
 
 const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
     () => {
-        setDialogue({
+        narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will zoom out with a speed of 3 and a limit of -0.5.
 - ${flowerTopName} will zoom in with a speed of 3 and a limit of 2.
 - ${helmlokName} will unzoom with a speed of 3 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
 - ${skullyName} will zoom in with a speed of 0.1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
-        })
+        }
         let eggHead = canvas.getCanvasElement<CanvasImage>("eggHead")
         if (eggHead)
             eggHead.scale.set(2)
@@ -289,13 +289,13 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
 
 const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
     async () => {
-        setDialogue({
+        narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will move in from the top with a speed of 80. If you go next, ${eggHeadName} will move out from the bottom with a speed of 80.
 - ${flowerTopName} will move in from the right with a speed of 80 and a speed progression of 0.02. If you go next, ${flowerTopName} will move out from the left with a speed of 80 and a speed progression of 0.02.
 - ${helmlokName} will move in from the left with a speed of 80. If you go next, ${helmlokName} will move out from the right with a speed of 80.
 - ${skullyName} will move in from the bottom with a speed of 80 and a speed progression of 0.02. If you go next, ${skullyName} will move out from the top with a speed of 80 and a speed progression of 0.02.`
-        })
+        }
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
         let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
@@ -321,13 +321,13 @@ const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
 
 const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
     async () => {
-        setDialogue({
+        narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will zoom in with a speed of 3. If you go next, ${eggHeadName} will zoom out with a speed of 3.
 - ${flowerTopName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${flowerTopName} will zoom out with a speed of 3.
 - ${helmlokName} will zoom in with a speed of 3. If you go next, ${helmlokName} will zoom out with a speed of 1.
 - ${skullyName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${skullyName} will zoom out with a speed of 3 and a speed progression of 0.02.`
-        })
+        }
         canvas.removeCanvasElements()
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)

@@ -1,8 +1,7 @@
 import { Assets, Texture } from "pixi.js";
 import { CanvasEvent, CanvasSprite } from "../classes";
 import { eventDecorator, newLabel } from "../decorators";
-import { setDialogue } from "../functions";
-import { canvas } from "../managers";
+import { canvas, narration } from "../managers";
 import { CanvasEventNamesType } from "../types";
 import { bunnyImage, bunnyName, juliette } from "./TestConstant";
 
@@ -53,15 +52,15 @@ const CANVAS_EVENTS_TEST_LABEL = "___pixi_vn_canvas_events_test___"
 
 export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
     [
-        () => setDialogue({
+        () => narration.dialogue = {
             character: juliette,
             text: "This is the test of clickable elements in a canvas."
-        }),
+        },
         async () => {
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `This is my friend, ${bunnyName}. It's small now, but if you try to click on it it will get bigger and bigger. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/click).)`
-            });
+            };
 
             // Load the bunny texture
             const texture = await Assets.load(bunnyImage);
@@ -92,10 +91,10 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
         },
         async () => {
             canvas.clear();
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `This is the test of buttons in a canvas. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/interactivity).)`
-            });
+            };
 
             // Create a background...
             const backgroundT = await Assets.load('https://pixijs.com/assets/bg_button.jpg');
