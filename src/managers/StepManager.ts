@@ -373,7 +373,7 @@ export default class GameStepManager {
         let currentLabel = GameStepManager.currentLabelId
         if (currentLabel) {
             let lastStep = GameStepManager.allOpenedLabels[currentLabel]
-            if (lastStep === GameStepManager.currentLabelStepIndex) {
+            if (GameStepManager.currentLabelStepIndex && lastStep >= GameStepManager.currentLabelStepIndex) {
                 return true
             }
         }
