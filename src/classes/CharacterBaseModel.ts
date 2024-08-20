@@ -4,8 +4,8 @@ import CharacterStoredClass from "./CharacterStoredClass"
 
 /**
  * CharacterBaseModel is a class that is used to create a character model.
- * I suggest you extend this class to create your own character models.
  * You must use the {@link saveCharacter} function to save the character in the game.
+ * It is raccomended to create your own class Character, read more here: https://pixi-vn.web.app/start/character.html#custom-character
  * @example
  * ```typescript
  * export const liam = new CharacterBaseModel('liam', {

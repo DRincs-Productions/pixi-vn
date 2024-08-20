@@ -762,6 +762,33 @@ export default class GameStepManager {
         return GameStepManager._stepsHistory.length > 1
     }
 
+
+
+    /**
+     * Function to be executed at the end of the game. It should be set in the game initialization.
+     * @example
+     * ```typescript
+     * narration.onGameEnd = async (props) => {
+     *    props.navigate("/end")
+     * }
+     * ```
+     */
+    public static onGameEnd: StepLabelType | undefined = undefined
+    /**
+     * Function to be executed when an error occurs in the step.
+     * @example
+     * ```typescript
+     * narration.onStepError = (error, props) => {
+     *    props.notify("An error occurred")
+     *    // send a notification to GlitchTip, Sentry, etc...
+     * }
+     * ```
+     */
+    public static onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined
+
+
+
+
     /**
      * Add a label to the history.
      */
@@ -838,26 +865,4 @@ export default class GameStepManager {
             console.error("[Pixi'VN] Error importing data", e)
         }
     }
-
-    /**
-     * Function to be executed at the end of the game. It should be set in the game initialization.
-     * @example
-     * ```typescript
-     * narration.onGameEnd = async (props) => {
-     *    props.navigate("/end")
-     * }
-     * ```
-     */
-    public static onGameEnd: StepLabelType | undefined = undefined
-    /**
-     * Function to be executed when an error occurs in the step.
-     * @example
-     * ```typescript
-     * narration.onStepError = (error, props) => {
-     *    props.notify("An error occurred")
-     *    // send a notification to GlitchTip, Sentry, etc...
-     * }
-     * ```
-     */
-    public static onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined
 }
