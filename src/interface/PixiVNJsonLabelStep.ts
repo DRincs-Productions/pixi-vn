@@ -1,6 +1,6 @@
 import { LabelRunModeType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
-import PixiVNJsonIfElse from "./PixiVNJsonIfElse"
+import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
 import { PixiVNJsonLabel } from "./PixiVNJsonLabels"
 import PixiVNJsonOperations from "./PixiVNJsonOperations"
 
@@ -26,9 +26,9 @@ export type PixiVNJsonChoice = {
      */
     oneTime?: boolean
 }
-export type PixiVNJsonChoices = (PixiVNJsonChoice | PixiVNJsonIfElse<PixiVNJsonChoice>)[]
+export type PixiVNJsonChoices = (PixiVNJsonChoice | PixiVNJsonConditionalStatements<PixiVNJsonChoice>)[]
 
-export type PixiVNJsonDialogText = string | PixiVNJsonIfElse<string> | (string | PixiVNJsonIfElse<string>)[]
+export type PixiVNJsonDialogText = string | PixiVNJsonConditionalStatements<string> | (string | PixiVNJsonConditionalStatements<string>)[]
 
 export type PixiVNJsonDialog<Text = string> = {
     /**
@@ -66,30 +66,30 @@ type PixiVNJsonLabelStep = {
     /**
      * Variable used to display a choice menu.
      */
-    choices?: PixiVNJsonChoices | PixiVNJsonIfElse<PixiVNJsonChoices>
+    choices?: PixiVNJsonChoices | PixiVNJsonConditionalStatements<PixiVNJsonChoices>
     /**
      * Variable used to display a dialog.
      */
-    dialogue?: PixiVNJsonDialog<PixiVNJsonDialogText> | PixiVNJsonIfElse<PixiVNJsonDialog<PixiVNJsonDialogText>>
+    dialogue?: PixiVNJsonDialog<PixiVNJsonDialogText> | PixiVNJsonConditionalStatements<PixiVNJsonDialog<PixiVNJsonDialogText>>
     /**
      * This variable is used to add the next dialog text into the current dialog memory.
      * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
      */
-    glueEnabled?: boolean | PixiVNJsonIfElse<boolean>
+    glueEnabled?: boolean | PixiVNJsonConditionalStatements<boolean>
     /**
      * Variable used to open a label.
      */
-    labelToOpen?: PixiVNJsonLabelToOpen | PixiVNJsonIfElse<PixiVNJsonLabelToOpen>
+    labelToOpen?: PixiVNJsonLabelToOpen | PixiVNJsonConditionalStatements<PixiVNJsonLabelToOpen>
     /**
      * If is true, the next step will be executed automatically.
      */
-    goNextStep?: boolean | PixiVNJsonIfElse<boolean>
+    goNextStep?: boolean | PixiVNJsonConditionalStatements<boolean>
     /**
      * Variable used to end some elements of the narrative.
      * - game_end: ends the game
      * - label_end: ends the label
      */
-    end?: "game_end" | "label_end" | PixiVNJsonIfElse<"game_end" | "label_end">
+    end?: "game_end" | "label_end" | PixiVNJsonConditionalStatements<"game_end" | "label_end">
 }
 
 export default PixiVNJsonLabelStep

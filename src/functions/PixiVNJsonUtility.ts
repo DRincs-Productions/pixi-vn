@@ -1,43 +1,52 @@
-import { PixiVNJsonConditions, PixiVNJsonIfElse, PixiVNJsonStorageGet, PixiVNJsonStorageSet, PixiVNJsonUnionCondition } from "../interface";
-import { storage } from "../managers";
+import { PixiVNJsonConditions, PixiVNJsonStorageGet, PixiVNJsonStorageSet, PixiVNJsonUnionCondition } from "../interface";
+import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
+import { narration, storage } from "../managers";
 import { StorageElementType } from "../types";
 import { setFlag } from "./FlagsUtility";
 
 /**
- * Get the value from the ifElse object.
- * @param ifElse is the ifElse object
- * @returns the value of the ifElse object
+ * Get the value from the conditional statements.
+ * @param statement is the conditional statements object
+ * @returns the value from the conditional statements
  */
-export function getValueFromIfElse<T>(ifElse: PixiVNJsonIfElse<T> | T): T {
-    try {
-        if (ifElse && typeof ifElse === "object" && "type" in ifElse && ifElse.type === "ifElse") {
-            let conditionResult = getConditionResult(ifElse.condition)
-            if (conditionResult) {
-                if (
-                    ifElse.then &&
-                    typeof ifElse.then === "object" &&
-                    "type" in ifElse.then &&
-                    ifElse.then.type === "ifElse"
-                ) {
-                    return getValueFromIfElse(ifElse.then)
-                } else {
-                    return ifElse.then as T
-                }
-            } else {
-                if (
-                    ifElse.else &&
-                    typeof ifElse.else === "object" &&
-                    "type" in ifElse.else &&
-                    ifElse.else.type === "ifElse"
-                ) {
-                    return getValueFromIfElse(ifElse.else)
-                } else {
-                    return ifElse.else as T
-                }
-            }
+export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalStatements<T> | T): T | undefined {
+    if (statement && typeof statement === "object" && "type" in statement && statement.type === "ifelse") {
+        let conditionResult = getConditionResult(statement.condition)
+        if (conditionResult) {
+            return getValueFromConditionalStatements(statement.then)
+        } else {
+            return getValueFromConditionalStatements(statement.then)
         }
-    } catch (error) { }
-    return ifElse as T
+    }
+    else if (statement && typeof statement === "object" && "type" in statement && statement.type === "stepswitch") {
+        let elements = getValueFromConditionalStatements(statement.elements) || []
+        if (elements.length === 0) {
+            console.error("[Pixi'VN] getValueFromConditionalStatements elements.length === 0")
+            return undefined
+        }
+        if (statement.choiceType === "random") {
+            let randomIndex = Math.floor(Math.random() * elements.length)
+            return getValueFromConditionalStatements(elements[randomIndex])
+        }
+        else if (statement.choiceType === "loop") {
+            if (narration.currentStepTimesCounter > elements.length - 1) {
+                narration.currentStepTimesCounter = 0
+                return getValueFromConditionalStatements(elements[0])
+            }
+            return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
+        }
+        else if (statement.choiceType === "sequential") {
+            let end: T | undefined = undefined
+            if (statement.end == "lastItem") {
+                end = getValueFromConditionalStatements(elements[elements.length - 1])
+            }
+            if (narration.currentStepTimesCounter > elements.length - 1) {
+                return end
+            }
+            return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
+        }
+    }
+    return statement
 }
 
 /**

@@ -76,7 +76,7 @@ export default class GameStepManager {
         }
         return list.length
     }
-    static set currentStepTimesCounter(value: 0) {
+    static set currentStepTimesCounter(_: 0) {
         let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
         let labelId = GameStepManager.currentLabelId
         if (!labelId || currentLabelStepIndex === null) {

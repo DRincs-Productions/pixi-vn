@@ -5,7 +5,7 @@ import PixiVNJsonUnionCondition from "./PixiVNJsonUnionCondition";
  * If-Else condition for PixiVNJson
  */
 interface PixiVNJsonIfElse<Then> {
-    type: "ifElse",
+    type: "ifelse",
     /**
      * The list of conditions to be checked.
      */

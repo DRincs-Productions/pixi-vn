@@ -1,7 +1,8 @@
 import sha1 from 'crypto-js/sha1'
 import { clearChoiceMenuOptions, moveIn, setChoiceMenuOptions, setDialogue, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
-import { getValueFromIfElse, setStorageJson } from "../functions/PixiVNJsonUtility"
+import { getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
+import PixiVNJsonConditionalStatements from '../interface/PixiVNJsonConditionalStatements'
 import { PixiVNJsonChoice, PixiVNJsonChoices, PixiVNJsonDialog, PixiVNJsonDialogText } from "../interface/PixiVNJsonLabelStep"
 import { canvas, narration, sound, storage } from "../managers"
 import { LabelIdType } from "../types/LabelIdType"
@@ -17,12 +18,12 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: (() => PixiVNJsonLabelStep | PixiVNJsonLabelStep)[], props?: LabelProps<LabelJson<T>>) {
+    constructor(id: LabelIdType, steps: (PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep))[], props?: LabelProps<LabelJson<T>>) {
         super(id, props)
         this._steps = steps
     }
 
-    private _steps: (() => PixiVNJsonLabelStep | PixiVNJsonLabelStep)[]
+    private _steps: (PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep))[]
     /**
      * Get the steps of the label.
      */
@@ -44,17 +45,17 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         if (Array.isArray(origin)) {
             let texts: string[] = []
             origin.forEach((t) => {
-                texts.push(getValueFromIfElse(t))
+                texts.push(getValueFromConditionalStatements(t) || "")
             })
             text = texts
         }
         else {
-            text = getValueFromIfElse(origin)
+            text = getValueFromConditionalStatements(origin) || ""
         }
         return text
     }
-    private getDialogue(origin: PixiVNJsonDialog<PixiVNJsonDialogText> | PixiVNJsonIfElse<PixiVNJsonDialog<PixiVNJsonDialogText>> | undefined): PixiVNJsonDialog<string | string[]> | undefined {
-        let d = getValueFromIfElse(origin)
+    private getDialogue(origin: PixiVNJsonDialog<PixiVNJsonDialogText> | PixiVNJsonConditionalStatements<PixiVNJsonDialog<PixiVNJsonDialogText>> | undefined): PixiVNJsonDialog<string | string[]> | undefined {
+        let d = getValueFromConditionalStatements(origin)
         let dialogue: PixiVNJsonDialog<string | string[]> | undefined = undefined
         if (d) {
             if (typeof d === "object" && "character" in d && "text" in d) {
@@ -70,12 +71,12 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return dialogue
     }
 
-    private getChoices(origin: PixiVNJsonChoices | PixiVNJsonIfElse<PixiVNJsonChoices> | undefined): PixiVNJsonChoice[] | undefined {
-        let choices = getValueFromIfElse(origin)
+    private getChoices(origin: PixiVNJsonChoices | PixiVNJsonConditionalStatements<PixiVNJsonChoices> | undefined): PixiVNJsonChoice[] | undefined {
+        let choices = getValueFromConditionalStatements(origin)
         if (choices) {
             let options: PixiVNJsonChoice[] = choices.map((option) => {
-                return getValueFromIfElse(option)
-            })
+                return getValueFromConditionalStatements(option)
+            }).filter((option) => option !== undefined)
             return options
         }
         return undefined
@@ -93,11 +94,11 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             }
 
             let choices = this.getChoices(step.choices)
-            let glueEnabled = getValueFromIfElse(step.glueEnabled)
+            let glueEnabled = getValueFromConditionalStatements(step.glueEnabled)
             let dialogue: PixiVNJsonDialog<string | string[]> | undefined = this.getDialogue(step.dialogue)
-            let labelToOpen = getValueFromIfElse(step.labelToOpen)
-            let goNextStep = getValueFromIfElse(step.goNextStep)
-            let end = getValueFromIfElse(step.end)
+            let labelToOpen = getValueFromConditionalStatements(step.labelToOpen)
+            let goNextStep = getValueFromConditionalStatements(step.goNextStep)
+            let end = getValueFromConditionalStatements(step.end)
 
             if (choices) {
                 let options = choices.map((option) => {
@@ -162,7 +163,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
     }
 
     private async runOperation(origin: PixiVNJsonOperation | PixiVNJsonIfElse<PixiVNJsonOperation>) {
-        let operation = getValueFromIfElse(origin)
+        let operation = getValueFromConditionalStatements(origin)
+        if (!operation) {
+            return
+        }
         switch (operation.type) {
             case "sound":
                 switch (operation.operationType) {
