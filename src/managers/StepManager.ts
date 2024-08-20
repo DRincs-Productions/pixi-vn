@@ -45,6 +45,10 @@ export default class GameStepManager {
     /**
      * Counter of execution times of the current step (). Current execution is also included.
      * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
+     * You can restart the counter in this way:
+     * ```typescript
+     * GameStepManager.currentStepTimesCounter = 0
+     * ```
      */
     static get currentStepTimesCounter(): number {
         let lastStep = GameStepManager.lastStepIndex
@@ -71,6 +75,20 @@ export default class GameStepManager {
             storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
         }
         return list.length
+    }
+    static set currentStepTimesCounter(value: 0) {
+        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
+        let labelId = GameStepManager.currentLabelId
+        if (!labelId || currentLabelStepIndex === null) {
+            console.error("[Pixi'VN] currentLabelId or currentLabelStepIndex is null")
+            return
+        }
+        let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
+        if (!obj[labelId]) {
+            obj[labelId] = {}
+        }
+        obj[labelId][currentLabelStepIndex] = { lastStepIndexs: [], stepSha1: "" }
+        storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
     }
     /**
      * is a list of all choices made by the player during the progression of the steps.
