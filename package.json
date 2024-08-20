@@ -3,8 +3,8 @@
   "version": "0.6.15",
   "type": "module",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
-  "main": "./dist/index.js",
-  "module": "./dist/index.mjs",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
