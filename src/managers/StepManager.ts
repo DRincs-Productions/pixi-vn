@@ -47,7 +47,7 @@ export default class GameStepManager {
      * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
      * You can restart the counter in this way:
      * ```typescript
-     * GameStepManager.currentStepTimesCounter = 0
+     * narration.currentStepTimesCounter = 0
      * ```
      */
     static get currentStepTimesCounter(): number {
@@ -457,7 +457,7 @@ export default class GameStepManager {
      * ```typescript
      *     function nextOnClick() {
      *     setLoading(true)
-     *     GameStepManager.goNext(yourParams)
+     *     narration.goNext(yourParams)
      *         .then((result) => {
      *             setUpdate((p) => p + 1)
      *             setLoading(false)
@@ -511,10 +511,19 @@ export default class GameStepManager {
                 if (!stepSha) {
                     console.warn("[Pixi'VN] stepSha not found")
                 }
-                let result = await step(props)
-                GameStepManager.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
-                GameStepManager.addStepHistory(stepSha || "error", choiseMade)
-                return result
+                try {
+                    let result = await step(props)
+                    GameStepManager.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
+                    GameStepManager.addStepHistory(stepSha || "error", choiseMade)
+                    return result
+                }
+                catch (e) {
+                    console.error("[Pixi'VN] Error running step", e)
+                    if (GameStepManager._onStepError) {
+                        GameStepManager._onStepError(e)
+                    }
+                    return
+                }
             }
             else if (GameStepManager.openedLabels.length > 1) {
                 GameStepManager.closeCurrentLabel()
@@ -537,7 +546,7 @@ export default class GameStepManager {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.callLabel(startLabel, yourParams).then((result) => {
+     * narration.callLabel(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -546,7 +555,7 @@ export default class GameStepManager {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return GameStepManager.callLabel(startLabel).then((result) => {
+     * return narration.callLabel(startLabel).then((result) => {
      *     return result
      * })
      * ```
@@ -599,7 +608,7 @@ export default class GameStepManager {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.jumpLabel(startLabel, yourParams).then((result) => {
+     * narration.jumpLabel(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -608,7 +617,7 @@ export default class GameStepManager {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return GameStepManager.jumpLabel(startLabel).then((result) => {
+     * return narration.jumpLabel(startLabel).then((result) => {
      *     return result
      * })
      * ```
@@ -662,7 +671,7 @@ export default class GameStepManager {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * GameStepManager.closeChoiceMenu(yourParams).then((result) => {
+     * narration.closeChoiceMenu(yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -691,7 +700,7 @@ export default class GameStepManager {
      * @example
      * ```typescript
      * export function goBack(navigate: (path: string) => void, afterBack?: () => void) {
-     *     GameStepManager.goBack(navigate)
+     *     narration.goBack(navigate)
      *     afterBack && afterBack()
      * }
      * ```
@@ -834,10 +843,23 @@ export default class GameStepManager {
      * Function to be executed at the end of the game. It should be set in the game initialization.
      * @example
      * ```typescript
-     * GameStepManager.gameEnd = async (props) => {
+     * narration.gameEnd = async (props) => {
      *    props.navigate("/end")
      * }
      * ```
      */
     static gameEnd: StepLabelType | undefined = undefined
+    private static _onStepError: (error: any) => void | undefined
+    /**
+     * Function to be executed when an error occurs in the step.
+     * @example
+     * ```typescript
+     * narration.onStepError = (error) => {
+     *     // error report
+     * }
+     * ```
+     */
+    public static set onStepError(onStepError: (error: Error) => void) {
+        GameStepManager._onStepError = onStepError
+    }
 }
