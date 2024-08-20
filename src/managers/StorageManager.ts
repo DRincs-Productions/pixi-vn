@@ -44,6 +44,11 @@ export default class GameStorageManager {
              * The key of a list of all choices that have been made during the progression of the steps.
              */
             ALL_CHOICES_MADE_KEY: "___all_choices_made___",
+            /**
+             * The key of the current step times counter.
+             * This value was added to introduce Ink Sequences, cycles and other alternatives https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#sequences-cycles-and-other-alternatives
+             */
+            CURRENT_STEP_TIMES_COUNTER_KEY: "___current_step_times_counter___",
         }
     }
     /**

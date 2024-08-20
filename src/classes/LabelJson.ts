@@ -1,3 +1,4 @@
+import sha1 from 'crypto-js/sha1'
 import { clearChoiceMenuOptions, moveIn, setChoiceMenuOptions, setDialogue, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
 import { getValueFromIfElse, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
@@ -16,20 +17,26 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: PixiVNJsonLabelStep[] | (() => PixiVNJsonLabelStep[]), props?: LabelProps<LabelJson<T>>) {
+    constructor(id: LabelIdType, steps: (() => PixiVNJsonLabelStep | PixiVNJsonLabelStep)[], props?: LabelProps<LabelJson<T>>) {
         super(id, props)
         this._steps = steps
     }
 
-    private _steps: PixiVNJsonLabelStep[] | (() => PixiVNJsonLabelStep[])
+    private _steps: (() => PixiVNJsonLabelStep | PixiVNJsonLabelStep)[]
     /**
      * Get the steps of the label.
      */
     public get steps(): StepLabelType<T>[] {
-        if (typeof this._steps === "function") {
-            return this._steps().map(this.stepConverter)
-        }
         return this._steps.map(this.stepConverter)
+    }
+
+    public getStepSha1(index: number): string | undefined {
+        if (index < 0 || index >= this.steps.length) {
+            return undefined
+        }
+        let step = this._steps[index]
+        let sha1String = sha1(step.toString().toLocaleLowerCase())
+        return sha1String.toString()
     }
 
     private getDialogueText(origin: PixiVNJsonDialogText): string | string[] {
@@ -74,8 +81,11 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return undefined
     }
 
-    private stepConverter(step: PixiVNJsonLabelStep): StepLabelType<T> {
+    private stepConverter(step: PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep)): StepLabelType<T> {
         return async (props) => {
+            if (typeof step === "function") {
+                step = step()
+            }
             if (step.operation) {
                 for (let operation of step.operation) {
                     await this.runOperation(operation)

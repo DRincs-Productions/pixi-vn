@@ -1,8 +1,6 @@
 import { getLabelById } from "../decorators"
-import { checkIfStepsIsEqual } from "../functions/StepLabelUtility"
 import { LabelProps } from "../interface"
 import { LabelIdType } from "../types/LabelIdType"
-import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelType } from "../types/StepLabelType"
 
 export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> {
@@ -32,17 +30,24 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> {
     public abstract get steps(): StepLabelType<TProps>[]
 
     /**
+     * Get the sha1 of the step
+     * @param index Index of the step
+     */
+    public abstract getStepSha1(index: number): string | undefined
+
+    /**
      * Get the corresponding steps number
-     * @param externalSteps
+     * @param externalStepSha1
      * @returns Numer of corresponding steps, for example, if externalSteps is [ABC, DEF, GHI] and the steps of the label is [ABC, GHT], the result will be 1
      */
-    protected getCorrespondingStepsNumber(externalSteps: StepHistoryDataType[] | StepLabelType[]): number {
-        if (externalSteps.length === 0) {
+    protected getCorrespondingStepsNumber(externalStepSha1: string[]): number {
+        if (externalStepSha1.length === 0) {
             return 0
         }
         let res: number = 0
-        externalSteps.forEach((step, index) => {
-            if (checkIfStepsIsEqual(step, this.steps[index])) {
+        externalStepSha1.forEach((stepSha1, index) => {
+            let sha1 = this.getStepSha1(index)
+            if (sha1 === stepSha1) {
                 res = index
             }
         })

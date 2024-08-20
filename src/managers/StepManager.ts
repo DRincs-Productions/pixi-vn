@@ -8,18 +8,17 @@ import { getLabelById } from "../decorators/LabelDecorator"
 import { getChoiceMenuOptions, getDialogue } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
-import { getStepSha1 } from "../functions/StepLabelUtility"
 import { NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
 import { HistoryChoiceMenuOption } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
-import { StepHistoryDataType } from "../types/StepHistoryDataType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 
 type AllOpenedLabelsType = { [key: LabelIdType]: number }
-type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number }
+type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number, stepSha1: string }
+type CurrentStepTimesCounterMemoty = { [key: LabelIdType]: { [key: number]: { lastStepIndexs: number[], stepSha1: string } } }
 
 /**
  * GameStepManager is a class that manages the steps and labels of the game.
@@ -42,6 +41,36 @@ export default class GameStepManager {
     }
     private static set allOpenedLabels(value: AllOpenedLabelsType) {
         storage.setVariable(storage.keysSystem.ALL_OPENED_LABELS_KEY, value)
+    }
+    /**
+     * Counter of execution times of the current step (). Current execution is also included.
+     * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
+     */
+    static get currentStepTimesCounter(): number {
+        let lastStep = GameStepManager.lastStepIndex
+        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
+        let labelId = GameStepManager.currentLabelId
+        let currentLabel = GameStepManager.currentLabel
+        if (!labelId || currentLabelStepIndex === null || !currentLabel) {
+            console.error("[Pixi'VN] currentLabelId or currentLabelStepIndex is null or currentLabel not found")
+            return 0
+        }
+        let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error"
+        let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
+        if (!obj[labelId]) {
+            obj[labelId] = {}
+        }
+        if (!obj[labelId][currentLabelStepIndex] || obj[labelId][currentLabelStepIndex].stepSha1 != stepSha1) {
+            obj[labelId][currentLabelStepIndex] = { lastStepIndexs: [], stepSha1: stepSha1 }
+        }
+        let list = obj[labelId][currentLabelStepIndex].lastStepIndexs
+        let listContainLastStep = list.find((item) => item === lastStep)
+        if (!listContainLastStep) {
+            list.push(lastStep)
+            obj[labelId][currentLabelStepIndex].lastStepIndexs = list
+            storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
+        }
+        return list.length
     }
     /**
      * is a list of all choices made by the player during the progression of the steps.
@@ -148,8 +177,7 @@ export default class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static addStepHistory(step: StepLabelType<any>, choiseMade?: number) {
-        let stepHistory: StepHistoryDataType = getStepSha1(step)
+    private static addStepHistory(stepSha: string, choiseMade?: number) {
         let currentStepData: IHistoryStepData = GameStepManager.currentStepData
         if (GameStepManager.originalStepData) {
             if (GameStepManager.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
@@ -184,7 +212,7 @@ export default class GameStepManager {
                 currentLabel: GameStepManager.currentLabelId,
                 dialoge: dialoge,
                 choices: requiredChoices,
-                stepSha1: stepHistory,
+                stepSha1: stepSha,
                 index: GameStepManager.lastStepIndex,
                 choiceIndexMade: choiseMade
             })
@@ -198,7 +226,7 @@ export default class GameStepManager {
      * @param stepIndex The step index of the label.
      * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
      */
-    private static addLabelHistory(label: LabelIdType, stepIndex: number, choiseMade?: number) {
+    private static addLabelHistory(label: LabelIdType, stepIndex: number, stepSha: string, choiseMade?: number) {
         let allOpenedLabels = GameStepManager.allOpenedLabels
         let oldStepIndex = GameStepManager.allOpenedLabels[label]
         if (!oldStepIndex || oldStepIndex < stepIndex) {
@@ -210,7 +238,7 @@ export default class GameStepManager {
             let allChoicesMade = GameStepManager.allChoicesMade
             let alredyMade = allChoicesMade.find((item) => item.label === label && item.step === stepIndex && item.choice === choiseMade)
             if (!alredyMade) {
-                allChoicesMade.push({ label: label, step: stepIndex, choice: choiseMade })
+                allChoicesMade.push({ label: label, step: stepIndex, choice: choiseMade, stepSha1: stepSha })
                 GameStepManager.allChoicesMade = allChoicesMade
             }
         }
@@ -346,24 +374,37 @@ export default class GameStepManager {
         return false
     }
     /**
-     * Get the choices already made in the current step.
+     * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
      */
     public static get alreadyCurrentStepMadeChoices(): number[] | undefined {
         let choiceMenuOptions = getChoiceMenuOptions()
-        if (choiceMenuOptions) {
-            let alreadyMade: number[] = []
-            choiceMenuOptions.forEach((item, index) => {
-                let alreadyMadeChoice = GameStepManager.allChoicesMade.find((choice) => choice.label === item.label.id && choice.step === GameStepManager.currentLabelStepIndex)
-                if (alreadyMadeChoice) {
-                    alreadyMade.push(index)
-                }
-            })
-            return alreadyMade
-        }
-        else {
+        if (!choiceMenuOptions) {
             console.warn("[Pixi'VN] No choice menu options on current step")
+            return
         }
+        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
+        let currentLabel = GameStepManager.currentLabel
+        if (currentLabelStepIndex === null || !currentLabel) {
+            console.error("[Pixi'VN] currentLabelStepIndex is null or currentLabel not found")
+            return
+        }
+        let stepSha = currentLabel.getStepSha1(currentLabelStepIndex)
+        if (!stepSha) {
+            console.warn("[Pixi'VN] stepSha not found")
+        }
+        let alreadyMade: number[] = []
+        choiceMenuOptions.forEach((item, index) => {
+            let alreadyMadeChoice = GameStepManager.allChoicesMade.find((choice) =>
+                choice.label === item.label.id &&
+                choice.step === currentLabelStepIndex &&
+                choice.stepSha1 === stepSha
+            )
+            if (alreadyMadeChoice) {
+                alreadyMade.push(index)
+            }
+        })
+        return alreadyMade
     }
     /**
      * Check if the current step is already completed.
@@ -448,9 +489,13 @@ export default class GameStepManager {
                     await onStepRun(currentLabelStepIndex, currentLabel)
                 }
                 let step = currentLabel.steps[currentLabelStepIndex]
+                let stepSha = currentLabel.getStepSha1(currentLabelStepIndex)
+                if (!stepSha) {
+                    console.warn("[Pixi'VN] stepSha not found")
+                }
                 let result = await step(props)
-                GameStepManager.addLabelHistory(currentLabel.id, currentLabelStepIndex, choiseMade)
-                GameStepManager.addStepHistory(step, choiseMade)
+                GameStepManager.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
+                GameStepManager.addStepHistory(stepSha || "error", choiseMade)
                 return result
             }
             else if (GameStepManager.openedLabels.length > 1) {
