@@ -12,7 +12,7 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
- * canvas.addCanvasElement("alien", alien);
+ * canvas.add("alien", alien);
  * const ticker = new RotateTicker({
  *    speed: 0.1,
  *    clockwise: true,

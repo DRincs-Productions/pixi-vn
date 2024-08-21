@@ -17,7 +17,7 @@ export const CANVAS_VIDEO_ID = "CanvasVideo"
  *     y: 100,
  * }, 'https://pixijs.com/assets/video.mp4')
  * await film.load()
- * canvas.addCanvasElement("film", film)
+ * canvas.add("film", film)
  * ```
  * @example
  * ```typescript

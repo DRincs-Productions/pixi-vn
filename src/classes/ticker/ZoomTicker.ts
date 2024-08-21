@@ -12,7 +12,7 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
- * canvas.addCanvasElement("alien", alien);
+ * canvas.add("alien", alien);
  * const ticker = new ZoomTicker({
  *    speed: 0.1,
  * }),
@@ -139,7 +139,7 @@ export class ZoomInOutTicker extends ZoomTicker {
     override onEndOfTicker<T extends Container = Container<ContainerChild>>(tag: string, tickerId: string, element: T, tagToRemoveAfter: string[] | string): void {
         if (element.children.length > 0) {
             let elementChild = element.children[0]
-            canvas.addCanvasElement(tag, elementChild as any)
+            canvas.add(tag, elementChild as any)
         }
         super.onEndOfTicker(tag, tickerId, element, tagToRemoveAfter)
     }

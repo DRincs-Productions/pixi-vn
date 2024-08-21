@@ -45,7 +45,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     }
     else {
         canvasElement = image
-        canvas.addCanvasElement(tag, canvasElement)
+        canvas.add(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -123,7 +123,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     }
     else {
         canvasElement = image
-        canvas.addCanvasElement(tag, canvasElement)
+        canvas.add(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -196,7 +196,7 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     }
     else {
         canvasElement = image
-        canvas.addCanvasElement(tag, canvasElement)
+        canvas.add(tag, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -304,7 +304,7 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    canvas.addCanvasElement(tag, container)
+    canvas.add(tag, container)
 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -368,7 +368,7 @@ export function zoomOut(
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    canvas.addCanvasElement(tag, container)
+    canvas.add(tag, container)
 
     if (props.direction == "up") {
         container.pivot.y = canvas.canvasHeight

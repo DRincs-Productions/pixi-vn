@@ -217,16 +217,22 @@ export default class GameWindowManager {
      * ```typescript
      * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
      * const sprite = CanvasSprite.from(texture);
-     * GameWindowManager.addCanvasElement("bunny", sprite);
+     * GameWindowManager.add("bunny", sprite);
      * ```
      */
-    public static addCanvasElement(tag: string, canvasElement: CanvasBase<any>) {
+    public static add(tag: string, canvasElement: CanvasBase<any>) {
         if (GameWindowManager._children[tag]) {
             GameWindowManager.removeCanvasElement(tag)
         }
         GameWindowManager.app.stage.addChild(canvasElement)
         GameWindowManager._children[tag] = canvasElement
         GameWindowManager.childrenTagsOrder.push(tag)
+    }
+    /**
+     * @deprecated use canvas.add
+     */
+    public static addCanvasElement(tag: string, canvasElement: CanvasBase<any>) {
+        GameWindowManager.add(tag, canvasElement)
     }
     /**
      * Remove a canvas element from the canvas.
@@ -740,7 +746,7 @@ export default class GameWindowManager {
                 childrenTagsOrder.forEach((tag) => {
                     if (currentElements[tag]) {
                         let element = importCanvasElement(currentElements[tag])
-                        GameWindowManager.addCanvasElement(tag, element)
+                        GameWindowManager.add(tag, element)
                         GameWindowManager.childrenTagsOrder.push(tag)
                     }
                 })

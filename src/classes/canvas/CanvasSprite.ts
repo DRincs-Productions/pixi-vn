@@ -28,7 +28,7 @@ export const CANVAS_SPRITE_ID = "CanvasSprite"
  * sprite.cursor = 'pointer';
  * sprite.onEvent('pointerdown', EventTest);
  *
- * canvas.addCanvasElement("bunny", sprite);
+ * canvas.add("bunny", sprite);
  * ```
  */
 export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
@@ -73,7 +73,7 @@ export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemo
      * sprite.cursor = 'pointer';
      * sprite.onEvent('pointerdown', EventTest);
      *
-     * canvas.addCanvasElement("bunny", sprite);
+     * canvas.add("bunny", sprite);
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {

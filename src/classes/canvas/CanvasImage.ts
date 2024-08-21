@@ -19,7 +19,7 @@ export const CANVAS_IMAGE_ID = "CanvasImage"
  *     y: 100,
  * }, 'https://pixijs.com/assets/eggHead.png')
  * await alien.load()
- * canvas.addCanvasElement("alien", alien)
+ * canvas.add("alien", alien)
  * ```
  * @example
  * ```typescript

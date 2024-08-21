@@ -19,7 +19,7 @@ import { getTexture } from '../TextureUtility';
 export function addVideo(tag: string, videoUrl: string): CanvasVideo {
     let video = new CanvasVideo()
     video.videoLink = videoUrl
-    canvas.addCanvasElement(tag, video)
+    canvas.add(tag, video)
     return video
 }
 

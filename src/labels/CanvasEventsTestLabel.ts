@@ -87,7 +87,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             // sprite.on('click', onClick); // mouse-only
             // sprite.on('tap', onClick); // touch-only
 
-            canvas.addCanvasElement("bunny", sprite);
+            canvas.add("bunny", sprite);
         },
         async () => {
             canvas.clear();
@@ -104,7 +104,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             background.height = canvas.screen.height;
 
             // Add background to stage...
-            canvas.addCanvasElement("bg", background);
+            canvas.add("bg", background);
 
             // Create some textures from an image path
             const textureButton = await Assets.load('https://pixijs.com/assets/button.png');
@@ -135,7 +135,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
                     .onEvent('pointerout', EventTest2);
 
                 // Add it to the stage
-                canvas.addCanvasElement("button" + i, button);
+                canvas.add("button" + i, button);
 
                 // Add button to array
                 buttons.push(button);

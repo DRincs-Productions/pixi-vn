@@ -64,7 +64,7 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
     priority?: UPDATE_PRIORITY
     /**
      * The method that will be called every frame.
-     * This method should be overridden and you can use {@link canvas.addCanvasElement()} to get the canvas element of the canvas, and edit them.
+     * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
      * @param _ticker The ticker that is calling this method
      * @param _args The arguments that you passed when you added the ticker
      * @param _tags The tags of the canvas elements that are connected to this ticker

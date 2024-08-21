@@ -116,7 +116,7 @@ export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_
                 // create a random speed for the dude between 2 - 4
                 dude.speed = 2 + Math.random() * 2;
 
-                canvas.addCanvasElement("alien" + i, dude);
+                canvas.add("alien" + i, dude);
                 canvas.addTicker("alien" + i, new TintingTestTicker());
             }
             narration.dialogue = {

@@ -19,7 +19,7 @@ import { getTexture } from '../TextureUtility';
 export function addImage(tag: string, imageUrl: string): CanvasImage {
     let image = new CanvasImage()
     image.imageLink = imageUrl
-    canvas.addCanvasElement(tag, image)
+    canvas.add(tag, image)
     return image
 }
 

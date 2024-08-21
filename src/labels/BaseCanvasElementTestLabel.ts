@@ -20,7 +20,7 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             // Create and add a container to the stage
             const container = new CanvasContainer();
 
-            canvas.addCanvasElement("container", container);
+            canvas.add("container", container);
 
             // Load the bunny texture
             const texture = await Assets.load(bunnyImage);
@@ -63,7 +63,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             basicText.x = 50;
             basicText.y = 100;
 
-            canvas.addCanvasElement("basicText", basicText);
+            canvas.add("basicText", basicText);
 
             // Create gradient fill
             const fill = new FillGradient(0, 0, 0, 36 * 1.7 * 7);
@@ -101,7 +101,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             richText.x = 50;
             richText.y = 220;
 
-            canvas.addCanvasElement("richText", richText);
+            canvas.add("richText", richText);
 
             const skewStyle = new TextStyle({
                 fontFamily: 'Arial',
@@ -128,7 +128,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             skewText.x = 300;
             skewText.y = 480;
 
-            canvas.addCanvasElement("skewText", skewText);
+            canvas.add("skewText", skewText);
         }
     ]
 )

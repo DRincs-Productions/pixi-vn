@@ -11,7 +11,7 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
  * await bunny.load()
- * canvas.addCanvasElement("bunny", bunny);
+ * canvas.add("bunny", bunny);
  * // ...
  * const ticker = new FadeAlphaTicker({
  *     duration: 4, // 4 seconds

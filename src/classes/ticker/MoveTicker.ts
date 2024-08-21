@@ -11,7 +11,7 @@ import TickerBase from "./TickerBase";
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
- * canvas.addCanvasElement("alien", alien);
+ * canvas.add("alien", alien);
  * const ticker = new MoveTicker({
  *    speed: 0.1,
  *    destination: { x: 100, y: 100 },
