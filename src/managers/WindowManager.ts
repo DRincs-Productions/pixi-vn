@@ -15,7 +15,7 @@ import { ICanvasBaseMemory } from "../interface/canvas";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
-import { aliasToRemoveAfter } from '../types/ticker/TagToRemoveAfterType';
+import { aliasToRemoveAfter } from '../types/ticker/AliasToRemoveAfterType';
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.

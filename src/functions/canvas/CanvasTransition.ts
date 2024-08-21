@@ -5,12 +5,12 @@ import { ZoomInOutTicker } from "../../classes/ticker/ZoomTicker"
 import { Pause } from "../../constants"
 import { canvas } from "../../managers"
 import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../../types/ticker"
-import { tagToRemoveAfterType } from "../../types/ticker/TagToRemoveAfterType"
+import { aliasToRemoveAfterType } from "../../types/ticker/AliasToRemoveAfterType"
 import { checkIfVideo } from "./CanvasUtility"
 import { addImage } from "./ImageUtility"
 import { addVideo } from "./VideoUtility"
 
-export type ShowWithDissolveTransitionProps = Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture">
+export type ShowWithDissolveTransitionProps = Omit<FadeAlphaTickerProps, "type" | aliasToRemoveAfterType | "startOnlyIfHaveTexture">
 /**
  * Show a image in the canvas with a disolve effect.
  * Disolve effect is a effect that the image is shown with a fade in.
@@ -88,7 +88,7 @@ export function removeWithDissolveTransition(
     canvas.addTicker(alias, effect)
 }
 
-export type ShowWithFadeTransitionProps = Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture">
+export type ShowWithFadeTransitionProps = Omit<FadeAlphaTickerProps, "type" | aliasToRemoveAfterType | "startOnlyIfHaveTexture">
 /**
  * Show a image in the canvas with a fade effect.
  * Fade effect is a effect that the image is shown with a fade in.
@@ -169,7 +169,7 @@ export type MoveInOutProps = {
      * The direction of the movement.
      */
     direction: "up" | "down" | "left" | "right",
-} & Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination">
+} & Omit<MoveTickerProps, aliasToRemoveAfterType | "startOnlyIfHaveTexture" | "destination">
 
 /**
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
@@ -272,7 +272,7 @@ export type ZoomInOutProps = {
      * The direction of the zoom effect.
      */
     direction: "up" | "down" | "left" | "right",
-} & Omit<ZoomTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "type">
+} & Omit<ZoomTickerProps, aliasToRemoveAfterType | "startOnlyIfHaveTexture" | "type">
 
 /**
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
