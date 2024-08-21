@@ -46,6 +46,27 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
             return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
         }
     }
+    else if (statement && typeof statement === "object" && "type" in statement && statement.type === "labelcondition") {
+        let conditionResult = false
+        if (statement.condition === "started") {
+            conditionResult = narration.isLabelAlreadyStarted(statement.label)
+        }
+        else if (statement.condition === "completed") {
+            conditionResult = narration.isLabelAlreadyCompleted(statement.label)
+        }
+        else if (statement.condition === "notstarted") {
+            conditionResult = !narration.isLabelAlreadyStarted(statement.label)
+        }
+        else if (statement.condition === "notcompleted") {
+            conditionResult = !narration.isLabelAlreadyCompleted(statement.label)
+        }
+
+        if (conditionResult) {
+            return getValueFromConditionalStatements(statement.then)
+        } else {
+            return getValueFromConditionalStatements(statement.else)
+        }
+    }
     return statement
 }
 

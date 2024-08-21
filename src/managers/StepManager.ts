@@ -392,6 +392,23 @@ export default class GameStepManager {
         return false
     }
     /**
+     * Check if the label is already started.
+     * @param label The label to check.
+     * @returns True if the label is already started.
+     */
+    public static isLabelAlreadyStarted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
+        let labelId: LabelIdType
+        if (typeof label === 'string') {
+            labelId = label
+        }
+        else {
+            labelId = label.id
+        }
+        let allOpenedLabels = GameStepManager.allOpenedLabels
+        let lastStep = allOpenedLabels[labelId]
+        return lastStep !== undefined
+    }
+    /**
      * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
      */
