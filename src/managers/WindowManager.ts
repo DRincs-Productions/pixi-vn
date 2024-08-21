@@ -222,7 +222,7 @@ export default class GameWindowManager {
      */
     public static add(tag: string, canvasElement: CanvasBase<any>) {
         if (GameWindowManager._children[tag]) {
-            GameWindowManager.removeCanvasElement(tag)
+            GameWindowManager.remove(tag)
         }
         GameWindowManager.app.stage.addChild(canvasElement)
         GameWindowManager._children[tag] = canvasElement
@@ -241,10 +241,10 @@ export default class GameWindowManager {
      * @returns 
      * @example
      * ```typescript
-     * canvas.removeCanvasElement("bunny");
+     * canvas.remove("bunny");
      * ```
      */
-    public static removeCanvasElement(tags: string | string[]) {
+    public static remove(tags: string | string[]) {
         if (typeof tags === "string") {
             tags = [tags]
         }
@@ -256,6 +256,12 @@ export default class GameWindowManager {
             }
         })
         GameWindowManager.childrenTagsOrder = GameWindowManager.childrenTagsOrder.filter((t) => !tags.includes(t))
+    }
+    /**
+     * @deprecated use canvas.remove
+     */
+    public static removeCanvasElement(tags: string | string[]) {
+        GameWindowManager.remove(tags)
     }
     /**
      * Get a canvas element by the tag.
@@ -535,7 +541,7 @@ export default class GameWindowManager {
     public static onEndOfTicker(canvasElementTags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string, canvasElementTagsToDelete: string | string[], tickerId: string) {
         let tickerData = GameWindowManager._currentTickers[tickerId]
         GameWindowManager.removeAssociationBetweenTickerCanvasElement(canvasElementTags, ticker)
-        GameWindowManager.removeCanvasElement(canvasElementTagsToDelete)
+        GameWindowManager.remove(canvasElementTagsToDelete)
         if (tickerData) {
             GameWindowManager.removeTicker(tickerId)
             if (tickerData.duration == undefined && tickerData.createdByTicketStepsId) {
@@ -693,7 +699,7 @@ export default class GameWindowManager {
         if (ticker) {
             if (ticker.args.hasOwnProperty(tagToRemoveAfter)) {
                 let tagToRemoveAfter: string | string[] = ticker.args.tagToRemoveAfter
-                GameWindowManager.removeCanvasElement(tagToRemoveAfter)
+                GameWindowManager.remove(tagToRemoveAfter)
             }
             GameWindowManager.app.ticker.remove(ticker.fn)
             delete GameWindowManager._currentTickers[tickerId]

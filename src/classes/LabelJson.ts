@@ -230,7 +230,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "remove":
-                        canvas.removeCanvasElement(operation.alias)
+                        canvas.remove(operation.alias)
                         break
                 }
                 break
@@ -273,7 +273,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "remove":
-                        canvas.removeCanvasElement(operation.alias)
+                        canvas.remove(operation.alias)
                         break
                     case "pause":
                         let videoPause = canvas.find<CanvasVideo>(operation.alias)

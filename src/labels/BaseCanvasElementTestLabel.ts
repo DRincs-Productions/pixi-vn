@@ -2,7 +2,6 @@ import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 import { CanvasContainer, CanvasSprite, CanvasText } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
-import { removeCanvasElement } from "../functions";
 import { canvas, narration } from "../managers";
 import { bunnyImage, juliette } from "./TestConstant";
 
@@ -45,7 +44,7 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             canvas.addTicker("container", new RotateTicker({ speed: 1 }));
         },
         async () => {
-            removeCanvasElement("container");
+            canvas.remove("container");
             narration.dialogue = {
                 character: juliette,
                 text: `Here's what's going to happen: I'm going to create some CanvasText with different styles and put them on the stage.
