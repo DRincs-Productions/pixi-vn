@@ -1,7 +1,6 @@
 import { ChoiceMenuOption } from "../classes";
 import { PIXIVN_VERSION } from "../constants";
 import { newLabel } from "../decorators";
-import { setChoiceMenuOptions } from "../functions";
 import { canvas, narration } from "../managers";
 import { baseCanvasElementTestLabel } from "./BaseCanvasElementTestLabel";
 import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
@@ -52,7 +51,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
         () => {
             canvas.clear()
             narration.dialogue = { character: juliette, text: "Which test would you like to start with?" }
-            setChoiceMenuOptions([
+            narration.choiceMenuOptions = [
                 new ChoiceMenuOption("Open Pixi’VN Wiki", openLink, { link: "https://pixi-vn.web.app/" }),
                 new ChoiceMenuOption("Open Pixi’VN Discord", openLink, { link: "https://discord.gg/E95FZWakzp" }),
                 new ChoiceMenuOption("Open Pixi’VN Github Issues", openLink, { link: "https://github.com/DRincs-Productions/pixi-vn/issues" }),
@@ -64,7 +63,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Steps and Labels Test", stepLabelTestLAbel, {}),
                 new ChoiceMenuOption("Markdown Test", markdownTest, {}),
-            ])
+            ]
         },
         (props) => narration.jumpLabel(RESTART_TEST_LABEL, props),
     ]

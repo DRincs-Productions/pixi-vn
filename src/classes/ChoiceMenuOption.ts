@@ -67,9 +67,9 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
-     * setChoiceMenuOptions([
+     * narration.choiceMenuOptions = [
      *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
-     * ])
+     * ]
      * return <List>
      *     {narration.choiceMenuOptions?.map((item, index) => {
      *         return (
@@ -137,9 +137,9 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
-     * setChoiceMenuOptions([
+     * narration.choiceMenuOptions = [
      *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
-     * ])
+     * ]
      * return <List>
      *     {narration.choiceMenuOptions?.map((item, index) => {
      *         return (
@@ -189,9 +189,9 @@ export type IStoratedChoiceMenuOption = {
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
-     * setChoiceMenuOptions([
+     * narration.choiceMenuOptions = [
      *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
-     * ])
+     * ]
      * return <List>
      *     {narration.choiceMenuOptions?.map((item, index) => {
      *         return (

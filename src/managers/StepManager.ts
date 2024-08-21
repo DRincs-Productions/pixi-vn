@@ -843,9 +843,18 @@ export default class GameStepManager {
         storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType)
         storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
     }
-
     /**
      * The options to be shown in the game
+     * @example
+     * ```typescript
+     * narration.choiceMenuOptions = [
+     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
+     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
+     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     * ]
+     * ```
      */
     public static get choiceMenuOptions(): ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }> | undefined {
         let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
@@ -878,6 +887,38 @@ export default class GameStepManager {
         }
         return undefined
     }
+    public static set choiceMenuOptions(options: ChoiceMenuOptionsType<any> | undefined) {
+        if (!options) {
+            storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
+            return
+        }
+        options = options.filter((option, index) => {
+            if (option.oneTime) {
+                let alreadyChoices = GameStepManager.alreadyCurrentStepMadeChoices
+                if (alreadyChoices && alreadyChoices.includes(index)) {
+                    return false
+                }
+            }
+            return true
+        })
+        let value: IStoratedChoiceMenuOption[] = options.map((option) => {
+            if (option instanceof ChoiceMenuOptionClose) {
+                return {
+                    text: option.text,
+                    type: Close,
+                    closeCurrentLabel: option.closeCurrentLabel,
+                    oneTime: option.oneTime,
+                }
+            }
+            return {
+                ...option,
+                label: option.label.id,
+            }
+        })
+        storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
+        storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+    }
+
 
     /**
      * Add a label to the history.
