@@ -45,14 +45,14 @@ export class TintingTestTicker extends TickerBase<{}> {
         super({})
     }
     override fn(_t: Ticker, _args: {}, tags: string[]): void {
-        tags.forEach((tag) => {
+        tags.forEach((alias) => {
             // create a bounding box for the little dudes
             const dudeBoundsPadding = 100;
             const dudeBounds = new Rectangle(-dudeBoundsPadding,
                 -dudeBoundsPadding,
                 canvas.screen.width + dudeBoundsPadding * 2,
                 canvas.screen.height + dudeBoundsPadding * 2);
-            let dude = canvas.find(tag)
+            let dude = canvas.find(alias)
             if (dude && dude instanceof AlienTintingTest) {
 
                 dude.direction += dude.turningSpeed * 0.01;

@@ -35,8 +35,8 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
             tagToRemoveAfter = [tagToRemoveAfter]
         }
         tags
-            .filter((tag) => {
-                let element = canvas.find(tag)
+            .filter((alias) => {
+                let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -44,15 +44,15 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                 }
                 return true
             })
-            .forEach((tag) => {
-                let element = canvas.find(tag)
+            .forEach((alias) => {
+                let element = canvas.find(alias)
                 if (element && element instanceof Container) {
                     if (clockwise)
                         element.rotation += speed * ticker.deltaTime
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

@@ -43,8 +43,8 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
             limit = 1
         }
         tags
-            .filter((tag) => {
-                let element = canvas.find(tag)
+            .filter((alias) => {
+                let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -52,8 +52,8 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 }
                 return true
             })
-            .forEach((tag) => {
-                let element = canvas.find(tag)
+            .forEach((alias) => {
+                let element = canvas.find(alias)
                 if (element && element instanceof Container) {
                     if (type === "show" && element.alpha < limit) {
                         element.alpha += speed * ticker.deltaTime
@@ -63,11 +63,11 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     }
                     if (type === "show" && element.alpha >= limit) {
                         element.alpha = limit
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
                     }
                     else if (type === "hide" && element.alpha <= limit) {
                         element.alpha = limit
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

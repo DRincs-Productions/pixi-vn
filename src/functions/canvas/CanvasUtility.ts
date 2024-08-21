@@ -19,8 +19,8 @@ export function getTextureMemory(texture: Texture): ITextureMemory {
 /**
  * @deprecated use canvas.remove
  */
-export function removeCanvasElement(tag: string | string[]) {
-    canvas.remove(tag)
+export function removeCanvasElement(alias: string | string[]) {
+    canvas.remove(alias)
 }
 
 export function checkIfVideo(imageUrl: string): boolean {

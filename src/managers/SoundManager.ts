@@ -204,10 +204,10 @@ export default class GameSoundManager extends SoundLibrary {
     }
     public export(): ExportedSounds {
         let soundElements: ExportedSound = {}
-        for (let tag of SoundManagerStatic.childrenTagsOrder) {
-            if (this.exists(tag)) {
-                let item = this.find(tag)
-                soundElements[tag] = {
+        for (let alias of SoundManagerStatic.childrenTagsOrder) {
+            if (this.exists(alias)) {
+                let item = this.find(alias)
+                soundElements[alias] = {
                     options: {
                         ...item.options,
                         autoPlay: item.autoPlay,
@@ -230,11 +230,11 @@ export default class GameSoundManager extends SoundLibrary {
     }
     public removeOldSoundAndExport(): ExportedSounds {
         // let childrenTagsOrder = []
-        // for (let tag of GameSoundManager.childrenTagsOrder) {
-        //     if (sound.exists(tag)) {
-        //         let s = sound.find(tag)
+        // for (let alias of GameSoundManager.childrenTagsOrder) {
+        //     if (sound.exists(alias)) {
+        //         let s = sound.find(alias)
         //         if (s.loop) {
-        //             childrenTagsOrder.push(tag)
+        //             childrenTagsOrder.push(alias)
         //         }
         //     }
         // }

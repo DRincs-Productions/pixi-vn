@@ -7,7 +7,7 @@ import { getTexture } from '../TextureUtility';
  * Add a video in the canvas.
  * Is the same that {@link showVideo}, but the video is not shown.
  * If you want to show the video, then you need to use the function {@link CanvasVideo.load()}.
- * @param tag is the unique tag of the video. You can use this tag to refer to this video
+ * @param alias is the unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl is the url of the video.
  * @returns the container of the video.
  * @example
@@ -16,10 +16,10 @@ import { getTexture } from '../TextureUtility';
  * await alien.load()
  * ```
  */
-export function addVideo(tag: string, videoUrl: string): CanvasVideo {
+export function addVideo(alias: string, videoUrl: string): CanvasVideo {
     let video = new CanvasVideo()
     video.videoLink = videoUrl
-    canvas.add(tag, video)
+    canvas.add(alias, video)
     return video
 }
 
@@ -51,12 +51,12 @@ export async function loadVideo(canvasVideos: CanvasVideo[] | CanvasVideo): Prom
 
 /**
  * Add and show a video in the canvas. This function is a combination of {@link addVideo} and {@link loadVideo}.
- * @param tag The unique tag of the video. You can use this tag to refer to this video
+ * @param alias The unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl The url of the video.
  * @returns A promise that is resolved when the video is loaded.
  */
-export async function showVideo(tag: string, videoUrl: string): Promise<CanvasVideo> {
-    let video = addVideo(tag, videoUrl)
+export async function showVideo(alias: string, videoUrl: string): Promise<CanvasVideo> {
+    let video = addVideo(alias, videoUrl)
     await video.load()
     return video
 }

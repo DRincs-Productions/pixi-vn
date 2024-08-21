@@ -30,8 +30,8 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the canvas.currentTickers
  *     ): void {
  *         let speed = args.speed === undefined ? 0.1 : args.speed
- *         tags.forEach((tag) => {
- *                 let element = canvas.find(tag)
+ *         tags.forEach((alias) => {
+ *                 let element = canvas.find(alias)
  *                 if (element && element instanceof Container) {
  *                     if (clockwise)
  *                         element.rotation += speed * t.deltaTime

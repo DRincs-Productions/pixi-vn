@@ -25,7 +25,7 @@ export type ZoomTickerProps = {
      */
     speedProgression?: TickerProgrationType
     /**
-     * The tag to remove after the effect is done
+     * The alias to remove after the effect is done
      * @default []
      */
     tagToRemoveAfter?: string[] | string

@@ -7,7 +7,7 @@ import { TickerHistoryForExport } from "../TickerHistory";
  */
 export default interface ExportedCanvas {
     currentTickers: { [id: string]: TickerHistoryForExport<any> }
-    currentTickersSteps: { [tag: string]: ITickersSteps }
-    currentElements: { [tag: string]: ICanvasBaseMemory }
+    currentTickersSteps: { [alias: string]: ITickersSteps }
+    currentElements: { [alias: string]: ICanvasBaseMemory }
     childrenTagsOrder: string[]
 }

@@ -44,8 +44,8 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             tagToRemoveAfter = [tagToRemoveAfter]
         }
         tags
-            .filter((tag) => {
-                let element = canvas.find(tag)
+            .filter((alias) => {
+                let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -53,8 +53,8 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 }
                 return true
             })
-            .forEach((tag) => {
-                let element = canvas.find(tag)
+            .forEach((alias) => {
+                let element = canvas.find(alias)
                 if (element && element instanceof Container) {
                     let xDistance = (destination.x - element.x) > 0 ? 1 : -1
                     if (xDistance != 0) {
@@ -77,7 +77,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
                     }
                 }
             })

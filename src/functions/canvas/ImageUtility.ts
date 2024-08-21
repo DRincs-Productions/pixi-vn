@@ -7,7 +7,7 @@ import { getTexture } from '../TextureUtility';
  * Add a image in the canvas.
  * Is the same that {@link showImage}, but the image is not shown.
  * If you want to show the image, then you need to use the function {@link CanvasImage.load()}.
- * @param tag is the unique tag of the image. You can use this tag to refer to this image
+ * @param alias is the unique alias of the image. You can use this alias to refer to this image
  * @param imageUrl is the url of the image.
  * @returns the container of the image.
  * @example
@@ -16,10 +16,10 @@ import { getTexture } from '../TextureUtility';
  * await alien.load()
  * ```
  */
-export function addImage(tag: string, imageUrl: string): CanvasImage {
+export function addImage(alias: string, imageUrl: string): CanvasImage {
     let image = new CanvasImage()
     image.imageLink = imageUrl
-    canvas.add(tag, image)
+    canvas.add(alias, image)
     return image
 }
 
@@ -51,12 +51,12 @@ export async function loadImage(canvasImages: CanvasImage[] | CanvasImage): Prom
 
 /**
  * Add and show a image in the canvas. This function is a combination of {@link addImage} and {@link loadImage}.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param imageUrl The url of the image.
  * @returns A promise that is resolved when the image is loaded.
  */
-export async function showImage(tag: string, imageUrl: string): Promise<CanvasImage> {
-    let image = addImage(tag, imageUrl)
+export async function showImage(alias: string, imageUrl: string): Promise<CanvasImage> {
+    let image = addImage(alias, imageUrl)
     await image.load()
     return image
 }

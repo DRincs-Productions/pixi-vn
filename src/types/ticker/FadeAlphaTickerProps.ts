@@ -16,7 +16,7 @@ export type FadeAlphaTickerProps = {
      */
     limit?: number
     /**
-     * The tag to remove after the fade is done
+     * The alias to remove after the fade is done
      * @default []
      */
     tagToRemoveAfter?: string[] | string
