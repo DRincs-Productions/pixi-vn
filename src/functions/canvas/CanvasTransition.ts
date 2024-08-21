@@ -28,10 +28,10 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    let oldCanvasTag: string | undefined = undefined
+    let oldCanvasAlias: string | undefined = undefined
     if (canvas.find(alias)) {
-        oldCanvasTag = alias + "_temp_disolve"
-        canvas.editAlias(alias, oldCanvasTag)
+        oldCanvasAlias = alias + "_temp_disolve"
+        canvas.editAlias(alias, oldCanvasAlias)
     }
 
     let canvasElement: CanvasBase<any>
@@ -55,7 +55,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     let effect = new FadeAlphaTicker({
         ...props,
         type: "show",
-        aliasToRemoveAfter: oldCanvasTag,
+        aliasToRemoveAfter: oldCanvasAlias,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
     canvas.addTicker(alias, effect)
@@ -109,8 +109,8 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
         return showWithDissolveTransition(alias, image, props, priority)
     }
 
-    let oldCanvasTag = alias + "_temp_fade"
-    canvas.editAlias(alias, oldCanvasTag)
+    let oldCanvasAlias = alias + "_temp_fade"
+    canvas.editAlias(alias, oldCanvasAlias)
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
@@ -130,7 +130,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     }
     canvasElement.alpha = 0
 
-    canvas.addTickersSteps(oldCanvasTag, [
+    canvas.addTickersSteps(oldCanvasAlias, [
         new FadeAlphaTicker({
             ...props,
             type: "hide",

@@ -301,37 +301,37 @@ export default class GameWindowManager {
     }
     /**
      * Edit the alias of a canvas element.
-     * @param oldTag The old alias of the canvas element.
-     * @param newTag The new alias of the canvas element.
+     * @param oldAlias The old alias of the canvas element.
+     * @param newAlias The new alias of the canvas element.
      */
-    public static editAlias(oldTag: string, newTag: string) {
-        if (GameWindowManager._children[oldTag]) {
-            GameWindowManager._children[newTag] = GameWindowManager._children[oldTag]
-            delete GameWindowManager._children[oldTag]
+    public static editAlias(oldAlias: string, newAlias: string) {
+        if (GameWindowManager._children[oldAlias]) {
+            GameWindowManager._children[newAlias] = GameWindowManager._children[oldAlias]
+            delete GameWindowManager._children[oldAlias]
         }
-        if (GameWindowManager._currentTickersSteps[oldTag]) {
-            GameWindowManager._currentTickersSteps[newTag] = GameWindowManager._currentTickersSteps[oldTag]
-            delete GameWindowManager._currentTickersSteps[oldTag]
+        if (GameWindowManager._currentTickersSteps[oldAlias]) {
+            GameWindowManager._currentTickersSteps[newAlias] = GameWindowManager._currentTickersSteps[oldAlias]
+            delete GameWindowManager._currentTickersSteps[oldAlias]
         }
         for (let id in GameWindowManager._currentTickers) {
             let ticker = GameWindowManager._currentTickers[id]
-            if (ticker.canvasElementAliases.includes(oldTag)) {
-                ticker.canvasElementAliases = ticker.canvasElementAliases.map((t) => t === oldTag ? newTag : t)
+            if (ticker.canvasElementAliases.includes(oldAlias)) {
+                ticker.canvasElementAliases = ticker.canvasElementAliases.map((t) => t === oldAlias ? newAlias : t)
                 if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
                     let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter
                     if (typeof aliasToRemoveAfter === "string") {
                         aliasToRemoveAfter = [aliasToRemoveAfter]
                     }
                     if (Array.isArray(aliasToRemoveAfter)) {
-                        ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) => t === oldTag ? newTag : t)
+                        ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) => t === oldAlias ? newAlias : t)
                     }
                 }
             }
         }
         for (let timeout in GameWindowManager._currentTickersTimeouts) {
             let TickerTimeout = GameWindowManager._currentTickersTimeouts[timeout]
-            if (TickerTimeout.aliases.includes(oldTag)) {
-                TickerTimeout.aliases = TickerTimeout.aliases.map((t) => t === oldTag ? newTag : t)
+            if (TickerTimeout.aliases.includes(oldAlias)) {
+                TickerTimeout.aliases = TickerTimeout.aliases.map((t) => t === oldAlias ? newAlias : t)
             }
         }
     }
@@ -371,7 +371,7 @@ export default class GameWindowManager {
      * Run a ticker. You can run multiple addTicker with the same alias and different tickerClasses.
      * If you run a ticker with the same alias and tickerClass, the old ticker will be removed.
      * If already exists a sequence of tickers with the same alias, it will be removed.
-     * @param canvasEslementTag The alias of the canvas element that will use the ticker.
+     * @param canvasElementAlias The alias of the canvas element that will use the ticker.
      * @param ticker The ticker class to be run.
      * @param args The arguments to be used in the ticker.
      * @param duration The time to be used in the ticker. This number is in seconds. If it is undefined, the ticker will run forever.
@@ -382,10 +382,10 @@ export default class GameWindowManager {
      * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
      * ```
      */
-    static addTicker<TArgs extends TickerArgsType>(canvasElementTag: string | string[], ticker: TickerBase<TArgs>) {
+    static addTicker<TArgs extends TickerArgsType>(canvasElementAlias: string | string[], ticker: TickerBase<TArgs>) {
         let tickerId: TickerIdType = ticker.id
-        if (typeof canvasElementTag === "string") {
-            canvasElementTag = [canvasElementTag]
+        if (typeof canvasElementAlias === "string") {
+            canvasElementAlias = [canvasElementAlias]
         }
         if (!geTickerInstanceById<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
             console.error(`[Pixi'VN] Ticker ${tickerId} not found`)
@@ -395,7 +395,7 @@ export default class GameWindowManager {
             fn: () => { },
             id: tickerId,
             args: createExportableElement(ticker.args),
-            canvasElementAliases: canvasElementTag,
+            canvasElementAliases: canvasElementAlias,
             priority: ticker.priority,
             duration: ticker.duration,
         }
@@ -409,7 +409,7 @@ export default class GameWindowManager {
                     GameWindowManager.removeTicker(id)
                 }
             }, ticker.duration * 1000);
-            GameWindowManager.addTickerTimeoutInfo(canvasElementTag, tickerId, timeout.toString(), true)
+            GameWindowManager.addTickerTimeoutInfo(canvasElementAlias, tickerId, timeout.toString(), true)
         }
     }
     private static pushTicker<TArgs extends TickerArgsType>(id: string, tickerData: TickerHistory<TArgs>, ticker: TickerBase<TArgs>) {
@@ -634,17 +634,17 @@ export default class GameWindowManager {
         clearTimeout(Number(timeout))
         GameWindowManager.removeTickerTimeoutInfo(timeout)
     }
-    private static removeTickerTimeoutsByTag(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
+    private static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
         for (let timeout in GameWindowManager._currentTickersTimeouts) {
-            let aliasesWithoutTagToRemove = GameWindowManager._currentTickersTimeouts[timeout].aliases.filter((t) => t !== alias)
-            if (aliasesWithoutTagToRemove.length === 0) {
+            let aliasesWithoutAliasToRemove = GameWindowManager._currentTickersTimeouts[timeout].aliases.filter((t) => t !== alias)
+            if (aliasesWithoutAliasToRemove.length === 0) {
                 let canBeDeletedBeforeEnd = GameWindowManager._currentTickersTimeouts[timeout].canBeDeletedBeforeEnd
                 if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
                     GameWindowManager.removeTickerTimeout(timeout)
                 }
             }
             else {
-                GameWindowManager._currentTickersTimeouts[timeout].aliases = aliasesWithoutTagToRemove
+                GameWindowManager._currentTickersTimeouts[timeout].aliases = aliasesWithoutAliasToRemove
             }
         }
     }
@@ -679,7 +679,7 @@ export default class GameWindowManager {
             if (GameWindowManager._currentTickersSteps[alias]) {
                 delete GameWindowManager._currentTickersSteps[alias]
             }
-            GameWindowManager.removeTickerTimeoutsByTag(alias, false)
+            GameWindowManager.removeTickerTimeoutsByAlias(alias, false)
             delete GameWindowManager._currentTickersSteps[alias]
         })
     }
