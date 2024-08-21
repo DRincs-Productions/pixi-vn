@@ -1,4 +1,4 @@
-import { DialogueBaseModel } from "../classes";
+import { Dialogue } from "../classes";
 import { CharacterInterface } from "../interface";
 import { narration } from "../managers";
 import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
@@ -6,7 +6,7 @@ import { ChoiceMenuOptionsType } from "../types/ChoiceMenuOptionsType";
 /**
  * @deprecated Use narration.dialogue
  */
-export function setDialogue<TCharacter extends CharacterInterface = CharacterInterface, TDialogue extends DialogueBaseModel = DialogueBaseModel>(props: {
+export function setDialogue<TCharacter extends CharacterInterface = CharacterInterface, TDialogue extends Dialogue = Dialogue>(props: {
     character: string | TCharacter,
     text: string | string[],
 } | string | string[] | TDialogue): void {
@@ -16,7 +16,7 @@ export function setDialogue<TCharacter extends CharacterInterface = CharacterInt
 /**
  * @deprecated Use narration.dialogue
  */
-export function getDialogue<T extends DialogueBaseModel = DialogueBaseModel>(): T | undefined {
+export function getDialogue<T extends Dialogue = Dialogue>(): T | undefined {
     return narration.dialogue as T
 }
 

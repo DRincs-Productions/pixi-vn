@@ -1,6 +1,6 @@
 import { diff } from "deep-diff"
 import { canvas, sound, storage } from "."
-import { DialogueBaseModel, Label } from "../classes"
+import { Dialogue, Label } from "../classes"
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import LabelAbstract from "../classes/LabelAbstract"
@@ -217,7 +217,7 @@ export default class GameStepManager {
         }
         let data = diff(GameStepManager.originalStepData, currentStepData)
         if (data) {
-            let dialoge: DialogueBaseModel | undefined = undefined
+            let dialoge: Dialogue | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
             if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
                 dialoge = GameStepManager.dialogue
@@ -315,7 +315,7 @@ export default class GameStepManager {
      * Get the narrative history
      * @returns the history of the dialogues, choices and steps
      */
-    static getNarrativeHistory<T extends DialogueBaseModel = DialogueBaseModel>(): NarrativeHistory<T>[] {
+    static getNarrativeHistory<T extends Dialogue = Dialogue>(): NarrativeHistory<T>[] {
         let list: NarrativeHistory<T>[] = []
         GameStepManager.stepsHistory.forEach((step) => {
             let dialoge = step.dialoge
@@ -789,29 +789,29 @@ export default class GameStepManager {
     /**
      * Dialogue to be shown in the game
      */
-    public static get dialogue(): DialogueBaseModel | undefined {
-        return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as DialogueBaseModel
+    public static get dialogue(): Dialogue | undefined {
+        return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue
     }
     public static set dialogue(props: {
         character: string | CharacterInterface,
         text: string | string[],
-    } | string | string[] | DialogueBaseModel | undefined) {
+    } | string | string[] | Dialogue | undefined) {
         if (!props) {
             storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, undefined)
             return
         }
         let text = ''
         let character: string | undefined = undefined
-        let dialogue: DialogueBaseModel
+        let dialogue: Dialogue
         if (typeof props === 'string') {
             text = props
-            dialogue = new DialogueBaseModel(text, character)
+            dialogue = new Dialogue(text, character)
         }
         else if (Array.isArray(props)) {
             text = props.join()
-            dialogue = new DialogueBaseModel(text, character)
+            dialogue = new Dialogue(text, character)
         }
-        else if (!(props instanceof DialogueBaseModel)) {
+        else if (!(props instanceof Dialogue)) {
             if (Array.isArray(props.text)) {
                 text = props.text.join()
             }
@@ -826,14 +826,14 @@ export default class GameStepManager {
                     character = props.character.id
                 }
             }
-            dialogue = new DialogueBaseModel(text, character)
+            dialogue = new Dialogue(text, character)
         }
         else {
             dialogue = props
         }
 
         if (getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)) {
-            let glueDialogue = storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as DialogueBaseModel
+            let glueDialogue = storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue
             if (glueDialogue) {
                 dialogue.text = `${glueDialogue.text}${dialogue.text}`
             }
