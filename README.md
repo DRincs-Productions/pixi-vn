@@ -115,7 +115,7 @@ bun add @drincs/pixi-vn
 For the following example, we will use React to create the interface and Pixi'VN to manage the visual novel.
 
 ```tsx
-import { canvas, narration } from '@drincs/pixi-vn'
+import { canvas, narration, clearAllGameDatas } from '@drincs/pixi-vn'
 import App from './App'
 import './index.css'
 
@@ -131,6 +131,7 @@ canvas.initialize(body, 1920, 1080, {
 
 // read more here: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game
 narration.onGameEnd = async (props) => {
+    clearAllGameDatas()
     props.navigate("/")
 }
 ```
