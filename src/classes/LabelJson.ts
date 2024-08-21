@@ -1,5 +1,5 @@
 import sha1 from 'crypto-js/sha1'
-import { clearChoiceMenuOptions, moveIn, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
+import { moveIn, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
 import { getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
 import PixiVNJsonConditionalStatements from '../interface/PixiVNJsonConditionalStatements'
@@ -126,7 +126,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 narration.choiceMenuOptions = options
             }
             else {
-                clearChoiceMenuOptions()
+                narration.choiceMenuOptions = undefined
             }
 
             if (glueEnabled) {
