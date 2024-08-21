@@ -8,9 +8,17 @@ It is designed for web developers, with basic experience in JavaScript/TypeScrip
 
 It is based on [Pixi.js](https://pixijs.com/), a rendering engine that allows you to create fast 2D graphics. It is based on WebGL and is very fast and efficient. It is used by many developers to create games, websites, and applications.
 
-In addition to managing the Pixi.js "Canvas", Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the "Canvas" to add interactions with the user.
+Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html) to add an **interface** with JavaScript frameworks.
+
+By "Interface" is meant the elements that are above the canvas, such as buttons, forms, etc.
+
+![Frame_Aufbau](https://github.com/user-attachments/assets/54adca3e-7f5a-4886-a52a-d499d2cca6b3)
 
 This allows the use of systems such as React, Vue, Angular, etc. to create much more complex **interface screens** with excellent performance.
+
+* [Angular](https://pixi-vn.web.app/start/interface-angular.html)
+* [React Interface](https://pixi-vn.web.app/start/interface-react.html)
+* [Vue](https://pixi-vn.web.app/start/interface-vue.html)
 
 ## Wiki
 
@@ -18,7 +26,6 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
 
 * [Why Pixi’VN?](https://pixi-vn.web.app/start/why.html)
 * [Get Started](https://pixi-vn.web.app/start/getting-started.html)
-* [Interface with JavaScript Framework](https://pixi-vn.web.app/start/interface.html)
 
 ### First steps
 
@@ -28,16 +35,22 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
   * [Label and Game Step](https://pixi-vn.web.app/start/labels.html)
   * [Choice Menus](https://pixi-vn.web.app/start/choices.html)
   * [History](https://pixi-vn.web.app/start/history.html)
-* Storage:
-  * [Game Storage](https://pixi-vn.web.app/start/storage.html)
-  * [Flags Management](https://pixi-vn.web.app/start/flags.html)
-  * [Stored Classes](https://pixi-vn.web.app/start/stored-classes.html)
-* [Save and Load](https://pixi-vn.web.app/start/save.html)
-* Canvas:
-  * [Images and Transitions](https://pixi-vn.web.app/start/images.html)
+* [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html):
+  * [Images](https://pixi-vn.web.app/start/images.html)
+  * [Video](https://pixi-vn.web.app/start/videos.html)
+  * [Transitions](https://pixi-vn.web.app/start/transition.html)
   * [Canvas Elements](https://pixi-vn.web.app/start/canvas-elements.html)
   * [Animations and Effects](https://pixi-vn.web.app/start/animations-effects.html)
   * [Tickers](https://pixi-vn.web.app/start/tickers.html)
+* [Sounds and Music](https://pixi-vn.web.app/start/sound.html)
+* [Interface with JavaScript Framework](https://pixi-vn.web.app/start/interface.html)
+  * [Angular Interface](https://pixi-vn.web.app/start/interface-angular.html)
+  * [React Interface](https://pixi-vn.web.app/start/interface-react.html)
+  * [Vue Interface](https://pixi-vn.web.app/start/interface-vue.html)
+* [Game storage](https://pixi-vn.web.app/start/storage.html):
+  * [Flags Management](https://pixi-vn.web.app/start/flags.html)
+  * [Stored Classes](https://pixi-vn.web.app/start/stored-classes.html)
+* [Save and Load](https://pixi-vn.web.app/start/save.html)
 
 ## Advanced topics
 
@@ -102,10 +115,7 @@ bun add @drincs/pixi-vn
 For the following example, we will use React to create the interface and Pixi'VN to manage the visual novel.
 
 ```tsx
-// main.tsx
-
 import { canvas, narration } from '@drincs/pixi-vn'
-import { createRoot } from 'react-dom/client'
 import App from './App'
 import './index.css'
 
@@ -117,19 +127,6 @@ if (!body) {
 
 canvas.initialize(body, 1920, 1080, {
     backgroundColor: "#303030"
-}).then(() => {
-    // React setup with ReactDOM
-    const root = document.getElementById('root')
-    if (!root) {
-        throw new Error('root element not found')
-    }
-
-    canvas.initializeHTMLLayout(root)
-    const reactRoot = createRoot(canvas.htmlLayout)
-
-    reactRoot.render(
-        <App />
-    )
 })
 
 // read more here: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game
