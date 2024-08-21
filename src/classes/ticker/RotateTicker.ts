@@ -25,7 +25,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
     override fn(
         ticker: Ticker,
         args: RotateTickerProps,
-        tags: string[],
+        aliases: string[],
         tickerId: string
     ): void {
         let speed = this.speedConvert(args.speed === undefined ? 1 : args.speed)
@@ -34,7 +34,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         if (typeof tagToRemoveAfter === "string") {
             tagToRemoveAfter = [tagToRemoveAfter]
         }
-        tags
+        aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {

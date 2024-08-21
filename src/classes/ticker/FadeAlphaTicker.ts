@@ -25,7 +25,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     override fn(
         ticker: Ticker,
         args: FadeAlphaTickerProps,
-        tags: string[],
+        aliases: string[],
         tickerId: string
     ): void {
         let type = args.type === undefined ? "hide" : args.type
@@ -42,7 +42,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         if (type === "show" && limit > 1) {
             limit = 1
         }
-        tags
+        aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {

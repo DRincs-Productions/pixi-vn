@@ -23,7 +23,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
     override fn(
         ticker: Ticker,
         args: MoveTickerProps,
-        tags: string[],
+        aliases: string[],
         tickerId: string
     ): void {
         let xSpeed = 1
@@ -43,7 +43,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         if (typeof tagToRemoveAfter === "string") {
             tagToRemoveAfter = [tagToRemoveAfter]
         }
-        tags
+        aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {

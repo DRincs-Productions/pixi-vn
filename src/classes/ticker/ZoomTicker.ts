@@ -24,7 +24,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     override fn(
         ticker: Ticker,
         args: ZoomTickerProps,
-        tags: string[],
+        alias: string[],
         tickerId: string
     ): void {
         let xSpeed = 0.1
@@ -56,7 +56,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 yLimit = args.limit.y
             }
         }
-        tags
+        alias
             .filter((alias) => {
                 let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
