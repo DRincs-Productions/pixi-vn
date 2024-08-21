@@ -31,7 +31,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     let oldCanvasTag: string | undefined = undefined
     if (canvas.find(tag)) {
         oldCanvasTag = tag + "_temp_disolve"
-        canvas.editCanvasElementTag(tag, oldCanvasTag)
+        canvas.editAlias(tag, oldCanvasTag)
     }
 
     let canvasElement: CanvasBase<any>
@@ -110,7 +110,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     }
 
     let oldCanvasTag = tag + "_temp_fade"
-    canvas.editCanvasElementTag(tag, oldCanvasTag)
+    canvas.editAlias(tag, oldCanvasTag)
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {

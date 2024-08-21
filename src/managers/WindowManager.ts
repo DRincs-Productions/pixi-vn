@@ -293,7 +293,7 @@ export default class GameWindowManager {
      * Remove all canvas elements from the canvas.
      * And remove all tickers that are not connected to any canvas element.
      */
-    public static removeCanvasElements() {
+    public static removeAll() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager._children = {}
         GameWindowManager.childrenTagsOrder = []
@@ -304,7 +304,7 @@ export default class GameWindowManager {
      * @param oldTag The old tag of the canvas element.
      * @param newTag The new tag of the canvas element.
      */
-    public static editCanvasElementTag(oldTag: string, newTag: string) {
+    public static editAlias(oldTag: string, newTag: string) {
         if (GameWindowManager._children[oldTag]) {
             GameWindowManager._children[newTag] = GameWindowManager._children[oldTag]
             delete GameWindowManager._children[oldTag]
@@ -710,7 +710,7 @@ export default class GameWindowManager {
      * Clear the canvas and the tickers.
      */
     static clear() {
-        GameWindowManager.removeCanvasElements()
+        GameWindowManager.removeAll()
     }
 
     /* Export and Import Methods */

@@ -328,7 +328,7 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
 - ${helmlokName} will zoom in with a speed of 3. If you go next, ${helmlokName} will zoom out with a speed of 1.
 - ${skullyName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${skullyName} will zoom out with a speed of 3 and a speed progression of 0.02.`
         }
-        canvas.removeCanvasElements()
+        canvas.removeAll()
         let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
         let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
