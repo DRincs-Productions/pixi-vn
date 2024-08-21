@@ -21,7 +21,7 @@ export interface ExportedSoundPlay {
  */
 export default interface ExportedSounds {
     sounds: ExportedSound
-    childrenTagsOrder: string[]
+    soundAliasesOrder: string[]
     filters?: SoundFilterMemory[]
     playInStepIndex: ExportedSoundPlay
 }

@@ -157,13 +157,13 @@ export default class GameStepManager {
                 path: "",
                 storage: {},
                 canvas: {
-                    childrenTagsOrder: [],
-                    currentElements: {},
-                    currentTickers: {},
-                    currentTickersSteps: {},
+                    elementAliasesOrder: [],
+                    elements: {},
+                    tickers: {},
+                    tickersSteps: {},
                 },
                 sound: {
-                    childrenTagsOrder: [],
+                    soundAliasesOrder: [],
                     sounds: {},
                     playInStepIndex: {},
                 },

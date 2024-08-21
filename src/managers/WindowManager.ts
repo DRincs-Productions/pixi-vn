@@ -207,7 +207,7 @@ export default class GameWindowManager {
     /**
      * The order of the children aliases.
      */
-    private static childrenTagsOrder: string[] = []
+    private static elementAliasesOrder: string[] = []
     /**
      * Add a canvas element to the canvas.
      * If there is a canvas element with the same alias, it will be removed.
@@ -226,7 +226,7 @@ export default class GameWindowManager {
         }
         GameWindowManager.app.stage.addChild(canvasElement)
         GameWindowManager._children[alias] = canvasElement
-        GameWindowManager.childrenTagsOrder.push(alias)
+        GameWindowManager.elementAliasesOrder.push(alias)
     }
     /**
      * @deprecated use canvas.add
@@ -255,7 +255,7 @@ export default class GameWindowManager {
                 GameWindowManager.removeTickerByCanvasElement(alias)
             }
         })
-        GameWindowManager.childrenTagsOrder = GameWindowManager.childrenTagsOrder.filter((t) => !alias.includes(t))
+        GameWindowManager.elementAliasesOrder = GameWindowManager.elementAliasesOrder.filter((t) => !alias.includes(t))
     }
     /**
      * @deprecated use canvas.remove
@@ -296,7 +296,7 @@ export default class GameWindowManager {
     public static removeAll() {
         GameWindowManager.app.stage.removeChildren()
         GameWindowManager._children = {}
-        GameWindowManager.childrenTagsOrder = []
+        GameWindowManager.elementAliasesOrder = []
         GameWindowManager.removeAllTickers()
     }
     /**
@@ -732,10 +732,10 @@ export default class GameWindowManager {
             currentElements[alias] = exportCanvasElement(GameWindowManager._children[alias])
         }
         return {
-            currentTickers: createExportableElement(GameWindowManager.currentTickersWithoutCreatedBySteps),
-            currentTickersSteps: createExportableElement(GameWindowManager._currentTickersSteps),
-            currentElements: createExportableElement(currentElements),
-            childrenTagsOrder: createExportableElement(GameWindowManager.childrenTagsOrder),
+            tickers: createExportableElement(GameWindowManager.currentTickersWithoutCreatedBySteps),
+            tickersSteps: createExportableElement(GameWindowManager._currentTickersSteps),
+            elements: createExportableElement(currentElements),
+            elementAliasesOrder: createExportableElement(GameWindowManager.elementAliasesOrder),
         }
     }
     /**
@@ -752,25 +752,25 @@ export default class GameWindowManager {
     public static import(data: object) {
         GameWindowManager.clear()
         try {
-            if (data.hasOwnProperty("childrenTagsOrder") && data.hasOwnProperty("currentElements")) {
-                let currentElements = (data as ExportedCanvas)["currentElements"]
-                let childrenTagsOrder = (data as ExportedCanvas)["childrenTagsOrder"]
-                childrenTagsOrder.forEach((alias) => {
+            if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
+                let currentElements = (data as ExportedCanvas)["elements"]
+                let elementAliasesOrder = (data as ExportedCanvas)["elementAliasesOrder"]
+                elementAliasesOrder.forEach((alias) => {
                     if (currentElements[alias]) {
                         let element = importCanvasElement(currentElements[alias])
                         GameWindowManager.add(alias, element)
-                        GameWindowManager.childrenTagsOrder.push(alias)
+                        GameWindowManager.elementAliasesOrder.push(alias)
                     }
                 })
             }
             else {
-                console.error("[Pixi'VN] The data does not have the properties childrenTagsOrder and currentElements")
+                console.error("[Pixi'VN] The data does not have the properties elementAliasesOrder and elements")
                 return
             }
-            if (data.hasOwnProperty("currentTickers")) {
-                let currentTickers = (data as ExportedCanvas)["currentTickers"]
-                for (let id in currentTickers) {
-                    let t = currentTickers[id]
+            if (data.hasOwnProperty("tickers")) {
+                let tickers = (data as ExportedCanvas)["tickers"]
+                for (let id in tickers) {
+                    let t = tickers[id]
                     let aliases: string[] = t.canvasElementAliases
                     let ticker = geTickerInstanceById(t.id, t.args, t.duration, t.priority)
                     if (ticker) {
@@ -781,9 +781,9 @@ export default class GameWindowManager {
                     }
                 }
             }
-            if (data.hasOwnProperty("currentTickersSteps")) {
-                let currentTickersSteps = (data as ExportedCanvas)["currentTickersSteps"]
-                GameWindowManager.restoneTickersSteps(currentTickersSteps)
+            if (data.hasOwnProperty("tickersSteps")) {
+                let tickersSteps = (data as ExportedCanvas)["tickersSteps"]
+                GameWindowManager.restoneTickersSteps(tickersSteps)
             }
         }
         catch (e) {

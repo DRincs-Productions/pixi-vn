@@ -69,7 +69,7 @@ export default class GameSoundManager extends SoundLibrary {
         }
         s.alias = alias;
 
-        !SoundManagerStatic.childrenTagsOrder.includes(alias) && SoundManagerStatic.childrenTagsOrder.push(alias)
+        !SoundManagerStatic.soundAliasesOrder.includes(alias) && SoundManagerStatic.soundAliasesOrder.push(alias)
         SoundManagerStatic.sounds[alias] = s
         sound.add(alias, s);
         return s;
@@ -87,7 +87,7 @@ export default class GameSoundManager extends SoundLibrary {
         sound.disableAutoPause = autoPause
     }
     override remove(alias: string): this {
-        SoundManagerStatic.childrenTagsOrder = SoundManagerStatic.childrenTagsOrder.filter((t) => t !== alias)
+        SoundManagerStatic.soundAliasesOrder = SoundManagerStatic.soundAliasesOrder.filter((t) => t !== alias)
         delete SoundManagerStatic.playInStepIndex[alias]
         delete SoundManagerStatic.sounds[alias]
         return sound.remove(alias) as this
@@ -123,7 +123,7 @@ export default class GameSoundManager extends SoundLibrary {
         return sound.unmuteAll() as this
     }
     override removeAll(): this {
-        SoundManagerStatic.childrenTagsOrder = []
+        SoundManagerStatic.soundAliasesOrder = []
         SoundManagerStatic.playInStepIndex = {}
         SoundManagerStatic.sounds = {}
         return sound.removeAll() as this
@@ -204,7 +204,7 @@ export default class GameSoundManager extends SoundLibrary {
     }
     public export(): ExportedSounds {
         let soundElements: ExportedSound = {}
-        for (let alias of SoundManagerStatic.childrenTagsOrder) {
+        for (let alias of SoundManagerStatic.soundAliasesOrder) {
             if (this.exists(alias)) {
                 let item = this.find(alias)
                 soundElements[alias] = {
@@ -223,22 +223,22 @@ export default class GameSoundManager extends SoundLibrary {
         }
         return {
             sounds: soundElements,
-            childrenTagsOrder: SoundManagerStatic.childrenTagsOrder,
+            soundAliasesOrder: SoundManagerStatic.soundAliasesOrder,
             filters: FilterToFilterMemory(this.filtersAll),
             playInStepIndex: SoundManagerStatic.playInStepIndex
         }
     }
     public removeOldSoundAndExport(): ExportedSounds {
-        // let childrenTagsOrder = []
-        // for (let alias of GameSoundManager.childrenTagsOrder) {
+        // let soundAliasesOrder = []
+        // for (let alias of GameSoundManager.soundAliasesOrder) {
         //     if (sound.exists(alias)) {
         //         let s = sound.find(alias)
         //         if (s.loop) {
-        //             childrenTagsOrder.push(alias)
+        //             soundAliasesOrder.push(alias)
         //         }
         //     }
         // }
-        // GameSoundManager.childrenTagsOrder = childrenTagsOrder
+        // GameSoundManager.soundAliasesOrder = soundAliasesOrder
         return this.export()
     }
     public importJson(dataString: string) {
@@ -247,11 +247,11 @@ export default class GameSoundManager extends SoundLibrary {
     public import(data: object, lastStepIndex = narration.lastStepIndex) {
         this.clear()
         try {
-            if (data.hasOwnProperty("childrenTagsOrder")) {
-                SoundManagerStatic.childrenTagsOrder = (data as ExportedSounds)["childrenTagsOrder"]
+            if (data.hasOwnProperty("soundAliasesOrder")) {
+                SoundManagerStatic.soundAliasesOrder = (data as ExportedSounds)["soundAliasesOrder"]
             }
             else {
-                console.error("[Pixi'VN] The data does not have the properties childrenTagsOrder")
+                console.error("[Pixi'VN] The data does not have the properties soundAliasesOrder")
                 return
             }
 
