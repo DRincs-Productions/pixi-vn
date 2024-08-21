@@ -518,6 +518,8 @@ export default class GameStepManager {
                     return result
                 }
                 catch (e) {
+                    // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
+                    // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
                     console.error("[Pixi'VN] Error running step", e)
                     if (GameStepManager.onStepError) {
                         GameStepManager.onStepError(e, props)
@@ -716,15 +718,7 @@ export default class GameStepManager {
         }
         let restoredStep = GameStepManager.goBackInternal(steps, GameStepManager.originalStepData)
         if (restoredStep) {
-            GameStepManager._originalStepData = restoredStep
-            GameStepManager._openedLabels = createExportableElement(restoredStep.openedLabels)
-            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onLoadStep) {
-                await GameStepManager.currentLabel.onLoadStep(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
-            }
-            storage.import(createExportableElement(restoredStep.storage))
-            canvas.import(createExportableElement(restoredStep.canvas))
-            sound.import(createExportableElement(restoredStep.sound), GameStepManager.lastStepIndex - 1)
-            navigate(restoredStep.path)
+            await GameStepManager.restoreFromHistoryStep(restoredStep, navigate)
         }
         else {
             console.error("[Pixi'VN] Error going back")
@@ -753,6 +747,17 @@ export default class GameStepManager {
         else {
             return restoredStep
         }
+    }
+    private static async restoreFromHistoryStep(restoredStep: IHistoryStepData, navigate: (path: string) => void) {
+        GameStepManager._originalStepData = restoredStep
+        GameStepManager._openedLabels = createExportableElement(restoredStep.openedLabels)
+        if (GameStepManager.currentLabel && GameStepManager.currentLabel.onLoadStep) {
+            await GameStepManager.currentLabel.onLoadStep(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+        }
+        storage.import(createExportableElement(restoredStep.storage))
+        canvas.import(createExportableElement(restoredStep.canvas))
+        sound.import(createExportableElement(restoredStep.sound), GameStepManager.lastStepIndex - 1)
+        navigate(restoredStep.path)
     }
 
     /**
