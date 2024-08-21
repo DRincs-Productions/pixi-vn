@@ -1,18 +1,18 @@
 import { diff } from "deep-diff"
 import { canvas, sound, storage } from "."
 import { DialogueBaseModel, Label } from "../classes"
-import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
+import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import LabelAbstract from "../classes/LabelAbstract"
 import { getLabelById } from "../decorators/LabelDecorator"
-import { getChoiceMenuOptions, getFlag, setFlag } from "../functions"
+import { getFlag, setFlag } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
 import { CharacterInterface, NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
-import { DialogueType, HistoryChoiceMenuOption } from "../types"
+import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 
@@ -396,7 +396,7 @@ export default class GameStepManager {
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
      */
     public static get alreadyCurrentStepMadeChoices(): number[] | undefined {
-        let choiceMenuOptions = getChoiceMenuOptions()
+        let choiceMenuOptions = GameStepManager.choiceMenuOptions
         if (!choiceMenuOptions) {
             console.warn("[Pixi'VN] No choice menu options on current step")
             return
@@ -442,7 +442,7 @@ export default class GameStepManager {
     /* Run Methods */
 
     static get canGoNext(): boolean {
-        let options = getChoiceMenuOptions()
+        let options = GameStepManager.choiceMenuOptions
         if (options && options.length > 0) {
             return false
         }
@@ -842,6 +842,41 @@ export default class GameStepManager {
 
         storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType)
         storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+    }
+
+    /**
+     * The options to be shown in the game
+     */
+    public static get choiceMenuOptions(): ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }> | undefined {
+        let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+        if (d) {
+            let options: ChoiceMenuOptionsType = []
+            d.forEach((option, index) => {
+                if (option.type === Close) {
+                    let itemLabel = newCloseLabel(index)
+                    let choice = new ChoiceMenuOptionClose(option.text, {
+                        closeCurrentLabel: option.closeCurrentLabel,
+                        oneTime: option.oneTime
+                    })
+                    choice.label = itemLabel
+                    options.push(choice)
+                    return
+                }
+                let label = getLabelById(option.label)
+                if (label) {
+                    let itemLabel = new Label(label.id, label.steps, {
+                        onStepStart: label.onStepStart,
+                        choiseIndex: index
+                    })
+                    options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, {
+                        type: option.type,
+                        oneTime: option.oneTime
+                    }))
+                }
+            })
+            return options
+        }
+        return undefined
     }
 
     /**

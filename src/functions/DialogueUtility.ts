@@ -1,7 +1,5 @@
-import { DialogueBaseModel, Label } from "../classes";
-import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
-import newCloseLabel from "../classes/CloseLabel";
-import { getLabelById } from "../decorators";
+import { DialogueBaseModel } from "../classes";
+import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import { CharacterInterface } from "../interface";
 import { narration, storage } from "../managers";
 import { Close } from "../types";
@@ -74,39 +72,10 @@ export function setChoiceMenuOptions(options: ChoiceMenuOptionsType<any>): void 
 }
 
 /**
- * Get the options to be shown in the game
- * @returns Options to be shown in the game
+ * @deprecated Use narration.choiceMenuOptions
  */
 export function getChoiceMenuOptions<TChoice extends ChoiceMenuOptionsType = ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }>>(): TChoice | undefined {
-    let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
-    if (d) {
-        let options: ChoiceMenuOptionsType = []
-        d.forEach((option, index) => {
-            if (option.type === Close) {
-                let itemLabel = newCloseLabel(index)
-                let choice = new ChoiceMenuOptionClose(option.text, {
-                    closeCurrentLabel: option.closeCurrentLabel,
-                    oneTime: option.oneTime
-                })
-                choice.label = itemLabel
-                options.push(choice)
-                return
-            }
-            let label = getLabelById(option.label)
-            if (label) {
-                let itemLabel = new Label(label.id, label.steps, {
-                    onStepStart: label.onStepStart,
-                    choiseIndex: index
-                })
-                options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, {
-                    type: option.type,
-                    oneTime: option.oneTime
-                }))
-            }
-        })
-        return options as TChoice
-    }
-    return undefined
+    return narration.choiceMenuOptions as TChoice
 }
 
 /**

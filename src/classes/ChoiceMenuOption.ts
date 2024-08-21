@@ -71,7 +71,7 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
      * ])
      * return <List>
-     *     {getChoiceMenuOptions()?.map((item, index) => {
+     *     {narration.choiceMenuOptions?.map((item, index) => {
      *         return (
      *             <ChoiceButton
      *                 disabled={item.props.disabled}
@@ -141,7 +141,7 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
      * ])
      * return <List>
-     *     {getChoiceMenuOptions()?.map((item, index) => {
+     *     {narration.choiceMenuOptions?.map((item, index) => {
      *         return (
      *             <ChoiceButton
      *                 disabled={item.props.disabled}
@@ -193,7 +193,7 @@ export type IStoratedChoiceMenuOption = {
      *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
      * ])
      * return <List>
-     *     {getChoiceMenuOptions()?.map((item, index) => {
+     *     {narration.choiceMenuOptions?.map((item, index) => {
      *         return (
      *             <ChoiceButton
      *                 disabled={item.props.disabled}
