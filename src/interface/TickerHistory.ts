@@ -9,7 +9,10 @@ export default interface TickerHistory<TArgs extends TickerArgsType> {
     fn: TickerCallback<any>,
     id: TickerIdType,
     args: TArgs
-    canvasElementTags: string[],
+    /**
+     * The aliases of the canvas elements that are connected to this ticker
+     */
+    canvasElementAliases: string[],
     priority?: UPDATE_PRIORITY,
     duration?: number
     /**
@@ -21,7 +24,10 @@ export default interface TickerHistory<TArgs extends TickerArgsType> {
 export interface TickerHistoryForExport<TArgs extends TickerArgsType> {
     id: TickerIdType,
     args: TArgs
-    canvasElementTags: string[],
+    /**
+     * The aliases of the canvas elements that are connected to this ticker
+     */
+    canvasElementAliases: string[],
     priority?: UPDATE_PRIORITY,
     duration?: number
 }
