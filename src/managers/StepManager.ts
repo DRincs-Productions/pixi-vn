@@ -315,8 +315,8 @@ export default class GameStepManager {
      * Get the narrative history
      * @returns the history of the dialogues, choices and steps
      */
-    static getNarrativeHistory<T extends Dialogue = Dialogue>(): NarrativeHistory<T>[] {
-        let list: NarrativeHistory<T>[] = []
+    public static get narrativeHistory(): NarrativeHistory[] {
+        let list: NarrativeHistory[] = []
         GameStepManager.stepsHistory.forEach((step) => {
             let dialoge = step.dialoge
             let requiredChoices = step.choices
@@ -346,7 +346,7 @@ export default class GameStepManager {
                     }
                 })
                 list.push({
-                    dialoge: dialoge as T,
+                    dialoge: dialoge,
                     playerMadeChoice: false,
                     choices: choices,
                     stepIndex: step.index
