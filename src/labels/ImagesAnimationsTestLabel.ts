@@ -128,7 +128,7 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
         )
     },
     async () => {
-        let eggHeadOld = canvas.getCanvasElement<CanvasImage>("eggHead")
+        let eggHeadOld = canvas.find<CanvasImage>("eggHead")
         if (eggHeadOld)
             eggHeadOld.alpha = 0
         showWithFadeTransition('eggHead', eggHeadImage, { duration: 0.5 })
@@ -144,16 +144,16 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
 - ${helmlokName} will rotate with a anchor set to 0.5, rotate clockwise for 2 seconds, rotate counterclockwise with a exponential (-0.05) speed progression, and when it reaches 0, it will repeat.
 - ${skullyName} will rotate with a anchor set to 1, rotate 3 seconds clockwise, wait for 0.5 seconds, and rotate 7 seconds counterclockwise.`
         }
-        let eggHead = canvas.getCanvasElement<CanvasImage>("eggHead")
+        let eggHead = canvas.find<CanvasImage>("eggHead")
         if (eggHead)
             eggHead.anchor.set(0);
-        let flowerTop = canvas.getCanvasElement<CanvasImage>("flowerTop")
+        let flowerTop = canvas.find<CanvasImage>("flowerTop")
         if (flowerTop)
             flowerTop.anchor.set(0.5);
-        let helmlok = canvas.getCanvasElement<CanvasImage>("helmlok")
+        let helmlok = canvas.find<CanvasImage>("helmlok")
         if (helmlok)
             helmlok.anchor.set(0.5);
-        let skully = canvas.getCanvasElement<CanvasImage>("skully")
+        let skully = canvas.find<CanvasImage>("skully")
         if (skully)
             skully.anchor.set(1);
         canvas.addTicker("eggHead", new RotateTicker({
@@ -244,10 +244,10 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
 - ${helmlokName} will unzoom with a speed of 3 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
 - ${skullyName} will zoom in with a speed of 0.1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
         }
-        let eggHead = canvas.getCanvasElement<CanvasImage>("eggHead")
+        let eggHead = canvas.find<CanvasImage>("eggHead")
         if (eggHead)
             eggHead.scale.set(2)
-        let helmlok = canvas.getCanvasElement<CanvasImage>("helmlok")
+        let helmlok = canvas.find<CanvasImage>("helmlok")
         if (helmlok)
             helmlok.anchor.set(0.5);
         canvas.addTicker("eggHead", new ZoomTicker({

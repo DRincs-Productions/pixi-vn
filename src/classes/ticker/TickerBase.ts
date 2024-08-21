@@ -31,7 +31,7 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  *     ): void {
  *         let speed = args.speed === undefined ? 0.1 : args.speed
  *         tags.forEach((tag) => {
- *                 let element = canvas.getCanvasElement(tag)
+ *                 let element = canvas.find(tag)
  *                 if (element && element instanceof Container) {
  *                     if (clockwise)
  *                         element.rotation += speed * t.deltaTime

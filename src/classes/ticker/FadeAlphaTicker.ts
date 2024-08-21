@@ -44,7 +44,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         }
         tags
             .filter((tag) => {
-                let element = canvas.getCanvasElement(tag)
+                let element = canvas.find(tag)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -53,7 +53,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 return true
             })
             .forEach((tag) => {
-                let element = canvas.getCanvasElement(tag)
+                let element = canvas.find(tag)
                 if (element && element instanceof Container) {
                     if (type === "show" && element.alpha < limit) {
                         element.alpha += speed * ticker.deltaTime

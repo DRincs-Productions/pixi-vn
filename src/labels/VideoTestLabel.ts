@@ -18,7 +18,7 @@ export const videoTest = newLabel(VIDEO_TEST_LABEL, [
             character: juliette,
             text: `The video is now paused.`
         };
-        let video = canvas.getCanvasElement<CanvasVideo>("video")
+        let video = canvas.find<CanvasVideo>("video")
         if (video) {
             video.pause()
         }
@@ -28,7 +28,7 @@ export const videoTest = newLabel(VIDEO_TEST_LABEL, [
             character: juliette,
             text: `The video is now playing.`
         };
-        let video = canvas.getCanvasElement<CanvasVideo>("video")
+        let video = canvas.find<CanvasVideo>("video")
         if (video) {
             video.play()
             video.loop = true
@@ -39,7 +39,7 @@ export const videoTest = newLabel(VIDEO_TEST_LABEL, [
             character: juliette,
             text: `The video is now restarted.`
         };
-        let video = canvas.getCanvasElement<CanvasVideo>("video")
+        let video = canvas.find<CanvasVideo>("video")
         if (video) {
             video.restart()
         }

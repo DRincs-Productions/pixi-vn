@@ -36,7 +36,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         }
         tags
             .filter((tag) => {
-                let element = canvas.getCanvasElement(tag)
+                let element = canvas.find(tag)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -45,7 +45,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                 return true
             })
             .forEach((tag) => {
-                let element = canvas.getCanvasElement(tag)
+                let element = canvas.find(tag)
                 if (element && element instanceof Container) {
                     if (clockwise)
                         element.rotation += speed * ticker.deltaTime

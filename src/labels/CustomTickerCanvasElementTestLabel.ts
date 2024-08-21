@@ -52,7 +52,7 @@ export class TintingTestTicker extends TickerBase<{}> {
                 -dudeBoundsPadding,
                 canvas.screen.width + dudeBoundsPadding * 2,
                 canvas.screen.height + dudeBoundsPadding * 2);
-            let dude = canvas.getCanvasElement(tag)
+            let dude = canvas.find(tag)
             if (dude && dude instanceof AlienTintingTest) {
 
                 dude.direction += dude.turningSpeed * 0.01;

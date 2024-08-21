@@ -219,7 +219,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "edit":
-                        let image = canvas.getCanvasElement<CanvasImage>(operation.alias)
+                        let image = canvas.find<CanvasImage>(operation.alias)
                         if (image) {
                             if (operation.props) {
                                 image.memory = operation.props
@@ -262,7 +262,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "edit":
-                        let video = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        let video = canvas.find<CanvasVideo>(operation.alias)
                         if (video) {
                             if (operation.props) {
                                 video.memory = operation.props
@@ -276,7 +276,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         canvas.removeCanvasElement(operation.alias)
                         break
                     case "pause":
-                        let videoPause = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        let videoPause = canvas.find<CanvasVideo>(operation.alias)
                         if (videoPause) {
                             videoPause.paused = true
                         }
@@ -285,7 +285,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "resume":
-                        let videoResume = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        let videoResume = canvas.find<CanvasVideo>(operation.alias)
                         if (videoResume) {
                             videoResume.paused = false
                         }

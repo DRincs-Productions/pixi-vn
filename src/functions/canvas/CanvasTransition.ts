@@ -29,7 +29,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let oldCanvasTag: string | undefined = undefined
-    if (canvas.getCanvasElement(tag)) {
+    if (canvas.find(tag)) {
         oldCanvasTag = tag + "_temp_disolve"
         canvas.editCanvasElementTag(tag, oldCanvasTag)
     }
@@ -105,7 +105,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    if (!canvas.getCanvasElement(tag)) {
+    if (!canvas.find(tag)) {
         return showWithDissolveTransition(tag, image, props, priority)
     }
 
@@ -237,7 +237,7 @@ export function moveOut(
     props: MoveInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): void {
-    let canvasElement = canvas.getCanvasElement(tag)
+    let canvasElement = canvas.find(tag)
     if (!canvasElement) {
         console.warn("[Pixi'VN] The canvas element is not found.")
         return
@@ -358,7 +358,7 @@ export function zoomOut(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
-    let canvasElement = canvas.getCanvasElement(tag)
+    let canvasElement = canvas.find(tag)
     if (!canvasElement) {
         console.warn("[Pixi'VN] The canvas element is not found.")
         return

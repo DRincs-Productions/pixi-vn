@@ -66,7 +66,7 @@ export default class GameWindowManager {
      * if (!body) {
      *     throw new Error('body element not found')
      * }
-     * await GameWindowManager.initialize(body, 1920, 1080, {
+     * await canvas.initialize(body, 1920, 1080, {
      *     backgroundColor: "#303030"
      * })
      * ```
@@ -118,8 +118,8 @@ export default class GameWindowManager {
      * if (!root) {
      *     throw new Error('root element not found')
      * }
-     * GameWindowManager.initializeHTMLLayout(root)
-     * const reactRoot = createRoot(GameWindowManager.htmlLayout)
+     * canvas.initializeHTMLLayout(root)
+     * const reactRoot = createRoot(canvas.htmlLayout)
      * reactRoot.render(
      *     <App />
      * )
@@ -217,7 +217,7 @@ export default class GameWindowManager {
      * ```typescript
      * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
      * const sprite = CanvasSprite.from(texture);
-     * GameWindowManager.add("bunny", sprite);
+     * canvas.add("bunny", sprite);
      * ```
      */
     public static add(tag: string, canvasElement: CanvasBase<any>) {
@@ -241,7 +241,7 @@ export default class GameWindowManager {
      * @returns 
      * @example
      * ```typescript
-     * GameWindowManager.removeCanvasElement("bunny");
+     * canvas.removeCanvasElement("bunny");
      * ```
      */
     public static removeCanvasElement(tags: string | string[]) {
@@ -263,11 +263,17 @@ export default class GameWindowManager {
      * @returns The canvas element.
      * @example
      * ```typescript
-     * const sprite = GameWindowManager.getCanvasElement<CanvasSprite>("bunny");
+     * const sprite = canvas.find<CanvasSprite>("bunny");
      * ```
      */
-    public static getCanvasElement<T extends CanvasBase<any>>(tag: string): T | undefined {
+    public static find<T extends CanvasBase<any>>(tag: string): T | undefined {
         return GameWindowManager._children[tag] as T | undefined
+    }
+    /**
+     * @deprecated use canvas.find
+     */
+    public static getCanvasElement<T extends CanvasBase<any>>(tag: string): T | undefined {
+        return GameWindowManager.find<T>(tag)
     }
     /**
      * Check if a DisplayObject is on the canvas.
@@ -367,7 +373,7 @@ export default class GameWindowManager {
      * @returns 
      * @example
      * ```typescript
-     * GameWindowManager.addTicker("alien", new RotateTicker({ speed: 0.2 }))
+     * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
      * ```
      */
     static addTicker<TArgs extends TickerArgsType>(canvasElementTag: string | string[], ticker: TickerBase<TArgs>) {
@@ -419,7 +425,7 @@ export default class GameWindowManager {
      * @returns
      * @example
      * ```typescript
-     * GameWindowManager.addTickersSteps("alien", [
+     * canvas.addTickersSteps("alien", [
      *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
      *     Pause(1), // 1 second
      *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
@@ -544,7 +550,7 @@ export default class GameWindowManager {
      * @param ticker The ticker class to be removed.
      * @example
      * ```typescript
-     * GameWindowManager.removeAssociationBetweenTickerCanvasElement("alien", RotateTicker)
+     * canvas.removeAssociationBetweenTickerCanvasElement("alien", RotateTicker)
      * ```
      */
     public static removeAssociationBetweenTickerCanvasElement(tags: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string) {
