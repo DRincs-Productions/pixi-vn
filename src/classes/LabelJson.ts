@@ -141,10 +141,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
 
             if (labelToOpen) {
                 if (labelToOpen.type === "jump") {
-                    narration.jumpLabel(labelToOpen.labelId, props)
+                    narration.jumpLabel(labelToOpen.label, props)
                 }
                 else {
-                    narration.callLabel(labelToOpen.labelId, props)
+                    narration.callLabel(labelToOpen.label, props)
                 }
             }
 

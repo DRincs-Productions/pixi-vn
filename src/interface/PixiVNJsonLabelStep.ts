@@ -45,7 +45,7 @@ export type PixiVNJsonLabelToOpen = {
     /**
      * The id of the label to open.
      */
-    labelId: string,
+    label: string,
     /**
      * Label opening mode
      */
