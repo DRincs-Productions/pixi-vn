@@ -636,15 +636,15 @@ export default class GameWindowManager {
     }
     private static removeTickerTimeoutsByTag(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
         for (let timeout in GameWindowManager._currentTickersTimeouts) {
-            let tagsWithoutTagToRemove = GameWindowManager._currentTickersTimeouts[timeout].aliases.filter((t) => t !== alias)
-            if (tagsWithoutTagToRemove.length === 0) {
+            let aliasesWithoutTagToRemove = GameWindowManager._currentTickersTimeouts[timeout].aliases.filter((t) => t !== alias)
+            if (aliasesWithoutTagToRemove.length === 0) {
                 let canBeDeletedBeforeEnd = GameWindowManager._currentTickersTimeouts[timeout].canBeDeletedBeforeEnd
                 if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
                     GameWindowManager.removeTickerTimeout(timeout)
                 }
             }
             else {
-                GameWindowManager._currentTickersTimeouts[timeout].aliases = tagsWithoutTagToRemove
+                GameWindowManager._currentTickersTimeouts[timeout].aliases = aliasesWithoutTagToRemove
             }
         }
     }
