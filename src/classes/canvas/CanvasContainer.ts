@@ -3,7 +3,7 @@ import { exportCanvasElement, importCanvasElement } from "../../functions/canvas
 import ICanvasContainerMemory from "../../interface/canvas/ICanvasContainerMemory";
 import CanvasBase from "./CanvasBase";
 
-export const CANVAS_CONTAINER_ID = "CanvasContainer"
+export const CANVAS_CONTAINER_ID = "Container"
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods, 
@@ -44,7 +44,7 @@ export default class CanvasContainer extends Container implements CanvasBase<ICa
 }
 
 export function getMemoryContainer<T extends Container>(element: T): ICanvasContainerMemory {
-    let className = "CanvasContainer"
+    let className = CANVAS_CONTAINER_ID
     if (element.hasOwnProperty("pixivnId")) {
         className = (element as any).pixivnId
     }

@@ -8,7 +8,7 @@ import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
-export const CANVAS_TEXT_ID = "CanvasText"
+export const CANVAS_TEXT_ID = "Text"
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,

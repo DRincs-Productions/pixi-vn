@@ -10,7 +10,7 @@ import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
-export const CANVAS_SPRITE_ID = "CanvasSprite"
+export const CANVAS_SPRITE_ID = "Sprite"
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
