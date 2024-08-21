@@ -15,7 +15,7 @@ import { ICanvasBaseMemory } from "../interface/canvas";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
-import { tagToRemoveAfter } from '../types/ticker/TagToRemoveAfterType';
+import { aliasToRemoveAfter } from '../types/ticker/TagToRemoveAfterType';
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -317,13 +317,13 @@ export default class GameWindowManager {
             let ticker = GameWindowManager._currentTickers[id]
             if (ticker.canvasElementAliases.includes(oldTag)) {
                 ticker.canvasElementAliases = ticker.canvasElementAliases.map((t) => t === oldTag ? newTag : t)
-                if (ticker.args.hasOwnProperty(tagToRemoveAfter)) {
-                    let tagToRemoveAfter: string | string[] = ticker.args.tagToRemoveAfter
-                    if (typeof tagToRemoveAfter === "string") {
-                        tagToRemoveAfter = [tagToRemoveAfter]
+                if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
+                    let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter
+                    if (typeof aliasToRemoveAfter === "string") {
+                        aliasToRemoveAfter = [aliasToRemoveAfter]
                     }
-                    if (Array.isArray(tagToRemoveAfter)) {
-                        ticker.args.tagToRemoveAfter = tagToRemoveAfter.map((t) => t === oldTag ? newTag : t)
+                    if (Array.isArray(aliasToRemoveAfter)) {
+                        ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) => t === oldTag ? newTag : t)
                     }
                 }
             }
@@ -697,9 +697,9 @@ export default class GameWindowManager {
     private static removeTicker(tickerId: string) {
         let ticker = GameWindowManager._currentTickers[tickerId]
         if (ticker) {
-            if (ticker.args.hasOwnProperty(tagToRemoveAfter)) {
-                let tagToRemoveAfter: string | string[] = ticker.args.tagToRemoveAfter
-                GameWindowManager.remove(tagToRemoveAfter)
+            if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
+                let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter
+                GameWindowManager.remove(aliasToRemoveAfter)
             }
             GameWindowManager.app.ticker.remove(ticker.fn)
             delete GameWindowManager._currentTickers[tickerId]

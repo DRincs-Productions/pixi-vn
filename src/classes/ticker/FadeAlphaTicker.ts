@@ -32,9 +32,9 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         let duration = args.duration === undefined ? 1 : args.duration
         let speed = 1 / (duration * 60)
         let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
-        let tagToRemoveAfter = args.tagToRemoveAfter || []
-        if (typeof tagToRemoveAfter === "string") {
-            tagToRemoveAfter = [tagToRemoveAfter]
+        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter]
         }
         if (type === "hide" && limit < 0) {
             limit = 0
@@ -63,11 +63,11 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     }
                     if (type === "show" && element.alpha >= limit) {
                         element.alpha = limit
-                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                     else if (type === "hide" && element.alpha <= limit) {
                         element.alpha = limit
-                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                 }
             })

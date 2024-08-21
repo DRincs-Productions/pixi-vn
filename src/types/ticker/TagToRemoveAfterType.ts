@@ -1,2 +1,2 @@
-export const tagToRemoveAfter = "tagToRemoveAfter";
-export type tagToRemoveAfterType = "tagToRemoveAfter";
+export const aliasToRemoveAfter = "aliasToRemoveAfter";
+export type tagToRemoveAfterType = "aliasToRemoveAfter";

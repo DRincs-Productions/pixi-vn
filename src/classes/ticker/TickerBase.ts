@@ -7,7 +7,7 @@ import { StorageElementType } from "../../types/StorageElementType"
 import { TickerIdType } from "../../types/TickerIdType"
 
 export type TickerArgsType = { [id: string]: StorageElementType } | {
-    tagToRemoveAfter?: string[] | string,
+    aliasToRemoveAfter?: string[] | string,
     [id: string]: StorageElementType
 }[]
 

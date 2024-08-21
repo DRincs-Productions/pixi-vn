@@ -39,9 +39,9 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             }
         }
         let destination = args.destination
-        let tagToRemoveAfter = args.tagToRemoveAfter || []
-        if (typeof tagToRemoveAfter === "string") {
-            tagToRemoveAfter = [tagToRemoveAfter]
+        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter]
         }
         aliases
             .filter((alias) => {
@@ -77,7 +77,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                 }
             })

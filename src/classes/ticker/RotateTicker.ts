@@ -30,9 +30,9 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
     ): void {
         let speed = this.speedConvert(args.speed === undefined ? 1 : args.speed)
         let clockwise = args.clockwise === undefined ? true : args.clockwise
-        let tagToRemoveAfter = args.tagToRemoveAfter || []
-        if (typeof tagToRemoveAfter === "string") {
-            tagToRemoveAfter = [tagToRemoveAfter]
+        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter]
         }
         aliases
             .filter((alias) => {
@@ -52,7 +52,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        canvas.onEndOfTicker(alias, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                 }
             })

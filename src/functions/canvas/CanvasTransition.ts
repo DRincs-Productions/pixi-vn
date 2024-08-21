@@ -55,7 +55,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     let effect = new FadeAlphaTicker({
         ...props,
         type: "show",
-        tagToRemoveAfter: oldCanvasTag,
+        aliasToRemoveAfter: oldCanvasTag,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
     canvas.addTicker(alias, effect)
@@ -82,7 +82,7 @@ export function removeWithDissolveTransition(
     let effect = new FadeAlphaTicker({
         ...props,
         type: 'hide',
-        tagToRemoveAfter: alias,
+        aliasToRemoveAfter: alias,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
     canvas.addTicker(alias, effect)
@@ -261,7 +261,7 @@ export function moveOut(
         ...props,
         destination,
         startOnlyIfHaveTexture: true,
-        tagToRemoveAfter: alias,
+        aliasToRemoveAfter: alias,
     }, priority)
 
     canvas.addTicker(alias, effect)
@@ -401,7 +401,7 @@ export function zoomOut(
         startOnlyIfHaveTexture: true,
         type: "unzoom",
         limit: 0,
-        tagToRemoveAfter: alias,
+        aliasToRemoveAfter: alias,
     }, priority)
 
     canvas.addTicker(alias, effect)
