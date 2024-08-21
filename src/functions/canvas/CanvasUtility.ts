@@ -17,11 +17,10 @@ export function getTextureMemory(texture: Texture): ITextureMemory {
 }
 
 /**
- * Remove a element from the canvas.
- * @param tag is the unique tag of the element. You can use this tag to refer to this image
+ * @deprecated use canvas.remove
  */
-export function removeCanvasElement(tag: string | string[]) {
-    canvas.removeCanvasElement(tag)
+export function removeCanvasElement(alias: string | string[]) {
+    canvas.remove(alias)
 }
 
 export function checkIfVideo(imageUrl: string): boolean {

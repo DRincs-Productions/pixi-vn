@@ -12,7 +12,7 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
- * canvas.addCanvasElement("alien", alien);
+ * canvas.add("alien", alien);
  * const ticker = new RotateTicker({
  *    speed: 0.1,
  *    clockwise: true,
@@ -25,18 +25,18 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
     override fn(
         ticker: Ticker,
         args: RotateTickerProps,
-        tags: string[],
+        aliases: string[],
         tickerId: string
     ): void {
         let speed = this.speedConvert(args.speed === undefined ? 1 : args.speed)
         let clockwise = args.clockwise === undefined ? true : args.clockwise
-        let tagToRemoveAfter = args.tagToRemoveAfter || []
-        if (typeof tagToRemoveAfter === "string") {
-            tagToRemoveAfter = [tagToRemoveAfter]
+        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter]
         }
-        tags
-            .filter((tag) => {
-                let element = canvas.getCanvasElement(tag)
+        aliases
+            .filter((alias) => {
+                let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -44,15 +44,15 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                 }
                 return true
             })
-            .forEach((tag) => {
-                let element = canvas.getCanvasElement(tag)
+            .forEach((alias) => {
+                let element = canvas.find(alias)
                 if (element && element instanceof Container) {
                     if (clockwise)
                         element.rotation += speed * ticker.deltaTime
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                 }
             })

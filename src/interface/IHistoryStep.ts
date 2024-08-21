@@ -1,5 +1,5 @@
 import deepDiff from "deep-diff";
-import { DialogueBaseModel } from "../classes";
+import { Dialogue } from "../classes";
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import { LabelIdType } from "../types/LabelIdType";
 import ExportedCanvas from "./export/ExportedCanvas";
@@ -37,7 +37,7 @@ export interface IHistoryStepData {
     sound: ExportedSounds,
 }
 
-export default interface IHistoryStep<T extends DialogueBaseModel = DialogueBaseModel> {
+export default interface IHistoryStep<T extends Dialogue = Dialogue> {
     /**
      * The difference between the previous step and the current step.
      */

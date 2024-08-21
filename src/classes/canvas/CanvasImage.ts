@@ -4,7 +4,7 @@ import { getTexture } from "../../functions/TextureUtility";
 import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
-export const CANVAS_IMAGE_ID = "CanvasImage"
+export const CANVAS_IMAGE_ID = "Image"
 
 /**
  * This class is a extension of the {@link CanvasSprite} class, it has the same properties and methods,
@@ -19,7 +19,7 @@ export const CANVAS_IMAGE_ID = "CanvasImage"
  *     y: 100,
  * }, 'https://pixijs.com/assets/eggHead.png')
  * await alien.load()
- * canvas.addCanvasElement("alien", alien)
+ * canvas.add("alien", alien)
  * ```
  * @example
  * ```typescript

@@ -1,18 +1,18 @@
 import { diff } from "deep-diff"
 import { canvas, sound, storage } from "."
-import { DialogueBaseModel, Label } from "../classes"
-import { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
+import { Dialogue, Label } from "../classes"
+import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import LabelAbstract from "../classes/LabelAbstract"
 import { getLabelById } from "../decorators/LabelDecorator"
-import { getChoiceMenuOptions, getDialogue } from "../functions"
+import { getFlag, setFlag } from "../functions"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
-import { NarrativeHistory } from "../interface"
+import { CharacterInterface, NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
-import { HistoryChoiceMenuOption } from "../types"
+import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 
@@ -157,13 +157,13 @@ export default class GameStepManager {
                 path: "",
                 storage: {},
                 canvas: {
-                    childrenTagsOrder: [],
-                    currentElements: {},
-                    currentTickers: {},
-                    currentTickersSteps: {},
+                    elementAliasesOrder: [],
+                    elements: {},
+                    tickers: {},
+                    tickersSteps: {},
                 },
                 sound: {
-                    childrenTagsOrder: [],
+                    soundAliasesOrder: [],
                     sounds: {},
                     playInStepIndex: {},
                 },
@@ -217,10 +217,10 @@ export default class GameStepManager {
         }
         let data = diff(GameStepManager.originalStepData, currentStepData)
         if (data) {
-            let dialoge: DialogueBaseModel | undefined = undefined
+            let dialoge: Dialogue | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
             if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
-                dialoge = getDialogue()
+                dialoge = GameStepManager.dialogue
             }
             if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
                 requiredChoices = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
@@ -315,8 +315,8 @@ export default class GameStepManager {
      * Get the narrative history
      * @returns the history of the dialogues, choices and steps
      */
-    static getNarrativeHistory<T extends DialogueBaseModel = DialogueBaseModel>(): NarrativeHistory<T>[] {
-        let list: NarrativeHistory<T>[] = []
+    public static get narrativeHistory(): NarrativeHistory[] {
+        let list: NarrativeHistory[] = []
         GameStepManager.stepsHistory.forEach((step) => {
             let dialoge = step.dialoge
             let requiredChoices = step.choices
@@ -346,7 +346,7 @@ export default class GameStepManager {
                     }
                 })
                 list.push({
-                    dialoge: dialoge as T,
+                    dialoge: dialoge,
                     playerMadeChoice: false,
                     choices: choices,
                     stepIndex: step.index
@@ -396,7 +396,7 @@ export default class GameStepManager {
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
      */
     public static get alreadyCurrentStepMadeChoices(): number[] | undefined {
-        let choiceMenuOptions = getChoiceMenuOptions()
+        let choiceMenuOptions = GameStepManager.choiceMenuOptions
         if (!choiceMenuOptions) {
             console.warn("[Pixi'VN] No choice menu options on current step")
             return
@@ -442,7 +442,7 @@ export default class GameStepManager {
     /* Run Methods */
 
     static get canGoNext(): boolean {
-        let options = getChoiceMenuOptions()
+        let options = GameStepManager.choiceMenuOptions
         if (options && options.length > 0) {
             return false
         }
@@ -786,7 +786,138 @@ export default class GameStepManager {
      */
     public static onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined
 
+    /**
+     * Dialogue to be shown in the game
+     */
+    public static get dialogue(): Dialogue | undefined {
+        return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue
+    }
+    public static set dialogue(props: {
+        character: string | CharacterInterface,
+        text: string | string[],
+    } | string | string[] | Dialogue | undefined) {
+        if (!props) {
+            storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, undefined)
+            return
+        }
+        let text = ''
+        let character: string | undefined = undefined
+        let dialogue: Dialogue
+        if (typeof props === 'string') {
+            text = props
+            dialogue = new Dialogue(text, character)
+        }
+        else if (Array.isArray(props)) {
+            text = props.join()
+            dialogue = new Dialogue(text, character)
+        }
+        else if (!(props instanceof Dialogue)) {
+            if (Array.isArray(props.text)) {
+                text = props.text.join()
+            }
+            else {
+                text = props.text
+            }
+            if (props.character) {
+                if (typeof props.character === 'string') {
+                    character = props.character
+                }
+                else {
+                    character = props.character.id
+                }
+            }
+            dialogue = new Dialogue(text, character)
+        }
+        else {
+            dialogue = props
+        }
 
+        if (getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)) {
+            let glueDialogue = storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue
+            if (glueDialogue) {
+                dialogue.text = `${glueDialogue.text}${dialogue.text}`
+            }
+            setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
+        }
+
+        storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType)
+        storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+    }
+    /**
+     * The options to be shown in the game
+     * @example
+     * ```typescript
+     * narration.choiceMenuOptions = [
+     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
+     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
+     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     * ]
+     * ```
+     */
+    public static get choiceMenuOptions(): ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }> | undefined {
+        let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+        if (d) {
+            let options: ChoiceMenuOptionsType = []
+            d.forEach((option, index) => {
+                if (option.type === Close) {
+                    let itemLabel = newCloseLabel(index)
+                    let choice = new ChoiceMenuOptionClose(option.text, {
+                        closeCurrentLabel: option.closeCurrentLabel,
+                        oneTime: option.oneTime
+                    })
+                    choice.label = itemLabel
+                    options.push(choice)
+                    return
+                }
+                let label = getLabelById(option.label)
+                if (label) {
+                    let itemLabel = new Label(label.id, label.steps, {
+                        onStepStart: label.onStepStart,
+                        choiseIndex: index
+                    })
+                    options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, {
+                        type: option.type,
+                        oneTime: option.oneTime
+                    }))
+                }
+            })
+            return options
+        }
+        return undefined
+    }
+    public static set choiceMenuOptions(options: ChoiceMenuOptionsType<any> | undefined) {
+        if (!options) {
+            storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
+            return
+        }
+        options = options.filter((option, index) => {
+            if (option.oneTime) {
+                let alreadyChoices = GameStepManager.alreadyCurrentStepMadeChoices
+                if (alreadyChoices && alreadyChoices.includes(index)) {
+                    return false
+                }
+            }
+            return true
+        })
+        let value: IStoratedChoiceMenuOption[] = options.map((option) => {
+            if (option instanceof ChoiceMenuOptionClose) {
+                return {
+                    text: option.text,
+                    type: Close,
+                    closeCurrentLabel: option.closeCurrentLabel,
+                    oneTime: option.oneTime,
+                }
+            }
+            return {
+                ...option,
+                label: option.label.id,
+            }
+        })
+        storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
+        storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+    }
 
 
     /**

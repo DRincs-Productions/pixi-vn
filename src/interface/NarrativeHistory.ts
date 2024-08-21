@@ -1,11 +1,11 @@
-import { DialogueBaseModel } from "../classes"
+import { Dialogue } from "../classes"
 import { HistoryChoiceMenuOption } from "../types"
 
-export default interface NarrativeHistory<T extends DialogueBaseModel = DialogueBaseModel> {
+export default interface NarrativeHistory {
     /**
      * Dialogue to be shown in the game
      */
-    dialoge?: T
+    dialoge?: Dialogue
     /**
      * List of choices asked of the player
      */

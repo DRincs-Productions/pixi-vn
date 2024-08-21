@@ -15,11 +15,11 @@ import LabelAbstract from "./LabelAbstract";
  *     [
  *         (props) => {
  *             canvas.clear()
- *             setDialogue({ character: liam, text: "Which test do you want to perform?" })
- *             setChoiceMenuOptions([
+ *             narration.dialogue = { character: liam, text: "Which test do you want to perform?" }
+ *             narration.choiceMenuOptions = [
  *                 new ChoiceMenuOption("Events Test", eventsTestLabel),
  *                 new ChoiceMenuOption("Show Image Test", showImageTest),
- *             ])
+ *             ]
  *         },
  *         (props) => narration.jumpLabel(START_LABEL_ID, props),
  *     ]

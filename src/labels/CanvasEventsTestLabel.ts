@@ -1,8 +1,7 @@
 import { Assets, Texture } from "pixi.js";
 import { CanvasEvent, CanvasSprite } from "../classes";
 import { eventDecorator, newLabel } from "../decorators";
-import { setDialogue } from "../functions";
-import { canvas } from "../managers";
+import { canvas, narration } from "../managers";
 import { CanvasEventNamesType } from "../types";
 import { bunnyImage, bunnyName, juliette } from "./TestConstant";
 
@@ -53,15 +52,15 @@ const CANVAS_EVENTS_TEST_LABEL = "___pixi_vn_canvas_events_test___"
 
 export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
     [
-        () => setDialogue({
+        () => narration.dialogue = {
             character: juliette,
             text: "This is the test of clickable elements in a canvas."
-        }),
+        },
         async () => {
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `This is my friend, ${bunnyName}. It's small now, but if you try to click on it it will get bigger and bigger. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/click).)`
-            });
+            };
 
             // Load the bunny texture
             const texture = await Assets.load(bunnyImage);
@@ -88,14 +87,14 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             // sprite.on('click', onClick); // mouse-only
             // sprite.on('tap', onClick); // touch-only
 
-            canvas.addCanvasElement("bunny", sprite);
+            canvas.add("bunny", sprite);
         },
         async () => {
             canvas.clear();
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `This is the test of buttons in a canvas. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/interactivity).)`
-            });
+            };
 
             // Create a background...
             const backgroundT = await Assets.load('https://pixijs.com/assets/bg_button.jpg');
@@ -105,7 +104,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             background.height = canvas.screen.height;
 
             // Add background to stage...
-            canvas.addCanvasElement("bg", background);
+            canvas.add("bg", background);
 
             // Create some textures from an image path
             const textureButton = await Assets.load('https://pixijs.com/assets/button.png');
@@ -136,7 +135,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
                     .onEvent('pointerout', EventTest2);
 
                 // Add it to the stage
-                canvas.addCanvasElement("button" + i, button);
+                canvas.add("button" + i, button);
 
                 // Add button to array
                 buttons.push(button);

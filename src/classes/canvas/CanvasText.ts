@@ -8,7 +8,7 @@ import CanvasEvent from "../CanvasEvent";
 import CanvasBase from "./CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
-export const CANVAS_TEXT_ID = "CanvasText"
+export const CANVAS_TEXT_ID = "Text"
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -17,7 +17,7 @@ export const CANVAS_TEXT_ID = "CanvasText"
  * ```typescript
  * const text = new CanvasText();
  * text.text = "Hello World"
- * canvas.addCanvasElement("text", text);
+ * canvas.add("text", text);
  * ```
  */
 export default class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
@@ -62,7 +62,7 @@ export default class CanvasText extends Text implements CanvasBase<ICanvasTextMe
      * text.cursor = 'pointer';
      * text.onEvent('pointerdown', EventTest);
      *
-     * canvas.addCanvasElement("text", text);
+     * canvas.add("text", text);
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {

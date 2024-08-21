@@ -16,10 +16,10 @@ export type RotateTickerProps = {
      */
     speedProgression?: TickerProgrationType
     /**
-     * The tag to remove after the fade is done
+     * The alias to remove after the fade is done
      * @default []
      */
-    tagToRemoveAfter?: string[] | string
+    aliasToRemoveAfter?: string[] | string
     /**
      * If true, the effect only starts if the canvas element have a texture
      * @default false

@@ -5,15 +5,15 @@ import { CANVAS_CONTAINER_ID } from "../classes/canvas/CanvasContainer"
 import { CANVAS_IMAGE_ID } from "../classes/canvas/CanvasImage"
 import { CANVAS_SPRITE_ID } from "../classes/canvas/CanvasSprite"
 import { CANVAS_TEXT_ID } from "../classes/canvas/CanvasText"
-import { CanvasElementTagType } from "../types/CanvasElementTagType"
+import { CanvasElementAliasType } from "../types/CanvasElementAliasType"
 
-export const registeredCanvasElement: { [name: CanvasElementTagType]: typeof CanvasBase<any> } = {}
+export const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBase<any> } = {}
 /**
  * Is a decorator that register a canvas element in the game.
  * @param name Name of the canvas element, by default it will use the class name. If the name is already registered, it will show a warning
  * @returns 
  */
-export default function canvasElementDecorator(name?: CanvasElementTagType) {
+export default function canvasElementDecorator(name?: CanvasElementAliasType) {
     return function (target: typeof CanvasBase<any>) {
         if (!name) {
             name = target.name
@@ -26,7 +26,7 @@ export default function canvasElementDecorator(name?: CanvasElementTagType) {
     }
 }
 
-export function getCanvasElementTypeById<T extends typeof CanvasBase<any>>(canvasId: CanvasElementTagType): T | undefined {
+export function getCanvasElementTypeById<T extends typeof CanvasBase<any>>(canvasId: CanvasElementAliasType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasId]
         if (!eventType) {
@@ -42,7 +42,7 @@ export function getCanvasElementTypeById<T extends typeof CanvasBase<any>>(canva
     }
 }
 
-export function getCanvasElementInstanceById<T extends CanvasBase<any>>(canvasId: CanvasElementTagType): T | undefined {
+export function getCanvasElementInstanceById<T extends CanvasBase<any>>(canvasId: CanvasElementAliasType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasId]
         if (!eventType) {

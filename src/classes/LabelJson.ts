@@ -1,5 +1,5 @@
 import sha1 from 'crypto-js/sha1'
-import { clearChoiceMenuOptions, moveIn, setChoiceMenuOptions, setDialogue, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
+import { moveIn, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
 import { getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
 import PixiVNJsonConditionalStatements from '../interface/PixiVNJsonConditionalStatements'
@@ -123,10 +123,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                     }
                     return true
                 })
-                setChoiceMenuOptions(options)
+                narration.choiceMenuOptions = options
             }
             else {
-                clearChoiceMenuOptions()
+                narration.choiceMenuOptions = undefined
             }
 
             if (glueEnabled) {
@@ -136,7 +136,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
             }
             if (dialogue) {
-                setDialogue(dialogue)
+                narration.dialogue = (dialogue)
             }
 
             if (labelToOpen) {
@@ -219,7 +219,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "edit":
-                        let image = canvas.getCanvasElement<CanvasImage>(operation.alias)
+                        let image = canvas.find<CanvasImage>(operation.alias)
                         if (image) {
                             if (operation.props) {
                                 image.memory = operation.props
@@ -230,7 +230,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "remove":
-                        canvas.removeCanvasElement(operation.alias)
+                        canvas.remove(operation.alias)
                         break
                 }
                 break
@@ -262,7 +262,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "edit":
-                        let video = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        let video = canvas.find<CanvasVideo>(operation.alias)
                         if (video) {
                             if (operation.props) {
                                 video.memory = operation.props
@@ -273,10 +273,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "remove":
-                        canvas.removeCanvasElement(operation.alias)
+                        canvas.remove(operation.alias)
                         break
                     case "pause":
-                        let videoPause = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        let videoPause = canvas.find<CanvasVideo>(operation.alias)
                         if (videoPause) {
                             videoPause.paused = true
                         }
@@ -285,7 +285,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                         break
                     case "resume":
-                        let videoResume = canvas.getCanvasElement<CanvasVideo>(operation.alias)
+                        let videoResume = canvas.find<CanvasVideo>(operation.alias)
                         if (videoResume) {
                             videoResume.paused = false
                         }

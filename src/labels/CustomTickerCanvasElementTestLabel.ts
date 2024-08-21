@@ -2,9 +2,8 @@ import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "p
 import { CanvasSprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
-import { setDialogue } from "../functions";
 import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../interface/canvas";
-import { canvas } from "../managers";
+import { canvas, narration } from "../managers";
 import { eggHeadImage, eggHeadName, juliette } from "./TestConstant";
 
 interface IAlienTintingMemory extends ICanvasSpriteBaseMemory {
@@ -45,15 +44,15 @@ export class TintingTestTicker extends TickerBase<{}> {
     constructor() {
         super({})
     }
-    override fn(_t: Ticker, _args: {}, tags: string[]): void {
-        tags.forEach((tag) => {
+    override fn(_t: Ticker, _args: {}, aliases: string[]): void {
+        aliases.forEach((alias) => {
             // create a bounding box for the little dudes
             const dudeBoundsPadding = 100;
             const dudeBounds = new Rectangle(-dudeBoundsPadding,
                 -dudeBoundsPadding,
                 canvas.screen.width + dudeBoundsPadding * 2,
                 canvas.screen.height + dudeBoundsPadding * 2);
-            let dude = canvas.getCanvasElement(tag)
+            let dude = canvas.find(alias)
             if (dude && dude instanceof AlienTintingTest) {
 
                 dude.direction += dude.turningSpeed * 0.01;
@@ -117,13 +116,13 @@ export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_
                 // create a random speed for the dude between 2 - 4
                 dude.speed = 2 + Math.random() * 2;
 
-                canvas.addCanvasElement("alien" + i, dude);
+                canvas.add("alien" + i, dude);
                 canvas.addTicker("alien" + i, new TintingTestTicker());
             }
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `This is a test of custom ticker and canvas element. In this test, we have created ${totalDudes} ${eggHeadName} with random tint, scale, position, direction, turning speed, and speed. With the custom ticker, we are moving the custom canvas element in a random direction. (This example is from the official [PixiJS website](https://pixijs.com/8.x/examples/events/interactivity).)`
-            });
+            };
         },
     ]
 )

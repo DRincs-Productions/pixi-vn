@@ -5,47 +5,47 @@ import { ZoomInOutTicker } from "../../classes/ticker/ZoomTicker"
 import { Pause } from "../../constants"
 import { canvas } from "../../managers"
 import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../../types/ticker"
-import { tagToRemoveAfterType } from "../../types/ticker/TagToRemoveAfterType"
+import { aliasToRemoveAfterType } from "../../types/ticker/AliasToRemoveAfterType"
 import { checkIfVideo } from "./CanvasUtility"
 import { addImage } from "./ImageUtility"
 import { addVideo } from "./VideoUtility"
 
-export type ShowWithDissolveTransitionProps = Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture">
+export type ShowWithDissolveTransitionProps = Omit<FadeAlphaTickerProps, "type" | aliasToRemoveAfterType | "startOnlyIfHaveTexture">
 /**
  * Show a image in the canvas with a disolve effect.
  * Disolve effect is a effect that the image is shown with a fade in.
- * If exist a image with the same tag, then the image is replaced and the first image is removed after the effect is done.
+ * If exist a image with the same alias, then the image is replaced and the first image is removed after the effect is done.
  * This transition is done with a {@link FadeAlphaTicker} effect.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
  */
 export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
-    tag: string,
+    alias: string,
     image: T,
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    let oldCanvasTag: string | undefined = undefined
-    if (canvas.getCanvasElement(tag)) {
-        oldCanvasTag = tag + "_temp_disolve"
-        canvas.editCanvasElementTag(tag, oldCanvasTag)
+    let oldCanvasAlias: string | undefined = undefined
+    if (canvas.find(alias)) {
+        oldCanvasAlias = alias + "_temp_disolve"
+        canvas.editAlias(alias, oldCanvasAlias)
     }
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
-            canvasElement = addVideo(tag, image)
+            canvasElement = addVideo(alias, image)
         }
         else {
-            canvasElement = addImage(tag, image)
+            canvasElement = addImage(alias, image)
         }
     }
     else {
         canvasElement = image
-        canvas.addCanvasElement(tag, canvasElement)
+        canvas.add(alias, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -55,10 +55,10 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     let effect = new FadeAlphaTicker({
         ...props,
         type: "show",
-        tagToRemoveAfter: oldCanvasTag,
+        aliasToRemoveAfter: oldCanvasAlias,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
-    canvas.addTicker(tag, effect)
+    canvas.addTicker(alias, effect)
     return
 }
 
@@ -67,77 +67,77 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
  * Disolve effect is a effect that the image is removed with a fade out.
  * This transition is done with a {@link FadeAlphaTicker} effect.
  * This function is equivalent to {@link removeWithFadeTransition}.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
  */
 export function removeWithDissolveTransition(
-    tag: string | string[],
+    alias: string | string[],
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): void {
-    if (typeof tag === "string") {
-        tag = [tag]
+    if (typeof alias === "string") {
+        alias = [alias]
     }
     let effect = new FadeAlphaTicker({
         ...props,
         type: 'hide',
-        tagToRemoveAfter: tag,
+        aliasToRemoveAfter: alias,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
-    canvas.addTicker(tag, effect)
+    canvas.addTicker(alias, effect)
 }
 
-export type ShowWithFadeTransitionProps = Omit<FadeAlphaTickerProps, "type" | tagToRemoveAfterType | "startOnlyIfHaveTexture">
+export type ShowWithFadeTransitionProps = Omit<FadeAlphaTickerProps, "type" | aliasToRemoveAfterType | "startOnlyIfHaveTexture">
 /**
  * Show a image in the canvas with a fade effect.
  * Fade effect is a effect that the image is shown with a fade in.
- * If exist a image with the same tag, the existing image is removed with a fade transition, and after the effect is done, the new image is shown with a fade transition.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * If exist a image with the same alias, the existing image is removed with a fade transition, and after the effect is done, the new image is shown with a fade transition.
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
  */
 export async function showWithFadeTransition<T extends CanvasBase<any> | string = string>(
-    tag: string,
+    alias: string,
     image: T,
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
-    if (!canvas.getCanvasElement(tag)) {
-        return showWithDissolveTransition(tag, image, props, priority)
+    if (!canvas.find(alias)) {
+        return showWithDissolveTransition(alias, image, props, priority)
     }
 
-    let oldCanvasTag = tag + "_temp_fade"
-    canvas.editCanvasElementTag(tag, oldCanvasTag)
+    let oldCanvasAlias = alias + "_temp_fade"
+    canvas.editAlias(alias, oldCanvasAlias)
 
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
-            canvasElement = addVideo(tag, image)
+            canvasElement = addVideo(alias, image)
         }
         else {
-            canvasElement = addImage(tag, image)
+            canvasElement = addImage(alias, image)
         }
     }
     else {
         canvasElement = image
-        canvas.addCanvasElement(tag, canvasElement)
+        canvas.add(alias, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     canvasElement.alpha = 0
 
-    canvas.addTickersSteps(oldCanvasTag, [
+    canvas.addTickersSteps(oldCanvasAlias, [
         new FadeAlphaTicker({
             ...props,
             type: "hide",
             startOnlyIfHaveTexture: true,
         }),
     ])
-    canvas.addTickersSteps(tag, [
+    canvas.addTickersSteps(alias, [
         Pause(props.duration || 1),
         new FadeAlphaTicker({
             ...props,
@@ -152,16 +152,16 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
  * Fade effect is a effect that the image is removed with a fade out.
  * This transition is done with a {@link FadeAlphaTicker} effect.
  * This function is equivalent to {@link removeWithDissolveTransition}.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
  */
 export function removeWithFadeTransition(
-    tag: string | string[],
+    alias: string | string[],
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): void {
-    return removeWithDissolveTransition(tag, props, priority)
+    return removeWithDissolveTransition(alias, props, priority)
 }
 
 export type MoveInOutProps = {
@@ -169,18 +169,18 @@ export type MoveInOutProps = {
      * The direction of the movement.
      */
     direction: "up" | "down" | "left" | "right",
-} & Omit<MoveTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "destination">
+} & Omit<MoveTickerProps, aliasToRemoveAfterType | "startOnlyIfHaveTexture" | "destination">
 
 /**
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
  */
 export async function moveIn<T extends CanvasBase<any> | string = string>(
-    tag: string,
+    alias: string,
     image: T,
     props: MoveInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
@@ -188,15 +188,15 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
-            canvasElement = addVideo(tag, image)
+            canvasElement = addVideo(alias, image)
         }
         else {
-            canvasElement = addImage(tag, image)
+            canvasElement = addImage(alias, image)
         }
     }
     else {
         canvasElement = image
-        canvas.addCanvasElement(tag, canvasElement)
+        canvas.add(alias, canvasElement)
     }
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -223,21 +223,21 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
         startOnlyIfHaveTexture: true,
     }, priority)
 
-    canvas.addTicker(tag, effect)
+    canvas.addTicker(alias, effect)
 }
 
 /**
  * Remove a image from the canvas with a move effect. The image is moved from the x and y position of the image to outside the canvas.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
  */
 export function moveOut(
-    tag: string,
+    alias: string,
     props: MoveInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): void {
-    let canvasElement = canvas.getCanvasElement(tag)
+    let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi'VN] The canvas element is not found.")
         return
@@ -261,10 +261,10 @@ export function moveOut(
         ...props,
         destination,
         startOnlyIfHaveTexture: true,
-        tagToRemoveAfter: tag,
+        aliasToRemoveAfter: alias,
     }, priority)
 
-    canvas.addTicker(tag, effect)
+    canvas.addTicker(alias, effect)
 }
 
 export type ZoomInOutProps = {
@@ -272,17 +272,17 @@ export type ZoomInOutProps = {
      * The direction of the zoom effect.
      */
     direction: "up" | "down" | "left" | "right",
-} & Omit<ZoomTickerProps, tagToRemoveAfterType | "startOnlyIfHaveTexture" | "type">
+} & Omit<ZoomTickerProps, aliasToRemoveAfterType | "startOnlyIfHaveTexture" | "type">
 
 /**
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  */
 export async function zoomIn<T extends CanvasSprite | string = string>(
-    tag: string,
+    alias: string,
     image: T,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
@@ -304,7 +304,7 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    canvas.addCanvasElement(tag, container)
+    canvas.add(alias, container)
 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -343,22 +343,22 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
         limit: 1,
     }, priority)
 
-    canvas.addTicker(tag, effect)
+    canvas.addTicker(alias, effect)
 }
 
 /**
  * Remove a image from the canvas with a zoom effect. The image is zoomed out to the center of the canvas.
- * @param tag The unique tag of the image. You can use this tag to refer to this image
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that is resolved when the image is loaded.
  */
 export function zoomOut(
-    tag: string,
+    alias: string,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
-    let canvasElement = canvas.getCanvasElement(tag)
+    let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi'VN] The canvas element is not found.")
         return
@@ -368,7 +368,7 @@ export function zoomOut(
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    canvas.addCanvasElement(tag, container)
+    canvas.add(alias, container)
 
     if (props.direction == "up") {
         container.pivot.y = canvas.canvasHeight
@@ -401,8 +401,8 @@ export function zoomOut(
         startOnlyIfHaveTexture: true,
         type: "unzoom",
         limit: 0,
-        tagToRemoveAfter: tag,
+        aliasToRemoveAfter: alias,
     }, priority)
 
-    canvas.addTicker(tag, effect)
+    canvas.addTicker(alias, effect)
 }

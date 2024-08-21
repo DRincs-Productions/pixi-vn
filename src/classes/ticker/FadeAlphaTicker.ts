@@ -11,7 +11,7 @@ import TickerBase from "./TickerBase";
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
  * await bunny.load()
- * canvas.addCanvasElement("bunny", bunny);
+ * canvas.add("bunny", bunny);
  * // ...
  * const ticker = new FadeAlphaTicker({
  *     duration: 4, // 4 seconds
@@ -25,16 +25,16 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     override fn(
         ticker: Ticker,
         args: FadeAlphaTickerProps,
-        tags: string[],
+        aliases: string[],
         tickerId: string
     ): void {
         let type = args.type === undefined ? "hide" : args.type
         let duration = args.duration === undefined ? 1 : args.duration
         let speed = 1 / (duration * 60)
         let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
-        let tagToRemoveAfter = args.tagToRemoveAfter || []
-        if (typeof tagToRemoveAfter === "string") {
-            tagToRemoveAfter = [tagToRemoveAfter]
+        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter]
         }
         if (type === "hide" && limit < 0) {
             limit = 0
@@ -42,9 +42,9 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         if (type === "show" && limit > 1) {
             limit = 1
         }
-        tags
-            .filter((tag) => {
-                let element = canvas.getCanvasElement(tag)
+        aliases
+            .filter((alias) => {
+                let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -52,8 +52,8 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 }
                 return true
             })
-            .forEach((tag) => {
-                let element = canvas.getCanvasElement(tag)
+            .forEach((alias) => {
+                let element = canvas.find(alias)
                 if (element && element instanceof Container) {
                     if (type === "show" && element.alpha < limit) {
                         element.alpha += speed * ticker.deltaTime
@@ -63,11 +63,11 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     }
                     if (type === "show" && element.alpha >= limit) {
                         element.alpha = limit
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                     else if (type === "hide" && element.alpha <= limit) {
                         element.alpha = limit
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                 }
             })

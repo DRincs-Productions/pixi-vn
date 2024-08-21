@@ -3,7 +3,7 @@ import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions
 import ICanvasVideoMemory from "../../interface/canvas/ICanvasVideoMemory";
 import CanvasImage from "./CanvasImage";
 
-export const CANVAS_VIDEO_ID = "CanvasVideo"
+export const CANVAS_VIDEO_ID = "Video"
 
 /**
  * This class is a extension of the {@link CanvasImage} class, it has the same properties and methods,
@@ -17,7 +17,7 @@ export const CANVAS_VIDEO_ID = "CanvasVideo"
  *     y: 100,
  * }, 'https://pixijs.com/assets/video.mp4')
  * await film.load()
- * canvas.addCanvasElement("film", film)
+ * canvas.add("film", film)
  * ```
  * @example
  * ```typescript

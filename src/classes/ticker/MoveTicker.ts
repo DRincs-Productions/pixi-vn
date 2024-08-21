@@ -11,7 +11,7 @@ import TickerBase from "./TickerBase";
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
- * canvas.addCanvasElement("alien", alien);
+ * canvas.add("alien", alien);
  * const ticker = new MoveTicker({
  *    speed: 0.1,
  *    destination: { x: 100, y: 100 },
@@ -23,7 +23,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
     override fn(
         ticker: Ticker,
         args: MoveTickerProps,
-        tags: string[],
+        aliases: string[],
         tickerId: string
     ): void {
         let xSpeed = 1
@@ -39,13 +39,13 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             }
         }
         let destination = args.destination
-        let tagToRemoveAfter = args.tagToRemoveAfter || []
-        if (typeof tagToRemoveAfter === "string") {
-            tagToRemoveAfter = [tagToRemoveAfter]
+        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter]
         }
-        tags
-            .filter((tag) => {
-                let element = canvas.getCanvasElement(tag)
+        aliases
+            .filter((alias) => {
+                let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
                     if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
                         return false
@@ -53,8 +53,8 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 }
                 return true
             })
-            .forEach((tag) => {
-                let element = canvas.getCanvasElement(tag)
+            .forEach((alias) => {
+                let element = canvas.find(alias)
                 if (element && element instanceof Container) {
                     let xDistance = (destination.x - element.x) > 0 ? 1 : -1
                     if (xDistance != 0) {
@@ -77,7 +77,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        canvas.onEndOfTicker(tag, this, tagToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
                     }
                 }
             })

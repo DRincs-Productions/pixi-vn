@@ -1,5 +1,5 @@
 export default interface TickerTimeoutHistory {
-    tags: string[]
+    aliases: string[]
     ticker: string
     canBeDeletedBeforeEnd: boolean
 }

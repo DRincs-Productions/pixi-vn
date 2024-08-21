@@ -7,7 +7,7 @@ import { StorageElementType } from "../../types/StorageElementType"
 import { TickerIdType } from "../../types/TickerIdType"
 
 export type TickerArgsType = { [id: string]: StorageElementType } | {
-    tagToRemoveAfter?: string[] | string,
+    aliasToRemoveAfter?: string[] | string,
     [id: string]: StorageElementType
 }[]
 
@@ -26,12 +26,12 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  *         args: { // the arguments that you passed when you added the ticker
  *             speed?: number,
  *         },
- *         tags: string[], // the tags of the canvas elements that are connected to this ticker
+ *         aliases: string[], // the aliases of the canvas elements that are connected to this ticker
  *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the canvas.currentTickers
  *     ): void {
  *         let speed = args.speed === undefined ? 0.1 : args.speed
- *         tags.forEach((tag) => {
- *                 let element = canvas.getCanvasElement(tag)
+ *         aliases.forEach((alias) => {
+ *                 let element = canvas.find(alias)
  *                 if (element && element instanceof Container) {
  *                     if (clockwise)
  *                         element.rotation += speed * t.deltaTime
@@ -64,11 +64,11 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
     priority?: UPDATE_PRIORITY
     /**
      * The method that will be called every frame.
-     * This method should be overridden and you can use {@link canvas.addCanvasElement()} to get the canvas element of the canvas, and edit them.
+     * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
      * @param _ticker The ticker that is calling this method
      * @param _args The arguments that you passed when you added the ticker
-     * @param _tags The tags of the canvas elements that are connected to this ticker
+     * @param _alias The alias of the canvas elements that are connected to this ticker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
-    fn(_ticker: Ticker, _args: TArgs, _tags: string | string[], _tickerId: string): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
+    fn(_ticker: Ticker, _args: TArgs, _alias: string | string[], _tickerId: string): void { throw new Error("[Pixi'VN] The method TickerBase.fn() must be overridden") }
 }

@@ -2,8 +2,7 @@ import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
 import { CanvasContainer, CanvasSprite, CanvasText } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
-import { removeCanvasElement, setDialogue } from "../functions";
-import { canvas } from "../managers";
+import { canvas, narration } from "../managers";
 import { bunnyImage, juliette } from "./TestConstant";
 
 const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"
@@ -12,15 +11,15 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
     [
         async () => {
             let number = 25
-            setDialogue({
+            narration.dialogue = {
                 character: juliette,
                 text: `Here's what's going to happen: I'm going to create ${number} bunnies (CanvasSprites) and put them in a CanvasContainer.`
-            })
+            }
 
             // Create and add a container to the stage
             const container = new CanvasContainer();
 
-            canvas.addCanvasElement("container", container);
+            canvas.add("container", container);
 
             // Load the bunny texture
             const texture = await Assets.load(bunnyImage);
@@ -45,12 +44,12 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             canvas.addTicker("container", new RotateTicker({ speed: 1 }));
         },
         async () => {
-            removeCanvasElement("container");
-            setDialogue({
+            canvas.remove("container");
+            narration.dialogue = {
                 character: juliette,
                 text: `Here's what's going to happen: I'm going to create some CanvasText with different styles and put them on the stage.
 But it will generate a warn message, because the FillGradient or FillPattern has not yet been supported by the Pixi’VN ( you can see the status of the issue here: [#76](https://github.com/DRincs-Productions/pixi-vn/issues/76)).`
-            })
+            }
 
             const basicStyle = new TextStyle({
                 fill: '#ffffff',
@@ -63,7 +62,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             basicText.x = 50;
             basicText.y = 100;
 
-            canvas.addCanvasElement("basicText", basicText);
+            canvas.add("basicText", basicText);
 
             // Create gradient fill
             const fill = new FillGradient(0, 0, 0, 36 * 1.7 * 7);
@@ -101,7 +100,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             richText.x = 50;
             richText.y = 220;
 
-            canvas.addCanvasElement("richText", richText);
+            canvas.add("richText", richText);
 
             const skewStyle = new TextStyle({
                 fontFamily: 'Arial',
@@ -128,7 +127,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
             skewText.x = 300;
             skewText.y = 480;
 
-            canvas.addCanvasElement("skewText", skewText);
+            canvas.add("skewText", skewText);
         }
     ]
 )
