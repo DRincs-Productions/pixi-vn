@@ -7,7 +7,7 @@ type PixiVNJsonUnionConditionAndOr = {
 }
 type PixiVNJsonUnionConditionNot = {
     type: "union",
-    conditions: PixiVNJsonConditions
+    condition: PixiVNJsonConditions
     unionType: "not"
 }
 type PixiVNJsonUnionCondition = PixiVNJsonUnionConditionAndOr | PixiVNJsonUnionConditionNot

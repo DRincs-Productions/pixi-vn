@@ -142,7 +142,7 @@ function getValue(value: StorageElementType | PixiVNJsonStorageGet): any {
  */
 function getUnionConditionResult(condition: PixiVNJsonUnionCondition): boolean {
     if (condition.unionType === "not") {
-        return !getConditionResult(condition.conditions)
+        return !getConditionResult(condition.condition)
     }
     let result: boolean = condition.unionType === "and" ? true : false
     for (let i = 0; i < condition.conditions.length; i++) {
