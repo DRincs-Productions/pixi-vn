@@ -10,61 +10,42 @@ import { setFlag } from "./FlagsUtility";
  * @returns the value from the conditional statements
  */
 export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalStatements<T> | T): T | undefined {
-    if (statement && typeof statement === "object" && "type" in statement && statement.type === "ifelse") {
-        let conditionResult = getConditionResult(statement.condition)
-        if (conditionResult) {
-            return getValueFromConditionalStatements(statement.then)
-        } else {
-            return getValueFromConditionalStatements(statement.then)
-        }
-    }
-    else if (statement && typeof statement === "object" && "type" in statement && statement.type === "stepswitch") {
-        let elements = getValueFromConditionalStatements(statement.elements) || []
-        if (elements.length === 0) {
-            console.error("[Pixi'VN] getValueFromConditionalStatements elements.length === 0")
-            return undefined
-        }
-        if (statement.choiceType === "random") {
-            let randomIndex = Math.floor(Math.random() * elements.length)
-            return getValueFromConditionalStatements(elements[randomIndex])
-        }
-        else if (statement.choiceType === "loop") {
-            if (narration.currentStepTimesCounter > elements.length - 1) {
-                narration.currentStepTimesCounter = 0
-                return getValueFromConditionalStatements(elements[0])
+    if (statement && typeof statement === "object" && "type" in statement) {
+        if (statement.type === "ifelse") {
+            let conditionResult = getConditionResult(statement.condition)
+            if (conditionResult) {
+                return getValueFromConditionalStatements(statement.then)
+            } else {
+                return getValueFromConditionalStatements(statement.then)
             }
-            return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
         }
-        else if (statement.choiceType === "sequential") {
-            let end: T | undefined = undefined
-            if (statement.end == "lastItem") {
-                end = getValueFromConditionalStatements(elements[elements.length - 1])
+        else if (statement.type === "stepswitch") {
+            let elements = getValueFromConditionalStatements(statement.elements) || []
+            if (elements.length === 0) {
+                console.error("[Pixi'VN] getValueFromConditionalStatements elements.length === 0")
+                return undefined
             }
-            if (narration.currentStepTimesCounter > elements.length - 1) {
-                return end
+            if (statement.choiceType === "random") {
+                let randomIndex = Math.floor(Math.random() * elements.length)
+                return getValueFromConditionalStatements(elements[randomIndex])
             }
-            return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
-        }
-    }
-    else if (statement && typeof statement === "object" && "type" in statement && statement.type === "labelcondition") {
-        let conditionResult = false
-        if (statement.condition === "started") {
-            conditionResult = narration.isLabelAlreadyStarted(statement.label)
-        }
-        else if (statement.condition === "completed") {
-            conditionResult = narration.isLabelAlreadyCompleted(statement.label)
-        }
-        else if (statement.condition === "notstarted") {
-            conditionResult = !narration.isLabelAlreadyStarted(statement.label)
-        }
-        else if (statement.condition === "notcompleted") {
-            conditionResult = !narration.isLabelAlreadyCompleted(statement.label)
-        }
-
-        if (conditionResult) {
-            return getValueFromConditionalStatements(statement.then)
-        } else {
-            return getValueFromConditionalStatements(statement.else)
+            else if (statement.choiceType === "loop") {
+                if (narration.currentStepTimesCounter > elements.length - 1) {
+                    narration.currentStepTimesCounter = 0
+                    return getValueFromConditionalStatements(elements[0])
+                }
+                return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
+            }
+            else if (statement.choiceType === "sequential") {
+                let end: T | undefined = undefined
+                if (statement.end == "lastItem") {
+                    end = getValueFromConditionalStatements(elements[elements.length - 1])
+                }
+                if (narration.currentStepTimesCounter > elements.length - 1) {
+                    return end
+                }
+                return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
+            }
         }
     }
     return statement
@@ -75,7 +56,7 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
  * @param condition is the condition object
  * @returns the result of the condition
  */
-function getConditionResult(condition: PixiVNJsonConditions | PixiVNJsonUnionCondition): boolean {
+function getConditionResult(condition: PixiVNJsonConditions): boolean {
     let result = false
     switch (condition.type) {
         case "compare":
@@ -107,6 +88,16 @@ function getConditionResult(condition: PixiVNJsonConditions | PixiVNJsonUnionCon
             break
         case "union":
             result = getUnionConditionResult(condition)
+            break
+        case "labelcondition":
+            switch (condition.operator) {
+                case "started":
+                    result = narration.isLabelAlreadyStarted(condition.label)
+                    break
+                case "completed":
+                    result = narration.isLabelAlreadyCompleted(condition.label)
+                    break
+            }
             break
     }
     return result

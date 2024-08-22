@@ -1,5 +1,7 @@
 import { StorageElementType } from "../types"
+import PixiVNJsonLabelCondition from "./PixiVNJsonLabelCondition"
 import { PixiVNJsonStorageGet } from "./PixiVNJsonStorage"
+import PixiVNJsonUnionCondition from "./PixiVNJsonUnionCondition"
 
 /**
  * Comparation for PixiVNJson.
@@ -32,6 +34,6 @@ type PixiVNJsonValueCondition = {
 /**
  * Conditions for PixiVNJson
  */
-type PixiVNJsonConditions = PixiVNJsonComparation | PixiVNJsonValueCondition
+type PixiVNJsonConditions = PixiVNJsonComparation | PixiVNJsonValueCondition | PixiVNJsonUnionCondition | PixiVNJsonLabelCondition
 
 export default PixiVNJsonConditions
