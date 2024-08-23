@@ -1,7 +1,6 @@
 import { initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
-import * as PIXI from "pixi.js";
-import { ApplicationOptions, Container, Ticker } from "pixi.js";
+import { Application, ApplicationOptions, Container, Ticker } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { Repeat } from "../constants";
@@ -23,7 +22,7 @@ import { aliasToRemoveAfter } from '../types/ticker/AliasToRemoveAfterType';
 export default class GameWindowManager {
     private constructor() { }
 
-    private static _app: PIXI.Application | undefined = undefined
+    private static _app: Application | undefined = undefined
     /**
      * The PIXI Application instance.
      * It not recommended to use this property directly.
@@ -74,7 +73,7 @@ export default class GameWindowManager {
     public static async initialize(element: HTMLElement, width: number, height: number, options?: Partial<ApplicationOptions>): Promise<void> {
         GameWindowManager.canvasWidth = width
         GameWindowManager.canvasHeight = height
-        GameWindowManager._app = new PIXI.Application()
+        GameWindowManager._app = new Application()
         return GameWindowManager.app.init({
             resolution: window.devicePixelRatio || 1,
             autoDensity: true,

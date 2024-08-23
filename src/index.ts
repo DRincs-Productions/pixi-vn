@@ -1,5 +1,4 @@
-import * as PIXI from "pixi.js";
-export const Assets = PIXI.Assets;
+export { Assets } from "pixi.js";
 export * from './classes';
 export * from './classes/ticker';
 export { Pause, Repeat, filters } from './constants';
