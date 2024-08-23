@@ -16,7 +16,7 @@ import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } f
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 
-type AllOpenedLabelsType = { [key: LabelIdType]: number }
+type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number, openCount: number } }
 type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number, stepSha1: string }
 type CurrentStepTimesCounterMemoty = { [key: LabelIdType]: { [key: number]: { lastStepIndexs: number[], stepSha1: string } } }
 
@@ -37,10 +37,10 @@ export default class GameStepManager {
      * the key is the label id and the biggest step opened.
      */
     private static get allOpenedLabels() {
-        return storage.getVariable<AllOpenedLabelsType>(storage.keysSystem.ALL_OPENED_LABELS_KEY) || {}
+        return storage.getVariable<AllOpenedLabelsType>(storage.keysSystem.OPENED_LABELS_COUNTER_KEY) || {}
     }
     private static set allOpenedLabels(value: AllOpenedLabelsType) {
-        storage.setVariable(storage.keysSystem.ALL_OPENED_LABELS_KEY, value)
+        storage.setVariable(storage.keysSystem.OPENED_LABELS_COUNTER_KEY, value)
     }
     /**
      * Counter of execution times of the current step. Current execution is also included.
@@ -246,9 +246,10 @@ export default class GameStepManager {
      */
     private static addLabelHistory(label: LabelIdType, stepIndex: number, stepSha: string, choiseMade?: number) {
         let allOpenedLabels = GameStepManager.allOpenedLabels
-        let oldStepIndex = GameStepManager.allOpenedLabels[label]
+        let oldStepIndex = GameStepManager.allOpenedLabels[label]?.biggestStep || 0
+        let openCount = GameStepManager.allOpenedLabels[label]?.openCount || 0
         if (!oldStepIndex || oldStepIndex < stepIndex) {
-            allOpenedLabels[label] = stepIndex
+            allOpenedLabels[label] = { biggestStep: stepIndex, openCount: openCount }
             GameStepManager.allOpenedLabels = allOpenedLabels
         }
 
@@ -274,6 +275,11 @@ export default class GameStepManager {
             label: label,
             currentStepIndex: 0,
         })
+        let allOpenedLabels = GameStepManager.allOpenedLabels
+        let biggestStep = GameStepManager.allOpenedLabels[label]?.biggestStep || 0
+        let openCount = GameStepManager.allOpenedLabels[label]?.openCount || 0
+        allOpenedLabels[label] = { biggestStep: biggestStep, openCount: openCount + 1 }
+        GameStepManager.allOpenedLabels = allOpenedLabels
     }
     /**
      * Close the current label and add it to the history.
@@ -382,7 +388,7 @@ export default class GameStepManager {
             labelId = label.id
         }
         let allOpenedLabels = GameStepManager.allOpenedLabels
-        let lastStep = allOpenedLabels[labelId]
+        let lastStep = allOpenedLabels[labelId]?.biggestStep || 0
         if (lastStep) {
             let currentLabel = getLabelById(labelId)
             if (currentLabel) {
@@ -448,12 +454,19 @@ export default class GameStepManager {
     public static get isCurrentStepAlreadyOpened(): boolean {
         let currentLabel = GameStepManager.currentLabelId
         if (currentLabel) {
-            let lastStep = GameStepManager.allOpenedLabels[currentLabel]
+            let lastStep = GameStepManager.allOpenedLabels[currentLabel]?.openCount || 0
             if (GameStepManager.currentLabelStepIndex && lastStep >= GameStepManager.currentLabelStepIndex) {
                 return true
             }
         }
         return false
+    }
+    /**
+     * Get times a label has been opened
+     * @returns times a label has been opened
+     */
+    public static getTimesLabelOpened(label: LabelIdType): number {
+        return GameStepManager.allOpenedLabels[label]?.openCount || 0
     }
 
     /* Run Methods */

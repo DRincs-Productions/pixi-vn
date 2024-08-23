@@ -39,7 +39,7 @@ export default class GameStorageManager {
             /**
              * The key of a list of all labels that have been opened during the progression of the steps.
              */
-            ALL_OPENED_LABELS_KEY: "___all_opened_labels___",
+            OPENED_LABELS_COUNTER_KEY: "___opened_labels_counter___",
             /**
              * The key of a list of all choices that have been made during the progression of the steps.
              */

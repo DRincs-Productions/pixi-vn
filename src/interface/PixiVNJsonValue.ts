@@ -1,8 +1,8 @@
 import { getFlag } from "../functions"
 import { StorageElementType } from "../types"
 
-export type PixiVNJsonStorageGet = {
-    type: "storage"
+type PixiVNJsonStorageGet = {
+    type: "value"
     storageOperationType: "get",
     /**
      * Key of the storage
@@ -15,8 +15,22 @@ export type PixiVNJsonStorageGet = {
     storageType: "storage" | "flagStorage",
 }
 
+type PixiVNJsonLabelGet = {
+    type: "value"
+    storageOperationType: "get",
+    /**
+     * Id of the label
+     */
+    label: string,
+    /**
+     * If it is a label, the value will be get with the function {@link narration.getTimesLabelOpened}
+     */
+    storageType: "label",
+}
+export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonLabelGet
+
 type PixiVNJsonOnlyStorageSet = {
-    type: "storage"
+    type: "value"
     storageOperationType: "set",
     /**
      * Key of the storage
@@ -25,7 +39,7 @@ type PixiVNJsonOnlyStorageSet = {
     /**
      * Value to be set in the storage
      */
-    value: StorageElementType | PixiVNJsonStorageGet,
+    value: StorageElementType | PixiVNJsonValueGet,
     /**
      * Type of the storage, if it is a flagStorage or a storage.
      */
@@ -33,7 +47,7 @@ type PixiVNJsonOnlyStorageSet = {
 }
 
 type PixiVNJsonFlagSet = {
-    type: "storage"
+    type: "value"
     storageOperationType: "set",
     /**
      * Key of the storage

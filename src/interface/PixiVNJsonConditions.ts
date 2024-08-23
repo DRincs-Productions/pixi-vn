@@ -1,7 +1,7 @@
 import { StorageElementType } from "../types"
 import PixiVNJsonLabelCondition from "./PixiVNJsonLabelCondition"
-import { PixiVNJsonStorageGet } from "./PixiVNJsonStorage"
 import PixiVNJsonUnionCondition from "./PixiVNJsonUnionCondition"
+import { PixiVNJsonValueGet } from "./PixiVNJsonValue"
 
 /**
  * Comparation for PixiVNJson.
@@ -12,11 +12,11 @@ type PixiVNJsonComparation = {
     /**
      * Left value of the comparation
      */
-    leftValue: StorageElementType | PixiVNJsonStorageGet,
+    leftValue: StorageElementType | PixiVNJsonValueGet,
     /**
      * Right value of the comparation
      */
-    rightValue: StorageElementType | PixiVNJsonStorageGet,
+    rightValue: StorageElementType | PixiVNJsonValueGet,
     /**
      * Operator of the comparation
      */
@@ -28,7 +28,7 @@ type PixiVNJsonValueCondition = {
     /**
      * Value to check, if it is true, or if it not null or undefined
      */
-    value: StorageElementType | PixiVNJsonStorageGet
+    value: StorageElementType | PixiVNJsonValueGet
 }
 
 /**

@@ -19,8 +19,8 @@ export type { PixiVNJsonDialogText, default as PixiVNJsonLabelStep } from './Pix
 export type { PixiVNJsonCanvas, PixiVNJsonSound } from './PixiVNJsonMedia';
 export type { PixiVNJsonOperation, default as PixiVNJsonOperations } from './PixiVNJsonOperations';
 export type { default as PixiVNJsonStepSwitch } from './PixiVNJsonStepSwitch';
-export type { PixiVNJsonStorageGet, PixiVNJsonStorageSet } from './PixiVNJsonStorage';
 export type { default as PixiVNJsonUnionCondition } from './PixiVNJsonUnionCondition';
+export type { PixiVNJsonValueGet as PixiVNJsonStorageGet, PixiVNJsonStorageSet } from './PixiVNJsonValue';
 export type { default as SoundOptions, SoundPlayOptions } from './SoundOptions';
 export type { default as TickerHistory, TickerHistoryForExport } from './TickerHistory';
 export type { TickerProgrationType } from './TickerProgrationType';
