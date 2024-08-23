@@ -1,8 +1,8 @@
 import PixiVNJsonIfElse from "./PixiVNJsonIfElse"
 import { PixiVNJsonCanvas, PixiVNJsonSound } from "./PixiVNJsonMedia"
-import { PixiVNJsonStorageSet } from "./PixiVNJsonValue"
+import { PixiVNJsonValueSet } from "./PixiVNJsonValue"
 
-export type PixiVNJsonOperation = PixiVNJsonStorageSet | PixiVNJsonCanvas | PixiVNJsonSound
+export type PixiVNJsonOperation = PixiVNJsonValueSet | PixiVNJsonCanvas | PixiVNJsonSound
 
 type PixiVNJsonOperations = (PixiVNJsonOperation | PixiVNJsonIfElse<PixiVNJsonOperation>)[]
 

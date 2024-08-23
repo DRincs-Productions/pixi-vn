@@ -1,8 +1,8 @@
-import { PixiVNJsonConditions, PixiVNJsonStorageGet, PixiVNJsonStorageSet, PixiVNJsonUnionCondition } from "../interface";
+import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
 import { StorageElementType } from "../types";
-import { setFlag } from "./FlagsUtility";
+import { getFlag, setFlag } from "./FlagsUtility";
 
 /**
  * Get the value from the conditional statements.
@@ -108,7 +108,7 @@ function getConditionResult(condition: PixiVNJsonConditions): boolean {
  * @param value is the value to convert to string
  * @returns the value to string
  */
-function getValueToString(value: StorageElementType | PixiVNJsonStorageGet): string {
+function getValueToString(value: StorageElementType | PixiVNJsonValueGet): string {
     let newValue = getValue(value)
     if (typeof newValue === "string") {
         return newValue
@@ -124,11 +124,18 @@ function getValueToString(value: StorageElementType | PixiVNJsonStorageGet): str
  * @param value is the value to get
  * @returns the value from the storage or the value
  */
-function getValue(value: StorageElementType | PixiVNJsonStorageGet): any {
+function getValue(value: StorageElementType | PixiVNJsonValueGet): any {
     if (value && typeof value === "object") {
         if ("type" in value) {
-            if (value.storageOperationType === "get") {
-                return storage.getVariable((value as PixiVNJsonStorageGet).key)
+            if (value.type === "value" && value.storageOperationType === "get") {
+                switch (value.storageType) {
+                    case "storage":
+                        return storage.getVariable((value as PixiVNJsonStorageGet).key)
+                    case "flagStorage":
+                        return getFlag((value as PixiVNJsonStorageGet).key)
+                    case "label":
+                        return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label)
+                }
             }
         }
     }
@@ -160,7 +167,7 @@ function getUnionConditionResult(condition: PixiVNJsonUnionCondition): boolean {
     return result
 }
 
-export function setStorageJson(value: PixiVNJsonStorageSet) {
+export function setStorageJson(value: PixiVNJsonValueSet) {
     if (value.storageType === "storage") {
         storage.setVariable(value.key, getValue(value.value))
     } else {

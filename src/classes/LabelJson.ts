@@ -295,7 +295,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         break
                 }
                 break
-            case "storage":
+            case "value":
                 setStorageJson(operation)
                 break
         }

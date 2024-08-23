@@ -1,7 +1,7 @@
 import { getFlag } from "../functions"
 import { StorageElementType } from "../types"
 
-type PixiVNJsonStorageGet = {
+export type PixiVNJsonStorageGet = {
     type: "value"
     storageOperationType: "get",
     /**
@@ -15,7 +15,7 @@ type PixiVNJsonStorageGet = {
     storageType: "storage" | "flagStorage",
 }
 
-type PixiVNJsonLabelGet = {
+export type PixiVNJsonLabelGet = {
     type: "value"
     storageOperationType: "get",
     /**
@@ -63,4 +63,4 @@ type PixiVNJsonFlagSet = {
     storageType: "flagStorage",
 }
 
-export type PixiVNJsonStorageSet = (PixiVNJsonOnlyStorageSet | PixiVNJsonFlagSet)
+export type PixiVNJsonValueSet = (PixiVNJsonOnlyStorageSet | PixiVNJsonFlagSet)
