@@ -57,66 +57,53 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
  * @returns the result of the condition
  */
 function getConditionResult(condition: PixiVNJsonConditions): boolean {
-    let result = false
+    if (!condition) {
+        return false
+    }
+    if (typeof condition !== "object" || !("type" in condition)) {
+        if (condition) {
+            return true
+        }
+        return false
+    }
     switch (condition.type) {
         case "compare":
-            let leftValue: string = getValueToString(condition.leftValue)
-            let rightValue: string = getValueToString(condition.rightValue)
+            let leftValue = getValue(condition.leftValue)
+            let rightValue = getValue(condition.rightValue)
             switch (condition.operator) {
                 case "==":
-                    result = leftValue === rightValue
-                    break
+                    return leftValue === rightValue
                 case "!=":
-                    result = leftValue !== rightValue
-                    break
+                    return leftValue !== rightValue
                 case "<":
-                    result = leftValue < rightValue
-                    break
+                    return leftValue < rightValue
                 case "<=":
-                    result = leftValue <= rightValue
-                    break
+                    return leftValue <= rightValue
                 case ">":
-                    result = leftValue > rightValue
-                    break
+                    return leftValue > rightValue
                 case ">=":
-                    result = leftValue >= rightValue
-                    break
+                    return leftValue >= rightValue
             }
             break
         case "valueCondition":
-            result = getValue(condition.value) ? true : false
-            break
+            return getValue(condition.value) ? true : false
         case "union":
-            result = getUnionConditionResult(condition)
-            break
+            return getUnionConditionResult(condition as PixiVNJsonUnionCondition)
         case "labelcondition":
-            switch (condition.operator) {
-                case "started":
-                    result = narration.isLabelAlreadyStarted(condition.label)
-                    break
-                case "completed":
-                    result = narration.isLabelAlreadyCompleted(condition.label)
-                    break
+            if ("operator" in condition && "label" in condition) {
+                switch (condition.operator) {
+                    case "started":
+                        return narration.isLabelAlreadyStarted(condition.label as string)
+                    case "completed":
+                        return narration.isLabelAlreadyCompleted(condition.label as string)
+                }
             }
             break
     }
-    return result
-}
-
-/**
- * Get the value to string.
- * @param value is the value to convert to string
- * @returns the value to string
- */
-function getValueToString(value: StorageElementType | PixiVNJsonValueGet): string {
-    let newValue = getValue(value)
-    if (typeof newValue === "string") {
-        return newValue
+    if (condition) {
+        return true
     }
-    if (typeof newValue === "object") {
-        return JSON.stringify(newValue)
-    }
-    return newValue.toString()
+    return false
 }
 
 /**
@@ -124,7 +111,7 @@ function getValueToString(value: StorageElementType | PixiVNJsonValueGet): strin
  * @param value is the value to get
  * @returns the value from the storage or the value
  */
-function getValue(value: StorageElementType | PixiVNJsonValueGet): any {
+function getValue(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditions): any {
     if (value && typeof value === "object") {
         if ("type" in value) {
             if (value.type === "value" && value.storageOperationType === "get") {
@@ -136,6 +123,9 @@ function getValue(value: StorageElementType | PixiVNJsonValueGet): any {
                     case "label":
                         return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label)
                 }
+            }
+            else {
+                return getConditionResult(value)
             }
         }
     }

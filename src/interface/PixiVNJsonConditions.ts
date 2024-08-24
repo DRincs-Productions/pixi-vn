@@ -12,24 +12,18 @@ type PixiVNJsonComparation = {
     /**
      * Left value of the comparation
      */
-    leftValue: StorageElementType | PixiVNJsonValueGet,
+    leftValue: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditions,
     /**
      * Right value of the comparation
      */
-    rightValue: StorageElementType | PixiVNJsonValueGet,
+    rightValue: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditions,
     /**
      * Operator of the comparation
      */
     operator: "==" | "!=" | "<" | "<=" | ">" | ">=",
 }
 
-type PixiVNJsonValueCondition = {
-    type: "valueCondition",
-    /**
-     * Value to check, if it is true, or if it not null or undefined
-     */
-    value: StorageElementType | PixiVNJsonValueGet
-}
+type PixiVNJsonValueCondition = StorageElementType | PixiVNJsonValueGet
 
 /**
  * Conditions for PixiVNJson
