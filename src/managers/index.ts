@@ -4,6 +4,13 @@ import StorageManager from './StorageManager';
 
 export {
     /**
+     *  @deprecated use "import { narration } from '@drincs/pixi-vn';"
+     */
+    default as GameWindowManager,
+    default as canvas
+} from './CanvasManager';
+export {
+    /**
      *  @deprecated use "import { canvas } from '@drincs/pixi-vn';"
      */
     default as GameStepManager
@@ -14,13 +21,6 @@ export {
      */
     default as GameStorageManager
 } from './StorageManager';
-export {
-    /**
-     *  @deprecated use "import { narration } from '@drincs/pixi-vn';"
-     */
-    default as GameWindowManager,
-    default as canvas
-} from './WindowManager';
 
 const sound = new SoundManager()
 const narration = new NarrationManager()
