@@ -6,7 +6,7 @@ export {
      */
     default as GameStepManager,
     default as narration
-} from './StepManager';
+} from './NarrationManager';
 export {
     /**
      *  @deprecated use "import { storage } from '@drincs/pixi-vn';"
@@ -25,3 +25,4 @@ export {
 const sound = new GameSoundManager()
 
 export { sound };
+
