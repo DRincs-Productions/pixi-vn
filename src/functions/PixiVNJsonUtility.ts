@@ -93,7 +93,7 @@ function getConditionResult(condition: PixiVNJsonConditions): boolean {
             if ("operator" in condition && "label" in condition) {
                 switch (condition.operator) {
                     case "started":
-                        return narration.isLabelAlreadyStarted(condition.label as string)
+                        return narration.getTimesLabelOpened(condition.label as string) > 0
                     case "completed":
                         return narration.isLabelAlreadyCompleted(condition.label as string)
                 }
