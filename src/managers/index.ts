@@ -1,11 +1,11 @@
+import NarrationManager from './NarrationManager';
 import GameSoundManager from './SoundManager';
 
 export {
     /**
      *  @deprecated use "import { canvas } from '@drincs/pixi-vn';"
      */
-    default as GameStepManager,
-    default as narration
+    default as GameStepManager
 } from './NarrationManager';
 export {
     /**
@@ -23,6 +23,7 @@ export {
 } from './WindowManager';
 
 const sound = new GameSoundManager()
+const narration = new NarrationManager()
 
-export { sound };
+export { narration, sound };
 
