@@ -9,7 +9,7 @@ import { LabelIdType } from "../types/LabelIdType"
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number, openCount: number } }
 type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number, stepSha1: string }
-type CurrentStepTimesCounterMemoty = { [key: LabelIdType]: { [key: number]: { lastStepIndexs: number[], stepSha1: string } } }
+type CurrentStepTimesCounterMemoty = { [key: LabelIdType]: { [key: string]: { lastStepIndexs: number[], stepSha1: string } } }
 
 export default class NarrationManagerStatic {
     private constructor() { }
@@ -24,9 +24,10 @@ export default class NarrationManagerStatic {
     static set allOpenedLabels(value: AllOpenedLabelsType) {
         storage.setVariable(storage.keysSystem.OPENED_LABELS_COUNTER_KEY, value)
     }
-    static getCurrentStepTimesCounter(id: string = ""): number {
+    static getCurrentStepTimesCounter(nestedId: string = ""): number {
         let lastStep = NarrationManagerStatic._lastStepIndex
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
+        let currentLabelStepIndexId = currentLabelStepIndex + nestedId
         let labelId = NarrationManagerStatic.currentLabelId
         let currentLabel = NarrationManagerStatic._currentLabel
         if (!labelId || currentLabelStepIndex === null || !currentLabel) {
@@ -38,20 +39,21 @@ export default class NarrationManagerStatic {
         if (!obj[labelId]) {
             obj[labelId] = {}
         }
-        if (!obj[labelId][currentLabelStepIndex] || obj[labelId][currentLabelStepIndex].stepSha1 != stepSha1) {
-            obj[labelId][currentLabelStepIndex] = { lastStepIndexs: [], stepSha1: stepSha1 }
+        if (!obj[labelId][currentLabelStepIndexId] || obj[labelId][currentLabelStepIndexId].stepSha1 != stepSha1) {
+            obj[labelId][currentLabelStepIndexId] = { lastStepIndexs: [], stepSha1: stepSha1 }
         }
-        let list = obj[labelId][currentLabelStepIndex].lastStepIndexs
+        let list = obj[labelId][currentLabelStepIndexId].lastStepIndexs
         let listContainLastStep = list.find((item) => item === lastStep)
         if (!listContainLastStep) {
             list.push(lastStep)
-            obj[labelId][currentLabelStepIndex].lastStepIndexs = list
+            obj[labelId][currentLabelStepIndexId].lastStepIndexs = list
             storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
         }
         return list.length
     }
-    static resetCurrentStepTimesCounter() {
+    static resetCurrentStepTimesCounter(nestedId: string = "") {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
+        let currentLabelStepIndexId = currentLabelStepIndex + nestedId
         let labelId = NarrationManagerStatic.currentLabelId
         if (!labelId || currentLabelStepIndex === null) {
             console.error("[Pixi'VN] currentLabelId or currentLabelStepIndex is null")
@@ -61,7 +63,7 @@ export default class NarrationManagerStatic {
         if (!obj[labelId]) {
             obj[labelId] = {}
         }
-        obj[labelId][currentLabelStepIndex] = { lastStepIndexs: [], stepSha1: "" }
+        obj[labelId][currentLabelStepIndexId] = { lastStepIndexs: [], stepSha1: "" }
         storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
     }
     /**
