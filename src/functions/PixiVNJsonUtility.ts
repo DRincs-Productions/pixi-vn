@@ -1,6 +1,7 @@
 import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
+import NarrationManagerStatic from "../managers/NarrationManagerStatic";
 import { StorageElementType } from "../types";
 import { getFlag, setFlag } from "./FlagsUtility";
 
@@ -34,7 +35,7 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
                     narration.currentStepTimesCounter = 0
                     return getValueFromConditionalStatements(elements[0])
                 }
-                return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
+                return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
             }
             else if (statement.choiceType === "sequential") {
                 let end: T | undefined = undefined
@@ -44,7 +45,7 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
                 if (narration.currentStepTimesCounter > elements.length - 1) {
                     return end
                 }
-                return getValueFromConditionalStatements(elements[narration.currentStepTimesCounter])
+                return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
             }
         }
     }
@@ -93,7 +94,7 @@ function getConditionResult(condition: PixiVNJsonConditions): boolean {
             if ("operator" in condition && "label" in condition) {
                 switch (condition.operator) {
                     case "started":
-                        return narration.isLabelAlreadyStarted(condition.label as string)
+                        return narration.getTimesLabelOpened(condition.label as string) > 0
                     case "completed":
                         return narration.isLabelAlreadyCompleted(condition.label as string)
                 }

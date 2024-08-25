@@ -1,27 +1,31 @@
-import GameSoundManager from './SoundManager';
+import CanvasManager from './CanvasManager';
+import NarrationManager from './NarrationManager';
+import SoundManager from './SoundManager';
+import StorageManager from './StorageManager';
 
-export {
-    /**
-     *  @deprecated use "import { canvas } from '@drincs/pixi-vn';"
-     */
-    default as GameStepManager,
-    default as narration
-} from './StepManager';
-export {
-    /**
-     *  @deprecated use "import { storage } from '@drincs/pixi-vn';"
-     */
-    default as GameStorageManager,
-    default as storage
-} from './StorageManager';
 export {
     /**
      *  @deprecated use "import { narration } from '@drincs/pixi-vn';"
      */
-    default as GameWindowManager,
-    default as canvas
-} from './WindowManager';
+    default as GameWindowManager
+} from './CanvasManager';
+export {
+    /**
+     *  @deprecated use "import { canvas } from '@drincs/pixi-vn';"
+     */
+    default as GameStepManager
+} from './NarrationManager';
+export {
+    /**
+     *  @deprecated use "import { storage } from '@drincs/pixi-vn';"
+     */
+    default as GameStorageManager
+} from './StorageManager';
 
-const sound = new GameSoundManager()
+const sound = new SoundManager()
+const narration = new NarrationManager()
+const storage = new StorageManager()
+const canvas = new CanvasManager()
 
-export { sound };
+export { canvas, narration, sound, storage };
+

@@ -1,46 +1,27 @@
 import { diff } from "deep-diff"
-import { canvas, sound, storage } from "."
+import { storage } from "."
 import { Dialogue, Label } from "../classes"
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import LabelAbstract from "../classes/LabelAbstract"
 import { getLabelById } from "../decorators/LabelDecorator"
 import { getFlag, setFlag } from "../functions"
-import { restoreDeepDiffChanges } from "../functions/DiffUtility"
-import { createExportableElement } from "../functions/ExportUtility"
-import { CharacterInterface, NarrativeHistory } from "../interface"
+import { CharacterInterface, IHistoryStepData, NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
-import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
-import IOpenedLabel from "../interface/IOpenedLabel"
 import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
-
-type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number, openCount: number } }
-type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number, stepSha1: string }
-type CurrentStepTimesCounterMemoty = { [key: LabelIdType]: { [key: number]: { lastStepIndexs: number[], stepSha1: string } } }
+import NarrationManagerStatic from "./NarrationManagerStatic"
 
 /**
- * GameStepManager is a class that manages the steps and labels of the game.
+ * This class is a class that manages the steps and labels of the game.
  */
-export default class GameStepManager {
-    private constructor() { }
-    private static _stepsHistory: IHistoryStep[] = []
+export default class NarrationManager {
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
-    static get stepsHistory() {
-        return GameStepManager._stepsHistory
-    }
-    /**
-     * is a list of all labels that have been opened during the progression of the steps.
-     * the key is the label id and the biggest step opened.
-     */
-    private static get allOpenedLabels() {
-        return storage.getVariable<AllOpenedLabelsType>(storage.keysSystem.OPENED_LABELS_COUNTER_KEY) || {}
-    }
-    private static set allOpenedLabels(value: AllOpenedLabelsType) {
-        storage.setVariable(storage.keysSystem.OPENED_LABELS_COUNTER_KEY, value)
+    get stepsHistory() {
+        return NarrationManagerStatic._stepsHistory
     }
     /**
      * Counter of execution times of the current step. Current execution is also included.
@@ -50,143 +31,29 @@ export default class GameStepManager {
      * narration.currentStepTimesCounter = 0
      * ```
      */
-    static get currentStepTimesCounter(): number {
-        let lastStep = GameStepManager.lastStepIndex
-        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
-        let labelId = GameStepManager.currentLabelId
-        let currentLabel = GameStepManager.currentLabel
-        if (!labelId || currentLabelStepIndex === null || !currentLabel) {
-            console.error("[Pixi'VN] currentLabelId or currentLabelStepIndex is null or currentLabel not found")
-            return 0
-        }
-        let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error"
-        let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
-        if (!obj[labelId]) {
-            obj[labelId] = {}
-        }
-        if (!obj[labelId][currentLabelStepIndex] || obj[labelId][currentLabelStepIndex].stepSha1 != stepSha1) {
-            obj[labelId][currentLabelStepIndex] = { lastStepIndexs: [], stepSha1: stepSha1 }
-        }
-        let list = obj[labelId][currentLabelStepIndex].lastStepIndexs
-        let listContainLastStep = list.find((item) => item === lastStep)
-        if (!listContainLastStep) {
-            list.push(lastStep)
-            obj[labelId][currentLabelStepIndex].lastStepIndexs = list
-            storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
-        }
-        return list.length
+    get currentStepTimesCounter(): number {
+        return NarrationManagerStatic.getCurrentStepTimesCounter()
     }
-    static set currentStepTimesCounter(_: 0) {
-        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
-        let labelId = GameStepManager.currentLabelId
-        if (!labelId || currentLabelStepIndex === null) {
-            console.error("[Pixi'VN] currentLabelId or currentLabelStepIndex is null")
-            return
-        }
-        let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
-        if (!obj[labelId]) {
-            obj[labelId] = {}
-        }
-        obj[labelId][currentLabelStepIndex] = { lastStepIndexs: [], stepSha1: "" }
-        storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
+    set currentStepTimesCounter(_: 0) {
+        NarrationManagerStatic.resetCurrentStepTimesCounter()
     }
-    /**
-     * is a list of all choices made by the player during the progression of the steps.
-     */
-    private static get allChoicesMade() {
-        return storage.getVariable<AllChoicesMadeType[]>(storage.keysSystem.ALL_CHOICES_MADE_KEY) || []
-    }
-    private static set allChoicesMade(value: AllChoicesMadeType[]) {
-        storage.setVariable(storage.keysSystem.ALL_CHOICES_MADE_KEY, value)
-    }
-    private static _lastStepIndex: number = 0
     /**
      * lastStepIndex is the last step index that occurred during the progression of the steps. **Not is the length of the stepsHistory - 1.**
      */
-    static get lastStepIndex() {
-        return GameStepManager._lastStepIndex
+    get lastStepIndex() {
+        return NarrationManagerStatic._lastStepIndex
     }
     /**
-     * Increase the last step index that occurred during the progression of the steps.
+     * The stack of the opened labels.
      */
-    private static increaseLastStepIndex() {
-        GameStepManager._lastStepIndex++
-    }
-    private static _openedLabels: IOpenedLabel[] = []
-    static get openedLabels() {
-        return GameStepManager._openedLabels
-    }
-    /**
-     * currentLabelId is the current label id that occurred during the progression of the steps.
-     */
-    private static get currentLabelId(): LabelIdType | undefined {
-        if (GameStepManager._openedLabels.length > 0) {
-            let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
-            return item.label
-        }
-        return undefined
+    get openedLabels() {
+        return NarrationManagerStatic._openedLabels
     }
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    static get currentLabel(): Label | undefined {
-        if (GameStepManager.currentLabelId) {
-            return getLabelById(GameStepManager.currentLabelId)
-        }
-    }
-    private static get currentLabelStepIndex(): number | null {
-        if (GameStepManager._openedLabels.length > 0) {
-            let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
-            return item.currentStepIndex
-        }
-        return null
-    }
-    /**
-     * lastHistoryStep is the last history step that occurred during the progression of the steps.
-     */
-    private static get lastHistoryStep(): IHistoryStep | null {
-        if (GameStepManager._stepsHistory.length > 0) {
-            return GameStepManager._stepsHistory[GameStepManager._stepsHistory.length - 1]
-        }
-        return null
-    }
-    private static _originalStepData: IHistoryStepData | undefined = undefined
-    private static get originalStepData(): IHistoryStepData {
-        if (!GameStepManager._originalStepData) {
-            return {
-                path: "",
-                storage: {},
-                canvas: {
-                    elementAliasesOrder: [],
-                    elements: {},
-                    tickers: {},
-                    tickersSteps: {},
-                },
-                sound: {
-                    soundAliasesOrder: [],
-                    sounds: {},
-                    playInStepIndex: {},
-                },
-                labelIndex: -1,
-                openedLabels: [],
-            }
-        }
-        return createExportableElement(GameStepManager._originalStepData)
-    }
-    private static set originalStepData(value: IHistoryStepData) {
-        GameStepManager._originalStepData = createExportableElement(value)
-    }
-
-    private static get currentStepData(): IHistoryStepData {
-        let currentStepData: IHistoryStepData = {
-            path: window.location.pathname,
-            storage: storage.export(),
-            canvas: canvas.export(),
-            sound: sound.removeOldSoundAndExport(),
-            labelIndex: GameStepManager.currentLabelStepIndex || 0,
-            openedLabels: createExportableElement(GameStepManager._openedLabels),
-        }
-        return currentStepData
+    get currentLabel(): Label | undefined {
+        return NarrationManagerStatic._currentLabel
     }
 
     /* Edit History Methods */
@@ -195,17 +62,17 @@ export default class GameStepManager {
      * Add a label to the history.
      * @param label The label to add to the history.
      */
-    private static addStepHistory(stepSha: string, choiseMade?: number) {
-        let currentStepData: IHistoryStepData = GameStepManager.currentStepData
-        if (GameStepManager.originalStepData) {
-            if (GameStepManager.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
+    private addStepHistory(stepSha: string, choiseMade?: number) {
+        let currentStepData: IHistoryStepData = NarrationManagerStatic.currentStepData
+        if (NarrationManagerStatic.originalStepData) {
+            if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {
-                    let lastStepDataOpenedLabelsString = JSON.stringify(GameStepManager.originalStepData.openedLabels)
+                    let lastStepDataOpenedLabelsString = JSON.stringify(NarrationManagerStatic.originalStepData.openedLabels)
                     let historyStepOpenedLabelsString = JSON.stringify(currentStepData.openedLabels)
                     if (
                         lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
-                        GameStepManager.originalStepData.path === currentStepData.path &&
-                        GameStepManager.originalStepData.labelIndex === currentStepData.labelIndex
+                        NarrationManagerStatic.originalStepData.path === currentStepData.path &&
+                        NarrationManagerStatic.originalStepData.labelIndex === currentStepData.labelIndex
                     ) {
                         return
                     }
@@ -215,115 +82,59 @@ export default class GameStepManager {
                 }
             }
         }
-        let data = diff(GameStepManager.originalStepData, currentStepData)
+        let data = diff(NarrationManagerStatic.originalStepData, currentStepData)
         if (data) {
             let dialoge: Dialogue | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
-            if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
-                dialoge = GameStepManager.dialogue
+            if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
+                dialoge = this.dialogue
             }
-            if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === GameStepManager.lastStepIndex) {
+            if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
                 requiredChoices = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
             }
-            GameStepManager._stepsHistory.push({
+            NarrationManagerStatic._stepsHistory.push({
                 diff: data,
-                currentLabel: GameStepManager.currentLabelId,
+                currentLabel: NarrationManagerStatic.currentLabelId,
                 dialoge: dialoge,
                 choices: requiredChoices,
                 stepSha1: stepSha,
-                index: GameStepManager.lastStepIndex,
+                index: NarrationManagerStatic._lastStepIndex,
                 choiceIndexMade: choiseMade
             })
-            GameStepManager.originalStepData = currentStepData
+            NarrationManagerStatic.originalStepData = currentStepData
         }
-        GameStepManager.increaseLastStepIndex()
-    }
-    /**
-     * Add a label to the history.
-     * @param label The label to add to the history.
-     * @param stepIndex The step index of the label.
-     * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
-     */
-    private static addLabelHistory(label: LabelIdType, stepIndex: number, stepSha: string, choiseMade?: number) {
-        let allOpenedLabels = GameStepManager.allOpenedLabels
-        let oldStepIndex = GameStepManager.allOpenedLabels[label]?.biggestStep || 0
-        let openCount = GameStepManager.allOpenedLabels[label]?.openCount || 0
-        if (!oldStepIndex || oldStepIndex < stepIndex) {
-            allOpenedLabels[label] = { biggestStep: stepIndex, openCount: openCount }
-            GameStepManager.allOpenedLabels = allOpenedLabels
-        }
-
-        if (choiseMade !== undefined) {
-            let allChoicesMade = GameStepManager.allChoicesMade
-            let alredyMade = allChoicesMade.find((item) => item.label === label && item.step === stepIndex && item.choice === choiseMade)
-            if (!alredyMade) {
-                allChoicesMade.push({ label: label, step: stepIndex, choice: choiseMade, stepSha1: stepSha })
-                GameStepManager.allChoicesMade = allChoicesMade
-            }
-        }
-    }
-    /**
-     * Add a label to the history.
-     * @param label The label to add to the history.
-     */
-    private static pushNewLabel(label: LabelIdType) {
-        let currentLabel = getLabelById(label)
-        if (!currentLabel) {
-            throw new Error(`[Pixi'VN] Label ${label} not found`)
-        }
-        GameStepManager._openedLabels.push({
-            label: label,
-            currentStepIndex: 0,
-        })
-        let allOpenedLabels = GameStepManager.allOpenedLabels
-        let biggestStep = GameStepManager.allOpenedLabels[label]?.biggestStep || 0
-        let openCount = GameStepManager.allOpenedLabels[label]?.openCount || 0
-        allOpenedLabels[label] = { biggestStep: biggestStep, openCount: openCount + 1 }
-        GameStepManager.allOpenedLabels = allOpenedLabels
+        NarrationManagerStatic.increaseLastStepIndex()
     }
     /**
      * Close the current label and add it to the history.
      * @returns 
      */
-    static closeCurrentLabel() {
-        if (!GameStepManager.currentLabelId) {
+    closeCurrentLabel() {
+        if (!NarrationManagerStatic.currentLabelId) {
             console.warn("[Pixi'VN] No label to close")
             return
         }
-        if (!GameStepManager.currentLabel) {
+        if (!this.currentLabel) {
             console.error("[Pixi'VN] currentLabel not found")
             return
         }
-        GameStepManager._openedLabels.pop()
+        NarrationManagerStatic._openedLabels.pop()
     }
     /**
      * Close all labels and add them to the history. **Attention: This method can cause an unhandled game ending.**
      */
-    static closeAllLabels() {
-        while (GameStepManager._openedLabels.length > 0) {
-            GameStepManager.closeCurrentLabel()
+    closeAllLabels() {
+        while (NarrationManagerStatic._openedLabels.length > 0) {
+            this.closeCurrentLabel()
         }
-    }
-    /**
-     * Increase the current step index of the current label.
-     */
-    private static increaseCurrentStepIndex() {
-        let item = GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1]
-        GameStepManager._openedLabels[GameStepManager._openedLabels.length - 1] = {
-            ...item,
-            currentStepIndex: item.currentStepIndex + 1,
-        }
-    }
-    private static restoreLastLabelList() {
-        GameStepManager._openedLabels = GameStepManager.originalStepData.openedLabels
     }
     /**
      * Get the narrative history
      * @returns the history of the dialogues, choices and steps
      */
-    public static get narrativeHistory(): NarrativeHistory[] {
+    public get narrativeHistory(): NarrativeHistory[] {
         let list: NarrativeHistory[] = []
-        GameStepManager.stepsHistory.forEach((step) => {
+        NarrationManagerStatic._stepsHistory.forEach((step) => {
             let dialoge = step.dialoge
             let requiredChoices = step.choices
             if (
@@ -368,10 +179,10 @@ export default class GameStepManager {
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
             // remove the first items
-            GameStepManager._stepsHistory.splice(0, itemsNumber)
+            NarrationManagerStatic._stepsHistory.splice(0, itemsNumber)
         }
         else {
-            GameStepManager._stepsHistory = []
+            NarrationManagerStatic._stepsHistory = []
         }
     }
     /**
@@ -379,7 +190,7 @@ export default class GameStepManager {
      * @param label The label to check.
      * @returns True if the label is already completed.
      */
-    public static isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
+    public isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
         let labelId: LabelIdType
         if (typeof label === 'string') {
             labelId = label
@@ -387,7 +198,7 @@ export default class GameStepManager {
         else {
             labelId = label.id
         }
-        let allOpenedLabels = GameStepManager.allOpenedLabels
+        let allOpenedLabels = NarrationManagerStatic.allOpenedLabels
         let lastStep = allOpenedLabels[labelId]?.biggestStep || 0
         if (lastStep) {
             let currentLabel = getLabelById(labelId)
@@ -398,34 +209,17 @@ export default class GameStepManager {
         return false
     }
     /**
-     * Check if the label is already started.
-     * @param label The label to check.
-     * @returns True if the label is already started.
-     */
-    public static isLabelAlreadyStarted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
-        let labelId: LabelIdType
-        if (typeof label === 'string') {
-            labelId = label
-        }
-        else {
-            labelId = label.id
-        }
-        let allOpenedLabels = GameStepManager.allOpenedLabels
-        let lastStep = allOpenedLabels[labelId]
-        return lastStep !== undefined
-    }
-    /**
      * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
      */
-    public static get alreadyCurrentStepMadeChoices(): number[] | undefined {
-        let choiceMenuOptions = GameStepManager.choiceMenuOptions
+    public get alreadyCurrentStepMadeChoices(): number[] | undefined {
+        let choiceMenuOptions = this.choiceMenuOptions
         if (!choiceMenuOptions) {
             console.warn("[Pixi'VN] No choice menu options on current step")
             return
         }
-        let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
-        let currentLabel = GameStepManager.currentLabel
+        let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
+        let currentLabel = this.currentLabel
         if (currentLabelStepIndex === null || !currentLabel) {
             console.error("[Pixi'VN] currentLabelStepIndex is null or currentLabel not found")
             return
@@ -436,7 +230,7 @@ export default class GameStepManager {
         }
         let alreadyMade: number[] = []
         choiceMenuOptions.forEach((item, index) => {
-            let alreadyMadeChoice = GameStepManager.allChoicesMade.find((choice) =>
+            let alreadyMadeChoice = NarrationManagerStatic.allChoicesMade.find((choice) =>
                 choice.label === item.label.id &&
                 choice.step === currentLabelStepIndex &&
                 choice.stepSha1 === stepSha
@@ -451,11 +245,11 @@ export default class GameStepManager {
      * Check if the current step is already completed.
      * @returns True if the current step is already completed.
      */
-    public static get isCurrentStepAlreadyOpened(): boolean {
-        let currentLabel = GameStepManager.currentLabelId
+    public get isCurrentStepAlreadyOpened(): boolean {
+        let currentLabel = NarrationManagerStatic.currentLabelId
         if (currentLabel) {
-            let lastStep = GameStepManager.allOpenedLabels[currentLabel]?.openCount || 0
-            if (GameStepManager.currentLabelStepIndex && lastStep >= GameStepManager.currentLabelStepIndex) {
+            let lastStep = NarrationManagerStatic.allOpenedLabels[currentLabel]?.openCount || 0
+            if (NarrationManagerStatic.currentLabelStepIndex && lastStep >= NarrationManagerStatic.currentLabelStepIndex) {
                 return true
             }
         }
@@ -465,14 +259,20 @@ export default class GameStepManager {
      * Get times a label has been opened
      * @returns times a label has been opened
      */
-    public static getTimesLabelOpened(label: LabelIdType): number {
-        return GameStepManager.allOpenedLabels[label]?.openCount || 0
+    // TODO to document
+    public getTimesLabelOpened(label: LabelIdType): number {
+        return NarrationManagerStatic.allOpenedLabels[label]?.openCount || 0
     }
 
     /* Run Methods */
 
-    static get canGoNext(): boolean {
-        let options = GameStepManager.choiceMenuOptions
+    /**
+     * Return if can go to the next step.
+     * @returns True if can go to the next step.
+     */
+    // TODO to document
+    get canGoNext(): boolean {
+        let options = this.choiceMenuOptions
         if (options && options.length > 0) {
             return false
         }
@@ -502,16 +302,16 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static async goNext(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
-        if (!GameStepManager.canGoNext) {
+    public async goNext(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
+        if (!this.canGoNext) {
             console.warn("[Pixi'VN] The player must make a choice")
             return
         }
-        if (GameStepManager.currentLabel && GameStepManager.currentLabel.onStepEnd) {
-            await GameStepManager.currentLabel.onStepEnd(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+        if (this.currentLabel && this.currentLabel.onStepEnd) {
+            await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
         }
-        GameStepManager.increaseCurrentStepIndex()
-        return await GameStepManager.runCurrentStep(props, choiseMade)
+        NarrationManagerStatic.increaseCurrentStepIndex()
+        return await this.runCurrentStep(props, choiseMade)
     }
     /**
      * Execute the current step and add it to the history.
@@ -519,14 +319,14 @@ export default class GameStepManager {
      * @param choiseMade The choise made by the player.
      * @returns StepLabelResultType or undefined.
      */
-    private static async runCurrentStep<T extends {}>(props: StepLabelPropsType<T>, choiseMade?: number): Promise<StepLabelResultType> {
-        if (GameStepManager.currentLabelId) {
-            let currentLabelStepIndex = GameStepManager.currentLabelStepIndex
+    async runCurrentStep<T extends {}>(props: StepLabelPropsType<T>, choiseMade?: number): Promise<StepLabelResultType> {
+        if (NarrationManagerStatic.currentLabelId) {
+            let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
             if (currentLabelStepIndex === null) {
                 console.error("[Pixi'VN] currentLabelStepIndex is null")
                 return
             }
-            let currentLabel = GameStepManager.currentLabel as Label<T> | undefined
+            let currentLabel = NarrationManagerStatic._currentLabel as Label<T> | undefined
             if (!currentLabel) {
                 console.error("[Pixi'VN] currentLabel not found")
                 return
@@ -543,28 +343,28 @@ export default class GameStepManager {
                 }
                 try {
                     let result = await step(props)
-                    GameStepManager.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
-                    GameStepManager.addStepHistory(stepSha || "error", choiseMade)
+                    NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
+                    this.addStepHistory(stepSha || "error", choiseMade)
                     return result
                 }
                 catch (e) {
                     // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
                     // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
                     console.error("[Pixi'VN] Error running step", e)
-                    if (GameStepManager.onStepError) {
-                        GameStepManager.onStepError(e, props)
+                    if (this.onStepError) {
+                        this.onStepError(e, props)
                     }
                     return
                 }
             }
-            else if (GameStepManager.openedLabels.length > 1) {
-                GameStepManager.closeCurrentLabel()
-                return await GameStepManager.goNext(props, choiseMade)
+            else if (this.openedLabels.length > 1) {
+                this.closeCurrentLabel()
+                return await this.goNext(props, choiseMade)
             }
             else {
-                GameStepManager.restoreLastLabelList()
-                if (GameStepManager.onGameEnd) {
-                    return await GameStepManager.onGameEnd(props)
+                NarrationManagerStatic.restoreLastLabelList()
+                if (this.onGameEnd) {
+                    return await this.onGameEnd(props)
                 }
                 console.error("[Pixi'VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game")
                 return
@@ -592,7 +392,7 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async callLabel<T extends {} = {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public async callLabel<T extends {} = {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         let choiseMade: number | undefined = undefined
         let labelId: LabelIdType
         if (typeof label === 'string') {
@@ -615,23 +415,23 @@ export default class GameStepManager {
                     oneTime: false,
                     props: {},
                 }
-                return GameStepManager.closeChoiceMenu(choice, props)
+                return this.closeChoiceMenu(choice, props)
             }
             let tempLabel = getLabelById<Label<T>>(labelId)
             if (!tempLabel) {
                 throw new Error(`[Pixi'VN] Label ${labelId} not found`)
             }
 
-            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onStepEnd) {
-                await GameStepManager.currentLabel.onStepEnd(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+            if (this.currentLabel && this.currentLabel.onStepEnd) {
+                await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
             }
-            GameStepManager.pushNewLabel(tempLabel.id)
+            NarrationManagerStatic.pushNewLabel(tempLabel.id)
         }
         catch (e) {
             console.error("[Pixi'VN] Error calling label", e)
             return
         }
-        return await GameStepManager.runCurrentStep<T>(props, choiseMade)
+        return await this.runCurrentStep<T>(props, choiseMade)
     }
     /**
      * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
@@ -654,8 +454,8 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
-        GameStepManager.closeCurrentLabel()
+    public async jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+        this.closeCurrentLabel()
         let choiseMade: number | undefined = undefined
         let labelId: LabelIdType
         if (typeof label === 'string') {
@@ -678,23 +478,23 @@ export default class GameStepManager {
                     oneTime: false,
                     props: {},
                 }
-                return GameStepManager.closeChoiceMenu<T>(choice, props)
+                return this.closeChoiceMenu<T>(choice, props)
             }
             let tempLabel = getLabelById<Label<T>>(labelId)
             if (!tempLabel) {
                 throw new Error(`[Pixi'VN] Label ${labelId} not found`)
             }
 
-            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onStepEnd) {
-                await GameStepManager.currentLabel.onStepEnd(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+            if (this.currentLabel && this.currentLabel.onStepEnd) {
+                await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
             }
-            GameStepManager.pushNewLabel(tempLabel.id)
+            NarrationManagerStatic.pushNewLabel(tempLabel.id)
         }
         catch (e) {
             console.error("[Pixi'VN] Error jumping label", e)
             return
         }
-        return await GameStepManager.runCurrentStep<T>(props, choiseMade)
+        return await this.runCurrentStep<T>(props, choiseMade)
     }
     /**
      * When the player is in a choice menu, can use this function to exit to the choice menu.
@@ -710,16 +510,16 @@ export default class GameStepManager {
      * })
      * ```
      */
-    public static async closeChoiceMenu<T extends {} = {}>(choice: ChoiceMenuOptionClose<T>, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+    public async closeChoiceMenu<T extends {} = {}>(choice: ChoiceMenuOptionClose<T>, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         let label: Label<T> = choice.label
         let choiseMade: number | undefined = undefined
         if (typeof label.choiseIndex === "number") {
             choiseMade = label.choiseIndex
         }
         if (choice.closeCurrentLabel) {
-            GameStepManager.closeCurrentLabel()
+            this.closeCurrentLabel()
         }
-        return GameStepManager.goNext(props, choiseMade)
+        return this.goNext(props, choiseMade)
     }
 
     /* Go Back & Refresh Methods */
@@ -737,64 +537,29 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static async goBack(navigate: (path: string) => void, steps: number = 1) {
+    public async goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
             console.warn("[Pixi'VN] Steps must be greater than 0")
             return
         }
-        if (GameStepManager._stepsHistory.length <= 1) {
+        if (NarrationManagerStatic._stepsHistory.length <= 1) {
             console.warn("[Pixi'VN] No steps to go back")
             return
         }
-        let restoredStep = GameStepManager.goBackInternal(steps, GameStepManager.originalStepData)
+        let restoredStep = NarrationManagerStatic.goBackInternal(steps, NarrationManagerStatic.originalStepData)
         if (restoredStep) {
-            await GameStepManager.restoreFromHistoryStep(restoredStep, navigate)
+            await NarrationManagerStatic.restoreFromHistoryStep(restoredStep, navigate)
         }
         else {
             console.error("[Pixi'VN] Error going back")
         }
     }
-    private static goBackInternal(steps: number, restoredStep: IHistoryStepData): IHistoryStepData {
-        if (steps <= 0) {
-            return restoredStep
-        }
-        if (GameStepManager._stepsHistory.length == 0) {
-            return restoredStep
-        }
-        let lastHistoryStep = GameStepManager.lastHistoryStep
-        if (lastHistoryStep) {
-            try {
-                let result = restoreDeepDiffChanges(restoredStep, lastHistoryStep.diff)
-                GameStepManager._lastStepIndex = lastHistoryStep.index
-                GameStepManager._stepsHistory.pop()
-                return GameStepManager.goBackInternal(steps - 1, result)
-            }
-            catch (e) {
-                console.error("[Pixi'VN] Error applying diff", e)
-                return restoredStep
-            }
-        }
-        else {
-            return restoredStep
-        }
-    }
-    private static async restoreFromHistoryStep(restoredStep: IHistoryStepData, navigate: (path: string) => void) {
-        GameStepManager._originalStepData = restoredStep
-        GameStepManager._openedLabels = createExportableElement(restoredStep.openedLabels)
-        if (GameStepManager.currentLabel && GameStepManager.currentLabel.onLoadStep) {
-            await GameStepManager.currentLabel.onLoadStep(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
-        }
-        storage.import(createExportableElement(restoredStep.storage))
-        canvas.import(createExportableElement(restoredStep.canvas))
-        sound.import(createExportableElement(restoredStep.sound), GameStepManager.lastStepIndex - 1)
-        navigate(restoredStep.path)
-    }
 
     /**
      * Return true if it is possible to go back.
      */
-    public static get canGoBack(): boolean {
-        return GameStepManager._stepsHistory.length > 1
+    public get canGoBack(): boolean {
+        return NarrationManagerStatic._stepsHistory.length > 1
     }
 
 
@@ -808,7 +573,7 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static onGameEnd: StepLabelType | undefined = undefined
+    public onGameEnd: StepLabelType | undefined = undefined
     /**
      * Function to be executed when an error occurs in the step.
      * @example
@@ -819,15 +584,15 @@ export default class GameStepManager {
      * }
      * ```
      */
-    public static onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined
+    public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined
 
     /**
      * Dialogue to be shown in the game
      */
-    public static get dialogue(): Dialogue | undefined {
+    public get dialogue(): Dialogue | undefined {
         return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue
     }
-    public static set dialogue(props: {
+    public set dialogue(props: {
         character: string | CharacterInterface,
         text: string | string[],
     } | string | string[] | Dialogue | undefined) {
@@ -876,7 +641,7 @@ export default class GameStepManager {
         }
 
         storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType)
-        storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+        storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex)
     }
     /**
      * The options to be shown in the game
@@ -891,7 +656,7 @@ export default class GameStepManager {
      * ]
      * ```
      */
-    public static get choiceMenuOptions(): ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }> | undefined {
+    public get choiceMenuOptions(): ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }> | undefined {
         let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
         if (d) {
             let options: ChoiceMenuOptionsType = []
@@ -922,14 +687,14 @@ export default class GameStepManager {
         }
         return undefined
     }
-    public static set choiceMenuOptions(options: ChoiceMenuOptionsType<any> | undefined) {
+    public set choiceMenuOptions(options: ChoiceMenuOptionsType<any> | undefined) {
         if (!options) {
             storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
             return
         }
         options = options.filter((option, index) => {
             if (option.oneTime) {
-                let alreadyChoices = GameStepManager.alreadyCurrentStepMadeChoices
+                let alreadyChoices = this.alreadyCurrentStepMadeChoices
                 if (alreadyChoices && alreadyChoices.includes(index)) {
                     return false
                 }
@@ -951,16 +716,16 @@ export default class GameStepManager {
             }
         })
         storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
-        storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, GameStepManager.lastStepIndex)
+        storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex)
     }
 
 
     /**
      * Add a label to the history.
      */
-    public static clear() {
-        GameStepManager._stepsHistory = []
-        GameStepManager._openedLabels = []
+    public clear() {
+        NarrationManagerStatic._stepsHistory = []
+        NarrationManagerStatic._openedLabels = []
     }
 
     /* Export and Import Methods */
@@ -969,62 +734,62 @@ export default class GameStepManager {
      * Export the history to a JSON string.
      * @returns The history in a JSON string.
      */
-    public static exportJson(): string {
+    public exportJson(): string {
         return JSON.stringify(this.export())
     }
     /**
      * Export the history to an object.
      * @returns The history in an object.
      */
-    public static export(): ExportedStep {
+    public export(): ExportedStep {
         return {
-            stepsHistory: GameStepManager._stepsHistory,
-            openedLabels: GameStepManager._openedLabels,
-            lastStepIndex: GameStepManager._lastStepIndex,
-            originalStepData: GameStepManager._originalStepData,
+            stepsHistory: NarrationManagerStatic._stepsHistory,
+            openedLabels: NarrationManagerStatic._openedLabels,
+            lastStepIndex: NarrationManagerStatic._lastStepIndex,
+            originalStepData: NarrationManagerStatic._originalStepData,
         }
     }
     /**
      * Import the history from a JSON string.
      * @param dataString The history in a JSON string.
      */
-    public static async importJson(dataString: string) {
-        await GameStepManager.import(JSON.parse(dataString))
+    public async importJson(dataString: string) {
+        await this.import(JSON.parse(dataString))
     }
     /**
      * Import the history from an object.
      * @param data The history in an object.
      */
-    public static async import(data: object) {
-        GameStepManager.clear()
+    public async import(data: object) {
+        this.clear()
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                GameStepManager._stepsHistory = (data as ExportedStep)["stepsHistory"]
+                NarrationManagerStatic._stepsHistory = (data as ExportedStep)["stepsHistory"]
             }
             else {
                 console.warn("[Pixi'VN] Could not import stepsHistory data, so will be ignored")
             }
             if (data.hasOwnProperty("openedLabels")) {
-                GameStepManager._openedLabels = (data as ExportedStep)["openedLabels"]
+                NarrationManagerStatic._openedLabels = (data as ExportedStep)["openedLabels"]
             }
             else {
                 console.warn("[Pixi'VN] Could not import openedLabels data, so will be ignored")
             }
             if (data.hasOwnProperty("lastStepIndex")) {
-                GameStepManager._lastStepIndex = (data as ExportedStep)["lastStepIndex"]
+                NarrationManagerStatic._lastStepIndex = (data as ExportedStep)["lastStepIndex"]
             }
             else {
                 console.warn("[Pixi'VN] Could not import lastStepIndex data, so will be ignored")
             }
             if (data.hasOwnProperty("originalStepData")) {
-                GameStepManager._originalStepData = (data as ExportedStep)["originalStepData"]
+                NarrationManagerStatic._originalStepData = (data as ExportedStep)["originalStepData"]
             }
             else {
                 console.warn("[Pixi'VN] Could not import originalStepData data, so will be ignored")
             }
 
-            if (GameStepManager.currentLabel && GameStepManager.currentLabel.onLoadStep) {
-                await GameStepManager.currentLabel.onLoadStep(GameStepManager.currentLabelStepIndex || 0, GameStepManager.currentLabel)
+            if (this.currentLabel && this.currentLabel.onLoadStep) {
+                await this.currentLabel.onLoadStep(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
             }
         }
         catch (e) {

@@ -5,7 +5,7 @@ import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/SoundUt
 import { ExportedSound, ExportedSounds, SoundOptions, SoundPlayOptions } from '../interface';
 import SoundManagerStatic from './SoundManagerStatic';
 
-export default class GameSoundManager extends SoundLibrary {
+export default class SoundManager extends SoundLibrary {
     override get context(): IMediaContext {
         return sound.context
     }
