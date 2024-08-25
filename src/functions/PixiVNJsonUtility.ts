@@ -165,3 +165,21 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
         setFlag(value.key, value.value)
     }
 }
+
+export function getVariableData<T extends {}>(value: PixiVNJsonConditionalStatements<T[] | T>, key: keyof T, result: T[] = []): T[] {
+    let data = getValueFromConditionalStatements(value)
+    if (!data) {
+        return result
+    }
+    if (!Array.isArray(data)) {
+        data = [data]
+    }
+    data.forEach((element) => {
+        result.push(element)
+        let keyElement = element[key] as PixiVNJsonConditionalStatements<T[] | T> | undefined
+        if (keyElement) {
+            getVariableData(keyElement, key, result)
+        }
+    })
+    return result
+}

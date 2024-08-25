@@ -1,9 +1,9 @@
 import sha1 from 'crypto-js/sha1'
 import { moveIn, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
-import { getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
+import { getValueFromConditionalStatements, getVariableData, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
 import PixiVNJsonConditionalStatements from '../interface/PixiVNJsonConditionalStatements'
-import { PixiVNJsonChoice, PixiVNJsonChoices, PixiVNJsonDialog, PixiVNJsonDialogText } from "../interface/PixiVNJsonLabelStep"
+import { PixiVNJsonChoice, PixiVNJsonChoices, PixiVNJsonDialog, PixiVNJsonDialogText, PixiVNJsonLabelToOpen } from "../interface/PixiVNJsonLabelStep"
 import { canvas, narration, sound, storage } from "../managers"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
@@ -82,15 +82,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return undefined
     }
 
-    private stepConverter(stepPar: PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep)): StepLabelType<T> {
+    private stepConverter(step: PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep)): StepLabelType<T> {
         return async (props) => {
-            if (typeof stepPar === "function") {
-                stepPar = stepPar()
-            }
-            let step = getValueFromConditionalStatements(stepPar)
-            if (!step) {
-                console.error(`[Pixi'VN] Step is undefined.`)
-                return
+            if (typeof step === "function") {
+                step = step()
             }
             if (step.operation) {
                 for (let operation of step.operation) {
@@ -101,7 +96,18 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             let choices = this.getChoices(step.choices)
             let glueEnabled = getValueFromConditionalStatements(step.glueEnabled)
             let dialogue: PixiVNJsonDialog<string | string[]> | undefined = this.getDialogue(step.dialogue)
-            let labelToOpen = getValueFromConditionalStatements(step.labelToOpen)
+            let labelToOpen: PixiVNJsonLabelToOpen[] = []
+            if (step.labelToOpen) {
+                if (!Array.isArray(step.labelToOpen)) {
+                    step.labelToOpen = [step.labelToOpen]
+                }
+                step.labelToOpen.forEach((label) => {
+                    let i = getValueFromConditionalStatements(label)
+                    if (i) {
+                        labelToOpen.push(i)
+                    }
+                })
+            }
             let goNextStep = getValueFromConditionalStatements(step.goNextStep)
             let end = getValueFromConditionalStatements(step.end)
 
@@ -109,9 +115,24 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 let options = choices.map((option) => {
                     let text: string = ""
                     if (Array.isArray(option.text)) {
-                        text = option.text.join()
+                        let texts: string[] = []
+                        option.text.forEach((t) => {
+                            if (typeof t === "string") {
+                                texts.push(t)
+                            }
+                            else if (t.conditionalChoice) {
+                                let res = getVariableData(t.conditionalChoice, "conditionalChoice").map((choice) => {
+                                    if (Array.isArray(choice.text)) {
+                                        return choice.text.join()
+                                    }
+                                    return choice.text
+                                }).join()
+                                texts.push(res)
+                            }
+                        })
+                        text = texts.join()
                     }
-                    else {
+                    else if (typeof option.text === "string") {
                         text = option.text
                     }
                     return new ChoiceMenuOption(text, option.label, option.props, {
@@ -144,14 +165,14 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 narration.dialogue = (dialogue)
             }
 
-            if (labelToOpen) {
-                if (labelToOpen.type === "jump") {
-                    narration.jumpLabel(labelToOpen.label, props)
+            labelToOpen.forEach((label) => {
+                if (label.type === "jump") {
+                    narration.jumpLabel(label.label, props)
                 }
                 else {
-                    narration.callLabel(labelToOpen.label, props)
+                    narration.callLabel(label.label, props)
                 }
-            }
+            })
 
             if (goNextStep) {
                 narration.goNext(props)

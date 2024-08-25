@@ -259,7 +259,6 @@ export default class NarrationManager {
      * Get times a label has been opened
      * @returns times a label has been opened
      */
-    // TODO to document
     public getTimesLabelOpened(label: LabelIdType): number {
         return NarrationManagerStatic.allOpenedLabels[label]?.openCount || 0
     }
@@ -270,7 +269,6 @@ export default class NarrationManager {
      * Return if can go to the next step.
      * @returns True if can go to the next step.
      */
-    // TODO to document
     get canGoNext(): boolean {
         let options = this.choiceMenuOptions
         if (options && options.length > 0) {
