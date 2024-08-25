@@ -125,9 +125,9 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                                     if (Array.isArray(choice.text)) {
                                         return choice.text.join()
                                     }
-                                    return choice.text
-                                }).join()
-                                texts.push(res)
+                                    return choice.text || ""
+                                })
+                                texts = texts.concat(res)
                             }
                         })
                         text = texts.join()
