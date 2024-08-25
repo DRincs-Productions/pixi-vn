@@ -82,10 +82,15 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return undefined
     }
 
-    private stepConverter(step: PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep)): StepLabelType<T> {
+    private stepConverter(stepPar: PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep)): StepLabelType<T> {
         return async (props) => {
-            if (typeof step === "function") {
-                step = step()
+            if (typeof stepPar === "function") {
+                stepPar = stepPar()
+            }
+            let step = getValueFromConditionalStatements(stepPar)
+            if (!step) {
+                console.error(`[Pixi'VN] Step is undefined.`)
+                return
             }
             if (step.operation) {
                 for (let operation of step.operation) {

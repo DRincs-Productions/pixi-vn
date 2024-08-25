@@ -61,7 +61,7 @@ export type PixiVNJsonLabelToOpen = {
  * 4. go to next step if {@link PixiVNJsonLabelStep.goNextStep} is true
  * 5. end the label if {@link PixiVNJsonLabelStep.end} is "label_end"
  */
-type PixiVNJsonLabelStep = {
+type PixiVNJsonLabelStepData = {
     operation?: PixiVNJsonOperations
     /**
      * Variable used to display a choice menu.
@@ -91,5 +91,7 @@ type PixiVNJsonLabelStep = {
      */
     end?: "game_end" | "label_end" | PixiVNJsonConditionalStatements<"game_end" | "label_end">
 }
+
+type PixiVNJsonLabelStep = PixiVNJsonLabelStepData | PixiVNJsonConditionalStatements<PixiVNJsonLabelStepData>
 
 export default PixiVNJsonLabelStep
