@@ -1,3 +1,4 @@
+import CanvasManager from './CanvasManager';
 import NarrationManager from './NarrationManager';
 import SoundManager from './SoundManager';
 import StorageManager from './StorageManager';
@@ -6,8 +7,7 @@ export {
     /**
      *  @deprecated use "import { narration } from '@drincs/pixi-vn';"
      */
-    default as GameWindowManager,
-    default as canvas
+    default as GameWindowManager
 } from './CanvasManager';
 export {
     /**
@@ -25,6 +25,7 @@ export {
 const sound = new SoundManager()
 const narration = new NarrationManager()
 const storage = new StorageManager()
+const canvas = new CanvasManager()
 
-export { narration, sound, storage };
+export { canvas, narration, sound, storage };
 
