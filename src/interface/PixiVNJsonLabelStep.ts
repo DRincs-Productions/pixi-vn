@@ -1,18 +1,15 @@
 import { LabelRunModeType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
+import PixiVNJsonConditionalResultWithDefaultElement from "./PixiVNJsonConditionalResultWithDefaultElement"
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
 import { PixiVNJsonLabel } from "./PixiVNJsonLabels"
 import PixiVNJsonOperations from "./PixiVNJsonOperations"
 
-type VariableChoiseText = {
-    text?: string | string[]
-    conditionalChoice?: PixiVNJsonConditionalStatements<VariableChoiseText[] | VariableChoiseText>
-}
 export type PixiVNJsonChoice = {
     /**
      * The text to be displayed.
      */
-    text: string | (string | VariableChoiseText)[]
+    text: string | (string | PixiVNJsonConditionalResultWithDefaultElement<string>)[]
     /**
      * The label id to be opened.
      */
@@ -32,7 +29,7 @@ export type PixiVNJsonChoice = {
 }
 export type PixiVNJsonChoices = (PixiVNJsonChoice | PixiVNJsonConditionalStatements<PixiVNJsonChoice>)[]
 
-export type PixiVNJsonDialogText = string | PixiVNJsonConditionalStatements<string> | (string | PixiVNJsonConditionalStatements<string>)[]
+export type PixiVNJsonDialogText = string | PixiVNJsonConditionalStatements<string> | (string | PixiVNJsonConditionalStatements<string> | PixiVNJsonConditionalResultWithDefaultElement<string>)[]
 
 export type PixiVNJsonDialog<Text = string> = {
     /**

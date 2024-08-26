@@ -1,4 +1,5 @@
 import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
+import PixiVNJsonConditionalResultWithDefaultElement from "../interface/PixiVNJsonConditionalResultWithDefaultElement";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
 import NarrationManagerStatic from "../managers/NarrationManagerStatic";
@@ -166,7 +167,7 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     }
 }
 
-export function getVariableData<T extends {}>(value: PixiVNJsonConditionalStatements<T[] | T>, key: keyof T, result: T[] = []): T[] {
+export function getVariableData<T>(value: PixiVNJsonConditionalStatements<PixiVNJsonConditionalResultWithDefaultElement<T>[] | PixiVNJsonConditionalResultWithDefaultElement<T>>, result: T[] = []): T[] {
     let data = getValueFromConditionalStatements(value)
     if (!data) {
         return result
@@ -175,10 +176,17 @@ export function getVariableData<T extends {}>(value: PixiVNJsonConditionalStatem
         data = [data]
     }
     data.forEach((element) => {
-        result.push(element)
-        let keyElement = element[key] as PixiVNJsonConditionalStatements<T[] | T> | undefined
-        if (keyElement) {
-            getVariableData(keyElement, key, result)
+        if (element.firstItem) {
+            if (!Array.isArray(element.firstItem)) {
+                element.firstItem = [element.firstItem]
+            }
+            element.firstItem.forEach((item) => {
+                result.push(item)
+            })
+        }
+        let secondConditionalItem = element.secondConditionalItem
+        if (secondConditionalItem) {
+            getVariableData(secondConditionalItem, result)
         }
     })
     return result

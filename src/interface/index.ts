@@ -11,6 +11,7 @@ export type { default as ITickersSteps } from './ITickersSteps';
 export type { default as LabelProps } from './LabelProps';
 export type { default as NarrativeHistory } from './NarrativeHistory';
 export type { default as PixiVNJson } from './PixiVNJson';
+export type { default as PixiVNJsonConditionalResultWithDefaultElement } from './PixiVNJsonConditionalResultWithDefaultElement';
 export type { default as PixiVNJsonConditionalStatements } from './PixiVNJsonConditionalStatements';
 export type { default as PixiVNJsonConditions } from './PixiVNJsonConditions';
 export type { default as PixiVNJsonIfElse } from './PixiVNJsonIfElse';

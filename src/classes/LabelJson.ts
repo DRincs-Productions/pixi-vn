@@ -45,7 +45,20 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         if (Array.isArray(origin)) {
             let texts: string[] = []
             origin.forEach((t) => {
-                texts.push(getValueFromConditionalStatements(t) || "")
+                if (typeof t === "string") {
+                    texts.push(t)
+                }
+                else if (t && typeof t === "object") {
+                    if ("type" in t && t.type === "crwde") {
+                        if (t.secondConditionalItem) {
+                            let res = getVariableData(t.secondConditionalItem)
+                            texts = texts.concat(res)
+                        }
+                    }
+                    else {
+                        texts.push(getValueFromConditionalStatements(t) || "")
+                    }
+                }
             })
             text = texts
         }
@@ -120,13 +133,8 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                             if (typeof t === "string") {
                                 texts.push(t)
                             }
-                            else if (t.conditionalChoice) {
-                                let res = getVariableData(t.conditionalChoice, "conditionalChoice").map((choice) => {
-                                    if (Array.isArray(choice.text)) {
-                                        return choice.text.join()
-                                    }
-                                    return choice.text || ""
-                                })
+                            else if (t.secondConditionalItem) {
+                                let res = getVariableData(t.secondConditionalItem)
                                 texts = texts.concat(res)
                             }
                         })
