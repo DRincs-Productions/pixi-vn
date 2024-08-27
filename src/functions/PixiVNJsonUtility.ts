@@ -13,41 +13,40 @@ import { getFlag, setFlag } from "./FlagsUtility";
  */
 export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalStatements<T> | T): T | undefined {
     if (statement && typeof statement === "object" && "type" in statement) {
-        if (statement.type === "ifelse") {
-            let conditionResult = getConditionResult(statement.condition)
-            if (conditionResult) {
-                return getValueFromConditionalStatements(statement.then)
-            } else {
-                return getValueFromConditionalStatements(statement.then)
-            }
-        }
-        else if (statement.type === "stepswitch") {
-            let elements = getValueFromConditionalStatements(statement.elements) || []
-            if (elements.length === 0) {
-                console.error("[Pixi'VN] getValueFromConditionalStatements elements.length === 0")
-                return undefined
-            }
-            if (statement.choiceType === "random") {
-                let randomIndex = Math.floor(Math.random() * elements.length)
-                return getValueFromConditionalStatements(elements[randomIndex])
-            }
-            else if (statement.choiceType === "loop") {
-                if (narration.currentStepTimesCounter > elements.length - 1) {
-                    narration.currentStepTimesCounter = 0
-                    return getValueFromConditionalStatements(elements[0])
+        switch (statement.type) {
+            case "ifelse":
+                let conditionResult = getConditionResult(statement.condition)
+                if (conditionResult) {
+                    return getValueFromConditionalStatements(statement.then)
+                } else {
+                    return getValueFromConditionalStatements(statement.then)
                 }
-                return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
-            }
-            else if (statement.choiceType === "sequential") {
-                let end: T | undefined = undefined
-                if (statement.end == "lastItem") {
-                    end = getValueFromConditionalStatements(elements[elements.length - 1])
+            case "stepswitch":
+                let elements = getValueFromConditionalStatements(statement.elements) || []
+                if (elements.length === 0) {
+                    console.error("[Pixi'VN] getValueFromConditionalStatements elements.length === 0")
+                    return undefined
                 }
-                if (narration.currentStepTimesCounter > elements.length - 1) {
-                    return end
+                switch (statement.choiceType) {
+                    case "random":
+                        let randomIndex = Math.floor(Math.random() * elements.length)
+                        return getValueFromConditionalStatements(elements[randomIndex])
+                    case "loop":
+                        if (narration.currentStepTimesCounter > elements.length - 1) {
+                            narration.currentStepTimesCounter = 0
+                            return getValueFromConditionalStatements(elements[0])
+                        }
+                        return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
+                    case "sequential":
+                        let end: T | undefined = undefined
+                        if (statement.end == "lastItem") {
+                            end = getValueFromConditionalStatements(elements[elements.length - 1])
+                        }
+                        if (narration.currentStepTimesCounter > elements.length - 1) {
+                            return end
+                        }
+                        return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
                 }
-                return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
-            }
         }
     }
     return statement
