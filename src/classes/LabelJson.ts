@@ -52,7 +52,14 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                     if ("type" in t && t.type === "crwde") {
                         if (t.secondConditionalItem) {
                             let res = getVariableData(t.secondConditionalItem)
-                            texts = texts.concat(res)
+                            let simpleList: string[] = []
+                            res.forEach((r) => {
+                                let simple = getValueFromConditionalStatements(r)
+                                if (simple) {
+                                    simpleList.push(simple)
+                                }
+                            })
+                            texts = texts.concat(simpleList)
                         }
                     }
                     else {
@@ -135,7 +142,14 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                             }
                             else if (t.secondConditionalItem) {
                                 let res = getVariableData(t.secondConditionalItem)
-                                texts = texts.concat(res)
+                                let simpleList: string[] = []
+                                res.forEach((r) => {
+                                    let simple = getValueFromConditionalStatements(r)
+                                    if (simple) {
+                                        simpleList.push(simple)
+                                    }
+                                })
+                                texts = texts.concat(simpleList)
                             }
                         })
                         text = texts.join()

@@ -9,7 +9,7 @@ export type PixiVNJsonChoice = {
     /**
      * The text to be displayed.
      */
-    text: string | (string | PixiVNJsonConditionalResultWithDefaultElement<string>)[]
+    text: string | (string | PixiVNJsonConditionalResultWithDefaultElement<string | PixiVNJsonConditionalStatements<string>>)[]
     /**
      * The label id to be opened.
      */
@@ -29,7 +29,7 @@ export type PixiVNJsonChoice = {
 }
 export type PixiVNJsonChoices = (PixiVNJsonChoice | PixiVNJsonConditionalStatements<PixiVNJsonChoice>)[]
 
-export type PixiVNJsonDialogText = string | PixiVNJsonConditionalStatements<string> | (string | PixiVNJsonConditionalStatements<string> | PixiVNJsonConditionalResultWithDefaultElement<string>)[]
+export type PixiVNJsonDialogText = string | PixiVNJsonConditionalStatements<string> | (string | PixiVNJsonConditionalStatements<string> | PixiVNJsonConditionalResultWithDefaultElement<string | PixiVNJsonConditionalStatements<string>>)[]
 
 export type PixiVNJsonDialog<Text = string> = {
     /**
