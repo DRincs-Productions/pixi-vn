@@ -1,6 +1,7 @@
 import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
-import PixiVNJsonConditionalResultWithDefaultElement from "../interface/PixiVNJsonConditionalResultWithDefaultElement";
+import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditionalResultToCombine";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
+import { PixiVNJsonStepSwitchElementsType } from "../interface/PixiVNJsonStepSwitch";
 import { narration, storage } from "../managers";
 import NarrationManagerStatic from "../managers/NarrationManagerStatic";
 import { StorageElementType } from "../types";
@@ -11,18 +12,23 @@ import { getFlag, setFlag } from "./FlagsUtility";
  * @param statement is the conditional statements object
  * @returns the value from the conditional statements
  */
-export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalStatements<T> | T): T | undefined {
-    if (statement && typeof statement === "object" && "type" in statement) {
+export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalStatements<T> | T | PixiVNJsonConditionalResultToCombine<T | T[]> | PixiVNJsonStepSwitchElementsType<T>, conbinate: (value?: PixiVNJsonConditionalResultToCombine<T>) => T): T | undefined {
+    if (Array.isArray(statement)) {
+        return undefined
+    }
+    else if (statement && typeof statement === "object" && "type" in statement) {
         switch (statement.type) {
+            case "resulttocombine":
+                return undefined
             case "ifelse":
                 let conditionResult = getConditionResult(statement.condition)
                 if (conditionResult) {
-                    return getValueFromConditionalStatements(statement.then)
+                    return getValueFromConditionalStatements(statement.then, conbinate)
                 } else {
-                    return getValueFromConditionalStatements(statement.then)
+                    return getValueFromConditionalStatements(statement.then, conbinate)
                 }
             case "stepswitch":
-                let elements = getValueFromConditionalStatements(statement.elements) || []
+                let elements = getValueFromConditionalStatements(statement.elements, conbinate) || []
                 if (elements.length === 0) {
                     console.error("[Pixi'VN] getValueFromConditionalStatements elements.length === 0")
                     return undefined
@@ -166,7 +172,7 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     }
 }
 
-export function getVariableData<T>(value: PixiVNJsonConditionalStatements<PixiVNJsonConditionalResultWithDefaultElement<T>[] | PixiVNJsonConditionalResultWithDefaultElement<T>>, result: T[] = []): T[] {
+export function getVariableData<T>(value: PixiVNJsonConditionalStatements<PixiVNJsonConditionalResultToCombine<T>[] | PixiVNJsonConditionalResultToCombine<T>>, result: T[] = []): T[] {
     let data = getValueFromConditionalStatements(value)
     if (!data) {
         return result

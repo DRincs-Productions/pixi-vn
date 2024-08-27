@@ -1,14 +1,17 @@
+import PixiVNJsonConditionalResultToCombine from "./PixiVNJsonConditionalResultToCombine"
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
+
+export type PixiVNJsonStepSwitchElementsType<Then> = (Then | PixiVNJsonConditionalStatements<Then> | PixiVNJsonConditionalResultToCombine<Then>)[] | PixiVNJsonConditionalStatements<Then[]>
 
 interface PixiVNJsonRandom<Then> {
     type: "stepswitch",
     choiceType: "random",
-    elements: (Then | PixiVNJsonConditionalStatements<Then>)[] | PixiVNJsonConditionalStatements<Then[]>
+    elements: PixiVNJsonStepSwitchElementsType<Then>
 }
 interface PixiVNJsonSequential<Then> {
     type: "stepswitch",
     choiceType: "sequential",
-    elements: (Then | PixiVNJsonConditionalStatements<Then>)[] | PixiVNJsonConditionalStatements<Then[]>
+    elements: PixiVNJsonStepSwitchElementsType<Then>
     /**
      * When the sequential ends, what should be the value? If undefined, it will return undefined.
      * If "lastItem", it will return the last item in the array.
@@ -22,7 +25,7 @@ interface PixiVNJsonSequential<Then> {
 interface PixiVNJsonLoop<Then> {
     type: "stepswitch",
     choiceType: "loop",
-    elements: (Then | PixiVNJsonConditionalStatements<Then>)[] | PixiVNJsonConditionalStatements<Then[]>
+    elements: PixiVNJsonStepSwitchElementsType<Then>
     nestedId?: string
 }
 
