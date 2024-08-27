@@ -1,7 +1,6 @@
 import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
 import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditionalResultToCombine";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
-import { PixiVNJsonStepSwitchElementsType } from "../interface/PixiVNJsonStepSwitch";
 import { narration, storage } from "../managers";
 import NarrationManagerStatic from "../managers/NarrationManagerStatic";
 import { StorageElementType } from "../types";
@@ -12,23 +11,23 @@ import { getFlag, setFlag } from "./FlagsUtility";
  * @param statement is the conditional statements object
  * @returns the value from the conditional statements
  */
-export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalStatements<T> | T | PixiVNJsonConditionalResultToCombine<T | T[]> | PixiVNJsonStepSwitchElementsType<T>, conbinate: (value?: PixiVNJsonConditionalResultToCombine<T>) => T): T | undefined {
-    if (Array.isArray(statement)) {
+export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalResultToCombine<T> | PixiVNJsonConditionalStatements<T> | T | undefined): T | undefined {
+    if (Array.isArray(statement) || !statement) {
         return undefined
     }
     else if (statement && typeof statement === "object" && "type" in statement) {
         switch (statement.type) {
             case "resulttocombine":
-                return undefined
+                return combinateResult(statement)
             case "ifelse":
                 let conditionResult = getConditionResult(statement.condition)
                 if (conditionResult) {
-                    return getValueFromConditionalStatements(statement.then, conbinate)
+                    return getValueFromConditionalStatements(statement.then)
                 } else {
-                    return getValueFromConditionalStatements(statement.then, conbinate)
+                    return getValueFromConditionalStatements(statement.else)
                 }
             case "stepswitch":
-                let elements = getValueFromConditionalStatements(statement.elements, conbinate) || []
+                let elements = getValueFromConditionalStatements(statement.elements) || []
                 if (elements.length === 0) {
                     console.error("[Pixi'VN] getValueFromConditionalStatements elements.length === 0")
                     return undefined
@@ -56,6 +55,34 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
         }
     }
     return statement
+}
+function combinateResult<T>(value: PixiVNJsonConditionalResultToCombine<T>): undefined | T {
+    let first = value.firstItem
+    let second: T[] = []
+    value.secondConditionalItem?.forEach((item) => {
+        if (!Array.isArray(item)) {
+            let i = getValueFromConditionalStatements(item)
+            if (i) {
+                second.push(i)
+            }
+        }
+        else {
+            item.forEach((i) => {
+                let j = getValueFromConditionalStatements(i)
+                if (j) {
+                    second.push(j)
+                }
+            })
+        }
+    })
+    let toCheck = first ? [first, ...second] : second
+    if (toCheck.length === 0) {
+        return undefined
+    }
+
+    if (typeof toCheck[0] === "string") {
+        return toCheck.join("") as T
+    }
 }
 
 /**
@@ -170,29 +197,4 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     } else {
         setFlag(value.key, value.value)
     }
-}
-
-export function getVariableData<T>(value: PixiVNJsonConditionalStatements<PixiVNJsonConditionalResultToCombine<T>[] | PixiVNJsonConditionalResultToCombine<T>>, result: T[] = []): T[] {
-    let data = getValueFromConditionalStatements(value)
-    if (!data) {
-        return result
-    }
-    if (!Array.isArray(data)) {
-        data = [data]
-    }
-    data.forEach((element) => {
-        if (element.firstItem) {
-            if (!Array.isArray(element.firstItem)) {
-                element.firstItem = [element.firstItem]
-            }
-            element.firstItem.forEach((item) => {
-                result.push(item)
-            })
-        }
-        let secondConditionalItem = element.secondConditionalItem
-        if (secondConditionalItem) {
-            getVariableData(secondConditionalItem, result)
-        }
-    })
-    return result
 }
