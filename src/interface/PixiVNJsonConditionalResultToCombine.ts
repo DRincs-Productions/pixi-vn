@@ -1,4 +1,5 @@
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
+import { PixiVNJsonStepSwitchElementType } from "./PixiVNJsonStepSwitch"
 
 /**
  * This element is used in case a {@link PixiVNJsonConditionalStatements} gives a result that must be combined with another calculated through other {@link PixiVNJsonConditionalStatements}.
@@ -11,6 +12,6 @@ type PixiVNJsonConditionalResultToCombine<T> = {
      */
     combine: "cross" | "union"
     firstItem?: T
-    secondConditionalItem?: (PixiVNJsonConditionalResultToCombine<T> | PixiVNJsonConditionalStatements<T>[] | T)[]
+    secondConditionalItem?: PixiVNJsonStepSwitchElementType<T>[]
 }
 export default PixiVNJsonConditionalResultToCombine

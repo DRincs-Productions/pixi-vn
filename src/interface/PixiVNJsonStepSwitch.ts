@@ -1,7 +1,8 @@
 import PixiVNJsonConditionalResultToCombine from "./PixiVNJsonConditionalResultToCombine"
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
 
-export type PixiVNJsonStepSwitchElementsType<Then> = (Then | PixiVNJsonConditionalStatements<Then> | PixiVNJsonConditionalResultToCombine<Then>)[] | PixiVNJsonConditionalStatements<Then[]>
+export type PixiVNJsonStepSwitchElementType<Then> = Then | PixiVNJsonConditionalStatements<Then> | PixiVNJsonConditionalResultToCombine<Then>
+export type PixiVNJsonStepSwitchElementsType<Then> = (PixiVNJsonStepSwitchElementType<Then>)[] | PixiVNJsonConditionalStatements<Then[]>
 
 interface PixiVNJsonRandom<Then> {
     type: "stepswitch",

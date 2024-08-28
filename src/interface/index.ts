@@ -19,7 +19,7 @@ export type { PixiVNJsonLabel, default as PixiVNJsonLabels } from './PixiVNJsonL
 export type { PixiVNJsonDialogText, default as PixiVNJsonLabelStep } from './PixiVNJsonLabelStep';
 export type { PixiVNJsonCanvas, PixiVNJsonSound } from './PixiVNJsonMedia';
 export type { PixiVNJsonOperation, default as PixiVNJsonOperations } from './PixiVNJsonOperations';
-export type { default as PixiVNJsonStepSwitch } from './PixiVNJsonStepSwitch';
+export type { default as PixiVNJsonStepSwitch, PixiVNJsonStepSwitchElementType, PixiVNJsonStepSwitchElementsType } from './PixiVNJsonStepSwitch';
 export type { default as PixiVNJsonUnionCondition } from './PixiVNJsonUnionCondition';
 export type { PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonValueGet, PixiVNJsonValueSet } from './PixiVNJsonValue';
 export type { default as SoundOptions, SoundPlayOptions } from './SoundOptions';
