@@ -11,7 +11,7 @@ export type { default as ITickersSteps } from './ITickersSteps';
 export type { default as LabelProps } from './LabelProps';
 export type { default as NarrativeHistory } from './NarrativeHistory';
 export type { default as PixiVNJson } from './PixiVNJson';
-export type { default as PixiVNJsonConditionalResultWithDefaultElement } from './PixiVNJsonConditionalResultWithDefaultElement';
+export type { default as PixiVNJsonConditionalResultToCombine } from './PixiVNJsonConditionalResultToCombine';
 export type { default as PixiVNJsonConditionalStatements } from './PixiVNJsonConditionalStatements';
 export type { default as PixiVNJsonConditions } from './PixiVNJsonConditions';
 export type { default as PixiVNJsonIfElse } from './PixiVNJsonIfElse';
@@ -19,7 +19,7 @@ export type { PixiVNJsonLabel, default as PixiVNJsonLabels } from './PixiVNJsonL
 export type { PixiVNJsonDialogText, default as PixiVNJsonLabelStep } from './PixiVNJsonLabelStep';
 export type { PixiVNJsonCanvas, PixiVNJsonSound } from './PixiVNJsonMedia';
 export type { PixiVNJsonOperation, default as PixiVNJsonOperations } from './PixiVNJsonOperations';
-export type { default as PixiVNJsonStepSwitch } from './PixiVNJsonStepSwitch';
+export type { default as PixiVNJsonStepSwitch, PixiVNJsonStepSwitchElementType, PixiVNJsonStepSwitchElementsType } from './PixiVNJsonStepSwitch';
 export type { default as PixiVNJsonUnionCondition } from './PixiVNJsonUnionCondition';
 export type { PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonValueGet, PixiVNJsonValueSet } from './PixiVNJsonValue';
 export type { default as SoundOptions, SoundPlayOptions } from './SoundOptions';

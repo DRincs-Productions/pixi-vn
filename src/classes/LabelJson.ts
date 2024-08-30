@@ -1,6 +1,6 @@
 import sha1 from 'crypto-js/sha1'
 import { moveIn, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
-import { getValueFromConditionalStatements, getVariableData, setStorageJson } from "../functions/PixiVNJsonUtility"
+import { getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
 import PixiVNJsonConditionalStatements from '../interface/PixiVNJsonConditionalStatements'
 import { PixiVNJsonChoice, PixiVNJsonChoices, PixiVNJsonDialog, PixiVNJsonDialogText, PixiVNJsonLabelToOpen } from "../interface/PixiVNJsonLabelStep"
@@ -49,21 +49,14 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                     texts.push(t)
                 }
                 else if (t && typeof t === "object") {
-                    if ("type" in t && t.type === "crwde") {
-                        if (t.secondConditionalItem) {
-                            let res = getVariableData(t.secondConditionalItem)
-                            let simpleList: string[] = []
-                            res.forEach((r) => {
-                                let simple = getValueFromConditionalStatements(r)
-                                if (simple) {
-                                    simpleList.push(simple)
-                                }
-                            })
-                            texts = texts.concat(simpleList)
+                    let res = getValueFromConditionalStatements(t)
+                    if (res) {
+                        if (Array.isArray(res)) {
+                            texts = texts.concat(res)
                         }
-                    }
-                    else {
-                        texts.push(getValueFromConditionalStatements(t) || "")
+                        else {
+                            texts.push(res)
+                        }
                     }
                 }
             })
@@ -140,16 +133,16 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                             if (typeof t === "string") {
                                 texts.push(t)
                             }
-                            else if (t.secondConditionalItem) {
-                                let res = getVariableData(t.secondConditionalItem)
-                                let simpleList: string[] = []
-                                res.forEach((r) => {
-                                    let simple = getValueFromConditionalStatements(r)
-                                    if (simple) {
-                                        simpleList.push(simple)
+                            else if (t && typeof t === "object") {
+                                let res = getValueFromConditionalStatements(t)
+                                if (res) {
+                                    if (Array.isArray(res)) {
+                                        texts = texts.concat(res)
                                     }
-                                })
-                                texts = texts.concat(simpleList)
+                                    else {
+                                        texts.push(res)
+                                    }
+                                }
                             }
                         })
                         text = texts.join()

@@ -1,5 +1,5 @@
-import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
-import PixiVNJsonConditionalResultWithDefaultElement from "../interface/PixiVNJsonConditionalResultWithDefaultElement";
+import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonLabelStep, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
+import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditionalResultToCombine";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
 import NarrationManagerStatic from "../managers/NarrationManagerStatic";
@@ -11,15 +11,20 @@ import { getFlag, setFlag } from "./FlagsUtility";
  * @param statement is the conditional statements object
  * @returns the value from the conditional statements
  */
-export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalStatements<T> | T): T | undefined {
-    if (statement && typeof statement === "object" && "type" in statement) {
+export function getValueFromConditionalStatements<T>(statement: PixiVNJsonConditionalResultToCombine<T> | PixiVNJsonConditionalStatements<T> | T | undefined): T | undefined {
+    if (Array.isArray(statement) || !statement) {
+        return undefined
+    }
+    else if (statement && typeof statement === "object" && "type" in statement) {
         switch (statement.type) {
+            case "resulttocombine":
+                return combinateResult(statement)
             case "ifelse":
                 let conditionResult = getConditionResult(statement.condition)
                 if (conditionResult) {
                     return getValueFromConditionalStatements(statement.then)
                 } else {
-                    return getValueFromConditionalStatements(statement.then)
+                    return getValueFromConditionalStatements(statement.else)
                 }
             case "stepswitch":
                 let elements = getValueFromConditionalStatements(statement.elements) || []
@@ -50,6 +55,55 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
         }
     }
     return statement
+}
+function combinateResult<T>(value: PixiVNJsonConditionalResultToCombine<T>): undefined | T {
+    let first = value.firstItem
+    let second: T[] = []
+    value.secondConditionalItem?.forEach((item) => {
+        if (!Array.isArray(item)) {
+            let i = getValueFromConditionalStatements(item)
+            if (i) {
+                second.push(i)
+            }
+        }
+        else {
+            item.forEach((i) => {
+                let j = getValueFromConditionalStatements(i)
+                if (j) {
+                    second.push(j)
+                }
+            })
+        }
+    })
+    let toCheck = first ? [first, ...second] : second
+    if (toCheck.length === 0) {
+        return undefined
+    }
+
+    if (typeof toCheck[0] === "string") {
+        return toCheck.join("") as T
+    }
+    if (typeof toCheck[0] === "object") {
+        let steps = toCheck as PixiVNJsonLabelStep[]
+        let dialogue = steps.map((step) => step.dialogue).join("")
+        let end = steps.find((step) => step.end)
+        let choices = steps.find((step) => step.choices)
+        let glueEnabled = steps.find((step) => step.glueEnabled)
+        let goNextStep = steps.find((step) => step.goNextStep)
+        let labelToOpen = steps.find((step) => step.labelToOpen)
+        let operation = steps.find((step) => step.operation)
+
+        let res: PixiVNJsonLabelStep = {
+            dialogue,
+            end: end?.end,
+            choices: choices?.choices,
+            glueEnabled: glueEnabled?.glueEnabled,
+            goNextStep: goNextStep?.goNextStep,
+            labelToOpen: labelToOpen?.labelToOpen,
+            operation: operation?.operation
+        }
+        return res as T
+    }
 }
 
 /**
@@ -164,29 +218,4 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     } else {
         setFlag(value.key, value.value)
     }
-}
-
-export function getVariableData<T>(value: PixiVNJsonConditionalStatements<PixiVNJsonConditionalResultWithDefaultElement<T>[] | PixiVNJsonConditionalResultWithDefaultElement<T>>, result: T[] = []): T[] {
-    let data = getValueFromConditionalStatements(value)
-    if (!data) {
-        return result
-    }
-    if (!Array.isArray(data)) {
-        data = [data]
-    }
-    data.forEach((element) => {
-        if (element.firstItem) {
-            if (!Array.isArray(element.firstItem)) {
-                element.firstItem = [element.firstItem]
-            }
-            element.firstItem.forEach((item) => {
-                result.push(item)
-            })
-        }
-        let secondConditionalItem = element.secondConditionalItem
-        if (secondConditionalItem) {
-            getVariableData(secondConditionalItem, result)
-        }
-    })
-    return result
 }
