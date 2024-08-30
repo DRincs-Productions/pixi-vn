@@ -1,4 +1,4 @@
-import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
+import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonLabelStep, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
 import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditionalResultToCombine";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
@@ -82,6 +82,27 @@ function combinateResult<T>(value: PixiVNJsonConditionalResultToCombine<T>): und
 
     if (typeof toCheck[0] === "string") {
         return toCheck.join("") as T
+    }
+    if (typeof toCheck[0] === "object") {
+        let steps = toCheck as PixiVNJsonLabelStep[]
+        let dialogue = steps.map((step) => step.dialogue).join("")
+        let end = steps.find((step) => step.end)
+        let choices = steps.find((step) => step.choices)
+        let glueEnabled = steps.find((step) => step.glueEnabled)
+        let goNextStep = steps.find((step) => step.goNextStep)
+        let labelToOpen = steps.find((step) => step.labelToOpen)
+        let operation = steps.find((step) => step.operation)
+
+        let res: PixiVNJsonLabelStep = {
+            dialogue,
+            end: end?.end,
+            choices: choices?.choices,
+            glueEnabled: glueEnabled?.glueEnabled,
+            goNextStep: goNextStep?.goNextStep,
+            labelToOpen: labelToOpen?.labelToOpen,
+            operation: operation?.operation
+        }
+        return res as T
     }
 }
 
