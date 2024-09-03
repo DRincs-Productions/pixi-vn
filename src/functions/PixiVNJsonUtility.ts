@@ -167,7 +167,7 @@ function getConditionResult(condition: PixiVNJsonConditions): boolean {
  * @param value is the value to get
  * @returns the value from the storage or the value
  */
-export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditions): T {
+export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditions): T | undefined {
     if (value && typeof value === "object") {
         if ("type" in value) {
             if (value.type === "value" && value.storageOperationType === "get") {
