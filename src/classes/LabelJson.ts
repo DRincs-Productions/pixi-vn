@@ -1,6 +1,6 @@
 import sha1 from 'crypto-js/sha1'
 import { moveIn, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
-import { getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
+import { getValue, getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
 import PixiVNJsonConditionalStatements from '../interface/PixiVNJsonConditionalStatements'
 import { PixiVNJsonChoice, PixiVNJsonChoices, PixiVNJsonDialog, PixiVNJsonDialogText, PixiVNJsonLabelToOpen } from "../interface/PixiVNJsonLabelStep"
@@ -181,11 +181,15 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             }
 
             labelToOpen.forEach((label) => {
+                let labelString = label.label
+                if (typeof labelString === "object") {
+                    labelString = getValue<string>(labelString)
+                }
                 if (label.type === "jump") {
-                    narration.jumpLabel(label.label, props)
+                    narration.jumpLabel(labelString, props)
                 }
                 else {
-                    narration.callLabel(label.label, props)
+                    narration.callLabel(labelString, props)
                 }
             })
 
