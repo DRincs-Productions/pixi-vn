@@ -3,6 +3,7 @@ import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditi
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
 import NarrationManagerStatic from "../managers/NarrationManagerStatic";
+import StorageManagerStatic from "../managers/StorageManagerStatic";
 import { StorageElementType } from "../types";
 import { getFlag, setFlag } from "./FlagsUtility";
 
@@ -173,6 +174,8 @@ function getValue(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonCon
                 switch (value.storageType) {
                     case "storage":
                         return storage.getVariable((value as PixiVNJsonStorageGet).key)
+                    case "tempstorage":
+                        return StorageManagerStatic.getTempVariable((value as PixiVNJsonStorageGet).key)
                     case "flagStorage":
                         return getFlag((value as PixiVNJsonStorageGet).key)
                     case "label":
@@ -213,9 +216,15 @@ function getUnionConditionResult(condition: PixiVNJsonUnionCondition): boolean {
 }
 
 export function setStorageJson(value: PixiVNJsonValueSet) {
-    if (value.storageType === "storage") {
-        storage.setVariable(value.key, getValue(value.value))
-    } else {
-        setFlag(value.key, value.value)
+    switch (value.storageType) {
+        case "flagStorage":
+            setFlag(value.key, value.value)
+            break
+        case "storage":
+            storage.setVariable(value.key, value.value)
+            break
+        case "tempstorage":
+            StorageManagerStatic.setTempVariable(value.key, value.value)
+            break
     }
 }
