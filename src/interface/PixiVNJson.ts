@@ -1,22 +1,16 @@
-import PixiVNJsonIfElse from "./PixiVNJsonIfElse"
 import PixiVNJsonLabels from "./PixiVNJsonLabels"
-import { PixiVNJsonValueSet } from "./PixiVNJsonValue"
+import PixiVNJsonOperations from "./PixiVNJsonOperations"
 
 /**
  * PixiVNJson It can be defined as a programming language to write a narrative written in json.
  */
 export default interface PixiVNJson {
     /**
-     * The initial variables are added to the system when this json is loaded.
-     * They will be set only if there are no variables with the same key already.
+     * The operations to be executed before the narrative starts.
+     * For the set storage: They will be set only if there are no variables with the same key already.
+     * For the det tempstorage: if there are variables with the same key already, they will be overwritten.
      */
-    initialVariables?: (PixiVNJsonValueSet | PixiVNJsonIfElse<PixiVNJsonValueSet>)[]
-    /**
-     * The variables are added to the system when this json is loaded.
-     * if there are variables with the same key already, they will be overwritten.
-     * This solution corresponds to the **constants**.
-     */
-    constants?: (PixiVNJsonValueSet | PixiVNJsonIfElse<PixiVNJsonValueSet>)[]
+    initialOperations?: PixiVNJsonOperations
     /**
      * The labels to be used in the narrative. They will be added to the system
      */
