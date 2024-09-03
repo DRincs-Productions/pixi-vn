@@ -216,15 +216,16 @@ function getUnionConditionResult(condition: PixiVNJsonUnionCondition): boolean {
 }
 
 export function setStorageJson(value: PixiVNJsonValueSet) {
+    let valueToSet = getValueFromConditionalStatements(value.value)
     switch (value.storageType) {
         case "flagStorage":
             setFlag(value.key, value.value)
             break
         case "storage":
-            storage.setVariable(value.key, value.value)
+            storage.setVariable(value.key, valueToSet)
             break
         case "tempstorage":
-            StorageManagerStatic.setTempVariable(value.key, value.value)
+            StorageManagerStatic.setTempVariable(value.key, valueToSet)
             break
     }
 }
