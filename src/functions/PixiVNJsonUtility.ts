@@ -3,6 +3,7 @@ import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditi
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
 import NarrationManagerStatic from "../managers/NarrationManagerStatic";
+import StorageManagerStatic from "../managers/StorageManagerStatic";
 import { StorageElementType } from "../types";
 import { getFlag, setFlag } from "./FlagsUtility";
 
@@ -166,25 +167,27 @@ function getConditionResult(condition: PixiVNJsonConditions): boolean {
  * @param value is the value to get
  * @returns the value from the storage or the value
  */
-function getValue(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditions): any {
+export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditions): T | undefined {
     if (value && typeof value === "object") {
         if ("type" in value) {
             if (value.type === "value" && value.storageOperationType === "get") {
                 switch (value.storageType) {
                     case "storage":
-                        return storage.getVariable((value as PixiVNJsonStorageGet).key)
+                        return storage.getVariable((value as PixiVNJsonStorageGet).key) as unknown as T
+                    case "tempstorage":
+                        return StorageManagerStatic.getTempVariable((value as PixiVNJsonStorageGet).key) as unknown as T
                     case "flagStorage":
-                        return getFlag((value as PixiVNJsonStorageGet).key)
+                        return getFlag((value as PixiVNJsonStorageGet).key) as unknown as T
                     case "label":
-                        return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label)
+                        return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label) as unknown as T
                 }
             }
             else {
-                return getConditionResult(value)
+                return getConditionResult(value) as unknown as T
             }
         }
     }
-    return value
+    return value as T
 }
 
 /**
@@ -213,9 +216,16 @@ function getUnionConditionResult(condition: PixiVNJsonUnionCondition): boolean {
 }
 
 export function setStorageJson(value: PixiVNJsonValueSet) {
-    if (value.storageType === "storage") {
-        storage.setVariable(value.key, getValue(value.value))
-    } else {
-        setFlag(value.key, value.value)
+    let valueToSet = getValueFromConditionalStatements(value.value)
+    switch (value.storageType) {
+        case "flagStorage":
+            setFlag(value.key, value.value)
+            break
+        case "storage":
+            storage.setVariable(value.key, valueToSet)
+            break
+        case "tempstorage":
+            StorageManagerStatic.setTempVariable(value.key, valueToSet)
+            break
     }
 }

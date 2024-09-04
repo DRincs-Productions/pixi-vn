@@ -1,5 +1,6 @@
 import { getFlag } from "../functions"
 import { StorageElementType } from "../types"
+import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
 
 export type PixiVNJsonStorageGet = {
     type: "value"
@@ -12,7 +13,7 @@ export type PixiVNJsonStorageGet = {
      * Type of the storage, if it is a flagStorage or a storage.
      * If it is a flagStorage, the value will be get with the function {@link getFlag}
      */
-    storageType: "storage" | "flagStorage",
+    storageType: "storage" | "flagStorage" | "tempstorage",
 }
 
 export type PixiVNJsonLabelGet = {
@@ -39,11 +40,11 @@ type PixiVNJsonOnlyStorageSet = {
     /**
      * Value to be set in the storage
      */
-    value: StorageElementType | PixiVNJsonValueGet,
+    value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditionalStatements<StorageElementType>,
     /**
      * Type of the storage, if it is a flagStorage or a storage.
      */
-    storageType: "storage",
+    storageType: "storage" | "tempstorage",
 }
 
 type PixiVNJsonFlagSet = {

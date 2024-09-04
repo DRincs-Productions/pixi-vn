@@ -3,6 +3,7 @@ import { LabelIdType } from "../types/LabelIdType"
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
 import { PixiVNJsonLabel } from "./PixiVNJsonLabels"
 import PixiVNJsonOperations from "./PixiVNJsonOperations"
+import { PixiVNJsonValueGet } from "./PixiVNJsonValue"
 
 export type PixiVNJsonChoice = {
     /**
@@ -28,7 +29,7 @@ export type PixiVNJsonChoice = {
 }
 export type PixiVNJsonChoices = (PixiVNJsonChoice | PixiVNJsonConditionalStatements<PixiVNJsonChoice>)[]
 
-export type PixiVNJsonDialogText = string | PixiVNJsonConditionalStatements<string | string[]> | (string | PixiVNJsonConditionalStatements<string | string[]>)[]
+export type PixiVNJsonDialogText = string | PixiVNJsonValueGet | PixiVNJsonConditionalStatements<string | PixiVNJsonValueGet | string[]> | (string | PixiVNJsonValueGet | PixiVNJsonConditionalStatements<string | PixiVNJsonValueGet | string[]>)[]
 
 export type PixiVNJsonDialog<Text = string> = {
     /**
@@ -45,7 +46,7 @@ export type PixiVNJsonLabelToOpen = {
     /**
      * The id of the label to open.
      */
-    label: string,
+    label: string | PixiVNJsonValueGet,
     /**
      * Label opening mode
      */

@@ -49,4 +49,28 @@ export default class StorageManagerStatic {
             CURRENT_STEP_TIMES_COUNTER_KEY: "___current_step_times_counter___",
         }
     }
+    static storageTemp: { [key: string]: StorageElementType } = {}
+    static setTempVariable(key: string, value: StorageElementType) {
+        key = key.toLowerCase()
+        if (value === undefined || value === null) {
+            if (StorageManagerStatic.storageTemp.hasOwnProperty(key)) {
+                delete StorageManagerStatic.storageTemp[key]
+            }
+            return
+        }
+        StorageManagerStatic.storageTemp[key] = value
+    }
+    static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
+        key = key.toLowerCase()
+        if (StorageManagerStatic.storageTemp.hasOwnProperty(key)) {
+            return StorageManagerStatic.storageTemp[key] as T
+        }
+        return undefined
+    }
+    static removeTempVariable(key: string) {
+        key = key.toLowerCase()
+        if (StorageManagerStatic.storageTemp.hasOwnProperty(key)) {
+            delete StorageManagerStatic.storageTemp[key]
+        }
+    }
 }
