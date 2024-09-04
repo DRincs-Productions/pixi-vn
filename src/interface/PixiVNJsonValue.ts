@@ -1,5 +1,6 @@
 import { getFlag } from "../functions"
 import { StorageElementType } from "../types"
+import PixiVNJsonArithmeticOperations from "./PixiVNJsonArithmeticOperations"
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
 
 export type PixiVNJsonStorageGet = {
@@ -28,7 +29,13 @@ export type PixiVNJsonLabelGet = {
      */
     storageType: "label",
 }
-export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonLabelGet
+export type PixiVNJsonArithmeticGet = {
+    type: "value"
+    storageOperationType: "get",
+    operation: PixiVNJsonArithmeticOperations,
+    storageType: "arithmetic",
+}
+export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonLabelGet | PixiVNJsonArithmeticGet
 
 type PixiVNJsonOnlyStorageSet = {
     type: "value"
@@ -40,7 +47,7 @@ type PixiVNJsonOnlyStorageSet = {
     /**
      * Value to be set in the storage
      */
-    value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonConditionalStatements<StorageElementType>,
+    value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditionalStatements<StorageElementType>,
     /**
      * Type of the storage, if it is a flagStorage or a storage.
      */

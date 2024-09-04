@@ -1,4 +1,5 @@
 import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonLabelStep, PixiVNJsonStorageGet, PixiVNJsonUnionCondition, PixiVNJsonValueGet, PixiVNJsonValueSet } from "../interface";
+import PixiVNJsonArithmeticOperations from "../interface/PixiVNJsonArithmeticOperations";
 import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditionalResultToCombine";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
 import { narration, storage } from "../managers";
@@ -180,6 +181,8 @@ export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet
                         return getFlag((value as PixiVNJsonStorageGet).key) as unknown as T
                     case "label":
                         return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label) as unknown as T
+                    case "arithmetic":
+
                 }
             }
             else {
@@ -216,7 +219,14 @@ function getUnionConditionResult(condition: PixiVNJsonUnionCondition): boolean {
 }
 
 export function setStorageJson(value: PixiVNJsonValueSet) {
-    let valueToSet = getValueFromConditionalStatements(value.value)
+    let v = getValueFromConditionalStatements(value.value)
+    let valueToSet: StorageElementType
+    if (v && typeof v === "object" && "type" in v) {
+        valueToSet = geArmtValue(v)
+    }
+    else {
+        valueToSet = v
+    }
     switch (value.storageType) {
         case "flagStorage":
             setFlag(value.key, value.value)
@@ -226,6 +236,55 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
             break
         case "tempstorage":
             StorageManagerStatic.setTempVariable(value.key, valueToSet)
+            break
+    }
+}
+
+function geArmtValue(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditionalStatements<StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations>): StorageElementType {
+    let v = getValueFromConditionalStatements(value)
+    if (
+        v && typeof v === "object" && "type" in v
+    ) {
+        switch (v.type) {
+            case "value":
+                return getValue(v)
+            case "arithmetic":
+            case "arithmeticsingle":
+                return getValueFromAritmeticOperations(v as PixiVNJsonArithmeticOperations)
+        }
+    }
+    return v as StorageElementType
+}
+function getValueFromAritmeticOperations(operation: PixiVNJsonArithmeticOperations): StorageElementType {
+    let leftValue = geArmtValue(operation.leftValue)
+    switch (operation.type) {
+        case "arithmetic":
+            let rightValue = geArmtValue(operation.rightValue)
+            switch (operation.operator) {
+                case "*":
+                    return (leftValue as any) * (rightValue as any)
+                case "/":
+                    return (leftValue as any) / (rightValue as any)
+                case "+":
+                    return (leftValue as any) + (rightValue as any)
+                case "-":
+                    return (leftValue as any) - (rightValue as any)
+                case "%":
+                    return (leftValue as any) % (rightValue as any)
+                case "POW":
+                    return Math.pow(leftValue as any, rightValue as any)
+                case "RANDOM":
+                    return Math.floor(Math.random() * ((rightValue as any) - (leftValue as any) + 1)) + (leftValue as any)
+            }
+        case "arithmeticsingle":
+            switch (operation.operator) {
+                case "INT":
+                    return parseInt(leftValue as any)
+                case "FLOOR":
+                    return Math.floor(leftValue as any)
+                case "FLOAT":
+                    return parseFloat(leftValue as any)
+            }
             break
     }
 }
