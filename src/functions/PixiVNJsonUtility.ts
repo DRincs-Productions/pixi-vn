@@ -181,8 +181,8 @@ export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet
                         return getFlag((value as PixiVNJsonStorageGet).key) as unknown as T
                     case "label":
                         return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label) as unknown as T
-                    case "arithmetic":
-
+                    case "logic":
+                    // TODO: Implement the logic operation
                 }
             }
             else {
@@ -250,12 +250,12 @@ function geArmtValue(value: StorageElementType | PixiVNJsonValueGet | PixiVNJson
                 return getValue(v)
             case "arithmetic":
             case "arithmeticsingle":
-                return getValueFromAritmeticOperations(v as PixiVNJsonArithmeticOperations)
+                return getValueFromArithmeticOperations(v as PixiVNJsonArithmeticOperations)
         }
     }
     return v as StorageElementType
 }
-function getValueFromAritmeticOperations(operation: PixiVNJsonArithmeticOperations): StorageElementType {
+function getValueFromArithmeticOperations(operation: PixiVNJsonArithmeticOperations): StorageElementType {
     let leftValue = geArmtValue(operation.leftValue)
     switch (operation.type) {
         case "arithmetic":

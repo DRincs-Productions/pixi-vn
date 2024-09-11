@@ -29,13 +29,13 @@ export type PixiVNJsonLabelGet = {
      */
     storageType: "label",
 }
-export type PixiVNJsonArithmeticGet = {
+export type PixiVNJsonLogicGet = {
     type: "value"
     storageOperationType: "get",
     operation: PixiVNJsonArithmeticOperations,
-    storageType: "arithmetic",
+    storageType: "logic",
 }
-export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonLabelGet | PixiVNJsonArithmeticGet
+export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonLabelGet | PixiVNJsonLogicGet
 
 type PixiVNJsonOnlyStorageSet = {
     type: "value"
