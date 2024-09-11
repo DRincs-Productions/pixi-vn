@@ -2,6 +2,7 @@ import { getFlag } from "../functions"
 import { StorageElementType } from "../types"
 import PixiVNJsonArithmeticOperations from "./PixiVNJsonArithmeticOperations"
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
+import PixiVNJsonConditions from "./PixiVNJsonConditions"
 
 export type PixiVNJsonStorageGet = {
     type: "value"
@@ -32,7 +33,7 @@ export type PixiVNJsonLabelGet = {
 export type PixiVNJsonLogicGet = {
     type: "value"
     storageOperationType: "get",
-    operation: PixiVNJsonArithmeticOperations,
+    operation: PixiVNJsonArithmeticOperations | PixiVNJsonConditions,
     storageType: "logic",
 }
 export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonLabelGet | PixiVNJsonLogicGet

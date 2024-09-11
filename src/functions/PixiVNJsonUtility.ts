@@ -23,7 +23,7 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
             case "resulttocombine":
                 return combinateResult(statement)
             case "ifelse":
-                let conditionResult = getConditionResult(statement.condition)
+                let conditionResult = geLogichValue<boolean>(statement.condition)
                 if (conditionResult) {
                     return getValueFromConditionalStatements(statement.then)
                 } else {
@@ -141,6 +141,8 @@ function getConditionResult(condition: PixiVNJsonConditions): boolean {
                     return leftValue > rightValue
                 case ">=":
                     return leftValue >= rightValue
+                case "CONTAINS":
+                    return leftValue.toString().includes(rightValue.toString())
             }
             break
         case "valueCondition":
@@ -183,11 +185,11 @@ export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet
                     case "label":
                         return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label) as unknown as T
                     case "logic":
-                        return getValueFromArithmeticOperations((value as PixiVNJsonLogicGet).operation) as unknown as T
+                        return geLogichValue((value as PixiVNJsonLogicGet).operation) as unknown as T
                 }
             }
             else {
-                return getConditionResult(value) as unknown as T
+                return geLogichValue<T>(value)
             }
         }
     }
@@ -201,11 +203,11 @@ export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet
  */
 function getUnionConditionResult(condition: PixiVNJsonUnionCondition): boolean {
     if (condition.unionType === "not") {
-        return !getConditionResult(condition.condition)
+        return !geLogichValue<boolean>(condition.condition)
     }
     let result: boolean = condition.unionType === "and" ? true : false
     for (let i = 0; i < condition.conditions.length; i++) {
-        result = getConditionResult(condition.conditions[i])
+        result = geLogichValue<boolean>(condition.conditions[i]) || false
         if (condition.unionType === "and") {
             if (!result) {
                 return false
@@ -223,7 +225,7 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     let v = getValueFromConditionalStatements(value.value)
     let valueToSet: StorageElementType
     if (v && typeof v === "object" && "type" in v) {
-        valueToSet = geArmtValue(v)
+        valueToSet = geLogichValue(v)
     }
     else {
         valueToSet = v
@@ -241,50 +243,55 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     }
 }
 
-function geArmtValue(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditionalStatements<StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations>): StorageElementType {
+function geLogichValue<T = StorageElementType>(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditionalStatements<StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations> | PixiVNJsonConditions): T | undefined {
     let v = getValueFromConditionalStatements(value)
     if (
         v && typeof v === "object" && "type" in v
     ) {
         switch (v.type) {
             case "value":
-                return getValue(v)
+                return getValue<T>(v)
             case "arithmetic":
             case "arithmeticsingle":
                 return getValueFromArithmeticOperations(v as PixiVNJsonArithmeticOperations)
+            case "compare":
+            case "valueCondition":
+            case "union":
+            case "labelcondition":
+                return getConditionResult(v) as T
         }
     }
-    return v as StorageElementType
+    return v as T
 }
-function getValueFromArithmeticOperations(operation: PixiVNJsonArithmeticOperations): StorageElementType {
-    let leftValue = geArmtValue(operation.leftValue)
+function getValueFromArithmeticOperations<T = StorageElementType>(operation: PixiVNJsonArithmeticOperations): T | undefined {
+    let leftValue = geLogichValue(operation.leftValue)
     switch (operation.type) {
         case "arithmetic":
-            let rightValue = geArmtValue(operation.rightValue)
+            let rightValue = geLogichValue(operation.rightValue)
             switch (operation.operator) {
                 case "*":
-                    return (leftValue as any) * (rightValue as any)
+                    return (leftValue as any) * (rightValue as any) as T
                 case "/":
-                    return (leftValue as any) / (rightValue as any)
+                    return (leftValue as any) / (rightValue as any) as T
                 case "+":
-                    return (leftValue as any) + (rightValue as any)
+                    return (leftValue as any) + (rightValue as any) as T
                 case "-":
-                    return (leftValue as any) - (rightValue as any)
+                    return (leftValue as any) - (rightValue as any) as T
                 case "%":
-                    return (leftValue as any) % (rightValue as any)
+                    return (leftValue as any) % (rightValue as any) as T
                 case "POW":
-                    return Math.pow(leftValue as any, rightValue as any)
+                    return Math.pow(leftValue as any, rightValue as any) as T
                 case "RANDOM":
                     return Math.floor(Math.random() * ((rightValue as any) - (leftValue as any) + 1)) + (leftValue as any)
             }
         case "arithmeticsingle":
             switch (operation.operator) {
                 case "INT":
-                    return parseInt(leftValue as any)
+                    return parseInt(leftValue as any) as T
                 case "FLOOR":
-                    return Math.floor(leftValue as any)
+                    return Math.floor(leftValue as any) as T
                 case "FLOAT":
-                    return parseFloat(leftValue as any)
+                    return parseFloat(leftValue as any) as T
             }
             break
     }

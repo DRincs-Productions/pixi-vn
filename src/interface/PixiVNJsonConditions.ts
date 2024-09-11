@@ -1,4 +1,5 @@
 import { StorageElementType } from "../types"
+import PixiVNJsonArithmeticOperations from "./PixiVNJsonArithmeticOperations"
 import PixiVNJsonLabelCondition from "./PixiVNJsonLabelCondition"
 import PixiVNJsonUnionCondition from "./PixiVNJsonUnionCondition"
 import { PixiVNJsonValueGet } from "./PixiVNJsonValue"
@@ -7,7 +8,7 @@ import { PixiVNJsonValueGet } from "./PixiVNJsonValue"
  * Comparation for PixiVNJson.
  * In this comparation, the values to be converted to string and compared.
  */
-type PixiVNJsonComparation = {
+export type PixiVNJsonComparation = {
     type: "compare",
     /**
      * Left value of the comparation
@@ -20,7 +21,7 @@ type PixiVNJsonComparation = {
     /**
      * Operator of the comparation
      */
-    operator: "==" | "!=" | "<" | "<=" | ">" | ">=",
+    operator: "==" | "!=" | "<" | "<=" | ">" | ">=" | "CONTAINS",
 }
 
 type PixiVNJsonValueCondition = StorageElementType | PixiVNJsonValueGet
@@ -28,6 +29,6 @@ type PixiVNJsonValueCondition = StorageElementType | PixiVNJsonValueGet
 /**
  * Conditions for PixiVNJson
  */
-type PixiVNJsonConditions = PixiVNJsonComparation | PixiVNJsonValueCondition | PixiVNJsonUnionCondition | PixiVNJsonLabelCondition
+type PixiVNJsonConditions = PixiVNJsonComparation | PixiVNJsonValueCondition | PixiVNJsonUnionCondition | PixiVNJsonLabelCondition | PixiVNJsonArithmeticOperations
 
 export default PixiVNJsonConditions
