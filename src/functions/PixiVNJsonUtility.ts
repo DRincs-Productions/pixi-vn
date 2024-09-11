@@ -2,6 +2,7 @@ import { PixiVNJsonConditions, PixiVNJsonLabelGet, PixiVNJsonLabelStep, PixiVNJs
 import PixiVNJsonArithmeticOperations from "../interface/PixiVNJsonArithmeticOperations";
 import PixiVNJsonConditionalResultToCombine from "../interface/PixiVNJsonConditionalResultToCombine";
 import PixiVNJsonConditionalStatements from "../interface/PixiVNJsonConditionalStatements";
+import { PixiVNJsonLogicGet } from "../interface/PixiVNJsonValue";
 import { narration, storage } from "../managers";
 import NarrationManagerStatic from "../managers/NarrationManagerStatic";
 import StorageManagerStatic from "../managers/StorageManagerStatic";
@@ -182,7 +183,7 @@ export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet
                     case "label":
                         return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label) as unknown as T
                     case "logic":
-                    // TODO: Implement the logic operation
+                        return getValueFromArithmeticOperations((value as PixiVNJsonLogicGet).operation) as unknown as T
                 }
             }
             else {
