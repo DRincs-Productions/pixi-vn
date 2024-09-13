@@ -38,6 +38,22 @@ export default class NarrationManager {
         NarrationManagerStatic.resetCurrentStepTimesCounter()
     }
     /**
+     * Get a random number between min and max.
+     * @param min The minimum number.
+     * @param max The maximum number.
+     * @param options The options.
+     * @returns The random number or undefined. If options.onceonly is true and all numbers between min and max have already been generated, it will return undefined.
+     */
+    getRandomNumber(min: number, max: number, options: {
+        /**
+         * If true, the number will be generated only once on the current step of the label.
+         * @default false
+         */
+        onceonly?: boolean
+    } = {}): number | undefined {
+        return NarrationManagerStatic.getRandomNumber(min, max, options)
+    }
+    /**
      * lastStepIndex is the last step index that occurred during the progression of the steps. **Not is the length of the stepsHistory - 1.**
      */
     get lastStepIndex() {

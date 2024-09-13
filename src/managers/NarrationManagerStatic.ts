@@ -9,7 +9,16 @@ import { LabelIdType } from "../types/LabelIdType"
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number, openCount: number } }
 type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number, stepSha1: string }
-type CurrentStepTimesCounterMemoty = { [key: LabelIdType]: { [key: string]: { lastStepIndexs: number[], stepSha1: string } } }
+type CurrentStepTimesCounterMemotyData = {
+    lastStepIndexs?: number[],
+    usedRandomNumbers?: { [minmaxkey: string]: number[] },
+    stepSha1: string,
+}
+type CurrentStepTimesCounterMemoty = {
+    [key: LabelIdType]: {
+        [key: string]: CurrentStepTimesCounterMemotyData
+    }
+}
 
 export default class NarrationManagerStatic {
     private constructor() { }
@@ -24,15 +33,14 @@ export default class NarrationManagerStatic {
     static set allOpenedLabels(value: AllOpenedLabelsType) {
         storage.setVariable(storage.keysSystem.OPENED_LABELS_COUNTER_KEY, value)
     }
-    static getCurrentStepTimesCounter(nestedId: string = ""): number {
-        let lastStep = NarrationManagerStatic._lastStepIndex
+    private static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId
         let labelId = NarrationManagerStatic.currentLabelId
         let currentLabel = NarrationManagerStatic._currentLabel
         if (!labelId || currentLabelStepIndex === null || !currentLabel) {
             console.error("[Pixi'VN] currentLabelId or currentLabelStepIndex is null or currentLabel not found")
-            return 0
+            return null
         }
         let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error"
         let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
@@ -40,16 +48,68 @@ export default class NarrationManagerStatic {
             obj[labelId] = {}
         }
         if (!obj[labelId][currentLabelStepIndexId] || obj[labelId][currentLabelStepIndexId].stepSha1 != stepSha1) {
-            obj[labelId][currentLabelStepIndexId] = { lastStepIndexs: [], stepSha1: stepSha1 }
+            obj[labelId][currentLabelStepIndexId] = { stepSha1: stepSha1 }
         }
-        let list = obj[labelId][currentLabelStepIndexId].lastStepIndexs
+        return obj[labelId][currentLabelStepIndexId]
+    }
+    private static setCurrentStepTimesCounterData(nestedId: string = "", data: CurrentStepTimesCounterMemotyData) {
+        let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
+        let currentLabelStepIndexId = currentLabelStepIndex + nestedId
+        let labelId = NarrationManagerStatic.currentLabelId
+        if (!labelId || currentLabelStepIndex === null) {
+            console.error("[Pixi'VN] currentLabelId or currentLabelStepIndex is null")
+            return
+        }
+        let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
+        if (!obj[labelId]) {
+            obj[labelId] = {}
+        }
+        obj[labelId][currentLabelStepIndexId] = data
+        storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
+    }
+    static getCurrentStepTimesCounter(nestedId: string = ""): number {
+        let lastStep = NarrationManagerStatic._lastStepIndex
+        let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(nestedId)
+        if (!obj) {
+            return 0
+        }
+        let list = obj.lastStepIndexs || []
         let listContainLastStep = list.find((item) => item === lastStep)
         if (!listContainLastStep) {
             list.push(lastStep)
-            obj[labelId][currentLabelStepIndexId].lastStepIndexs = list
-            storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj)
+            obj.lastStepIndexs = list
+            NarrationManagerStatic.setCurrentStepTimesCounterData(nestedId, obj)
         }
         return list.length
+    }
+    static getRandomNumber(min: number, max: number, options: {
+        onceonly?: boolean
+        nestedId?: string
+    } = {}): number | undefined {
+        let nestedId = options.nestedId || ""
+        let onceonly = options.onceonly || false
+        if (onceonly) {
+            let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(nestedId)
+            if (!obj) {
+                return undefined
+            }
+            let usedRandomNumbers = obj.usedRandomNumbers || {}
+            // get a random number between min and max and not in the usedRandomNumbers, if all numbers are in the usedRandomNumbers, return null
+            let allNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min).filter((item) => !usedRandomNumbers[`${min}-${max}`]?.includes(item))
+            if (allNumbers.length === 0) {
+                return undefined
+            }
+            let randomIndex = Math.floor(Math.random() * allNumbers.length)
+            let randomNumber = allNumbers[randomIndex]
+            if (!usedRandomNumbers[`${min}-${max}`]) {
+                usedRandomNumbers[`${min}-${max}`] = []
+            }
+            usedRandomNumbers[`${min}-${max}`].push(randomNumber)
+            obj.usedRandomNumbers = usedRandomNumbers
+            NarrationManagerStatic.setCurrentStepTimesCounterData(nestedId, obj)
+            return randomNumber
+        }
+        return Math.floor(Math.random() * (max - min + 1)) + min
     }
     static resetCurrentStepTimesCounter(nestedId: string = "") {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex

@@ -9,6 +9,10 @@ import StorageManagerStatic from "../managers/StorageManagerStatic";
 import { StorageElementType } from "../types";
 import { getFlag, setFlag } from "./FlagsUtility";
 
+function randomIntFromInterval(min: number, max: number) {
+    return Math.floor(Math.random() * (max - min + 1) + min);
+}
+
 /**
  * Get the value from the conditional statements.
  * @param statement is the conditional statements object
@@ -37,7 +41,7 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
                 }
                 switch (statement.choiceType) {
                     case "random":
-                        let randomIndex = Math.floor(Math.random() * elements.length)
+                        let randomIndex = randomIntFromInterval(0, elements.length)
                         return getValueFromConditionalStatements(elements[randomIndex])
                     case "loop":
                         if (narration.currentStepTimesCounter > elements.length - 1) {
@@ -54,6 +58,13 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
                             return end
                         }
                         return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
+                    case "sequentialrandom":
+                        let randomIndexWhitExclude = NarrationManagerStatic.getRandomNumber(0, elements.length, {
+                            nestedId: statement.nestedId,
+                            onceonly: true
+                        })
+                        let endSequentialRandom: T | undefined = undefined
+
                 }
         }
     }
