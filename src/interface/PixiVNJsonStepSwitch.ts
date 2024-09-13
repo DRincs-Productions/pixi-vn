@@ -18,6 +18,10 @@ interface PixiVNJsonSequentialRandom<Then> {
      * If "lastItem", it will return the last item in the array.
      */
     end: undefined | "lastItem"
+    /**
+     * The subId is used for manager nested switches
+     */
+    nestedId?: string
 }
 interface PixiVNJsonSequential<Then> {
     type: "stepswitch",

@@ -49,7 +49,7 @@ export default class NarrationManager {
          * If true, the number will be generated only once on the current step of the label.
          * @default false
          */
-        onceonly?: boolean
+        onceOnly?: boolean
     } = {}): number | undefined {
         return NarrationManagerStatic.getRandomNumber(min, max, options)
     }

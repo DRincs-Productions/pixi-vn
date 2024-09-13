@@ -59,12 +59,22 @@ export function getValueFromConditionalStatements<T>(statement: PixiVNJsonCondit
                         }
                         return getValueFromConditionalStatements(elements[NarrationManagerStatic.getCurrentStepTimesCounter(statement.nestedId)])
                     case "sequentialrandom":
-                        let randomIndexWhitExclude = NarrationManagerStatic.getRandomNumber(0, elements.length, {
+                        let randomIndexWhitExclude = NarrationManagerStatic.getRandomNumber(0, elements.length - 1, {
                             nestedId: statement.nestedId,
-                            onceonly: true
+                            onceOnly: true
                         })
-                        let endSequentialRandom: T | undefined = undefined
-
+                        if (randomIndexWhitExclude == undefined && statement.end == "lastItem") {
+                            let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(statement.nestedId)
+                            if (!obj || !obj?.usedRandomNumbers) {
+                                return undefined
+                            }
+                            let lastItem = obj.usedRandomNumbers[`${0}-${elements.length - 1}`]
+                            return getValueFromConditionalStatements(elements[lastItem[lastItem.length - 1]])
+                        }
+                        if (randomIndexWhitExclude == undefined) {
+                            return undefined
+                        }
+                        return getValueFromConditionalStatements(elements[randomIndexWhitExclude])
                 }
         }
     }

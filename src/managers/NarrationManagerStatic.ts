@@ -33,7 +33,7 @@ export default class NarrationManagerStatic {
     static set allOpenedLabels(value: AllOpenedLabelsType) {
         storage.setVariable(storage.keysSystem.OPENED_LABELS_COUNTER_KEY, value)
     }
-    private static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
+    static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId
         let labelId = NarrationManagerStatic.currentLabelId
@@ -83,11 +83,11 @@ export default class NarrationManagerStatic {
         return list.length
     }
     static getRandomNumber(min: number, max: number, options: {
-        onceonly?: boolean
+        onceOnly?: boolean
         nestedId?: string
     } = {}): number | undefined {
         let nestedId = options.nestedId || ""
-        let onceonly = options.onceonly || false
+        let onceonly = options.onceOnly || false
         if (onceonly) {
             let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(nestedId)
             if (!obj) {
