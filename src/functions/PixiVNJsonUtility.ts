@@ -225,7 +225,7 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     let v = getValueFromConditionalStatements(value.value)
     let valueToSet: StorageElementType
     if (v && typeof v === "object" && "type" in v) {
-        valueToSet = geLogichValue(v)
+        valueToSet = geLogichValue<StorageElementType>(v)
     }
     else {
         valueToSet = v
@@ -243,8 +243,8 @@ export function setStorageJson(value: PixiVNJsonValueSet) {
     }
 }
 
-function geLogichValue<T = StorageElementType>(value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditionalStatements<StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations> | PixiVNJsonConditions): T | undefined {
-    let v = getValueFromConditionalStatements(value)
+function geLogichValue<T = StorageElementType>(value: T | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditions | PixiVNJsonConditionalStatements<T | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditions>): T | undefined {
+    let v = getValueFromConditionalStatements<T | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditions>(value)
     if (
         v && typeof v === "object" && "type" in v
     ) {
