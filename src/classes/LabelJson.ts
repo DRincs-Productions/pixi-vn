@@ -1,4 +1,5 @@
 import sha1 from 'crypto-js/sha1'
+import { PIXIVNJSON_PARAM_ID } from '../constants'
 import { moveIn, setFlag, showImage, showVideo, showWithDissolveTransition, showWithFadeTransition, zoomIn } from "../functions"
 import { getValue, getValueFromConditionalStatements, setStorageJson } from "../functions/PixiVNJsonUtility"
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
@@ -195,6 +196,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 if (typeof labelString === "object") {
                     labelString = getValue<string>(labelString) || ""
                 }
+                props = {
+                    ...props,
+                    [PIXIVNJSON_PARAM_ID]: label.params
+                } as any
                 if (label.type === "jump") {
                     narration.jumpLabel(labelString, props)
                 }

@@ -18,6 +18,16 @@ export type PixiVNJsonStorageGet = {
     storageType: "storage" | "flagStorage" | "tempstorage",
 }
 
+export type PixiVNJsonParamGet = {
+    type: "value"
+    storageOperationType: "get",
+    /**
+     * Key of the storage
+     */
+    key: number,
+    storageType: "params",
+}
+
 export type PixiVNJsonLabelGet = {
     type: "value"
     storageOperationType: "get",
@@ -36,7 +46,7 @@ export type PixiVNJsonLogicGet = {
     operation: PixiVNJsonArithmeticOperations | PixiVNJsonConditions,
     storageType: "logic",
 }
-export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonLabelGet | PixiVNJsonLogicGet
+export type PixiVNJsonValueGet = PixiVNJsonStorageGet | PixiVNJsonParamGet | PixiVNJsonLabelGet | PixiVNJsonLogicGet
 
 type PixiVNJsonOnlyStorageSet = {
     type: "value"

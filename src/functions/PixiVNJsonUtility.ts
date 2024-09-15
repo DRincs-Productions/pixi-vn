@@ -207,6 +207,8 @@ export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet
                         return narration.getTimesLabelOpened((value as PixiVNJsonLabelGet).label) as unknown as T
                     case "logic":
                         return geLogichValue((value as PixiVNJsonLogicGet).operation) as unknown as T
+                    case "params":
+                    // TODO get params
                 }
             }
             else {
