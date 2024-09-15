@@ -41,7 +41,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return sha1String.toString()
     }
 
-    private getDialogueText(origin: PixiVNJsonDialogText): string | string[] {
+    private getDialogueText(origin: PixiVNJsonDialogText, params: any[]): string | string[] {
         let text: string | string[] = ""
         if (Array.isArray(origin)) {
             let texts: string[] = []
@@ -50,10 +50,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                     texts.push(t)
                 }
                 else if (t && typeof t === "object") {
-                    let res = getValueFromConditionalStatements(t)
+                    let res = getValueFromConditionalStatements(t, params)
                     if (res) {
                         if (res && !Array.isArray(res) && typeof res === "object") {
-                            res = getValue<string | string[]>(res) || ""
+                            res = getValue<string | string[]>(res, params) || ""
                         }
                         if (Array.isArray(res)) {
                             texts = texts.concat(res)
@@ -67,36 +67,36 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             text = texts
         }
         else {
-            let res = getValueFromConditionalStatements(origin) || ""
+            let res = getValueFromConditionalStatements(origin, params) || ""
             if (res && !Array.isArray(res) && typeof res === "object") {
-                res = getValue<string | string[]>(res) || ""
+                res = getValue<string | string[]>(res, params) || ""
             }
             text = res
         }
         return text
     }
-    private getDialogue(origin: PixiVNJsonDialog<PixiVNJsonDialogText> | PixiVNJsonConditionalStatements<PixiVNJsonDialog<PixiVNJsonDialogText>> | undefined): PixiVNJsonDialog<string | string[]> | undefined {
-        let d = getValueFromConditionalStatements(origin)
+    private getDialogue(origin: PixiVNJsonDialog<PixiVNJsonDialogText> | PixiVNJsonConditionalStatements<PixiVNJsonDialog<PixiVNJsonDialogText>> | undefined, params: any[]): PixiVNJsonDialog<string | string[]> | undefined {
+        let d = getValueFromConditionalStatements(origin, params)
         let dialogue: PixiVNJsonDialog<string | string[]> | undefined = undefined
         if (d) {
             if (typeof d === "object" && "character" in d && "text" in d) {
                 dialogue = {
                     character: d.character,
-                    text: this.getDialogueText(d.text)
+                    text: this.getDialogueText(d.text, params)
                 }
             }
             else {
-                dialogue = this.getDialogueText(d)
+                dialogue = this.getDialogueText(d, params)
             }
         }
         return dialogue
     }
 
-    private getChoices(origin: PixiVNJsonChoices | PixiVNJsonConditionalStatements<PixiVNJsonChoices> | undefined): PixiVNJsonChoice[] | undefined {
-        let choices = getValueFromConditionalStatements(origin)
+    private getChoices(origin: PixiVNJsonChoices | PixiVNJsonConditionalStatements<PixiVNJsonChoices> | undefined, params: any[]): PixiVNJsonChoice[] | undefined {
+        let choices = getValueFromConditionalStatements(origin, params)
         if (choices) {
             let options: PixiVNJsonChoice[] = choices.map((option) => {
-                return getValueFromConditionalStatements(option)
+                return getValueFromConditionalStatements(option, params)
             }).filter((option) => option !== undefined)
             return options
         }
@@ -105,32 +105,33 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
 
     private stepConverter(step: PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep)): StepLabelType<T> {
         return async (props) => {
+            let params: any[] = props[PIXIVNJSON_PARAM_ID]
             if (typeof step === "function") {
                 step = step()
             }
             if (step.operation) {
                 for (let operation of step.operation) {
-                    await this.runOperation(operation)
+                    await this.runOperation(operation, params)
                 }
             }
 
-            let choices = this.getChoices(step.choices)
-            let glueEnabled = getValueFromConditionalStatements(step.glueEnabled)
-            let dialogue: PixiVNJsonDialog<string | string[]> | undefined = this.getDialogue(step.dialogue)
+            let choices = this.getChoices(step.choices, params)
+            let glueEnabled = getValueFromConditionalStatements(step.glueEnabled, params)
+            let dialogue: PixiVNJsonDialog<string | string[]> | undefined = this.getDialogue(step.dialogue, params)
             let labelToOpen: PixiVNJsonLabelToOpen[] = []
             if (step.labelToOpen) {
                 if (!Array.isArray(step.labelToOpen)) {
                     step.labelToOpen = [step.labelToOpen]
                 }
                 step.labelToOpen.forEach((label) => {
-                    let i = getValueFromConditionalStatements(label)
+                    let i = getValueFromConditionalStatements(label, params)
                     if (i) {
                         labelToOpen.push(i)
                     }
                 })
             }
-            let goNextStep = getValueFromConditionalStatements(step.goNextStep)
-            let end = getValueFromConditionalStatements(step.end)
+            let goNextStep = getValueFromConditionalStatements(step.goNextStep, params)
+            let end = getValueFromConditionalStatements(step.end, params)
 
             if (choices) {
                 let options = choices.map((option) => {
@@ -142,9 +143,9 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                                 texts.push(t)
                             }
                             else if (t && typeof t === "object") {
-                                let res = getValueFromConditionalStatements(t)
+                                let res = getValueFromConditionalStatements(t, params)
                                 if (res && !Array.isArray(res) && typeof res === "object") {
-                                    res = getValue<string | string[]>(res) || ""
+                                    res = getValue<string | string[]>(res, params) || ""
                                 }
                                 if (res) {
                                     if (Array.isArray(res)) {
@@ -194,7 +195,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             labelToOpen.forEach((label) => {
                 let labelString = label.label
                 if (typeof labelString === "object") {
-                    labelString = getValue<string>(labelString) || ""
+                    labelString = getValue<string>(labelString, params) || ""
                 }
                 props = {
                     ...props,
@@ -222,8 +223,8 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         }
     }
 
-    private async runOperation(origin: PixiVNJsonOperation | PixiVNJsonIfElse<PixiVNJsonOperation>) {
-        let operation = getValueFromConditionalStatements(origin)
+    private async runOperation(origin: PixiVNJsonOperation | PixiVNJsonIfElse<PixiVNJsonOperation>, params: any[]) {
+        let operation = getValueFromConditionalStatements(origin, params)
         if (!operation) {
             return
         }
@@ -356,7 +357,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 }
                 break
             case "value":
-                setStorageJson(operation)
+                setStorageJson(operation, params)
                 break
         }
     }
