@@ -65,6 +65,20 @@ type PixiVNJsonOnlyStorageSet = {
     storageType: "storage" | "tempstorage",
 }
 
+type PixiVNJsonOnlyParamSet = {
+    type: "value"
+    storageOperationType: "set",
+    /**
+     * Key of the storage
+     */
+    key: number,
+    /**
+     * Value to be set in the storage
+     */
+    value: StorageElementType | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditionalStatements<StorageElementType>,
+    storageType: "params",
+}
+
 type PixiVNJsonFlagSet = {
     type: "value"
     storageOperationType: "set",
@@ -82,4 +96,4 @@ type PixiVNJsonFlagSet = {
     storageType: "flagStorage",
 }
 
-export type PixiVNJsonValueSet = (PixiVNJsonOnlyStorageSet | PixiVNJsonFlagSet)
+export type PixiVNJsonValueSet = PixiVNJsonOnlyStorageSet | PixiVNJsonFlagSet | PixiVNJsonOnlyParamSet

@@ -211,7 +211,10 @@ export function getValue<T = any>(value: StorageElementType | PixiVNJsonValueGet
                     case "logic":
                         return geLogichValue((value as PixiVNJsonLogicGet).operation, params) as unknown as T
                     case "params":
-                    // TODO get params
+                        if (params && params.length - 1 >= (value.key as number)) {
+                            return params[(value.key as number)] as unknown as T
+                        }
+                        return undefined
                 }
             }
             else {
@@ -265,6 +268,11 @@ export function setStorageJson(value: PixiVNJsonValueSet, params: any[]) {
             break
         case "tempstorage":
             StorageManagerStatic.setTempVariable(value.key, valueToSet)
+            break
+        case "params":
+            if (params && params.length - 1 >= (value.key as number)) {
+                params[(value.key as number)] = valueToSet
+            }
             break
     }
 }
