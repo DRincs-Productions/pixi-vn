@@ -277,7 +277,7 @@ export function setStorageJson(value: PixiVNJsonValueSet, params: any[]) {
     }
 }
 
-function geLogichValue<T = StorageElementType>(
+export function geLogichValue<T = StorageElementType>(
     value: T | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditions | PixiVNJsonConditionalStatements<T | PixiVNJsonValueGet | PixiVNJsonArithmeticOperations | PixiVNJsonConditions>,
     params: any[]
 ): T | undefined {
