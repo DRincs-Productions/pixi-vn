@@ -23,6 +23,18 @@ export default class StorageManagerStatic {
              */
             LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "___last_menu_options_added_in_step_memory___",
             /**
+             * The key of the input memory
+             */
+            CURRENT_INPUT_VALUE_MEMORY_KEY: "___current_input_memory___",
+            /**
+             * The key of the last input added in the step memory
+             */
+            LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY: "___last_input_added_in_step_memory___",
+            /**
+             * The key of the current input info
+             */
+            CURRENT_INPUT_INFO_KEY: "___current_input_info___",
+            /**
              * The key of the characters memory
              */
             CHARACTER_CATEGORY_KEY: "___character___",

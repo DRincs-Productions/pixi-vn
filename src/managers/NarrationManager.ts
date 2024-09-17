@@ -8,7 +8,7 @@ import { getLabelById } from "../decorators/LabelDecorator"
 import { getFlag, setFlag } from "../functions"
 import { CharacterInterface, IHistoryStepData, NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
-import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } from "../types"
+import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption, InputInfo } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 import NarrationManagerStatic from "./NarrationManagerStatic"
@@ -734,6 +734,42 @@ export default class NarrationManager {
         })
         storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
         storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex)
+    }
+    /**
+     * The input value to be inserted by the player.
+     */
+    public get inputValue(): any {
+        return storage.getVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
+    }
+    public set inputValue(value: any) {
+        this.removeInputRequest()
+        storage.setVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY, value)
+        storage.setVariable(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex)
+    }
+    /**
+     * If true, the player must enter a value.
+     */
+    public get isRequiredInput(): boolean {
+        return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_KEY)?.isRequired || false
+    }
+    public get inputType(): string | undefined {
+        return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_KEY)?.type
+    }
+    /**
+     * Request input from the player.
+     * @param value The input value to be inserted by the player.
+     */
+    public requestInput(value: Omit<InputInfo, "isRequired">) {
+        (value as InputInfo).isRequired = true
+        storage.setVariable(storage.keysSystem.CURRENT_INPUT_INFO_KEY, value)
+        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
+    }
+    /**
+     * Remove the input request.
+     */
+    public removeInputRequest() {
+        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_INFO_KEY)
+        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
     }
 
 

@@ -4,6 +4,7 @@ export { Close } from './CloseType';
 export type { CloseType } from './CloseType';
 export type { default as DialogueType } from './DialogueType';
 export type { default as HistoryChoiceMenuOption } from './HistoryChoiceMenuOption';
+export type { InputInfo } from './InputInfo';
 export type { default as LabelRunModeType } from './LabelRunModeType';
 export type { PauseType } from './PauseType';
 export type { RepeatType } from './RepeatType';
