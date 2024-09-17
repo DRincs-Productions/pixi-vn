@@ -1,6 +1,7 @@
 import deepDiff from "deep-diff";
 import { Dialogue } from "../classes";
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
+import { StorageElementType } from "../types";
 import { LabelIdType } from "../types/LabelIdType";
 import ExportedCanvas from "./export/ExportedCanvas";
 import ExportedSounds from "./export/ExportedSounds";
@@ -62,6 +63,10 @@ export default interface IHistoryStep<T extends Dialogue = Dialogue> {
      * List of choices asked of the player
      */
     choices?: IStoratedChoiceMenuOption[]
+    /**
+     * The input value of the player
+     */
+    inputValue?: StorageElementType
     /**
      * The choice made by the player
      */

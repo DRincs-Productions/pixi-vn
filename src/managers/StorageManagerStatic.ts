@@ -33,7 +33,7 @@ export default class StorageManagerStatic {
             /**
              * The key of the current input info
              */
-            CURRENT_INPUT_INFO_KEY: "___current_input_info___",
+            CURRENT_INPUT_INFO_MEMORY_KEY: "___current_input_info_memory___",
             /**
              * The key of the characters memory
              */

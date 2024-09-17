@@ -1,5 +1,5 @@
 import { Dialogue } from "../classes"
-import { HistoryChoiceMenuOption } from "../types"
+import { HistoryChoiceMenuOption, StorageElementType } from "../types"
 
 export default interface NarrativeHistory {
     /**
@@ -18,4 +18,8 @@ export default interface NarrativeHistory {
      * The index of the step in the history.
      */
     stepIndex: number
+    /**
+     * The input value of the player
+     */
+    inputValue?: StorageElementType
 }
