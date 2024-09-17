@@ -1,4 +1,5 @@
-import { LabelRunModeType, StorageObjectType } from "../types"
+import { PIXIVNJSON_PARAM_ID } from "../constants"
+import { LabelRunModeType, StepLabelPropsType, StorageObjectType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import PixiVNJsonConditionalStatements from "./PixiVNJsonConditionalStatements"
 import { PixiVNJsonLabel } from "./PixiVNJsonLabels"
@@ -42,7 +43,7 @@ export type PixiVNJsonDialog<Text = string> = {
     text: Text,
 } | Text
 
-export type PixiVNJsonLabelToOpen = {
+export type PixiVNJsonLabelToOpen<T extends {} = {}> = {
     /**
      * The id of the label to open.
      */
@@ -52,7 +53,12 @@ export type PixiVNJsonLabelToOpen = {
      */
     type: LabelRunModeType,
     /**
-     * The properties to be passed to the label.
+     * The properties to be passed to the label. if you don't want to pass a object, but a list of parameters, you can use the "params" attribute.
+     */
+    props?: StepLabelPropsType<T>,
+    /**
+     * **It is not recommended to use it, use it only if necessary**. The parameters to be passed to the label. If you want to pass an object, use the "props" attribute.
+     * "params" attribute will be stored in the "props" attribute -> props: { [{@link PIXIVNJSON_PARAM_ID}]: params }
      */
     params?: any[]
 }
