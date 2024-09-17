@@ -197,14 +197,14 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 if (typeof labelString === "object") {
                     labelString = getValue<string>(labelString, params) || ""
                 }
-                let labelParams: any[] | undefined = label.params?.map((param) => {
+                let labelParams = label.params?.map((param) => {
                     return geLogichValue(param, params)
                 })
                 props = {
                     ...props,
                     ...label.props,
                     [PIXIVNJSON_PARAM_ID]: labelParams
-                } as any
+                }
                 if (label.type === "jump") {
                     narration.jumpLabel(labelString, props)
                 }
