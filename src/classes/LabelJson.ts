@@ -202,6 +202,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 })
                 props = {
                     ...props,
+                    ...label.props,
                     [PIXIVNJSON_PARAM_ID]: labelParams
                 } as any
                 if (label.type === "jump") {
