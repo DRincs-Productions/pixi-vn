@@ -1,6 +1,8 @@
+import { initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
-import { Application } from "pixi.js";
+import { Application, ApplicationOptions } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
+import { asciiArtLog } from '../functions/EasterEgg';
 import { ITickersSteps, TickerHistory, TickerTimeoutHistory } from "../interface";
 
 /**
@@ -9,10 +11,129 @@ import { ITickersSteps, TickerHistory, TickerTimeoutHistory } from "../interface
 export default class CanvasManagerStatic {
     private constructor() { }
 
-    static _app: Application | undefined = undefined
+    private static _app: Application | undefined = undefined
+    static get app() {
+        if (!CanvasManagerStatic._app) {
+            throw new Error("[Pixi'VN] GameWindowManager.app is undefined")
+        }
+        return CanvasManagerStatic._app
+    }
+    /**
+     * This is the div that have same size of the canvas.
+     * This is useful to put interface elements.
+     * You can use React or other framework to put elements in this div.
+     */
+    static htmlLayout?: HTMLElement
+    static canvasWidth: number = 300
+    static canvasHeight: number = 300
     static _isInitialized: boolean = false
 
+    static async initialize(element: HTMLElement, width: number, height: number, options?: Partial<ApplicationOptions>): Promise<void> {
+        CanvasManagerStatic.canvasWidth = width
+        CanvasManagerStatic.canvasHeight = height
+        CanvasManagerStatic._app = new Application()
+        return CanvasManagerStatic.app.init({
+            resolution: window.devicePixelRatio || 1,
+            autoDensity: true,
+            width: width,
+            height: height,
+            ...options
+        }).then(() => {
+            initDevtools({ app: CanvasManagerStatic.app });
+
+            CanvasManagerStatic._isInitialized = true
+            // Manager.app.ticker.add(Manager.update)
+            CanvasManagerStatic.addCanvasIntoHTMLElement(element)
+            // listen for the browser telling us that the screen size changed
+            window.addEventListener("resize", CanvasManagerStatic.resize)
+
+            // call it manually once so we are sure we are the correct size after starting
+            CanvasManagerStatic.resize()
+
+            asciiArtLog()
+        });
+    }
+    /**
+     * Add the canvas into a html element.
+     * @param element it is the html element where I will put the canvas. Example: document.body
+     */
+    private static addCanvasIntoHTMLElement(element: HTMLElement) {
+        if (CanvasManagerStatic._isInitialized) {
+            element.appendChild(CanvasManagerStatic.app.canvas as HTMLCanvasElement)
+        }
+        else {
+            console.error("[Pixi'VN] GameWindowManager is not initialized")
+        }
+    }
+    static initializeHTMLLayout(element: HTMLElement) {
+        let div = document.createElement('div')
+        div.style.position = 'absolute'
+        div.style.pointerEvents = 'none'
+        element.appendChild(div)
+        CanvasManagerStatic.htmlLayout = div
+        CanvasManagerStatic.resize()
+    }
+
     /* Resize Metods */
+
+    /**
+     * This method returns the scale of the screen.
+     */
+    private static get screenScale() {
+        let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+        let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+        return Math.min(screenWidth / CanvasManagerStatic.canvasWidth, screenHeight / CanvasManagerStatic.canvasHeight)
+    }
+    /**
+     * This method returns the width of the screen enlarged by the scale.
+     */
+    private static get screenWidth() {
+        return Math.floor(CanvasManagerStatic.screenScale * CanvasManagerStatic.canvasWidth)
+    }
+    /**
+     * This method returns the height of the screen enlarged by the scale.
+     */
+    private static get screenHeight() {
+        return Math.floor(CanvasManagerStatic.screenScale * CanvasManagerStatic.canvasHeight)
+    }
+    /**
+     * This method returns the horizontal margin of the screen.
+     */
+    private static get horizontalMargin() {
+        let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0)
+        return (screenWidth - CanvasManagerStatic.screenWidth) / 2
+    }
+    /**
+     * This method returns the vertical margin of the screen.
+     */
+    private static get verticalMargin() {
+        let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+        return (screenHeight - CanvasManagerStatic.screenHeight) / 2
+    }
+    /**
+     * This method is called when the screen is resized.
+     */
+    private static resize(): void {
+        // now we use css trickery to set the sizes and margins
+        if (CanvasManagerStatic._isInitialized) {
+            let style = CanvasManagerStatic.app.canvas.style;
+            style.width = `${CanvasManagerStatic.screenWidth}px`;
+            style.height = `${CanvasManagerStatic.screenHeight}px`;
+            (style as any).marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
+            (style as any).marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
+            (style as any).marginTop = `${CanvasManagerStatic.verticalMargin}px`;
+            (style as any).marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
+        }
+
+        if (CanvasManagerStatic.htmlLayout) {
+            CanvasManagerStatic.htmlLayout.style.width = `${CanvasManagerStatic.screenWidth}px`
+            CanvasManagerStatic.htmlLayout.style.height = `${CanvasManagerStatic.screenHeight}px`
+            CanvasManagerStatic.htmlLayout.style.marginLeft = `${CanvasManagerStatic.horizontalMargin}px`
+            CanvasManagerStatic.htmlLayout.style.marginRight = `${CanvasManagerStatic.horizontalMargin}px`
+            CanvasManagerStatic.htmlLayout.style.marginTop = `${CanvasManagerStatic.verticalMargin}px`
+            CanvasManagerStatic.htmlLayout.style.marginBottom = `${CanvasManagerStatic.verticalMargin}px`
+        }
+    }
 
     /* Edit Canvas Elements Methods */
 
