@@ -8,7 +8,7 @@ import { getLabelById } from "../decorators/LabelDecorator"
 import { getFlag, setFlag } from "../functions"
 import { CharacterInterface, IHistoryStepData, NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
-import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } from "../types"
+import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption, InputInfo, StorageElementType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 import NarrationManagerStatic from "./NarrationManagerStatic"
@@ -103,11 +103,15 @@ export default class NarrationManager {
         if (data) {
             let dialoge: Dialogue | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
+            let inputValue: StorageElementType | undefined = undefined
             if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
                 dialoge = this.dialogue
             }
             if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
                 requiredChoices = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
+            }
+            if (storage.getVariable<StorageElementType>(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
+                inputValue = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
             }
             NarrationManagerStatic._stepsHistory.push({
                 diff: data,
@@ -116,7 +120,8 @@ export default class NarrationManager {
                 choices: requiredChoices,
                 stepSha1: stepSha,
                 index: NarrationManagerStatic._lastStepIndex,
-                choiceIndexMade: choiseMade
+                choiceIndexMade: choiseMade,
+                inputValue: inputValue,
             })
             NarrationManagerStatic.originalStepData = currentStepData
         }
@@ -156,6 +161,7 @@ export default class NarrationManager {
         NarrationManagerStatic._stepsHistory.forEach((step) => {
             let dialoge = step.dialoge
             let requiredChoices = step.choices
+            let inputValue = step.inputValue
             if (
                 list.length > 0 &&
                 list[list.length - 1].choices &&
@@ -185,7 +191,15 @@ export default class NarrationManager {
                     dialoge: dialoge,
                     playerMadeChoice: false,
                     choices: choices,
-                    stepIndex: step.index
+                    stepIndex: step.index,
+                    inputValue: inputValue,
+                })
+            }
+            else if (inputValue) {
+                list.push({
+                    playerMadeChoice: false,
+                    stepIndex: step.index,
+                    inputValue: inputValue,
                 })
             }
         })
@@ -734,6 +748,42 @@ export default class NarrationManager {
         })
         storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
         storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex)
+    }
+    /**
+     * The input value to be inserted by the player.
+     */
+    public get inputValue(): unknown {
+        return storage.getVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
+    }
+    public set inputValue(value: StorageElementType) {
+        this.removeInputRequest()
+        storage.setVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY, value)
+        storage.setVariable(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex)
+    }
+    /**
+     * If true, the player must enter a value.
+     */
+    public get isRequiredInput(): boolean {
+        return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY)?.isRequired || false
+    }
+    public get inputType(): string | undefined {
+        return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY)?.type
+    }
+    /**
+     * Request input from the player.
+     * @param value The input value to be inserted by the player.
+     */
+    public requestInput(value: Omit<InputInfo, "isRequired">) {
+        (value as InputInfo).isRequired = true
+        storage.setVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY, value)
+        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
+    }
+    /**
+     * Remove the input request.
+     */
+    public removeInputRequest() {
+        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY)
+        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
     }
 
 
