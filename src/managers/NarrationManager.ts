@@ -12,6 +12,7 @@ import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } f
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 import NarrationManagerStatic from "./NarrationManagerStatic"
+import StorageManagerStatic from "./StorageManagerStatic"
 
 /**
  * This class is a class that manages the steps and labels of the game.
@@ -135,6 +136,7 @@ export default class NarrationManager {
             return
         }
         NarrationManagerStatic._openedLabels.pop()
+        StorageManagerStatic.clearOldTempVariables(this.openedLabels.length)
     }
     /**
      * Close all labels and add them to the history. **Attention: This method can cause an unhandled game ending.**
@@ -142,6 +144,7 @@ export default class NarrationManager {
     closeAllLabels() {
         while (NarrationManagerStatic._openedLabels.length > 0) {
             this.closeCurrentLabel()
+            StorageManagerStatic.clearOldTempVariables(this.openedLabels.length)
         }
     }
     /**

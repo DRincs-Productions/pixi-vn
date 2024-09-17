@@ -1,3 +1,4 @@
+import { narration } from "."
 import { StorageElementType } from "../types/StorageElementType"
 
 export default class StorageManagerStatic {
@@ -47,30 +48,80 @@ export default class StorageManagerStatic {
              * This value was added to introduce Ink Sequences, cycles and other alternatives https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#sequences-cycles-and-other-alternatives
              */
             CURRENT_STEP_TIMES_COUNTER_KEY: "___current_step_times_counter___",
+            /**
+             * The key of the current step memory
+             */
+            TEMP_STORAGE_KEY: "___temp_storage___",
+            /**
+             * The key of the current step memory deadlines
+             */
+            TEMP_STORAGE_DEADLINES_KEY: "___temp_storage_deadlines___",
         }
     }
-    static storageTemp: { [key: string]: StorageElementType } = {}
+    static get tempStorage(): { [key: string]: StorageElementType } {
+        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] || {} as any
+    }
+    static set tempStorage(value: { [key: string]: StorageElementType }) {
+        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] = value
+    }
+    static get tempStorageDeadlines(): { [key: string]: number } {
+        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] || {} as any
+    }
+    static set tempStorageDeadlines(value: { [key: string]: number }) {
+        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] = value
+    }
     static setTempVariable(key: string, value: StorageElementType) {
         key = key.toLowerCase()
+        let tempStorage = StorageManagerStatic.tempStorage
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
         if (value === undefined || value === null) {
-            if (StorageManagerStatic.storageTemp.hasOwnProperty(key)) {
-                delete StorageManagerStatic.storageTemp[key]
+            if (tempStorage.hasOwnProperty(key)) {
+                delete tempStorage[key]
+                delete tempStorageDeadlines[key]
             }
             return
         }
-        StorageManagerStatic.storageTemp[key] = value
+        else {
+            tempStorage[key] = value
+            tempStorageDeadlines[key] = narration.openedLabels.length
+        }
+        StorageManagerStatic.tempStorage = tempStorage
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
     }
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase()
-        if (StorageManagerStatic.storageTemp.hasOwnProperty(key)) {
-            return StorageManagerStatic.storageTemp[key] as T
+        if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
+            return StorageManagerStatic.tempStorage[key] as T
         }
         return undefined
     }
     static removeTempVariable(key: string) {
         key = key.toLowerCase()
-        if (StorageManagerStatic.storageTemp.hasOwnProperty(key)) {
-            delete StorageManagerStatic.storageTemp[key]
+        let tempStorage = StorageManagerStatic.tempStorage
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
+        if (tempStorage.hasOwnProperty(key)) {
+            delete tempStorage[key]
+            delete tempStorageDeadlines[key]
         }
+        StorageManagerStatic.tempStorage = tempStorage
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
+    }
+    static clearOldTempVariables(openedLabelsNumber: number) {
+        let tempStorage = StorageManagerStatic.tempStorage
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
+        if (openedLabelsNumber === 0) {
+            tempStorage = {}
+            tempStorageDeadlines = {}
+        }
+        else {
+            for (const key in tempStorageDeadlines) {
+                if (tempStorageDeadlines[key] < openedLabelsNumber) {
+                    delete tempStorage[key]
+                    delete tempStorageDeadlines[key]
+                }
+            }
+        }
+        StorageManagerStatic.tempStorage = tempStorage
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
     }
 }
