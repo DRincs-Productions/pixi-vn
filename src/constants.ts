@@ -127,3 +127,5 @@ export const videoFormats = [
     "asf",
     "vob",
 ]
+
+export const PIXIVNJSON_PARAM_ID = "___param___"

@@ -12,6 +12,7 @@ import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption } f
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 import NarrationManagerStatic from "./NarrationManagerStatic"
+import StorageManagerStatic from "./StorageManagerStatic"
 
 /**
  * This class is a class that manages the steps and labels of the game.
@@ -36,6 +37,22 @@ export default class NarrationManager {
     }
     set currentStepTimesCounter(_: 0) {
         NarrationManagerStatic.resetCurrentStepTimesCounter()
+    }
+    /**
+     * Get a random number between min and max.
+     * @param min The minimum number.
+     * @param max The maximum number.
+     * @param options The options.
+     * @returns The random number or undefined. If options.onceonly is true and all numbers between min and max have already been generated, it will return undefined.
+     */
+    getRandomNumber(min: number, max: number, options: {
+        /**
+         * If true, the number will be generated only once on the current step of the label.
+         * @default false
+         */
+        onceOnly?: boolean
+    } = {}): number | undefined {
+        return NarrationManagerStatic.getRandomNumber(min, max, options)
     }
     /**
      * lastStepIndex is the last step index that occurred during the progression of the steps. **Not is the length of the stepsHistory - 1.**
@@ -119,6 +136,7 @@ export default class NarrationManager {
             return
         }
         NarrationManagerStatic._openedLabels.pop()
+        StorageManagerStatic.clearOldTempVariables(this.openedLabels.length)
     }
     /**
      * Close all labels and add them to the history. **Attention: This method can cause an unhandled game ending.**
@@ -126,6 +144,7 @@ export default class NarrationManager {
     closeAllLabels() {
         while (NarrationManagerStatic._openedLabels.length > 0) {
             this.closeCurrentLabel()
+            StorageManagerStatic.clearOldTempVariables(this.openedLabels.length)
         }
     }
     /**

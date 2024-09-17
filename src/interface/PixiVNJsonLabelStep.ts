@@ -51,6 +51,10 @@ export type PixiVNJsonLabelToOpen = {
      * Label opening mode
      */
     type: LabelRunModeType,
+    /**
+     * The properties to be passed to the label.
+     */
+    params?: any[]
 }
 
 /**
