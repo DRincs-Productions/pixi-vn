@@ -78,12 +78,13 @@ export default class StoredClassModel {
     /**
      * Get a property from the storage.
      * @param propertyName The name of the property to get.
+     * @param idToUse The id of the instance to get the property. @default this.id
      * @returns The value of the property. If the property is not found, returns undefined.
      */
-    protected getStorageProperty<T>(propertyName: string): T | undefined {
+    protected getStorageProperty<T>(propertyName: string, idToUse: string = this.id): T | undefined {
         let storageValue = storage.getVariable<any>(this.categoryId)
-        if (storageValue && storageValue.hasOwnProperty(this.id) && storageValue[this.id].hasOwnProperty(propertyName)) {
-            return storageValue[this.id][propertyName]
+        if (storageValue && storageValue.hasOwnProperty(idToUse) && storageValue[idToUse].hasOwnProperty(propertyName)) {
+            return storageValue[idToUse][propertyName]
         }
         return undefined
     }
