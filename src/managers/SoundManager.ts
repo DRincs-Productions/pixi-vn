@@ -275,6 +275,11 @@ export default class SoundManager extends SoundLibrary {
                 for (let alias in sounds) {
                     let item = sounds[alias]
                     let autoPlay = false
+                    let s = this.add(alias, {
+                        ...item.options,
+                        autoPlay: false
+                    })
+
                     if (alias in SoundManagerStatic.playInStepIndex) {
                         let step = SoundManagerStatic.playInStepIndex[alias];
                         if (item.options.loop || (step.options && typeof step.options === 'object' && step.options.loop)) {
@@ -282,11 +287,6 @@ export default class SoundManager extends SoundLibrary {
                         } else if (step.stepIndex === lastStepIndex) {
                             autoPlay = true
                         }
-
-                        let s = this.add(alias, {
-                            ...item.options,
-                            autoPlay: false
-                        })
 
                         if (item.filters) {
                             s.filters = FilterMemoryToFilter(item.filters)
