@@ -6,6 +6,7 @@ import { baseCanvasElementTestLabel } from "./BaseCanvasElementTestLabel";
 import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
 import { customTickerCanvasElementTestLabel } from "./CustomTickerCanvasElementTestLabel";
 import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
+import { inputTestLabel } from "./InputTestLabel";
 import { markdownTest } from "./MarkdownTest";
 import { soundTestLabel } from "./SoundTestLabel";
 import { stepLabelTestLAbel } from "./StepLabelTest";
@@ -63,6 +64,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Steps and Labels Test", stepLabelTestLAbel, {}),
                 new ChoiceMenuOption("Markdown Test", markdownTest, {}),
+                new ChoiceMenuOption("Input Test", inputTestLabel, {}),
             ]
         },
         (props) => narration.jumpLabel(RESTART_TEST_LABEL, props),
