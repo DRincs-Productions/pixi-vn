@@ -23,6 +23,7 @@ type CurrentStepTimesCounterMemoty = {
 export default class NarrationManagerStatic {
     private constructor() { }
     static _stepsHistory: IHistoryStep[] = []
+    static stepHistoryMustBeSaved: boolean = false
     /**
      * is a list of all labels that have been opened during the progression of the steps.
      * the key is the label id and the biggest step opened.

@@ -373,9 +373,13 @@ export default class NarrationManager {
                     console.warn("[Pixi'VN] stepSha not found")
                 }
                 try {
+                    NarrationManagerStatic.stepHistoryMustBeSaved = true
                     let result = await step(props)
-                    NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
-                    this.addStepHistory(stepSha || "error", choiseMade)
+                    if (NarrationManagerStatic.stepHistoryMustBeSaved) {
+                        NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
+                        this.addStepHistory(stepSha || "error", choiseMade)
+                        NarrationManagerStatic.stepHistoryMustBeSaved = false
+                    }
                     return result
                 }
                 catch (e) {
