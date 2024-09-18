@@ -50,9 +50,9 @@ export const soundTestLabel = newLabel(SOUND_TEST_LABEL,
             s.filters = [new filters.ReverbFilter()]
             sound.play("audio")
         },
-        (props) => {
+        async (props) => {
             sound.stop("audio")
-            narration.goNext(props)
+            await narration.goNext(props)
         },
     ]
 )

@@ -37,9 +37,9 @@ const openLink = newLabel<{
     link: string
 }>("___pixi_vn_open_link___",
     [
-        (props) => {
+        async (props) => {
             window.open(props.link)
-            narration.goNext(props)
+            await narration.goNext(props)
         },
     ]
 )
