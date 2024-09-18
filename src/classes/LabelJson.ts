@@ -214,12 +214,12 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
             })
 
             if (goNextStep) {
-                narration.goNext(props)
+                await narration.goNext(props)
             }
 
             if (end === "game_end") {
                 narration.closeAllLabels()
-                narration.goNext(props)
+                await narration.goNext(props)
             }
             else if (end === "label_end") {
                 narration.closeCurrentLabel()
