@@ -5,7 +5,7 @@ export default interface CharacterBaseModelProps {
     /**
      * The name of the character.
      */
-    name: string
+    name?: string
     /**
      * The surname of the character.
      */

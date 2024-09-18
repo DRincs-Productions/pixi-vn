@@ -30,21 +30,21 @@ export default class CharacterBaseModel extends CharacterStoredClass {
      * @param id The id of the character.
      * @param props The properties of the character.
      */
-    constructor(id: string, props: CharacterBaseModelProps) {
-        super(id)
+    constructor(id: string | { id: string, emotion: string }, props: CharacterBaseModelProps) {
+        super(typeof id === "string" ? id : id.id, typeof id === "string" ? "" : id.emotion)
         this.defaultName = props.name
         this.defaultSurname = props.surname
         this.defaultAge = props.age
         this._icon = props.icon
         this._color = props.color
     }
-    private defaultName: string = ""
+    private defaultName?: string
     /***
      * The name of the character.
      * If you set undefined, it will return the default name.
      */
     get name(): string {
-        return this.getStorageProperty<string>("name") || this.defaultName
+        return this.getStorageProperty<string>("name") || this.defaultName || this.id
     }
     set name(value: string | undefined) {
         this.setStorageProperty<string>("name", value)
