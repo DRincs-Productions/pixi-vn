@@ -14,13 +14,13 @@ type PixiVNJsonImageEdit = {
     type: "image",
     operationType: "edit",
     alias: string,
-    props?: ICanvasImageMemory
+    props?: Partial<ICanvasImageMemory>
 }
 type PixiVNJsonVideoEdit = {
     type: "video",
     operationType: "edit",
     alias: string,
-    props?: ICanvasVideoMemory
+    props?: Partial<ICanvasVideoMemory>
 }
 type PixiVNJsonCanvasRemove = {
     type: "image" | "video",
