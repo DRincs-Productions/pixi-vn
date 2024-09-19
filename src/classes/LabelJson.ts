@@ -287,7 +287,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         let image = canvas.find<CanvasImage>(operation.alias)
                         if (image) {
                             if (operation.props) {
-                                image.memory = operation.props
+                                image.memory = {
+                                    ...image.memory,
+                                    ...operation.props,
+                                }
                             }
                         }
                         else {
@@ -330,7 +333,10 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         let video = canvas.find<CanvasVideo>(operation.alias)
                         if (video) {
                             if (operation.props) {
-                                video.memory = operation.props
+                                video.memory = {
+                                    ...video.memory,
+                                    ...operation.props,
+                                }
                             }
                         }
                         else {
