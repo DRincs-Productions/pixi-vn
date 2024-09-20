@@ -11,7 +11,7 @@ import { PixiVNJsonOperation } from "../interface/PixiVNJsonOperations"
  */
 export function importPixiVNJson(
     data: PixiVNJson | string,
-    operationStringConvert?: (value: string) => PixiVNJsonOperation
+    operationStringConvert?: (value: string) => PixiVNJsonOperation | undefined
 ) {
     try {
         if (typeof data === "string") {

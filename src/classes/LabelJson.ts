@@ -24,7 +24,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         id: LabelIdType,
         steps: (PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep))[],
         props?: LabelProps<LabelJson<T>>,
-        operationStringConvert?: (value: string) => PixiVNJsonOperation,
+        operationStringConvert?: (value: string) => PixiVNJsonOperation | undefined,
     ) {
         super(id, props)
         this._steps = steps
@@ -39,7 +39,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         return this._steps.map(this.stepConverter)
     }
 
-    private operationStringConvert?: (value: string) => PixiVNJsonOperation
+    private operationStringConvert?: (value: string) => PixiVNJsonOperation | undefined
 
     public getStepSha1(index: number): string | undefined {
         if (index < 0 || index >= this.steps.length) {
@@ -393,7 +393,9 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                         }
                     })
                     let op = this.operationStringConvert(stringOperation)
-                    await this.runOperation(op, params)
+                    if (op) {
+                        await this.runOperation(op, params)
+                    }
                 }
                 break
         }
