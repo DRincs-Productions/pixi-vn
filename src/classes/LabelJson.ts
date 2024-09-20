@@ -5,6 +5,7 @@ import { geLogichValue, getValue, getValueFromConditionalStatements, setStorageJ
 import { LabelProps, PixiVNJsonIfElse, PixiVNJsonLabelStep, PixiVNJsonOperation } from "../interface"
 import PixiVNJsonConditionalStatements from '../interface/PixiVNJsonConditionalStatements'
 import { PixiVNJsonChoice, PixiVNJsonChoices, PixiVNJsonDialog, PixiVNJsonDialogText, PixiVNJsonLabelToOpen } from "../interface/PixiVNJsonLabelStep"
+import { PixiVNJsonOperationString } from '../interface/PixiVNJsonOperations'
 import { canvas, narration, sound, storage } from "../managers"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
@@ -19,9 +20,15 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: (PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep))[], props?: LabelProps<LabelJson<T>>) {
+    constructor(
+        id: LabelIdType,
+        steps: (PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep))[],
+        props?: LabelProps<LabelJson<T>>,
+        operationStringConvert?: (value: string) => PixiVNJsonOperation,
+    ) {
         super(id, props)
         this._steps = steps
+        this.operationStringConvert = operationStringConvert
     }
 
     private _steps: (PixiVNJsonLabelStep | (() => PixiVNJsonLabelStep))[]
@@ -31,6 +38,8 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
     public get steps(): StepLabelType<T>[] {
         return this._steps.map(this.stepConverter)
     }
+
+    private operationStringConvert?: (value: string) => PixiVNJsonOperation
 
     public getStepSha1(index: number): string | undefined {
         if (index < 0 || index >= this.steps.length) {
@@ -227,7 +236,7 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
         }
     }
 
-    private async runOperation(origin: PixiVNJsonOperation | PixiVNJsonIfElse<PixiVNJsonOperation>, params: any[]) {
+    private async runOperation(origin: PixiVNJsonOperation | PixiVNJsonIfElse<PixiVNJsonOperation> | PixiVNJsonOperationString, params: any[]) {
         let operation = getValueFromConditionalStatements(origin, params)
         if (!operation) {
             return
@@ -368,6 +377,24 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                 break
             case "value":
                 setStorageJson(operation, params)
+                break
+            case "oprationtoconvert":
+                if (this.operationStringConvert) {
+                    let stringOperation = ""
+                    operation.values.forEach((value) => {
+                        if (typeof value === "string") {
+                            stringOperation += value
+                        }
+                        else {
+                            let res = geLogichValue<string>(value, params)
+                            if (res) {
+                                stringOperation += `${res}`
+                            }
+                        }
+                    })
+                    let op = this.operationStringConvert(stringOperation)
+                    await this.runOperation(op, params)
+                }
                 break
         }
     }

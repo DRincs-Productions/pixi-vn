@@ -1,6 +1,7 @@
 import { LabelJson } from "../classes"
 import { saveLabel } from "../decorators/LabelDecorator"
 import { PixiVNJson, PixiVNJsonLabelStep } from "../interface"
+import { PixiVNJsonOperation } from "../interface/PixiVNJsonOperations"
 
 /**
  * Import a Pixi'VN JSON to the system.
@@ -8,7 +9,10 @@ import { PixiVNJson, PixiVNJsonLabelStep } from "../interface"
  * @param data The Pixi'VN JSON to be imported
  * @returns
  */
-export function importPixiVNJson(data: PixiVNJson | string) {
+export function importPixiVNJson(
+    data: PixiVNJson | string,
+    operationStringConvert?: (value: string) => PixiVNJsonOperation
+) {
     try {
         if (typeof data === "string") {
             data = JSON.parse(data) as PixiVNJson
@@ -27,7 +31,7 @@ export function importPixiVNJson(data: PixiVNJson | string) {
         for (const labelId in labels) {
             try {
                 const steps: PixiVNJsonLabelStep[] = labels[labelId]
-                let label = new LabelJson(labelId, steps)
+                let label = new LabelJson(labelId, steps, undefined, operationStringConvert)
                 saveLabel(label)
             }
             catch (e) {
