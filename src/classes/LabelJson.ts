@@ -398,6 +398,13 @@ export default class LabelJson<T extends {} = {}> extends LabelAbstract<LabelJso
                     }
                 }
                 break
+            case "input":
+                switch (operation.operationType) {
+                    case "request":
+                        narration.requestInput({ type: operation.valueType })
+                        break
+                }
+                break
         }
     }
 }
