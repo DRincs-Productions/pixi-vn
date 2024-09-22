@@ -6,6 +6,11 @@ Pixi’VN + [Templates](#project-initialization) provides a complete solution an
 
 It is designed for web developers, with basic experience in JavaScript/TypeScript, who want to create a visual novel with a modern 2D rendering engine and their favorite JavaScript framework.
 
+With the [PixiVNJson](https://pixi-vn.web.app/advanced/pixi-vn-json.html) implementation you have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
+
+* [Ink](https://pixi-vn.web.app/ink/ink.html)
+* [Ren'Py](https://pixi-vn.web.app/renpy/renpy.html)
+
 It is based on [Pixi.js](https://pixijs.com/), a rendering engine that allows you to create fast 2D graphics. It is based on WebGL and is very fast and efficient. It is used by many developers to create games, websites, and applications.
 
 Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html) to add an **interface** with JavaScript frameworks.
@@ -30,11 +35,21 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
 ### First steps
 
 * [Characters](https://pixi-vn.web.app/start/character.html)
-* Narration:
+* [Narration (JS/TS)](https://pixi-vn.web.app/start/narration.html):
   * [Dialogue](https://pixi-vn.web.app/start/dialogue.html)
   * [Label and Game Step](https://pixi-vn.web.app/start/labels.html)
   * [Choice Menus](https://pixi-vn.web.app/start/choices.html)
+  * [Input](https://pixi-vn.web.app/start/input.html)
   * [History](https://pixi-vn.web.app/start/history.html)
+  * [Typewriter effect](https://pixi-vn.web.app/start/typewriter.html)
+  * [Style Text (Markdown)](https://pixi-vn.web.app/start/markdown.html)
+* [Narration with Ink](https://pixi-vn.web.app/ink/ink.html):
+  * [Characters](https://pixi-vn.web.app/ink/ink-character.html)
+  * [Style Text (Markdown)](https://pixi-vn.web.app/ink/ink-markdown.html)
+  * [Input](https://pixi-vn.web.app/ink/ink-input.html)
+  * [Canvas](https://pixi-vn.web.app/ink/ink-canvas.html)
+  * [Sounds and Music](https://pixi-vn.web.app/ink/ink-sound.html)
+* [Narration with Ren’Py](https://pixi-vn.web.app/renpy/renpy.html)
 * [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html):
   * [Images](https://pixi-vn.web.app/start/images.html)
   * [Video](https://pixi-vn.web.app/start/videos.html)
@@ -56,7 +71,8 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
 
 * [Intecept Events](https://pixi-vn.web.app/advanced/intercept-events.html)
 * [Distribution](https://pixi-vn.web.app/advanced/distribution.html)
-* [Mobile distribution](https://pixi-vn.web.app/advanced/distribution%E2%80%90mobile.html)
+  * [Mobile distribution](https://pixi-vn.web.app/advanced/distribution%E2%80%90mobile.html)
+* [Pixi’VN + Json](https://pixi-vn.web.app/advanced/pixi-vn-json.html)
 
 ## Prerequisites
 
