@@ -179,6 +179,9 @@ export default class NarrationManager {
                     list[list.length - 1].choices = oldChoices
                 }
             }
+            if (inputValue && list.length > 0) {
+                list[list.length - 1].inputValue = inputValue
+            }
             if (dialoge || requiredChoices) {
                 let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice) => {
                     return {
@@ -192,14 +195,6 @@ export default class NarrationManager {
                     playerMadeChoice: false,
                     choices: choices,
                     stepIndex: step.index,
-                    inputValue: inputValue,
-                })
-            }
-            else if (inputValue) {
-                list.push({
-                    playerMadeChoice: false,
-                    stepIndex: step.index,
-                    inputValue: inputValue,
                 })
             }
         })
