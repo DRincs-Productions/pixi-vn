@@ -243,7 +243,6 @@ export default class NarrationManager {
     public get alreadyCurrentStepMadeChoices(): number[] | undefined {
         let choiceMenuOptions = this.choiceMenuOptions
         if (!choiceMenuOptions) {
-            console.warn("[Pixi'VN] No choice menu options on current step")
             return
         }
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
