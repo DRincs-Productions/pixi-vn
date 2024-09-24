@@ -263,10 +263,15 @@ export default class NarrationManagerStatic {
      * Increase the current step index of the current label.
      */
     static increaseCurrentStepIndex() {
-        let item = NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1]
-        NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1] = {
-            ...item,
-            currentStepIndex: item.currentStepIndex + 1,
+        if (NarrationManagerStatic._openedLabels.length > 0) {
+            let item = NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1]
+            NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1] = {
+                ...item,
+                currentStepIndex: item.currentStepIndex + 1,
+            }
+        }
+        else {
+            console.log("[Pixi'VN] No label opened")
         }
     }
     static restoreLastLabelList() {
