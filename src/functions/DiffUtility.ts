@@ -36,10 +36,10 @@ export function restoreDeepDiffChanges<T extends object = object>(data: T, diffe
                             (dataToEdit[path] as any[])[index] = diff.item.lhs
                         }
                         else if (diff.item.kind === "A") {
-                            console.warn("[Pixi’VN} Nested array found, skipping diff", diff)
+                            console.warn("[Pixi’VN] Nested array found, skipping diff", diff)
                         }
                         else {
-                            console.warn("[Pixi’VN} No array found, skipping diff", diff)
+                            console.warn("[Pixi’VN] No array found, skipping diff", diff)
                         }
                     }
                 }
@@ -49,7 +49,7 @@ export function restoreDeepDiffChanges<T extends object = object>(data: T, diffe
             })
         }
         else {
-            console.warn("[Pixi’VN} No path found, skipping diff", diff)
+            console.warn("[Pixi’VN] No path found, skipping diff", diff)
         }
     })
     return result

@@ -229,7 +229,7 @@ export function moveOut(
 ): void {
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
-        console.warn("[Pixi’VN} The canvas element is not found.")
+        console.warn("[Pixi’VN] The canvas element is not found.")
         return
     }
 
@@ -343,7 +343,7 @@ export function zoomOut(
 ) {
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
-        console.warn("[Pixi’VN} The canvas element is not found.")
+        console.warn("[Pixi’VN] The canvas element is not found.")
         return
     }
 

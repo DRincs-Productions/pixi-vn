@@ -70,5 +70,5 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
      * @param _alias The alias of the canvas elements that are connected to this ticker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
-    fn(_ticker: Ticker, _args: TArgs, _alias: string | string[], _tickerId: string): void { throw new Error("[Pixi’VN} The method TickerBase.fn() must be overridden") }
+    fn(_ticker: Ticker, _args: TArgs, _alias: string | string[], _tickerId: string): void { throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden") }
 }

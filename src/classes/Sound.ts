@@ -7,11 +7,11 @@ export default class Sound extends PixiSound {
     alias?: string;
     override pause(): this {
         if (!this.alias) {
-            throw new Error("[Pixi’VN} The alias is not defined.");
+            throw new Error("[Pixi’VN] The alias is not defined.");
         }
         let item = SoundManagerStatic.playInStepIndex[this.alias]
         if (!item) {
-            throw new Error("[Pixi’VN} The alias is not found in the playInStepIndex.");
+            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.playInStepIndex[this.alias] = {
             ...item,
@@ -21,11 +21,11 @@ export default class Sound extends PixiSound {
     }
     override resume(): this {
         if (!this.alias) {
-            throw new Error("[Pixi’VN} The alias is not defined.");
+            throw new Error("[Pixi’VN] The alias is not defined.");
         }
         let item = SoundManagerStatic.playInStepIndex[this.alias]
         if (!item) {
-            throw new Error("[Pixi’VN} The alias is not found in the playInStepIndex.");
+            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.playInStepIndex[this.alias] = {
             options: item.options,
@@ -42,7 +42,7 @@ export default class Sound extends PixiSound {
     }
     override stop(): this {
         if (!this.alias) {
-            throw new Error("[Pixi’VN} The alias is not defined.");
+            throw new Error("[Pixi’VN] The alias is not defined.");
         }
         delete SoundManagerStatic.playInStepIndex[this.alias];
         return super.stop();
@@ -52,7 +52,7 @@ export default class Sound extends PixiSound {
             this.alias = options;
         }
         if (!this.alias) {
-            throw new Error("[Pixi’VN} The alias is not defined.");
+            throw new Error("[Pixi’VN] The alias is not defined.");
         }
         SoundManagerStatic.playInStepIndex[this.alias] = {
             stepIndex: narration.lastStepIndex,

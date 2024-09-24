@@ -19,7 +19,7 @@ export default function canvasElementDecorator(name?: CanvasElementAliasType) {
             name = target.name
         }
         if (registeredCanvasElement[name]) {
-            console.warn(`[Pixi’VN} CanvasElement ${name} already registered`)
+            console.warn(`[Pixi’VN] CanvasElement ${name} already registered`)
         }
         target.prototype.pixivnId = name
         registeredCanvasElement[name] = target
@@ -30,14 +30,14 @@ export function getCanvasElementTypeById<T extends typeof CanvasBase<any>>(canva
     try {
         let eventType = registeredCanvasElement[canvasId]
         if (!eventType) {
-            console.error(`[Pixi’VN} CanvasElement ${canvasId} not found`)
+            console.error(`[Pixi’VN] CanvasElement ${canvasId} not found`)
             return
         }
         new eventType()
         return eventType as T
     }
     catch (e) {
-        console.error(`[Pixi’VN} Error while getting CanvasElement ${canvasId}`, e)
+        console.error(`[Pixi’VN] Error while getting CanvasElement ${canvasId}`, e)
         return
     }
 }
@@ -64,14 +64,14 @@ export function getCanvasElementInstanceById<T extends CanvasBase<any>>(canvasId
         }
 
         if (!eventType) {
-            console.error(`[Pixi’VN} CanvasElement ${canvasId} not found`)
+            console.error(`[Pixi’VN] CanvasElement ${canvasId} not found`)
             return
         }
         let canvasElement = new eventType()
         return canvasElement as T
     }
     catch (e) {
-        console.error(`[Pixi’VN} Error while getting CanvasElement ${canvasId}`, e)
+        console.error(`[Pixi’VN] Error while getting CanvasElement ${canvasId}`, e)
         return
     }
 }

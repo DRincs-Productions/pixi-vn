@@ -16,7 +16,7 @@ export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label
  */
 export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: Omit<LabelProps<Label<T>>, "choiseIndex">): Label<T> {
     if (registeredLabels[id]) {
-        console.info(`[Pixi’VN} Label ${id} already exists, it will be overwritten`)
+        console.info(`[Pixi’VN] Label ${id} already exists, it will be overwritten`)
     }
     let label = new Label<T>(id, steps, props)
     registeredLabels[id] = label
@@ -31,7 +31,7 @@ export function newLabel<T extends {} = {}>(id: LabelIdType, steps: StepLabelTyp
 export function getLabelById<T = Label<any>>(id: LabelIdType): T | undefined {
     let label = registeredLabels[id]
     if (!label) {
-        console.error(`[Pixi’VN} Label ${id} not found`)
+        console.error(`[Pixi’VN] Label ${id} not found`)
         return
     }
     return label as T

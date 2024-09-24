@@ -72,7 +72,7 @@ export default class CanvasImage<Memory extends ICanvasImageMemory = ICanvasImag
                 }
             })
             .catch((e) => {
-                console.error("[Pixi’VN} Error into CanvasImage.load()", e)
+                console.error("[Pixi’VN] Error into CanvasImage.load()", e)
             })
     }
 }

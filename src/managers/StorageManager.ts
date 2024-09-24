@@ -69,11 +69,11 @@ export default class StorageManager {
                 StorageManagerStatic.storage = (data as ExportedStorage)
             }
             else {
-                console.warn("[Pixi’VN} No storage data found")
+                console.warn("[Pixi’VN] No storage data found")
             }
         }
         catch (e) {
-            console.error("[Pixi’VN} Error importing data", e)
+            console.error("[Pixi’VN] Error importing data", e)
         }
     }
 }

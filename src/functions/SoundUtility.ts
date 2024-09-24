@@ -26,7 +26,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): Filter[] {
             res.push(new filters.DistortionFilter(f.amount))
         }
         else {
-            console.error("[Pixi’VN} Unknown sound filter type")
+            console.error("[Pixi’VN] Unknown sound filter type")
         }
     }
     return res
@@ -87,7 +87,7 @@ export function FilterToFilterMemory(filter?: Filter[]): SoundFilterMemory[] | u
             })
         }
         else {
-            console.error("[Pixi’VN} Unknown sound filter type")
+            console.error("[Pixi’VN] Unknown sound filter type")
         }
     }
     return res

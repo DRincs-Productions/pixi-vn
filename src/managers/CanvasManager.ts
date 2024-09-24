@@ -272,7 +272,7 @@ export default class CanvasManager {
             canvasElementAlias = [canvasElementAlias]
         }
         if (!geTickerInstanceById<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
-            console.error(`[Pixi’VN} Ticker ${tickerId} not found`)
+            console.error(`[Pixi’VN] Ticker ${tickerId} not found`)
             return
         }
         let tickerHistory: TickerHistory<TArgs> = {
@@ -325,7 +325,7 @@ export default class CanvasManager {
      */
     addTickersSteps<TArgs extends TickerArgsType>(alias: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
-            console.warn("[Pixi’VN} The steps of the tickers is empty")
+            console.warn("[Pixi’VN] The steps of the tickers is empty")
             return
         }
         this.removeTickerStepByCanvasElement(alias)
@@ -361,7 +361,7 @@ export default class CanvasManager {
             step = CanvasManagerStatic._currentTickersSteps[alias].steps[0]
             CanvasManagerStatic._currentTickersSteps[alias].currentStepNumber = 0
             if (step === Repeat) {
-                console.error("[Pixi’VN} TikersSteps has a RepeatType in the first step")
+                console.error("[Pixi’VN] TikersSteps has a RepeatType in the first step")
                 return
             }
         }
@@ -380,7 +380,7 @@ export default class CanvasManager {
         }
         let ticker = geTickerInstanceById<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
         if (!ticker) {
-            console.error(`[Pixi’VN} Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
+            console.error(`[Pixi’VN] Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
             return
         }
         let tickerName: TickerIdType = ticker.id
@@ -620,7 +620,7 @@ export default class CanvasManager {
                 })
             }
             else {
-                console.error("[Pixi’VN} The data does not have the properties elementAliasesOrder and elements")
+                console.error("[Pixi’VN] The data does not have the properties elementAliasesOrder and elements")
                 return
             }
             if (data.hasOwnProperty("tickers")) {
@@ -633,7 +633,7 @@ export default class CanvasManager {
                         this.addTicker(aliases, ticker)
                     }
                     else {
-                        console.error(`[Pixi’VN} Ticker ${t.id} not found`)
+                        console.error(`[Pixi’VN] Ticker ${t.id} not found`)
                     }
                 }
             }
@@ -643,7 +643,7 @@ export default class CanvasManager {
             }
         }
         catch (e) {
-            console.error("[Pixi’VN} Error importing data", e)
+            console.error("[Pixi’VN] Error importing data", e)
         }
     }
 }

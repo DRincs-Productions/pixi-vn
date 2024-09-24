@@ -40,7 +40,7 @@ export default class NarrationManagerStatic {
         let labelId = NarrationManagerStatic.currentLabelId
         let currentLabel = NarrationManagerStatic._currentLabel
         if (!labelId || currentLabelStepIndex === null || !currentLabel) {
-            console.error("[Pixi’VN} currentLabelId or currentLabelStepIndex is null or currentLabel not found")
+            console.error("[Pixi’VN] currentLabelId or currentLabelStepIndex is null or currentLabel not found")
             return null
         }
         let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error"
@@ -58,7 +58,7 @@ export default class NarrationManagerStatic {
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId
         let labelId = NarrationManagerStatic.currentLabelId
         if (!labelId || currentLabelStepIndex === null) {
-            console.error("[Pixi’VN} currentLabelId or currentLabelStepIndex is null")
+            console.error("[Pixi’VN] currentLabelId or currentLabelStepIndex is null")
             return
         }
         let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
@@ -117,7 +117,7 @@ export default class NarrationManagerStatic {
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId
         let labelId = NarrationManagerStatic.currentLabelId
         if (!labelId || currentLabelStepIndex === null) {
-            console.error("[Pixi’VN} currentLabelId or currentLabelStepIndex is null")
+            console.error("[Pixi’VN] currentLabelId or currentLabelStepIndex is null")
             return
         }
         let obj = storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {}
@@ -247,7 +247,7 @@ export default class NarrationManagerStatic {
     static pushNewLabel(label: LabelIdType) {
         let currentLabel = getLabelById(label)
         if (!currentLabel) {
-            throw new Error(`[Pixi’VN} Label ${label} not found`)
+            throw new Error(`[Pixi’VN] Label ${label} not found`)
         }
         NarrationManagerStatic._openedLabels.push({
             label: label,
@@ -271,7 +271,7 @@ export default class NarrationManagerStatic {
             }
         }
         else {
-            console.log("[Pixi’VN} No label opened")
+            console.log("[Pixi’VN] No label opened")
         }
     }
     static restoreLastLabelList() {
@@ -299,7 +299,7 @@ export default class NarrationManagerStatic {
                 return NarrationManagerStatic.goBackInternal(steps - 1, result)
             }
             catch (e) {
-                console.error("[Pixi’VN} Error applying diff", e)
+                console.error("[Pixi’VN] Error applying diff", e)
                 return restoredStep
             }
         }

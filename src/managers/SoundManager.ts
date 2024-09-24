@@ -51,7 +51,7 @@ export default class SoundManager extends SoundLibrary {
     override add(map: any, globalOptions?: SoundOptions): SoundMap;
     public override add(alias: string, sourceOptions?: SoundOptions | string): (Sound | SoundMap) {
         if (typeof alias === 'object') {
-            throw new Error("[Pixi’VN} The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.")
+            throw new Error("[Pixi’VN] The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.")
         }
         if (this.exists(alias)) {
             this.remove(alias)
@@ -159,7 +159,7 @@ export default class SoundManager extends SoundLibrary {
     override  pause(alias: string): Sound {
         let item = SoundManagerStatic.playInStepIndex[alias]
         if (!item) {
-            throw new Error("[Pixi’VN} The alias is not found in the playInStepIndex.");
+            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.playInStepIndex[alias] = {
             ...item,
@@ -170,7 +170,7 @@ export default class SoundManager extends SoundLibrary {
     override resume(alias: string): Sound {
         let item = SoundManagerStatic.playInStepIndex[alias]
         if (!item) {
-            throw new Error("[Pixi’VN} The alias is not found in the playInStepIndex.");
+            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.playInStepIndex[alias] = {
             options: item.options,
@@ -251,7 +251,7 @@ export default class SoundManager extends SoundLibrary {
                 SoundManagerStatic.soundAliasesOrder = (data as ExportedSounds)["soundAliasesOrder"]
             }
             else {
-                console.error("[Pixi’VN} The data does not have the properties soundAliasesOrder")
+                console.error("[Pixi’VN] The data does not have the properties soundAliasesOrder")
                 return
             }
 
@@ -266,7 +266,7 @@ export default class SoundManager extends SoundLibrary {
                 SoundManagerStatic.playInStepIndex = (data as ExportedSounds)["playInStepIndex"]
             }
             else {
-                console.error("[Pixi’VN} The data does not have the properties playInStepIndex")
+                console.error("[Pixi’VN] The data does not have the properties playInStepIndex")
                 return
             }
 
@@ -299,12 +299,12 @@ export default class SoundManager extends SoundLibrary {
                 }
             }
             else {
-                console.error("[Pixi’VN} The data does not have the properties sounds")
+                console.error("[Pixi’VN] The data does not have the properties sounds")
                 return
             }
         }
         catch (e) {
-            console.error("[Pixi’VN} Error importing data", e)
+            console.error("[Pixi’VN] Error importing data", e)
         }
     }
 }
