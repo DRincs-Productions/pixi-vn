@@ -551,6 +551,17 @@ export default class CanvasManager {
         }
     }
 
+    /* Other Methods */
+
+    /**
+     * Extract the canvas as an image.
+     * @returns The image as a base64 string.
+     */
+    async extractImage() {
+        const image = await this.app.renderer.extract.image(this.app.stage)
+        return image.src
+    }
+
     /**
      * Clear the canvas and the tickers.
      */
