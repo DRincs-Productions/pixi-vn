@@ -1,7 +1,7 @@
 import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/TextureUtility";
-import ICanvasImageMemory from "../../interface/canvas/ICanvasImageMemory";
+import { ICanvasImageMemory } from "../../interface";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
 export const CANVAS_IMAGE_ID = "Image"

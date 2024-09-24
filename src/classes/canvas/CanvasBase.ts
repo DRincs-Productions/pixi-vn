@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators";
 import { getCanvasElementInstanceById } from "../../decorators/CanvasElementDecorator";
-import { ICanvasBaseMemory } from "../../interface/canvas";
+import { ICanvasBaseMemory } from "../../interface";
 import { canvas } from "../../managers";
 
 /**

@@ -1,6 +1,6 @@
 import { Container, ContainerOptions } from "pixi.js";
 import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/CanvasMemoryUtility";
-import ICanvasContainerMemory from "../../interface/canvas/ICanvasContainerMemory";
+import { ICanvasContainerMemory } from "../../interface";
 import CanvasBase from "./CanvasBase";
 
 export const CANVAS_CONTAINER_ID = "Container"

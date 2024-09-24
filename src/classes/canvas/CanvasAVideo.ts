@@ -1,6 +1,6 @@
 import { Sprite, Texture, TextureSourceLike } from "pixi.js";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
-import ICanvasVideoMemory from "../../interface/canvas/ICanvasVideoMemory";
+import { ICanvasVideoMemory } from "../../interface";
 import CanvasImage from "./CanvasImage";
 
 export const CANVAS_VIDEO_ID = "Video"

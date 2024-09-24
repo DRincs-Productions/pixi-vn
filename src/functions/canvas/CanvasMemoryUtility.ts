@@ -1,6 +1,6 @@
 import { CanvasBase } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/CanvasElementDecorator";
-import { ICanvasBaseMemory } from "../../interface/canvas";
+import { ICanvasBaseMemory } from "../../interface";
 
 /**
  * Export a Canvas element to a memory object

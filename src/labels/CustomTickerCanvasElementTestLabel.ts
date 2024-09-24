@@ -2,7 +2,7 @@ import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "p
 import { CanvasSprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
-import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../interface/canvas";
+import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../interface";
 import { canvas, narration } from "../managers";
 import { eggHeadImage, eggHeadName, juliette } from "./TestConstant";
 

@@ -1,6 +1,6 @@
 import { Texture } from "pixi.js";
 import { videoFormats } from "../../constants";
-import { ITextureMemory } from "../../interface/canvas";
+import { ITextureMemory } from "../../interface";
 import { canvas } from "../../managers";
 
 /**

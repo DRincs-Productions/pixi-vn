@@ -2,8 +2,7 @@ import { ContainerChild, ContainerEvents, EventEmitter, Sprite, SpriteOptions, T
 import { getEventInstanceById, getEventTypeById } from "../../decorators/EventDecorator";
 import { getTextureMemory } from "../../functions/canvas/CanvasUtility";
 import { getTexture } from "../../functions/TextureUtility";
-import ICanvasBaseMemory from "../../interface/canvas/ICanvasBaseMemory";
-import ICanvasSpriteMemory, { ICanvasSpriteBaseMemory } from "../../interface/canvas/ICanvasSpriteMemory";
+import { ICanvasBaseMemory, ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
