@@ -390,14 +390,17 @@ export default class NarrationManager {
                 this.closeCurrentLabel()
                 return await this.goNext(props, choiseMade)
             }
-            else {
-                NarrationManagerStatic.restoreLastLabelList()
-                if (this.onGameEnd) {
-                    return await this.onGameEnd(props)
-                }
-                console.error("[Pixi'VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game")
-                return
+        }
+        else if (this.openedLabels.length === 0) {
+            NarrationManagerStatic.restoreLastLabelList()
+            if (this.onGameEnd) {
+                return await this.onGameEnd(props)
             }
+            console.error("[Pixi'VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game")
+            return
+        }
+        else {
+            console.error("[Pixi'VN] currentLabelId not found")
         }
     }
     /**
