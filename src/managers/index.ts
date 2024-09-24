@@ -22,6 +22,11 @@ export {
     default as GameStorageManager
 } from './StorageManager';
 
+export { default as CanvasManagerStatic } from './CanvasManagerStatic';
+export { default as NarrationManagerStatic } from './NarrationManagerStatic';
+export { default as SoundManagerStatic } from './SoundManagerStatic';
+export { default as StorageManagerStatic } from './StorageManagerStatic';
+
 const sound = new SoundManager()
 const narration = new NarrationManager()
 const storage = new StorageManager()
