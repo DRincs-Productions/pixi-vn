@@ -16,6 +16,7 @@ export {
     default as DialogueBaseModel
 } from './Dialogue';
 export { default as Label } from './Label';
+export { default as LabelAbstract } from './LabelAbstract';
 export { default as Sound } from './Sound';
 export { default as StoredClassModel } from './StoredClassModel';
 
