@@ -14,7 +14,7 @@ export default class CanvasManagerStatic {
     private static _app: Application | undefined = undefined
     static get app() {
         if (!CanvasManagerStatic._app) {
-            throw new Error("[Pixi'VN] GameWindowManager.app is undefined")
+            throw new Error("[Pixi’VN} GameWindowManager.app is undefined")
         }
         return CanvasManagerStatic._app
     }
@@ -62,7 +62,7 @@ export default class CanvasManagerStatic {
             element.appendChild(CanvasManagerStatic.app.canvas as HTMLCanvasElement)
         }
         else {
-            console.error("[Pixi'VN] GameWindowManager is not initialized")
+            console.error("[Pixi’VN} GameWindowManager is not initialized")
         }
     }
     static initializeHTMLLayout(element: HTMLElement) {
@@ -156,7 +156,7 @@ export default class CanvasManagerStatic {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)
         }
         catch (e) {
-            throw new Error(`[Pixi'VN] Error to generate ticker id: ${e}`)
+            throw new Error(`[Pixi’VN} Error to generate ticker id: ${e}`)
         }
     }
     static addTickerTimeoutInfo(aliases: string | string[], ticker: string, timeout: string, canBeDeletedBeforeEnd: boolean) {

@@ -12,19 +12,19 @@ export async function getTexture(imageUrl: string): Promise<Texture | void> {
     return Assets.load(imageUrl)
         .then((texture) => {
             if (!texture) {
-                console.error("[Pixi'VN] Texture not found", imageUrl)
+                console.error("[Pixi’VN} Texture not found", imageUrl)
                 return
             }
             // if texture not is a Texture, then it is a TextureResource
             if (!(texture instanceof Texture)) {
-                console.error("[Pixi'VN] File not is a image", imageUrl)
+                console.error("[Pixi’VN} File not is a image", imageUrl)
                 return
             }
 
             return texture
         })
         .catch((e) => {
-            console.error("[Pixi'VN] Error loading image", e)
+            console.error("[Pixi’VN} Error loading image", e)
             return
         })
 }
@@ -34,7 +34,7 @@ function getFillGradientFillPattern(prop: ColorSource | FillGradient | FillPatte
         return prop
     }
     // TODO: FillGradient and FillPattern are not supported yet
-    console.warn(`[Pixi'VN] CanvasText.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop)
+    console.warn(`[Pixi’VN} CanvasText.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop)
     return undefined
 }
 
