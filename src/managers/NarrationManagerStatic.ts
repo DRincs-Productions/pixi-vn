@@ -76,6 +76,7 @@ export default class NarrationManagerStatic {
         let lastStep = NarrationManagerStatic._lastStepIndex
         let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(nestedId)
         if (!obj) {
+            console.error("[Pixi’VN] getCurrentStepTimesCounter obj is null")
             return 0
         }
         let list = obj.lastStepIndexs || []
