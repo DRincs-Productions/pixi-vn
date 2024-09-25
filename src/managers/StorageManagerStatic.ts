@@ -24,9 +24,9 @@ export default class StorageManagerStatic {
              */
             LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "___last_menu_options_added_in_step_memory___",
             /**
-             * The key of the input memory
+             * The key of the input memory. This value can be read by pixi-vn json importer
              */
-            CURRENT_INPUT_VALUE_MEMORY_KEY: "___current_input_memory___",
+            CURRENT_INPUT_VALUE_MEMORY_KEY: "_input_value_",
             /**
              * The key of the last input added in the step memory
              */
