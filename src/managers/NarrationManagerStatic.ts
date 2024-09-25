@@ -270,9 +270,6 @@ export default class NarrationManagerStatic {
                 currentStepIndex: item.currentStepIndex + 1,
             }
         }
-        else {
-            console.log("[Pixi’VN] No label opened")
-        }
     }
     static restoreLastLabelList() {
         NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalStepData.openedLabels
