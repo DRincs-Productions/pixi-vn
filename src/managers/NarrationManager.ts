@@ -104,13 +104,13 @@ export default class NarrationManager {
             let dialoge: Dialogue | undefined = undefined
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined
             let inputValue: StorageElementType | undefined = undefined
-            if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
+            if (storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) === this.lastStepIndex) {
                 dialoge = this.dialogue
             }
-            if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
+            if (storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) === this.lastStepIndex) {
                 requiredChoices = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
             }
-            if (storage.getVariable<StorageElementType>(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY) === NarrationManagerStatic._lastStepIndex) {
+            if (storage.getVariable<StorageElementType>(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY) === this.lastStepIndex) {
                 inputValue = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
             }
             NarrationManagerStatic._stepsHistory.push({
@@ -119,7 +119,7 @@ export default class NarrationManager {
                 dialoge: dialoge,
                 choices: requiredChoices,
                 stepSha1: stepSha,
-                index: NarrationManagerStatic._lastStepIndex,
+                index: this.lastStepIndex,
                 choiceIndexMade: choiseMade,
                 inputValue: inputValue,
             })
@@ -794,6 +794,8 @@ export default class NarrationManager {
     public clear() {
         NarrationManagerStatic._stepsHistory = []
         NarrationManagerStatic._openedLabels = []
+        NarrationManagerStatic._lastStepIndex = 0
+        NarrationManagerStatic._originalStepData = undefined
     }
 
     /* Export and Import Methods */
@@ -813,7 +815,7 @@ export default class NarrationManager {
         return {
             stepsHistory: NarrationManagerStatic._stepsHistory,
             openedLabels: NarrationManagerStatic._openedLabels,
-            lastStepIndex: NarrationManagerStatic._lastStepIndex,
+            lastStepIndex: this.lastStepIndex,
             originalStepData: NarrationManagerStatic._originalStepData,
         }
     }
