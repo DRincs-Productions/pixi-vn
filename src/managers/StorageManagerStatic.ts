@@ -3,6 +3,7 @@ import { StorageElementType } from "../types/StorageElementType"
 
 export default class StorageManagerStatic {
     static storage: { [key: string]: StorageElementType } = {}
+    static baseStorage: { [key: string]: StorageElementType } = {}
     private constructor() { }
     public static get _keysSystem() {
         return {
@@ -135,5 +136,8 @@ export default class StorageManagerStatic {
         }
         StorageManagerStatic.tempStorage = tempStorage
         StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
+    }
+    static saveStorageAsBasicStorage() {
+        StorageManagerStatic.baseStorage = { ...StorageManagerStatic.storage }
     }
 }

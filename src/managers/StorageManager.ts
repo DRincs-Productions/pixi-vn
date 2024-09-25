@@ -51,7 +51,7 @@ export default class StorageManager {
      * @returns
      */
     public clear() {
-        StorageManagerStatic.storage = {}
+        StorageManagerStatic.storage = { ...StorageManagerStatic.baseStorage }
     }
     public exportJson(): string {
         return JSON.stringify(this.export())
