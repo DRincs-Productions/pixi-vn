@@ -13,4 +13,6 @@ export default defineConfig({
     bundle: true,
     skipNodeModulesBundle: false, // Skip bundling of node_modules
     entryPoints: ['src/index.ts'],
+    noExternal: ['pixi.js', '@pixi/sound'],
+
 });
