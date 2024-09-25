@@ -36,7 +36,11 @@ export default class NarrationManagerStatic {
     }
     static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
-        let currentLabelStepIndexId = currentLabelStepIndex + nestedId
+        if (currentLabelStepIndex === null) {
+            console.error("[Pixi’VN] currentLabelStepIndex is null")
+            return null
+        }
+        let currentLabelStepIndexId = `${currentLabelStepIndex}${nestedId}`
         let labelId = NarrationManagerStatic.currentLabelId
         let currentLabel = NarrationManagerStatic._currentLabel
         if (!labelId || currentLabelStepIndex === null || !currentLabel) {
