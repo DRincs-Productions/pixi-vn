@@ -360,7 +360,7 @@ export default class NarrationManager {
                     NarrationManagerStatic.stepsRunning++
                     let result = await step(props)
 
-                    if (this.choiceMenuOptions?.length === 1 && !this.choiceMenuOptions[0].autoSelect) {
+                    if (this.choiceMenuOptions?.length === 1 && this.choiceMenuOptions[0].autoSelect) {
                         let choice = this.choiceMenuOptions[0]
                         result = await this.selectChoice(choice, props)
                     }
