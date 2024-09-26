@@ -8,7 +8,24 @@ import IOpenedLabel from "../interface/IOpenedLabel"
 import { LabelIdType } from "../types/LabelIdType"
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number, openCount: number } }
-type AllChoicesMadeType = { label: LabelIdType, step: number, choice: number, stepSha1: string }
+type AllChoicesMadeType = {
+    /**
+     * The label id of the current step.
+     */
+    labelId: LabelIdType,
+    /**
+     * The index of the step in the history.
+     */
+    stepIndex: number,
+    /**
+     * The index of the choice made by the player.
+     */
+    choiceIndex: number,
+    /**
+     * The sha1 of the step function.
+     */
+    stepSha1: string,
+}
 type CurrentStepTimesCounterMemotyData = {
     lastStepIndexs?: number[],
     usedRandomNumbers?: { [minmaxkey: string]: number[] },
@@ -23,7 +40,11 @@ type CurrentStepTimesCounterMemoty = {
 export default class NarrationManagerStatic {
     private constructor() { }
     static _stepsHistory: IHistoryStep[] = []
-    static stepHistoryMustBeSaved: boolean = false
+    /**
+     * Number of steps function that are running.
+     * If you run a step that have a goNext, this number is > 1.
+     */
+    static stepsRunning: number = 0
     /**
      * is a list of all labels that have been opened during the progression of the steps.
      * the key is the label id and the biggest step opened.
@@ -227,7 +248,7 @@ export default class NarrationManagerStatic {
      * @param stepIndex The step index of the label.
      * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
      */
-    static addLabelHistory(label: LabelIdType, stepIndex: number, stepSha: string, choiseMade?: number) {
+    static addLabelHistory(label: LabelIdType, stepIndex: number) {
         let allOpenedLabels = NarrationManagerStatic.allOpenedLabels
         let oldStepIndex = NarrationManagerStatic.allOpenedLabels[label]?.biggestStep || 0
         let openCount = NarrationManagerStatic.allOpenedLabels[label]?.openCount || 0
@@ -235,14 +256,18 @@ export default class NarrationManagerStatic {
             allOpenedLabels[label] = { biggestStep: stepIndex, openCount: openCount }
             NarrationManagerStatic.allOpenedLabels = allOpenedLabels
         }
-
-        if (choiseMade !== undefined) {
-            let allChoicesMade = NarrationManagerStatic.allChoicesMade
-            let alredyMade = allChoicesMade.find((item) => item.label === label && item.step === stepIndex && item.choice === choiseMade)
-            if (!alredyMade) {
-                allChoicesMade.push({ label: label, step: stepIndex, choice: choiseMade, stepSha1: stepSha })
-                NarrationManagerStatic.allChoicesMade = allChoicesMade
-            }
+    }
+    static addChoicesMade(label: LabelIdType, stepIndex: number, stepSha: string, choiseMade: number) {
+        let allChoicesMade = NarrationManagerStatic.allChoicesMade
+        let alredyMade = allChoicesMade.find((item) =>
+            item.labelId === label &&
+            item.stepIndex === stepIndex &&
+            item.choiceIndex === choiseMade &&
+            item.stepSha1 === stepSha
+        )
+        if (!alredyMade) {
+            allChoicesMade.push({ labelId: label, stepIndex: stepIndex, choiceIndex: choiseMade, stepSha1: stepSha })
+            NarrationManagerStatic.allChoicesMade = allChoicesMade
         }
     }
     /**

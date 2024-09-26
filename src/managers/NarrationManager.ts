@@ -120,8 +120,10 @@ export default class NarrationManager {
                 choices: requiredChoices,
                 stepSha1: stepSha,
                 index: this.lastStepIndex,
+                labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
                 choiceIndexMade: choiseMade,
                 inputValue: inputValue,
+                alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
             })
             NarrationManagerStatic.originalStepData = currentStepData
         }
@@ -241,32 +243,20 @@ export default class NarrationManager {
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
      */
     public get alreadyCurrentStepMadeChoices(): number[] | undefined {
-        let choiceMenuOptions = this.choiceMenuOptions
-        if (!choiceMenuOptions) {
-            return
-        }
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
         let currentLabel = this.currentLabel
         if (currentLabelStepIndex === null || !currentLabel) {
-            console.error("[Pixi’VN] currentLabelStepIndex is null or currentLabel not found")
             return
         }
         let stepSha = currentLabel.getStepSha1(currentLabelStepIndex)
         if (!stepSha) {
             console.warn("[Pixi’VN] stepSha not found")
         }
-        let alreadyMade: number[] = []
-        choiceMenuOptions.forEach((item, index) => {
-            let alreadyMadeChoice = NarrationManagerStatic.allChoicesMade.find((choice) =>
-                choice.label === item.label.id &&
-                choice.step === currentLabelStepIndex &&
+        return NarrationManagerStatic.allChoicesMade.filter((choice) => {
+            return choice.labelId === currentLabel?.id &&
+                choice.stepIndex === currentLabelStepIndex &&
                 choice.stepSha1 === stepSha
-            )
-            if (alreadyMadeChoice) {
-                alreadyMade.push(index)
-            }
-        })
-        return alreadyMade
+        }).map((choice) => choice.choiceIndex)
     }
     /**
      * Check if the current step is already completed.
@@ -367,12 +357,18 @@ export default class NarrationManager {
                     console.warn("[Pixi’VN] stepSha not found")
                 }
                 try {
-                    NarrationManagerStatic.stepHistoryMustBeSaved = true
+                    NarrationManagerStatic.stepsRunning++
                     let result = await step(props)
-                    if (NarrationManagerStatic.stepHistoryMustBeSaved) {
-                        NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex, stepSha || "error", choiseMade)
+
+                    if (choiseMade !== undefined && NarrationManagerStatic._stepsHistory.length > 0) {
+                        let lastHistoryStep = NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1]
+                        NarrationManagerStatic.addChoicesMade(lastHistoryStep.currentLabel || "error", lastHistoryStep.labelStepIndex || -1, lastHistoryStep.stepSha1 || "error", choiseMade)
+                    }
+
+                    NarrationManagerStatic.stepsRunning--
+                    if (NarrationManagerStatic.stepsRunning === 0) {
+                        NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex)
                         this.addStepHistory(stepSha || "error", choiseMade)
-                        NarrationManagerStatic.stepHistoryMustBeSaved = false
                     }
                     return result
                 }
@@ -715,7 +711,15 @@ export default class NarrationManager {
                     }))
                 }
             })
-            return options
+            let alreadyChoices = this.alreadyCurrentStepMadeChoices
+            return options.filter((option, index) => {
+                if (option.oneTime) {
+                    if (alreadyChoices && alreadyChoices.includes(index)) {
+                        return false
+                    }
+                }
+                return true
+            })
         }
         return undefined
     }
@@ -724,15 +728,6 @@ export default class NarrationManager {
             storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined)
             return
         }
-        options = options.filter((option, index) => {
-            if (option.oneTime) {
-                let alreadyChoices = this.alreadyCurrentStepMadeChoices
-                if (alreadyChoices && alreadyChoices.includes(index)) {
-                    return false
-                }
-            }
-            return true
-        })
         let value: IStoratedChoiceMenuOption[] = options.map((option) => {
             if (option instanceof ChoiceMenuOptionClose) {
                 return {

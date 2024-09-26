@@ -56,6 +56,10 @@ export default interface IHistoryStep<T extends Dialogue = Dialogue> {
      */
     index: number,
     /**
+     * The data of the step of the label.
+     */
+    labelStepIndex: number | null,
+    /**
      * Dialogue to be shown in the game
      */
     dialoge?: T
@@ -63,6 +67,10 @@ export default interface IHistoryStep<T extends Dialogue = Dialogue> {
      * List of choices asked of the player
      */
     choices?: IStoratedChoiceMenuOption[]
+    /**
+     * List of choices already made by the player
+     */
+    alreadyMadeChoices?: number[]
     /**
      * The input value of the player
      */
