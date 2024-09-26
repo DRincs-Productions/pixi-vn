@@ -13,6 +13,16 @@ type ChoiceMenuOptionOptions = {
      * If this is true, the choice can only be made once. @default false
      */
     oneTime?: boolean
+    /**
+     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+     * @default false
+     */
+    onlyHaveNoChoice?: boolean
+    /**
+     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+     * @default false
+     */
+    autoSelect?: boolean
 }
 type ChoiceMenuOptionCloseOptions = {
     /**
@@ -23,6 +33,16 @@ type ChoiceMenuOptionCloseOptions = {
      * If this is true, the choice can only be made once. @default false
      */
     oneTime?: boolean
+    /**
+     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+     * @default false
+     */
+    onlyHaveNoChoice?: boolean
+    /**
+     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+     * @default false
+     */
+    autoSelect?: boolean
 }
 
 /**
@@ -64,6 +84,14 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      */
     oneTime: boolean
     /**
+     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+     */
+    onlyHaveNoChoice: boolean
+    /**
+     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+     */
+    autoSelect: boolean
+    /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
@@ -98,6 +126,8 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
         this._label = label
         this.type = options?.type || "call"
         this.oneTime = options?.oneTime || false
+        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false
+        this.autoSelect = options?.autoSelect || false
         if (props) {
             this.props = props
         }
@@ -134,6 +164,14 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      */
     oneTime: boolean
     /**
+     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+     */
+    onlyHaveNoChoice: boolean
+    /**
+     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+     */
+    autoSelect: boolean
+    /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
@@ -165,6 +203,8 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
         this.text = text
         this.closeCurrentLabel = options?.closeCurrentLabel || false
         this.oneTime = options?.oneTime || false
+        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false
+        this.autoSelect = options?.autoSelect || false
     }
 }
 
@@ -185,6 +225,14 @@ export type IStoratedChoiceMenuOption = {
      * If this is true, the choice can only be made once.
      */
     oneTime: boolean
+    /**
+     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+     */
+    onlyHaveNoChoice: boolean
+    /**
+     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+     */
+    autoSelect: boolean
     /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
@@ -222,6 +270,14 @@ export type IStoratedChoiceMenuOption = {
      * If this is true, the choice can only be made once.
      */
     oneTime: boolean
+    /**
+     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+     */
+    onlyHaveNoChoice: boolean
+    /**
+     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+     */
+    autoSelect: boolean
     /**
      * If true, the current label will be closed
      */
