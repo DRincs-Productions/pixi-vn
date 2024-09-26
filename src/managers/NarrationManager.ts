@@ -360,6 +360,11 @@ export default class NarrationManager {
                     NarrationManagerStatic.stepsRunning++
                     let result = await step(props)
 
+                    if (this.choiceMenuOptions?.length === 1 && !this.choiceMenuOptions[0].autoSelect) {
+                        let choice = this.choiceMenuOptions[0]
+                        result = await this.selectChoice(choice, props)
+                    }
+
                     if (choiseMade !== undefined && NarrationManagerStatic._stepsHistory.length > 0) {
                         let lastHistoryStep = NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1]
                         NarrationManagerStatic.addChoicesMade(lastHistoryStep.currentLabel || "error", lastHistoryStep.labelStepIndex || -1, lastHistoryStep.stepSha1 || "error", choiseMade)
@@ -441,6 +446,8 @@ export default class NarrationManager {
                     closeCurrentLabel: false,
                     type: "close",
                     oneTime: false,
+                    onlyHaveNoChoice: false,
+                    autoSelect: false,
                     props: {},
                 }
                 return this.closeChoiceMenu(choice, props)
@@ -504,6 +511,8 @@ export default class NarrationManager {
                     closeCurrentLabel: false,
                     type: "close",
                     oneTime: false,
+                    onlyHaveNoChoice: false,
+                    autoSelect: false,
                     props: {},
                 }
                 return this.closeChoiceMenu<T>(choice, props)
@@ -523,6 +532,27 @@ export default class NarrationManager {
             return
         }
         return await this.runCurrentStep<T>(props, choiseMade)
+    }
+    /**
+     * Select a choice from the choice menu. and close the choice menu.
+     * @param item 
+     * @param props 
+     * @returns 
+     */
+    public async selectChoice<T extends {}>(item: ChoiceMenuOptionClose | ChoiceMenuOption<T>, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
+        this.choiceMenuOptions = undefined;
+        if (item.type == "call") {
+            return await this.callLabel(item.label, props)
+        }
+        else if (item.type == "jump") {
+            return await this.jumpLabel(item.label, props)
+        }
+        else if (item.type == "close") {
+            return await this.closeChoiceMenu(item, props)
+        }
+        else {
+            throw new Error(`[Pixi’VN] Type ${item.type} not found`)
+        }
     }
     /**
      * When the player is in a choice menu, can use this function to exit to the choice menu.
@@ -688,12 +718,15 @@ export default class NarrationManager {
         let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY)
         if (d) {
             let options: ChoiceMenuOptionsType = []
+            let onlyHaveNoChoice: ChoiceMenuOptionsType = []
             d.forEach((option, index) => {
                 if (option.type === Close) {
                     let itemLabel = newCloseLabel(index)
                     let choice = new ChoiceMenuOptionClose(option.text, {
                         closeCurrentLabel: option.closeCurrentLabel,
-                        oneTime: option.oneTime
+                        oneTime: option.oneTime,
+                        onlyHaveNoChoice: option.onlyHaveNoChoice,
+                        autoSelect: option.autoSelect,
                     })
                     choice.label = itemLabel
                     options.push(choice)
@@ -707,19 +740,32 @@ export default class NarrationManager {
                     })
                     options.push(new ChoiceMenuOption(option.text, itemLabel, option.props, {
                         type: option.type,
-                        oneTime: option.oneTime
+                        oneTime: option.oneTime,
+                        onlyHaveNoChoice: option.onlyHaveNoChoice,
+                        autoSelect: option.autoSelect,
                     }))
                 }
             })
             let alreadyChoices = this.alreadyCurrentStepMadeChoices
-            return options.filter((option, index) => {
+            options = options.filter((option, index) => {
                 if (option.oneTime) {
                     if (alreadyChoices && alreadyChoices.includes(index)) {
                         return false
                     }
                 }
+                if (option.onlyHaveNoChoice) {
+                    onlyHaveNoChoice.push(option)
+                    return false
+                }
                 return true
             })
+            if (options.length > 0) {
+                return options
+            }
+            else if (onlyHaveNoChoice.length > 0) {
+                let firstOption = onlyHaveNoChoice[0]
+                return [firstOption]
+            }
         }
         return undefined
     }
@@ -735,6 +781,8 @@ export default class NarrationManager {
                     type: Close,
                     closeCurrentLabel: option.closeCurrentLabel,
                     oneTime: option.oneTime,
+                    onlyHaveNoChoice: option.onlyHaveNoChoice,
+                    autoSelect: option.autoSelect,
                 }
             }
             return {
