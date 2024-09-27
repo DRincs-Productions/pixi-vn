@@ -45,6 +45,7 @@ export default class NarrationManagerStatic {
      * If you run a step that have a goNext, this number is > 1.
      */
     static stepsRunning: number = 0
+    static choiseMadeTemp: undefined | number = undefined
     /**
      * is a list of all labels that have been opened during the progression of the steps.
      * the key is the label id and the biggest step opened.

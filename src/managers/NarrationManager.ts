@@ -368,12 +368,14 @@ export default class NarrationManager {
                     if (choiseMade !== undefined && NarrationManagerStatic._stepsHistory.length > 0) {
                         let lastHistoryStep = NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1]
                         NarrationManagerStatic.addChoicesMade(lastHistoryStep.currentLabel || "error", lastHistoryStep.labelStepIndex || -1, lastHistoryStep.stepSha1 || "error", choiseMade)
+                        NarrationManagerStatic.choiseMadeTemp = choiseMade
                     }
 
                     NarrationManagerStatic.stepsRunning--
                     if (NarrationManagerStatic.stepsRunning === 0) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex)
-                        this.addStepHistory(stepSha || "error", choiseMade)
+                        this.addStepHistory(stepSha || "error", NarrationManagerStatic.choiseMadeTemp)
+                        NarrationManagerStatic.choiseMadeTemp = undefined
                     }
                     return result
                 }
@@ -538,6 +540,20 @@ export default class NarrationManager {
      * @param item 
      * @param props 
      * @returns 
+     * @example
+     * ```typescript
+     * narration.selectChoice(item, {
+     *     navigate: navigate,
+     *     // your props
+     *     ...item.props
+     * })
+     *     .then(() => {
+     *         // your code
+     *     })
+     *     .catch((e) => {
+     *         // your code
+     *     })
+     * ```
      */
     public async selectChoice<T extends {}>(item: ChoiceMenuOptionClose | ChoiceMenuOption<T>, props: StepLabelPropsType<T>): Promise<StepLabelResultType> {
         this.choiceMenuOptions = undefined;
