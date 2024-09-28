@@ -30,6 +30,9 @@ export default class StorageManager {
      */
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase()
+        if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
+            return StorageManagerStatic.getTempVariable<T>(key)
+        }
         if (StorageManagerStatic.storage.hasOwnProperty(key)) {
             return createExportableElement(StorageManagerStatic.storage[key]) as T
         }

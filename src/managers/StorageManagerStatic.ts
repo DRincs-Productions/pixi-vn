@@ -1,4 +1,5 @@
 import { narration } from "."
+import { createExportableElement } from "../functions/ExportUtility"
 import { StorageElementType } from "../types/StorageElementType"
 
 export default class StorageManagerStatic {
@@ -104,7 +105,7 @@ export default class StorageManagerStatic {
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase()
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
-            return StorageManagerStatic.tempStorage[key] as T
+            return createExportableElement(StorageManagerStatic.tempStorage[key]) as T
         }
         return undefined
     }
