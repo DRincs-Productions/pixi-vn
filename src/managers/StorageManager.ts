@@ -31,10 +31,7 @@ export default class StorageManager {
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase()
         if (StorageManagerStatic.storage.hasOwnProperty(key)) {
-            let res = createExportableElement(StorageManagerStatic.storage[key]) as T
-            if (res === undefined) {
-                return createExportableElement(StorageManagerStatic.baseStorage[key]) as T
-            }
+            return createExportableElement(StorageManagerStatic.storage[key]) as T
         }
         return undefined
     }
