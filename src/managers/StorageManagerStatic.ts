@@ -1,4 +1,3 @@
-import { narration } from "."
 import { createExportableElement } from "../functions/ExportUtility"
 import { StorageElementType } from "../types/StorageElementType"
 
@@ -84,41 +83,12 @@ export default class StorageManagerStatic {
     static set tempStorageDeadlines(value: { [key: string]: number }) {
         StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] = value
     }
-    static setTempVariable(key: string, value: StorageElementType) {
-        key = key.toLowerCase()
-        let tempStorage = StorageManagerStatic.tempStorage
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
-        if (value === undefined || value === null) {
-            if (tempStorage.hasOwnProperty(key)) {
-                delete tempStorage[key]
-                delete tempStorageDeadlines[key]
-            }
-            return
-        }
-        else {
-            tempStorage[key] = value
-            tempStorageDeadlines[key] = narration.openedLabels.length
-        }
-        StorageManagerStatic.tempStorage = tempStorage
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
-    }
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase()
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
             return createExportableElement(StorageManagerStatic.tempStorage[key]) as T
         }
         return undefined
-    }
-    static removeTempVariable(key: string) {
-        key = key.toLowerCase()
-        let tempStorage = StorageManagerStatic.tempStorage
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
-        if (tempStorage.hasOwnProperty(key)) {
-            delete tempStorage[key]
-            delete tempStorageDeadlines[key]
-        }
-        StorageManagerStatic.tempStorage = tempStorage
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
     }
     static clearOldTempVariables(openedLabelsNumber: number) {
         let tempStorage = StorageManagerStatic.tempStorage

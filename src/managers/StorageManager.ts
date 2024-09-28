@@ -1,3 +1,4 @@
+import { narration } from "."
 import { createExportableElement } from "../functions/ExportUtility"
 import { ExportedStorage } from "../interface"
 import { StorageElementType } from "../types/StorageElementType"
@@ -24,7 +25,7 @@ export default class StorageManager {
         StorageManagerStatic.storage[key] = value
     }
     /**
-     * Get a variable from the storage
+     * Get a variable from the storage. If the variable is a temporary variable, it will return the temporary variable
      * @param key The key of the variable
      * @returns The value of the variable. If the variable does not exist, it will return undefined
      */
@@ -48,6 +49,45 @@ export default class StorageManager {
         if (StorageManagerStatic.storage.hasOwnProperty(key)) {
             delete StorageManagerStatic.storage[key]
         }
+    }
+    /**
+     * Set a variable in the temporary storage. The lifespan of the variable is the number of opened labels.
+     * To get the temporary variable, use {@link this.getVariable}
+     * @param key The key of the temporary variable
+     * @param value The value of the temporary variable. If undefined, the variable will be removed
+     * @returns 
+     */
+    public setTempVariable(key: string, value: StorageElementType) {
+        key = key.toLowerCase()
+        let tempStorage = StorageManagerStatic.tempStorage
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
+        if (value === undefined || value === null) {
+            this.removeTempVariable(key)
+            return
+        }
+        else {
+            tempStorage[key] = value
+            if (!tempStorageDeadlines.hasOwnProperty(key)) {
+                tempStorageDeadlines[key] = narration.openedLabels.length
+            }
+        }
+        StorageManagerStatic.tempStorage = tempStorage
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
+    }
+    /**
+     * Remove a temporary variable
+     * @param key The key of the temporary variable
+     */
+    public removeTempVariable(key: string) {
+        key = key.toLowerCase()
+        let tempStorage = StorageManagerStatic.tempStorage
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
+        if (tempStorage.hasOwnProperty(key)) {
+            delete tempStorage[key]
+            delete tempStorageDeadlines[key]
+        }
+        StorageManagerStatic.tempStorage = tempStorage
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
     }
     /**
      * Clear the storage and the oidsUsed
