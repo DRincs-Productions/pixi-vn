@@ -393,6 +393,13 @@ export default class NarrationManager {
                 this.closeCurrentLabel()
                 return await this.goNext(props, choiseMade)
             }
+            else if (this.openedLabels.length === 1) {
+                NarrationManagerStatic.restoreLastLabelList()
+                if (this.onGameEnd) {
+                    return await this.onGameEnd(props)
+                }
+                return
+            }
         }
         else if (this.openedLabels.length === 0) {
             NarrationManagerStatic.restoreLastLabelList()
