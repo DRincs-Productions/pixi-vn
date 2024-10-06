@@ -5,6 +5,9 @@
  */
 export function createExportableElement<T>(element: T): T {
     try {
+        if (typeof element === "undefined") {
+            return element
+        }
         let elementString = JSON.stringify(element)
         return JSON.parse(elementString)
     }
