@@ -5,27 +5,11 @@ import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
+import ChoicesMadeType from "../types/ChoicesMadeType"
 import { LabelIdType } from "../types/LabelIdType"
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number, openCount: number } }
-type AllChoicesMadeType = {
-    /**
-     * The label id of the current step.
-     */
-    labelId: LabelIdType,
-    /**
-     * The index of the step in the history.
-     */
-    stepIndex: number,
-    /**
-     * The index of the choice made by the player.
-     */
-    choiceIndex: number,
-    /**
-     * The sha1 of the step function.
-     */
-    stepSha1: string,
-}
+
 type CurrentStepTimesCounterMemotyData = {
     lastStepIndexs?: number[],
     usedRandomNumbers?: { [minmaxkey: string]: number[] },
@@ -158,9 +142,9 @@ export default class NarrationManagerStatic {
      * is a list of all choices made by the player during the progression of the steps.
      */
     static get allChoicesMade() {
-        return storage.getVariable<AllChoicesMadeType[]>(storage.keysSystem.ALL_CHOICES_MADE_KEY) || []
+        return storage.getVariable<ChoicesMadeType[]>(storage.keysSystem.ALL_CHOICES_MADE_KEY) || []
     }
-    static set allChoicesMade(value: AllChoicesMadeType[]) {
+    static set allChoicesMade(value: ChoicesMadeType[]) {
         storage.setVariable(storage.keysSystem.ALL_CHOICES_MADE_KEY, value)
     }
     static _lastStepIndex: number = 0
@@ -260,16 +244,19 @@ export default class NarrationManagerStatic {
     }
     static addChoicesMade(label: LabelIdType, stepIndex: number, stepSha: string, choiseMade: number) {
         let allChoicesMade = NarrationManagerStatic.allChoicesMade
-        let alredyMade = allChoicesMade.find((item) =>
+        let alredyMade = allChoicesMade.findIndex((item) =>
             item.labelId === label &&
             item.stepIndex === stepIndex &&
             item.choiceIndex === choiseMade &&
             item.stepSha1 === stepSha
         )
-        if (!alredyMade) {
-            allChoicesMade.push({ labelId: label, stepIndex: stepIndex, choiceIndex: choiseMade, stepSha1: stepSha })
-            NarrationManagerStatic.allChoicesMade = allChoicesMade
+        if (alredyMade < 0) {
+            allChoicesMade.push({ labelId: label, stepIndex: stepIndex, choiceIndex: choiseMade, stepSha1: stepSha, madeTimes: 1 })
         }
+        else {
+            allChoicesMade[alredyMade].madeTimes++
+        }
+        NarrationManagerStatic.allChoicesMade = allChoicesMade
     }
     /**
      * Add a label to the history.

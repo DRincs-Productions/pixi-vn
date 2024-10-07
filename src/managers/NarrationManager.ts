@@ -9,6 +9,7 @@ import { getFlag, setFlag } from "../functions"
 import { CharacterInterface, IHistoryStepData, NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
 import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption, InputInfo, StorageElementType } from "../types"
+import ChoicesMadeType from "../types/ChoicesMadeType"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType"
 import NarrationManagerStatic from "./NarrationManagerStatic"
@@ -238,11 +239,7 @@ export default class NarrationManager {
         }
         return false
     }
-    /**
-     * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
-     * @returns The choices already made in the current step. If there are no choices, it will return undefined.
-     */
-    public get alreadyCurrentStepMadeChoices(): number[] | undefined {
+    private get alreadyCurrentStepMadeChoicesObj(): ChoicesMadeType[] | undefined {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex
         let currentLabel = this.currentLabel
         if (currentLabelStepIndex === null || !currentLabel) {
@@ -256,7 +253,14 @@ export default class NarrationManager {
             return choice.labelId === currentLabel?.id &&
                 choice.stepIndex === currentLabelStepIndex &&
                 choice.stepSha1 === stepSha
-        }).map((choice) => choice.choiceIndex)
+        })
+    }
+    /**
+     * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
+     * @returns The choices already made in the current step. If there are no choices, it will return undefined.
+     */
+    public get alreadyCurrentStepMadeChoices(): number[] | undefined {
+        return this.alreadyCurrentStepMadeChoicesObj?.map((choice) => choice.choiceIndex)
     }
     /**
      * Check if the current step is already completed.
@@ -278,6 +282,14 @@ export default class NarrationManager {
      */
     public getTimesLabelOpened(label: LabelIdType): number {
         return NarrationManagerStatic.allOpenedLabels[label]?.openCount || 0
+    }
+    /**
+     * Get times a choice has been made in the current step.
+     * @param index The index of the choice.
+     * @returns The number of times the choice has been made.
+     */
+    public getTimesChoiceMade(index: number): number {
+        return this.alreadyCurrentStepMadeChoicesObj?.find((choice) => choice.choiceIndex === index)?.madeTimes || 0
     }
 
     /* Run Methods */
