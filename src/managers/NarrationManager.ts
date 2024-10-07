@@ -252,6 +252,7 @@ export default class NarrationManager {
         if (!stepSha) {
             console.warn("[Pixi’VN] stepSha not found")
         }
+        console.log("NarrationManagerStatic.allChoicesMade", NarrationManagerStatic.allChoicesMade)
         return NarrationManagerStatic.allChoicesMade.filter((choice) => {
             return choice.labelId === currentLabel?.id &&
                 choice.stepIndex === currentLabelStepIndex &&
@@ -367,7 +368,12 @@ export default class NarrationManager {
 
                     if (choiseMade !== undefined && NarrationManagerStatic._stepsHistory.length > 0) {
                         let lastHistoryStep = NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1]
-                        NarrationManagerStatic.addChoicesMade(lastHistoryStep.currentLabel || "error", lastHistoryStep.labelStepIndex || -1, lastHistoryStep.stepSha1 || "error", choiseMade)
+                        NarrationManagerStatic.addChoicesMade(
+                            lastHistoryStep.currentLabel || "error",
+                            typeof lastHistoryStep.labelStepIndex === "number" ? lastHistoryStep.labelStepIndex : -1,
+                            lastHistoryStep.stepSha1 || "error",
+                            choiseMade,
+                        )
                         NarrationManagerStatic.choiseMadeTemp = choiseMade
                     }
 
@@ -772,6 +778,7 @@ export default class NarrationManager {
             let alreadyChoices = this.alreadyCurrentStepMadeChoices
             options = options.filter((option, index) => {
                 if (option.oneTime) {
+                    console.log("alreadyChoices", this.alreadyCurrentStepMadeChoices)
                     if (alreadyChoices && alreadyChoices.includes(index)) {
                         return false
                     }
