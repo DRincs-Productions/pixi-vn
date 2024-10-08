@@ -17,6 +17,10 @@ type HistoryChoiceMenuOption = {
      * This choice is a response
      */
     isResponse: boolean
+    /**
+     * The choice is hidden
+     */
+    hidden: boolean
 }
 
 export default HistoryChoiceMenuOption
