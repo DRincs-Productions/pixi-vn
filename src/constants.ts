@@ -1,7 +1,7 @@
 import { filters as f } from '@pixi/sound';
 import { PauseType, RepeatType } from "./types";
 
-export const PIXIVN_VERSION = '0.8.1'
+export const PIXIVN_VERSION = '0.8.2'
 export const Repeat: RepeatType = "repeat"
 /**
  * Pause the tickers for a duration.
