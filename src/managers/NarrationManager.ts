@@ -186,13 +186,25 @@ export default class NarrationManager {
                 list[list.length - 1].inputValue = inputValue
             }
             if (dialoge || requiredChoices) {
-                let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice) => {
+                let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice, index) => {
+                    let hidden: boolean = false
+                    if (choice.oneTime && step.alreadyMadeChoices && step.alreadyMadeChoices.includes(index)) {
+                        hidden = true
+                    }
                     return {
                         text: choice.text,
                         type: choice.type,
-                        isResponse: false
+                        isResponse: false,
+                        hidden: hidden,
                     }
                 })
+                // if all choices are hidden find onlyHaveNoChoice
+                if (choices && choices.every((choice) => choice.hidden)) {
+                    let onlyHaveNoChoice = choices.find((choice) => choice.hidden === false)
+                    if (onlyHaveNoChoice) {
+                        onlyHaveNoChoice.hidden = false
+                    }
+                }
                 list.push({
                     dialoge: dialoge,
                     playerMadeChoice: false,
