@@ -215,7 +215,7 @@ export default class NarrationManagerStatic {
 
     static get currentStepData(): IHistoryStepData {
         let currentStepData: IHistoryStepData = {
-            path: window.location.pathname,
+            path: window.location.pathname + window.location.hash,
             storage: storage.export(),
             canvas: canvas.export(),
             sound: sound.removeOldSoundAndExport(),
