@@ -13,13 +13,13 @@ With the [PixiVNJson](https://pixi-vn.web.app/advanced/pixi-vn-json.html) implem
 
 It is based on [Pixi.js](https://pixijs.com/), a rendering engine that allows you to create fast 2D graphics. It is based on WebGL and is very fast and efficient. It is used by many developers to create games, websites, and applications.
 
-Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html) to add an **interface** with JavaScript frameworks.
+Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html) to add an **UI** with JavaScript frameworks.
 
-By "Interface" is meant the elements that are above the canvas, such as buttons, forms, etc.
+By "UI" is meant the elements that are above the canvas, such as buttons, forms, etc.
 
 ![Frame_Aufbau](https://github.com/user-attachments/assets/54adca3e-7f5a-4886-a52a-d499d2cca6b3)
 
-This allows the use of systems such as React, Vue, Angular, etc. to create much more complex **interface screens** with excellent performance.
+This allows the use of systems such as React, Vue, Angular, etc. to create much more complex **UI screens** with excellent performance.
 
 * [Angular](https://pixi-vn.web.app/start/interface-angular.html)
 * [React Interface](https://pixi-vn.web.app/start/interface-react.html)
@@ -102,7 +102,8 @@ bun create pixi-vn@latest
 
 The supported template presets are:
 
-**[Basic Visual Novel - Web page (Vite + React + MUI joy)](https://github.com/DRincs-Productions/pixi-vn-react-template)**
+* **[Basic Visual Novel - Web page (Vite + React + MUI joy)](https://github.com/DRincs-Productions/pixi-vn-react-template)**
+* **[Basic Visual Novel - Multi Device (Vite + React + MUI joy + Electron Forge)](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/electron)**
 
 ( More templates will be added in the future, see this [issue](https://github.com/DRincs-Productions/pixi-vn/issues/162) for more information )
 
@@ -130,9 +131,11 @@ bun add @drincs/pixi-vn
 
 ## Usage
 
-For the following example, we will use React to create the interface and Pixi'VN to manage the visual novel.
+Now you must initialize the Pixi’VN window before using the engine.
 
-```tsx
+For example, you add the following code to the `main.ts` or `index.ts` (It depends on your project configuration):
+
+```typescript
 import { canvas, narration, clearAllGameDatas } from '@drincs/pixi-vn'
 import App from './App'
 import './index.css'
@@ -164,7 +167,7 @@ This is the HTML file that will be used to load the application.
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/pixiVN.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pixi'VN</title>
+    <title>Pixi’VN</title>
   </head>
   <body>
     <div id="root"></div>
