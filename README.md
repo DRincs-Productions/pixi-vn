@@ -41,6 +41,7 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
   * [Choice Menus](https://pixi-vn.web.app/start/choices.html)
   * [Input](https://pixi-vn.web.app/start/input.html)
   * [History](https://pixi-vn.web.app/start/history.html)
+  * [Translating](translate)
   * [Typewriter effect](https://pixi-vn.web.app/start/typewriter.html)
   * [Style Text (Markdown)](https://pixi-vn.web.app/start/markdown.html)
 * [Narration with Ink](https://pixi-vn.web.app/ink/ink.html):
@@ -49,6 +50,7 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
   * [Input](https://pixi-vn.web.app/ink/ink-input.html)
   * [Canvas](https://pixi-vn.web.app/ink/ink-canvas.html)
   * [Sounds and Music](https://pixi-vn.web.app/ink/ink-sound.html)
+  * [Translating](ink-translate)
 * [Narration with Ren’Py](https://pixi-vn.web.app/renpy/renpy.html)
 * [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html):
   * [Images](https://pixi-vn.web.app/start/images.html)
@@ -58,16 +60,16 @@ For more information, visit the [Web Page](https://pixi-vn.web.app/)
   * [Animations and Effects](https://pixi-vn.web.app/start/animations-effects.html)
   * [Tickers](https://pixi-vn.web.app/start/tickers.html)
 * [Sounds and Music](https://pixi-vn.web.app/start/sound.html)
-* [Interface with JavaScript Framework](https://pixi-vn.web.app/start/interface.html)
-  * [Angular Interface](https://pixi-vn.web.app/start/interface-angular.html)
-  * [React Interface](https://pixi-vn.web.app/start/interface-react.html)
-  * [Vue Interface](https://pixi-vn.web.app/start/interface-vue.html)
+* [UI with JavaScript Framework](https://pixi-vn.web.app/start/interface.html)
+  * [Angular UI](https://pixi-vn.web.app/start/interface-angular.html)
+  * [React UI](https://pixi-vn.web.app/start/interface-react.html)
+  * [Vue UI](https://pixi-vn.web.app/start/interface-vue.html)
 * [Game storage](https://pixi-vn.web.app/start/storage.html):
   * [Flags Management](https://pixi-vn.web.app/start/flags.html)
   * [Stored Classes](https://pixi-vn.web.app/start/stored-classes.html)
 * [Save and Load](https://pixi-vn.web.app/start/save.html)
 
-## Advanced topics
+### Advanced topics
 
 * [Intecept Events](https://pixi-vn.web.app/advanced/intercept-events.html)
 * [Distribution](https://pixi-vn.web.app/advanced/distribution.html)
