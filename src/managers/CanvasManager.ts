@@ -1,4 +1,4 @@
-import { ApplicationOptions, Container, Ticker } from "pixi.js";
+import { ApplicationOptions, Container, Sprite, Ticker } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { Repeat } from "../constants";
@@ -106,6 +106,66 @@ export default class CanvasManager {
     get currentCanvasElements() {
         return CanvasManagerStatic._children
     }
+    private importOldCanvasElementStyle(oldCanvasElement: CanvasBase<any>, newCanvasElement: CanvasBase<any>) {
+        if ("blendMode" in oldCanvasElement) {
+            newCanvasElement.blendMode = oldCanvasElement.blendMode
+        }
+        if ("tint" in oldCanvasElement) {
+            newCanvasElement.tint = oldCanvasElement.tint
+        }
+        if ("alpha" in oldCanvasElement) {
+            newCanvasElement.alpha = oldCanvasElement.alpha
+        }
+        if ("rotation" in oldCanvasElement) { // equal to angle
+            newCanvasElement.rotation = oldCanvasElement.rotation
+        }
+        // if ("scale" in oldCanvasElement) {
+        //     newCanvasElement.scale.set(oldCanvasElement.scale.x, oldCanvasElement.scale.y)
+        // }
+        if ("pivot" in oldCanvasElement) {
+            newCanvasElement.pivot.set(oldCanvasElement.pivot.x, oldCanvasElement.pivot.y)
+        }
+        if ("position" in oldCanvasElement) {
+            newCanvasElement.position.set(oldCanvasElement.position.x, oldCanvasElement.position.y)
+        }
+        if ("skew" in oldCanvasElement) {
+            newCanvasElement.skew.set(oldCanvasElement.skew.x, oldCanvasElement.skew.y)
+        }
+        // if ("visible" in oldCanvasElement) {
+        //     newCanvasElement.visible = oldCanvasElement.visible
+        // }
+        if ("x" in oldCanvasElement) {
+            newCanvasElement.x = oldCanvasElement.x
+        }
+        if ("y" in oldCanvasElement) {
+            newCanvasElement.y = oldCanvasElement.y
+        }
+        // if ("boundsArea" in oldCanvasElement) {
+        //     newCanvasElement.boundsArea = oldCanvasElement.boundsArea
+        // }
+        if ("cursor" in oldCanvasElement) {
+            newCanvasElement.cursor = oldCanvasElement.cursor
+        }
+        if ("eventMode" in oldCanvasElement) {
+            newCanvasElement.eventMode = oldCanvasElement.eventMode
+        }
+        if ("interactive" in oldCanvasElement) {
+            newCanvasElement.interactive = oldCanvasElement.interactive
+        }
+        if ("interactiveChildren" in oldCanvasElement) {
+            newCanvasElement.interactiveChildren = oldCanvasElement.interactiveChildren
+        }
+        if ("hitArea" in oldCanvasElement) {
+            newCanvasElement.hitArea = oldCanvasElement.hitArea
+        }
+
+        if ("anchor" in oldCanvasElement && "anchor" in newCanvasElement) {
+            (newCanvasElement as any as Sprite).anchor.set((oldCanvasElement as any as Sprite).anchor.x, (oldCanvasElement as any as Sprite).anchor.y)
+        }
+        if ("roundPixels" in oldCanvasElement && "roundPixels" in newCanvasElement) {
+            (newCanvasElement as any as Sprite).roundPixels = (oldCanvasElement as any as Sprite).roundPixels
+        }
+    }
     /**
      * Add a canvas element to the canvas.
      * If there is a canvas element with the same alias, it will be removed.
@@ -118,11 +178,23 @@ export default class CanvasManager {
      * canvas.add("bunny", sprite);
      * ```
      */
-    public add(alias: string, canvasElement: CanvasBase<any>) {
-        if (CanvasManagerStatic._children[alias]) {
+    public add(alias: string, canvasElement: CanvasBase<any>, options: {
+        /**
+         * If there is a canvas element with the same alias, the "style" of the old canvas element will be imported to the new canvas element.
+         */
+        ignoreOldStyle?: boolean
+    } = {}) {
+        let ignoreOldStyle = options?.ignoreOldStyle
+        let oldCanvasElement = this.find(alias)
+        if (oldCanvasElement && !ignoreOldStyle) {
+            let zIndex = oldCanvasElement.zIndex
+            this.importOldCanvasElementStyle(oldCanvasElement, canvasElement)
             this.remove(alias)
+            this.app.stage.addChildAt(canvasElement, zIndex)
         }
-        this.app.stage.addChild(canvasElement)
+        else {
+            this.app.stage.addChild(canvasElement)
+        }
         CanvasManagerStatic._children[alias] = canvasElement
         CanvasManagerStatic.elementAliasesOrder.push(alias)
     }
@@ -142,7 +214,10 @@ export default class CanvasManager {
      * canvas.remove("bunny");
      * ```
      */
-    public remove(alias: string | string[]) {
+    public remove(alias: string | string[], options: {
+        removeTickers: boolean
+    } = {}) {
+        let removeTickers = options.removeTickers
         if (typeof alias === "string") {
             alias = [alias]
         }
@@ -150,7 +225,7 @@ export default class CanvasManager {
             if (CanvasManagerStatic._children[alias]) {
                 this.app.stage.removeChild(CanvasManagerStatic._children[alias])
                 delete CanvasManagerStatic._children[alias]
-                this.removeTickerByCanvasElement(alias)
+                removeTickers && this.removeTickerByCanvasElement(alias)
             }
         })
         CanvasManagerStatic.elementAliasesOrder = CanvasManagerStatic.elementAliasesOrder.filter((t) => !alias.includes(t))
