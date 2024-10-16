@@ -2,9 +2,8 @@ import { getLabelById } from "../decorators"
 import { LabelProps } from "../interface"
 import { LabelIdType } from "../types/LabelIdType"
 import { StepLabelType } from "../types/StepLabelType"
-import Label from "./Label"
 
-export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> {
+export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> implements LabelProps<TLabel> {
     /**
      * @param id is the id of the label
      * @param props is the properties of the label
@@ -56,10 +55,6 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> {
     }
 
     private _onStepStart: ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined
-    /**
-     * Is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached.
-     * @returns Promise<void> or void
-     */
     public get onStepStart(): ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined {
         return async (stepIndex: number, label: TLabel) => {
             if (this._onLoadStep) {
@@ -72,19 +67,11 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> {
     }
 
     private _onLoadStep: ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined
-    /**
-     * Is a function that will be executed in {@link Label.onStepStart} and when the user goes back to it or when the user laods a save file.
-     * @returns Promise<void> or void
-     */
     public get onLoadStep(): ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined {
         return this._onLoadStep
     }
 
     private _onStepEnd: ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined
-    /**
-     * Is a function that will be executed when the step ends.
-     * @returns Promise<void> or void
-     */
     public get onStepEnd(): ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined {
         return this._onStepEnd
     }
