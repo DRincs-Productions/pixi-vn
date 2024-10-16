@@ -18,7 +18,7 @@ export default interface LabelProps<T> {
      */
     onStepStart?: (stepIndex: number, label: T) => void | Promise<void>,
     /**
-     * Is a function that will be executed in {@link Label#onStepStart} and when the user goes back to it or when the user laods a save file.
+     * Is a function that will be executed in {@link Label.onStepStart} and when the user goes back to it or when the user laods a save file.
      * @param stepIndex Step index
      * @param label Label
      * @returns 
