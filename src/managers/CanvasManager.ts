@@ -186,9 +186,9 @@ export default class CanvasManager {
     } = {}) {
         let ignoreOldStyle = options?.ignoreOldStyle
         let oldCanvasElement = this.find(alias)
-        if (oldCanvasElement && !ignoreOldStyle) {
+        if (oldCanvasElement) {
             let zIndex = oldCanvasElement.zIndex
-            this.importOldCanvasElementStyle(oldCanvasElement, canvasElement)
+            !ignoreOldStyle && this.importOldCanvasElementStyle(oldCanvasElement, canvasElement)
             this.remove(alias)
             this.app.stage.addChildAt(canvasElement, zIndex)
         }
@@ -215,7 +215,7 @@ export default class CanvasManager {
      * ```
      */
     public remove(alias: string | string[], options: {
-        removeTickers: boolean
+        removeTickers?: boolean
     } = {}) {
         let removeTickers = options.removeTickers
         if (typeof alias === "string") {
