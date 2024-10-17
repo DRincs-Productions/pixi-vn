@@ -119,6 +119,8 @@ export default class CanvasManager {
         "text" in oldCanvasElementMemory && delete oldCanvasElementMemory.text
         "resolution" in oldCanvasElementMemory && delete oldCanvasElementMemory.resolution
         "style" in oldCanvasElementMemory && delete oldCanvasElementMemory.style
+        "height" in oldCanvasElementMemory && delete oldCanvasElementMemory.height
+        "width" in oldCanvasElementMemory && delete oldCanvasElementMemory.width
         if (newCanvasElement instanceof CanvasSprite) {
             setMemorySprite(newCanvasElement, oldCanvasElementMemory)
         }
