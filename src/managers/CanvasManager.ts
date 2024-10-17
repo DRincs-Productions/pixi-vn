@@ -110,25 +110,104 @@ export default class CanvasManager {
     get currentCanvasElements() {
         return CanvasManagerStatic._children
     }
-    private importOldCanvasElementStyle<T extends ICanvasBaseMemory>(newCanvasElement: CanvasBase<T>, oldCanvasElementMemory: T) {
-        "isRenderGroup" in oldCanvasElementMemory && delete oldCanvasElementMemory.isRenderGroup
-        "scale" in oldCanvasElementMemory && delete oldCanvasElementMemory.scale
-        "visible" in oldCanvasElementMemory && delete oldCanvasElementMemory.visible
-        "boundsArea" in oldCanvasElementMemory && delete oldCanvasElementMemory.boundsArea
-        "textureImage" in oldCanvasElementMemory && delete oldCanvasElementMemory.textureImage
-        "text" in oldCanvasElementMemory && delete oldCanvasElementMemory.text
-        "resolution" in oldCanvasElementMemory && delete oldCanvasElementMemory.resolution
-        "style" in oldCanvasElementMemory && delete oldCanvasElementMemory.style
-        "height" in oldCanvasElementMemory && delete oldCanvasElementMemory.height
-        "width" in oldCanvasElementMemory && delete oldCanvasElementMemory.width
-        if (newCanvasElement instanceof CanvasSprite) {
-            setMemorySprite(newCanvasElement, oldCanvasElementMemory)
+    /**
+     * Copy the properties of an old canvas element to a new canvas element.
+     * @param oldAlias Old alias
+     * @param newAlias New alias
+     * @returns 
+     */
+    copyCanvasElementProperty<T extends ICanvasBaseMemory>(oldAlias: T | CanvasBase<T> | string, newAlias: CanvasBase<T> | string) {
+        if (typeof newAlias === "string") {
+            let element = this.find(newAlias)
+            if (element) {
+                newAlias = element
+            }
+            else {
+                console.error(`[Pixi’VN] Canvas element ${newAlias} not found`)
+                return
+            }
         }
-        else if (newCanvasElement instanceof CanvasText) {
-            setMemoryText(newCanvasElement, oldCanvasElementMemory)
+        if (typeof oldAlias === "string") {
+            let element = this.find(oldAlias)
+            if (element) {
+                oldAlias = element
+            }
+            else {
+                console.error(`[Pixi’VN] Canvas element ${oldAlias} not found`)
+                return
+            }
         }
-        else if (newCanvasElement instanceof Container) {
-            setMemoryContainer(newCanvasElement, oldCanvasElementMemory)
+        if (oldAlias instanceof Container) {
+            oldAlias = oldAlias.memory
+        }
+        "isRenderGroup" in oldAlias && delete oldAlias.isRenderGroup
+        "scale" in oldAlias && delete oldAlias.scale
+        "visible" in oldAlias && delete oldAlias.visible
+        "boundsArea" in oldAlias && delete oldAlias.boundsArea
+        "textureImage" in oldAlias && delete oldAlias.textureImage
+        "text" in oldAlias && delete oldAlias.text
+        "resolution" in oldAlias && delete oldAlias.resolution
+        "style" in oldAlias && delete oldAlias.style
+        "height" in oldAlias && delete oldAlias.height
+        "width" in oldAlias && delete oldAlias.width
+        if (newAlias instanceof CanvasSprite) {
+            setMemorySprite(newAlias, oldAlias)
+        }
+        else if (newAlias instanceof CanvasText) {
+            setMemoryText(newAlias, oldAlias)
+        }
+        else if (newAlias instanceof Container) {
+            setMemoryContainer(newAlias, oldAlias)
+        }
+    }
+    /**
+     * Transfer the tickers from an old alias to a new alias.
+     * @param oldAlias Old alias
+     * @param newAlias New alias
+     * @param mode If "move", the old alias will be removed from the ticker. If "duplicate", the old alias will be kept in the ticker.
+     */
+    transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
+        for (let id in CanvasManagerStatic._currentTickers) {
+            let ticker = CanvasManagerStatic._currentTickers[id]
+            if (ticker.canvasElementAliases.includes(oldAlias)) {
+                if (mode === "move") {
+                    ticker.canvasElementAliases = ticker.canvasElementAliases.map((t) => t === oldAlias ? newAlias : t)
+                }
+                else if (mode === "duplicate") {
+                    if (ticker.canvasElementAliases.find((t) => t === oldAlias)) {
+                        ticker.canvasElementAliases.push(newAlias)
+                    }
+                }
+                if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
+                    let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter
+                    if (typeof aliasToRemoveAfter === "string") {
+                        aliasToRemoveAfter = [aliasToRemoveAfter]
+                    }
+                    if (Array.isArray(aliasToRemoveAfter)) {
+                        if (mode === "move") {
+                            ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) => t === oldAlias ? newAlias : t)
+                        }
+                        else if (mode === "duplicate") {
+                            if (aliasToRemoveAfter.find((t) => t === oldAlias)) {
+                                ticker.args.aliasToRemoveAfter = [...aliasToRemoveAfter, newAlias]
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        for (let timeout in CanvasManagerStatic._currentTickersTimeouts) {
+            let TickerTimeout = CanvasManagerStatic._currentTickersTimeouts[timeout]
+            if (TickerTimeout.aliases.includes(oldAlias)) {
+                if (mode === "move") {
+                    TickerTimeout.aliases = TickerTimeout.aliases.map((t) => t === oldAlias ? newAlias : t)
+                }
+                else if (mode === "duplicate") {
+                    if (TickerTimeout.aliases.find((t) => t === oldAlias)) {
+                        TickerTimeout.aliases.push(newAlias)
+                    }
+                }
+            }
         }
     }
     /**
@@ -155,7 +234,7 @@ export default class CanvasManager {
         let oldCanvasElement = this.find(alias)
         if (oldCanvasElement) {
             let zIndex = oldCanvasElement.zIndex
-            !ignoreOldStyle && this.importOldCanvasElementStyle(canvasElement, oldCanvasElement.memory)
+            !ignoreOldStyle && this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
             this.remove(alias, { ignoreTickers: true })
             this.app.stage.addChildAt(canvasElement, zIndex)
         }
@@ -258,27 +337,7 @@ export default class CanvasManager {
             CanvasManagerStatic._currentTickersSteps[newAlias] = CanvasManagerStatic._currentTickersSteps[oldAlias]
             delete CanvasManagerStatic._currentTickersSteps[oldAlias]
         }
-        for (let id in CanvasManagerStatic._currentTickers) {
-            let ticker = CanvasManagerStatic._currentTickers[id]
-            if (ticker.canvasElementAliases.includes(oldAlias)) {
-                ticker.canvasElementAliases = ticker.canvasElementAliases.map((t) => t === oldAlias ? newAlias : t)
-                if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
-                    let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter
-                    if (typeof aliasToRemoveAfter === "string") {
-                        aliasToRemoveAfter = [aliasToRemoveAfter]
-                    }
-                    if (Array.isArray(aliasToRemoveAfter)) {
-                        ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) => t === oldAlias ? newAlias : t)
-                    }
-                }
-            }
-        }
-        for (let timeout in CanvasManagerStatic._currentTickersTimeouts) {
-            let TickerTimeout = CanvasManagerStatic._currentTickersTimeouts[timeout]
-            if (TickerTimeout.aliases.includes(oldAlias)) {
-                TickerTimeout.aliases = TickerTimeout.aliases.map((t) => t === oldAlias ? newAlias : t)
-            }
-        }
+        this.transferTickers(oldAlias, newAlias, "move")
     }
 
     /** Edit Tickers Methods */

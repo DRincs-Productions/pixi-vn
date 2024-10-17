@@ -48,6 +48,8 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
+    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
+    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
 
     let effect = new FadeAlphaTicker({
