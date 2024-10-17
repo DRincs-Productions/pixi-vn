@@ -9,6 +9,7 @@ import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage,
 const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
 export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
     async () => {
+        canvas.removeAll()
         narration.dialogue = { character: juliette, text: `These are my 4 puppets: ${eggHeadName}, ${flowerTopName}, ${helmlokName} and ${skullyName}. They can appear, disappear and animate at my will.` }
         let eggHead = addImage("eggHead", eggHeadImage)
         await eggHead.load()
@@ -36,6 +37,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
+            new ChoiceMenuOption("Add same tag", imagesAddSameTagTestLabel, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -358,7 +360,7 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
     },
 ])
 
-export const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test___", [
+const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test___", [
     () => {
         canvas.remove("flowerTop")
         canvas.remove("helmlok")
