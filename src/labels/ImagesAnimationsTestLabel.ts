@@ -2,7 +2,7 @@ import { CanvasImage, ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
-import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { canvas, narration } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -356,4 +356,43 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
     },
+])
+
+export const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test___", [
+    () => {
+        canvas.remove("flowerTop")
+        canvas.remove("helmlok")
+        canvas.remove("skully")
+        let skully = canvas.find<CanvasImage>("eggHead")
+        if (skully) {
+            skully.anchor.set(0.5)
+            skully.alpha = 0.5
+        }
+
+        canvas.addTicker("eggHead", new RotateTicker({
+            speed: 6,
+        }))
+        canvas.addTickersSteps("eggHead", [
+            new MoveTicker({
+                destination: { x: 100, y: 100 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 100, y: 500 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 1700, y: 500 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 1700, y: 100 },
+                speed: 200,
+            }),
+            Repeat,
+        ])
+    },
+    () => showImage("eggHead", flowerTopImage),
+    () => showWithDissolveTransition("eggHead", helmlokImage),
+    () => showWithFadeTransition("eggHead", skullyImage),
 ])

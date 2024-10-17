@@ -134,6 +134,7 @@ export default class CanvasManager {
      * If there is a canvas element with the same alias, it will be removed.
      * @param alias The alias of the canvas element.
      * @param canvasElement The canvas elements to be added.
+     * @param options The options of the canvas element.
      * @example
      * ```typescript
      * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
@@ -172,6 +173,7 @@ export default class CanvasManager {
      * Remove a canvas element from the canvas.
      * And remove all tickers that are not connected to any canvas element.
      * @param alias The alias of the canvas element to be removed.
+     * @param options The options of the canvas element.
      * @returns 
      * @example
      * ```typescript
