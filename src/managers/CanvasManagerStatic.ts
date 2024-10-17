@@ -14,7 +14,7 @@ export default class CanvasManagerStatic {
     private static _app: Application | undefined = undefined
     static get app() {
         if (!CanvasManagerStatic._app) {
-            throw new Error("[Pixi’VN] GameWindowManager.app is undefined")
+            throw new Error("[Pixi’VN] CanvasManagerStatic.app is undefined")
         }
         return CanvasManagerStatic._app
     }
