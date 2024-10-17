@@ -1,5 +1,9 @@
-import { ApplicationOptions, Container, Sprite, Ticker } from "pixi.js";
+import { ApplicationOptions, Container, Ticker } from "pixi.js";
+import { CanvasSprite, CanvasText } from "../classes";
 import CanvasBase from "../classes/canvas/CanvasBase";
+import { setMemoryContainer } from "../classes/canvas/CanvasContainer";
+import { setMemorySprite } from "../classes/canvas/CanvasSprite";
+import { setMemoryText } from "../classes/canvas/CanvasText";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
 import { Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/TickerDecorator";
@@ -106,64 +110,23 @@ export default class CanvasManager {
     get currentCanvasElements() {
         return CanvasManagerStatic._children
     }
-    private importOldCanvasElementStyle(oldCanvasElement: CanvasBase<any>, newCanvasElement: CanvasBase<any>) {
-        if ("blendMode" in oldCanvasElement) {
-            newCanvasElement.blendMode = oldCanvasElement.blendMode
+    private importOldCanvasElementStyle<T extends ICanvasBaseMemory>(newCanvasElement: CanvasBase<T>, oldCanvasElementMemory: T) {
+        "isRenderGroup" in oldCanvasElementMemory && delete oldCanvasElementMemory.isRenderGroup
+        "scale" in oldCanvasElementMemory && delete oldCanvasElementMemory.scale
+        "visible" in oldCanvasElementMemory && delete oldCanvasElementMemory.visible
+        "boundsArea" in oldCanvasElementMemory && delete oldCanvasElementMemory.boundsArea
+        "textureImage" in oldCanvasElementMemory && delete oldCanvasElementMemory.textureImage
+        "text" in oldCanvasElementMemory && delete oldCanvasElementMemory.text
+        "resolution" in oldCanvasElementMemory && delete oldCanvasElementMemory.resolution
+        "style" in oldCanvasElementMemory && delete oldCanvasElementMemory.style
+        if (newCanvasElement instanceof CanvasSprite) {
+            setMemorySprite(newCanvasElement, oldCanvasElementMemory)
         }
-        if ("tint" in oldCanvasElement) {
-            newCanvasElement.tint = oldCanvasElement.tint
+        else if (newCanvasElement instanceof CanvasText) {
+            setMemoryText(newCanvasElement, oldCanvasElementMemory)
         }
-        if ("alpha" in oldCanvasElement) {
-            newCanvasElement.alpha = oldCanvasElement.alpha
-        }
-        if ("rotation" in oldCanvasElement) { // equal to angle
-            newCanvasElement.rotation = oldCanvasElement.rotation
-        }
-        // if ("scale" in oldCanvasElement) {
-        //     newCanvasElement.scale.set(oldCanvasElement.scale.x, oldCanvasElement.scale.y)
-        // }
-        if ("pivot" in oldCanvasElement) {
-            newCanvasElement.pivot.set(oldCanvasElement.pivot.x, oldCanvasElement.pivot.y)
-        }
-        if ("position" in oldCanvasElement) {
-            newCanvasElement.position.set(oldCanvasElement.position.x, oldCanvasElement.position.y)
-        }
-        if ("skew" in oldCanvasElement) {
-            newCanvasElement.skew.set(oldCanvasElement.skew.x, oldCanvasElement.skew.y)
-        }
-        // if ("visible" in oldCanvasElement) {
-        //     newCanvasElement.visible = oldCanvasElement.visible
-        // }
-        if ("x" in oldCanvasElement) {
-            newCanvasElement.x = oldCanvasElement.x
-        }
-        if ("y" in oldCanvasElement) {
-            newCanvasElement.y = oldCanvasElement.y
-        }
-        // if ("boundsArea" in oldCanvasElement) {
-        //     newCanvasElement.boundsArea = oldCanvasElement.boundsArea
-        // }
-        if ("cursor" in oldCanvasElement) {
-            newCanvasElement.cursor = oldCanvasElement.cursor
-        }
-        if ("eventMode" in oldCanvasElement) {
-            newCanvasElement.eventMode = oldCanvasElement.eventMode
-        }
-        if ("interactive" in oldCanvasElement) {
-            newCanvasElement.interactive = oldCanvasElement.interactive
-        }
-        if ("interactiveChildren" in oldCanvasElement) {
-            newCanvasElement.interactiveChildren = oldCanvasElement.interactiveChildren
-        }
-        if ("hitArea" in oldCanvasElement) {
-            newCanvasElement.hitArea = oldCanvasElement.hitArea
-        }
-
-        if ("anchor" in oldCanvasElement && "anchor" in newCanvasElement) {
-            (newCanvasElement as any as Sprite).anchor.set((oldCanvasElement as any as Sprite).anchor.x, (oldCanvasElement as any as Sprite).anchor.y)
-        }
-        if ("roundPixels" in oldCanvasElement && "roundPixels" in newCanvasElement) {
-            (newCanvasElement as any as Sprite).roundPixels = (oldCanvasElement as any as Sprite).roundPixels
+        else if (newCanvasElement instanceof Container) {
+            setMemoryContainer(newCanvasElement, oldCanvasElementMemory)
         }
     }
     /**
@@ -181,6 +144,7 @@ export default class CanvasManager {
     public add(alias: string, canvasElement: CanvasBase<any>, options: {
         /**
          * If there is a canvas element with the same alias, the "style" of the old canvas element will be imported to the new canvas element.
+         * @default false
          */
         ignoreOldStyle?: boolean
     } = {}) {
@@ -188,8 +152,8 @@ export default class CanvasManager {
         let oldCanvasElement = this.find(alias)
         if (oldCanvasElement) {
             let zIndex = oldCanvasElement.zIndex
-            !ignoreOldStyle && this.importOldCanvasElementStyle(oldCanvasElement, canvasElement)
-            this.remove(alias)
+            !ignoreOldStyle && this.importOldCanvasElementStyle(canvasElement, oldCanvasElement.memory)
+            this.remove(alias, { ignoreTickers: true })
             this.app.stage.addChildAt(canvasElement, zIndex)
         }
         else {
@@ -215,9 +179,13 @@ export default class CanvasManager {
      * ```
      */
     public remove(alias: string | string[], options: {
-        removeTickers?: boolean
+        /**
+         * If true, the tickers that are connected to the canvas element will not be removed.
+         * @default false
+         */
+        ignoreTickers?: boolean
     } = {}) {
-        let removeTickers = options.removeTickers
+        let ignoreTickers = options.ignoreTickers
         if (typeof alias === "string") {
             alias = [alias]
         }
@@ -225,7 +193,7 @@ export default class CanvasManager {
             if (CanvasManagerStatic._children[alias]) {
                 this.app.stage.removeChild(CanvasManagerStatic._children[alias])
                 delete CanvasManagerStatic._children[alias]
-                removeTickers && this.removeTickerByCanvasElement(alias)
+                !ignoreTickers && this.removeTickerByCanvasElement(alias)
             }
         })
         CanvasManagerStatic.elementAliasesOrder = CanvasManagerStatic.elementAliasesOrder.filter((t) => !alias.includes(t))
