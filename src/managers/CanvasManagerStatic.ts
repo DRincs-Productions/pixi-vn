@@ -184,7 +184,7 @@ export default class CanvasManagerStatic {
         clearTimeout(Number(timeout))
         CanvasManagerStatic.removeTickerTimeoutInfo(timeout)
     }
-    static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
+    static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) { // todo
         for (let timeout in CanvasManagerStatic._currentTickersTimeouts) {
             let aliasesWithoutAliasToRemove = CanvasManagerStatic._currentTickersTimeouts[timeout].aliases.filter((t) => t !== alias)
             if (aliasesWithoutAliasToRemove.length === 0) {

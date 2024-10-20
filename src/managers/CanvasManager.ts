@@ -167,6 +167,15 @@ export default class CanvasManager {
      * @param mode If "move", the old alias will be removed from the ticker. If "duplicate", the old alias will be kept in the ticker.
      */
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
+        if (CanvasManagerStatic._currentTickersSteps[oldAlias]) {
+            if (mode === "move") {
+                CanvasManagerStatic._currentTickersSteps[newAlias] = CanvasManagerStatic._currentTickersSteps[oldAlias]
+                delete CanvasManagerStatic._currentTickersSteps[oldAlias]
+            }
+            else if (mode === "duplicate") {
+                CanvasManagerStatic._currentTickersSteps[newAlias] = CanvasManagerStatic._currentTickersSteps[oldAlias]
+            }
+        }
         for (let id in CanvasManagerStatic._currentTickers) {
             let ticker = CanvasManagerStatic._currentTickers[id]
             if (ticker.canvasElementAliases.includes(oldAlias)) {
@@ -332,10 +341,6 @@ export default class CanvasManager {
         if (CanvasManagerStatic._children[oldAlias]) {
             CanvasManagerStatic._children[newAlias] = CanvasManagerStatic._children[oldAlias]
             delete CanvasManagerStatic._children[oldAlias]
-        }
-        if (CanvasManagerStatic._currentTickersSteps[oldAlias]) {
-            CanvasManagerStatic._currentTickersSteps[newAlias] = CanvasManagerStatic._currentTickersSteps[oldAlias]
-            delete CanvasManagerStatic._currentTickersSteps[oldAlias]
         }
         this.transferTickers(oldAlias, newAlias, "move")
     }
@@ -624,7 +629,12 @@ export default class CanvasManager {
             for (let id in CanvasManagerStatic._currentTickers) {
                 let ticker = CanvasManagerStatic._currentTickers[id]
                 if (ticker.canvasElementAliases.includes(alias)) {
-                    this.removeTicker(id)
+                    if (ticker.canvasElementAliases.length === 1) {
+                        this.removeTicker(id)
+                    }
+                    else {
+                        ticker.canvasElementAliases = ticker.canvasElementAliases.filter((t) => t !== alias)
+                    }
                 }
             }
             if (CanvasManagerStatic._currentTickersSteps[alias]) {
