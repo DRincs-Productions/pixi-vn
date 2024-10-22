@@ -127,6 +127,8 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
+    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
+    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
 
     canvas.addTickersSteps(oldCanvasAlias, [
