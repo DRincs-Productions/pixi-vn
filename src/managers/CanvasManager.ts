@@ -169,11 +169,11 @@ export default class CanvasManager {
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
         if (CanvasManagerStatic._currentTickersSteps[oldAlias]) {
             if (mode === "move") {
-                CanvasManagerStatic._currentTickersSteps[newAlias] = CanvasManagerStatic._currentTickersSteps[oldAlias]
-                delete CanvasManagerStatic._currentTickersSteps[oldAlias]
+                CanvasManagerStatic._currentTickersSteps[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSteps[oldAlias])
+                this.removeTickerStepByCanvasElement(oldAlias)
             }
             else if (mode === "duplicate") {
-                CanvasManagerStatic._currentTickersSteps[newAlias] = CanvasManagerStatic._currentTickersSteps[oldAlias]
+                CanvasManagerStatic._currentTickersSteps[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSteps[oldAlias])
             }
         }
         for (let id in CanvasManagerStatic._currentTickers) {
@@ -218,6 +218,7 @@ export default class CanvasManager {
                 }
             }
         }
+        this.runTickersSteps(newAlias)
     }
     /**
      * Add a canvas element to the canvas.
