@@ -401,7 +401,7 @@ export default class CanvasManager {
             duration: ticker.duration,
         }
         let id = CanvasManagerStatic.generateTickerId(tickerHistory)
-        this.pushTicker(id, tickerHistory, ticker)
+        this.pushTicker(id, tickerHistory, ticker, { ignoreTickerSteps: false })
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 CanvasManagerStatic.removeTickerTimeoutInfo(timeout)
@@ -413,8 +413,13 @@ export default class CanvasManager {
             CanvasManagerStatic.addTickerTimeoutInfo(canvasElementAlias, tickerId, timeout.toString(), true)
         }
     }
-    private pushTicker<TArgs extends TickerArgsType>(id: string, tickerData: TickerHistory<TArgs>, ticker: TickerBase<TArgs>) {
-        this.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementAliases, ticker)
+    private pushTicker<TArgs extends TickerArgsType>(
+        id: string,
+        tickerData: TickerHistory<TArgs>,
+        ticker: TickerBase<TArgs>,
+        options: { ignoreTickerSteps: boolean } = { ignoreTickerSteps: true }
+    ) {
+        this.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementAliases, ticker, options)
         CanvasManagerStatic._currentTickers[id] = tickerData
         tickerData.fn = (t: Ticker) => {
             let data = CanvasManagerStatic._currentTickers[id]
@@ -480,7 +485,6 @@ export default class CanvasManager {
     }
     private runTickersSteps<TArgs extends TickerArgsType>(alias: string, key: string) {
         if (!CanvasManagerStatic._currentTickersSteps[alias] || !(CanvasManagerStatic._currentTickersSteps[alias][key])) {
-            console.error(`[Pixi’VN] TickersSteps ${alias} not found`)
             return
         }
         let step = CanvasManagerStatic._currentTickersSteps[alias][key].steps[CanvasManagerStatic._currentTickersSteps[alias][key].currentStepNumber]
@@ -554,7 +558,7 @@ export default class CanvasManager {
     }
     public onEndOfTicker(alias: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string, aliasToDelete: string | string[], tickerId: string) {
         let tickerData = CanvasManagerStatic._currentTickers[tickerId]
-        this.removeAssociationBetweenTickerCanvasElement(alias, ticker)
+        this.removeAssociationBetweenTickerCanvasElement(alias, ticker, { ignoreTickerSteps: true })
         this.remove(aliasToDelete)
         if (tickerData) {
             this.removeTicker(tickerId)
@@ -568,12 +572,23 @@ export default class CanvasManager {
      * And remove the ticker if there is no canvas element connected to it.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param ticker The ticker class to be removed.
+     * @param options The options
      * @example
      * ```typescript
      * canvas.removeAssociationBetweenTickerCanvasElement("alien", RotateTicker)
      * ```
      */
-    public removeAssociationBetweenTickerCanvasElement(alias: string | string[], ticker: typeof TickerBase<any> | TickerBase<any> | string) {
+    public removeAssociationBetweenTickerCanvasElement(
+        alias: string | string[],
+        ticker: typeof TickerBase<any> | TickerBase<any> | string,
+        options: {
+            /**
+             * If true, the tickers that are connected to the canvas element will not be removed.
+             * @default false
+             */
+            ignoreTickerSteps?: boolean
+        } = {}
+    ) {
         let tickerId: TickerIdType
         if (typeof ticker === "string") {
             tickerId = ticker
@@ -586,6 +601,18 @@ export default class CanvasManager {
         }
         if (typeof alias === "string") {
             alias = [alias]
+        }
+        if (!options.ignoreTickerSteps) {
+            alias.forEach((alias) => {
+                if (CanvasManagerStatic._currentTickersSteps[alias]) {
+                    for (let id in CanvasManagerStatic._currentTickersSteps[alias]) {
+                        let ticker = CanvasManagerStatic._currentTickersSteps[alias][id]
+                        if (ticker.steps.find((t) => typeof t === "object" && "ticker" in t && t.ticker === tickerId)) {
+                            delete CanvasManagerStatic._currentTickersSteps[alias][id]
+                        }
+                    }
+                }
+            })
         }
         for (let id in CanvasManagerStatic._currentTickers) {
             let ticker = CanvasManagerStatic._currentTickers[id]

@@ -397,8 +397,8 @@ const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test_
     () => showImage("eggHead", flowerTopImage),
     () => showWithDissolveTransition("eggHead", helmlokImage),
     () => showWithFadeTransition("eggHead", skullyImage),
-    () => {
-        moveIn("eggHead", eggHeadImage)
+    async () => {
+        await moveIn("eggHead", eggHeadImage, { speed: 100 })
     },
     () => {
         canvas.addTickersSteps("eggHead", [

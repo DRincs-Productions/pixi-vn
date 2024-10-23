@@ -177,9 +177,10 @@ export function removeWithFadeTransition(
 export async function moveIn<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
-    props: MoveInOutProps = { direction: "right" },
+    props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
+    let direction = props.direction || "right"
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
@@ -198,18 +199,19 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     }
 
     let destination = { x: canvasElement.x, y: canvasElement.y }
-
-    if (props.direction == "up") {
-        canvasElement.y = canvas.canvasHeight + canvasElement.height
-    }
-    else if (props.direction == "down") {
-        canvasElement.y = -(canvasElement.height)
-    }
-    else if (props.direction == "left") {
-        canvasElement.x = canvas.canvasWidth + canvasElement.width
-    }
-    else if (props.direction == "right") {
-        canvasElement.x = -(canvasElement.width)
+    switch (direction) {
+        case "up":
+            canvasElement.y = canvas.canvasHeight + canvasElement.height
+            break
+        case "down":
+            canvasElement.y = -(canvasElement.height)
+            break
+        case "left":
+            canvasElement.x = canvas.canvasWidth + canvasElement.width
+            break
+        case "right":
+            canvasElement.x = -(canvasElement.width)
+            break
     }
 
     let effect = new MoveTicker({
@@ -229,9 +231,10 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
  */
 export function moveOut(
     alias: string,
-    props: MoveInOutProps = { direction: "right" },
+    props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): void {
+    let direction = props.direction || "right"
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -239,17 +242,19 @@ export function moveOut(
     }
 
     let destination = { x: canvasElement.x, y: canvasElement.y }
-    if (props.direction == "up") {
-        destination.y = -(canvasElement.height)
-    }
-    else if (props.direction == "down") {
-        destination.y = canvas.canvasHeight + canvasElement.height
-    }
-    else if (props.direction == "left") {
-        destination.x = -(canvasElement.width)
-    }
-    else if (props.direction == "right") {
-        destination.x = canvas.canvasWidth + canvasElement.width
+    switch (direction) {
+        case "up":
+            destination.y = -(canvasElement.height)
+            break
+        case "down":
+            destination.y = canvas.canvasHeight + canvasElement.height
+            break
+        case "left":
+            destination.x = -(canvasElement.width)
+            break
+        case "right":
+            destination.x = canvas.canvasWidth + canvasElement.width
+            break
     }
 
     let effect = new MoveTicker({
