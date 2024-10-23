@@ -170,14 +170,15 @@ export default class CanvasManager {
         if (CanvasManagerStatic._currentTickersSteps[oldAlias]) {
             if (mode === "move") {
                 CanvasManagerStatic._currentTickersSteps[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSteps[oldAlias])
-                this.removeTickerStepByCanvasElement(oldAlias)
             }
             else if (mode === "duplicate") {
                 CanvasManagerStatic._currentTickersSteps[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSteps[oldAlias])
             }
         }
-        for (let id in CanvasManagerStatic._currentTickers) {
-            let ticker = CanvasManagerStatic._currentTickers[id]
+        for (let [id, ticker] of Object.entries(CanvasManagerStatic._currentTickers)) {
+            if (mode === "move" && ticker.createdByTicketStepsId?.alias === oldAlias) {
+                this.removeTicker(id)
+            }
             if (ticker.canvasElementAliases.includes(oldAlias)) {
                 if (mode === "move") {
                     ticker.canvasElementAliases = ticker.canvasElementAliases.map((t) => t === oldAlias ? newAlias : t)
@@ -552,7 +553,16 @@ export default class CanvasManager {
                 this.runTickersSteps(alias, key)
             }
             else {
-                this.removeTickerStepByCanvasElement(alias, key)
+                if (key && CanvasManagerStatic._currentTickersSteps[alias] && CanvasManagerStatic._currentTickersSteps[alias][key]) {
+                    delete CanvasManagerStatic._currentTickersSteps[alias][key]
+                    for (let [id, ticker] of Object.entries(CanvasManagerStatic._currentTickers)) {
+                        if (ticker.createdByTicketStepsId?.alias === alias) {
+                            if (ticker.createdByTicketStepsId.stepId === key) {
+                                this.removeTicker(id)
+                            }
+                        }
+                    }
+                }
             }
         }
     }
@@ -689,19 +699,6 @@ export default class CanvasManager {
             CanvasManagerStatic.removeTickerTimeoutsByAlias(alias, false)
             delete CanvasManagerStatic._currentTickersSteps[alias]
         })
-    }
-    private removeTickerStepByCanvasElement(alias: string, stepId?: string) {
-        if (stepId && CanvasManagerStatic._currentTickersSteps[alias] && CanvasManagerStatic._currentTickersSteps[alias][stepId]) {
-            delete CanvasManagerStatic._currentTickersSteps[alias][stepId]
-        }
-        for (let id in CanvasManagerStatic._currentTickers) {
-            let ticker = CanvasManagerStatic._currentTickers[id]
-            if (ticker.createdByTicketStepsId?.alias === alias) {
-                if (stepId === undefined || ticker.createdByTicketStepsId.stepId === stepId) {
-                    this.removeTicker(id)
-                }
-            }
-        }
     }
     private removeTicker(tickerId: string) {
         let ticker = CanvasManagerStatic._currentTickers[tickerId]
