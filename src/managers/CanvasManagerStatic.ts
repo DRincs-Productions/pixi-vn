@@ -149,9 +149,9 @@ export default class CanvasManagerStatic {
         return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketStepsId))
     }
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
-    static _currentTickersSteps: { [alias: string]: ITickersSteps } = {}
+    static _currentTickersSteps: { [alias: string]: { [tickerId: string]: ITickersSteps } } = {}
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {}
-    static generateTickerId(tickerData: TickerHistory<any>): string {
+    static generateTickerId(tickerData: TickerHistory<any> | ITickersSteps): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)
         }
