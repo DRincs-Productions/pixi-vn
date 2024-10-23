@@ -226,7 +226,8 @@ export default class CanvasManager {
     }
     /**
      * Add a canvas element to the canvas.
-     * If there is a canvas element with the same alias, it will be removed.
+     * If there is a canvas element with the same alias, all "style", zIndex, and {@link TickerBase} will be transferred to the new canvas element,
+     * and the old canvas element will be removed.
      * @param alias The alias of the canvas element.
      * @param canvasElement The canvas elements to be added.
      * @param options The options of the canvas element.

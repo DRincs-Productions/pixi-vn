@@ -397,4 +397,31 @@ const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test_
     () => showImage("eggHead", flowerTopImage),
     () => showWithDissolveTransition("eggHead", helmlokImage),
     () => showWithFadeTransition("eggHead", skullyImage),
+    () => {
+        moveIn("eggHead", eggHeadImage)
+    },
+    () => {
+        canvas.addTickersSteps("eggHead", [
+            new MoveTicker({
+                destination: { x: 100, y: 100 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 100, y: 500 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 1700, y: 500 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 1700, y: 100 },
+                speed: 200,
+            }),
+            Repeat,
+        ])
+    },
+    () => {
+        zoomIn("eggHead", eggHeadImage)
+    },
 ])
