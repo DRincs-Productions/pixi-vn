@@ -547,7 +547,7 @@ export default class CanvasManager {
                 this.runTickersSteps(alias, key)
             }
             else {
-                this.removeTickerStepByCanvasElement(alias)
+                this.removeTickerStepByCanvasElement(alias, key)
             }
         }
     }
@@ -662,14 +662,16 @@ export default class CanvasManager {
             delete CanvasManagerStatic._currentTickersSteps[alias]
         })
     }
-    private removeTickerStepByCanvasElement(alias: string) {
-        if (CanvasManagerStatic._currentTickersSteps[alias]) {
-            delete CanvasManagerStatic._currentTickersSteps[alias]
+    private removeTickerStepByCanvasElement(alias: string, stepId?: string) {
+        if (stepId && CanvasManagerStatic._currentTickersSteps[alias] && CanvasManagerStatic._currentTickersSteps[alias][stepId]) {
+            delete CanvasManagerStatic._currentTickersSteps[alias][stepId]
         }
         for (let id in CanvasManagerStatic._currentTickers) {
             let ticker = CanvasManagerStatic._currentTickers[id]
             if (ticker.createdByTicketStepsId?.alias === alias) {
-                this.removeTicker(id)
+                if (stepId === undefined || ticker.createdByTicketStepsId.stepId === stepId) {
+                    this.removeTicker(id)
+                }
             }
         }
     }

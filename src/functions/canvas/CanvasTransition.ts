@@ -144,6 +144,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
             ...props,
             type: "show",
             startOnlyIfHaveTexture: true,
+            aliasToRemoveAfter: oldCanvasAlias,
         })
     ])
 }
