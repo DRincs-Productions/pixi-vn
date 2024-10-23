@@ -444,7 +444,9 @@ export default class CanvasManager {
             console.warn("[Pixi’VN] The steps of the tickers is empty")
             return
         }
-        this.removeTickerStepByCanvasElement(alias)
+        if (!(alias in CanvasManagerStatic._currentTickersSteps)) {
+            CanvasManagerStatic._currentTickersSteps[alias] = {}
+        }
         let step: ITickersSteps = {
             currentStepNumber: currentStepNumber,
             steps: steps.map((step) => {
