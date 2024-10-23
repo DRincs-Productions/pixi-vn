@@ -136,7 +136,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
             ...props,
             type: "hide",
             startOnlyIfHaveTexture: true,
-        }),
+        }, undefined, priority),
     ])
     canvas.addTickersSteps(alias, [
         Pause(props.duration || 1),
@@ -145,7 +145,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
             type: "show",
             startOnlyIfHaveTexture: true,
             aliasToRemoveAfter: oldCanvasAlias,
-        })
+        }, undefined, priority)
     ])
 }
 
@@ -216,7 +216,7 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
         ...props,
         destination,
         startOnlyIfHaveTexture: true,
-    }, priority)
+    }, undefined, priority)
 
     canvas.addTicker(alias, effect)
 }
@@ -257,7 +257,7 @@ export function moveOut(
         destination,
         startOnlyIfHaveTexture: true,
         aliasToRemoveAfter: alias,
-    }, priority)
+    }, undefined, priority)
 
     canvas.addTicker(alias, effect)
 }
@@ -329,7 +329,8 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
-    }, priority)
+        aliasToRemoveAfter: alias,
+    }, undefined, priority)
 
     canvas.addTicker(alias, effect)
 }
@@ -390,7 +391,7 @@ export function zoomOut(
         type: "unzoom",
         limit: 0,
         aliasToRemoveAfter: alias,
-    }, priority)
+    }, undefined, priority)
 
     canvas.addTicker(alias, effect)
 }
