@@ -334,7 +334,6 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
-        aliasToRemoveAfter: alias,
     }, undefined, priority)
 
     canvas.addTicker(alias, effect)
