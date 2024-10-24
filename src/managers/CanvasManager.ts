@@ -815,6 +815,7 @@ export default class CanvasManager {
     public import(data: object) {
         this.clear()
         try {
+            let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let currentElements = (data as ExportedCanvas)["elements"]
                 let elementAliasesOrder = (data as ExportedCanvas)["elementAliasesOrder"]
@@ -831,6 +832,7 @@ export default class CanvasManager {
                 return
             }
             if (data.hasOwnProperty("tickers")) {
+                // TODO edit tickersOnPause
                 let tickers = (data as ExportedCanvas)["tickers"]
                 Object.values(tickers).forEach((t) => {
                     let aliases: string[] = t.canvasElementAliases
@@ -844,11 +846,11 @@ export default class CanvasManager {
                 })
             }
             if (data.hasOwnProperty("tickersSteps")) {
+                // TODO edit tickersOnPause
                 let tickersSteps = (data as ExportedCanvas)["tickersSteps"]
                 this.restoneTickersSteps(tickersSteps)
             }
             if (data.hasOwnProperty("tickersOnPause")) {
-                let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"]
                 CanvasManagerStatic._tickersOnPause = tickersOnPause
             }
         }
