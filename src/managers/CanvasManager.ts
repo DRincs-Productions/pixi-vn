@@ -798,6 +798,7 @@ export default class CanvasManager {
             tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSteps),
             elements: createExportableElement(currentElements),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.elementAliasesOrder),
+            tickersOnPause: createExportableElement(CanvasManagerStatic._tickersOnPause),
         }
     }
     /**
@@ -845,6 +846,10 @@ export default class CanvasManager {
             if (data.hasOwnProperty("tickersSteps")) {
                 let tickersSteps = (data as ExportedCanvas)["tickersSteps"]
                 this.restoneTickersSteps(tickersSteps)
+            }
+            if (data.hasOwnProperty("tickersOnPause")) {
+                let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"]
+                CanvasManagerStatic._tickersOnPause = tickersOnPause
             }
         }
         catch (e) {
