@@ -18,9 +18,9 @@ export default interface TickerHistory<TArgs extends TickerArgsType> {
     /**
      * If this ticker was created by steps
      */
-    createdByTicketStepsId?: {
-        alias: string,
-        stepId: string,
+    createdByTicketSteps?: {
+        canvasElementAlias: string,
+        id: string,
     }
 }
 

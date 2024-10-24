@@ -34,6 +34,10 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter]
         }
+        let tickerAliasToResume = args.tickerAliasToResume || []
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume]
+        }
         aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
@@ -52,7 +56,10 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
+                        canvas.onEndOfTicker(alias, this, tickerId, {
+                            aliasToRemoveAfter: aliasToRemoveAfter,
+                            tickerAliasToResume: tickerAliasToResume,
+                        })
                     }
                 }
             })

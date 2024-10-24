@@ -27,4 +27,9 @@ export type MoveTickerProps = {
      * @default false
      */
     startOnlyIfHaveTexture?: boolean
+    /**
+     * The alias to resume after the effect is done
+     * @default []
+     */
+    tickerAliasToResume?: string[] | string
 }

@@ -43,6 +43,10 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter]
         }
+        let tickerAliasToResume = args.tickerAliasToResume || []
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume]
+        }
         let type = args.type || "zoom"
         let xLimit = type === "zoom" ? Infinity : 0
         let yLimit = type === "zoom" ? Infinity : 0
@@ -93,7 +97,10 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         if (element.scale.x >= xLimit && element.scale.y >= yLimit) {
                             element.scale.x = xLimit
                             element.scale.y = yLimit
-                            this.onEndOfTicker(alias, tickerId, element, aliasToRemoveAfter)
+                            this.onEndOfTicker(alias, tickerId, element, {
+                                aliasToRemoveAfter: aliasToRemoveAfter,
+                                tickerAliasToResume: tickerAliasToResume,
+                            })
                         }
                     }
                     else if (type === "unzoom") {
@@ -106,11 +113,17 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         if (element.scale.x <= xLimit && element.scale.y <= yLimit) {
                             element.scale.x = xLimit
                             element.scale.y = yLimit
-                            this.onEndOfTicker(alias, tickerId, element, aliasToRemoveAfter)
+                            this.onEndOfTicker(alias, tickerId, element, {
+                                aliasToRemoveAfter: aliasToRemoveAfter,
+                                tickerAliasToResume: tickerAliasToResume,
+                            })
                         }
                     }
                     if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        this.onEndOfTicker(alias, tickerId, element, aliasToRemoveAfter)
+                        this.onEndOfTicker(alias, tickerId, element, {
+                            aliasToRemoveAfter: aliasToRemoveAfter,
+                            tickerAliasToResume: tickerAliasToResume,
+                        })
                     }
                 }
             })
@@ -125,9 +138,12 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         alias: string,
         tickerId: string,
         _element: T,
-        aliasToRemoveAfter: string[] | string,
+        options: {
+            aliasToRemoveAfter: string[] | string,
+            tickerAliasToResume: string[] | string,
+        }
     ): void {
-        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
+        canvas.onEndOfTicker(alias, this, tickerId, options)
     }
 }
 
@@ -136,11 +152,19 @@ export class ZoomInOutTicker extends ZoomTicker {
     constructor(props: ZoomTickerProps, duration?: number, priority?: UPDATE_PRIORITY) {
         super(props, duration, priority)
     }
-    override onEndOfTicker<T extends Container = Container<ContainerChild>>(alias: string, tickerId: string, element: T, aliasToRemoveAfter: string[] | string): void {
+    override onEndOfTicker<T extends Container = Container<ContainerChild>>(
+        alias: string,
+        tickerId: string,
+        element: T,
+        options: {
+            aliasToRemoveAfter: string[] | string,
+            tickerAliasToResume: string[] | string,
+        }
+    ): void {
         if (element.children.length > 0) {
             let elementChild = element.children[0]
             canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
         }
-        super.onEndOfTicker(alias, tickerId, element, aliasToRemoveAfter)
+        super.onEndOfTicker(alias, tickerId, element, options)
     }
 }

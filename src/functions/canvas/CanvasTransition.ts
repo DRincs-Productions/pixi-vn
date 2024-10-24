@@ -280,6 +280,8 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
     let canvasElement: CanvasSprite
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
@@ -332,12 +334,16 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
 
     let effect = new ZoomInOutTicker({
         ...props,
+        tickerAliasToResume: tickerAliasToResume,
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
     }, undefined, priority)
 
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+    }
 }
 
 /**

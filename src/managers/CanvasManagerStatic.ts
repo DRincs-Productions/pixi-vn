@@ -4,6 +4,7 @@ import { Application, ApplicationOptions } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import { asciiArtLog } from '../functions/EasterEgg';
 import { ITickersSteps, TickerHistory, TickerTimeoutHistory } from "../interface";
+import PauseTickerType from '../types/PauseTickerType';
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -146,7 +147,7 @@ export default class CanvasManagerStatic {
     /** Edit Tickers Methods */
 
     static get currentTickersWithoutCreatedBySteps() {
-        return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketStepsId))
+        return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketSteps))
     }
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
     static _currentTickersSteps: { [alias: string]: { [tickerId: string]: ITickersSteps } } = {}
@@ -185,10 +186,10 @@ export default class CanvasManagerStatic {
         CanvasManagerStatic.removeTickerTimeoutInfo(timeout)
     }
     static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) { // todo
-        for (let timeout in CanvasManagerStatic._currentTickersTimeouts) {
-            let aliasesWithoutAliasToRemove = CanvasManagerStatic._currentTickersTimeouts[timeout].aliases.filter((t) => t !== alias)
+        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(([timeout, tickerTimeout]) => {
+            let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias)
             if (aliasesWithoutAliasToRemove.length === 0) {
-                let canBeDeletedBeforeEnd = CanvasManagerStatic._currentTickersTimeouts[timeout].canBeDeletedBeforeEnd
+                let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd
                 if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
                     CanvasManagerStatic.removeTickerTimeout(timeout)
                 }
@@ -196,6 +197,8 @@ export default class CanvasManagerStatic {
             else {
                 CanvasManagerStatic._currentTickersTimeouts[timeout].aliases = aliasesWithoutAliasToRemove
             }
-        }
+        })
     }
+
+    static _tickersOnPause: { [alias: string]: PauseTickerType } = {}
 }
