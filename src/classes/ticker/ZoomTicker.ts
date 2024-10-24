@@ -139,7 +139,7 @@ export class ZoomInOutTicker extends ZoomTicker {
     override onEndOfTicker<T extends Container = Container<ContainerChild>>(alias: string, tickerId: string, element: T, aliasToRemoveAfter: string[] | string): void {
         if (element.children.length > 0) {
             let elementChild = element.children[0]
-            canvas.add(alias, elementChild as any)
+            canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
         }
         super.onEndOfTicker(alias, tickerId, element, aliasToRemoveAfter)
     }

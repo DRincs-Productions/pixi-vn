@@ -293,11 +293,12 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
         canvasElement = image
     }
 
+    canvas.copyCanvasElementProperty(alias, canvasElement)
     let container = new CanvasContainer()
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    canvas.add(alias, container)
+    canvas.add(alias, container, { ignoreOldStyle: true })
 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
