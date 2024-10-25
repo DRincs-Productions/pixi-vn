@@ -773,15 +773,16 @@ export default class CanvasManager {
      * @param alias The alias of the canvas element that will use the ticker.
      * @param tickerId The ticker that will be checked.
      */
-    addTickerMustBeCompletedBeforeNextStep(alias: string, id: string) {
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.push({ alias, id })
+    addTickerMustBeCompletedBeforeNextStep(id: string, alias: string) {
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.push(id)
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.push(alias)
     }
     /**
      * This method force the completion of the tickers that are running.
      * This funcions is called in the next step.
      */
     forceCompletionOfReportedTickers() {
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.forEach(({ id, alias }) => {
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.forEach((id) => {
             let ticker = CanvasManagerStatic._currentTickers[id]
             if (ticker) {
                 this.onEndOfTicker(
@@ -793,25 +794,8 @@ export default class CanvasManager {
                     }
                 )
             }
-            let steps = CanvasManagerStatic._currentTickersSteps[alias]
-            if (steps) {
-                let stepTicker = steps[id]
-                if (stepTicker) {
-                    let step = stepTicker.steps[stepTicker.currentStepNumber]
-                    if (typeof step === "object" && "ticker" in step) {
-                        let args = step.args
-                        this.onEndOfTicker(
-                            id,
-                            {
-                                aliasToRemoveAfter: aliasToRemoveAfter in args ? args.aliasToRemoveAfter as any || [] : [],
-                                tickerAliasToResume: "tickerAliasToResume" in args ? args.tickerAliasToResume as any || [] : [],
-                                ignoreTickerSteps: true,
-                            }
-                        )
-                    }
-                }
-            }
         })
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
     }
 
     /* Other Methods */
