@@ -398,9 +398,11 @@ export default class CanvasManager {
             canvasElementAliases: canvasElementAlias,
             priority: ticker.priority,
             duration: ticker.duration,
+            onEndOfTicker: () => { },
         }
         let id = CanvasManagerStatic.generateTickerId(tickerHistory)
         this.pushTicker(id, tickerHistory, ticker)
+        this.pushEndOfTicker(id, tickerHistory, ticker)
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 CanvasManagerStatic.removeTickerTimeoutInfo(timeout)
@@ -438,6 +440,15 @@ export default class CanvasManager {
         }
         this.app.ticker.add(tickerData.fn, undefined, tickerData.priority)
     }
+    private pushEndOfTicker<TArgs extends TickerArgsType>(
+        id: string,
+        tickerData: TickerHistory<TArgs>,
+        ticker: TickerBase<TArgs>,
+    ) {
+        tickerData.onEndOfTicker = () => {
+            ticker.onEndOfTicker(tickerData.canvasElementAliases, id, tickerData.args)
+        }
+    }
     /**
      * Run a sequence of tickers.
      * @param alias The alias of canvas element that will use the tickers.
@@ -474,7 +485,7 @@ export default class CanvasManager {
                 let tickerId = (step as ITicker<TArgs>).id
                 return {
                     ticker: tickerId,
-                    args: createExportableElement((step as ITicker<TArgs>).args),
+                    args: createExportableElement((step as TickerBase<TArgs>).args),
                     duration: step.duration,
                 }
             })
@@ -527,6 +538,7 @@ export default class CanvasManager {
                 canvasElementAlias: alias,
                 id: key,
             },
+            onEndOfTicker: () => { },
         }
         let id = CanvasManagerStatic.generateTickerId(tickerHistory)
         this.pushTicker(id, tickerHistory, ticker)
@@ -657,14 +669,12 @@ export default class CanvasManager {
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
             ticker.canvasElementAliases = ticker.canvasElementAliases.filter((e) => CanvasManagerStatic._children[e])
             if (ticker.canvasElementAliases.length === 0) {
-                this.onEndOfTicker(
-                    id,
+                this.onEndOfTicker(id,
                     {
                         aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter : [],
                         tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume : [],
                         ignoreTickerSteps: true,
-                    }
-                )
+                    })
             }
         })
         Object.entries(CanvasManagerStatic._currentTickersSteps).forEach(([alias, ticker]) => {
@@ -769,30 +779,49 @@ export default class CanvasManager {
         return false
     }
     /**
-     * Export the canvas elements and the tickers.
-     * @param alias The alias of the canvas element that will use the ticker.
-     * @param tickerId The ticker that will be checked.
+     * Add a ticker that must be completed before the next step.
+     * This method is used for example into a transition between scenes.
+     * @param step The step that the ticker must be completed before the next step.
      */
-    addTickerMustBeCompletedBeforeNextStep(id: string, alias: string) {
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.push(id)
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.push(alias)
+    addTickerMustBeCompletedBeforeNextStep(step: {
+        /**
+         * The id of the step.
+         */
+        id: string,
+        /**
+         * If is a sequence of tickers, the alias of the sequence of tickers.
+         */
+        alias?: string
+    }) {
+        if (step.alias) {
+            CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.push({ id: step.id, alias: step.alias })
+        }
+        else {
+            CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.push({ id: step.id })
+        }
     }
     /**
      * This method force the completion of the tickers that are running.
      * This funcions is called in the next step.
      */
     forceCompletionOfReportedTickers() {
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.forEach((id) => {
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.forEach(({ id }) => {
             let ticker = CanvasManagerStatic._currentTickers[id]
             if (ticker) {
-                this.onEndOfTicker(
-                    id,
-                    {
-                        aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter as any || [] : [],
-                        tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume as any || [] : [],
-                        ignoreTickerSteps: true,
+                ticker.onEndOfTicker()
+            }
+        })
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
+            let ticker = CanvasManagerStatic._currentTickersSteps[alias]
+            if (ticker && ticker[id] && !ticker[id].steps.includes(Repeat)) {
+                ticker[id].steps.forEach((step) => {
+                    if (typeof step === "object" && "ticker" in step) {
+                        let ticker = geTickerInstanceById<any>((step as ITickersStep<any>).ticker, (step as ITickersStep<any>).args, step.duration, (step as ITickersStep<any>).priority)
+                        if (ticker) {
+                            ticker.onEndOfTicker([alias], id, (step as ITickersStep<any>).args)
+                        }
                     }
-                )
+                })
             }
         })
         CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
