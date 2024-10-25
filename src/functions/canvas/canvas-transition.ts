@@ -4,9 +4,9 @@ import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
-import { checkIfVideo } from "./CanvasUtility"
-import { addImage } from "./ImageUtility"
-import { addVideo } from "./VideoUtility"
+import { checkIfVideo } from "./canvas-utility"
+import { addImage } from "./image-utility"
+import { addVideo } from "./video-utility"
 
 /**
  * Show a image in the canvas with a disolve effect.

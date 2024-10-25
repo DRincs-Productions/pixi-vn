@@ -1,5 +1,5 @@
 import { eventDecorator } from "../decorators";
-import { getEventInstanceById } from "../decorators/EventDecorator";
+import { getEventInstanceById } from "../decorators/event-decorator";
 import { CanvasEventNamesType } from "../types";
 import { EventIdType } from "../types/EventIdType";
 

@@ -1,6 +1,6 @@
 import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
-import { updateTickerProgression } from "../../functions/TickerUtility";
+import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";

@@ -1,5 +1,5 @@
 import deepDiff from "deep-diff"
-import { createExportableElement } from "./ExportUtility"
+import { createExportableElement } from "./export-utility"
 
 export function restoreDeepDiffChanges<T extends object = object>(data: T, differences: deepDiff.Diff<T, T>[]): T {
     let result = createExportableElement(data)

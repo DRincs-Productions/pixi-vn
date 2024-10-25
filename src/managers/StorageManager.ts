@@ -1,5 +1,5 @@
 import { narration } from "."
-import { createExportableElement } from "../functions/ExportUtility"
+import { createExportableElement } from "../functions/export-utility"
 import { ExportedStorage } from "../interface"
 import { StorageElementType } from "../types/StorageElementType"
 import StorageManagerStatic from "./StorageManagerStatic"

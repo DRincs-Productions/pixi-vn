@@ -1,7 +1,7 @@
 import { Filter, filters, IMediaContext, IMediaInstance, Sound as PixiSound, sound, SoundLibrary, SoundMap } from '@pixi/sound';
 import { narration } from '.';
 import { Sound } from '../classes';
-import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/SoundUtility';
+import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/sound-utility';
 import { ExportedSound, ExportedSounds, SoundOptions, SoundPlayOptions } from '../interface';
 import SoundManagerStatic from './SoundManagerStatic';
 

@@ -1,4 +1,4 @@
-import { createExportableElement } from "../functions/ExportUtility"
+import { createExportableElement } from "../functions/export-utility"
 import { StorageElementType } from "../types/StorageElementType"
 
 export default class StorageManagerStatic {

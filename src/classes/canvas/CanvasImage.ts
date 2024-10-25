@@ -1,6 +1,6 @@
 import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
-import { getTexture } from "../../functions/TextureUtility";
+import { getTexture } from "../../functions/texture-utility";
 import { ICanvasImageMemory } from "../../interface";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 

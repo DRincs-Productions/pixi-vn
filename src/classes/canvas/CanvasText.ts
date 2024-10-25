@@ -1,6 +1,6 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text, TextOptions } from "pixi.js";
-import { getEventInstanceById, getEventTypeById } from "../../decorators/EventDecorator";
-import { getTextStyle } from "../../functions/TextureUtility";
+import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
+import { getTextStyle } from "../../functions/texture-utility";
 import ICanvasTextMemory from "../../interface/canvas/ICanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";

@@ -2,7 +2,7 @@ import { initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
-import { asciiArtLog } from '../functions/EasterEgg';
+import { asciiArtLog } from '../functions/easter-egg';
 import { ITickersSteps, TickerHistory, TickerTimeoutHistory } from "../interface";
 import PauseTickerType from '../types/PauseTickerType';
 

@@ -1,7 +1,7 @@
 import { Texture } from 'pixi.js';
 import { CanvasImage } from '../../classes';
 import { canvas } from '../../managers';
-import { getTexture } from '../TextureUtility';
+import { getTexture } from '../texture-utility';
 
 /**
  * Add a image in the canvas.

@@ -1,6 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import { TickerArgsType } from "../classes/ticker/TickerBase";
-import { geTickerInstanceById } from "../decorators/TickerDecorator";
+import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { TickerIdType } from "../types/TickerIdType";
 
 export default interface ITicker<TArgs extends TickerArgsType> {

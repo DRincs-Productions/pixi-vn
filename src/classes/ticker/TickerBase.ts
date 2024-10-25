@@ -1,6 +1,6 @@
 import { Ticker, UPDATE_PRIORITY } from "pixi.js"
 import { tickerDecorator } from "../../decorators"
-import { geTickerInstanceById } from "../../decorators/TickerDecorator"
+import { geTickerInstanceById } from "../../decorators/ticker-decorator"
 import ITicker from "../../interface/ITicker"
 import { canvas } from "../../managers"
 import { StorageElementType } from "../../types/StorageElementType"

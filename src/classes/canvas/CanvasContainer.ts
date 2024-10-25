@@ -1,5 +1,5 @@
 import { Container, ContainerOptions } from "pixi.js";
-import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/CanvasMemoryUtility";
+import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
 import { ICanvasContainerMemory } from "../../interface";
 import CanvasBase from "./CanvasBase";
 
