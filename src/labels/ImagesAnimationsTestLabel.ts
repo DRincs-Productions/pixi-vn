@@ -394,34 +394,9 @@ const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test_
             Repeat,
         ])
     },
-    () => showImage("eggHead", flowerTopImage),
-    () => showWithDissolveTransition("eggHead", helmlokImage),
-    () => showWithFadeTransition("eggHead", skullyImage),
-    async () => {
-        await moveIn("eggHead", eggHeadImage, { speed: 100 })
-    },
-    () => {
-        canvas.addTickersSteps("eggHead", [
-            new MoveTicker({
-                destination: { x: 100, y: 100 },
-                speed: 200,
-            }),
-            new MoveTicker({
-                destination: { x: 100, y: 500 },
-                speed: 200,
-            }),
-            new MoveTicker({
-                destination: { x: 1700, y: 500 },
-                speed: 200,
-            }),
-            new MoveTicker({
-                destination: { x: 1700, y: 100 },
-                speed: 200,
-            }),
-            Repeat,
-        ])
-    },
-    async () => {
-        await zoomIn("eggHead", eggHeadImage)
-    },
+    async () => await showImage("eggHead", flowerTopImage),
+    async () => await showWithDissolveTransition("eggHead", helmlokImage),
+    async () => await showWithFadeTransition("eggHead", skullyImage),
+    async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
+    async () => await zoomIn("eggHead", eggHeadImage),
 ])

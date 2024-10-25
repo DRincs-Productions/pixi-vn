@@ -180,6 +180,8 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let direction = props.direction || "right"
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
@@ -215,11 +217,15 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
 
     let effect = new MoveTicker({
         ...props,
+        tickerAliasToResume: tickerAliasToResume,
         destination,
         startOnlyIfHaveTexture: true,
     }, undefined, priority)
 
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+    }
 }
 
 /**

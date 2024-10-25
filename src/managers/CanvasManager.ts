@@ -176,7 +176,7 @@ export default class CanvasManager {
             }
         }
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-            if (mode === "move" && ticker.createdByTicketSteps?.canvasElementAlias === oldAlias) {
+            if (ticker.createdByTicketSteps?.canvasElementAlias === oldAlias) {
                 this.removeTicker(id)
             }
             if (ticker.canvasElementAliases.includes(oldAlias)) {
@@ -221,6 +221,11 @@ export default class CanvasManager {
         if (CanvasManagerStatic._currentTickersSteps[newAlias]) {
             Object.keys(CanvasManagerStatic._currentTickersSteps[newAlias]).forEach((key) => {
                 this.runTickersSteps(newAlias, key)
+            })
+        }
+        if (mode === "duplicate" && CanvasManagerStatic._currentTickersSteps[oldAlias]) {
+            Object.keys(CanvasManagerStatic._currentTickersSteps[oldAlias]).forEach((key) => {
+                this.runTickersSteps(oldAlias, key)
             })
         }
     }
@@ -395,13 +400,22 @@ export default class CanvasManager {
             duration: ticker.duration,
         }
         let id = CanvasManagerStatic.generateTickerId(tickerHistory)
-        this.pushTicker(id, tickerHistory, ticker, { ignoreTickerSteps: false })
+        this.pushTicker(id, tickerHistory, ticker)
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 CanvasManagerStatic.removeTickerTimeoutInfo(timeout)
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()]
                 if (tickerTimeoutInfo) {
-                    this.removeTicker(id)
+                    this.onEndOfTicker(
+                        canvasElementAlias,
+                        ticker,
+                        id,
+                        {
+                            aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter as any || [] : [],
+                            tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume as any || [] : [],
+                            ignoreTickerSteps: true,
+                        }
+                    )
                 }
             }, ticker.duration * 1000);
             CanvasManagerStatic.addTickerTimeoutInfo(canvasElementAlias, tickerId, timeout.toString(), true)
@@ -412,9 +426,7 @@ export default class CanvasManager {
         id: string,
         tickerData: TickerHistory<TArgs>,
         ticker: TickerBase<TArgs>,
-        options: { ignoreTickerSteps: boolean } = { ignoreTickerSteps: true }
     ) {
-        this.removeAssociationBetweenTickerCanvasElement(tickerData.canvasElementAliases, ticker, options)
         CanvasManagerStatic._currentTickers[id] = tickerData
         tickerData.fn = (t: Ticker) => {
             if (tickerData.createdByTicketSteps && this.isTickerPaused(tickerData.createdByTicketSteps.canvasElementAlias, tickerData.createdByTicketSteps.id)) {
@@ -524,7 +536,16 @@ export default class CanvasManager {
             let timeout = setTimeout(() => {
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()]
                 if (tickerTimeoutInfo) {
-                    this.removeTicker(id)
+                    this.onEndOfTicker(
+                        alias,
+                        ticker,
+                        id,
+                        {
+                            aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter as any || [] : [],
+                            tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume as any || [] : [],
+                            ignoreTickerSteps: true,
+                        }
+                    )
                     tickerTimeoutInfo.aliases.forEach((alias) => {
                         this.nextTickerStep(alias, key)
                     })
@@ -557,21 +578,22 @@ export default class CanvasManager {
         }
     }
     public onEndOfTicker(
-        alias: string | string[],
-        ticker: typeof TickerBase<any> | TickerBase<any> | string,
+        _alias: string | string[],
+        _ticker: typeof TickerBase<any> | TickerBase<any> | string,
         tickerId: string,
         options: {
             aliasToRemoveAfter: string[] | string,
-            tickerAliasToResume: string[] | string
+            tickerAliasToResume: string[] | string,
+            ignoreTickerSteps?: boolean
         },
     ) {
         let tickerData = CanvasManagerStatic._currentTickers[tickerId]
-        this.removeAssociationBetweenTickerCanvasElement(alias, ticker, { ignoreTickerSteps: true })
+        let ignoreTickerSteps = options.ignoreTickerSteps || false
         this.remove(options.aliasToRemoveAfter)
         this.resumeTickerPaused(options.tickerAliasToResume)
         if (tickerData) {
             this.removeTicker(tickerId)
-            if (tickerData.duration == undefined && tickerData.createdByTicketSteps) {
+            if (!ignoreTickerSteps && tickerData.duration == undefined && tickerData.createdByTicketSteps) {
                 this.nextTickerStep(tickerData.createdByTicketSteps.canvasElementAlias, tickerData.createdByTicketSteps.id)
             }
         }
@@ -641,7 +663,16 @@ export default class CanvasManager {
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
             ticker.canvasElementAliases = ticker.canvasElementAliases.filter((e) => CanvasManagerStatic._children[e])
             if (ticker.canvasElementAliases.length === 0) {
-                this.removeTicker(id)
+                this.onEndOfTicker(
+                    ticker.canvasElementAliases,
+                    ticker,
+                    id,
+                    {
+                        aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter : [],
+                        tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume : [],
+                        ignoreTickerSteps: true,
+                    }
+                )
             }
         })
         Object.entries(CanvasManagerStatic._currentTickersSteps).forEach(([alias, ticker]) => {
