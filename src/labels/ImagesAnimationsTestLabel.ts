@@ -37,7 +37,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
-            new ChoiceMenuOption("Add same tag", imagesAddSameTagTestLabel, {}),
+            new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -360,8 +360,12 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
     },
 ])
 
-const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test___", [
+const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_test___", [
     () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Now they will be added at each step with the same alias. Here's what's going to happen, All styles and tickers will be transferred to the new image.`,
+        }
         canvas.remove("flowerTop")
         canvas.remove("helmlok")
         canvas.remove("skully")
