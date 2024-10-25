@@ -4,6 +4,7 @@ import { Application, ApplicationOptions } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import { asciiArtLog } from '../functions/EasterEgg';
 import { ITickersSteps, TickerHistory, TickerTimeoutHistory } from "../interface";
+import PauseTickerType from '../types/PauseTickerType';
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -14,7 +15,7 @@ export default class CanvasManagerStatic {
     private static _app: Application | undefined = undefined
     static get app() {
         if (!CanvasManagerStatic._app) {
-            throw new Error("[Pixi’VN] GameWindowManager.app is undefined")
+            throw new Error("[Pixi’VN] CanvasManagerStatic.app is undefined")
         }
         return CanvasManagerStatic._app
     }
@@ -139,19 +140,25 @@ export default class CanvasManagerStatic {
 
     static _children: { [alias: string]: CanvasBase<any> } = {}
     /**
-     * The order of the children aliases.
+     * The order of the elements in the canvas, is determined by the zIndex.
      */
-    static elementAliasesOrder: string[] = []
+    static get childrenAliasesOrder(): string[] {
+        return Object.entries(CanvasManagerStatic._children).sort((a, b) => a[1].zIndex - b[1].zIndex).map(([alias, _]) => alias)
+    }
 
     /** Edit Tickers Methods */
 
     static get currentTickersWithoutCreatedBySteps() {
-        return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketStepsId))
+        return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketSteps))
     }
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
-    static _currentTickersSteps: { [alias: string]: ITickersSteps } = {}
+    static _currentTickersSteps: { [alias: string]: { [tickerId: string]: ITickersSteps } } = {}
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {}
-    static generateTickerId(tickerData: TickerHistory<any>): string {
+    static _tickersMustBeCompletedBeforeNextStep: {
+        tikersIds: { id: string }[],
+        stepAlias: { id: string, alias: string }[],
+    } = { tikersIds: [], stepAlias: [] }
+    static generateTickerId(tickerData: TickerHistory<any> | ITickersSteps): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)
         }
@@ -184,11 +191,11 @@ export default class CanvasManagerStatic {
         clearTimeout(Number(timeout))
         CanvasManagerStatic.removeTickerTimeoutInfo(timeout)
     }
-    static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
-        for (let timeout in CanvasManagerStatic._currentTickersTimeouts) {
-            let aliasesWithoutAliasToRemove = CanvasManagerStatic._currentTickersTimeouts[timeout].aliases.filter((t) => t !== alias)
+    static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) { // todo
+        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(([timeout, tickerTimeout]) => {
+            let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias)
             if (aliasesWithoutAliasToRemove.length === 0) {
-                let canBeDeletedBeforeEnd = CanvasManagerStatic._currentTickersTimeouts[timeout].canBeDeletedBeforeEnd
+                let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd
                 if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
                     CanvasManagerStatic.removeTickerTimeout(timeout)
                 }
@@ -196,6 +203,8 @@ export default class CanvasManagerStatic {
             else {
                 CanvasManagerStatic._currentTickersTimeouts[timeout].aliases = aliasesWithoutAliasToRemove
             }
-        }
+        })
     }
+
+    static _tickersOnPause: { [alias: string]: PauseTickerType } = {}
 }

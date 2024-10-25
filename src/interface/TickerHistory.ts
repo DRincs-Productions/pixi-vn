@@ -18,7 +18,11 @@ export default interface TickerHistory<TArgs extends TickerArgsType> {
     /**
      * If this ticker was created by steps
      */
-    createdByTicketStepsId?: string
+    createdByTicketSteps?: {
+        canvasElementAlias: string,
+        id: string,
+    }
+    onEndOfTicker: () => void
 }
 
 export interface TickerHistoryForExport<TArgs extends TickerArgsType> {

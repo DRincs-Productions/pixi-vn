@@ -7,11 +7,11 @@ export type MoveInOutProps = {
     /**
      * The direction of the movement.
      */
-    direction: "up" | "down" | "left" | "right",
+    direction?: "up" | "down" | "left" | "right",
 } & Omit<MoveTickerProps, aliasToRemoveAfterType | "startOnlyIfHaveTexture" | "destination">
 export type ZoomInOutProps = {
     /**
      * The direction of the zoom effect.
      */
-    direction: "up" | "down" | "left" | "right",
+    direction?: "up" | "down" | "left" | "right",
 } & Omit<ZoomTickerProps, aliasToRemoveAfterType | "startOnlyIfHaveTexture" | "type">

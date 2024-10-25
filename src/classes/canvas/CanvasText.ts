@@ -103,9 +103,9 @@ export function getMemoryText<T extends CanvasText>(element: T | CanvasText): IC
     }
 }
 
-export function setMemoryText(element: CanvasText, memory: ICanvasTextMemory) {
+export function setMemoryText(element: CanvasText, memory: ICanvasTextMemory | {}) {
     setMemoryContainer(element, memory)
-    if (memory.anchor) {
+    if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {
             element.anchor.set(memory.anchor, memory.anchor)
         }
@@ -113,15 +113,17 @@ export function setMemoryText(element: CanvasText, memory: ICanvasTextMemory) {
             element.anchor.set(memory.anchor.x, memory.anchor.y)
         }
     }
-    memory.text && (element.text = memory.text)
-    memory.resolution && (element.resolution = memory.resolution)
-    memory.style && (element.style = memory.style)
-    memory.roundPixels && (element.roundPixels = memory.roundPixels)
-    for (let event in memory.onEvents) {
-        let id = memory.onEvents[event]
-        let instance = getEventTypeById(id)
-        if (instance) {
-            element.onEvent(event as CanvasEventNamesType, instance)
+    "text" in memory && memory.text && (element.text = memory.text)
+    "resolution" in memory && memory.resolution && (element.resolution = memory.resolution)
+    "style" in memory && memory.style && (element.style = memory.style)
+    "roundPixels" in memory && memory.roundPixels && (element.roundPixels = memory.roundPixels)
+    if ("onEvents" in memory) {
+        for (let event in memory.onEvents) {
+            let id = memory.onEvents[event]
+            let instance = getEventTypeById(id)
+            if (instance) {
+                element.onEvent(event as CanvasEventNamesType, instance)
+            }
         }
     }
 }

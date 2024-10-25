@@ -1,3 +1,4 @@
+import PauseTickerType from "../../types/PauseTickerType";
 import ICanvasBaseMemory from "../canvas/ICanvasBaseMemory";
 import ITickersSteps from "../ITickersSteps";
 import { TickerHistoryForExport } from "../TickerHistory";
@@ -7,7 +8,8 @@ import { TickerHistoryForExport } from "../TickerHistory";
  */
 export default interface ExportedCanvas {
     tickers: { [id: string]: TickerHistoryForExport<any> }
-    tickersSteps: { [alias: string]: ITickersSteps }
+    tickersSteps: { [alias: string]: { [tickerId: string]: ITickersSteps } }
     elements: { [alias: string]: ICanvasBaseMemory }
     elementAliasesOrder: string[]
+    tickersOnPause: { [alias: string]: PauseTickerType }
 }

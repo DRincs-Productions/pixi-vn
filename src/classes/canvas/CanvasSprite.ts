@@ -117,14 +117,14 @@ export function getMemorySprite<T extends CanvasSprite<any>>(element: T | Canvas
     }
 }
 
-export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory) {
+export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory | {}) {
     setMemoryContainer(element, memory)
-    getTexture(memory.textureImage.image).then((texture) => {
+    "textureImage" in memory && getTexture(memory.textureImage.image).then((texture) => {
         if (texture) {
             element.texture = texture
         }
     })
-    if (memory.anchor) {
+    if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {
             element.anchor.set(memory.anchor, memory.anchor)
         }
@@ -132,12 +132,14 @@ export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element:
             element.anchor.set(memory.anchor.x, memory.anchor.y)
         }
     }
-    memory.roundPixels && (element.roundPixels = memory.roundPixels)
-    for (let event in memory.onEvents) {
-        let id = memory.onEvents[event]
-        let instance = getEventTypeById(id)
-        if (instance) {
-            element.onEvent(event, instance)
+    "roundPixels" in memory && memory.roundPixels && (element.roundPixels = memory.roundPixels)
+    if ("onEvents" in memory) {
+        for (let event in memory.onEvents) {
+            let id = memory.onEvents[event]
+            let instance = getEventTypeById(id)
+            if (instance) {
+                element.onEvent(event, instance)
+            }
         }
     }
 }

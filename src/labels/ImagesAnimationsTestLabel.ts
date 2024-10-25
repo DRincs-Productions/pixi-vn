@@ -2,13 +2,14 @@ import { CanvasImage, ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
-import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { canvas, narration } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
 const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
 export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
     async () => {
+        canvas.removeAll()
         narration.dialogue = { character: juliette, text: `These are my 4 puppets: ${eggHeadName}, ${flowerTopName}, ${helmlokName} and ${skullyName}. They can appear, disappear and animate at my will.` }
         let eggHead = addImage("eggHead", eggHeadImage)
         await eggHead.load()
@@ -36,6 +37,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
+            new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -356,4 +358,49 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
     },
+])
+
+const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_test___", [
+    () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Now they will be added at each step with the same alias. Here's what's going to happen, All styles and tickers will be transferred to the new image.`,
+        }
+        canvas.remove("flowerTop")
+        canvas.remove("helmlok")
+        canvas.remove("skully")
+        let skully = canvas.find<CanvasImage>("eggHead")
+        if (skully) {
+            skully.anchor.set(0.5)
+            skully.alpha = 0.5
+        }
+
+        canvas.addTicker("eggHead", new RotateTicker({
+            speed: 6,
+        }))
+        canvas.addTickersSteps("eggHead", [
+            new MoveTicker({
+                destination: { x: 100, y: 100 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 100, y: 500 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 1700, y: 500 },
+                speed: 200,
+            }),
+            new MoveTicker({
+                destination: { x: 1700, y: 100 },
+                speed: 200,
+            }),
+            Repeat,
+        ])
+    },
+    async () => await showImage("eggHead", flowerTopImage),
+    async () => await showWithDissolveTransition("eggHead", helmlokImage),
+    async () => await showWithFadeTransition("eggHead", skullyImage),
+    async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
+    async () => await zoomIn("eggHead", eggHeadImage),
 ])

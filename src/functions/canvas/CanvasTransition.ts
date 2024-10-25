@@ -1,7 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js"
 import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite, CanvasVideo } from "../../classes"
-import { FadeAlphaTicker, MoveTicker } from "../../classes/ticker"
-import { ZoomInOutTicker } from "../../classes/ticker/ZoomTicker"
+import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
@@ -48,6 +47,8 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
+    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
+    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
 
     let effect = new FadeAlphaTicker({
@@ -56,7 +57,8 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
         aliasToRemoveAfter: oldCanvasAlias,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    id && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     return
 }
 
@@ -125,23 +127,28 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
+    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
+    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
 
-    canvas.addTickersSteps(oldCanvasAlias, [
+    let id1 = canvas.addTickersSteps(oldCanvasAlias, [
         new FadeAlphaTicker({
             ...props,
             type: "hide",
             startOnlyIfHaveTexture: true,
-        }),
+        }, undefined, priority),
     ])
-    canvas.addTickersSteps(alias, [
+    let id2 = canvas.addTickersSteps(alias, [
         Pause(props.duration || 1),
         new FadeAlphaTicker({
             ...props,
             type: "show",
             startOnlyIfHaveTexture: true,
-        })
+            aliasToRemoveAfter: oldCanvasAlias,
+        }, undefined, priority)
     ])
+    id1 && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
+    id2 && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
 }
 
 /**
@@ -172,9 +179,12 @@ export function removeWithFadeTransition(
 export async function moveIn<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
-    props: MoveInOutProps = { direction: "right" },
+    props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
+    let direction = props.direction || "right"
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
     let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
@@ -193,27 +203,32 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     }
 
     let destination = { x: canvasElement.x, y: canvasElement.y }
-
-    if (props.direction == "up") {
-        canvasElement.y = canvas.canvasHeight + canvasElement.height
-    }
-    else if (props.direction == "down") {
-        canvasElement.y = -(canvasElement.height)
-    }
-    else if (props.direction == "left") {
-        canvasElement.x = canvas.canvasWidth + canvasElement.width
-    }
-    else if (props.direction == "right") {
-        canvasElement.x = -(canvasElement.width)
+    switch (direction) {
+        case "up":
+            canvasElement.y = canvas.canvasHeight + canvasElement.height
+            break
+        case "down":
+            canvasElement.y = -(canvasElement.height)
+            break
+        case "left":
+            canvasElement.x = canvas.canvasWidth + canvasElement.width
+            break
+        case "right":
+            canvasElement.x = -(canvasElement.width)
+            break
     }
 
     let effect = new MoveTicker({
         ...props,
+        tickerAliasToResume: tickerAliasToResume,
         destination,
         startOnlyIfHaveTexture: true,
-    }, priority)
+    }, undefined, priority)
 
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+    }
 }
 
 /**
@@ -224,9 +239,10 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
  */
 export function moveOut(
     alias: string,
-    props: MoveInOutProps = { direction: "right" },
+    props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): void {
+    let direction = props.direction || "right"
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -234,17 +250,19 @@ export function moveOut(
     }
 
     let destination = { x: canvasElement.x, y: canvasElement.y }
-    if (props.direction == "up") {
-        destination.y = -(canvasElement.height)
-    }
-    else if (props.direction == "down") {
-        destination.y = canvas.canvasHeight + canvasElement.height
-    }
-    else if (props.direction == "left") {
-        destination.x = -(canvasElement.width)
-    }
-    else if (props.direction == "right") {
-        destination.x = canvas.canvasWidth + canvasElement.width
+    switch (direction) {
+        case "up":
+            destination.y = -(canvasElement.height)
+            break
+        case "down":
+            destination.y = canvas.canvasHeight + canvasElement.height
+            break
+        case "left":
+            destination.x = -(canvasElement.width)
+            break
+        case "right":
+            destination.x = canvas.canvasWidth + canvasElement.width
+            break
     }
 
     let effect = new MoveTicker({
@@ -252,7 +270,7 @@ export function moveOut(
         destination,
         startOnlyIfHaveTexture: true,
         aliasToRemoveAfter: alias,
-    }, priority)
+    }, undefined, priority)
 
     canvas.addTicker(alias, effect)
 }
@@ -270,6 +288,8 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
     let canvasElement: CanvasSprite
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
@@ -283,11 +303,12 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
         canvasElement = image
     }
 
+    canvas.copyCanvasElementProperty(alias, canvasElement)
     let container = new CanvasContainer()
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    canvas.add(alias, container)
+    canvas.add(alias, container, { ignoreOldStyle: true })
 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
@@ -319,14 +340,19 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     }
     container.scale.set(0)
 
-    let effect = new ZoomInOutTicker({
+    let effect = new ZoomTicker({
         ...props,
+        tickerAliasToResume: tickerAliasToResume,
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
-    }, priority)
+        isZoomInOut: true,
+    }, undefined, priority)
 
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+    }
 }
 
 /**
@@ -379,13 +405,14 @@ export function zoomOut(
     }
     container.scale.set(1)
 
-    let effect = new ZoomInOutTicker({
+    let effect = new ZoomTicker({
         ...props,
         startOnlyIfHaveTexture: true,
         type: "unzoom",
         limit: 0,
         aliasToRemoveAfter: alias,
-    }, priority)
+        isZoomInOut: true,
+    }, undefined, priority)
 
     canvas.addTicker(alias, effect)
 }

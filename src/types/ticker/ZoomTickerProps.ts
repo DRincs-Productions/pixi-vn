@@ -34,4 +34,15 @@ export type ZoomTickerProps = {
      * @default false
      */
     startOnlyIfHaveTexture?: boolean
+    /**
+     * The alias to resume after the effect is done
+     * @default []
+     */
+    tickerAliasToResume?: string[] | string
+    /**
+     * Is a special prop used in the zoom in/out transition.
+     * If true, get the first child of the container and add it to canvas on the end of the effect.
+     * @default false
+     */
+    isZoomInOut?: boolean
 }

@@ -71,4 +71,28 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
     fn(_ticker: Ticker, _args: TArgs, _alias: string | string[], _tickerId: string): void { throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden") }
+    /**
+     * This method is called when the ticker is added to the canvas.
+     * @param alias The alias of the canvas elements that are connected to this ticker
+     * @param tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
+     * @param options The options that you passed when you added the ticker
+     */
+    public onEndOfTicker(
+        _alias: string | string[],
+        tickerId: string,
+        args: TArgs,
+    ) {
+        let aliasToRemoveAfter: string | string[] = "aliasToRemoveAfter" in args && args.aliasToRemoveAfter as any || []
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter]
+        }
+        let tickerAliasToResume: string | string[] = "tickerAliasToResume" in args && args.tickerAliasToResume as any || []
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume]
+        }
+        canvas.onEndOfTicker(tickerId, {
+            aliasToRemoveAfter: aliasToRemoveAfter,
+            tickerAliasToResume: tickerAliasToResume,
+        })
+    }
 }

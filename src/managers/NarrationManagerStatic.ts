@@ -197,6 +197,7 @@ export default class NarrationManagerStatic {
                     elements: {},
                     tickers: {},
                     tickersSteps: {},
+                    tickersOnPause: {},
                 },
                 sound: {
                     soundAliasesOrder: [],

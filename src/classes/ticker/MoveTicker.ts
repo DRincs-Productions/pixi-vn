@@ -43,6 +43,10 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter]
         }
+        let tickerAliasToResume = args.tickerAliasToResume || []
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume]
+        }
         aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
@@ -77,12 +81,30 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        canvas.onEndOfTicker(alias, this, aliasToRemoveAfter, tickerId)
+                        this.onEndOfTicker(alias, tickerId, args)
                     }
                 }
             })
         if (args.speedProgression)
             updateTickerProgression(args, "speed", args.speedProgression, this.speedConvert)
+    }
+    override onEndOfTicker(
+        alias: string | string[],
+        tickerId: string,
+        args: MoveTickerProps,
+    ): void {
+        if (typeof alias === "string") {
+            alias = [alias]
+        }
+        alias.forEach((alias) => {
+            let element = canvas.find(alias)
+            if (element) {
+                let destination = args.destination
+                element.x = destination.x
+                element.y = destination.y
+            }
+        })
+        super.onEndOfTicker(alias, tickerId, args)
     }
     private speedConvert(speed: number): number {
         return speed / 6

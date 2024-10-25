@@ -1,5 +1,5 @@
 import { diff } from "deep-diff"
-import { storage } from "."
+import { canvas, storage } from "."
 import { Dialogue, Label } from "../classes"
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
@@ -382,6 +382,7 @@ export default class NarrationManager {
                 }
                 try {
                     NarrationManagerStatic.stepsRunning++
+                    canvas.forceCompletionOfReportedTickers()
                     let result = await step(props)
 
                     if (this.choiceMenuOptions?.length === 1 && this.choiceMenuOptions[0].autoSelect) {
