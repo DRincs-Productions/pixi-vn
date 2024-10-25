@@ -1,7 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js"
 import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite, CanvasVideo } from "../../classes"
-import { FadeAlphaTicker, MoveTicker } from "../../classes/ticker"
-import { ZoomInOutTicker } from "../../classes/ticker/ZoomTicker"
+import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
@@ -332,12 +331,13 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
     }
     container.scale.set(0)
 
-    let effect = new ZoomInOutTicker({
+    let effect = new ZoomTicker({
         ...props,
         tickerAliasToResume: tickerAliasToResume,
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
+        isZoomInOut: true,
     }, undefined, priority)
 
     let id = canvas.addTicker(alias, effect)
@@ -396,12 +396,13 @@ export function zoomOut(
     }
     container.scale.set(1)
 
-    let effect = new ZoomInOutTicker({
+    let effect = new ZoomTicker({
         ...props,
         startOnlyIfHaveTexture: true,
         type: "unzoom",
         limit: 0,
         aliasToRemoveAfter: alias,
+        isZoomInOut: true,
     }, undefined, priority)
 
     canvas.addTicker(alias, effect)

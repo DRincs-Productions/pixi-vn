@@ -421,7 +421,7 @@ const imagesAddSameTagTestLabel = newLabel("___pixi_vn_images_add_same_tag_test_
             Repeat,
         ])
     },
-    () => {
-        zoomIn("eggHead", eggHeadImage)
+    async () => {
+        await zoomIn("eggHead", eggHeadImage)
     },
 ])

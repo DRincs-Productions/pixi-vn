@@ -1,4 +1,4 @@
-import { Container, ContainerChild, Sprite, Ticker, UPDATE_PRIORITY } from "pixi.js";
+import { Container, Sprite, Ticker } from "pixi.js";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/TickerUtility";
 import { canvas } from "../../managers";
@@ -100,6 +100,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             this.onEndOfTicker(alias, tickerId, element, {
                                 aliasToRemoveAfter: aliasToRemoveAfter,
                                 tickerAliasToResume: tickerAliasToResume,
+                                isZoomInOut: args.isZoomInOut || false,
                             })
                         }
                     }
@@ -116,6 +117,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             this.onEndOfTicker(alias, tickerId, element, {
                                 aliasToRemoveAfter: aliasToRemoveAfter,
                                 tickerAliasToResume: tickerAliasToResume,
+                                isZoomInOut: args.isZoomInOut || false,
                             })
                         }
                     }
@@ -123,6 +125,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         this.onEndOfTicker(alias, tickerId, element, {
                             aliasToRemoveAfter: aliasToRemoveAfter,
                             tickerAliasToResume: tickerAliasToResume,
+                            isZoomInOut: args.isZoomInOut || false,
                         })
                     }
                 }
@@ -137,34 +140,17 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     onEndOfTicker<T extends Container = Container>(
         alias: string,
         tickerId: string,
-        _element: T,
-        options: {
-            aliasToRemoveAfter: string[] | string,
-            tickerAliasToResume: string[] | string,
-        }
-    ): void {
-        canvas.onEndOfTicker(alias, this, tickerId, options)
-    }
-}
-
-
-export class ZoomInOutTicker extends ZoomTicker {
-    constructor(props: ZoomTickerProps, duration?: number, priority?: UPDATE_PRIORITY) {
-        super(props, duration, priority)
-    }
-    override onEndOfTicker<T extends Container = Container<ContainerChild>>(
-        alias: string,
-        tickerId: string,
         element: T,
         options: {
             aliasToRemoveAfter: string[] | string,
             tickerAliasToResume: string[] | string,
+            isZoomInOut: boolean,
         }
     ): void {
         if (element.children.length > 0) {
             let elementChild = element.children[0]
             canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
         }
-        super.onEndOfTicker(alias, tickerId, element, options)
+        canvas.onEndOfTicker(alias, this, tickerId, options)
     }
 }
