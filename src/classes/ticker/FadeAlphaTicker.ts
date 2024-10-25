@@ -29,9 +29,9 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         tickerId: string
     ): void {
         let type = args.type === undefined ? "hide" : args.type
+        let limit = this.getLimit(args)
         let duration = args.duration === undefined ? 1 : args.duration
         let speed = 1 / (duration * 60)
-        let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
         let aliasToRemoveAfter = args.aliasToRemoveAfter || []
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter]
@@ -66,20 +66,34 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                         element.alpha -= speed * ticker.deltaTime
                     }
                     if (type === "show" && element.alpha >= limit) {
-                        element.alpha = limit
-                        canvas.onEndOfTicker(alias, this, tickerId, {
-                            aliasToRemoveAfter: aliasToRemoveAfter,
-                            tickerAliasToResume: tickerAliasToResume,
-                        })
+                        this.onEndOfTicker(alias, tickerId, args)
                     }
                     else if (type === "hide" && element.alpha <= limit) {
-                        element.alpha = limit
-                        canvas.onEndOfTicker(alias, this, tickerId, {
-                            aliasToRemoveAfter: aliasToRemoveAfter,
-                            tickerAliasToResume: tickerAliasToResume,
-                        })
+                        this.onEndOfTicker(alias, tickerId, args)
                     }
                 }
             })
+    }
+    override onEndOfTicker(
+        alias: string | string[],
+        tickerId: string,
+        args: FadeAlphaTickerProps,
+    ): void {
+        if (typeof alias === "string") {
+            alias = [alias]
+        }
+        alias.forEach((alias) => {
+            let element = canvas.find(alias)
+            if (element) {
+                let limit = this.getLimit(args)
+                element.alpha = limit
+            }
+        })
+        super.onEndOfTicker(alias, tickerId, args)
+    }
+    private getLimit(args: FadeAlphaTickerProps): number {
+        let type = args.type === undefined ? "hide" : args.type
+        let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
+        return limit
     }
 }

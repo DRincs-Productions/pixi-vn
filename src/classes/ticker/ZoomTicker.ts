@@ -5,6 +5,8 @@ import { canvas } from "../../managers";
 import { ZoomTickerProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
+const DEFAULT_SPEED = 0.1
+
 /**
  * A ticker that zooms the canvas element of the canvas.
  * This ticker can be used on all canvas elements that extend the {@link Container} class.
@@ -27,8 +29,8 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         alias: string[],
         tickerId: string
     ): void {
-        let xSpeed = 0.1
-        let ySpeed = 0.1
+        let xSpeed = DEFAULT_SPEED
+        let ySpeed = DEFAULT_SPEED
         if (args.speed) {
             if (typeof args.speed === "number") {
                 xSpeed = this.speedConvert(args.speed)
@@ -48,18 +50,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
             tickerAliasToResume = [tickerAliasToResume]
         }
         let type = args.type || "zoom"
-        let xLimit = type === "zoom" ? Infinity : 0
-        let yLimit = type === "zoom" ? Infinity : 0
-        if (args.limit) {
-            if (typeof args.limit === "number") {
-                xLimit = args.limit
-                yLimit = args.limit
-            }
-            else {
-                xLimit = args.limit.x
-                yLimit = args.limit.y
-            }
-        }
+        let limit = this.getLimit(args)
         alias
             .filter((alias) => {
                 let element = canvas.find(alias)
@@ -75,58 +66,42 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 if (element && element instanceof Container) {
                     if (
                         type === "zoom"
-                        && (element.scale.x < xLimit || element.scale.y < yLimit)
+                        && (element.scale.x < limit.x || element.scale.y < limit.y)
                     ) {
                         element.scale.x += xSpeed * ticker.deltaTime
                         element.scale.y += ySpeed * ticker.deltaTime
                     }
                     else if (
                         type === "unzoom"
-                        && (element.scale.x > xLimit || element.scale.y > yLimit)
+                        && (element.scale.x > limit.x || element.scale.y > limit.y)
                     ) {
                         element.scale.x -= xSpeed * ticker.deltaTime
                         element.scale.y -= ySpeed * ticker.deltaTime
                     }
                     if (type === "zoom") {
-                        if (element.scale.x > xLimit) {
-                            element.scale.x = xLimit
+                        if (element.scale.x > limit.x) {
+                            element.scale.x = limit.x
                         }
-                        if (element.scale.y > yLimit) {
-                            element.scale.y = yLimit
+                        if (element.scale.y > limit.y) {
+                            element.scale.y = limit.y
                         }
-                        if (element.scale.x >= xLimit && element.scale.y >= yLimit) {
-                            element.scale.x = xLimit
-                            element.scale.y = yLimit
-                            this.onEndOfTicker(alias, tickerId, element, {
-                                aliasToRemoveAfter: aliasToRemoveAfter,
-                                tickerAliasToResume: tickerAliasToResume,
-                                isZoomInOut: args.isZoomInOut || false,
-                            })
+                        if (element.scale.x >= limit.x && element.scale.y >= limit.y) {
+                            this.onEndOfTicker(alias, tickerId, args)
                         }
                     }
                     else if (type === "unzoom") {
-                        if (element.scale.x < xLimit) {
-                            element.scale.x = xLimit
+                        if (element.scale.x < limit.x) {
+                            element.scale.x = limit.x
                         }
-                        if (element.scale.y < yLimit) {
-                            element.scale.y = yLimit
+                        if (element.scale.y < limit.y) {
+                            element.scale.y = limit.y
                         }
-                        if (element.scale.x <= xLimit && element.scale.y <= yLimit) {
-                            element.scale.x = xLimit
-                            element.scale.y = yLimit
-                            this.onEndOfTicker(alias, tickerId, element, {
-                                aliasToRemoveAfter: aliasToRemoveAfter,
-                                tickerAliasToResume: tickerAliasToResume,
-                                isZoomInOut: args.isZoomInOut || false,
-                            })
+                        if (element.scale.x <= limit.x && element.scale.y <= limit.y) {
+                            this.onEndOfTicker(alias, tickerId, args)
                         }
                     }
-                    if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        this.onEndOfTicker(alias, tickerId, element, {
-                            aliasToRemoveAfter: aliasToRemoveAfter,
-                            tickerAliasToResume: tickerAliasToResume,
-                            isZoomInOut: args.isZoomInOut || false,
-                        })
+                    if (this.isStop(args)) {
+                        this.onEndOfTicker(alias, tickerId, args)
                     }
                 }
             })
@@ -136,21 +111,62 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     private speedConvert(speed: number): number {
         return speed / 60
     }
-
-    onEndOfTicker<T extends Container = Container>(
-        alias: string,
+    override onEndOfTicker(
+        alias: string | string[],
         tickerId: string,
-        element: T,
-        options: {
-            aliasToRemoveAfter: string[] | string,
-            tickerAliasToResume: string[] | string,
-            isZoomInOut: boolean,
-        }
+        args: ZoomTickerProps,
     ): void {
-        if (element.children.length > 0) {
-            let elementChild = element.children[0]
-            canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
+        if (typeof alias === "string") {
+            alias = [alias]
         }
-        canvas.onEndOfTicker(alias, this, tickerId, options)
+        alias.forEach((alias) => {
+            let element = canvas.find(alias)
+            if (element) {
+                if (!this.isStop(args)) {
+                    let limit = this.getLimit(args)
+                    element.scale.x = limit.x
+                    element.scale.y = limit.y
+                }
+                if (args.isZoomInOut && element.children.length > 0) {
+                    let elementChild = element.children[0]
+                    canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
+                }
+            }
+        })
+        super.onEndOfTicker(alias, tickerId, args)
+    }
+    private getLimit(args: ZoomTickerProps): { x: number, y: number } {
+        let type = args.type || "zoom"
+        let xLimit = type === "zoom" ? Infinity : 0
+        let yLimit = type === "zoom" ? Infinity : 0
+        if (args.limit) {
+            if (typeof args.limit === "number") {
+                xLimit = args.limit
+                yLimit = args.limit
+            }
+            else {
+                xLimit = args.limit.x
+                yLimit = args.limit.y
+            }
+        }
+        return { x: xLimit, y: yLimit }
+    }
+    private isStop(args: ZoomTickerProps): boolean {
+        let xSpeed = DEFAULT_SPEED
+        let ySpeed = DEFAULT_SPEED
+        if (args.speed) {
+            if (typeof args.speed === "number") {
+                xSpeed = this.speedConvert(args.speed)
+                ySpeed = this.speedConvert(args.speed)
+            }
+            else {
+                xSpeed = this.speedConvert(args.speed.x)
+                ySpeed = this.speedConvert(args.speed.y)
+            }
+        }
+        if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
+            return true
+        }
+        return false
     }
 }

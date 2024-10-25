@@ -407,8 +407,6 @@ export default class CanvasManager {
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()]
                 if (tickerTimeoutInfo) {
                     this.onEndOfTicker(
-                        canvasElementAlias,
-                        ticker,
                         id,
                         {
                             aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter as any || [] : [],
@@ -537,8 +535,6 @@ export default class CanvasManager {
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()]
                 if (tickerTimeoutInfo) {
                     this.onEndOfTicker(
-                        alias,
-                        ticker,
                         id,
                         {
                             aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter as any || [] : [],
@@ -578,8 +574,6 @@ export default class CanvasManager {
         }
     }
     public onEndOfTicker(
-        _alias: string | string[],
-        _ticker: typeof TickerBase<any> | TickerBase<any> | string,
         tickerId: string,
         options: {
             aliasToRemoveAfter: string[] | string,
@@ -664,8 +658,6 @@ export default class CanvasManager {
             ticker.canvasElementAliases = ticker.canvasElementAliases.filter((e) => CanvasManagerStatic._children[e])
             if (ticker.canvasElementAliases.length === 0) {
                 this.onEndOfTicker(
-                    ticker.canvasElementAliases,
-                    ticker,
                     id,
                     {
                         aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter : [],
@@ -776,6 +768,51 @@ export default class CanvasManager {
         }
         return false
     }
+    /**
+     * Export the canvas elements and the tickers.
+     * @param alias The alias of the canvas element that will use the ticker.
+     * @param tickerId The ticker that will be checked.
+     */
+    addTickerMustBeCompletedBeforeNextStep(alias: string, id: string) {
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.push({ alias, id })
+    }
+    /**
+     * This method force the completion of the tickers that are running.
+     * This funcions is called in the next step.
+     */
+    forceCompletionOfReportedTickers() {
+        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.forEach(({ id, alias }) => {
+            let ticker = CanvasManagerStatic._currentTickers[id]
+            if (ticker) {
+                this.onEndOfTicker(
+                    id,
+                    {
+                        aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter as any || [] : [],
+                        tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume as any || [] : [],
+                        ignoreTickerSteps: true,
+                    }
+                )
+            }
+            let steps = CanvasManagerStatic._currentTickersSteps[alias]
+            if (steps) {
+                let stepTicker = steps[id]
+                if (stepTicker) {
+                    let step = stepTicker.steps[stepTicker.currentStepNumber]
+                    if (typeof step === "object" && "ticker" in step) {
+                        let args = step.args
+                        this.onEndOfTicker(
+                            id,
+                            {
+                                aliasToRemoveAfter: aliasToRemoveAfter in args ? args.aliasToRemoveAfter as any || [] : [],
+                                tickerAliasToResume: "tickerAliasToResume" in args ? args.tickerAliasToResume as any || [] : [],
+                                ignoreTickerSteps: true,
+                            }
+                        )
+                    }
+                }
+            }
+        })
+    }
 
     /* Other Methods */
 
@@ -817,7 +854,7 @@ export default class CanvasManager {
             tickers: createExportableElement(CanvasManagerStatic.currentTickersWithoutCreatedBySteps),
             tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSteps),
             elements: createExportableElement(currentElements),
-            elementAliasesOrder: createExportableElement(CanvasManagerStatic.elementAliasesOrder),
+            elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
             tickersOnPause: createExportableElement(CanvasManagerStatic._tickersOnPause),
         }
     }
@@ -843,7 +880,7 @@ export default class CanvasManager {
                     if (currentElements[alias]) {
                         let element = importCanvasElement(currentElements[alias])
                         this.add(alias, element)
-                        CanvasManagerStatic.elementAliasesOrder.push(alias)
+                        CanvasManagerStatic.childrenAliasesOrder.push(alias)
                     }
                 })
             }

@@ -142,7 +142,7 @@ export default class CanvasManagerStatic {
     /**
      * The order of the elements in the canvas, is determined by the zIndex.
      */
-    static get elementAliasesOrder(): string[] {
+    static get childrenAliasesOrder(): string[] {
         return Object.entries(CanvasManagerStatic._children).sort((a, b) => a[1].zIndex - b[1].zIndex).map(([alias, _]) => alias)
     }
 
@@ -154,6 +154,7 @@ export default class CanvasManagerStatic {
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
     static _currentTickersSteps: { [alias: string]: { [tickerId: string]: ITickersSteps } } = {}
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {}
+    static _tickersMustBeCompletedBeforeNextStep: { alias: string, id: string }[] = []
     static generateTickerId(tickerData: TickerHistory<any> | ITickersSteps): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)

@@ -56,10 +56,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
-                        canvas.onEndOfTicker(alias, this, tickerId, {
-                            aliasToRemoveAfter: aliasToRemoveAfter,
-                            tickerAliasToResume: tickerAliasToResume,
-                        })
+                        this.onEndOfTicker(alias, tickerId, args)
                     }
                 }
             })

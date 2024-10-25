@@ -57,7 +57,8 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
         aliasToRemoveAfter: oldCanvasAlias,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    id && canvas.addTickerMustBeCompletedBeforeNextStep(alias, id)
     return
 }
 
@@ -130,14 +131,14 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
 
-    canvas.addTickersSteps(oldCanvasAlias, [
+    let id1 = canvas.addTickersSteps(oldCanvasAlias, [
         new FadeAlphaTicker({
             ...props,
             type: "hide",
             startOnlyIfHaveTexture: true,
         }, undefined, priority),
     ])
-    canvas.addTickersSteps(alias, [
+    let id2 = canvas.addTickersSteps(alias, [
         Pause(props.duration || 1),
         new FadeAlphaTicker({
             ...props,
@@ -146,6 +147,8 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
             aliasToRemoveAfter: oldCanvasAlias,
         }, undefined, priority)
     ])
+    id1 && canvas.addTickerMustBeCompletedBeforeNextStep(oldCanvasAlias, id1)
+    id2 && canvas.addTickerMustBeCompletedBeforeNextStep(alias, id2)
 }
 
 /**
