@@ -3,6 +3,7 @@ import { Label } from "../classes"
 import { getLabelById } from "../decorators/LabelDecorator"
 import { restoreDeepDiffChanges } from "../functions/DiffUtility"
 import { createExportableElement } from "../functions/ExportUtility"
+import { getGamePath } from "../functions/path-utility"
 import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
 import IOpenedLabel from "../interface/IOpenedLabel"
 import ChoicesMadeType from "../types/ChoicesMadeType"
@@ -216,7 +217,7 @@ export default class NarrationManagerStatic {
 
     static get currentStepData(): IHistoryStepData {
         let currentStepData: IHistoryStepData = {
-            path: window.location.pathname + window.location.hash,
+            path: getGamePath(),
             storage: storage.export(),
             canvas: canvas.export(),
             sound: sound.removeOldSoundAndExport(),

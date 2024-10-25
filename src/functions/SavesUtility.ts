@@ -1,6 +1,7 @@
 import { PIXIVN_VERSION } from "../constants";
 import ISaveData from "../interface/ISaveData";
 import { canvas, narration, sound, storage } from "../managers";
+import { getGamePath } from "./path-utility";
 
 /**
  * Get the save data
@@ -13,7 +14,7 @@ export function getSaveData(): ISaveData {
         storageData: storage.export(),
         canvasData: canvas.export(),
         soundData: sound.export(),
-        path: window.location.pathname,
+        path: getGamePath(),
     };
 }
 
