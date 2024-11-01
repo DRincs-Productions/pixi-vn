@@ -1,6 +1,6 @@
 # Pixi'VN - PixiJS Visual Novel Engine
 
-![pixi-vn-logo](https://github.com/user-attachments/assets/6247a557-2876-4ac6-a11d-aed8fb036732)
+![pixi-vn-cover](https://github.com/user-attachments/assets/28c41fe1-c539-4ebb-b7d4-8cb9f79e089e)
 
 Pixi’VN is a npm package that provides various features for creating visual novels, has functions to manage story steps, saving and loading, variable storage, dialogues, character,canvas management, and much more.
 
