@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBase, CanvasContainer, CanvasImage, CanvasSprite, CanvasVideo } from "../../classes"
+import { CanvasBase, CanvasContainer, CanvasImage, CanvasVideo } from "../../classes"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
@@ -282,7 +282,7 @@ export function moveOut(
  * @param props The properties of the effect
  * @param priority The priority of the effect
  */
-export async function zoomIn<T extends CanvasSprite | string = string>(
+export async function zoomIn<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
     props: ZoomInOutProps = { direction: "right" },
@@ -290,7 +290,7 @@ export async function zoomIn<T extends CanvasSprite | string = string>(
 ) {
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement: CanvasSprite
+    let canvasElement: CanvasBase<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
             canvasElement = new CanvasVideo({}, image)
