@@ -1,6 +1,6 @@
 import { CanvasImage, ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
-import { Pause, Repeat } from "../constants"
+import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { canvas, narration } from "../managers"
@@ -38,6 +38,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
             new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
+            new ChoiceMenuOption("Shake", shakeStageTest, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -403,4 +404,20 @@ const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_tes
     async () => await showWithFadeTransition("eggHead", skullyImage),
     async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
     async () => await zoomIn("eggHead", eggHeadImage),
+])
+
+const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
+    () => {
+        canvas.addTickersSteps(CANVAS_APP_STAGE_ALIAS, [
+            new MoveTicker({
+                destination: { x: 10, y: 0 },
+                speed: 20,
+            }),
+            new MoveTicker({
+                destination: { x: -10, y: 0 },
+                speed: 20,
+            }),
+            Repeat,
+        ])
+    },
 ])

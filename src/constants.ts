@@ -1,4 +1,5 @@
 import { filters as f } from '@pixi/sound';
+import { canvas } from './managers';
 import { PauseType, RepeatType } from "./types";
 
 export const PIXIVN_VERSION = '0.8.3'
@@ -127,3 +128,8 @@ export const videoFormats = [
     "asf",
     "vob",
 ]
+
+/**
+ * Is a special alias to indicate {@link canvas.app.stage}.
+ */
+export const CANVAS_APP_STAGE_ALIAS = "_stage_"

@@ -5,7 +5,7 @@ import { setMemoryContainer } from "../classes/canvas/CanvasContainer";
 import { setMemorySprite } from "../classes/canvas/CanvasSprite";
 import { setMemoryText } from "../classes/canvas/CanvasText";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
-import { Repeat } from "../constants";
+import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { exportCanvasElement, importCanvasElement } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
@@ -250,6 +250,10 @@ export default class CanvasManager {
          */
         ignoreOldStyle?: boolean
     } = {}) {
+        if (alias === CANVAS_APP_STAGE_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`)
+            return
+        }
         let ignoreOldStyle = options?.ignoreOldStyle
         let oldCanvasElement = this.find(alias)
         if (oldCanvasElement) {
@@ -287,6 +291,10 @@ export default class CanvasManager {
          */
         ignoreTickers?: boolean
     } = {}) {
+        if (alias === CANVAS_APP_STAGE_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`)
+            return
+        }
         let ignoreTickers = options.ignoreTickers
         if (typeof alias === "string") {
             alias = [alias]
@@ -315,6 +323,9 @@ export default class CanvasManager {
      * ```
      */
     public find<T extends CanvasBase<any>>(alias: string): T | undefined {
+        if (alias === CANVAS_APP_STAGE_ALIAS) {
+            return this.app.stage as T
+        }
         return CanvasManagerStatic._children[alias] as T | undefined
     }
     /**

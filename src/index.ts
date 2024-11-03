@@ -1,7 +1,7 @@
 export { Assets } from "pixi.js";
 export * from './classes';
 export * from './classes/ticker';
-export { Pause, Repeat, filters } from './constants';
+export { CANVAS_APP_STAGE_ALIAS, Pause, Repeat, filters } from './constants';
 export * from './decorators';
 export * from './functions';
 export * from './interface';
