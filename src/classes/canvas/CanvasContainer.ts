@@ -1,6 +1,6 @@
 import { Container, ContainerOptions } from "pixi.js";
 import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
-import { ICanvasContainerMemory } from "../../interface";
+import { CanvasContainerMemory } from "../../interface";
 import CanvasBase from "./CanvasBase";
 
 export const CANVAS_CONTAINER_ID = "Container"
@@ -22,20 +22,20 @@ export const CANVAS_CONTAINER_ID = "Container"
  *  }
  * ```
  */
-export default class CanvasContainer extends Container implements CanvasBase<ICanvasContainerMemory> {
+export default class CanvasContainer extends Container implements CanvasBase<CanvasContainerMemory> {
     constructor(options?: ContainerOptions) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID
     }
     pixivnId: string = CANVAS_CONTAINER_ID
-    get memory(): ICanvasContainerMemory {
+    get memory(): CanvasContainerMemory {
         let memory = getMemoryContainer(this)
         this.children.forEach(child => {
             memory.elements.push(exportCanvasElement(child as CanvasBase<any>))
         })
         return memory
     }
-    set memory(value: ICanvasContainerMemory) {
+    set memory(value: CanvasContainerMemory) {
         setMemoryContainer(this, value)
         value.elements.forEach(child => {
             this.addChild(importCanvasElement(child))
@@ -43,7 +43,7 @@ export default class CanvasContainer extends Container implements CanvasBase<ICa
     }
 }
 
-export function getMemoryContainer<T extends Container>(element: T): ICanvasContainerMemory {
+export function getMemoryContainer<T extends Container>(element: T): CanvasContainerMemory {
     let className = CANVAS_CONTAINER_ID
     if (element.hasOwnProperty("pixivnId")) {
         className = (element as any).pixivnId

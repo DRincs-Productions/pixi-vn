@@ -1,6 +1,6 @@
 import { Texture } from "pixi.js";
 import { videoFormats } from "../../constants";
-import { ITextureMemory } from "../../interface";
+import { TextureMemory } from "../../interface";
 import { canvas } from "../../managers";
 
 /**
@@ -8,9 +8,9 @@ import { canvas } from "../../managers";
  * @param texture PixiJS Texture object
  * @returns Memory object of the texture
  */
-export function getTextureMemory(texture: Texture): ITextureMemory {
+export function getTextureMemory(texture: Texture): TextureMemory {
     let sourceTexture = texture.source
-    let textureMemory: ITextureMemory = {
+    let textureMemory: TextureMemory = {
         image: sourceTexture.label
     }
     return textureMemory

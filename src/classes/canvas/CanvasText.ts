@@ -1,7 +1,7 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text, TextOptions } from "pixi.js";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTextStyle } from "../../functions/texture-utility";
-import ICanvasTextMemory from "../../interface/canvas/ICanvasTextTextMemory";
+import CanvasTextMemory from "../../interface/canvas/CanvasTextTextMemory";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
@@ -20,16 +20,16 @@ export const CANVAS_TEXT_ID = "Text"
  * canvas.add("text", text);
  * ```
  */
-export default class CanvasText extends Text implements CanvasBase<ICanvasTextMemory> {
+export default class CanvasText extends Text implements CanvasBase<CanvasTextMemory> {
     constructor(options?: TextOptions) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_TEXT_ID
     }
     pixivnId: string = CANVAS_TEXT_ID
-    get memory(): ICanvasTextMemory {
+    get memory(): CanvasTextMemory {
         return getMemoryText(this)
     }
-    set memory(value: ICanvasTextMemory) {
+    set memory(value: CanvasTextMemory) {
         setMemoryText(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
@@ -89,7 +89,7 @@ export default class CanvasText extends Text implements CanvasBase<ICanvasTextMe
     }
 }
 
-export function getMemoryText<T extends CanvasText>(element: T | CanvasText): ICanvasTextMemory {
+export function getMemoryText<T extends CanvasText>(element: T | CanvasText): CanvasTextMemory {
     let temp = getMemoryContainer(element)
     return {
         ...temp,
@@ -103,7 +103,7 @@ export function getMemoryText<T extends CanvasText>(element: T | CanvasText): IC
     }
 }
 
-export function setMemoryText(element: CanvasText, memory: ICanvasTextMemory | {}) {
+export function setMemoryText(element: CanvasText, memory: CanvasTextMemory | {}) {
     setMemoryContainer(element, memory)
     if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {

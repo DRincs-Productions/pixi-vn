@@ -2,7 +2,7 @@ import { ContainerChild, ContainerEvents, EventEmitter, Sprite, SpriteOptions, T
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTextureMemory } from "../../functions/canvas/canvas-utility";
 import { getTexture } from "../../functions/texture-utility";
-import { ICanvasBaseMemory, ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../../interface";
+import { CanvasBaseMemory, CanvasSpriteBaseMemory, CanvasSpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
@@ -30,16 +30,16 @@ export const CANVAS_SPRITE_ID = "Sprite"
  * canvas.add("bunny", sprite);
  * ```
  */
-export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemory = ICanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | ICanvasSpriteMemory> {
+export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseMemory = CanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | CanvasSpriteMemory> {
     constructor(options?: SpriteOptions | Texture) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
     }
     pixivnId: string = CANVAS_SPRITE_ID
-    get memory(): Memory | ICanvasSpriteMemory {
+    get memory(): Memory | CanvasSpriteMemory {
         return getMemorySprite(this)
     }
-    set memory(value: ICanvasSpriteMemory) {
+    set memory(value: CanvasSpriteMemory) {
         setMemorySprite(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
@@ -105,7 +105,7 @@ export default class CanvasSprite<Memory extends SpriteOptions & ICanvasBaseMemo
     }
 }
 
-export function getMemorySprite<T extends CanvasSprite<any>>(element: T | CanvasSprite<any>): ICanvasSpriteMemory {
+export function getMemorySprite<T extends CanvasSprite<any>>(element: T | CanvasSprite<any>): CanvasSpriteMemory {
     let temp = getMemoryContainer(element)
     return {
         ...temp,
@@ -117,7 +117,7 @@ export function getMemorySprite<T extends CanvasSprite<any>>(element: T | Canvas
     }
 }
 
-export function setMemorySprite<Memory extends ICanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory | {}) {
+export function setMemorySprite<Memory extends CanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory | {}) {
     setMemoryContainer(element, memory)
     "textureImage" in memory && getTexture(memory.textureImage.image).then((texture) => {
         if (texture) {

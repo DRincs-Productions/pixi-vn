@@ -1,7 +1,7 @@
 import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
-import { ICanvasImageMemory } from "../../interface";
+import { CanvasImageMemory } from "../../interface";
 import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
 
 export const CANVAS_IMAGE_ID = "Image"
@@ -30,7 +30,7 @@ export const CANVAS_IMAGE_ID = "Image"
  * await alien.load()
  * ```
  */
-export default class CanvasImage<Memory extends ICanvasImageMemory = ICanvasImageMemory> extends CanvasSprite<Memory> {
+export default class CanvasImage<Memory extends CanvasImageMemory = CanvasImageMemory> extends CanvasSprite<Memory> {
     pixivnId: string = CANVAS_IMAGE_ID
     constructor(options?: SpriteOptions | Texture | undefined, imageLink?: string) {
         super(options)
@@ -38,14 +38,14 @@ export default class CanvasImage<Memory extends ICanvasImageMemory = ICanvasImag
             this.imageLink = imageLink
         }
     }
-    override get memory(): ICanvasImageMemory {
+    override get memory(): CanvasImageMemory {
         return {
             ...getMemorySprite(this),
             pixivnId: this.pixivnId,
             imageLink: this.imageLink,
         }
     }
-    override set memory(memory: ICanvasImageMemory) {
+    override set memory(memory: CanvasImageMemory) {
         setMemorySprite(this, memory)
         this.imageLink = memory.imageLink
     }

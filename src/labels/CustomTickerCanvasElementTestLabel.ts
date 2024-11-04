@@ -2,11 +2,11 @@ import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "p
 import { CanvasSprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
-import { ICanvasSpriteBaseMemory, ICanvasSpriteMemory } from "../interface";
+import { CanvasSpriteBaseMemory, CanvasSpriteMemory } from "../interface";
 import { canvas, narration } from "../managers";
 import { eggHeadImage, eggHeadName, juliette } from "./TestConstant";
 
-interface IAlienTintingMemory extends ICanvasSpriteBaseMemory {
+interface IAlienTintingMemory extends CanvasSpriteBaseMemory {
     direction: number
     turningSpeed: number
     speed: number
@@ -23,7 +23,7 @@ class AlienTintingTest extends CanvasSprite<IAlienTintingMemory> {
         }
     }
     override set memory(memory: IAlienTintingMemory) {
-        super.memory = memory as ICanvasSpriteMemory
+        super.memory = memory as CanvasSpriteMemory
         this.direction = memory.direction
         this.turningSpeed = memory.turningSpeed
         this.speed = memory.speed

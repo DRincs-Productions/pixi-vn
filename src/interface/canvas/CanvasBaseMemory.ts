@@ -1,6 +1,6 @@
 /**
  * Interface for the canvas base memory
  */
-export default interface ICanvasBaseMemory {
+export default interface CanvasBaseMemory {
     pixivnId: string,
 }
