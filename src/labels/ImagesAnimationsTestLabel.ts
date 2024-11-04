@@ -37,8 +37,8 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
-            new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOption("Shake", shakeStageTest, {}),
+            new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -408,6 +408,17 @@ const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_tes
 
 const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
     () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Ok this is a test for the shake effect. The ${eggHeadName} will shake.`
+        }
+        shakeEffect("eggHead")
+    },
+    () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Now the whole stage will shake.`
+        }
         shakeEffect(CANVAS_APP_STAGE_ALIAS)
     },
 ])
