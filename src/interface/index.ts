@@ -1,3 +1,4 @@
+export type { ShakeEffectProps } from './canvas/effect-props';
 export type { default as ICanvasBaseMemory } from './canvas/ICanvasBaseMemory';
 export type { default as ICanvasContainerMemory } from './canvas/ICanvasContainerMemory';
 export type { default as ICanvasImageMemory } from './canvas/ICanvasImageMemory';
