@@ -1,7 +1,7 @@
 import { ApplicationOptions, Container, Ticker } from "pixi.js";
 import { CanvasSprite, CanvasText } from "../classes";
 import CanvasBase from "../classes/canvas/CanvasBase";
-import { setMemoryContainer } from "../classes/canvas/CanvasContainer";
+import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/CanvasContainer";
 import { setMemorySprite } from "../classes/canvas/CanvasSprite";
 import { setMemoryText } from "../classes/canvas/CanvasText";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
@@ -878,6 +878,7 @@ export default class CanvasManager {
             tickers: createExportableElement(CanvasManagerStatic.currentTickersWithoutCreatedBySteps),
             tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSteps),
             elements: createExportableElement(currentElements),
+            stage: createExportableElement(getMemoryContainer(this.app.stage)),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
             tickersOnPause: createExportableElement(CanvasManagerStatic._tickersOnPause),
         }
@@ -896,6 +897,12 @@ export default class CanvasManager {
     public import(data: object) {
         this.clear()
         try {
+            if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
+                setMemoryContainer(this.app.stage, (data as ExportedCanvas)["stage"])
+            }
+            else {
+                console.error("[Pixi’VN] The data does not have the properties stage")
+            }
             let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let currentElements = (data as ExportedCanvas)["elements"]
