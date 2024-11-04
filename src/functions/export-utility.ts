@@ -12,7 +12,7 @@ export function createExportableElement<T>(element: T): T {
         return JSON.parse(elementString)
     }
     catch (e) {
-        console.error("[Pixi’VN] Error creating exportable element", e)
+        console.error("[Pixi’VN] Error creating exportable element", element, e)
         throw new Error("[Pixi’VN] Error creating exportable element")
     }
 }
