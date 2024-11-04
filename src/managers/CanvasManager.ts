@@ -824,15 +824,20 @@ export default class CanvasManager {
         })
         CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
             let ticker = CanvasManagerStatic._currentTickersSteps[alias]
-            if (ticker && ticker[id] && !ticker[id].steps.includes(Repeat)) {
-                ticker[id].steps.forEach((step) => {
-                    if (typeof step === "object" && "ticker" in step) {
-                        let ticker = geTickerInstanceById<any>((step as ITickersStep<any>).ticker, (step as ITickersStep<any>).args, step.duration, (step as ITickersStep<any>).priority)
-                        if (ticker) {
-                            ticker.onEndOfTicker([alias], id, (step as ITickersStep<any>).args)
+            if (ticker && ticker[id]) {
+                if (ticker[id].steps.includes(Repeat)) {
+                    console.error(`[Pixi’VN] The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`, ticker[id])
+                }
+                else {
+                    ticker[id].steps.forEach((step) => {
+                        if (typeof step === "object" && "ticker" in step) {
+                            let ticker = geTickerInstanceById<any>((step as ITickersStep<any>).ticker, (step as ITickersStep<any>).args, step.duration, (step as ITickersStep<any>).priority)
+                            if (ticker) {
+                                ticker.onEndOfTicker([alias], id, (step as ITickersStep<any>).args)
+                            }
                         }
-                    }
-                })
+                    })
+                }
             }
         })
         CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
