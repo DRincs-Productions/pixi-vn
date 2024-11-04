@@ -5,7 +5,7 @@ export type { ICanvasSpriteBaseMemory, default as ICanvasSpriteMemory } from './
 export type { default as ICanvasTextTextMemory } from './canvas/ICanvasTextTextMemory';
 export type { default as ICanvasVideoMemory } from './canvas/ICanvasVideoMemory';
 export type { default as ITextureMemory } from './canvas/ITextureMemory';
-export type { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from './canvas/ITransitionProps';
+export type { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from './canvas/transition-props';
 export type { default as CharacterInterface } from './CharacterInterface';
 export type { default as ExportedCanvas } from './export/ExportedCanvas';
 export type { ExportedSound, default as ExportedSounds } from './export/ExportedSounds';
