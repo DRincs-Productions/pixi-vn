@@ -1,9 +1,4 @@
-export type { default as CanvasBaseMemory } from './canvas/CanvasBaseMemory';
-export type { default as CanvasContainerMemory } from './canvas/CanvasContainerMemory';
-export type { default as CanvasImageMemory } from './canvas/CanvasImageMemory';
-export type { CanvasSpriteBaseMemory as CanvasSpriteBaseMemory, default as CanvasSpriteMemory } from './canvas/CanvasSpriteMemory';
-export type { default as CanvasTextTextMemory } from './canvas/CanvasTextTextMemory';
-export type { default as CanvasVideoMemory } from './canvas/CanvasVideoMemory';
+export type { CanvasBaseMemory, CanvasContainerMemory, CanvasImageMemory, CanvasSpriteBaseMemory, CanvasSpriteMemory, CanvasTextMemory, CanvasVideoMemory } from './canvas/canvas-memory';
 export type { ShakeEffectProps } from './canvas/effect-props';
 export type { default as TextureMemory } from './canvas/TextureMemory';
 export type { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from './canvas/transition-props';

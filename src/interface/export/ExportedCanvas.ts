@@ -1,5 +1,5 @@
 import PauseTickerType from "../../types/PauseTickerType";
-import CanvasBaseMemory from "../canvas/CanvasBaseMemory";
+import { CanvasBaseMemory } from "../canvas/canvas-memory";
 import ITickersSteps from "../ITickersSteps";
 import { TickerHistoryForExport } from "../TickerHistory";
 
