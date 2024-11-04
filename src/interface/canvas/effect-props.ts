@@ -15,8 +15,8 @@ export interface ShakeEffectProps {
      */
     startOnlyIfHaveTexture?: boolean
     /**
-     * The number of shocks
-     * @default 8
+     * The number of shocks. **Must be at least 3**.
+     * @default 10
      */
     shocksNumber?: number
     /**
