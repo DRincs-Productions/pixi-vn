@@ -1,11 +1,7 @@
-export type { default as ICanvasBaseMemory } from './canvas/ICanvasBaseMemory';
-export type { default as ICanvasContainerMemory } from './canvas/ICanvasContainerMemory';
-export type { default as ICanvasImageMemory } from './canvas/ICanvasImageMemory';
-export type { ICanvasSpriteBaseMemory, default as ICanvasSpriteMemory } from './canvas/ICanvasSpriteMemory';
-export type { default as ICanvasTextTextMemory } from './canvas/ICanvasTextTextMemory';
-export type { default as ICanvasVideoMemory } from './canvas/ICanvasVideoMemory';
-export type { default as ITextureMemory } from './canvas/ITextureMemory';
-export type { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from './canvas/ITransitionProps';
+export type { CanvasBaseMemory, CanvasContainerMemory, CanvasImageMemory, CanvasSpriteBaseMemory, CanvasSpriteMemory, CanvasTextMemory, CanvasVideoMemory } from './canvas/canvas-memory';
+export type { ShakeEffectProps } from './canvas/effect-props';
+export type { default as TextureMemory } from './canvas/TextureMemory';
+export type { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from './canvas/transition-props';
 export type { default as CharacterInterface } from './CharacterInterface';
 export type { default as ExportedCanvas } from './export/ExportedCanvas';
 export type { ExportedSound, default as ExportedSounds } from './export/ExportedSounds';

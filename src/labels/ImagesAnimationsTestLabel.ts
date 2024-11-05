@@ -1,8 +1,8 @@
 import { CanvasImage, ChoiceMenuOption, ChoiceMenuOptionClose } from "../classes"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
-import { Pause, Repeat } from "../constants"
+import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
-import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { canvas, narration } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -37,6 +37,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
+            new ChoiceMenuOption("Shake", shakeStageTest, {}),
             new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
@@ -403,4 +404,21 @@ const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_tes
     async () => await showWithFadeTransition("eggHead", skullyImage),
     async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
     async () => await zoomIn("eggHead", eggHeadImage),
+])
+
+const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
+    () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Ok this is a test for the shake effect. The ${eggHeadName} will shake.`
+        }
+        shakeEffect("eggHead")
+    },
+    () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Now the whole stage will shake.`
+        }
+        shakeEffect(CANVAS_APP_STAGE_ALIAS)
+    },
 ])

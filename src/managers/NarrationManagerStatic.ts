@@ -196,6 +196,7 @@ export default class NarrationManagerStatic {
                 canvas: {
                     elementAliasesOrder: [],
                     elements: {},
+                    stage: {},
                     tickers: {},
                     tickersSteps: {},
                     tickersOnPause: {},

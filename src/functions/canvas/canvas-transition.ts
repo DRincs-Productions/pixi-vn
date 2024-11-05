@@ -170,6 +170,7 @@ export function removeWithFadeTransition(
 
 /**
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
+ * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
@@ -277,6 +278,7 @@ export function moveOut(
 
 /**
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
+ * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect

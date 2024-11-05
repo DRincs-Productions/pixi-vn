@@ -1,6 +1,6 @@
 /**
  * Interface for texture memory
  */
-export default interface ITextureMemory {
+export default interface TextureMemory {
     image: string,
 }

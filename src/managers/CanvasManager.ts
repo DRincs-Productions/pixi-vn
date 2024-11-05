@@ -1,15 +1,15 @@
 import { ApplicationOptions, Container, Ticker } from "pixi.js";
 import { CanvasSprite, CanvasText } from "../classes";
 import CanvasBase from "../classes/canvas/CanvasBase";
-import { setMemoryContainer } from "../classes/canvas/CanvasContainer";
+import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/CanvasContainer";
 import { setMemorySprite } from "../classes/canvas/CanvasSprite";
 import { setMemoryText } from "../classes/canvas/CanvasText";
 import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
-import { Repeat } from "../constants";
+import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { exportCanvasElement, importCanvasElement } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
-import { ExportedCanvas, ICanvasBaseMemory, ITicker, ITickersSteps, TickerHistory } from "../interface";
+import { CanvasBaseMemory, ExportedCanvas, ITicker, ITickersSteps, TickerHistory } from "../interface";
 import { ITickersStep } from "../interface/ITickersSteps";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -116,7 +116,7 @@ export default class CanvasManager {
      * @param newAlias New alias
      * @returns 
      */
-    copyCanvasElementProperty<T extends ICanvasBaseMemory>(oldAlias: T | CanvasBase<T> | string, newAlias: CanvasBase<T> | string) {
+    copyCanvasElementProperty<T extends CanvasBaseMemory>(oldAlias: T | CanvasBase<T> | string, newAlias: CanvasBase<T> | string) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias)
             if (element) {
@@ -250,6 +250,10 @@ export default class CanvasManager {
          */
         ignoreOldStyle?: boolean
     } = {}) {
+        if (alias === CANVAS_APP_STAGE_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`)
+            return
+        }
         let ignoreOldStyle = options?.ignoreOldStyle
         let oldCanvasElement = this.find(alias)
         if (oldCanvasElement) {
@@ -287,6 +291,10 @@ export default class CanvasManager {
          */
         ignoreTickers?: boolean
     } = {}) {
+        if (alias === CANVAS_APP_STAGE_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`)
+            return
+        }
         let ignoreTickers = options.ignoreTickers
         if (typeof alias === "string") {
             alias = [alias]
@@ -315,6 +323,9 @@ export default class CanvasManager {
      * ```
      */
     public find<T extends CanvasBase<any>>(alias: string): T | undefined {
+        if (alias === CANVAS_APP_STAGE_ALIAS) {
+            return this.app.stage as T
+        }
         return CanvasManagerStatic._children[alias] as T | undefined
     }
     /**
@@ -429,12 +440,17 @@ export default class CanvasManager {
     ) {
         CanvasManagerStatic._currentTickers[id] = tickerData
         tickerData.fn = (t: Ticker) => {
-            if (tickerData.createdByTicketSteps && this.isTickerPaused(tickerData.createdByTicketSteps.canvasElementAlias, tickerData.createdByTicketSteps.id)) {
-                return
-            }
             let data = CanvasManagerStatic._currentTickers[id]
             if (data) {
-                let canvasElementAliases = data.canvasElementAliases.filter((alias) => !this.isTickerPaused(alias, id))
+                let canvasElementAliases = data.canvasElementAliases
+                if (tickerData.createdByTicketSteps) {
+                    if (this.isTickerPaused(tickerData.createdByTicketSteps.canvasElementAlias, tickerData.createdByTicketSteps.id)) {
+                        return
+                    }
+                }
+                else {
+                    canvasElementAliases = canvasElementAliases.filter((alias) => !this.isTickerPaused(alias, id))
+                }
                 ticker?.fn(t, data.args, canvasElementAliases, id)
             }
         }
@@ -813,15 +829,20 @@ export default class CanvasManager {
         })
         CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
             let ticker = CanvasManagerStatic._currentTickersSteps[alias]
-            if (ticker && ticker[id] && !ticker[id].steps.includes(Repeat)) {
-                ticker[id].steps.forEach((step) => {
-                    if (typeof step === "object" && "ticker" in step) {
-                        let ticker = geTickerInstanceById<any>((step as ITickersStep<any>).ticker, (step as ITickersStep<any>).args, step.duration, (step as ITickersStep<any>).priority)
-                        if (ticker) {
-                            ticker.onEndOfTicker([alias], id, (step as ITickersStep<any>).args)
+            if (ticker && ticker[id]) {
+                if (ticker[id].steps.includes(Repeat)) {
+                    console.error(`[Pixi’VN] The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`, ticker[id])
+                }
+                else {
+                    ticker[id].steps.forEach((step) => {
+                        if (typeof step === "object" && "ticker" in step) {
+                            let ticker = geTickerInstanceById<any>((step as ITickersStep<any>).ticker, (step as ITickersStep<any>).args, step.duration, (step as ITickersStep<any>).priority)
+                            if (ticker) {
+                                ticker.onEndOfTicker([alias], id, (step as ITickersStep<any>).args)
+                            }
                         }
-                    }
-                })
+                    })
+                }
             }
         })
         CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
@@ -859,7 +880,7 @@ export default class CanvasManager {
      * @returns The object.
      */
     public export(): ExportedCanvas {
-        let currentElements: { [alias: string]: ICanvasBaseMemory } = {}
+        let currentElements: { [alias: string]: CanvasBaseMemory } = {}
         for (let alias in CanvasManagerStatic._children) {
             currentElements[alias] = exportCanvasElement(CanvasManagerStatic._children[alias])
         }
@@ -867,6 +888,7 @@ export default class CanvasManager {
             tickers: createExportableElement(CanvasManagerStatic.currentTickersWithoutCreatedBySteps),
             tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSteps),
             elements: createExportableElement(currentElements),
+            stage: createExportableElement(getMemoryContainer(this.app.stage)),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
             tickersOnPause: createExportableElement(CanvasManagerStatic._tickersOnPause),
         }
@@ -885,6 +907,12 @@ export default class CanvasManager {
     public import(data: object) {
         this.clear()
         try {
+            if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
+                setMemoryContainer(this.app.stage, (data as ExportedCanvas)["stage"])
+            }
+            else {
+                console.error("[Pixi’VN] The data does not have the properties stage")
+            }
             let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let currentElements = (data as ExportedCanvas)["elements"]
