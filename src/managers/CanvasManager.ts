@@ -440,12 +440,17 @@ export default class CanvasManager {
     ) {
         CanvasManagerStatic._currentTickers[id] = tickerData
         tickerData.fn = (t: Ticker) => {
-            if (tickerData.createdByTicketSteps && this.isTickerPaused(tickerData.createdByTicketSteps.canvasElementAlias, tickerData.createdByTicketSteps.id)) {
-                return
-            }
             let data = CanvasManagerStatic._currentTickers[id]
             if (data) {
-                let canvasElementAliases = data.canvasElementAliases.filter((alias) => !this.isTickerPaused(alias, id))
+                let canvasElementAliases = data.canvasElementAliases
+                if (tickerData.createdByTicketSteps) {
+                    if (this.isTickerPaused(tickerData.createdByTicketSteps.canvasElementAlias, tickerData.createdByTicketSteps.id)) {
+                        return
+                    }
+                }
+                else {
+                    canvasElementAliases = canvasElementAliases.filter((alias) => !this.isTickerPaused(alias, id))
+                }
                 ticker?.fn(t, data.args, canvasElementAliases, id)
             }
         }
