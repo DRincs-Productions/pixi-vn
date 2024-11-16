@@ -73,7 +73,7 @@ export default class StoredClassModel {
             delete storageValue[this.id]
         }
 
-        storageValue.setVariable(this.categoryId, storageValue)
+        storage.setVariable(this.categoryId, storageValue)
     }
     /**
      * Get a property from the storage.
