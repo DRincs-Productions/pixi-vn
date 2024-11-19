@@ -305,7 +305,9 @@ export async function zoomIn<T extends CanvasBase<any> | string = string>(
         canvasElement = image
     }
 
-    canvas.copyCanvasElementProperty(alias, canvasElement)
+    if (canvas.find(alias)) {
+        canvas.copyCanvasElementProperty(alias, canvasElement)
+    }
     let container = new CanvasContainer()
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
