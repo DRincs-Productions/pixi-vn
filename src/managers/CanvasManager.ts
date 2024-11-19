@@ -1,4 +1,5 @@
-import { ApplicationOptions, Container, Ticker } from "pixi.js";
+import { ApplicationOptions, Container } from "pixi.js";
+import { TickerValue } from "..";
 import { CanvasSprite, CanvasText } from "../classes";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/CanvasContainer";
@@ -439,7 +440,7 @@ export default class CanvasManager {
         ticker: TickerBase<TArgs>,
     ) {
         CanvasManagerStatic._currentTickers[id] = tickerData
-        tickerData.fn = (t: Ticker) => {
+        tickerData.fn = (t: TickerValue) => {
             let data = CanvasManagerStatic._currentTickers[id]
             if (data) {
                 let canvasElementAliases = data.canvasElementAliases

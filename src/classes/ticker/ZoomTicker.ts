@@ -1,4 +1,5 @@
-import { Container, Sprite, Ticker } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
+import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
@@ -24,7 +25,7 @@ const DEFAULT_SPEED = 0.1
 @tickerDecorator()
 export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     override fn(
-        ticker: Ticker,
+        ticker: TickerValue,
         args: ZoomTickerProps,
         alias: string[],
         tickerId: string

@@ -1,4 +1,5 @@
-import { Ticker, UPDATE_PRIORITY } from "pixi.js"
+import { UPDATE_PRIORITY } from "pixi.js"
+import { TickerValue } from "../.."
 import { tickerDecorator } from "../../decorators"
 import { geTickerInstanceById } from "../../decorators/ticker-decorator"
 import ITicker from "../../interface/ITicker"
@@ -22,7 +23,7 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  * \@tickerDecorator() // this is equivalent to tickerDecorator("RotateTicker")
  * export class RotateTicker extends TickerBase<{ speed?: number }> {
  *     override fn(
- *         t: Ticker, // the ticker that is calling this method
+ *         t: TickerValue, // the ticker that is calling this method
  *         args: { // the arguments that you passed when you added the ticker
  *             speed?: number,
  *         },
@@ -70,7 +71,7 @@ export default class TickerBase<TArgs extends TickerArgsType> implements ITicker
      * @param _alias The alias of the canvas elements that are connected to this ticker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
-    fn(_ticker: Ticker, _args: TArgs, _alias: string | string[], _tickerId: string): void { throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden") }
+    fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void { throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden") }
     /**
      * This method is called when the ticker is added to the canvas.
      * @param alias The alias of the canvas elements that are connected to this ticker

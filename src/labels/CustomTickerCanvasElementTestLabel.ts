@@ -1,4 +1,5 @@
-import { Assets, Rectangle, Sprite, Texture, TextureSourceLike, Ticker } from "pixi.js";
+import { Assets, Rectangle, Sprite, Texture, TextureSourceLike } from "pixi.js";
+import { TickerValue } from "..";
 import { CanvasSprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
@@ -44,7 +45,7 @@ export class TintingTestTicker extends TickerBase<{}> {
     constructor() {
         super({})
     }
-    override fn(_t: Ticker, _args: {}, aliases: string[]): void {
+    override fn(_t: TickerValue, _args: {}, aliases: string[]): void {
         aliases.forEach((alias) => {
             // create a bounding box for the little dudes
             const dudeBoundsPadding = 100;

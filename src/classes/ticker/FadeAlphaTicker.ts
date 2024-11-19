@@ -1,4 +1,5 @@
-import { Container, Sprite, Ticker } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
+import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
@@ -23,7 +24,7 @@ import TickerBase from "./TickerBase";
 @tickerDecorator()
 export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     override fn(
-        ticker: Ticker,
+        ticker: TickerValue,
         args: FadeAlphaTickerProps,
         aliases: string[],
         tickerId: string

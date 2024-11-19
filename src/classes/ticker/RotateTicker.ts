@@ -1,4 +1,5 @@
-import { Container, Sprite, Ticker } from "pixi.js";
+import { Container, Sprite } from "pixi.js";
+import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
@@ -23,7 +24,7 @@ import TickerBase from "./TickerBase";
 @tickerDecorator()
 export default class RotateTicker extends TickerBase<RotateTickerProps> {
     override fn(
-        ticker: Ticker,
+        ticker: TickerValue,
         args: RotateTickerProps,
         aliases: string[],
         tickerId: string
