@@ -27,8 +27,8 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         aliases: string[],
         tickerId: string
     ): void {
-        let xSpeed = 1
-        let ySpeed = 1
+        let xSpeed = 10
+        let ySpeed = 10
         if (args.speed) {
             if (typeof args.speed === "number") {
                 xSpeed = this.speedConvert(args.speed)
