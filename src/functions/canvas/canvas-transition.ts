@@ -449,23 +449,24 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
         canvas.editAlias(alias, oldCanvasAlias)
         pushOut(oldCanvasAlias, props, priority)
     }
+
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+
     let container = new CanvasContainer()
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
     container.addChild(canvasElement)
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
-
     if (props.direction == "up") {
         container.x = 0
-        container.y = -canvas.canvasWidth
+        container.y = -canvas.canvasHeight
     }
     else if (props.direction == "down") {
         container.x = 0
-        container.y = canvas.canvasWidth
+        container.y = canvas.canvasHeight
     }
     else if (props.direction == "left") {
         container.x = canvas.canvasWidth
@@ -502,10 +503,12 @@ export function pushOut(
     }
 
     let container = new CanvasContainer()
-    container.height = canvas.canvasHeight
-    container.width = canvas.canvasWidth
+    container.pivot.x = 0
+    container.pivot.y = 0
+    container.x = 0
+    container.y = 0
     container.addChild(canvasElement)
-    canvas.add(alias, container)
+    canvas.add(alias, container, { ignoreOldStyle: true })
 
     let destination = { x: 0, y: 0 }
 
