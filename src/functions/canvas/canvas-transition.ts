@@ -447,12 +447,12 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
     if (oldCanvas) {
         canvas.copyCanvasElementProperty(oldCanvas, canvasElement)
         canvas.editAlias(alias, oldCanvasAlias)
-        // TODO: pushOut
+        pushOut(oldCanvasAlias, props, priority)
     }
     let container = new CanvasContainer()
-    container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
+    container.addChild(canvasElement)
     canvas.add(alias, container, { ignoreOldStyle: true })
 
     if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
@@ -464,8 +464,8 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
         container.y = -canvas.canvasWidth
     }
     else if (props.direction == "down") {
-        container.x = canvas.canvasWidth
-        container.y = 0
+        container.x = 0
+        container.y = canvas.canvasWidth
     }
     else if (props.direction == "left") {
         container.x = canvas.canvasWidth
@@ -475,7 +475,6 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
         container.x = -canvas.canvasWidth
         container.y = 0
     }
-    container.scale.set(0)
 
     let effect = new MoveTicker({
         ...props,
@@ -496,4 +495,40 @@ export function pushOut(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
+    let canvasElement = canvas.find(alias)
+    if (!canvasElement) {
+        console.warn("[Pixi’VN] The canvas element is not found.")
+        return
+    }
+
+    let container = new CanvasContainer()
+    container.height = canvas.canvasHeight
+    container.width = canvas.canvasWidth
+    container.addChild(canvasElement)
+    canvas.add(alias, container)
+
+    let destination = { x: 0, y: 0 }
+
+    if (props.direction == "up") {
+        destination.y = canvas.canvasHeight
+    }
+    else if (props.direction == "down") {
+        destination.y = -canvas.canvasHeight
+    }
+    else if (props.direction == "left") {
+        destination.x = -canvas.canvasWidth
+    }
+    else if (props.direction == "right") {
+        destination.x = canvas.canvasWidth
+    }
+
+    let effect = new MoveTicker({
+        ...props,
+        startOnlyIfHaveTexture: true,
+        destination: destination,
+        aliasToRemoveAfter: alias,
+        isPushInOut: true,
+    }, undefined, priority)
+
+    canvas.addTicker(alias, effect)
 }

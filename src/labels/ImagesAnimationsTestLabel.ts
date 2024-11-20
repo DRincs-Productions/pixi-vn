@@ -3,6 +3,7 @@ import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classe
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { canvas, narration } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -37,6 +38,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Zoom", imagesZoomTest, {}),
             new ChoiceMenuOption("Move in/out", imagesMoveInOutTest, {}),
             new ChoiceMenuOption("Zoom in/out", imagesZoomInOutTest, {}),
+            new ChoiceMenuOption("Push in/out", imagesPushInOutTest, {}),
             new ChoiceMenuOption("Shake", shakeStageTest, {}),
             new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
@@ -355,6 +357,40 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
         zoomOut("flowerTop", { speed: 3, direction: "left" })
         zoomOut("helmlok", { speed: 1, direction: "right" })
         zoomOut("skully", {
+            speed: 3, direction: "up",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
+    },
+])
+
+const imagesPushInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
+    async () => {
+        narration.dialogue = {
+            character: juliette, text: `Here's what's going to happen:`
+        }
+        let eggHead = new CanvasImage({ x: 100, y: 100 }, eggHeadImage)
+        let flowerTop = new CanvasImage({ x: 300, y: 100 }, flowerTopImage)
+        let helmlok = new CanvasImage({ x: 100, y: 300 }, helmlokImage)
+        let skully = new CanvasImage({ x: 300, y: 300 }, skullyImage)
+        pushIn("eggHead", eggHead, { speed: 20, direction: "down" })
+        pushIn("flowerTop", flowerTop, {
+            speed: 3, direction: "left",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
+        pushIn("helmlok", helmlok, { speed: 30, direction: "right" })
+        pushIn("skully", skully, {
+            speed: 3, direction: "up",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
+    },
+    async () => {
+        pushOut("eggHead", {
+            speed: 3, direction: "down",
+            speedProgression: { type: "exponential", percentage: 0.02 }
+        })
+        pushOut("flowerTop", { speed: 30, direction: "left" })
+        pushOut("helmlok", { speed: 10, direction: "right" })
+        pushOut("skully", {
             speed: 3, direction: "up",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
