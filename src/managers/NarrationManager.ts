@@ -381,8 +381,10 @@ export default class NarrationManager {
                     console.warn("[Pixi’VN] stepSha not found")
                 }
                 try {
+                    if (NarrationManagerStatic.stepsRunning === 0) {
+                        canvas.forceCompletionOfReportedTickers()
+                    }
                     NarrationManagerStatic.stepsRunning++
-                    canvas.forceCompletionOfReportedTickers()
                     let result = await step(props)
 
                     if (this.choiceMenuOptions?.length === 1 && this.choiceMenuOptions[0].autoSelect) {
