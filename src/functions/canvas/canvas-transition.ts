@@ -420,3 +420,80 @@ export function zoomOut(
 
     canvas.addTicker(alias, effect)
 }
+
+export async function pushIn<T extends CanvasBase<any> | string = string>(
+    alias: string,
+    image: T,
+    props: ZoomInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+) {
+    let oldCanvasAlias = alias + "_temp_push"
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
+    let canvasElement: CanvasBase<any>
+    if (typeof image === "string") {
+        if (checkIfVideo(image)) {
+            canvasElement = new CanvasVideo({}, image)
+        }
+        else {
+            canvasElement = new CanvasImage({}, image)
+        }
+    }
+    else {
+        canvasElement = image
+    }
+
+    let oldCanvas = canvas.find(alias)
+    if (oldCanvas) {
+        canvas.copyCanvasElementProperty(oldCanvas, canvasElement)
+        canvas.editAlias(alias, oldCanvasAlias)
+        // TODO: pushOut
+    }
+    let container = new CanvasContainer()
+    container.addChild(canvasElement)
+    container.height = canvas.canvasHeight
+    container.width = canvas.canvasWidth
+    canvas.add(alias, container, { ignoreOldStyle: true })
+
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+
+    if (props.direction == "up") {
+        container.x = 0
+        container.y = -canvas.canvasWidth
+    }
+    else if (props.direction == "down") {
+        container.x = canvas.canvasWidth
+        container.y = 0
+    }
+    else if (props.direction == "left") {
+        container.x = canvas.canvasWidth
+        container.y = 0
+    }
+    else if (props.direction == "right") {
+        container.x = -canvas.canvasWidth
+        container.y = 0
+    }
+    container.scale.set(0)
+
+    let effect = new MoveTicker({
+        ...props,
+        tickerAliasToResume: tickerAliasToResume,
+        startOnlyIfHaveTexture: true,
+        isPushInOut: true,
+        destination: { x: 0, y: 0 }
+    }, undefined, priority)
+
+    let id = canvas.addTicker(alias, effect)
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+    }
+}
+
+export function pushOut(
+    alias: string,
+    props: ZoomInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY,
+) {
+}
