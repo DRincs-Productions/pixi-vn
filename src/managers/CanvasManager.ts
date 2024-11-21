@@ -353,16 +353,23 @@ export default class CanvasManager {
         this.removeAllTickers()
     }
     /**
-     * Edit the alias of a canvas element.
+     * Edit the alias of a canvas element. The tickers that are connected to the canvas element will be transferred.
      * @param oldAlias The old alias of the canvas element.
      * @param newAlias The new alias of the canvas element.
+     * @param options The options of the canvas element.
      */
-    public editAlias(oldAlias: string, newAlias: string) {
+    public editAlias(oldAlias: string, newAlias: string, options: {
+        /**
+         * If true, the tickers that are connected to the canvas element will not be transferred.
+         * @default false
+         */
+        ignoreTickers?: boolean
+    } = {}) {
         if (CanvasManagerStatic._children[oldAlias]) {
             CanvasManagerStatic._children[newAlias] = CanvasManagerStatic._children[oldAlias]
             delete CanvasManagerStatic._children[oldAlias]
         }
-        this.transferTickers(oldAlias, newAlias, "move")
+        !options.ignoreTickers && this.transferTickers(oldAlias, newAlias, "move")
     }
 
     /** Edit Tickers Methods */
@@ -908,12 +915,6 @@ export default class CanvasManager {
     public import(data: object) {
         this.clear()
         try {
-            if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
-                setMemoryContainer(this.app.stage, (data as ExportedCanvas)["stage"])
-            }
-            else {
-                console.error("[Pixi’VN] The data does not have the properties stage")
-            }
             let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let currentElements = (data as ExportedCanvas)["elements"]
@@ -929,6 +930,12 @@ export default class CanvasManager {
             else {
                 console.error("[Pixi’VN] The data does not have the properties elementAliasesOrder and elements")
                 return
+            }
+            if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
+                setMemoryContainer(this.app.stage, (data as ExportedCanvas)["stage"])
+            }
+            else {
+                console.error("[Pixi’VN] The data does not have the properties stage")
             }
             if (data.hasOwnProperty("tickers")) {
                 let tickers = (data as ExportedCanvas)["tickers"]

@@ -103,6 +103,10 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 let destination = args.destination
                 element.x = destination.x
                 element.y = destination.y
+                if (args.isPushInOut && element.children.length > 0) {
+                    let elementChild = element.children[0]
+                    canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
+                }
             }
         })
         super.onEndOfTicker(alias, tickerId, args)
