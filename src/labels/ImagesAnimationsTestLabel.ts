@@ -363,7 +363,7 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
     },
 ])
 
-const imagesPushInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
+const imagesPushInOutTest = newLabel("___pixi_vn_images_push_in_out_test___", [
     async () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:`
@@ -440,6 +440,7 @@ const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_tes
     async () => await showWithFadeTransition("eggHead", skullyImage),
     async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
     async () => await zoomIn("eggHead", eggHeadImage),
+    async () => await pushIn("eggHead", eggHeadImage, { speed: 100 }),
 ])
 
 const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [

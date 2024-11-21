@@ -17,14 +17,14 @@ import { addVideo } from "./video-utility"
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
- * @returns A promise that is resolved when the image is loaded.
+ * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function showWithDissolveTransition<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
-): Promise<void> {
+): Promise<string[] | undefined> {
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let oldCanvasAlias: string | undefined = undefined
     if (canvas.find(alias)) {
@@ -59,8 +59,10 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
         startOnlyIfHaveTexture: true,
     }, 10, priority)
     let id = canvas.addTicker(alias, effect)
-    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
-    return
+    if (id) {
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
+    }
 }
 
 /**
@@ -71,12 +73,13 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
+ * @returns The ids of the tickers that are used in the effect.
  */
 export function removeWithDissolveTransition(
     alias: string | string[],
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
-): void {
+): string[] | undefined {
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     if (typeof alias === "string") {
         alias = [alias]
@@ -88,7 +91,10 @@ export function removeWithDissolveTransition(
         startOnlyIfHaveTexture: true,
     }, 10, priority)
     let id = canvas.addTicker(alias, effect)
-    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    if (id) {
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
+    }
 }
 
 /**
@@ -99,14 +105,14 @@ export function removeWithDissolveTransition(
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
- * @returns A promise that is resolved when the image is loaded.
+ * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function showWithFadeTransition<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
-): Promise<void> {
+): Promise<string[] | undefined> {
     if (!canvas.find(alias)) {
         return showWithDissolveTransition(alias, image, props, priority)
     }
@@ -151,8 +157,16 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
             aliasToRemoveAfter: oldCanvasAlias,
         }, undefined, priority)
     ])
-    id1 && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
-    id2 && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
+    let res: undefined | string[] = undefined
+    if (id1) {
+        res = [id1]
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
+    }
+    if (id2) {
+        res ? res.push(id2) : res = [id2]
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
+    }
+    return res
 }
 
 /**
@@ -163,12 +177,13 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
+ * @returns The ids of the tickers that are used in the effect.
  */
 export function removeWithFadeTransition(
     alias: string | string[],
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
-): void {
+): string[] | undefined {
     return removeWithDissolveTransition(alias, props, priority)
 }
 
@@ -179,14 +194,14 @@ export function removeWithFadeTransition(
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
- * @returns A promise that is resolved when the image is loaded.
+ * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function moveIn<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
     props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
-): Promise<void> {
+): Promise<string[] | undefined> {
     let direction = props.direction || "right"
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
@@ -235,20 +250,23 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     if (id) {
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
     }
 }
 
 /**
  * Remove a image from the canvas with a move effect. The image is moved from the x and y position of the image to outside the canvas.
+ * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
+ * @returns The ids of the tickers that are used in the effect.
  */
 export function moveOut(
     alias: string,
     props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
-): void {
+): string[] | undefined {
     let direction = props.direction || "right"
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let canvasElement = canvas.find(alias)
@@ -281,7 +299,11 @@ export function moveOut(
     }, undefined, priority)
 
     let id = canvas.addTicker(alias, effect)
-    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
+    }
 }
 
 /**
@@ -291,13 +313,14 @@ export function moveOut(
  * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
+ * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function zoomIn<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
-) {
+): Promise<string[] | undefined> {
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
@@ -366,21 +389,23 @@ export async function zoomIn<T extends CanvasBase<any> | string = string>(
     if (id) {
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
     }
 }
 
 /**
  * Remove a image from the canvas with a zoom effect. The image is zoomed out to the center of the canvas.
+ * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
- * @returns A promise that is resolved when the image is loaded.
+ * @returns The ids of the tickers that are used in the effect.
  */
 export function zoomOut(
     alias: string,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
-) {
+): string[] | undefined {
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
@@ -430,7 +455,11 @@ export function zoomOut(
     }, undefined, priority)
 
     let id = canvas.addTicker(alias, effect)
-    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
+    }
 }
 
 export async function pushIn<T extends CanvasBase<any> | string = string>(
@@ -438,7 +467,7 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
     image: T,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
-) {
+): Promise<string[] | undefined> {
     let oldCanvasAlias = alias + "_temp_push"
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
@@ -502,6 +531,7 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
     if (id) {
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
     }
 }
 
@@ -509,7 +539,7 @@ export function pushOut(
     alias: string,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
-) {
+): string[] | undefined {
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
@@ -549,5 +579,9 @@ export function pushOut(
     }, undefined, priority)
 
     let id = canvas.addTicker(alias, effect)
-    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    if (id) {
+        canvas.putOnPauseTicker(alias, id)
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        return [id]
+    }
 }
