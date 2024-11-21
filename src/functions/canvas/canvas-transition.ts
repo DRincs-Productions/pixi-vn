@@ -25,6 +25,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let oldCanvasAlias: string | undefined = undefined
     if (canvas.find(alias)) {
         oldCanvasAlias = alias + "_temp_disolve"
@@ -58,7 +59,7 @@ export async function showWithDissolveTransition<T extends CanvasBase<any> | str
         startOnlyIfHaveTexture: true,
     }, 10, priority)
     let id = canvas.addTicker(alias, effect)
-    id && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     return
 }
 
@@ -76,6 +77,7 @@ export function removeWithDissolveTransition(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): void {
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     if (typeof alias === "string") {
         alias = [alias]
     }
@@ -85,7 +87,8 @@ export function removeWithDissolveTransition(
         aliasToRemoveAfter: alias,
         startOnlyIfHaveTexture: true,
     }, 10, priority)
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
 }
 
 /**
@@ -108,6 +111,7 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
         return showWithDissolveTransition(alias, image, props, priority)
     }
 
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let oldCanvasAlias = alias + "_temp_fade"
     canvas.editAlias(alias, oldCanvasAlias)
 
@@ -147,8 +151,8 @@ export async function showWithFadeTransition<T extends CanvasBase<any> | string 
             aliasToRemoveAfter: oldCanvasAlias,
         }, undefined, priority)
     ])
-    id1 && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
-    id2 && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
+    id1 && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
+    id2 && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
 }
 
 /**
@@ -184,6 +188,7 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     priority?: UPDATE_PRIORITY,
 ): Promise<void> {
     let direction = props.direction || "right"
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
     let canvasElement: CanvasBase<any>
@@ -229,6 +234,7 @@ export async function moveIn<T extends CanvasBase<any> | string = string>(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     }
 }
 
@@ -244,6 +250,7 @@ export function moveOut(
     priority?: UPDATE_PRIORITY,
 ): void {
     let direction = props.direction || "right"
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -273,7 +280,8 @@ export function moveOut(
         aliasToRemoveAfter: alias,
     }, undefined, priority)
 
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
 }
 
 /**
@@ -290,6 +298,7 @@ export async function zoomIn<T extends CanvasBase<any> | string = string>(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
     let canvasElement: CanvasBase<any>
@@ -356,6 +365,7 @@ export async function zoomIn<T extends CanvasBase<any> | string = string>(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     }
 }
 
@@ -371,6 +381,7 @@ export function zoomOut(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -418,7 +429,8 @@ export function zoomOut(
         isZoomInOut: true,
     }, undefined, priority)
 
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
 }
 
 export async function pushIn<T extends CanvasBase<any> | string = string>(
@@ -428,6 +440,7 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
     priority?: UPDATE_PRIORITY,
 ) {
     let oldCanvasAlias = alias + "_temp_push"
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
     let canvasElement: CanvasBase<any>
@@ -488,6 +501,7 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
+        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     }
 }
 
@@ -496,6 +510,7 @@ export function pushOut(
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ) {
+    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -533,5 +548,6 @@ export function pushOut(
         isPushInOut: true,
     }, undefined, priority)
 
-    canvas.addTicker(alias, effect)
+    let id = canvas.addTicker(alias, effect)
+    id && mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
 }
