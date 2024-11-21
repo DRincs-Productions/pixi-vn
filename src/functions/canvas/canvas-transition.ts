@@ -468,6 +468,15 @@ export function zoomOut(
     }
 }
 
+/**
+ * Show a image in the canvas with a push effect. The new image is pushed in from the inside of the canvas and the old image is pushed out to the outside of the canvas.
+ * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link CanvasVideo} is added to the canvas.
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+ */
 export async function pushIn<T extends CanvasBase<any> | string = string>(
     alias: string,
     image: T,
@@ -541,6 +550,14 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
     }
 }
 
+/**
+ * Remove a image from the canvas with a push effect. The image is pushed out to the outside of the canvas.
+ * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
+ * @param alias The unique alias of the image. You can use this alias to refer to this image
+ * @param props The properties of the effect
+ * @param priority The priority of the effect
+ * @returns The ids of the tickers that are used in the effect.
+ */
 export function pushOut(
     alias: string,
     props: ZoomInOutProps = { direction: "right" },
