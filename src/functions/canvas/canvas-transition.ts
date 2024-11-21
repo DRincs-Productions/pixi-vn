@@ -498,15 +498,15 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
         pushOut(oldCanvasAlias, props, priority)
     }
 
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
-
     let container = new CanvasContainer()
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
     container.addChild(canvasElement)
     canvas.add(alias, container, { ignoreOldStyle: true })
+
+    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
 
     if (props.direction == "up") {
         container.x = 0
