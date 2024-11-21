@@ -269,6 +269,8 @@ export function moveOut(
 ): string[] | undefined {
     let direction = props.direction || "right"
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -293,6 +295,7 @@ export function moveOut(
 
     let effect = new MoveTicker({
         ...props,
+        tickerAliasToResume: tickerAliasToResume,
         destination,
         startOnlyIfHaveTexture: true,
         aliasToRemoveAfter: alias,
@@ -407,6 +410,8 @@ export function zoomOut(
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -447,6 +452,7 @@ export function zoomOut(
 
     let effect = new ZoomTicker({
         ...props,
+        tickerAliasToResume: tickerAliasToResume,
         startOnlyIfHaveTexture: true,
         type: "unzoom",
         limit: 0,
@@ -541,6 +547,8 @@ export function pushOut(
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
+    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    tickerAliasToResume.push(alias)
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas element is not found.")
@@ -572,6 +580,7 @@ export function pushOut(
 
     let effect = new MoveTicker({
         ...props,
+        tickerAliasToResume: tickerAliasToResume,
         startOnlyIfHaveTexture: true,
         destination: destination,
         aliasToRemoveAfter: alias,
