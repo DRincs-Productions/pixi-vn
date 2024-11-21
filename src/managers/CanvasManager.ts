@@ -353,16 +353,23 @@ export default class CanvasManager {
         this.removeAllTickers()
     }
     /**
-     * Edit the alias of a canvas element.
+     * Edit the alias of a canvas element. The tickers that are connected to the canvas element will be transferred.
      * @param oldAlias The old alias of the canvas element.
      * @param newAlias The new alias of the canvas element.
+     * @param options The options of the canvas element.
      */
-    public editAlias(oldAlias: string, newAlias: string) {
+    public editAlias(oldAlias: string, newAlias: string, options: {
+        /**
+         * If true, the tickers that are connected to the canvas element will not be transferred.
+         * @default false
+         */
+        ignoreTickers?: boolean
+    } = {}) {
         if (CanvasManagerStatic._children[oldAlias]) {
             CanvasManagerStatic._children[newAlias] = CanvasManagerStatic._children[oldAlias]
             delete CanvasManagerStatic._children[oldAlias]
         }
-        this.transferTickers(oldAlias, newAlias, "move")
+        !options.ignoreTickers && this.transferTickers(oldAlias, newAlias, "move")
     }
 
     /** Edit Tickers Methods */

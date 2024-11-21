@@ -494,7 +494,7 @@ export async function pushIn<T extends CanvasBase<any> | string = string>(
     let oldCanvas = canvas.find(alias)
     if (oldCanvas) {
         canvas.copyCanvasElementProperty(oldCanvas, canvasElement)
-        canvas.editAlias(alias, oldCanvasAlias)
+        canvas.editAlias(alias, oldCanvasAlias, { ignoreTickers: true })
         pushOut(oldCanvasAlias, props, priority)
     }
 
