@@ -440,7 +440,7 @@ const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_tes
     async () => await showWithFadeTransition("eggHead", skullyImage),
     async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
     async () => await zoomIn("eggHead", eggHeadImage),
-    async () => await pushIn("eggHead", eggHeadImage, { speed: 100 }),
+    async () => await pushIn("eggHead", eggHeadImage),
 ])
 
 const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
