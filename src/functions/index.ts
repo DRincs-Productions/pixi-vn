@@ -1,5 +1,5 @@
 export { shakeEffect } from './canvas/canvas-effect';
-export { moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from './canvas/canvas-transition';
+export { moveIn, moveOut, pushIn, pushOut, removeWithDissolveTransition, removeWithFadeTransition, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from './canvas/canvas-transition';
 export { removeCanvasElement } from './canvas/canvas-utility';
 export { addImage, loadImage, showImage } from './canvas/image-utility';
 export { addVideo, loadVideo, showVideo } from './canvas/video-utility';
