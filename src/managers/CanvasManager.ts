@@ -10,8 +10,8 @@ import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { exportCanvasElement, importCanvasElement } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
-import { CanvasBaseMemory, ExportedCanvas, ITicker, ITickersSteps, TickerHistory } from "../interface";
-import { ITickersStep } from "../interface/ITickersSteps";
+import { CanvasBaseMemory, ExportedCanvas, Ticker, TickerHistory, TickersSteps } from "../interface";
+import { TickersStep } from "../interface/TickersSteps";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
@@ -489,7 +489,7 @@ export default class CanvasManager {
      * ])
      * ```
      */
-    addTickersSteps<TArgs extends TickerArgsType>(alias: string, steps: (ITicker<TArgs> | RepeatType | PauseType)[], currentStepNumber = 0) {
+    addTickersSteps<TArgs extends TickerArgsType>(alias: string, steps: (Ticker<TArgs> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
             console.warn("[Pixi’VN] The steps of the tickers is empty")
             return
@@ -497,7 +497,7 @@ export default class CanvasManager {
         if (!(alias in CanvasManagerStatic._currentTickersSteps)) {
             CanvasManagerStatic._currentTickersSteps[alias] = {}
         }
-        let step: ITickersSteps = {
+        let step: TickersSteps = {
             currentStepNumber: currentStepNumber,
             steps: steps.map((step) => {
                 if (step === Repeat) {
@@ -506,7 +506,7 @@ export default class CanvasManager {
                 if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
                     return step as PauseType
                 }
-                let tickerId = (step as ITicker<TArgs>).id
+                let tickerId = (step as Ticker<TArgs>).id
                 return {
                     ticker: tickerId,
                     args: createExportableElement((step as TickerBase<TArgs>).args),
@@ -545,9 +545,9 @@ export default class CanvasManager {
             CanvasManagerStatic.addTickerTimeoutInfo(alias, "steps", timeout.toString(), false)
             return
         }
-        let ticker = geTickerInstanceById<TArgs>((step as ITickersStep<TArgs>).ticker, (step as ITickersStep<TArgs>).args, step.duration, (step as ITickersStep<TArgs>).priority)
+        let ticker = geTickerInstanceById<TArgs>((step as TickersStep<TArgs>).ticker, (step as TickersStep<TArgs>).args, step.duration, (step as TickersStep<TArgs>).priority)
         if (!ticker) {
-            console.error(`[Pixi’VN] Ticker ${(step as ITickersStep<TArgs>).ticker} not found`)
+            console.error(`[Pixi’VN] Ticker ${(step as TickersStep<TArgs>).ticker} not found`)
             return
         }
         let tickerName: TickerIdType = ticker.id
@@ -844,9 +844,9 @@ export default class CanvasManager {
                 else {
                     ticker[id].steps.forEach((step) => {
                         if (typeof step === "object" && "ticker" in step) {
-                            let ticker = geTickerInstanceById<any>((step as ITickersStep<any>).ticker, (step as ITickersStep<any>).args, step.duration, (step as ITickersStep<any>).priority)
+                            let ticker = geTickerInstanceById<any>((step as TickersStep<any>).ticker, (step as TickersStep<any>).args, step.duration, (step as TickersStep<any>).priority)
                             if (ticker) {
-                                ticker.onEndOfTicker([alias], id, (step as ITickersStep<any>).args)
+                                ticker.onEndOfTicker([alias], id, (step as TickersStep<any>).args)
                             }
                         }
                     })

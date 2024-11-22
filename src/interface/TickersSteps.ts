@@ -3,7 +3,7 @@ import { TickerArgsType } from "../classes/ticker/TickerBase"
 import { PauseType } from "../types/PauseType"
 import { RepeatType } from "../types/RepeatType"
 
-export interface ITickersStep<TArgs extends TickerArgsType> {
+export interface TickersStep<TArgs extends TickerArgsType> {
     /**
      * Ticker class name
      */
@@ -25,7 +25,7 @@ export interface ITickersStep<TArgs extends TickerArgsType> {
 /**
  * The steps of the tickers
  */
-export default interface ITickersSteps {
+export default interface TickersSteps {
     /**
      * The step number
      */
@@ -33,5 +33,5 @@ export default interface ITickersSteps {
     /**
      * The steps of the tickers
      */
-    steps: (ITickersStep<any> | RepeatType | PauseType)[]
+    steps: (TickersStep<any> | RepeatType | PauseType)[]
 }

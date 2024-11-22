@@ -4,8 +4,8 @@ import { getLabelById } from "../decorators/label-decorator"
 import { restoreDeepDiffChanges } from "../functions/diff-utility"
 import { createExportableElement } from "../functions/export-utility"
 import { getGamePath } from "../functions/path-utility"
-import IHistoryStep, { IHistoryStepData } from "../interface/IHistoryStep"
-import IOpenedLabel from "../interface/IOpenedLabel"
+import HistoryStep, { HistoryStepData } from "../interface/HistoryStep"
+import OpenedLabel from "../interface/OpenedLabel"
 import ChoicesMadeType from "../types/ChoicesMadeType"
 import { LabelIdType } from "../types/LabelIdType"
 
@@ -24,7 +24,7 @@ type CurrentStepTimesCounterMemoty = {
 
 export default class NarrationManagerStatic {
     private constructor() { }
-    static _stepsHistory: IHistoryStep[] = []
+    static _stepsHistory: HistoryStep[] = []
     /**
      * Number of steps function that are running.
      * If you run a step that have a goNext, this number is > 1.
@@ -155,7 +155,7 @@ export default class NarrationManagerStatic {
     static increaseLastStepIndex() {
         NarrationManagerStatic._lastStepIndex++
     }
-    static _openedLabels: IOpenedLabel[] = []
+    static _openedLabels: OpenedLabel[] = []
     static get _currentLabel(): Label | undefined {
         if (NarrationManagerStatic.currentLabelId) {
             return getLabelById(NarrationManagerStatic.currentLabelId)
@@ -181,14 +181,14 @@ export default class NarrationManagerStatic {
     /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
      */
-    private static get lastHistoryStep(): IHistoryStep | null {
+    private static get lastHistoryStep(): HistoryStep | null {
         if (NarrationManagerStatic._stepsHistory.length > 0) {
             return NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1]
         }
         return null
     }
-    static _originalStepData: IHistoryStepData | undefined = undefined
-    static get originalStepData(): IHistoryStepData {
+    static _originalStepData: HistoryStepData | undefined = undefined
+    static get originalStepData(): HistoryStepData {
         if (!NarrationManagerStatic._originalStepData) {
             return {
                 path: "",
@@ -212,12 +212,12 @@ export default class NarrationManagerStatic {
         }
         return createExportableElement(NarrationManagerStatic._originalStepData)
     }
-    static set originalStepData(value: IHistoryStepData) {
+    static set originalStepData(value: HistoryStepData) {
         NarrationManagerStatic._originalStepData = createExportableElement(value)
     }
 
-    static get currentStepData(): IHistoryStepData {
-        let currentStepData: IHistoryStepData = {
+    static get currentStepData(): HistoryStepData {
+        let currentStepData: HistoryStepData = {
             path: getGamePath(),
             storage: storage.export(),
             canvas: canvas.export(),
@@ -301,7 +301,7 @@ export default class NarrationManagerStatic {
 
     /* Go Back & Refresh Methods */
 
-    static goBackInternal(steps: number, restoredStep: IHistoryStepData): IHistoryStepData {
+    static goBackInternal(steps: number, restoredStep: HistoryStepData): HistoryStepData {
         if (steps <= 0) {
             return restoredStep
         }
@@ -325,7 +325,7 @@ export default class NarrationManagerStatic {
             return restoredStep
         }
     }
-    static async restoreFromHistoryStep(restoredStep: IHistoryStepData, navigate: (path: string) => void) {
+    static async restoreFromHistoryStep(restoredStep: HistoryStepData, navigate: (path: string) => void) {
         NarrationManagerStatic._originalStepData = restoredStep
         NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels)
         if (NarrationManagerStatic._currentLabel && NarrationManagerStatic._currentLabel.onLoadStep) {

@@ -2,7 +2,7 @@ import { UPDATE_PRIORITY } from "pixi.js"
 import { TickerValue } from "../.."
 import { tickerDecorator } from "../../decorators"
 import { geTickerInstanceById } from "../../decorators/ticker-decorator"
-import ITicker from "../../interface/ITicker"
+import Ticker from "../../interface/Ticker"
 import { canvas } from "../../managers"
 import { StorageElementType } from "../../types/StorageElementType"
 import { TickerIdType } from "../../types/TickerIdType"
@@ -44,7 +44,7 @@ export type TickerArgsType = { [id: string]: StorageElementType } | {
  * }
  * ```
  */
-export default class TickerBase<TArgs extends TickerArgsType> implements ITicker<TArgs> {
+export default class TickerBase<TArgs extends TickerArgsType> implements Ticker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
      * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined

@@ -1,5 +1,5 @@
 import { PIXIVN_VERSION } from "../constants";
-import ISaveData from "../interface/ISaveData";
+import SaveData from "../interface/SaveData";
 import { canvas, narration, sound, storage } from "../managers";
 import { getGamePath } from "./path-utility";
 
@@ -7,7 +7,7 @@ import { getGamePath } from "./path-utility";
  * Get the save data
  * @returns The save data
  */
-export function getSaveData(): ISaveData {
+export function getSaveData(): SaveData {
     return {
         pixivn_version: PIXIVN_VERSION,
         stepData: narration.export(),
@@ -44,7 +44,7 @@ export function getSaveJson() {
  * @param data The save data
  * @param navigate The function to navigate to a path
  */
-export async function loadSaveData(data: ISaveData, navigate: (path: string) => void) {
+export async function loadSaveData(data: SaveData, navigate: (path: string) => void) {
     await narration.import(data.stepData);
     storage.import(data.storageData);
     canvas.import(data.canvasData);
@@ -89,6 +89,6 @@ export async function loadSaveJson(dataString: string, navigate: (path: string) 
  * @param json The JSON string
  * @returns The save data
  */
-export function jsonToSaveData(json: string): ISaveData {
+export function jsonToSaveData(json: string): SaveData {
     return JSON.parse(json);
 }

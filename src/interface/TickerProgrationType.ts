@@ -1,6 +1,7 @@
 
-export type TickerProgrationType = ITickerProgrationLinear | ITickerProgrationExponential;
-export type ITickerProgrationLinear = {
+type TickerProgrationType = TickerProgrationLinear | TickerProgrationExponential;
+export default TickerProgrationType
+export interface TickerProgrationLinear {
     /**
      * The amount of the speed to increase every frame.
      */
@@ -11,7 +12,7 @@ export type ITickerProgrationLinear = {
     limit?: number,
     type: "linear",
 }
-export type ITickerProgrationExponential = {
+export interface TickerProgrationExponential {
     /**
      * The percentage of the speed to increase every frame. if the percentage is 0.1, the speed will increase by 10% every frame.
      */

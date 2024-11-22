@@ -1,4 +1,4 @@
-import { ITickerProgrationExponential, ITickerProgrationLinear, TickerProgrationType } from "../interface/TickerProgrationType";
+import { TickerProgrationExponential, TickerProgrationLinear, TickerProgrationType } from "../interface";
 
 /**
  * This function updates the progression of the ticker.
@@ -45,7 +45,7 @@ export function updateTickerProgression<T extends {}>(args: T, propertyName: key
     }
 }
 
-function getLinearProgression(number: number, progression: ITickerProgrationLinear, valueConvert?: (value: number) => number): number {
+function getLinearProgression(number: number, progression: TickerProgrationLinear, valueConvert?: (value: number) => number): number {
     let limit = valueConvert && progression.limit ? valueConvert(progression.limit) : progression.limit
     let amt = valueConvert ? valueConvert(progression.amt) : progression.amt
     if (limit !== undefined) {
@@ -59,7 +59,7 @@ function getLinearProgression(number: number, progression: ITickerProgrationLine
     return number + amt
 }
 
-function getExponentialProgression(number: number, progression: ITickerProgrationExponential, valueConvert?: (value: number) => number): number {
+function getExponentialProgression(number: number, progression: TickerProgrationExponential, valueConvert?: (value: number) => number): number {
     let limit = valueConvert && progression.limit ? valueConvert(progression.limit) : progression.limit
     if (limit !== undefined) {
         if (number > limit && progression.percentage > 0) {

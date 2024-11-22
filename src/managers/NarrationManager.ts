@@ -6,7 +6,7 @@ import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
 import LabelAbstract from "../classes/LabelAbstract"
 import { getLabelById } from "../decorators/label-decorator"
 import { getFlag, setFlag } from "../functions"
-import { CharacterInterface, IHistoryStepData, NarrativeHistory } from "../interface"
+import { CharacterInterface, HistoryStepData, NarrativeHistory } from "../interface"
 import ExportedStep from "../interface/export/ExportedStep"
 import { ChoiceMenuOptionsType, Close, DialogueType, HistoryChoiceMenuOption, InputInfo, StorageElementType } from "../types"
 import ChoicesMadeType from "../types/ChoicesMadeType"
@@ -81,7 +81,7 @@ export default class NarrationManager {
      * @param label The label to add to the history.
      */
     private addStepHistory(stepSha: string, choiseMade?: number) {
-        let currentStepData: IHistoryStepData = NarrationManagerStatic.currentStepData
+        let currentStepData: HistoryStepData = NarrationManagerStatic.currentStepData
         if (NarrationManagerStatic.originalStepData) {
             if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {

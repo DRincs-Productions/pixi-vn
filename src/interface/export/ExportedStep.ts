@@ -1,12 +1,12 @@
-import IHistoryStep, { IHistoryStepData } from "../IHistoryStep"
-import IOpenedLabel from "../IOpenedLabel"
+import HistoryStep, { HistoryStepData } from "../HistoryStep"
+import OpenedLabel from "../OpenedLabel"
 
 /**
  * Interface exported step data
  */
 export default interface ExportedStep {
-    stepsHistory: IHistoryStep[]
-    openedLabels: IOpenedLabel[]
+    stepsHistory: HistoryStep[]
+    openedLabels: OpenedLabel[]
     lastStepIndex: number
-    originalStepData: IHistoryStepData | undefined
+    originalStepData: HistoryStepData | undefined
 }

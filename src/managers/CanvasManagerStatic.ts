@@ -3,7 +3,7 @@ import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions } from "pixi.js";
 import CanvasBase from "../classes/canvas/CanvasBase";
 import { asciiArtLog } from '../functions/easter-egg';
-import { ITickersSteps, TickerHistory, TickerTimeoutHistory } from "../interface";
+import { TickerHistory, TickersSteps, TickerTimeoutHistory } from "../interface";
 import PauseTickerType from '../types/PauseTickerType';
 
 /**
@@ -152,13 +152,13 @@ export default class CanvasManagerStatic {
         return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketSteps))
     }
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
-    static _currentTickersSteps: { [alias: string]: { [tickerId: string]: ITickersSteps } } = {}
+    static _currentTickersSteps: { [alias: string]: { [tickerId: string]: TickersSteps } } = {}
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {}
     static _tickersMustBeCompletedBeforeNextStep: {
         tikersIds: { id: string }[],
         stepAlias: { id: string, alias: string }[],
     } = { tikersIds: [], stepAlias: [] }
-    static generateTickerId(tickerData: TickerHistory<any> | ITickersSteps): string {
+    static generateTickerId(tickerData: TickerHistory<any> | TickersSteps): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)
         }
