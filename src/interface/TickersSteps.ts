@@ -1,9 +1,9 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { TickerArgsType } from "../classes/ticker/TickerBase"
 import { PauseType } from "../types/PauseType"
 import { RepeatType } from "../types/RepeatType"
+import TickerArgs from "./TickerArgs"
 
-export interface TickersStep<TArgs extends TickerArgsType> {
+export interface TickersStep<TArgs extends TickerArgs> {
     /**
      * Ticker class name
      */

@@ -5,12 +5,12 @@ import CanvasBase from "../classes/canvas/CanvasBase";
 import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/CanvasContainer";
 import { setMemorySprite } from "../classes/canvas/CanvasSprite";
 import { setMemoryText } from "../classes/canvas/CanvasText";
-import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase";
+import TickerBase from "../classes/ticker/TickerBase";
 import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { exportCanvasElement, importCanvasElement } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
-import { CanvasBaseMemory, ExportedCanvas, Ticker, TickerHistory, TickersSteps } from "../interface";
+import { CanvasBaseMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
 import { TickersStep } from "../interface/TickersSteps";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -401,7 +401,7 @@ export default class CanvasManager {
      * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
      * ```
      */
-    addTicker<TArgs extends TickerArgsType>(canvasElementAlias: string | string[], ticker: TickerBase<TArgs>) {
+    addTicker<TArgs extends TickerArgs>(canvasElementAlias: string | string[], ticker: TickerBase<TArgs>) {
         let tickerId: TickerIdType = ticker.id
         if (typeof canvasElementAlias === "string") {
             canvasElementAlias = [canvasElementAlias]
@@ -441,7 +441,7 @@ export default class CanvasManager {
         }
         return id
     }
-    private pushTicker<TArgs extends TickerArgsType>(
+    private pushTicker<TArgs extends TickerArgs>(
         id: string,
         tickerData: TickerHistory<TArgs>,
         ticker: TickerBase<TArgs>,
@@ -464,7 +464,7 @@ export default class CanvasManager {
         }
         this.app.ticker.add(tickerData.fn, undefined, tickerData.priority)
     }
-    private pushEndOfTicker<TArgs extends TickerArgsType>(
+    private pushEndOfTicker<TArgs extends TickerArgs>(
         id: string,
         tickerData: TickerHistory<TArgs>,
         ticker: TickerBase<TArgs>,
@@ -489,7 +489,7 @@ export default class CanvasManager {
      * ])
      * ```
      */
-    addTickersSteps<TArgs extends TickerArgsType>(alias: string, steps: (Ticker<TArgs> | RepeatType | PauseType)[], currentStepNumber = 0) {
+    addTickersSteps<TArgs extends TickerArgs>(alias: string, steps: (Ticker<TArgs> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
             console.warn("[Pixi’VN] The steps of the tickers is empty")
             return
@@ -519,7 +519,7 @@ export default class CanvasManager {
         this.runTickersSteps(alias, key)
         return key
     }
-    private runTickersSteps<TArgs extends TickerArgsType>(alias: string, key: string) {
+    private runTickersSteps<TArgs extends TickerArgs>(alias: string, key: string) {
         if (!CanvasManagerStatic._currentTickersSteps[alias] || !(CanvasManagerStatic._currentTickersSteps[alias][key])) {
             return
         }

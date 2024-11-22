@@ -1,9 +1,9 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { TickerArgsType } from "../classes/ticker/TickerBase";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { TickerIdType } from "../types/TickerIdType";
+import TickerArgs from "./TickerArgs";
 
-export default interface Ticker<TArgs extends TickerArgsType> {
+export default interface Ticker<TArgs extends TickerArgs> {
     /**
      * Arguments to pass to the ticker
      */

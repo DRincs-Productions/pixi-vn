@@ -1,5 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import TickerBase, { TickerArgsType } from "../classes/ticker/TickerBase"
+import TickerBase from "../classes/ticker/TickerBase"
+import { TickerArgs } from "../interface"
 import { TickerIdType } from "../types/TickerIdType"
 
 /**
@@ -34,7 +35,7 @@ export default function tickerDecorator(name?: TickerIdType) {
  * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
  * @returns The instance of the ticker
  */
-export function geTickerInstanceById<TArgs extends TickerArgsType>(tickerId: TickerIdType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
+export function geTickerInstanceById<TArgs extends TickerArgs>(tickerId: TickerIdType, args: TArgs, duration?: number, priority?: UPDATE_PRIORITY): TickerBase<TArgs> | undefined {
     try {
         let ticker = registeredTickers[tickerId]
         if (!ticker) {

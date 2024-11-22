@@ -1,11 +1,11 @@
 import { TickerCallback, UPDATE_PRIORITY } from "pixi.js";
-import { TickerArgsType } from "../classes/ticker/TickerBase";
 import { TickerIdType } from "../types/TickerIdType";
+import TickerArgs from "./TickerArgs";
 
 /**
  * TickerHistory is a class that contains the name of a class and the arguments that were used to create it.
  */
-export default interface TickerHistory<TArgs extends TickerArgsType> {
+export default interface TickerHistory<TArgs extends TickerArgs> {
     fn: TickerCallback<any>,
     id: TickerIdType,
     args: TArgs
@@ -25,7 +25,7 @@ export default interface TickerHistory<TArgs extends TickerArgsType> {
     onEndOfTicker: () => void
 }
 
-export interface TickerHistoryForExport<TArgs extends TickerArgsType> {
+export interface TickerHistoryForExport<TArgs extends TickerArgs> {
     id: TickerIdType,
     args: TArgs
     /**
