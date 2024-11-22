@@ -1,3 +1,1 @@
-export default interface TickerArgs {
-    aliasToRemoveAfter?: string[] | string,
-}
+export default interface TickerArgs { }

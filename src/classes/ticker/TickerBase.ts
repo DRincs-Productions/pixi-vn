@@ -39,7 +39,7 @@ import { TickerIdType } from "../../types/TickerIdType"
  * }
  * ```
  */
-export default class TickerBase<TArgs extends (TickerArgs | {})> implements Ticker<TArgs> {
+export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
      * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
