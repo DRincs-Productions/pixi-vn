@@ -40,11 +40,12 @@ class AlienTintingTest extends CanvasSprite<IAlienTintingMemory> {
     }
 }
 
+interface TintingTestTickerArgs {
+    test?: string
+}
+
 @tickerDecorator("___pixi_vn_custom_ticker___")
-export class TintingTestTicker extends TickerBase<{}> {
-    constructor() {
-        super({})
-    }
+export class TintingTestTicker extends TickerBase<TintingTestTickerArgs> {
     override fn(_t: TickerValue, _args: {}, aliases: string[]): void {
         aliases.forEach((alias) => {
             // create a bounding box for the little dudes
@@ -118,7 +119,8 @@ export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_
                 dude.speed = 2 + Math.random() * 2;
 
                 canvas.add("alien" + i, dude);
-                canvas.addTicker("alien" + i, new TintingTestTicker());
+                let args: TintingTestTickerArgs = {}
+                canvas.addTicker("alien" + i, new TintingTestTicker(args));
             }
             narration.dialogue = {
                 character: juliette,
