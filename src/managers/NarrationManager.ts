@@ -870,12 +870,18 @@ export default class NarrationManager {
     }
     /**
      * Request input from the player.
-     * @param value The input value to be inserted by the player.
+     * @param info The input value to be inserted by the player.
+     * @param defaultValue The default value to be inserted.
      */
-    public requestInput(value: Omit<InputInfo, "isRequired">) {
-        (value as InputInfo).isRequired = true
-        storage.setVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY, value)
-        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
+    public requestInput(info: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType) {
+        (info as InputInfo).isRequired = true
+        storage.setVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY, info)
+        if (defaultValue !== undefined) {
+            this.inputValue = defaultValue
+        }
+        else {
+            storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
+        }
     }
     /**
      * Remove the input request.
