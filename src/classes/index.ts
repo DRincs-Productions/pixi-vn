@@ -6,7 +6,6 @@ export {
     default as CanvasBase,
     default as CanvasBaseItem
 } from './canvas/CanvasBaseItem';
-export { default as CanvasImage } from './canvas/CanvasImage';
 export {
     /**
      * @deprecated use "import { Container } from '@drincs/pixi-vn';"
@@ -21,6 +20,13 @@ export {
     default as CanvasSprite,
     default as Sprite
 } from './canvas/Sprite';
+export {
+    /**
+     * @deprecated use "import { SpriteImage } from '@drincs/pixi-vn';"
+     */
+    default as CanvasImage,
+    default as SpriteImage
+} from './canvas/SpriteImage';
 export {
     /**
      * @deprecated use "import { Text } from '@drincs/pixi-vn';"

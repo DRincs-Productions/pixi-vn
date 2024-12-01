@@ -1,12 +1,12 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
 import { SpriteVideoMemory } from "../../interface";
-import CanvasImage from "./CanvasImage";
+import SpriteImage from "./SpriteImage";
 
 export const CANVAS_VIDEO_ID = "Video"
 
 /**
- * This class is a extension of the {@link CanvasImage} class, it has the same properties and methods,
+ * This class is a extension of the {@link SpriteImage} class, it has the same properties and methods,
  * but it has some features that make video management easier.
  * You need to use {@link CanvasVideo.load()} to show the video in the canvas.
  * This class is used for functions like {@link addVideo}, {@link loadVideo} and {@link showWithDissolveTransition}.
@@ -26,7 +26,7 @@ export const CANVAS_VIDEO_ID = "Video"
  * await film.load()
  * ```
  */
-export default class CanvasVideo extends CanvasImage<SpriteVideoMemory> {
+export default class CanvasVideo extends SpriteImage<SpriteVideoMemory> {
     pixivnId: string = CANVAS_VIDEO_ID
     override get memory(): SpriteVideoMemory {
         return {

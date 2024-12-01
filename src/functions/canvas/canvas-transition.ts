@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBaseItem, CanvasImage, CanvasVideo, Container } from "../../classes"
+import { CanvasBaseItem, CanvasVideo, Container, SpriteImage } from "../../classes"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
@@ -45,7 +45,7 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
@@ -134,7 +134,7 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
@@ -219,7 +219,7 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
@@ -333,7 +333,7 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
             canvasElement = new CanvasVideo({}, image)
         }
         else {
-            canvasElement = new CanvasImage({}, image)
+            canvasElement = new SpriteImage({}, image)
         }
     }
     else {
@@ -349,7 +349,7 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     container.width = canvas.canvasWidth
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
@@ -493,7 +493,7 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
             canvasElement = new CanvasVideo({}, image)
         }
         else {
-            canvasElement = new CanvasImage({}, image)
+            canvasElement = new SpriteImage({}, image)
         }
     }
     else {
@@ -513,7 +513,7 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     container.addChild(canvasElement)
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if (canvasElement instanceof CanvasImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
