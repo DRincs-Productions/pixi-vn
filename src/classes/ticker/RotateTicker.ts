@@ -1,4 +1,4 @@
-import { Container, Sprite as PixiSprite } from "pixi.js";
+import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/ticker-utility";
@@ -8,7 +8,7 @@ import TickerBase from "./TickerBase";
 
 /**
  * A ticker that rotates the canvas element of the canvas. For centre rotation, set the anchor of the canvas element to 0.5.
- * This ticker can be used on all canvas elements that extend the {@link Container} class.
+ * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -51,7 +51,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
             })
             .forEach((alias) => {
                 let element = canvas.find(alias)
-                if (element && element instanceof Container) {
+                if (element && element instanceof PixiContainer) {
                     if (clockwise)
                         element.rotation += speed * ticker.deltaTime
                     else

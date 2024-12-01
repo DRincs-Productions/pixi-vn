@@ -1,4 +1,4 @@
-import { Container, ContainerOptions } from "pixi.js";
+import { ContainerOptions, Container as PixiContainer } from "pixi.js";
 import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
 import { ContainerMemory } from "../../interface";
 import CanvasBase from "./CanvasBase";
@@ -22,7 +22,7 @@ export const CANVAS_CONTAINER_ID = "Container"
  *  }
  * ```
  */
-export default class CanvasContainer extends Container implements CanvasBase<ContainerMemory> {
+export default class CanvasContainer extends PixiContainer implements CanvasBase<ContainerMemory> {
     constructor(options?: ContainerOptions) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID
@@ -43,7 +43,7 @@ export default class CanvasContainer extends Container implements CanvasBase<Con
     }
 }
 
-export function getMemoryContainer<T extends Container>(element: T): ContainerMemory {
+export function getMemoryContainer<T extends PixiContainer>(element: T): ContainerMemory {
     let className = CANVAS_CONTAINER_ID
     if (element.hasOwnProperty("pixivnId")) {
         className = (element as any).pixivnId
@@ -79,7 +79,7 @@ export function getMemoryContainer<T extends Container>(element: T): ContainerMe
     }
 }
 
-export function setMemoryContainer<T extends Container>(element: T | Container, memory: ContainerOptions | {}) {
+export function setMemoryContainer<T extends PixiContainer>(element: T | PixiContainer, memory: ContainerOptions | {}) {
     "isRenderGroup" in memory && memory.isRenderGroup && (element.isRenderGroup = memory.isRenderGroup)
     "blendMode" in memory && memory.blendMode && (element.blendMode = memory.blendMode)
     "tint" in memory && memory.tint && (element.tint = memory.tint)

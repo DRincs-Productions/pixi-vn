@@ -1,4 +1,4 @@
-import { Container, Sprite as PixiSprite } from "pixi.js";
+import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/ticker-utility";
@@ -10,7 +10,7 @@ const DEFAULT_SPEED = 0.1
 
 /**
  * A ticker that zooms the canvas element of the canvas.
- * This ticker can be used on all canvas elements that extend the {@link Container} class.
+ * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -64,7 +64,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
             })
             .forEach((alias) => {
                 let element = canvas.find(alias)
-                if (element && element instanceof Container) {
+                if (element && element instanceof PixiContainer) {
                     if (
                         type === "zoom"
                         && (element.scale.x < limit.x || element.scale.y < limit.y)

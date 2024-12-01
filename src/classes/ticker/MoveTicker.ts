@@ -1,4 +1,4 @@
-import { Container, Sprite as PixiSprite } from "pixi.js";
+import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { updateTickerProgression } from "../../functions/ticker-utility";
@@ -8,7 +8,7 @@ import TickerBase from "./TickerBase";
 
 /**
  * A ticker that moves the canvas element of the canvas.
- * This ticker can be used on all canvas elements that extend the {@link Container} class.
+ * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -60,7 +60,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             })
             .forEach((alias) => {
                 let element = canvas.find(alias)
-                if (element && element instanceof Container) {
+                if (element && element instanceof PixiContainer) {
                     let xDistance = (destination.x - element.x) > 0 ? 1 : -1
                     if (xDistance != 0) {
                         element.x += xDistance * xSpeed * ticker.deltaTime

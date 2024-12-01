@@ -1,4 +1,4 @@
-import { ApplicationOptions, Container } from "pixi.js";
+import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
 import { CanvasSprite, CanvasText } from "../classes";
 import CanvasBase from "../classes/canvas/CanvasBase";
@@ -138,7 +138,7 @@ export default class CanvasManager {
                 return
             }
         }
-        if (oldAlias instanceof Container) {
+        if (oldAlias instanceof PixiContainer) {
             oldAlias = oldAlias.memory
         }
         "isRenderGroup" in oldAlias && delete oldAlias.isRenderGroup
@@ -157,7 +157,7 @@ export default class CanvasManager {
         else if (newAlias instanceof CanvasText) {
             setMemoryText(newAlias, oldAlias)
         }
-        else if (newAlias instanceof Container) {
+        else if (newAlias instanceof PixiContainer) {
             setMemoryContainer(newAlias, oldAlias)
         }
     }
@@ -340,7 +340,7 @@ export default class CanvasManager {
      * @param pixiElement The DisplayObject to be checked.
      * @returns If the DisplayObject is on the canvas.
      */
-    public canvasElementIsOnCanvas<T extends Container>(pixiElement: T) {
+    public canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T) {
         return this.app.stage.children.includes(pixiElement)
     }
     /**
