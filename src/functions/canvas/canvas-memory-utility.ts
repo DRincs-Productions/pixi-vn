@@ -1,6 +1,6 @@
 import { CanvasBase } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
-import { CanvasBaseMemory } from "../../interface";
+import { CanvasItemBaseMemory } from "../../interface";
 
 /**
  * Export a Canvas element to a memory object
@@ -9,7 +9,7 @@ import { CanvasBaseMemory } from "../../interface";
  */
 export function exportCanvasElement<T extends CanvasBase<any>>(
     element: T,
-): CanvasBaseMemory {
+): CanvasItemBaseMemory {
     return element.memory
 }
 
@@ -19,7 +19,7 @@ export function exportCanvasElement<T extends CanvasBase<any>>(
  * @returns Canvas element
  */
 export function importCanvasElement<T extends CanvasBase<any>>(
-    memory: CanvasBaseMemory,
+    memory: CanvasItemBaseMemory,
 ): T {
     let element = getCanvasElementInstanceById<T>(memory.pixivnId)
     if (element) {

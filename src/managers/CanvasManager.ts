@@ -10,7 +10,7 @@ import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { exportCanvasElement, importCanvasElement } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
-import { CanvasBaseMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
+import { CanvasItemBaseMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
 import { TickersStep } from "../interface/TickersSteps";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -117,7 +117,7 @@ export default class CanvasManager {
      * @param newAlias New alias
      * @returns 
      */
-    copyCanvasElementProperty<T extends CanvasBaseMemory>(oldAlias: T | CanvasBase<T> | string, newAlias: CanvasBase<T> | string) {
+    copyCanvasElementProperty<T extends CanvasItemBaseMemory>(oldAlias: T | CanvasBase<T> | string, newAlias: CanvasBase<T> | string) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias)
             if (element) {
@@ -888,7 +888,7 @@ export default class CanvasManager {
      * @returns The object.
      */
     public export(): ExportedCanvas {
-        let currentElements: { [alias: string]: CanvasBaseMemory } = {}
+        let currentElements: { [alias: string]: CanvasItemBaseMemory } = {}
         for (let alias in CanvasManagerStatic._children) {
             currentElements[alias] = exportCanvasElement(CanvasManagerStatic._children[alias])
         }
