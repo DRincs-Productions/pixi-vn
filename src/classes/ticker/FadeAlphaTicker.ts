@@ -1,4 +1,4 @@
-import { Container, Sprite } from "pixi.js";
+import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { canvas } from "../../managers";
@@ -7,7 +7,7 @@ import TickerBase from "./TickerBase";
 
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
- * This ticker can be used on all canvas elements that extend the {@link Container} class.
+ * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
  * @example
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
@@ -51,7 +51,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
             .filter((alias) => {
                 let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
-                    if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
+                    if (element && element instanceof PixiSprite && element.texture?.label == "EMPTY") {
                         return false
                     }
                 }
@@ -59,7 +59,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
             })
             .forEach((alias) => {
                 let element = canvas.find(alias)
-                if (element && element instanceof Container) {
+                if (element && element instanceof PixiContainer) {
                     if (type === "show" && element.alpha < limit) {
                         element.alpha += speed * ticker.deltaTime
                     }

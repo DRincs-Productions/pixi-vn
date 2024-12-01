@@ -1,9 +1,45 @@
-export { default as CanvasVideo } from './canvas/CanvasAVideo';
-export { default as CanvasBase } from './canvas/CanvasBase';
-export { default as CanvasContainer } from './canvas/CanvasContainer';
-export { default as CanvasImage } from './canvas/CanvasImage';
-export { default as CanvasSprite } from './canvas/CanvasSprite';
-export { default as CanvasText } from './canvas/CanvasText';
+export {
+    /**
+     * @deprecated use "import { CanvasBaseItem } from '@drincs/pixi-vn';"
+     */
+    default as CanvasBase,
+    default as CanvasBaseItem
+} from './canvas/CanvasBaseItem';
+export {
+    /**
+     * @deprecated use "import { Container } from '@drincs/pixi-vn';"
+     */
+    default as CanvasContainer,
+    default as Container
+} from './canvas/Container';
+export {
+    /**
+     * @deprecated use "import { Sprite } from '@drincs/pixi-vn';"
+     */
+    default as CanvasSprite,
+    default as Sprite
+} from './canvas/Sprite';
+export {
+    /**
+     * @deprecated use "import { SpriteImage } from '@drincs/pixi-vn';"
+     */
+    default as CanvasImage,
+    default as SpriteImage
+} from './canvas/SpriteImage';
+export {
+    /**
+     * @deprecated use "import { SpriteVideo } from '@drincs/pixi-vn';"
+     */
+    default as CanvasVideo,
+    default as SpriteVideo
+} from './canvas/SpriteVideo';
+export {
+    /**
+     * @deprecated use "import { Text } from '@drincs/pixi-vn';"
+     */
+    default as CanvasText,
+    default as Text
+} from './canvas/Text';
 export { default as CanvasEvent } from './CanvasEvent';
 export { default as CharacterBaseModel } from './CharacterBaseModel';
 export { default as CharacterStoredClass } from './CharacterStoredClass';

@@ -1,16 +1,16 @@
-import { ApplicationOptions, Container } from "pixi.js";
+import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
-import { CanvasSprite, CanvasText } from "../classes";
-import CanvasBase from "../classes/canvas/CanvasBase";
-import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/CanvasContainer";
-import { setMemorySprite } from "../classes/canvas/CanvasSprite";
-import { setMemoryText } from "../classes/canvas/CanvasText";
+import { Sprite, Text } from "../classes";
+import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
+import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/Container";
+import { setMemorySprite } from "../classes/canvas/Sprite";
+import { setMemoryText } from "../classes/canvas/Text";
 import TickerBase from "../classes/ticker/TickerBase";
 import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { exportCanvasElement, importCanvasElement } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
-import { CanvasBaseMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
+import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
 import { TickersStep } from "../interface/TickersSteps";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -117,7 +117,7 @@ export default class CanvasManager {
      * @param newAlias New alias
      * @returns 
      */
-    copyCanvasElementProperty<T extends CanvasBaseMemory>(oldAlias: T | CanvasBase<T> | string, newAlias: CanvasBase<T> | string) {
+    copyCanvasElementProperty<T extends CanvasBaseItemMemory>(oldAlias: T | CanvasBaseItem<T> | string, newAlias: CanvasBaseItem<T> | string) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias)
             if (element) {
@@ -138,7 +138,7 @@ export default class CanvasManager {
                 return
             }
         }
-        if (oldAlias instanceof Container) {
+        if (oldAlias instanceof PixiContainer) {
             oldAlias = oldAlias.memory
         }
         "isRenderGroup" in oldAlias && delete oldAlias.isRenderGroup
@@ -151,13 +151,13 @@ export default class CanvasManager {
         "style" in oldAlias && delete oldAlias.style
         "height" in oldAlias && delete oldAlias.height
         "width" in oldAlias && delete oldAlias.width
-        if (newAlias instanceof CanvasSprite) {
+        if (newAlias instanceof Sprite) {
             setMemorySprite(newAlias, oldAlias)
         }
-        else if (newAlias instanceof CanvasText) {
+        else if (newAlias instanceof Text) {
             setMemoryText(newAlias, oldAlias)
         }
-        else if (newAlias instanceof Container) {
+        else if (newAlias instanceof PixiContainer) {
             setMemoryContainer(newAlias, oldAlias)
         }
     }
@@ -240,11 +240,11 @@ export default class CanvasManager {
      * @example
      * ```typescript
      * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-     * const sprite = CanvasSprite.from(texture);
+     * const sprite = Sprite.from(texture);
      * canvas.add("bunny", sprite);
      * ```
      */
-    public add(alias: string, canvasElement: CanvasBase<any>, options: {
+    public add(alias: string, canvasElement: CanvasBaseItem<any>, options: {
         /**
          * If there is a canvas element with the same alias, the "style" of the old canvas element will be imported to the new canvas element.
          * @default false
@@ -271,7 +271,7 @@ export default class CanvasManager {
     /**
      * @deprecated use canvas.add
      */
-    public addCanvasElement(alias: string, canvasElement: CanvasBase<any>) {
+    public addCanvasElement(alias: string, canvasElement: CanvasBaseItem<any>) {
         this.add(alias, canvasElement)
     }
     /**
@@ -320,10 +320,10 @@ export default class CanvasManager {
      * @returns The canvas element.
      * @example
      * ```typescript
-     * const sprite = canvas.find<CanvasSprite>("bunny");
+     * const sprite = canvas.find<Sprite>("bunny");
      * ```
      */
-    public find<T extends CanvasBase<any>>(alias: string): T | undefined {
+    public find<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
         if (alias === CANVAS_APP_STAGE_ALIAS) {
             return this.app.stage as T
         }
@@ -332,7 +332,7 @@ export default class CanvasManager {
     /**
      * @deprecated use canvas.find
      */
-    public getCanvasElement<T extends CanvasBase<any>>(alias: string): T | undefined {
+    public getCanvasElement<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
         return this.find<T>(alias)
     }
     /**
@@ -340,7 +340,7 @@ export default class CanvasManager {
      * @param pixiElement The DisplayObject to be checked.
      * @returns If the DisplayObject is on the canvas.
      */
-    public canvasElementIsOnCanvas<T extends Container>(pixiElement: T) {
+    public canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T) {
         return this.app.stage.children.includes(pixiElement)
     }
     /**
@@ -888,7 +888,7 @@ export default class CanvasManager {
      * @returns The object.
      */
     public export(): ExportedCanvas {
-        let currentElements: { [alias: string]: CanvasBaseMemory } = {}
+        let currentElements: { [alias: string]: CanvasBaseItemMemory } = {}
         for (let alias in CanvasManagerStatic._children) {
             currentElements[alias] = exportCanvasElement(CanvasManagerStatic._children[alias])
         }

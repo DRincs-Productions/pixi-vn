@@ -1,20 +1,20 @@
-import { CanvasContainer, CanvasImage, CanvasSprite, CanvasText } from "../classes"
-import CanvasVideo, { CANVAS_VIDEO_ID } from "../classes/canvas/CanvasAVideo"
-import CanvasBase from "../classes/canvas/CanvasBase"
-import { CANVAS_CONTAINER_ID } from "../classes/canvas/CanvasContainer"
-import { CANVAS_IMAGE_ID } from "../classes/canvas/CanvasImage"
-import { CANVAS_SPRITE_ID } from "../classes/canvas/CanvasSprite"
-import { CANVAS_TEXT_ID } from "../classes/canvas/CanvasText"
+import { Container, Sprite, SpriteImage, Text } from "../classes"
+import CanvasBaseItem from "../classes/canvas/CanvasBaseItem"
+import { CANVAS_CONTAINER_ID } from "../classes/canvas/Container"
+import { CANVAS_SPRITE_ID } from "../classes/canvas/Sprite"
+import { CANVAS_IMAGE_ID } from "../classes/canvas/SpriteImage"
+import SpriteVideo, { CANVAS_VIDEO_ID } from "../classes/canvas/SpriteVideo"
+import { CANVAS_TEXT_ID } from "../classes/canvas/Text"
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType"
 
-export const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBase<any> } = {}
+export const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBaseItem<any> } = {}
 /**
  * Is a decorator that register a canvas element in the game.
  * @param name Name of the canvas element, by default it will use the class name. If the name is already registered, it will show a warning
  * @returns 
  */
 export default function canvasElementDecorator(name?: CanvasElementAliasType) {
-    return function (target: typeof CanvasBase<any>) {
+    return function (target: typeof CanvasBaseItem<any>) {
         if (!name) {
             name = target.name
         }
@@ -26,7 +26,7 @@ export default function canvasElementDecorator(name?: CanvasElementAliasType) {
     }
 }
 
-export function getCanvasElementTypeById<T extends typeof CanvasBase<any>>(canvasId: CanvasElementAliasType): T | undefined {
+export function getCanvasElementTypeById<T extends typeof CanvasBaseItem<any>>(canvasId: CanvasElementAliasType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasId]
         if (!eventType) {
@@ -42,24 +42,24 @@ export function getCanvasElementTypeById<T extends typeof CanvasBase<any>>(canva
     }
 }
 
-export function getCanvasElementInstanceById<T extends CanvasBase<any>>(canvasId: CanvasElementAliasType): T | undefined {
+export function getCanvasElementInstanceById<T extends CanvasBaseItem<any>>(canvasId: CanvasElementAliasType): T | undefined {
     try {
         let eventType = registeredCanvasElement[canvasId]
         if (!eventType) {
             if (canvasId === CANVAS_CONTAINER_ID) {
-                eventType = CanvasContainer
+                eventType = Container
             }
             else if (canvasId === CANVAS_VIDEO_ID) {
-                eventType = CanvasVideo
+                eventType = SpriteVideo
             }
             else if (canvasId === CANVAS_IMAGE_ID) {
-                eventType = CanvasImage
+                eventType = SpriteImage
             }
             else if (canvasId === CANVAS_SPRITE_ID) {
-                eventType = CanvasSprite
+                eventType = Sprite
             }
             else if (canvasId === CANVAS_TEXT_ID) {
-                eventType = CanvasText
+                eventType = Text
             }
         }
 

@@ -1,7 +1,7 @@
 import { initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions } from "pixi.js";
-import CanvasBase from "../classes/canvas/CanvasBase";
+import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
 import { asciiArtLog } from '../functions/easter-egg';
 import { TickerHistory, TickersSteps, TickerTimeoutHistory } from "../interface";
 import PauseTickerType from '../types/PauseTickerType';
@@ -138,7 +138,7 @@ export default class CanvasManagerStatic {
 
     /* Edit Canvas Elements Methods */
 
-    static _children: { [alias: string]: CanvasBase<any> } = {}
+    static _children: { [alias: string]: CanvasBaseItem<any> } = {}
     /**
      * The order of the elements in the canvas, is determined by the zIndex.
      */

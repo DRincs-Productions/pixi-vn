@@ -1,5 +1,5 @@
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
-import { CanvasContainer, CanvasSprite, CanvasText } from "../classes";
+import { Container, Sprite, Text } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
@@ -13,11 +13,11 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             let number = 25
             narration.dialogue = {
                 character: juliette,
-                text: `Here's what's going to happen: I'm going to create ${number} bunnies (CanvasSprites) and put them in a CanvasContainer.`
+                text: `Here's what's going to happen: I'm going to create ${number} bunnies (CanvasSprites) and put them in a Container.`
             }
 
             // Create and add a container to the stage
-            const container = new CanvasContainer();
+            const container = new Container();
 
             canvas.add("container", container);
 
@@ -26,7 +26,7 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
 
             // Create a 5x5 grid of bunnies in the container
             for (let i = 0; i < number; i++) {
-                const bunny = new CanvasSprite(texture);
+                const bunny = new Sprite(texture);
 
                 bunny.x = (i % 5) * 40;
                 bunny.y = Math.floor(i / 5) * 40;
@@ -47,14 +47,14 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             canvas.remove("container");
             narration.dialogue = {
                 character: juliette,
-                text: `Here's what's going to happen: I'm going to create some CanvasText with different styles and put them on the stage.
+                text: `Here's what's going to happen: I'm going to create some Text with different styles and put them on the stage.
 But it will generate a warn message, because the FillGradient or FillPattern has not yet been supported by the Pixi’VN ( you can see the status of the issue here: [#76](https://github.com/DRincs-Productions/pixi-vn/issues/76)).`
             }
 
             const basicStyle = new TextStyle({
                 fill: '#ffffff',
             });
-            const basicText = new CanvasText({
+            const basicText = new Text({
                 text: 'Basic text in pixi',
                 style: basicStyle
             });
@@ -92,7 +92,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
                 wordWrapWidth: 440,
             });
 
-            const richText = new CanvasText({
+            const richText = new Text({
                 text: 'Rich text with a lot of options and across multiple lines',
                 style,
             });
@@ -117,7 +117,7 @@ But it will generate a warn message, because the FillGradient or FillPattern has
                 fontWeight: 'lighter',
             });
 
-            const skewText = new CanvasText({
+            const skewText = new Text({
                 text: 'SKEW IS COOL',
                 style: skewStyle,
             });

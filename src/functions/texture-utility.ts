@@ -34,7 +34,7 @@ function getFillGradientFillPattern(prop: ColorSource | FillGradient | FillPatte
         return prop
     }
     // TODO: FillGradient and FillPattern are not supported yet
-    console.warn(`[Pixi’VN] CanvasText.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop)
+    console.warn(`[Pixi’VN] Text.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop)
     return undefined
 }
 

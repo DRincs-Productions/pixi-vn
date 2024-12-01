@@ -1,7 +1,7 @@
-import { Container, ContainerOptions } from "pixi.js";
+import { ContainerOptions, Container as PixiContainer } from "pixi.js";
 import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
-import { CanvasContainerMemory } from "../../interface";
-import CanvasBase from "./CanvasBase";
+import { ContainerMemory } from "../../interface";
+import CanvasBaseItem from "./CanvasBaseItem";
 
 export const CANVAS_CONTAINER_ID = "Container"
 
@@ -10,32 +10,32 @@ export const CANVAS_CONTAINER_ID = "Container"
  * but it has the ability to be saved and loaded by the Pixi'VN library.
  * @example
  * ```typescript
- *  const container = new CanvasContainer();
+ *  const container = new Container();
  *  canvas.add(container);
  *  const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
  *  for (let i = 0; i < 25; i++)
  *  {
- *      const bunny = new CanvasSprite(texture);
+ *      const bunny = new Sprite(texture);
  *      bunny.x = (i % 5) * 40;
  *      bunny.y = Math.floor(i / 5) * 40;
  *      container.addChild(bunny);
  *  }
  * ```
  */
-export default class CanvasContainer extends Container implements CanvasBase<CanvasContainerMemory> {
+export default class Container extends PixiContainer implements CanvasBaseItem<ContainerMemory> {
     constructor(options?: ContainerOptions) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID
     }
     pixivnId: string = CANVAS_CONTAINER_ID
-    get memory(): CanvasContainerMemory {
+    get memory(): ContainerMemory {
         let memory = getMemoryContainer(this)
         this.children.forEach(child => {
-            memory.elements.push(exportCanvasElement(child as CanvasBase<any>))
+            memory.elements.push(exportCanvasElement(child as CanvasBaseItem<any>))
         })
         return memory
     }
-    set memory(value: CanvasContainerMemory) {
+    set memory(value: ContainerMemory) {
         setMemoryContainer(this, value)
         value.elements.forEach(child => {
             this.addChild(importCanvasElement(child))
@@ -43,7 +43,7 @@ export default class CanvasContainer extends Container implements CanvasBase<Can
     }
 }
 
-export function getMemoryContainer<T extends Container>(element: T): CanvasContainerMemory {
+export function getMemoryContainer<T extends PixiContainer>(element: T): ContainerMemory {
     let className = CANVAS_CONTAINER_ID
     if (element.hasOwnProperty("pixivnId")) {
         className = (element as any).pixivnId
@@ -79,7 +79,7 @@ export function getMemoryContainer<T extends Container>(element: T): CanvasConta
     }
 }
 
-export function setMemoryContainer<T extends Container>(element: T | Container, memory: ContainerOptions | {}) {
+export function setMemoryContainer<T extends PixiContainer>(element: T | PixiContainer, memory: ContainerOptions | {}) {
     "isRenderGroup" in memory && memory.isRenderGroup && (element.isRenderGroup = memory.isRenderGroup)
     "blendMode" in memory && memory.blendMode && (element.blendMode = memory.blendMode)
     "tint" in memory && memory.tint && (element.tint = memory.tint)

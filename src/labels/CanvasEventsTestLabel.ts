@@ -1,13 +1,13 @@
 import { Assets, Texture } from "pixi.js";
-import { CanvasEvent, CanvasSprite } from "../classes";
+import { CanvasEvent, Sprite } from "../classes";
 import { eventDecorator, newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
 import { CanvasEventNamesType } from "../types";
 import { bunnyImage, bunnyName, juliette } from "./TestConstant";
 
 @eventDecorator("___pixi_vn_canvas_events_test_event1___")
-export class EventTest1 extends CanvasEvent<CanvasSprite> {
-    override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
+export class EventTest1 extends CanvasEvent<Sprite> {
+    override fn(event: CanvasEventNamesType, sprite: Sprite): void {
         if (event === 'pointerdown') {
             sprite.scale.x *= 1.25;
             sprite.scale.y *= 1.25;
@@ -15,8 +15,8 @@ export class EventTest1 extends CanvasEvent<CanvasSprite> {
     }
 }
 @eventDecorator("___pixi_vn_canvas_events_test_event2___")
-export class EventTest2 extends CanvasEvent<CanvasSprite> {
-    override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
+export class EventTest2 extends CanvasEvent<Sprite> {
+    override fn(event: CanvasEventNamesType, sprite: Sprite): void {
         if (event === 'pointerdown') {
             (sprite as any).isdown = true;
             sprite.texture = Texture.from('https://pixijs.com/assets/button_down.png');
@@ -66,7 +66,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             const texture = await Assets.load(bunnyImage);
 
             // Create the bunny sprite
-            const sprite = CanvasSprite.from(texture);
+            const sprite = Sprite.from(texture);
             sprite.scale.set(3);
 
             // Set the initial position
@@ -98,7 +98,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
 
             // Create a background...
             const backgroundT = await Assets.load('https://pixijs.com/assets/bg_button.jpg');
-            const background = new CanvasSprite(backgroundT);
+            const background = new Sprite(backgroundT);
 
             background.width = canvas.screen.width;
             background.height = canvas.screen.height;
@@ -114,7 +114,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
             const buttonPositions = [175, 75, 655, 75, 410, 325, 150, 465, 685, 445];
 
             for (let i = 0; i < 5; i++) {
-                const button = new CanvasSprite(textureButton);
+                const button = new Sprite(textureButton);
 
                 button.anchor.set(0.5);
                 button.x = buttonPositions[i * 2];

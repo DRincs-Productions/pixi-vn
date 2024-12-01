@@ -1,36 +1,46 @@
-import { ContainerChild, ContainerEvents, EventEmitter, Text, TextOptions } from "pixi.js";
+import { ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
-import { getTextStyle } from "../../functions/texture-utility";
-import { CanvasTextMemory } from "../../interface";
+import { getTextureMemory } from "../../functions/canvas/canvas-utility";
+import { getTexture } from "../../functions/texture-utility";
+import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
-import CanvasBase from "./CanvasBase";
-import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
+import CanvasBaseItem from "./CanvasBaseItem";
+import { getMemoryContainer, setMemoryContainer } from "./Container";
 
-export const CANVAS_TEXT_ID = "Text"
+export const CANVAS_SPRITE_ID = "Sprite"
 
 /**
- * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
+ * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
  * but it has the ability to be saved and loaded by the Pixi'VN library.
  * @example
  * ```typescript
- * const text = new CanvasText();
- * text.text = "Hello World"
- * canvas.add("text", text);
+ * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
+ * const sprite = Sprite.from(texture);
+ *
+ * sprite.anchor.set(0.5);
+ * sprite.x = canvas.screen.width / 2;
+ * sprite.y = canvas.screen.height / 2;
+ *
+ * sprite.eventMode = 'static';
+ * sprite.cursor = 'pointer';
+ * sprite.onEvent('pointerdown', EventTest);
+ *
+ * canvas.add("bunny", sprite);
  * ```
  */
-export default class CanvasText extends Text implements CanvasBase<CanvasTextMemory> {
-    constructor(options?: TextOptions) {
+export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory> extends PixiSprite implements CanvasBaseItem<Memory | SpriteMemory> {
+    constructor(options?: SpriteOptions | Texture) {
         super(options)
-        this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_TEXT_ID
+        this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
     }
-    pixivnId: string = CANVAS_TEXT_ID
-    get memory(): CanvasTextMemory {
-        return getMemoryText(this)
+    pixivnId: string = CANVAS_SPRITE_ID
+    get memory(): Memory | SpriteMemory {
+        return getMemorySprite(this)
     }
-    set memory(value: CanvasTextMemory) {
-        setMemoryText(this, value)
+    set memory(value: SpriteMemory) {
+        setMemorySprite(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
     get onEvents() {
@@ -44,25 +54,25 @@ export default class CanvasText extends Text implements CanvasBase<CanvasTextMem
      * @example
      * ```typescript
      * \@eventDecorator()
-     * export class EventTest extends CanvasEvent<CanvasText> {
-     *     override fn(event: CanvasEventNamesType, text: CanvasText): void {
+     * export class EventTest extends CanvasEvent<Sprite> {
+     *     override fn(event: CanvasEventNamesType, sprite: Sprite): void {
      *         if (event === 'pointerdown') {
-     *             text.scale.x *= 1.25;
-     *             text.scale.y *= 1.25;
+     *             sprite.scale.x *= 1.25;
+     *             sprite.scale.y *= 1.25;
      *         }
      *     }
      * }
      * ```
      * 
      * ```typescript
-     * const text = new CanvasText();
-     * text.text = "Hello World"
+     * let sprite = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
+     * await sprite.load()
      *
-     * text.eventMode = 'static';
-     * text.cursor = 'pointer';
-     * text.onEvent('pointerdown', EventTest);
+     * sprite.eventMode = 'static';
+     * sprite.cursor = 'pointer';
+     * sprite.onEvent('pointerdown', EventTest);
      *
-     * canvas.add("text", text);
+     * canvas.add("bunny", sprite);
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
@@ -71,7 +81,7 @@ export default class CanvasText extends Text implements CanvasBase<CanvasTextMem
         this._onEvents[event] = id
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
+                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this)
             })
         }
         return this
@@ -87,24 +97,33 @@ export default class CanvasText extends Text implements CanvasBase<CanvasTextMem
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents<ContainerChild> & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
         return super.on(event, fn, context)
     }
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
+        let sprite = PixiSprite.from(source, skipCache)
+        let mySprite = new Sprite()
+        mySprite.texture = sprite.texture
+        return mySprite
+    }
 }
 
-export function getMemoryText<T extends CanvasText>(element: T | CanvasText): CanvasTextMemory {
+export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>): SpriteMemory {
     let temp = getMemoryContainer(element)
     return {
         ...temp,
         pixivnId: element.pixivnId,
+        textureImage: getTextureMemory((element as any).texture),
         anchor: { x: element.anchor.x, y: element.anchor.y },
-        text: element.text,
-        resolution: element.resolution,
-        style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
     }
 }
 
-export function setMemoryText(element: CanvasText, memory: CanvasTextMemory | {}) {
+export function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}) {
     setMemoryContainer(element, memory)
+    "textureImage" in memory && getTexture(memory.textureImage.image).then((texture) => {
+        if (texture) {
+            element.texture = texture
+        }
+    })
     if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {
             element.anchor.set(memory.anchor, memory.anchor)
@@ -113,16 +132,13 @@ export function setMemoryText(element: CanvasText, memory: CanvasTextMemory | {}
             element.anchor.set(memory.anchor.x, memory.anchor.y)
         }
     }
-    "text" in memory && memory.text && (element.text = memory.text)
-    "resolution" in memory && memory.resolution && (element.resolution = memory.resolution)
-    "style" in memory && memory.style && (element.style = memory.style)
     "roundPixels" in memory && memory.roundPixels && (element.roundPixels = memory.roundPixels)
     if ("onEvents" in memory) {
         for (let event in memory.onEvents) {
             let id = memory.onEvents[event]
             let instance = getEventTypeById(id)
             if (instance) {
-                element.onEvent(event as CanvasEventNamesType, instance)
+                element.onEvent(event, instance)
             }
         }
     }

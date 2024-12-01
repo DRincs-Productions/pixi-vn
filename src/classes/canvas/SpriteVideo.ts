@@ -1,18 +1,18 @@
-import { Sprite, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
-import { CanvasVideoMemory } from "../../interface";
-import CanvasImage from "./CanvasImage";
+import { SpriteVideoMemory } from "../../interface";
+import SpriteImage from "./SpriteImage";
 
 export const CANVAS_VIDEO_ID = "Video"
 
 /**
- * This class is a extension of the {@link CanvasImage} class, it has the same properties and methods,
+ * This class is a extension of the {@link SpriteImage} class, it has the same properties and methods,
  * but it has some features that make video management easier.
- * You need to use {@link CanvasVideo.load()} to show the video in the canvas.
+ * You need to use {@link SpriteVideo.load()} to show the video in the canvas.
  * This class is used for functions like {@link addVideo}, {@link loadVideo} and {@link showWithDissolveTransition}.
  * @example
  * ```typescript
- * let film = new CanvasVideo({
+ * let film = new SpriteVideo({
  *     x: 100,
  *     y: 100,
  * }, 'https://pixijs.com/assets/video.mp4')
@@ -26,9 +26,9 @@ export const CANVAS_VIDEO_ID = "Video"
  * await film.load()
  * ```
  */
-export default class CanvasVideo extends CanvasImage<CanvasVideoMemory> {
+export default class SpriteVideo extends SpriteImage<SpriteVideoMemory> {
     pixivnId: string = CANVAS_VIDEO_ID
-    override get memory(): CanvasVideoMemory {
+    override get memory(): SpriteVideoMemory {
         return {
             ...super.memory,
             pixivnId: this.pixivnId,
@@ -37,7 +37,7 @@ export default class CanvasVideo extends CanvasImage<CanvasVideoMemory> {
             currentTime: this.currentTime,
         }
     }
-    override set memory(memory: CanvasVideoMemory) {
+    override set memory(memory: SpriteVideoMemory) {
         super.memory = memory
         this.loop = memory.loop
         this.currentTime = memory.currentTime
@@ -51,8 +51,8 @@ export default class CanvasVideo extends CanvasImage<CanvasVideoMemory> {
         return this.imageLink
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = Sprite.from(source, skipCache)
-        let mySprite = new CanvasVideo()
+        let sprite = PixiSprite.from(source, skipCache)
+        let mySprite = new SpriteVideo()
         mySprite.texture = sprite.texture
         return mySprite
     }

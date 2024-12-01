@@ -1,4 +1,34 @@
-export type { CanvasBaseMemory, CanvasContainerMemory, CanvasImageMemory, CanvasSpriteBaseMemory, CanvasSpriteMemory, CanvasTextMemory, CanvasVideoMemory } from './canvas/canvas-memory';
+export type {
+    CanvasBaseItemMemory,
+    /**
+     *  @deprecated use "import { CanvasBaseItemMemory } from '@drincs/pixi-vn';"
+     */
+    CanvasBaseItemMemory as CanvasBaseMemory,
+    /**
+     *  @deprecated use "import { ContainerMemory } from '@drincs/pixi-vn';"
+     */
+    ContainerMemory as CanvasContainerMemory,
+    /**
+     *  @deprecated use "import { SpriteImageMemory } from '@drincs/pixi-vn';"
+     */
+    SpriteImageMemory as CanvasImageMemory,
+    /**
+     *  @deprecated use "import { SpriteBaseMemory } from '@drincs/pixi-vn';"
+     */
+    SpriteBaseMemory as CanvasSpriteBaseMemory,
+    /**
+     *  @deprecated use "import { SpriteMemory } from '@drincs/pixi-vn';"
+     */
+    SpriteMemory as CanvasSpriteMemory,
+    /**
+     *  @deprecated use "import { TextMemory } from '@drincs/pixi-vn';"
+     */
+    TextMemory as CanvasTextMemory,
+    /**
+     *  @deprecated use "import { SpriteVideoMemory } from '@drincs/pixi-vn';"
+     */
+    SpriteVideoMemory as CanvasVideoMemory, ContainerMemory, SpriteBaseMemory, SpriteImageMemory, SpriteMemory, SpriteVideoMemory, TextMemory
+} from './canvas/canvas-memory';
 export type { ShakeEffectProps } from './canvas/effect-props';
 export type { default as TextureMemory } from './canvas/TextureMemory';
 export type { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from './canvas/transition-props';
