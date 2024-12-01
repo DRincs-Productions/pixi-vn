@@ -10,8 +10,8 @@ import { EventIdType } from "../types/EventIdType";
  * @example
  * ```typescript
  * \@eventDecorator() // this is equivalent to eventDecorator("EventTest")
- * export class EventTest extends CanvasEvent<CanvasSprite> {
- *     override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
+ * export class EventTest extends CanvasEvent<Sprite> {
+ *     override fn(event: CanvasEventNamesType, sprite: Sprite): void {
  *         if (event === 'pointerdown') {
  *             sprite.scale.x *= 1.25;
  *             sprite.scale.y *= 1.25;

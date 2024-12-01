@@ -1,6 +1,6 @@
 import { Rectangle } from "pixi.js";
 import { Assets, Texture, TextureSourceLike, TickerValue } from "..";
-import { CanvasSprite } from "../classes";
+import { Sprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
 import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
 import { SpriteBaseMemory, SpriteMemory } from "../interface";
@@ -14,7 +14,7 @@ interface IAlienTintingMemory extends SpriteBaseMemory {
 }
 
 @canvasElementDecorator("___pixi_vn_custom_canvas_element___")
-class AlienTintingTest extends CanvasSprite<IAlienTintingMemory> {
+class AlienTintingTest extends Sprite<IAlienTintingMemory> {
     override get memory() {
         return {
             ...super.memory,
@@ -33,7 +33,7 @@ class AlienTintingTest extends CanvasSprite<IAlienTintingMemory> {
     turningSpeed: number = 0
     speed: number = 0
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = CanvasSprite.from(source, skipCache)
+        let sprite = Sprite.from(source, skipCache)
         let mySprite = new AlienTintingTest()
         mySprite.texture = sprite.texture
         return mySprite

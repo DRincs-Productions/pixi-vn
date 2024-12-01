@@ -2,12 +2,12 @@ import { Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from 
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
 import { SpriteImageMemory } from "../../interface";
-import CanvasSprite, { getMemorySprite, setMemorySprite } from "./CanvasSprite";
+import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
 
 export const CANVAS_IMAGE_ID = "Image"
 
 /**
- * This class is a extension of the {@link CanvasSprite} class, it has the same properties and methods,
+ * This class is a extension of the {@link Sprite} class, it has the same properties and methods,
  * but it has some features that make texture management easier.
  * You need to use {@link CanvasImage.load()} to show the image in the canvas.
  * This class is used for functions like {@link addImage}, {@link loadImage} and {@link showWithDissolveTransition}.
@@ -30,7 +30,7 @@ export const CANVAS_IMAGE_ID = "Image"
  * await alien.load()
  * ```
  */
-export default class CanvasImage<Memory extends SpriteImageMemory = SpriteImageMemory> extends CanvasSprite<Memory> {
+export default class CanvasImage<Memory extends SpriteImageMemory = SpriteImageMemory> extends Sprite<Memory> {
     pixivnId: string = CANVAS_IMAGE_ID
     constructor(options?: SpriteOptions | Texture | undefined, imageLink?: string) {
         super(options)

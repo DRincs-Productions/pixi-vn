@@ -15,12 +15,12 @@ export const CANVAS_TEXT_ID = "Text"
  * but it has the ability to be saved and loaded by the Pixi'VN library.
  * @example
  * ```typescript
- * const text = new CanvasText();
+ * const text = new Text();
  * text.text = "Hello World"
  * canvas.add("text", text);
  * ```
  */
-export default class CanvasText extends PixiText implements CanvasBaseItem<TextMemory> {
+export default class Text extends PixiText implements CanvasBaseItem<TextMemory> {
     constructor(options?: TextOptions) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_TEXT_ID
@@ -44,8 +44,8 @@ export default class CanvasText extends PixiText implements CanvasBaseItem<TextM
      * @example
      * ```typescript
      * \@eventDecorator()
-     * export class EventTest extends CanvasEvent<CanvasText> {
-     *     override fn(event: CanvasEventNamesType, text: CanvasText): void {
+     * export class EventTest extends CanvasEvent<Text> {
+     *     override fn(event: CanvasEventNamesType, text: Text): void {
      *         if (event === 'pointerdown') {
      *             text.scale.x *= 1.25;
      *             text.scale.y *= 1.25;
@@ -55,7 +55,7 @@ export default class CanvasText extends PixiText implements CanvasBaseItem<TextM
      * ```
      * 
      * ```typescript
-     * const text = new CanvasText();
+     * const text = new Text();
      * text.text = "Hello World"
      *
      * text.eventMode = 'static';
@@ -89,7 +89,7 @@ export default class CanvasText extends PixiText implements CanvasBaseItem<TextM
     }
 }
 
-export function getMemoryText<T extends CanvasText>(element: T | CanvasText): TextMemory {
+export function getMemoryText<T extends Text>(element: T | Text): TextMemory {
     let temp = getMemoryContainer(element)
     return {
         ...temp,
@@ -103,7 +103,7 @@ export function getMemoryText<T extends CanvasText>(element: T | CanvasText): Te
     }
 }
 
-export function setMemoryText(element: CanvasText, memory: TextMemory | {}) {
+export function setMemoryText(element: Text, memory: TextMemory | {}) {
     setMemoryContainer(element, memory)
     if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {

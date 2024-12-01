@@ -1,5 +1,5 @@
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
-import { CanvasSprite, Container, Text } from "../classes";
+import { Container, Sprite, Text } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
@@ -26,7 +26,7 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
 
             // Create a 5x5 grid of bunnies in the container
             for (let i = 0; i < number; i++) {
-                const bunny = new CanvasSprite(texture);
+                const bunny = new Sprite(texture);
 
                 bunny.x = (i % 5) * 40;
                 bunny.y = Math.floor(i / 5) * 40;

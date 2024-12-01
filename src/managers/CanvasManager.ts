@@ -1,9 +1,9 @@
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
-import { CanvasSprite, Text } from "../classes";
+import { Sprite, Text } from "../classes";
 import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
-import { setMemorySprite } from "../classes/canvas/CanvasSprite";
 import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/Container";
+import { setMemorySprite } from "../classes/canvas/Sprite";
 import { setMemoryText } from "../classes/canvas/Text";
 import TickerBase from "../classes/ticker/TickerBase";
 import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
@@ -151,7 +151,7 @@ export default class CanvasManager {
         "style" in oldAlias && delete oldAlias.style
         "height" in oldAlias && delete oldAlias.height
         "width" in oldAlias && delete oldAlias.width
-        if (newAlias instanceof CanvasSprite) {
+        if (newAlias instanceof Sprite) {
             setMemorySprite(newAlias, oldAlias)
         }
         else if (newAlias instanceof Text) {
@@ -240,7 +240,7 @@ export default class CanvasManager {
      * @example
      * ```typescript
      * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-     * const sprite = CanvasSprite.from(texture);
+     * const sprite = Sprite.from(texture);
      * canvas.add("bunny", sprite);
      * ```
      */
@@ -320,7 +320,7 @@ export default class CanvasManager {
      * @returns The canvas element.
      * @example
      * ```typescript
-     * const sprite = canvas.find<CanvasSprite>("bunny");
+     * const sprite = canvas.find<Sprite>("bunny");
      * ```
      */
     public find<T extends CanvasBaseItem<any>>(alias: string): T | undefined {

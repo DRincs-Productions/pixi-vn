@@ -17,7 +17,7 @@ export const CANVAS_SPRITE_ID = "Sprite"
  * @example
  * ```typescript
  * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
- * const sprite = CanvasSprite.from(texture);
+ * const sprite = Sprite.from(texture);
  *
  * sprite.anchor.set(0.5);
  * sprite.x = canvas.screen.width / 2;
@@ -30,7 +30,7 @@ export const CANVAS_SPRITE_ID = "Sprite"
  * canvas.add("bunny", sprite);
  * ```
  */
-export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory> extends PixiSprite implements CanvasBaseItem<Memory | SpriteMemory> {
+export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory> extends PixiSprite implements CanvasBaseItem<Memory | SpriteMemory> {
     constructor(options?: SpriteOptions | Texture) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
@@ -54,8 +54,8 @@ export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseItemM
      * @example
      * ```typescript
      * \@eventDecorator()
-     * export class EventTest extends CanvasEvent<CanvasSprite> {
-     *     override fn(event: CanvasEventNamesType, sprite: CanvasSprite): void {
+     * export class EventTest extends CanvasEvent<Sprite> {
+     *     override fn(event: CanvasEventNamesType, sprite: Sprite): void {
      *         if (event === 'pointerdown') {
      *             sprite.scale.x *= 1.25;
      *             sprite.scale.y *= 1.25;
@@ -97,15 +97,15 @@ export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseItemM
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents<ContainerChild> & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
         return super.on(event, fn, context)
     }
-    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite<any> {
+    static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
         let sprite = PixiSprite.from(source, skipCache)
-        let mySprite = new CanvasSprite()
+        let mySprite = new Sprite()
         mySprite.texture = sprite.texture
         return mySprite
     }
 }
 
-export function getMemorySprite<T extends CanvasSprite<any>>(element: T | CanvasSprite<any>): SpriteMemory {
+export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>): SpriteMemory {
     let temp = getMemoryContainer(element)
     return {
         ...temp,
@@ -117,7 +117,7 @@ export function getMemorySprite<T extends CanvasSprite<any>>(element: T | Canvas
     }
 }
 
-export function setMemorySprite<Memory extends SpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory | {}) {
+export function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}) {
     setMemoryContainer(element, memory)
     "textureImage" in memory && getTexture(memory.textureImage.image).then((texture) => {
         if (texture) {
