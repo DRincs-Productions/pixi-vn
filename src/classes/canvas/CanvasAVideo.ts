@@ -1,6 +1,6 @@
 import { Sprite, Texture, TextureSourceLike } from "pixi.js";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
-import { CanvasVideoMemory } from "../../interface";
+import { SpriteVideoMemory } from "../../interface";
 import CanvasImage from "./CanvasImage";
 
 export const CANVAS_VIDEO_ID = "Video"
@@ -26,9 +26,9 @@ export const CANVAS_VIDEO_ID = "Video"
  * await film.load()
  * ```
  */
-export default class CanvasVideo extends CanvasImage<CanvasVideoMemory> {
+export default class CanvasVideo extends CanvasImage<SpriteVideoMemory> {
     pixivnId: string = CANVAS_VIDEO_ID
-    override get memory(): CanvasVideoMemory {
+    override get memory(): SpriteVideoMemory {
         return {
             ...super.memory,
             pixivnId: this.pixivnId,
@@ -37,7 +37,7 @@ export default class CanvasVideo extends CanvasImage<CanvasVideoMemory> {
             currentTime: this.currentTime,
         }
     }
-    override set memory(memory: CanvasVideoMemory) {
+    override set memory(memory: SpriteVideoMemory) {
         super.memory = memory
         this.loop = memory.loop
         this.currentTime = memory.currentTime

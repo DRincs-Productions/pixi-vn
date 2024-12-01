@@ -1,8 +1,8 @@
-import { ContainerChild, ContainerEvents, EventEmitter, Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTextureMemory } from "../../functions/canvas/canvas-utility";
 import { getTexture } from "../../functions/texture-utility";
-import { CanvasBaseMemory, CanvasSpriteBaseMemory, CanvasSpriteMemory } from "../../interface";
+import { CanvasItemBaseMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
@@ -30,16 +30,16 @@ export const CANVAS_SPRITE_ID = "Sprite"
  * canvas.add("bunny", sprite);
  * ```
  */
-export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseMemory = CanvasSpriteMemory> extends Sprite implements CanvasBase<Memory | CanvasSpriteMemory> {
+export default class CanvasSprite<Memory extends SpriteOptions & CanvasItemBaseMemory = SpriteMemory> extends PixiSprite implements CanvasBase<Memory | SpriteMemory> {
     constructor(options?: SpriteOptions | Texture) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
     }
     pixivnId: string = CANVAS_SPRITE_ID
-    get memory(): Memory | CanvasSpriteMemory {
+    get memory(): Memory | SpriteMemory {
         return getMemorySprite(this)
     }
-    set memory(value: CanvasSpriteMemory) {
+    set memory(value: SpriteMemory) {
         setMemorySprite(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
@@ -98,14 +98,14 @@ export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseMemor
         return super.on(event, fn, context)
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): CanvasSprite<any> {
-        let sprite = Sprite.from(source, skipCache)
+        let sprite = PixiSprite.from(source, skipCache)
         let mySprite = new CanvasSprite()
         mySprite.texture = sprite.texture
         return mySprite
     }
 }
 
-export function getMemorySprite<T extends CanvasSprite<any>>(element: T | CanvasSprite<any>): CanvasSpriteMemory {
+export function getMemorySprite<T extends CanvasSprite<any>>(element: T | CanvasSprite<any>): SpriteMemory {
     let temp = getMemoryContainer(element)
     return {
         ...temp,
@@ -117,7 +117,7 @@ export function getMemorySprite<T extends CanvasSprite<any>>(element: T | Canvas
     }
 }
 
-export function setMemorySprite<Memory extends CanvasSpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory | {}) {
+export function setMemorySprite<Memory extends SpriteBaseMemory>(element: CanvasSprite<any>, memory: Memory | {}) {
     setMemoryContainer(element, memory)
     "textureImage" in memory && getTexture(memory.textureImage.image).then((texture) => {
         if (texture) {

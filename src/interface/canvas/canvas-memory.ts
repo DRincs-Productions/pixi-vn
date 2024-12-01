@@ -6,18 +6,18 @@ import TextureMemory from "./TextureMemory";
 /**
  * Interface for the canvas base memory
  */
-export interface CanvasBaseMemory {
+export interface CanvasItemBaseMemory {
     pixivnId: string,
 }
 
 /**
  * Interface for the canvas container memory
  */
-export interface CanvasContainerMemory extends ContainerOptions, CanvasBaseMemory {
-    elements: CanvasBaseMemory[],
+export interface ContainerMemory extends ContainerOptions, CanvasItemBaseMemory {
+    elements: CanvasItemBaseMemory[],
 }
 
-export interface CanvasSpriteBaseMemory extends SpriteOptions, CanvasBaseMemory {
+export interface SpriteBaseMemory extends SpriteOptions, CanvasItemBaseMemory {
     textureImage: TextureMemory,
     onEvents: { [name: CanvasEventNamesType]: EventIdType }
 }
@@ -25,26 +25,26 @@ export interface CanvasSpriteBaseMemory extends SpriteOptions, CanvasBaseMemory 
 /**
  * Interface for the canvas sprite memory
  */
-export interface CanvasSpriteMemory extends CanvasSpriteBaseMemory { }
+export interface SpriteMemory extends SpriteBaseMemory { }
 
 /**
  * Interface for the canvas text memory
  */
-export interface CanvasTextMemory extends TextOptions, CanvasBaseMemory {
+export interface TextMemory extends TextOptions, CanvasItemBaseMemory {
     onEvents: { [name: CanvasEventNamesType]: EventIdType }
 }
 
 /**
  * The memory of the image. It uses for save the state of the image.
  */
-export interface CanvasImageMemory extends CanvasSpriteBaseMemory {
+export interface SpriteImageMemory extends SpriteBaseMemory {
     imageLink: string,
 }
 
 /**
  * The memory of the video. It uses for save the state of the video.
  */
-export interface CanvasVideoMemory extends CanvasImageMemory {
+export interface SpriteVideoMemory extends SpriteImageMemory {
     loop: boolean,
     paused: boolean,
     currentTime: number,
