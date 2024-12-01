@@ -1,7 +1,7 @@
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
 import { CanvasSprite, CanvasText } from "../classes";
-import CanvasBase from "../classes/canvas/CanvasBase";
+import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
 import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/CanvasContainer";
 import { setMemorySprite } from "../classes/canvas/CanvasSprite";
 import { setMemoryText } from "../classes/canvas/CanvasText";
@@ -117,7 +117,7 @@ export default class CanvasManager {
      * @param newAlias New alias
      * @returns 
      */
-    copyCanvasElementProperty<T extends CanvasBaseItemMemory>(oldAlias: T | CanvasBase<T> | string, newAlias: CanvasBase<T> | string) {
+    copyCanvasElementProperty<T extends CanvasBaseItemMemory>(oldAlias: T | CanvasBaseItem<T> | string, newAlias: CanvasBaseItem<T> | string) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias)
             if (element) {
@@ -244,7 +244,7 @@ export default class CanvasManager {
      * canvas.add("bunny", sprite);
      * ```
      */
-    public add(alias: string, canvasElement: CanvasBase<any>, options: {
+    public add(alias: string, canvasElement: CanvasBaseItem<any>, options: {
         /**
          * If there is a canvas element with the same alias, the "style" of the old canvas element will be imported to the new canvas element.
          * @default false
@@ -271,7 +271,7 @@ export default class CanvasManager {
     /**
      * @deprecated use canvas.add
      */
-    public addCanvasElement(alias: string, canvasElement: CanvasBase<any>) {
+    public addCanvasElement(alias: string, canvasElement: CanvasBaseItem<any>) {
         this.add(alias, canvasElement)
     }
     /**
@@ -323,7 +323,7 @@ export default class CanvasManager {
      * const sprite = canvas.find<CanvasSprite>("bunny");
      * ```
      */
-    public find<T extends CanvasBase<any>>(alias: string): T | undefined {
+    public find<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
         if (alias === CANVAS_APP_STAGE_ALIAS) {
             return this.app.stage as T
         }
@@ -332,7 +332,7 @@ export default class CanvasManager {
     /**
      * @deprecated use canvas.find
      */
-    public getCanvasElement<T extends CanvasBase<any>>(alias: string): T | undefined {
+    public getCanvasElement<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
         return this.find<T>(alias)
     }
     /**

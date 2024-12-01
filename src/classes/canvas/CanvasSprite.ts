@@ -6,7 +6,7 @@ import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../inte
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
-import CanvasBase from "./CanvasBase";
+import CanvasBaseItem from "./CanvasBaseItem";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 export const CANVAS_SPRITE_ID = "Sprite"
@@ -30,7 +30,7 @@ export const CANVAS_SPRITE_ID = "Sprite"
  * canvas.add("bunny", sprite);
  * ```
  */
-export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory> extends PixiSprite implements CanvasBase<Memory | SpriteMemory> {
+export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory> extends PixiSprite implements CanvasBaseItem<Memory | SpriteMemory> {
     constructor(options?: SpriteOptions | Texture) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
@@ -81,7 +81,7 @@ export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseItemM
         this._onEvents[event] = id
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
+                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this)
             })
         }
         return this

@@ -1,5 +1,11 @@
 export { default as CanvasVideo } from './canvas/CanvasAVideo';
-export { default as CanvasBase } from './canvas/CanvasBase';
+export {
+    /**
+     * @deprecated use "import { CanvasBaseItem } from '@drincs/pixi-vn';"
+     */
+    default as CanvasBase,
+    default as CanvasBaseItem
+} from './canvas/CanvasBaseItem';
 export { default as CanvasContainer } from './canvas/CanvasContainer';
 export { default as CanvasImage } from './canvas/CanvasImage';
 export { default as CanvasSprite } from './canvas/CanvasSprite';

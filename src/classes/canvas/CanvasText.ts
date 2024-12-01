@@ -5,7 +5,7 @@ import { TextMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
-import CanvasBase from "./CanvasBase";
+import CanvasBaseItem from "./CanvasBaseItem";
 import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
 
 export const CANVAS_TEXT_ID = "Text"
@@ -20,7 +20,7 @@ export const CANVAS_TEXT_ID = "Text"
  * canvas.add("text", text);
  * ```
  */
-export default class CanvasText extends PixiText implements CanvasBase<TextMemory> {
+export default class CanvasText extends PixiText implements CanvasBaseItem<TextMemory> {
     constructor(options?: TextOptions) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_TEXT_ID
@@ -71,7 +71,7 @@ export default class CanvasText extends PixiText implements CanvasBase<TextMemor
         this._onEvents[event] = id
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<CanvasBase<any>>).fn(event, this)
+                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this)
             })
         }
         return this
