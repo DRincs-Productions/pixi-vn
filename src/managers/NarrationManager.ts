@@ -745,12 +745,12 @@ export default class NarrationManager {
             dialogue = props
         }
 
-        if (getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)) {
+        if (this.dialogGlue) {
             let glueDialogue = storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue
             if (glueDialogue) {
                 dialogue.text = `${glueDialogue.text}${dialogue.text}`
             }
-            setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, false)
+            this.dialogGlue = false
         }
 
         storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType)
@@ -847,6 +847,15 @@ export default class NarrationManager {
         })
         storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value)
         storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex)
+    }
+    /**
+     * If true, the next dialogue text will be added to the current dialogue text.
+     */
+    public get dialogGlue(): boolean {
+        return getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY)
+    }
+    public set dialogGlue(value: boolean) {
+        setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, value)
     }
     /**
      * The input value to be inserted by the player.
