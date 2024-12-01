@@ -10,7 +10,7 @@ export const CANVAS_CONTAINER_ID = "Container"
  * but it has the ability to be saved and loaded by the Pixi'VN library.
  * @example
  * ```typescript
- *  const container = new CanvasContainer();
+ *  const container = new Container();
  *  canvas.add(container);
  *  const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
  *  for (let i = 0; i < 25; i++)
@@ -22,7 +22,7 @@ export const CANVAS_CONTAINER_ID = "Container"
  *  }
  * ```
  */
-export default class CanvasContainer extends PixiContainer implements CanvasBaseItem<ContainerMemory> {
+export default class Container extends PixiContainer implements CanvasBaseItem<ContainerMemory> {
     constructor(options?: ContainerOptions) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID
