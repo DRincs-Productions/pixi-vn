@@ -1,4 +1,3 @@
-export { default as CanvasVideo } from './canvas/CanvasAVideo';
 export {
     /**
      * @deprecated use "import { CanvasBaseItem } from '@drincs/pixi-vn';"
@@ -27,6 +26,13 @@ export {
     default as CanvasImage,
     default as SpriteImage
 } from './canvas/SpriteImage';
+export {
+    /**
+     * @deprecated use "import { SpriteVideo } from '@drincs/pixi-vn';"
+     */
+    default as CanvasVideo,
+    default as SpriteVideo
+} from './canvas/SpriteVideo';
 export {
     /**
      * @deprecated use "import { Text } from '@drincs/pixi-vn';"
