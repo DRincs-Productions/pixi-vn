@@ -1,4 +1,4 @@
-import { Sprite, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
 import { SpriteVideoMemory } from "../../interface";
 import CanvasImage from "./CanvasImage";
@@ -51,7 +51,7 @@ export default class CanvasVideo extends CanvasImage<SpriteVideoMemory> {
         return this.imageLink
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = Sprite.from(source, skipCache)
+        let sprite = PixiSprite.from(source, skipCache)
         let mySprite = new CanvasVideo()
         mySprite.texture = sprite.texture
         return mySprite

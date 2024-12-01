@@ -1,4 +1,4 @@
-import { Container, Sprite } from "pixi.js";
+import { Container, Sprite as PixiSprite } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { canvas } from "../../managers";
@@ -51,7 +51,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
             .filter((alias) => {
                 let element = canvas.find(alias)
                 if (args.startOnlyIfHaveTexture) {
-                    if (element && element instanceof Sprite && element.texture?.label == "EMPTY") {
+                    if (element && element instanceof PixiSprite && element.texture?.label == "EMPTY") {
                         return false
                     }
                 }

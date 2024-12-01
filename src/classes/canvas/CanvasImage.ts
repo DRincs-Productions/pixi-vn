@@ -1,4 +1,4 @@
-import { Sprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
 import { SpriteImageMemory } from "../../interface";
@@ -51,7 +51,7 @@ export default class CanvasImage<Memory extends SpriteImageMemory = SpriteImageM
     }
     imageLink: string = ""
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = Sprite.from(source, skipCache)
+        let sprite = PixiSprite.from(source, skipCache)
         let mySprite = new CanvasImage()
         mySprite.texture = sprite.texture
         return mySprite
