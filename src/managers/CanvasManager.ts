@@ -1,10 +1,10 @@
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
-import { CanvasSprite, CanvasText } from "../classes";
+import { CanvasSprite, Text } from "../classes";
 import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
 import { setMemorySprite } from "../classes/canvas/CanvasSprite";
-import { setMemoryText } from "../classes/canvas/CanvasText";
 import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/Container";
+import { setMemoryText } from "../classes/canvas/Text";
 import TickerBase from "../classes/ticker/TickerBase";
 import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
@@ -154,7 +154,7 @@ export default class CanvasManager {
         if (newAlias instanceof CanvasSprite) {
             setMemorySprite(newAlias, oldAlias)
         }
-        else if (newAlias instanceof CanvasText) {
+        else if (newAlias instanceof Text) {
             setMemoryText(newAlias, oldAlias)
         }
         else if (newAlias instanceof PixiContainer) {

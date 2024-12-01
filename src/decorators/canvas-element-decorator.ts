@@ -1,10 +1,10 @@
-import { CanvasImage, CanvasSprite, CanvasText, Container } from "../classes"
+import { CanvasImage, CanvasSprite, Container, Text } from "../classes"
 import CanvasVideo, { CANVAS_VIDEO_ID } from "../classes/canvas/CanvasAVideo"
 import CanvasBaseItem from "../classes/canvas/CanvasBaseItem"
 import { CANVAS_IMAGE_ID } from "../classes/canvas/CanvasImage"
 import { CANVAS_SPRITE_ID } from "../classes/canvas/CanvasSprite"
-import { CANVAS_TEXT_ID } from "../classes/canvas/CanvasText"
 import { CANVAS_CONTAINER_ID } from "../classes/canvas/Container"
+import { CANVAS_TEXT_ID } from "../classes/canvas/Text"
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType"
 
 export const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBaseItem<any> } = {}
@@ -59,7 +59,7 @@ export function getCanvasElementInstanceById<T extends CanvasBaseItem<any>>(canv
                 eventType = CanvasSprite
             }
             else if (canvasId === CANVAS_TEXT_ID) {
-                eventType = CanvasText
+                eventType = Text
             }
         }
 
