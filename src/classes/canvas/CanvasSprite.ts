@@ -7,7 +7,7 @@ import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
-import { getMemoryContainer, setMemoryContainer } from "./CanvasContainer";
+import { getMemoryContainer, setMemoryContainer } from "./Container";
 
 export const CANVAS_SPRITE_ID = "Sprite"
 

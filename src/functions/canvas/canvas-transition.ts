@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBaseItem, CanvasContainer, CanvasImage, CanvasVideo } from "../../classes"
+import { CanvasBaseItem, CanvasImage, CanvasVideo, Container } from "../../classes"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
@@ -343,7 +343,7 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     if (canvas.find(alias)) {
         canvas.copyCanvasElementProperty(alias, canvasElement)
     }
-    let container = new CanvasContainer()
+    let container = new Container()
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
@@ -418,7 +418,7 @@ export function zoomOut(
         return
     }
 
-    let container = new CanvasContainer()
+    let container = new Container()
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
@@ -507,7 +507,7 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
         pushOut(oldCanvasAlias, props, priority)
     }
 
-    let container = new CanvasContainer()
+    let container = new Container()
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
     container.addChild(canvasElement)
@@ -572,7 +572,7 @@ export function pushOut(
         return
     }
 
-    let container = new CanvasContainer()
+    let container = new Container()
     container.pivot.x = 0
     container.pivot.y = 0
     container.x = 0

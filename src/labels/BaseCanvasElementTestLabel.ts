@@ -1,5 +1,5 @@
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
-import { CanvasContainer, CanvasSprite, CanvasText } from "../classes";
+import { CanvasSprite, CanvasText, Container } from "../classes";
 import { RotateTicker } from "../classes/ticker";
 import { newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
@@ -13,11 +13,11 @@ export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
             let number = 25
             narration.dialogue = {
                 character: juliette,
-                text: `Here's what's going to happen: I'm going to create ${number} bunnies (CanvasSprites) and put them in a CanvasContainer.`
+                text: `Here's what's going to happen: I'm going to create ${number} bunnies (CanvasSprites) and put them in a Container.`
             }
 
             // Create and add a container to the stage
-            const container = new CanvasContainer();
+            const container = new Container();
 
             canvas.add("container", container);
 

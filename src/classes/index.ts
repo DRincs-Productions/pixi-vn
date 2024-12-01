@@ -6,10 +6,16 @@ export {
     default as CanvasBase,
     default as CanvasBaseItem
 } from './canvas/CanvasBaseItem';
-export { default as CanvasContainer } from './canvas/CanvasContainer';
 export { default as CanvasImage } from './canvas/CanvasImage';
 export { default as CanvasSprite } from './canvas/CanvasSprite';
 export { default as CanvasText } from './canvas/CanvasText';
+export {
+    /**
+     * @deprecated use "import { Container } from '@drincs/pixi-vn';"
+     */
+    default as CanvasContainer,
+    default as Container
+} from './canvas/Container';
 export { default as CanvasEvent } from './CanvasEvent';
 export { default as CharacterBaseModel } from './CharacterBaseModel';
 export { default as CharacterStoredClass } from './CharacterStoredClass';
