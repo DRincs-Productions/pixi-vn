@@ -37,14 +37,14 @@ export interface TextMemory extends TextOptions, CanvasBaseItemMemory {
 /**
  * The memory of the image. It uses for save the state of the image.
  */
-export interface SpriteImageMemory extends SpriteBaseMemory {
+export interface ImageSpriteMemory extends SpriteBaseMemory {
     imageLink: string,
 }
 
 /**
  * The memory of the video. It uses for save the state of the video.
  */
-export interface SpriteVideoMemory extends SpriteImageMemory {
+export interface VideoSpriteMemory extends ImageSpriteMemory {
     loop: boolean,
     paused: boolean,
     currentTime: number,

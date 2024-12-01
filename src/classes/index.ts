@@ -14,6 +14,13 @@ export {
 } from './canvas/Container';
 export {
     /**
+     * @deprecated use "import { ImageSprite } from '@drincs/pixi-vn';"
+     */
+    default as CanvasImage,
+    default as ImageSprite
+} from './canvas/ImageSprite';
+export {
+    /**
      * @deprecated use "import { Sprite } from '@drincs/pixi-vn';"
      */
     default as CanvasSprite,
@@ -21,25 +28,18 @@ export {
 } from './canvas/Sprite';
 export {
     /**
-     * @deprecated use "import { SpriteImage } from '@drincs/pixi-vn';"
-     */
-    default as CanvasImage,
-    default as SpriteImage
-} from './canvas/SpriteImage';
-export {
-    /**
-     * @deprecated use "import { SpriteVideo } from '@drincs/pixi-vn';"
-     */
-    default as CanvasVideo,
-    default as SpriteVideo
-} from './canvas/SpriteVideo';
-export {
-    /**
      * @deprecated use "import { Text } from '@drincs/pixi-vn';"
      */
     default as CanvasText,
     default as Text
 } from './canvas/Text';
+export {
+    /**
+     * @deprecated use "import { VideoSprite } from '@drincs/pixi-vn';"
+     */
+    default as CanvasVideo,
+    default as VideoSprite
+} from './canvas/VideoSprite';
 export { default as CanvasEvent } from './CanvasEvent';
 export { default as CharacterBaseModel } from './CharacterBaseModel';
 export { default as CharacterStoredClass } from './CharacterStoredClass';

@@ -1,4 +1,4 @@
-import { SpriteVideo } from "../classes"
+import { VideoSprite } from "../classes"
 import { newLabel } from "../decorators"
 import { showWithDissolveTransition } from "../functions"
 import { canvas, narration } from "../managers"
@@ -18,7 +18,7 @@ export const videoTest = newLabel(VIDEO_TEST_LABEL, [
             character: juliette,
             text: `The video is now paused.`
         };
-        let video = canvas.find<SpriteVideo>("video")
+        let video = canvas.find<VideoSprite>("video")
         if (video) {
             video.pause()
         }
@@ -28,7 +28,7 @@ export const videoTest = newLabel(VIDEO_TEST_LABEL, [
             character: juliette,
             text: `The video is now playing.`
         };
-        let video = canvas.find<SpriteVideo>("video")
+        let video = canvas.find<VideoSprite>("video")
         if (video) {
             video.play()
             video.loop = true
@@ -39,7 +39,7 @@ export const videoTest = newLabel(VIDEO_TEST_LABEL, [
             character: juliette,
             text: `The video is now restarted.`
         };
-        let video = canvas.find<SpriteVideo>("video")
+        let video = canvas.find<VideoSprite>("video")
         if (video) {
             video.restart()
         }

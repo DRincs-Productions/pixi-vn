@@ -1,4 +1,4 @@
-import { ChoiceMenuOption, ChoiceMenuOptionClose, SpriteImage } from "../classes"
+import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite } from "../classes"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
@@ -57,7 +57,7 @@ const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [
 - ${skullyName} will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
         }
         removeWithDissolveTransition(["eggHead"], { duration: 2 })
-        let eggHead = new SpriteImage({ x: 300, y: 100 }, eggHeadImage)
+        let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
         showWithDissolveTransition('flowerTop', eggHead, { duration: 1 })
         canvas.addTickersSteps("helmlok",
             [
@@ -102,7 +102,7 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
 - ${skullyName} will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
         }
         removeWithFadeTransition(["eggHead"], { duration: 2 })
-        let eggHead = new SpriteImage({ x: 300, y: 100 }, eggHeadImage)
+        let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
         showWithFadeTransition('flowerTop', eggHead, { duration: 1 })
         canvas.addTickersSteps("helmlok",
             [
@@ -133,7 +133,7 @@ const imagesFadeTest = newLabel("___pixi_vn_images_fade_test___", [
         )
     },
     async () => {
-        let eggHeadOld = canvas.find<SpriteImage>("eggHead")
+        let eggHeadOld = canvas.find<ImageSprite>("eggHead")
         if (eggHeadOld)
             eggHeadOld.alpha = 0
         showWithFadeTransition('eggHead', eggHeadImage, { duration: 0.5 })
@@ -149,16 +149,16 @@ const imagesRotateTest = newLabel("___pixi_vn_images_rotate_test___", [
 - ${helmlokName} will rotate with a anchor set to 0.5, rotate clockwise for 2 seconds, rotate counterclockwise with a exponential (-0.05) speed progression, and when it reaches 0, it will repeat.
 - ${skullyName} will rotate with a anchor set to 1, rotate 3 seconds clockwise, wait for 0.5 seconds, and rotate 7 seconds counterclockwise.`
         }
-        let eggHead = canvas.find<SpriteImage>("eggHead")
+        let eggHead = canvas.find<ImageSprite>("eggHead")
         if (eggHead)
             eggHead.anchor.set(0);
-        let flowerTop = canvas.find<SpriteImage>("flowerTop")
+        let flowerTop = canvas.find<ImageSprite>("flowerTop")
         if (flowerTop)
             flowerTop.anchor.set(0.5);
-        let helmlok = canvas.find<SpriteImage>("helmlok")
+        let helmlok = canvas.find<ImageSprite>("helmlok")
         if (helmlok)
             helmlok.anchor.set(0.5);
-        let skully = canvas.find<SpriteImage>("skully")
+        let skully = canvas.find<ImageSprite>("skully")
         if (skully)
             skully.anchor.set(1);
         canvas.addTicker("eggHead", new RotateTicker({
@@ -249,10 +249,10 @@ const imagesZoomTest = newLabel("___pixi_vn_images_zoom_test___", [
 - ${helmlokName} will unzoom with a speed of 3 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
 - ${skullyName} will zoom in with a speed of 0.1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
         }
-        let eggHead = canvas.find<SpriteImage>("eggHead")
+        let eggHead = canvas.find<ImageSprite>("eggHead")
         if (eggHead)
             eggHead.scale.set(2)
-        let helmlok = canvas.find<SpriteImage>("helmlok")
+        let helmlok = canvas.find<ImageSprite>("helmlok")
         if (helmlok)
             helmlok.anchor.set(0.5);
         canvas.addTicker("eggHead", new ZoomTicker({
@@ -301,10 +301,10 @@ const imagesMoveInOutTest = newLabel("___pixi_vn_images_move_in_out_test___", [
 - ${helmlokName} will move in from the left with a speed of 80. If you go next, ${helmlokName} will move out from the right with a speed of 80.
 - ${skullyName} will move in from the bottom with a speed of 80 and a speed progression of 0.02. If you go next, ${skullyName} will move out from the top with a speed of 80 and a speed progression of 0.02.`
         }
-        let eggHead = new SpriteImage({ x: 100, y: 100 }, eggHeadImage)
-        let flowerTop = new SpriteImage({ x: 300, y: 100 }, flowerTopImage)
-        let helmlok = new SpriteImage({ x: 100, y: 300 }, helmlokImage)
-        let skully = new SpriteImage({ x: 300, y: 300 }, skullyImage)
+        let eggHead = new ImageSprite({ x: 100, y: 100 }, eggHeadImage)
+        let flowerTop = new ImageSprite({ x: 300, y: 100 }, flowerTopImage)
+        let helmlok = new ImageSprite({ x: 100, y: 300 }, helmlokImage)
+        let skully = new ImageSprite({ x: 300, y: 300 }, skullyImage)
         moveIn("eggHead", eggHead, { speed: 80, direction: "down" })
         moveIn("flowerTop", flowerTop, {
             speed: 80, direction: "left",
@@ -334,10 +334,10 @@ const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
 - ${skullyName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${skullyName} will zoom out with a speed of 3 and a speed progression of 0.02.`
         }
         canvas.removeAll()
-        let eggHead = new SpriteImage({ x: 100, y: 100 }, eggHeadImage)
-        let flowerTop = new SpriteImage({ x: 300, y: 100 }, flowerTopImage)
-        let helmlok = new SpriteImage({ x: 100, y: 300 }, helmlokImage)
-        let skully = new SpriteImage({ x: 300, y: 300 }, skullyImage)
+        let eggHead = new ImageSprite({ x: 100, y: 100 }, eggHeadImage)
+        let flowerTop = new ImageSprite({ x: 300, y: 100 }, flowerTopImage)
+        let helmlok = new ImageSprite({ x: 100, y: 300 }, helmlokImage)
+        let skully = new ImageSprite({ x: 300, y: 300 }, skullyImage)
         zoomIn("eggHead", eggHead, { speed: 3, direction: "down" })
         zoomIn("flowerTop", flowerTop, {
             speed: 3, direction: "left",
@@ -368,10 +368,10 @@ const imagesPushInOutTest = newLabel("___pixi_vn_images_push_in_out_test___", [
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:`
         }
-        let eggHead = new SpriteImage({ x: 100, y: 100 }, eggHeadImage)
-        let flowerTop = new SpriteImage({ x: 300, y: 100 }, flowerTopImage)
-        let helmlok = new SpriteImage({ x: 100, y: 300 }, helmlokImage)
-        let skully = new SpriteImage({ x: 300, y: 300 }, skullyImage)
+        let eggHead = new ImageSprite({ x: 100, y: 100 }, eggHeadImage)
+        let flowerTop = new ImageSprite({ x: 300, y: 100 }, flowerTopImage)
+        let helmlok = new ImageSprite({ x: 100, y: 300 }, helmlokImage)
+        let skully = new ImageSprite({ x: 300, y: 300 }, skullyImage)
         pushIn("eggHead", eggHead, { speed: 20, direction: "down" })
         pushIn("flowerTop", flowerTop, {
             speed: 3, direction: "left",
@@ -406,7 +406,7 @@ const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_tes
         canvas.remove("flowerTop")
         canvas.remove("helmlok")
         canvas.remove("skully")
-        let skully = canvas.find<SpriteImage>("eggHead")
+        let skully = canvas.find<ImageSprite>("eggHead")
         if (skully) {
             skully.anchor.set(0.5)
             skully.alpha = 0.5

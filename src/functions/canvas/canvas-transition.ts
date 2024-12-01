@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBaseItem, Container, SpriteImage, SpriteVideo } from "../../classes"
+import { CanvasBaseItem, Container, ImageSprite, VideoSprite } from "../../classes"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
@@ -14,7 +14,7 @@ import { addVideo } from "./video-utility"
  * If exist a image with the same alias, then the image is replaced and the first image is removed after the effect is done.
  * This transition is done with a {@link FadeAlphaTicker} effect.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link SpriteVideo} is added to the canvas.
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
@@ -45,7 +45,7 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
@@ -102,7 +102,7 @@ export function removeWithDissolveTransition(
  * Fade effect is a effect that the image is shown with a fade in.
  * If exist a image with the same alias, the existing image is removed with a fade transition, and after the effect is done, the new image is shown with a fade transition.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link SpriteVideo} is added to the canvas.
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
@@ -134,7 +134,7 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
@@ -191,7 +191,7 @@ export function removeWithFadeTransition(
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link SpriteVideo} is added to the canvas.
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
@@ -219,7 +219,7 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
@@ -313,7 +313,7 @@ export function moveOut(
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link SpriteVideo} is added to the canvas.
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
@@ -330,10 +330,10 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     let canvasElement: CanvasBaseItem<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
-            canvasElement = new SpriteVideo({}, image)
+            canvasElement = new VideoSprite({}, image)
         }
         else {
-            canvasElement = new SpriteImage({}, image)
+            canvasElement = new ImageSprite({}, image)
         }
     }
     else {
@@ -349,7 +349,7 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     container.width = canvas.canvasWidth
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
@@ -472,7 +472,7 @@ export function zoomOut(
  * Show a image in the canvas with a push effect. The new image is pushed in from the inside of the canvas and the old image is pushed out to the outside of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link SpriteVideo} is added to the canvas.
+ * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
@@ -490,10 +490,10 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     let canvasElement: CanvasBaseItem<any>
     if (typeof image === "string") {
         if (checkIfVideo(image)) {
-            canvasElement = new SpriteVideo({}, image)
+            canvasElement = new VideoSprite({}, image)
         }
         else {
-            canvasElement = new SpriteImage({}, image)
+            canvasElement = new ImageSprite({}, image)
         }
     }
     else {
@@ -513,7 +513,7 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     container.addChild(canvasElement)
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if (canvasElement instanceof SpriteImage && canvasElement.texture?.label == "EMPTY") {
+    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 

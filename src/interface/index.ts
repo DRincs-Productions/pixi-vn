@@ -9,9 +9,9 @@ export type {
      */
     ContainerMemory as CanvasContainerMemory,
     /**
-     *  @deprecated use "import { SpriteImageMemory } from '@drincs/pixi-vn';"
+     *  @deprecated use "import { ImageSpriteMemory } from '@drincs/pixi-vn';"
      */
-    SpriteImageMemory as CanvasImageMemory,
+    ImageSpriteMemory as CanvasImageMemory,
     /**
      *  @deprecated use "import { SpriteBaseMemory } from '@drincs/pixi-vn';"
      */
@@ -25,9 +25,9 @@ export type {
      */
     TextMemory as CanvasTextMemory,
     /**
-     *  @deprecated use "import { SpriteVideoMemory } from '@drincs/pixi-vn';"
+     *  @deprecated use "import { VideoSpriteMemory } from '@drincs/pixi-vn';"
      */
-    SpriteVideoMemory as CanvasVideoMemory, ContainerMemory, SpriteBaseMemory, SpriteImageMemory, SpriteMemory, SpriteVideoMemory, TextMemory
+    VideoSpriteMemory as CanvasVideoMemory, ContainerMemory, ImageSpriteMemory, SpriteBaseMemory, SpriteMemory, TextMemory, VideoSpriteMemory
 } from './canvas/canvas-memory';
 export type { ShakeEffectProps } from './canvas/effect-props';
 export type { default as TextureMemory } from './canvas/TextureMemory';

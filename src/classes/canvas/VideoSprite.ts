@@ -1,18 +1,18 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
-import { SpriteVideoMemory } from "../../interface";
-import SpriteImage from "./SpriteImage";
+import { VideoSpriteMemory } from "../../interface";
+import ImageSprite from "./ImageSprite";
 
 export const CANVAS_VIDEO_ID = "Video"
 
 /**
- * This class is a extension of the {@link SpriteImage} class, it has the same properties and methods,
+ * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,
  * but it has some features that make video management easier.
- * You need to use {@link SpriteVideo.load()} to show the video in the canvas.
+ * You need to use {@link VideoSprite.load()} to show the video in the canvas.
  * This class is used for functions like {@link addVideo}, {@link loadVideo} and {@link showWithDissolveTransition}.
  * @example
  * ```typescript
- * let film = new SpriteVideo({
+ * let film = new VideoSprite({
  *     x: 100,
  *     y: 100,
  * }, 'https://pixijs.com/assets/video.mp4')
@@ -26,9 +26,9 @@ export const CANVAS_VIDEO_ID = "Video"
  * await film.load()
  * ```
  */
-export default class SpriteVideo extends SpriteImage<SpriteVideoMemory> {
+export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
     pixivnId: string = CANVAS_VIDEO_ID
-    override get memory(): SpriteVideoMemory {
+    override get memory(): VideoSpriteMemory {
         return {
             ...super.memory,
             pixivnId: this.pixivnId,
@@ -37,7 +37,7 @@ export default class SpriteVideo extends SpriteImage<SpriteVideoMemory> {
             currentTime: this.currentTime,
         }
     }
-    override set memory(memory: SpriteVideoMemory) {
+    override set memory(memory: VideoSpriteMemory) {
         super.memory = memory
         this.loop = memory.loop
         this.currentTime = memory.currentTime
@@ -52,7 +52,7 @@ export default class SpriteVideo extends SpriteImage<SpriteVideoMemory> {
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
-        let mySprite = new SpriteVideo()
+        let mySprite = new VideoSprite()
         mySprite.texture = sprite.texture
         return mySprite
     }

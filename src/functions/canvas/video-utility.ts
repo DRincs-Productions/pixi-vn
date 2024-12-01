@@ -1,12 +1,12 @@
 import { Texture } from 'pixi.js';
-import SpriteVideo from '../../classes/canvas/SpriteVideo';
+import VideoSprite from '../../classes/canvas/VideoSprite';
 import { canvas } from '../../managers';
 import { getTexture } from '../texture-utility';
 
 /**
  * Add a video in the canvas.
  * Is the same that {@link showVideo}, but the video is not shown.
- * If you want to show the video, then you need to use the function {@link SpriteVideo.load()}.
+ * If you want to show the video, then you need to use the function {@link VideoSprite.load()}.
  * @param alias is the unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl is the url of the video.
  * @returns the container of the video.
@@ -16,8 +16,8 @@ import { getTexture } from '../texture-utility';
  * await alien.load()
  * ```
  */
-export function addVideo(alias: string, videoUrl: string): SpriteVideo {
-    let video = new SpriteVideo()
+export function addVideo(alias: string, videoUrl: string): VideoSprite {
+    let video = new VideoSprite()
     video.videoLink = videoUrl
     canvas.add(alias, video)
     return video
@@ -28,7 +28,7 @@ export function addVideo(alias: string, videoUrl: string): SpriteVideo {
  * @param canvasVideos is a list of videos to show.
  * @returns the list of videos.
  */
-export async function loadVideo(canvasVideos: SpriteVideo[] | SpriteVideo): Promise<SpriteVideo[]> {
+export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Promise<VideoSprite[]> {
     if (!Array.isArray(canvasVideos)) {
         return [canvasVideos]
     }
@@ -55,7 +55,7 @@ export async function loadVideo(canvasVideos: SpriteVideo[] | SpriteVideo): Prom
  * @param videoUrl The url of the video.
  * @returns A promise that is resolved when the video is loaded.
  */
-export async function showVideo(alias: string, videoUrl: string): Promise<SpriteVideo> {
+export async function showVideo(alias: string, videoUrl: string): Promise<VideoSprite> {
     let video = addVideo(alias, videoUrl)
     await video.load()
     return video

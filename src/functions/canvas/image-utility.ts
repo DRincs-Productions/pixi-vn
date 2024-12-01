@@ -1,12 +1,12 @@
 import { Texture } from 'pixi.js';
-import { SpriteImage } from '../../classes';
+import { ImageSprite } from '../../classes';
 import { canvas } from '../../managers';
 import { getTexture } from '../texture-utility';
 
 /**
  * Add a image in the canvas.
  * Is the same that {@link showImage}, but the image is not shown.
- * If you want to show the image, then you need to use the function {@link SpriteImage.load()}.
+ * If you want to show the image, then you need to use the function {@link ImageSprite.load()}.
  * @param alias is the unique alias of the image. You can use this alias to refer to this image
  * @param imageUrl is the url of the image.
  * @returns the container of the image.
@@ -16,8 +16,8 @@ import { getTexture } from '../texture-utility';
  * await alien.load()
  * ```
  */
-export function addImage(alias: string, imageUrl: string): SpriteImage {
-    let image = new SpriteImage()
+export function addImage(alias: string, imageUrl: string): ImageSprite {
+    let image = new ImageSprite()
     image.imageLink = imageUrl
     canvas.add(alias, image)
     return image
@@ -28,7 +28,7 @@ export function addImage(alias: string, imageUrl: string): SpriteImage {
  * @param canvasImages is a list of images to show.
  * @returns the list of images.
  */
-export async function loadImage(canvasImages: SpriteImage[] | SpriteImage): Promise<SpriteImage[]> {
+export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Promise<ImageSprite[]> {
     if (!Array.isArray(canvasImages)) {
         return [canvasImages]
     }
@@ -55,7 +55,7 @@ export async function loadImage(canvasImages: SpriteImage[] | SpriteImage): Prom
  * @param imageUrl The url of the image.
  * @returns A promise that is resolved when the image is loaded.
  */
-export async function showImage(alias: string, imageUrl: string): Promise<SpriteImage> {
+export async function showImage(alias: string, imageUrl: string): Promise<ImageSprite> {
     let image = addImage(alias, imageUrl)
     await image.load()
     return image

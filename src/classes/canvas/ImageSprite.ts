@@ -1,7 +1,7 @@
 import { Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
-import { SpriteImageMemory } from "../../interface";
+import { ImageSpriteMemory } from "../../interface";
 import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
 
 export const CANVAS_IMAGE_ID = "Image"
@@ -9,11 +9,11 @@ export const CANVAS_IMAGE_ID = "Image"
 /**
  * This class is a extension of the {@link Sprite} class, it has the same properties and methods,
  * but it has some features that make texture management easier.
- * You need to use {@link SpriteImage.load()} to show the image in the canvas.
+ * You need to use {@link ImageSprite.load()} to show the image in the canvas.
  * This class is used for functions like {@link addImage}, {@link loadImage} and {@link showWithDissolveTransition}.
  * @example
  * ```typescript
- * let alien = new SpriteImage({
+ * let alien = new ImageSprite({
  *     anchor: { x: 0.5, y: 0.5 },
  *     x: 100,
  *     y: 100,
@@ -30,7 +30,7 @@ export const CANVAS_IMAGE_ID = "Image"
  * await alien.load()
  * ```
  */
-export default class SpriteImage<Memory extends SpriteImageMemory = SpriteImageMemory> extends Sprite<Memory> {
+export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> {
     pixivnId: string = CANVAS_IMAGE_ID
     constructor(options?: SpriteOptions | Texture | undefined, imageLink?: string) {
         super(options)
@@ -38,21 +38,21 @@ export default class SpriteImage<Memory extends SpriteImageMemory = SpriteImageM
             this.imageLink = imageLink
         }
     }
-    override get memory(): SpriteImageMemory {
+    override get memory(): ImageSpriteMemory {
         return {
             ...getMemorySprite(this),
             pixivnId: this.pixivnId,
             imageLink: this.imageLink,
         }
     }
-    override set memory(memory: SpriteImageMemory) {
+    override set memory(memory: ImageSpriteMemory) {
         setMemorySprite(this, memory)
         this.imageLink = memory.imageLink
     }
     imageLink: string = ""
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
-        let mySprite = new SpriteImage()
+        let mySprite = new ImageSprite()
         mySprite.texture = sprite.texture
         return mySprite
     }
@@ -72,7 +72,7 @@ export default class SpriteImage<Memory extends SpriteImageMemory = SpriteImageM
                 }
             })
             .catch((e) => {
-                console.error("[Pixi’VN] Error into SpriteImage.load()", e)
+                console.error("[Pixi’VN] Error into ImageSprite.load()", e)
             })
     }
 }
