@@ -4,6 +4,7 @@ import { ContainerMemory } from "../../interface";
 import CanvasBaseItem from "./CanvasBaseItem";
 
 export const CANVAS_CONTAINER_ID = "Container"
+export type ContainerChild = PixiContainer & CanvasBaseItem<any>
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods, 
@@ -22,8 +23,8 @@ export const CANVAS_CONTAINER_ID = "Container"
  *  }
  * ```
  */
-export default class Container extends PixiContainer implements CanvasBaseItem<ContainerMemory> {
-    constructor(options?: ContainerOptions) {
+export default class Container<C extends ContainerChild = ContainerChild> extends PixiContainer<C> implements CanvasBaseItem<ContainerMemory> {
+    constructor(options?: ContainerOptions<C>) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID
     }
@@ -38,7 +39,7 @@ export default class Container extends PixiContainer implements CanvasBaseItem<C
     set memory(value: ContainerMemory) {
         setMemoryContainer(this, value)
         value.elements.forEach(child => {
-            this.addChild(importCanvasElement(child))
+            this.addChild(importCanvasElement<C>(child))
         })
     }
 }
