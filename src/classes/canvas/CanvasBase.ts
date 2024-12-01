@@ -1,7 +1,7 @@
 import { Container } from "pixi.js";
 import { canvasElementDecorator } from "../../decorators";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
-import { CanvasItemBaseMemory } from "../../interface";
+import { CanvasBaseItemMemory } from "../../interface";
 import { canvas } from "../../managers";
 
 /**
@@ -26,7 +26,7 @@ import { canvas } from "../../managers";
  * }
  * ```
  */
-export default class CanvasBase<T2 extends CanvasItemBaseMemory> extends Container {
+export default class CanvasBase<T2 extends CanvasBaseItemMemory> extends Container {
     /**
      * This method return the memory of the canvas element.
      */

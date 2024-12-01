@@ -1,8 +1,9 @@
 export type {
+    CanvasBaseItemMemory,
     /**
-     *  @deprecated use "import { CanvasItemBaseMemory } from '@drincs/pixi-vn';"
+     *  @deprecated use "import { CanvasBaseItemMemory } from '@drincs/pixi-vn';"
      */
-    CanvasItemBaseMemory as CanvasBaseMemory,
+    CanvasBaseItemMemory as CanvasBaseMemory,
     /**
      *  @deprecated use "import { ContainerMemory } from '@drincs/pixi-vn';"
      */
@@ -10,7 +11,7 @@ export type {
     /**
      *  @deprecated use "import { SpriteImageMemory } from '@drincs/pixi-vn';"
      */
-    SpriteImageMemory as CanvasImageMemory, CanvasItemBaseMemory,
+    SpriteImageMemory as CanvasImageMemory,
     /**
      *  @deprecated use "import { SpriteBaseMemory } from '@drincs/pixi-vn';"
      */

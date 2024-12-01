@@ -2,7 +2,7 @@ import { ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, Sp
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTextureMemory } from "../../functions/canvas/canvas-utility";
 import { getTexture } from "../../functions/texture-utility";
-import { CanvasItemBaseMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
+import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
@@ -30,7 +30,7 @@ export const CANVAS_SPRITE_ID = "Sprite"
  * canvas.add("bunny", sprite);
  * ```
  */
-export default class CanvasSprite<Memory extends SpriteOptions & CanvasItemBaseMemory = SpriteMemory> extends PixiSprite implements CanvasBase<Memory | SpriteMemory> {
+export default class CanvasSprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory> extends PixiSprite implements CanvasBase<Memory | SpriteMemory> {
     constructor(options?: SpriteOptions | Texture) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID

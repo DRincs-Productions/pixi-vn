@@ -6,18 +6,18 @@ import TextureMemory from "./TextureMemory";
 /**
  * Interface for the canvas base memory
  */
-export interface CanvasItemBaseMemory {
+export interface CanvasBaseItemMemory {
     pixivnId: string,
 }
 
 /**
  * Interface for the canvas container memory
  */
-export interface ContainerMemory extends ContainerOptions, CanvasItemBaseMemory {
-    elements: CanvasItemBaseMemory[],
+export interface ContainerMemory extends ContainerOptions, CanvasBaseItemMemory {
+    elements: CanvasBaseItemMemory[],
 }
 
-export interface SpriteBaseMemory extends SpriteOptions, CanvasItemBaseMemory {
+export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {
     textureImage: TextureMemory,
     onEvents: { [name: CanvasEventNamesType]: EventIdType }
 }
@@ -30,7 +30,7 @@ export interface SpriteMemory extends SpriteBaseMemory { }
 /**
  * Interface for the canvas text memory
  */
-export interface TextMemory extends TextOptions, CanvasItemBaseMemory {
+export interface TextMemory extends TextOptions, CanvasBaseItemMemory {
     onEvents: { [name: CanvasEventNamesType]: EventIdType }
 }
 
