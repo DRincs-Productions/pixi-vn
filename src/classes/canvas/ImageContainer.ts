@@ -1,8 +1,8 @@
-import { ContainerOptions } from "pixi.js";
+import { ContainerOptions, Texture } from "pixi.js";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
 
-export const CANVAS_CONTAINER_ID = "image-container"
+export const CANVAS_IMAGE_CONTAINER_ID = "ImageContainer"
 
 /**
  * This class is a extension of the {@link Container}, it has the same properties and methods, 
@@ -27,10 +27,10 @@ export default class ImageContainer extends Container<ImageSprite> {
     }
     override get memory() {
         let memory = super.memory
-        memory.pixivnId = CANVAS_CONTAINER_ID
+        memory.pixivnId = CANVAS_IMAGE_CONTAINER_ID
         return memory
     }
-    pixivnId: string = CANVAS_CONTAINER_ID
+    pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
     /** 
      * Load the children images.
      * @returns A promise that resolves when the images are loaded.
@@ -42,5 +42,15 @@ export default class ImageContainer extends Container<ImageSprite> {
             }
         })
         return Promise.all(list)
+    }
+
+    /**
+     * The texture of the first child. If there is no child, it returns a new {@link Texture}.
+     */
+    get texture() {
+        if (this.children.length > 0) {
+            return this.children[0].texture
+        }
+        return new Texture()
     }
 }
