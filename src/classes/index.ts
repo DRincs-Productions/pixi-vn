@@ -1,3 +1,12 @@
+// * This import must be imported before the ImageSprite import.
+export {
+    /**
+     * @deprecated use "import { VideoSprite } from '@drincs/pixi-vn';"
+     */
+    default as CanvasVideo,
+    default as VideoSprite
+} from './canvas/VideoSprite';
+
 export {
     /**
      * @deprecated use "import { CanvasBaseItem } from '@drincs/pixi-vn';"
@@ -33,13 +42,6 @@ export {
     default as CanvasText,
     default as Text
 } from './canvas/Text';
-export {
-    /**
-     * @deprecated use "import { VideoSprite } from '@drincs/pixi-vn';"
-     */
-    default as CanvasVideo,
-    default as VideoSprite
-} from './canvas/VideoSprite';
 export { default as CanvasEvent } from './CanvasEvent';
 export { default as CharacterBaseModel } from './CharacterBaseModel';
 export { default as CharacterStoredClass } from './CharacterStoredClass';
