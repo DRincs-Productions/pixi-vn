@@ -350,10 +350,6 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     container.width = canvas.canvasWidth
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
-
     if (props.direction == "up") {
         container.pivot.y = canvas.canvasHeight
         container.pivot.x = canvas.canvasWidth / 2
@@ -393,6 +389,13 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     if (id) {
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    }
+
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+
+    if (id) {
         return [id]
     }
 }
