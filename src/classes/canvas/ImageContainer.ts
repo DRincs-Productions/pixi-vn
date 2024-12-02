@@ -1,8 +1,7 @@
 import { ContainerOptions, Texture } from "pixi.js";
+import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
-
-export const CANVAS_IMAGE_CONTAINER_ID = "ImageContainer"
 
 /**
  * This class is a extension of the {@link Container}, it has the same properties and methods, 

@@ -1,9 +1,8 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
+import { CANVAS_VIDEO_ID } from "../../constants";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
 import { VideoSpriteMemory } from "../../interface";
 import ImageSprite from "./ImageSprite";
-
-export const CANVAS_VIDEO_ID = "Video"
 
 /**
  * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,

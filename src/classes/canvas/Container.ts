@@ -1,9 +1,9 @@
 import { ContainerOptions, Container as PixiContainer } from "pixi.js";
+import { CANVAS_CONTAINER_ID } from "../../constants";
 import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
 import { ContainerMemory } from "../../interface";
 import CanvasBaseItem from "./CanvasBaseItem";
 
-export const CANVAS_CONTAINER_ID = "Container"
 export type ContainerChild = PixiContainer & CanvasBaseItem<any>
 
 /**
