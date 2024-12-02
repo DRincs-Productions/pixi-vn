@@ -932,7 +932,7 @@ export default class CanvasManager {
                 return
             }
             if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
-                setMemoryContainer(this.app.stage, (data as ExportedCanvas)["stage"])
+                setMemoryContainer(this.app.stage, (data as ExportedCanvas)["stage"], { ignoreScale: true })
             }
             else {
                 console.error("[Pixi’VN] The data does not have the properties stage")

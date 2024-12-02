@@ -80,7 +80,11 @@ export function getMemoryContainer<T extends PixiContainer>(element: T): Contain
     }
 }
 
-export function setMemoryContainer<T extends PixiContainer>(element: T | PixiContainer, memory: ContainerOptions | {}) {
+export function setMemoryContainer<T extends PixiContainer>(element: T | PixiContainer, memory: ContainerOptions | {}, opstions?: {
+    ignoreScale?: boolean,
+}) {
+    let ignoreScale = opstions?.ignoreScale || false
+
     "isRenderGroup" in memory && memory.isRenderGroup && (element.isRenderGroup = memory.isRenderGroup)
     "blendMode" in memory && memory.blendMode && (element.blendMode = memory.blendMode)
     "tint" in memory && memory.tint && (element.tint = memory.tint)
@@ -88,7 +92,7 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
     "angle" in memory && memory.angle && (element.angle = memory.angle)
     "renderable" in memory && memory.renderable && (element.renderable = memory.renderable)
     "rotation" in memory && memory.rotation && (element.rotation = memory.rotation)
-    if ("scale" in memory && memory.scale) {
+    if (!ignoreScale && "scale" in memory && memory.scale) {
         if (typeof memory.scale === "number") {
             element.scale.set(memory.scale, memory.scale)
         }
@@ -119,6 +123,8 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
 
     // end
     // width and height must be set after the scale
-    "width" in memory && memory.width && (element.width = memory.width)
-    "height" in memory && memory.height && (element.height = memory.height)
+    if (!ignoreScale) {
+        "width" in memory && memory.width && (element.width = memory.width)
+        "height" in memory && memory.height && (element.height = memory.height)
+    }
 }
