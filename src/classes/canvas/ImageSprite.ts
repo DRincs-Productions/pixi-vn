@@ -1,10 +1,9 @@
 import { Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory } from "../../interface";
 import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
-
-export const CANVAS_IMAGE_ID = "Image"
 
 /**
  * This class is a extension of the {@link Sprite} class, it has the same properties and methods,

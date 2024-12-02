@@ -1,4 +1,5 @@
 import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite } from "../classes"
+import ImageContainer from "../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
@@ -41,6 +42,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Push in/out", imagesPushInOutTest, {}),
             new ChoiceMenuOption("Shake", shakeStageTest, {}),
             new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
+            new ChoiceMenuOption("Image container", imageContainerTest, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -458,4 +460,22 @@ const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
         }
         shakeEffect(CANVAS_APP_STAGE_ALIAS)
     },
+])
+
+const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
+    () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Now I will show you the image container.`
+        }
+        canvas.removeAll()
+        let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage, helmlokImage, skullyImage])
+        container.x = 300
+        container.y = 300
+        container.pivot.set(container.width / 2, container.height / 2)
+        showWithDissolveTransition("container", container)
+        canvas.addTicker("container", new RotateTicker({
+            speed: 6,
+        }))
+    }
 ])

@@ -1,4 +1,5 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
+import { CANVAS_TEXT_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTextStyle } from "../../functions/texture-utility";
 import { TextMemory } from "../../interface";
@@ -7,8 +8,6 @@ import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
 import { getMemoryContainer, setMemoryContainer } from "./Container";
-
-export const CANVAS_TEXT_ID = "Text"
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,

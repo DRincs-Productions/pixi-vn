@@ -1,5 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js"
 import { CanvasBaseItem, Container, ImageSprite, VideoSprite } from "../../classes"
+import ImageContainer from "../../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
@@ -45,7 +46,7 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
@@ -134,7 +135,7 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
@@ -219,7 +220,7 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
@@ -349,7 +350,7 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     container.width = canvas.canvasWidth
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
@@ -513,7 +514,7 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     container.addChild(canvasElement)
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if (canvasElement instanceof ImageSprite && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
         await canvasElement.load()
     }
 
