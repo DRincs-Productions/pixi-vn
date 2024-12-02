@@ -29,6 +29,9 @@ export default class ImageContainer extends Container<ImageSprite> {
         memory.pixivnId = CANVAS_IMAGE_CONTAINER_ID
         return memory
     }
+    override set memory(value) {
+        super.memory = value
+    }
     pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
     /** 
      * Load the children images.

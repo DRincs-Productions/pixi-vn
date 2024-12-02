@@ -21,6 +21,7 @@ export {
     default as CanvasContainer,
     default as Container
 } from './canvas/Container';
+export { default as ImageContainer } from './canvas/ImageContainer';
 export {
     /**
      * @deprecated use "import { ImageSprite } from '@drincs/pixi-vn';"
