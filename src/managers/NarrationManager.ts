@@ -973,6 +973,13 @@ export default class NarrationManager {
 
             if (this.currentLabel && this.currentLabel.onLoadStep) {
                 await this.currentLabel.onLoadStep(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
+                for (let i = 0; i < this.openedLabels.length; i++) {
+                    let labelInfo = this.openedLabels[i]
+                    let label = getLabelById(labelInfo.label)
+                    if (label && label.onLoadStep) {
+                        await label.onLoadStep(labelInfo.currentStepIndex, label)
+                    }
+                }
             }
         }
         catch (e) {
