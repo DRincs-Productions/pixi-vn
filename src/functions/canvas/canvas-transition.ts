@@ -46,9 +46,6 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
@@ -62,6 +59,11 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
     let id = canvas.addTicker(alias, effect)
     if (id) {
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    }
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+    if (id) {
         return [id]
     }
 }
@@ -135,9 +137,6 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
@@ -166,6 +165,9 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
     if (id2) {
         res ? res.push(id2) : res = [id2]
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
+    }
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
     }
     return res
 }
@@ -220,9 +222,6 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
         canvasElement = image
         canvas.add(alias, canvasElement)
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
 
     let destination = { x: canvasElement.x, y: canvasElement.y }
     switch (direction) {
@@ -251,6 +250,11 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
     if (id) {
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    }
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+    if (id) {
         return [id]
     }
 }
@@ -350,10 +354,6 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     container.width = canvas.canvasWidth
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
-
     if (props.direction == "up") {
         container.pivot.y = canvas.canvasHeight
         container.pivot.x = canvas.canvasWidth / 2
@@ -393,6 +393,11 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     if (id) {
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    }
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+    if (id) {
         return [id]
     }
 }
@@ -514,10 +519,6 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     container.addChild(canvasElement)
     canvas.add(alias, container, { ignoreOldStyle: true })
 
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
-        await canvasElement.load()
-    }
-
     if (props.direction == "up") {
         container.x = 0
         container.y = -canvas.canvasHeight
@@ -547,6 +548,11 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     if (id) {
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+    }
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+        await canvasElement.load()
+    }
+    if (id) {
         return [id]
     }
 }
