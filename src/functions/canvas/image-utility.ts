@@ -18,7 +18,7 @@ import { getTexture } from '../texture-utility';
  */
 export function addImage(alias: string, imageUrl: string): ImageSprite {
     let image = new ImageSprite()
-    image.imageLink = imageUrl
+    image.textureAlias = imageUrl
     canvas.add(alias, image)
     return image
 }
@@ -34,7 +34,7 @@ export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Prom
     }
     let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasImages.length)
     for (let i = 0; i < canvasImages.length; i++) {
-        promises[i] = getTexture(canvasImages[i].imageLink)
+        promises[i] = getTexture(canvasImages[i].textureAlias)
     }
     // wait for all promises
     return Promise.all(promises).then((textures) => {

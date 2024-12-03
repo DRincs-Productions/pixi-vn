@@ -2,5 +2,10 @@
  * Interface for texture memory
  */
 export default interface TextureMemory {
-    image: string,
+    /**
+     * @deprecated
+     */
+    image?: string,
+    alias?: string,
+    url: string,
 }

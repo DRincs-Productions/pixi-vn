@@ -18,7 +18,7 @@ import { getTexture } from '../texture-utility';
  */
 export function addVideo(alias: string, videoUrl: string): VideoSprite {
     let video = new VideoSprite()
-    video.videoLink = videoUrl
+    video.textureAlias = videoUrl
     canvas.add(alias, video)
     return video
 }
@@ -34,7 +34,7 @@ export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Prom
     }
     let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasVideos.length)
     for (let i = 0; i < canvasVideos.length; i++) {
-        promises[i] = getTexture(canvasVideos[i].videoLink)
+        promises[i] = getTexture(canvasVideos[i].textureAlias)
     }
     // wait for all promises
     return Promise.all(promises).then((textures) => {

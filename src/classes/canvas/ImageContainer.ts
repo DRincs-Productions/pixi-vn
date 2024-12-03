@@ -16,11 +16,11 @@ import ImageSprite from "./ImageSprite";
  * ```
  */
 export default class ImageContainer extends Container<ImageSprite> {
-    constructor(options?: ContainerOptions<ImageSprite>, imageLinks: string[] = []) {
+    constructor(options?: ContainerOptions<ImageSprite>, textureAliases: string[] = []) {
         super(options)
-        if (imageLinks) {
-            imageLinks.forEach(imageLink => {
-                this.addChild(new ImageSprite(undefined, imageLink))
+        if (textureAliases) {
+            textureAliases.forEach(textureAlias => {
+                this.addChild(new ImageSprite(undefined, textureAlias))
             })
         }
     }

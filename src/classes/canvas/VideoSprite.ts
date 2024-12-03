@@ -43,12 +43,6 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         this.paused = memory.paused
         this.load()
     }
-    set videoLink(value: string) {
-        this.imageLink = value
-    }
-    get videoLink() {
-        return this.imageLink
-    }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
         let mySprite = new VideoSprite()

@@ -19,7 +19,11 @@ export interface ContainerMemory<C extends ContainerChild = ContainerChild> exte
 }
 
 export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {
-    textureImage: TextureMemory,
+    /**
+     * @deprecated
+     */
+    textureImage?: TextureMemory,
+    textureData: TextureMemory,
     onEvents: { [name: CanvasEventNamesType]: EventIdType }
 }
 
@@ -39,7 +43,10 @@ export interface TextMemory extends TextOptions, CanvasBaseItemMemory {
  * The memory of the image. It uses for save the state of the image.
  */
 export interface ImageSpriteMemory extends SpriteBaseMemory {
-    imageLink: string,
+    /**
+     * @deprecated use SpriteBaseMemory.textureAlias
+     */
+    imageLink?: string,
 }
 
 /**

@@ -1,4 +1,4 @@
-import { ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTextureMemory } from "../../functions/canvas/canvas-utility";
@@ -35,6 +35,16 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
     }
     pixivnId: string = CANVAS_SPRITE_ID
+    private _textureAlias?: string
+    public get textureAlias() {
+        if (this._textureAlias) {
+            return this._textureAlias
+        }
+        return this.texture.source.label
+    }
+    public set textureAlias(value: string) {
+        this._textureAlias = value
+    }
     get memory(): Memory | SpriteMemory {
         return getMemorySprite(this)
     }
@@ -109,7 +119,7 @@ export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>)
     return {
         ...temp,
         pixivnId: element.pixivnId,
-        textureImage: getTextureMemory((element as any).texture),
+        textureData: getTextureMemory((element as any).texture, element.textureAlias),
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
@@ -118,11 +128,29 @@ export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>)
 
 export function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}) {
     setMemoryContainer(element, memory)
-    "textureImage" in memory && getTexture(memory.textureImage.image).then((texture) => {
+    "textureImage" in memory && memory.textureImage && memory.textureImage.image && getTexture(memory.textureImage.image).then((texture) => {
         if (texture) {
             element.texture = texture
         }
     })
+    if ("textureData" in memory) {
+        if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
+            getTexture(memory.textureData.alias)
+                .then((texture) => {
+                    if (texture) {
+                        element.texture = texture
+                    }
+                })
+        }
+        else {
+            getTexture(memory.textureData.url)
+                .then((texture) => {
+                    if (texture) {
+                        element.texture = texture
+                    }
+                })
+        }
+    }
     if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {
             element.anchor.set(memory.anchor, memory.anchor)
