@@ -1,4 +1,4 @@
-import { Texture } from 'pixi.js';
+import { Assets, Texture } from 'pixi.js';
 import VideoSprite from '../../classes/canvas/VideoSprite';
 import { canvas } from '../../managers';
 import { getTexture } from '../texture-utility';
@@ -8,17 +8,28 @@ import { getTexture } from '../texture-utility';
  * Is the same that {@link showVideo}, but the video is not shown.
  * If you want to show the video, then you need to use the function {@link VideoSprite.load()}.
  * @param alias is the unique alias of the video. You can use this alias to refer to this video
- * @param videoUrl is the url of the video.
+ * @param videoUrl is the url of the video. If you don't provide the url, then the alias is used as the url.
  * @returns the container of the video.
  * @example
  * ```typescript
- * let alien = addVideo("bunny1", "https://pixijs.com/assets/video.mp4")
- * await alien.load()
+ * let video1 = addVideo("video1", "https://pixijs.com/assets/video1.mp4")
+ * await video1.load()
+ * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
+ * let video2 = addVideo("video2")
+ * await video2.load()
  * ```
  */
-export function addVideo(alias: string, videoUrl: string): VideoSprite {
+export function addVideo(alias: string, videoUrl?: string): VideoSprite {
+    if (!videoUrl) {
+        if (Assets.resolver.hasKey(alias)) {
+            videoUrl = alias
+        }
+        else {
+            throw new Error(`The video ${alias} does not exist in the cache.`)
+        }
+    }
     let video = new VideoSprite()
-    video.videoLink = videoUrl
+    video.textureAlias = videoUrl
     canvas.add(alias, video)
     return video
 }
@@ -34,7 +45,7 @@ export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Prom
     }
     let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasVideos.length)
     for (let i = 0; i < canvasVideos.length; i++) {
-        promises[i] = getTexture(canvasVideos[i].videoLink)
+        promises[i] = getTexture(canvasVideos[i].textureAlias)
     }
     // wait for all promises
     return Promise.all(promises).then((textures) => {
@@ -54,8 +65,14 @@ export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Prom
  * @param alias The unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl The url of the video.
  * @returns A promise that is resolved when the video is loaded.
+ * @example
+ * ```typescript
+ * let video1 = showVideo("video1", "https://pixijs.com/assets/video1.mp4")
+ * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
+ * let video2 = showVideo("video2")
+ * ```
  */
-export async function showVideo(alias: string, videoUrl: string): Promise<VideoSprite> {
+export async function showVideo(alias: string, videoUrl?: string): Promise<VideoSprite> {
     let video = addVideo(alias, videoUrl)
     await video.load()
     return video

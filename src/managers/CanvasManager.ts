@@ -145,7 +145,6 @@ export default class CanvasManager {
         "scale" in oldAlias && delete oldAlias.scale
         "visible" in oldAlias && delete oldAlias.visible
         "boundsArea" in oldAlias && delete oldAlias.boundsArea
-        "textureImage" in oldAlias && delete oldAlias.textureImage
         "text" in oldAlias && delete oldAlias.text
         "resolution" in oldAlias && delete oldAlias.resolution
         "style" in oldAlias && delete oldAlias.style

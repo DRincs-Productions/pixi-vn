@@ -8,10 +8,11 @@ import { canvas } from "../../managers";
  * @param texture PixiJS Texture object
  * @returns Memory object of the texture
  */
-export function getTextureMemory(texture: Texture): TextureMemory {
-    let sourceTexture = texture.source
+export function getTextureMemory(texture: Texture, alias?: string): TextureMemory {
+    let url = texture.source.label
     let textureMemory: TextureMemory = {
-        image: sourceTexture.label
+        url: url,
+        alias: alias === url ? undefined : alias,
     }
     return textureMemory
 }

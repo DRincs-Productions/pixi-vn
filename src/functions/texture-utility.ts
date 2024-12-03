@@ -2,29 +2,33 @@ import { Assets, ColorSource, FillGradient, FillPattern, StrokeStyle, TextStyle,
 
 /**
  * Get a texture from a url.
- * @param imageUrl is the url of the image.
- * @returns the texture of the image, or a text with the error.
+ * @param textureAlias is the url of the file.
+ * @returns the texture of the image or video, or a text with the error.
  */
-export async function getTexture(imageUrl: string): Promise<Texture | void> {
-    if (Assets.cache.has(imageUrl)) {
-        return Assets.get(imageUrl)
+export async function getTexture(textureAlias?: string): Promise<Texture | void> {
+    if (!textureAlias) {
+        console.error("[Pixi’VN] Texture not found", textureAlias)
+        return
     }
-    return Assets.load(imageUrl)
+    if (Assets.cache.has(textureAlias)) {
+        return Assets.get(textureAlias)
+    }
+    return Assets.load(textureAlias)
         .then((texture) => {
             if (!texture) {
-                console.error("[Pixi’VN] Texture not found", imageUrl)
+                console.error("[Pixi’VN] Texture not found", textureAlias)
                 return
             }
             // if texture not is a Texture, then it is a TextureResource
             if (!(texture instanceof Texture)) {
-                console.error("[Pixi’VN] File not is a image", imageUrl)
+                console.error("[Pixi’VN] File not is a file", textureAlias)
                 return
             }
 
             return texture
         })
         .catch((e) => {
-            console.error("[Pixi’VN] Error loading image", e)
+            console.error("[Pixi’VN] Error loading file", e)
             return
         })
 }

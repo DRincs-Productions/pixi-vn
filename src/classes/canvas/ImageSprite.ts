@@ -31,24 +31,23 @@ import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
  */
 export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> {
     pixivnId: string = CANVAS_IMAGE_ID
-    constructor(options?: SpriteOptions | Texture | undefined, imageLink?: string) {
+    constructor(options?: SpriteOptions | Texture | undefined, textureAlias?: string) {
         super(options)
-        if (imageLink) {
-            this.imageLink = imageLink
+        if (textureAlias) {
+            this.textureAlias = textureAlias
         }
     }
     override get memory(): ImageSpriteMemory {
         return {
             ...getMemorySprite(this),
             pixivnId: this.pixivnId,
-            imageLink: this.imageLink,
         }
     }
     override set memory(memory: ImageSpriteMemory) {
         setMemorySprite(this, memory)
-        this.imageLink = memory.imageLink
+        if ("imageLink" in memory && memory.imageLink)
+            this.textureAlias = memory.imageLink
     }
-    imageLink: string = ""
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
         let mySprite = new ImageSprite()
@@ -57,14 +56,14 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     }
     /** 
      * Load the image from the link and set the texture of the sprite.
-     * @param image The link of the image. If it is not set, it will use the imageLink property.
+     * @param image The link of the image. If it is not set, it will use the {@link Sprite.textureAlias} property.
      * @returns A promise that resolves when the image is loaded.
      */
     async load(image?: string) {
         if (!image) {
-            image = this.imageLink
+            image = this.textureAlias
         }
-        return getTexture(this.imageLink)
+        return getTexture(this.textureAlias)
             .then((texture) => {
                 if (texture) {
                     this.texture = texture
