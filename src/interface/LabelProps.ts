@@ -3,7 +3,17 @@ import { Label } from "../classes"
 
 export default interface LabelProps<T> {
     /**
-     * Is a function that will be executed before any step is executed, is useful for example to make sure all images used have been cached.
+     * Is a function that will be executed before any step is executed.
+     * @param stepIndex Step index
+     * @param label Label
+     * @returns
+     */
+    onStepStart?: (stepIndex: number, label: T) => void | Promise<void>,
+    /**
+     * Is a function that will be executed in {@link Label.onStepStart} if the index of the step is 0
+     * and when the user goes back to it or when the user laods a save file.
+     * When you load a save file, will be executed all onLoadingLabel functions of the {@link narration.openedLabels}.
+     * It is useful for example to make sure all images used have been cached
      * @param stepIndex Step index
      * @param label Label
      * @returns
@@ -16,15 +26,6 @@ export default interface LabelProps<T> {
      *     }
      * })
      * ```
-     */
-    onStepStart?: (stepIndex: number, label: T) => void | Promise<void>,
-    /**
-     * Is a function that will be executed in {@link Label.onStepStart} if the index of the step is 0
-     * and when the user goes back to it or when the user laods a save file.
-     * When you load a save file, will be executed all onLoadLabel functions of the {@link narration.openedLabels}.
-     * @param stepIndex Step index
-     * @param label Label
-     * @returns 
      */
     onLoadingLabel?: (stepIndex: number, label: T) => void | Promise<void>,
     /**
