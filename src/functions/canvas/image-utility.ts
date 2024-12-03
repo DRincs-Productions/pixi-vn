@@ -1,4 +1,4 @@
-import { Texture } from 'pixi.js';
+import { Assets, Texture } from 'pixi.js';
 import { ImageSprite } from '../../classes';
 import { canvas } from '../../managers';
 import { getTexture } from '../texture-utility';
@@ -8,7 +8,7 @@ import { getTexture } from '../texture-utility';
  * Is the same that {@link showImage}, but the image is not shown.
  * If you want to show the image, then you need to use the function {@link ImageSprite.load()}.
  * @param alias is the unique alias of the image. You can use this alias to refer to this image
- * @param imageUrl is the url of the image.
+ * @param imageUrl is the url of the image. If you don't provide the url, then the alias is used as the url.
  * @returns the container of the image.
  * @example
  * ```typescript
@@ -16,7 +16,15 @@ import { getTexture } from '../texture-utility';
  * await alien.load()
  * ```
  */
-export function addImage(alias: string, imageUrl: string): ImageSprite {
+export function addImage(alias: string, imageUrl?: string): ImageSprite {
+    if (!imageUrl) {
+        if (Assets.resolver.hasKey(alias)) {
+            imageUrl = alias
+        }
+        else {
+            throw new Error(`The image ${alias} does not exist in the cache.`)
+        }
+    }
     let image = new ImageSprite()
     image.textureAlias = imageUrl
     canvas.add(alias, image)
@@ -55,7 +63,7 @@ export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Prom
  * @param imageUrl The url of the image.
  * @returns A promise that is resolved when the image is loaded.
  */
-export async function showImage(alias: string, imageUrl: string): Promise<ImageSprite> {
+export async function showImage(alias: string, imageUrl?: string): Promise<ImageSprite> {
     let image = addImage(alias, imageUrl)
     await image.load()
     return image

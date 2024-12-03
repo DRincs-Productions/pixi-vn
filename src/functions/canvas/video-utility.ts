@@ -1,4 +1,4 @@
-import { Texture } from 'pixi.js';
+import { Assets, Texture } from 'pixi.js';
 import VideoSprite from '../../classes/canvas/VideoSprite';
 import { canvas } from '../../managers';
 import { getTexture } from '../texture-utility';
@@ -8,7 +8,7 @@ import { getTexture } from '../texture-utility';
  * Is the same that {@link showVideo}, but the video is not shown.
  * If you want to show the video, then you need to use the function {@link VideoSprite.load()}.
  * @param alias is the unique alias of the video. You can use this alias to refer to this video
- * @param videoUrl is the url of the video.
+ * @param videoUrl is the url of the video. If you don't provide the url, then the alias is used as the url.
  * @returns the container of the video.
  * @example
  * ```typescript
@@ -16,7 +16,15 @@ import { getTexture } from '../texture-utility';
  * await alien.load()
  * ```
  */
-export function addVideo(alias: string, videoUrl: string): VideoSprite {
+export function addVideo(alias: string, videoUrl?: string): VideoSprite {
+    if (!videoUrl) {
+        if (Assets.resolver.hasKey(alias)) {
+            videoUrl = alias
+        }
+        else {
+            throw new Error(`The video ${alias} does not exist in the cache.`)
+        }
+    }
     let video = new VideoSprite()
     video.textureAlias = videoUrl
     canvas.add(alias, video)
@@ -55,7 +63,7 @@ export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Prom
  * @param videoUrl The url of the video.
  * @returns A promise that is resolved when the video is loaded.
  */
-export async function showVideo(alias: string, videoUrl: string): Promise<VideoSprite> {
+export async function showVideo(alias: string, videoUrl?: string): Promise<VideoSprite> {
     let video = addVideo(alias, videoUrl)
     await video.load()
     return video
