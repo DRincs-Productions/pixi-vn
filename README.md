@@ -159,7 +159,7 @@ canvas.initialize(body, 1920, 1080, {
     backgroundColor: "#303030"
 })
 
-// read more here: https://pixi-vn.web.app/start/labels.html#how-manage-the-end-of-the-game
+// read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
 narration.onGameEnd = async (props) => {
     clearAllGameDatas()
     props.navigate("/")
