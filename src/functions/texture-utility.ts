@@ -6,12 +6,18 @@ import { Assets, ColorSource, FillGradient, FillPattern, StrokeStyle, TextStyle,
  * @returns the texture of the image or video, or a text with the error.
  */
 export async function getTexture(textureAlias?: string): Promise<Texture | void> {
+    if (textureAlias === "EMPTY") {
+        return
+    }
     if (!textureAlias) {
         console.error("[Pixi’VN] Texture not found", textureAlias)
         return
     }
     if (Assets.cache.has(textureAlias)) {
-        return Assets.get(textureAlias)
+        let texture = Assets.get(textureAlias)
+        if (texture) {
+            return texture
+        }
     }
     return Assets.load(textureAlias)
         .then((texture) => {

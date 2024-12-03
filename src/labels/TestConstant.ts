@@ -10,13 +10,13 @@ export const juliette: any = new CharacterBaseModel('___pixivn_juliette___', {
 
 saveCharacter(juliette);
 
-export const eggHeadImage = "https://pixijs.com/assets/eggHead.png"
+export const eggHeadImage = "eggHead"
 export const eggHeadName = `<span style="color:purple">Egg Head</span>`
-export const flowerTopImage = "https://pixijs.com/assets/flowerTop.png"
+export const flowerTopImage = "flowerTop"
 export const flowerTopName = `<span style="color:green">Flower Top</span>`
-export const helmlokImage = "https://pixijs.com/assets/helmlok.png"
+export const helmlokImage = "helmlok"
 export const helmlokName = `<span style="color:blue">Helmlok</span>`
-export const skullyImage = "https://pixijs.com/assets/skully.png"
+export const skullyImage = "skully"
 export const skullyName = `<span style="color:red">Skully</span>`
 export const bunnyImage = "https://pixijs.com/assets/bunny.png"
 export const bunnyName = `Bunny`
