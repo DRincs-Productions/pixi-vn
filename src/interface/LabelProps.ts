@@ -19,13 +19,14 @@ export default interface LabelProps<T> {
      */
     onStepStart?: (stepIndex: number, label: T) => void | Promise<void>,
     /**
-     * Is a function that will be executed in {@link Label.onStepStart} and when the user goes back to it or when the user laods a save file.
-     * When you load a save file, will be executed all onLoadStep functions of the {@link narration.openedLabels}.
+     * Is a function that will be executed in {@link Label.onStepStart} if the index of the step is 0
+     * and when the user goes back to it or when the user laods a save file.
+     * When you load a save file, will be executed all onLoadLabel functions of the {@link narration.openedLabels}.
      * @param stepIndex Step index
      * @param label Label
      * @returns 
      */
-    onLoadStep?: (stepIndex: number, label: T) => void | Promise<void>,
+    onLoadingLabel?: (stepIndex: number, label: T) => void | Promise<void>,
     /**
      * Is a function that will be executed when the step ends.
      * @param stepIndex Step index

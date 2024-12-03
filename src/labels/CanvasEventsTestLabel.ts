@@ -150,7 +150,7 @@ export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
         }
     ],
     {
-        onLoadStep: async () => {
+        onLoadingLabel: async () => {
             await Assets.load([
                 'https://pixijs.com/assets/bg_button.jpg',
                 'https://pixijs.com/assets/button.png',

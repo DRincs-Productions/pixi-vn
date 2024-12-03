@@ -971,13 +971,13 @@ export default class NarrationManager {
                 console.warn("[Pixi’VN] Could not import originalStepData data, so will be ignored")
             }
 
-            if (this.currentLabel && this.currentLabel.onLoadStep) {
-                await this.currentLabel.onLoadStep(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
+            if (this.currentLabel && this.currentLabel.onLoadingLabel) {
+                await this.currentLabel.onLoadingLabel(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
                 for (let i = 0; i < this.openedLabels.length; i++) {
                     let labelInfo = this.openedLabels[i]
                     let label = getLabelById(labelInfo.label)
-                    if (label && label.onLoadStep) {
-                        await label.onLoadStep(labelInfo.currentStepIndex, label)
+                    if (label && label.onLoadingLabel) {
+                        await label.onLoadingLabel(labelInfo.currentStepIndex, label)
                     }
                 }
             }

@@ -11,7 +11,7 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> impl
     constructor(id: LabelIdType, props?: LabelProps<TLabel>) {
         this._id = id
         this._onStepStart = props?.onStepStart
-        this._onLoadStep = props?.onLoadStep
+        this._onLoadingLabel = props?.onLoadingLabel
         this._onStepEnd = props?.onStepEnd
         this._choiseIndex = props?.choiseIndex
     }
@@ -57,8 +57,8 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> impl
     private _onStepStart: ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined
     public get onStepStart(): ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined {
         return async (stepIndex: number, label: TLabel) => {
-            if (this._onLoadStep) {
-                await this._onLoadStep(stepIndex, label)
+            if (this._onLoadingLabel && stepIndex === 0) {
+                await this._onLoadingLabel(stepIndex, label)
             }
             if (this._onStepStart) {
                 return await this._onStepStart(stepIndex, label)
@@ -66,9 +66,9 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> impl
         }
     }
 
-    private _onLoadStep: ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined
-    public get onLoadStep(): ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined {
-        return this._onLoadStep
+    private _onLoadingLabel: ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined
+    public get onLoadingLabel(): ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined {
+        return this._onLoadingLabel
     }
 
     private _onStepEnd: ((stepIndex: number, label: TLabel) => void | Promise<void>) | undefined

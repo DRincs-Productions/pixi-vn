@@ -328,8 +328,8 @@ export default class NarrationManagerStatic {
     static async restoreFromHistoryStep(restoredStep: HistoryStepData, navigate: (path: string) => void) {
         NarrationManagerStatic._originalStepData = restoredStep
         NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels)
-        if (NarrationManagerStatic._currentLabel && NarrationManagerStatic._currentLabel.onLoadStep) {
-            await NarrationManagerStatic._currentLabel.onLoadStep(NarrationManagerStatic.currentLabelStepIndex || 0, NarrationManagerStatic._currentLabel)
+        if (NarrationManagerStatic._currentLabel && NarrationManagerStatic._currentLabel.onLoadingLabel) {
+            await NarrationManagerStatic._currentLabel.onLoadingLabel(NarrationManagerStatic.currentLabelStepIndex || 0, NarrationManagerStatic._currentLabel)
         }
         storage.import(createExportableElement(restoredStep.storage))
         canvas.import(createExportableElement(restoredStep.canvas))
