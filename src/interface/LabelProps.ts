@@ -11,7 +11,7 @@ export default interface LabelProps<T> {
     onStepStart?: (stepIndex: number, label: T) => void | Promise<void>,
     /**
      * Is a function that will be executed in {@link Label.onStepStart} if the index of the step is 0
-     * and when the user goes back to it or when the user laods a save file.
+     * and when the user laods a save file.
      * When you load a save file, will be executed all onLoadingLabel functions of the {@link narration.openedLabels}.
      * It is useful for example to make sure all images used have been cached
      * @param stepIndex Step index
@@ -20,7 +20,7 @@ export default interface LabelProps<T> {
      * @example
      * ```typescript
      * newLabel("id", [], {
-     *     onStepStart: async (stepIndex, label) => {
+     *     onLoadingLabel: async (stepIndex, label) => {
      *         await Assets.load('path/to/image1.png')
      *         await Assets.load('path/to/image2.png')
      *     }
