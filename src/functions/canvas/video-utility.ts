@@ -12,8 +12,11 @@ import { getTexture } from '../texture-utility';
  * @returns the container of the video.
  * @example
  * ```typescript
- * let alien = addVideo("bunny1", "https://pixijs.com/assets/video.mp4")
- * await alien.load()
+ * let video1 = addVideo("video1", "https://pixijs.com/assets/video1.mp4")
+ * await video1.load()
+ * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
+ * let video2 = addVideo("video2")
+ * await video2.load()
  * ```
  */
 export function addVideo(alias: string, videoUrl?: string): VideoSprite {
@@ -62,6 +65,12 @@ export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Prom
  * @param alias The unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl The url of the video.
  * @returns A promise that is resolved when the video is loaded.
+ * @example
+ * ```typescript
+ * let video1 = showVideo("video1", "https://pixijs.com/assets/video1.mp4")
+ * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
+ * let video2 = showVideo("video2")
+ * ```
  */
 export async function showVideo(alias: string, videoUrl?: string): Promise<VideoSprite> {
     let video = addVideo(alias, videoUrl)

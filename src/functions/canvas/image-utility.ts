@@ -12,8 +12,11 @@ import { getTexture } from '../texture-utility';
  * @returns the container of the image.
  * @example
  * ```typescript
- * let alien = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
- * await alien.load()
+ * let bunny1 = addImage("bunny1", "https://pixijs.com/assets/bunny1.png")
+ * await bunny1.load()
+ * Assets.add({ alias: "bunny2", src: "https://pixijs.com/assets/bunny2.png" })
+ * let bunny2 = addImage("bunny2")
+ * await bunny2.load()
  * ```
  */
 export function addImage(alias: string, imageUrl?: string): ImageSprite {
@@ -62,6 +65,12 @@ export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Prom
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param imageUrl The url of the image.
  * @returns A promise that is resolved when the image is loaded.
+ * @example
+ * ```typescript
+ * let bunny1 = showImage("bunny1", "https://pixijs.com/assets/bunny1.png")
+ * Assets.add({ alias: "bunny2", src: "https://pixijs.com/assets/bunny2.png" })
+ * let bunny2 = showImage("bunny2")
+ * ```
  */
 export async function showImage(alias: string, imageUrl?: string): Promise<ImageSprite> {
     let image = addImage(alias, imageUrl)
