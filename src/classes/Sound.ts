@@ -9,11 +9,11 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
-        let item = SoundManagerStatic.playInStepIndex[this.alias]
+        let item = SoundManagerStatic.soundsPlaying[this.alias]
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
-        SoundManagerStatic.playInStepIndex[this.alias] = {
+        SoundManagerStatic.soundsPlaying[this.alias] = {
             ...item,
             paused: true
         }
@@ -23,11 +23,11 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
-        let item = SoundManagerStatic.playInStepIndex[this.alias]
+        let item = SoundManagerStatic.soundsPlaying[this.alias]
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
-        SoundManagerStatic.playInStepIndex[this.alias] = {
+        SoundManagerStatic.soundsPlaying[this.alias] = {
             options: item.options,
             stepIndex: narration.lastStepIndex,
             paused: false
@@ -36,7 +36,7 @@ export default class Sound extends PixiSound {
     }
     override destroy(): void {
         if (this.alias) {
-            delete SoundManagerStatic.playInStepIndex[this.alias];
+            delete SoundManagerStatic.soundsPlaying[this.alias];
         }
         return super.destroy();
     }
@@ -44,7 +44,7 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
-        delete SoundManagerStatic.playInStepIndex[this.alias];
+        delete SoundManagerStatic.soundsPlaying[this.alias];
         return super.stop();
     }
     override play(options?: string | SoundPlayOptions): IMediaInstance | Promise<IMediaInstance> {
@@ -54,7 +54,7 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
-        SoundManagerStatic.playInStepIndex[this.alias] = {
+        SoundManagerStatic.soundsPlaying[this.alias] = {
             stepIndex: narration.lastStepIndex,
             options: options,
             paused: false
