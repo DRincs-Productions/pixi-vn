@@ -142,7 +142,15 @@ export default class SoundManager extends SoundLibrary {
         return sound.isPlaying()
     }
     override find(alias: string): Sound {
-        return SoundManagerStatic.sounds[alias]
+        let item = SoundManagerStatic.sounds[alias]
+        if (item) {
+            return item
+        }
+        item = sound.find(alias)
+        if (item) {
+            SoundManagerStatic.sounds[alias] = item
+        }
+        return item
     }
     override play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
         SoundManagerStatic.playInStepIndex[alias] = {
