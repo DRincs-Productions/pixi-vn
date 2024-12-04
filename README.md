@@ -38,7 +38,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
     * [Characters](https://pixi-vn.web.app/ink/ink-character.html)
     * [Open a knot](https://pixi-vn.web.app/ink/ink-label.html)
     * [Variables](https://pixi-vn.web.app/ink/ink-variables.html)
-    * [Style Text (Markdown)](https://pixi-vn.web.app/ink/ink-markdown.html)
+    * [Markup language (to add text style)](https://pixi-vn.web.app/ink/ink-markup.html)
     * [Input](https://pixi-vn.web.app/ink/ink-input.html)
     * [Canvas](https://pixi-vn.web.app/ink/ink-canvas.html)
     * [Sounds and Music](https://pixi-vn.web.app/ink/ink-sound.html)
@@ -50,6 +50,8 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
   * Narration with JS/TS:
     * [Dialogue](https://pixi-vn.web.app/start/dialogue.html)
     * [Label and Game Step](https://pixi-vn.web.app/start/labels.html)
+      * [Game flow with labels](https://pixi-vn.web.app/start/labels-flow.html)
+      * [Label features](https://pixi-vn.web.app/start/labels-advanced.html)
     * [Choice Menus](https://pixi-vn.web.app/start/choices.html)
     * [Input](https://pixi-vn.web.app/start/input.html)
     * [History](https://pixi-vn.web.app/start/history.html)
@@ -65,23 +67,26 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
   * [Animations and Effects](https://pixi-vn.web.app/start/animations-effects.html)
   * [Tickers](https://pixi-vn.web.app/start/tickers.html)
 * [Sounds and Music](https://pixi-vn.web.app/start/sound.html)
-* [UI with JavaScript Framework](https://pixi-vn.web.app/start/interface.html)
-  * [Angular UI](https://pixi-vn.web.app/start/interface-angular.html)
-  * [React UI](https://pixi-vn.web.app/start/interface-react.html)
-  * [Vue UI](https://pixi-vn.web.app/start/interface-vue.html)
+* [Assets management](https://pixi-vn.web.app/start/assets-management.html)
 * [Game storage](https://pixi-vn.web.app/start/storage.html):
   * [Flags Management](https://pixi-vn.web.app/start/flags.html)
   * [Stored Classes](https://pixi-vn.web.app/start/stored-classes.html)
 * [Save and Load](https://pixi-vn.web.app/start/save.html)
+* [UI with JavaScript Framework](https://pixi-vn.web.app/start/interface.html)
+  * JavaScript Frameworks
+    * [Angular](https://pixi-vn.web.app/start/interface-angular.html)
+    * [React Interface](https://pixi-vn.web.app/start/interface-react.html)
+    * [Vue](https://pixi-vn.web.app/start/interface-vue.html)
+  * [Navigate/switch between UI screens](https://pixi-vn.web.app/start/interface-navigate.html)
+  * [Connect the UI with the storage](https://pixi-vn.web.app/start/interface-connect-storage.html)
 
-### Advanced topics
+## Advanced topics
 
 * [Intecept Events](https://pixi-vn.web.app/advanced/intercept-events.html)
 * [Distribution](https://pixi-vn.web.app/advanced/distribution.html)
   * [Website distribution](https://pixi-vn.web.app/advanced/distribution-website.html)
-  * [Desktop distribution](https://pixi-vn.web.app/advanced/distribution-desktop.html)
-  * [Mobile distribution](https://pixi-vn.web.app/advanced/distribution-mobile.html)
-* [Pixi’VN + Json](pixi-vn-json)
+  * [Desktop & mobile devices](https://pixi-vn.web.app/advanced/distribution-desktop-mobile.html)
+* [Pixi’VN + Json](https://pixi-vn.web.app/advanced/pixi-vn-json.html)
 
 ## Prerequisites
 
