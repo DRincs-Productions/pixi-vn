@@ -2,7 +2,8 @@ import { Filter, filters, IMediaContext, IMediaInstance, Sound as PixiSound, sou
 import { narration } from '.';
 import { Sound } from '../classes';
 import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/sound-utility';
-import { ExportedSound, ExportedSounds, SoundOptions, SoundPlayOptions } from '../interface';
+import { ExportedSounds, SoundOptions, SoundPlayOptions } from '../interface';
+import { ExportedSoundPlay } from '../interface/export/ExportedSounds';
 import SoundManagerStatic from './SoundManagerStatic';
 
 export default class SoundManager extends SoundLibrary {
@@ -88,7 +89,7 @@ export default class SoundManager extends SoundLibrary {
     }
     override remove(alias: string): this {
         SoundManagerStatic.soundAliasesOrder = SoundManagerStatic.soundAliasesOrder.filter((t) => t !== alias)
-        delete SoundManagerStatic.playInStepIndex[alias]
+        delete SoundManagerStatic.soundsPlaying[alias]
         delete SoundManagerStatic.sounds[alias]
         return sound.remove(alias) as this
     }
@@ -124,7 +125,7 @@ export default class SoundManager extends SoundLibrary {
     }
     override removeAll(): this {
         SoundManagerStatic.soundAliasesOrder = []
-        SoundManagerStatic.playInStepIndex = {}
+        SoundManagerStatic.soundsPlaying = {}
         SoundManagerStatic.sounds = {}
         return sound.removeAll() as this
     }
@@ -132,11 +133,11 @@ export default class SoundManager extends SoundLibrary {
         for (let alias in SoundManagerStatic.sounds) {
             SoundManagerStatic.sounds[alias].stop()
         }
-        SoundManagerStatic.playInStepIndex = {}
+        SoundManagerStatic.soundsPlaying = {}
         return sound.stopAll() as this
     }
     override exists(alias: string, assert?: boolean): boolean {
-        return sound.exists(alias, assert) && alias in SoundManagerStatic.sounds
+        return sound.exists(alias, assert) || alias in SoundManagerStatic.sounds
     }
     override isPlaying(): boolean {
         return sound.isPlaying()
@@ -153,7 +154,10 @@ export default class SoundManager extends SoundLibrary {
         return item
     }
     override play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
-        SoundManagerStatic.playInStepIndex[alias] = {
+        if (!this.exists(alias)) {
+            throw new Error("[Pixi’VN] The alias is not found in the sound library.");
+        }
+        SoundManagerStatic.soundsPlaying[alias] = {
             stepIndex: narration.lastStepIndex,
             options: options,
             paused: false
@@ -161,26 +165,26 @@ export default class SoundManager extends SoundLibrary {
         return sound.play(alias, options)
     }
     override stop(alias: string): Sound {
-        delete SoundManagerStatic.playInStepIndex[alias];
+        delete SoundManagerStatic.soundsPlaying[alias];
         return sound.stop(alias)
     }
-    override  pause(alias: string): Sound {
-        let item = SoundManagerStatic.playInStepIndex[alias]
+    override pause(alias: string): Sound {
+        let item = SoundManagerStatic.soundsPlaying[alias]
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
-        SoundManagerStatic.playInStepIndex[alias] = {
+        SoundManagerStatic.soundsPlaying[alias] = {
             ...item,
             paused: true
         }
         return sound.pause(alias)
     }
     override resume(alias: string): Sound {
-        let item = SoundManagerStatic.playInStepIndex[alias]
+        let item = SoundManagerStatic.soundsPlaying[alias]
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
-        SoundManagerStatic.playInStepIndex[alias] = {
+        SoundManagerStatic.soundsPlaying[alias] = {
             options: item.options,
             stepIndex: narration.lastStepIndex,
             paused: false
@@ -202,7 +206,6 @@ export default class SoundManager extends SoundLibrary {
 
     clear() {
         this.stopAll()
-        this.removeAll()
     }
 
     /* Export and Import Methods */
@@ -211,29 +214,32 @@ export default class SoundManager extends SoundLibrary {
         return JSON.stringify(this.export())
     }
     public export(): ExportedSounds {
-        let soundElements: ExportedSound = {}
-        for (let alias of SoundManagerStatic.soundAliasesOrder) {
-            if (this.exists(alias)) {
-                let item = this.find(alias)
+        let soundElements: { [key: string]: ExportedSoundPlay } = {}
+        for (let alias in SoundManagerStatic.soundsPlaying) {
+            let sound = SoundManagerStatic.soundsPlaying[alias]
+            let item = this.find(alias)
+            if (item) {
                 soundElements[alias] = {
-                    options: {
-                        ...item.options,
-                        autoPlay: item.autoPlay,
-                        loop: item.loop,
-                        preload: item.preload,
-                        singleInstance: item.singleInstance,
-                        url: item.options.url,
-                        volume: item.options.volume,
-                    },
-                    filters: FilterToFilterMemory(item.media.filters),
+                    ...sound,
+                    sound: {
+                        options: {
+                            ...item.options,
+                            autoPlay: item.autoPlay,
+                            loop: item.loop,
+                            preload: item.preload,
+                            singleInstance: item.singleInstance,
+                            url: item.options.url,
+                            volume: item.options.volume,
+                        },
+                        filters: FilterToFilterMemory(item.media.filters),
+                    }
                 }
             }
         }
         return {
-            sounds: soundElements,
+            soundsPlaying: soundElements,
             soundAliasesOrder: SoundManagerStatic.soundAliasesOrder,
             filters: FilterToFilterMemory(this.filtersAll),
-            playInStepIndex: SoundManagerStatic.playInStepIndex
         }
     }
     public removeOldSoundAndExport(): ExportedSounds {
@@ -271,11 +277,10 @@ export default class SoundManager extends SoundLibrary {
             }
 
             if (data.hasOwnProperty("playInStepIndex")) {
-                SoundManagerStatic.playInStepIndex = (data as ExportedSounds)["playInStepIndex"]
-            }
-            else {
-                console.error("[Pixi’VN] The data does not have the properties playInStepIndex")
-                return
+                let playInStepIndex = (data as ExportedSounds)["playInStepIndex"]
+                if (playInStepIndex) {
+                    SoundManagerStatic.soundsPlaying = playInStepIndex
+                }
             }
 
             if (data.hasOwnProperty("sounds")) {
@@ -288,8 +293,55 @@ export default class SoundManager extends SoundLibrary {
                         autoPlay: false
                     })
 
-                    if (alias in SoundManagerStatic.playInStepIndex) {
-                        let step = SoundManagerStatic.playInStepIndex[alias];
+                    if (alias in SoundManagerStatic.soundsPlaying) {
+                        let step = SoundManagerStatic.soundsPlaying[alias];
+                        if (item.options.loop || (step.options && typeof step.options === 'object' && step.options.loop)) {
+                            autoPlay = true
+                        } else if (step.stepIndex === lastStepIndex) {
+                            autoPlay = true
+                        }
+
+                        if (item.filters) {
+                            s.filters = FilterMemoryToFilter(item.filters)
+                        }
+
+                        if (autoPlay) {
+                            s.play()
+                        }
+                    }
+                }
+            }
+
+            if (data.hasOwnProperty("soundsPlaying")) {
+                let soundsPlaying = (data as ExportedSounds)["soundsPlaying"]
+                for (let alias in soundsPlaying) {
+                    let op = soundsPlaying[alias]
+                    SoundManagerStatic.soundsPlaying[alias] = {
+                        paused: op.paused,
+                        stepIndex: op.stepIndex,
+                        options: op.options,
+                    }
+
+                    let item = soundsPlaying[alias].sound
+                    let autoPlay = false
+                    let s: Sound
+                    if (this.exists(alias)) {
+                        s = this.find(alias)
+                        item.options.url = s.options.url
+                        item.options.volume = s.options.volume
+                        s.options = item.options
+                        s.autoPlay = false
+                        s.filters = item.filters ? FilterMemoryToFilter(item.filters) : []
+                    }
+                    else {
+                        s = this.add(alias, {
+                            ...item.options,
+                            autoPlay: false
+                        })
+                    }
+
+                    if (alias in SoundManagerStatic.soundsPlaying) {
+                        let step = SoundManagerStatic.soundsPlaying[alias];
                         if (item.options.loop || (step.options && typeof step.options === 'object' && step.options.loop)) {
                             autoPlay = true
                         } else if (step.stepIndex === lastStepIndex) {
@@ -307,7 +359,7 @@ export default class SoundManager extends SoundLibrary {
                 }
             }
             else {
-                console.error("[Pixi’VN] The data does not have the properties sounds")
+                console.error("[Pixi’VN] The data does not have the properties soundsPlaying")
                 return
             }
         }

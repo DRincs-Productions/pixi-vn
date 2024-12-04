@@ -203,8 +203,9 @@ export default class NarrationManagerStatic {
                 },
                 sound: {
                     soundAliasesOrder: [],
-                    sounds: {},
+                    soundsPlaying: {},
                     playInStepIndex: {},
+                    filters: undefined,
                 },
                 labelIndex: -1,
                 openedLabels: [],

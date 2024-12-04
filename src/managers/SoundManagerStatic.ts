@@ -1,9 +1,9 @@
 import { Sound } from "../classes"
-import { ExportedSoundPlay } from "../interface/export/ExportedSounds"
+import { SoundPlay } from "../interface/export/ExportedSounds"
 
 export default class SoundManagerStatic {
     private constructor() { }
     static soundAliasesOrder: string[] = []
-    static playInStepIndex: ExportedSoundPlay = {}
+    static soundsPlaying: { [key: string]: SoundPlay } = {}
     static sounds: { [key: string]: Sound } = {}
 }
