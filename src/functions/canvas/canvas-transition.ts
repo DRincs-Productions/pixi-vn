@@ -60,7 +60,7 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
     if (id) {
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
     }
     if (id) {
@@ -166,7 +166,7 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
         res ? res.push(id2) : res = [id2]
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
     }
     return res
@@ -251,7 +251,7 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
     }
     if (id) {
@@ -394,7 +394,7 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
     }
     if (id) {
@@ -549,7 +549,7 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
         canvas.putOnPauseTicker(alias, id)
         mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.texture?.label == "EMPTY") {
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
     }
     if (id) {
