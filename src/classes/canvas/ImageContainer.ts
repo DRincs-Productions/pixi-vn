@@ -47,17 +47,21 @@ export default class ImageContainer extends Container<ImageSprite> {
     }
 
     /**
-     * The texture of the first child or the first child with the empty texture.
+     * The texture of the first child.
      * If there is no child, it returns a new {@link Texture}.
      */
     get texture() {
         if (this.children.length > 0) {
-            let childrenEmpty = this.children.find(child => child.texture._source.label === "EMPTY")
-            if (childrenEmpty) {
-                return childrenEmpty.texture
-            }
             return this.children[0].texture
         }
         return new Texture()
+    }
+
+    /**
+     * Check if there is a child with the empty texture.
+     * @returns A boolean that is true if there is a child with the empty texture.
+     */
+    get haveEmptyTexture() {
+        return this.children.some(child => child.texture._source.label === "EMPTY")
     }
 }
