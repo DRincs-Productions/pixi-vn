@@ -1,6 +1,7 @@
-import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
+import { Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
+import { checkIfTextureIsEmpty } from "../../functions/texture-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { RotateTickerProps } from "../../types/ticker/RotateTickerProps";
@@ -42,8 +43,11 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
+                if (!element) {
+                    return false
+                }
                 if (args.startOnlyIfHaveTexture) {
-                    if (element && element instanceof PixiSprite && element.texture?.label == "EMPTY") {
+                    if (!checkIfTextureIsEmpty(element)) {
                         return false
                     }
                 }

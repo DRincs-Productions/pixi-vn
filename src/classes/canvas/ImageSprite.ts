@@ -73,4 +73,12 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                 console.error("[Pixi’VN] Error into ImageSprite.load()", e)
             })
     }
+
+    /**
+     * Check if the texture is empty.
+     * @returns A boolean that is true if the texture is empty.
+     */
+    get haveEmptyTexture() {
+        return this.texture._source.label === "EMPTY"
+    }
 }

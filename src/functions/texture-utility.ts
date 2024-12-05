@@ -1,4 +1,5 @@
-import { Assets, ColorSource, FillGradient, FillPattern, StrokeStyle, TextStyle, TextStyleOptions, Texture } from 'pixi.js';
+import { Assets, ColorSource, FillGradient, FillPattern, Sprite as PixiSprite, StrokeStyle, TextStyle, TextStyleOptions, Texture } from 'pixi.js';
+import { CanvasBaseItem, Container, ImageContainer, ImageSprite } from '../classes';
 
 /**
  * Get a texture from a url.
@@ -70,4 +71,14 @@ export function getTextStyle(style: TextStyle): TextStyleOptions {
         wordWrap: style.wordWrap,
         wordWrapWidth: style.wordWrapWidth,
     }
+}
+
+export function checkIfTextureIsEmpty<T extends Container | CanvasBaseItem<any> = Container>(element: T) {
+    if ((element instanceof ImageSprite || element instanceof ImageContainer) && element.haveEmptyTexture) {
+        return false
+    }
+    else if (element instanceof PixiSprite && element.texture?.label == "EMPTY") {
+        return false
+    }
+    return true
 }
