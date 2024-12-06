@@ -471,7 +471,7 @@ const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
         let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage, helmlokImage, skullyImage])
         container.x = 300
         container.y = 300
-        container.pivot.set(container.width / 2, container.height / 2)
+        container.anchor = 0.5
         showWithDissolveTransition("container", container)
         canvas.addTicker("container", new RotateTicker({
             speed: 6,

@@ -1,4 +1,4 @@
-import { ContainerOptions, Texture } from "pixi.js";
+import { ContainerOptions, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -16,12 +16,17 @@ import ImageSprite from "./ImageSprite";
  * ```
  */
 export default class ImageContainer extends Container<ImageSprite> {
-    constructor(options?: ContainerOptions<ImageSprite>, textureAliases: string[] = []) {
+    constructor(options?: ContainerOptions<ImageSprite> & {
+        anchor: PointData | number
+    }, textureAliases: string[] = []) {
         super(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {
                 this.addChild(new ImageSprite(undefined, textureAlias))
             })
+        }
+        if (options?.anchor) {
+            this.anchor = options.anchor
         }
     }
     override get memory() {
@@ -63,5 +68,35 @@ export default class ImageContainer extends Container<ImageSprite> {
      */
     get haveEmptyTexture() {
         return this.children.some(child => child.texture._source.label === "EMPTY")
+    }
+
+    /**
+     * The anchor sets the origin point of the imageContainer. The default value is taken from the {@link Texture}
+     * and passed to the constructor.
+     *
+     * The default is `(0,0)`, this means the imageContainer's origin is the top left.
+     *
+     * Setting the anchor to `(0.5,0.5)` means the imageContainer's origin is centered.
+     *
+     * Setting the anchor to `(1,1)` would mean the imageContainer's origin point will be the bottom right corner.
+     *
+     * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
+     * @example
+     * import { ImageContainer } from '@drincs/pixi-vn';
+     *
+     * const imageContainer = new ImageContainer();
+     * imageContainer.anchor = 0.5;
+     */
+    get anchor(): PointData {
+        let x = this.pivot.x / this.width
+        let y = this.pivot.y / this.height
+        return { x, y }
+    }
+    set anchor(value: PointData | number) {
+        if (typeof value === "number") {
+            this.pivot.set(value * this.width, value * this.height)
+        } else {
+            this.pivot.set(value.x * this.width, value.y * this.height)
+        }
     }
 }
