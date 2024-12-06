@@ -11,7 +11,7 @@ import { getMemoryContainer, setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
- * but it has the ability to be saved and loaded by the Pixi'VN library.
+ * but it has the ability to be saved and loaded by the Pixi’VN library.
  * @example
  * ```typescript
  * const text = new Text();
