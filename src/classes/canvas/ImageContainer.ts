@@ -88,15 +88,35 @@ export default class ImageContainer extends Container<ImageSprite> {
      * imageContainer.anchor = 0.5;
      */
     get anchor(): PointData {
-        let x = this.pivot.x / this.width
-        let y = this.pivot.y / this.height
+        let x: number;
+        let y: number;
+        if (this.children.length === 0) {
+            x = this.pivot.x / this.width
+            y = this.pivot.y / this.height
+        }
+        else {
+            x = this.pivot.x / this._widthBigChild
+            y = this.pivot.y / this._heightBigChild
+        }
         return { x, y }
     }
     set anchor(value: PointData | number) {
         if (typeof value === "number") {
-            this.pivot.set(value * this.width, value * this.height)
+            this.pivot.set(value * this._widthBigChild, value * this._heightBigChild)
         } else {
-            this.pivot.set(value.x * this.width, value.y * this.height)
+            this.pivot.set(value.x * this._widthBigChild, value.y * this._heightBigChild)
         }
+    }
+    private get _widthBigChild(): number {
+        if (this.children.length === 0) {
+            return this.width
+        }
+        return Math.max(...this.children.map(child => child.width))
+    }
+    private get _heightBigChild(): number {
+        if (this.children.length === 0) {
+            return this.height
+        }
+        return Math.max(...this.children.map(child => child.height))
     }
 }
