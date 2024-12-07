@@ -477,19 +477,13 @@ const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
             speed: 6,
         }))
     },
-    () => {
+    async () => {
         narration.dialogue = {
             character: juliette,
             text: `Now I will show you the image container with 2 images.`
         }
-        canvas.removeAll()
         let container = new ImageContainer(undefined, [helmlokImage, skullyImage])
-        container.x = 300
-        container.y = 300
-        container.anchor = 0.5
         canvas.add("container", container)
-        canvas.addTicker("container", new RotateTicker({
-            speed: 6,
-        }))
+        await container.load()
     },
 ])
