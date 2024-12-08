@@ -38,6 +38,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     }
     override set memory(value) {
         super.memory = value
+        if (value.anchor) {
+            this.reloadAnchor()
+        }
     }
     pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
     /** 
@@ -103,11 +106,15 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     set anchor(value: PointData | number) {
         if (typeof value === "number") {
             this._anchor = { x: value, y: value }
-            super.pivot.set(value * this.width, value * this.height)
         }
         else {
             this._anchor = value
-            super.pivot.set(value.x * this.width, value.y * this.height)
+        }
+        this.reloadAnchor()
+    }
+    private reloadAnchor() {
+        if (this._anchor) {
+            super.pivot.set(this._anchor.x * this.width, this._anchor.y * this.height)
         }
     }
     override get pivot() {
