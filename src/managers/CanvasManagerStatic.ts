@@ -143,7 +143,10 @@ export default class CanvasManagerStatic {
      * The order of the elements in the canvas, is determined by the zIndex.
      */
     static get childrenAliasesOrder(): string[] {
-        return Object.entries(CanvasManagerStatic._children).sort((a, b) => a[1].zIndex - b[1].zIndex).map(([alias, _]) => alias)
+        return Object
+            .entries(CanvasManagerStatic._children)
+            .sort((a, b) => CanvasManagerStatic.app.stage.getChildIndex(a[1]) - CanvasManagerStatic.app.stage.getChildIndex(b[1]))
+            .map(([alias, _]) => alias)
     }
 
     /** Edit Tickers Methods */

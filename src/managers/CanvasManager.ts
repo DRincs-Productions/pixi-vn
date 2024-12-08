@@ -257,7 +257,7 @@ export default class CanvasManager {
         let ignoreOldStyle = options?.ignoreOldStyle
         let oldCanvasElement = this.find(alias)
         if (oldCanvasElement) {
-            let zIndex = oldCanvasElement.zIndex
+            let zIndex = this.app.stage.getChildIndex(oldCanvasElement)
             !ignoreOldStyle && this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
             this.remove(alias, { ignoreTickers: true })
             this.app.stage.addChildAt(canvasElement, zIndex)

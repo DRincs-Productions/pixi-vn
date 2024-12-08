@@ -31,9 +31,11 @@ export default class Container<C extends ContainerChild = ContainerChild, Memory
     pixivnId: string = CANVAS_CONTAINER_ID
     get memory(): Memory {
         let memory = getMemoryContainer(this)
-        this.children.forEach(child => {
-            memory.elements.push(exportCanvasElement(child as CanvasBaseItem<any>))
-        })
+        this.children
+            .sort((a, b) => this.getChildIndex(a) - this.getChildIndex(b))
+            .forEach(child => {
+                memory.elements.push(exportCanvasElement(child as CanvasBaseItem<any>))
+            })
         return memory as Memory
     }
     set memory(value: Memory) {
