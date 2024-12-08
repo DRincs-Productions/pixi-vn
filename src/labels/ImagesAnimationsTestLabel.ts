@@ -471,19 +471,10 @@ const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
         let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage])
         container.x = 300
         container.y = 300
-        await showWithDissolveTransition("container", container)
+        showWithDissolveTransition("container", container)
         container.anchor = 0.5
         canvas.addTicker("container", new RotateTicker({
             speed: 6,
         }))
-    },
-    async () => {
-        narration.dialogue = {
-            character: juliette,
-            text: `Now I will show you the image container with 2 images.`
-        }
-        let container = new ImageContainer(undefined, [helmlokImage, skullyImage])
-        canvas.add("container", container)
-        await container.load()
     },
 ])

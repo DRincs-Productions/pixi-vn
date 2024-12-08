@@ -1,4 +1,4 @@
-import { ContainerOptions, PointData, Texture } from "pixi.js";
+import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -48,7 +48,12 @@ export default class ImageContainer extends Container<ImageSprite> {
                 return child.load()
             }
         })
-        return Promise.all(list)
+        return Promise.all(list).then((res) => {
+            if (this._anchor) {
+                this.anchor = this._anchor
+            }
+            return res
+        })
     }
 
     /**
@@ -70,6 +75,7 @@ export default class ImageContainer extends Container<ImageSprite> {
         return this.children.some(child => child.texture._source.label === "EMPTY")
     }
 
+    private _anchor?: PointData
     /**
      * The anchor sets the origin point of the imageContainer. The default value is taken from the {@link Texture}
      * and passed to the constructor.
@@ -88,15 +94,24 @@ export default class ImageContainer extends Container<ImageSprite> {
      * imageContainer.anchor = 0.5;
      */
     get anchor(): PointData {
-        let x = this.pivot.x / this.width
-        let y = this.pivot.y / this.height
+        let x = super.pivot.x / this.width
+        let y = super.pivot.y / this.height
         return { x, y }
     }
     set anchor(value: PointData | number) {
         if (typeof value === "number") {
-            this.pivot.set(value * this.width, value * this.height)
+            this._anchor = { x: value, y: value }
+            super.pivot.set(value * this.width, value * this.height)
         } else {
-            this.pivot.set(value.x * this.width, value.y * this.height)
+            this._anchor = value
+            super.pivot.set(value.x * this.width, value.y * this.height)
         }
+    }
+    override get pivot() {
+        return super.pivot
+    }
+    override set pivot(value: ObservablePoint) {
+        this._anchor = undefined
+        super.pivot = value
     }
 }
