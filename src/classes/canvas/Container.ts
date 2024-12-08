@@ -23,20 +23,20 @@ export type ContainerChild = PixiContainer & CanvasBaseItem<any>
  *  }
  * ```
  */
-export default class Container<C extends ContainerChild = ContainerChild> extends PixiContainer<C> implements CanvasBaseItem<ContainerMemory> {
+export default class Container<C extends ContainerChild = ContainerChild, Memory extends ContainerMemory = ContainerMemory> extends PixiContainer<C> implements CanvasBaseItem<Memory> {
     constructor(options?: ContainerOptions<C>) {
         super(options)
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID
     }
     pixivnId: string = CANVAS_CONTAINER_ID
-    get memory(): ContainerMemory {
+    get memory(): Memory {
         let memory = getMemoryContainer(this)
         this.children.forEach(child => {
             memory.elements.push(exportCanvasElement(child as CanvasBaseItem<any>))
         })
-        return memory
+        return memory as Memory
     }
-    set memory(value: ContainerMemory) {
+    set memory(value: Memory) {
         setMemoryContainer(this, value)
         value.elements.forEach(child => {
             this.addChild(importCanvasElement<C>(child))
