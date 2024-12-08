@@ -1,4 +1,5 @@
-import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, PointData, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { canvas } from "../..";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { setMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
@@ -112,6 +113,21 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         let mySprite = new Sprite()
         mySprite.texture = sprite.texture
         return mySprite
+    }
+    set align(value: PointData | number) {
+        if (typeof value === "number") {
+            this.x = value
+            this.y = value
+        } else {
+            this.x = value.x
+            this.y = value.y
+        }
+    }
+    set xAlign(value: number) {
+        this.x = value * (canvas.screen.width - this.width - this.pivot.x)
+    }
+    set yAlign(value: number) {
+        this.y = value * (canvas.screen.height - this.height - this.pivot.y)
     }
 }
 
