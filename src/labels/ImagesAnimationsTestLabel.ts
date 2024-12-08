@@ -462,19 +462,24 @@ const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
 ])
 
 const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
-    () => {
+    async () => {
         narration.dialogue = {
             character: juliette,
             text: `Now I will show you the image container.`
         }
         canvas.removeAll()
-        let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage, helmlokImage, skullyImage])
+        let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage])
         container.x = 300
         container.y = 300
-        container.pivot.set(container.width / 2, container.height / 2)
         showWithDissolveTransition("container", container)
+        container.anchor = 0.5
         canvas.addTicker("container", new RotateTicker({
             speed: 6,
         }))
-    }
+    },
+    async () => {
+        let container = new ImageContainer(undefined, [helmlokImage, skullyImage])
+        canvas.add("container", container)
+        await container.load()
+    },
 ])

@@ -1,6 +1,7 @@
 import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
+import { setMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
 import { getTextureMemory } from "../../functions/canvas/canvas-utility";
 import { getTexture } from "../../functions/texture-utility";
 import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
@@ -8,7 +9,7 @@ import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
-import { getMemoryContainer, setMemoryContainer } from "./Container";
+import { getMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,

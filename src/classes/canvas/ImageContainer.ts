@@ -1,5 +1,6 @@
-import { ContainerOptions, Texture } from "pixi.js";
+import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
+import { ImageContainerMemory } from "../../interface";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
 
@@ -15,22 +16,31 @@ import ImageSprite from "./ImageSprite";
  *  canvas.add(container);
  * ```
  */
-export default class ImageContainer extends Container<ImageSprite> {
-    constructor(options?: ContainerOptions<ImageSprite>, textureAliases: string[] = []) {
+export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
+    constructor(options?: ContainerOptions<ImageSprite> & {
+        anchor: PointData | number
+    }, textureAliases: string[] = []) {
         super(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {
                 this.addChild(new ImageSprite(undefined, textureAlias))
             })
         }
+        if (options?.anchor) {
+            this.anchor = options.anchor
+        }
     }
     override get memory() {
         let memory = super.memory
         memory.pixivnId = CANVAS_IMAGE_CONTAINER_ID
+        memory.anchor = this._anchor
         return memory
     }
     override set memory(value) {
         super.memory = value
+        if (value.anchor) {
+            this.reloadAnchor()
+        }
     }
     pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
     /** 
@@ -43,7 +53,12 @@ export default class ImageContainer extends Container<ImageSprite> {
                 return child.load()
             }
         })
-        return Promise.all(list)
+        return Promise.all(list).then((res) => {
+            if (this._anchor) {
+                this.anchor = this._anchor
+            }
+            return res
+        })
     }
 
     /**
@@ -63,5 +78,50 @@ export default class ImageContainer extends Container<ImageSprite> {
      */
     get haveEmptyTexture() {
         return this.children.some(child => child.texture._source.label === "EMPTY")
+    }
+
+    private _anchor?: PointData
+    /**
+     * The anchor sets the origin point of the imageContainer. The default value is taken from the {@link Texture}
+     * and passed to the constructor.
+     *
+     * The default is `(0,0)`, this means the imageContainer's origin is the top left.
+     *
+     * Setting the anchor to `(0.5,0.5)` means the imageContainer's origin is centered.
+     *
+     * Setting the anchor to `(1,1)` would mean the imageContainer's origin point will be the bottom right corner.
+     *
+     * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
+     * @example
+     * import { ImageContainer } from '@drincs/pixi-vn';
+     *
+     * const imageContainer = new ImageContainer();
+     * imageContainer.anchor = 0.5;
+     */
+    get anchor(): PointData {
+        let x = super.pivot.x / this.width
+        let y = super.pivot.y / this.height
+        return { x, y }
+    }
+    set anchor(value: PointData | number) {
+        if (typeof value === "number") {
+            this._anchor = { x: value, y: value }
+        }
+        else {
+            this._anchor = value
+        }
+        this.reloadAnchor()
+    }
+    private reloadAnchor() {
+        if (this._anchor) {
+            super.pivot.set(this._anchor.x * this.width, this._anchor.y * this.height)
+        }
+    }
+    override get pivot() {
+        return super.pivot
+    }
+    override set pivot(value: ObservablePoint) {
+        this._anchor = undefined
+        super.pivot = value
     }
 }
