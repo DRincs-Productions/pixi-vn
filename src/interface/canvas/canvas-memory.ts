@@ -1,4 +1,5 @@
-import { ContainerOptions, SpriteOptions, TextOptions } from "pixi.js";
+import { ContainerOptions, PointData, SpriteOptions, TextOptions } from "pixi.js";
+import { ImageSprite } from "../../classes";
 import { ContainerChild } from "../../classes/canvas/Container";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
@@ -16,6 +17,14 @@ export interface CanvasBaseItemMemory {
  */
 export interface ContainerMemory<C extends ContainerChild = ContainerChild> extends ContainerOptions<C>, CanvasBaseItemMemory {
     elements: CanvasBaseItemMemory[],
+}
+
+/**
+ * Interface for the canvas container memory
+ */
+export interface ImageContainerMemory extends ContainerMemory<ImageSprite> {
+    elements: ImageSpriteMemory[],
+    anchor?: PointData
 }
 
 export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {

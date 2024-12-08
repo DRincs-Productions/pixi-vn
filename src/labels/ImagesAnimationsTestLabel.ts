@@ -477,4 +477,9 @@ const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
             speed: 6,
         }))
     },
+    async () => {
+        let container = new ImageContainer(undefined, [helmlokImage, skullyImage])
+        canvas.add("container", container)
+        await container.load()
+    },
 ])

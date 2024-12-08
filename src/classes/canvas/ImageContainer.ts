@@ -1,5 +1,6 @@
 import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
+import { ImageContainerMemory } from "../../interface";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
 
@@ -15,7 +16,7 @@ import ImageSprite from "./ImageSprite";
  *  canvas.add(container);
  * ```
  */
-export default class ImageContainer extends Container<ImageSprite> {
+export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
     constructor(options?: ContainerOptions<ImageSprite> & {
         anchor: PointData | number
     }, textureAliases: string[] = []) {
@@ -32,6 +33,7 @@ export default class ImageContainer extends Container<ImageSprite> {
     override get memory() {
         let memory = super.memory
         memory.pixivnId = CANVAS_IMAGE_CONTAINER_ID
+        memory.anchor = this._anchor
         return memory
     }
     override set memory(value) {
@@ -102,7 +104,8 @@ export default class ImageContainer extends Container<ImageSprite> {
         if (typeof value === "number") {
             this._anchor = { x: value, y: value }
             super.pivot.set(value * this.width, value * this.height)
-        } else {
+        }
+        else {
             this._anchor = value
             super.pivot.set(value.x * this.width, value.y * this.height)
         }
