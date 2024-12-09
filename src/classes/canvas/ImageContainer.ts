@@ -35,11 +35,12 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         }
     }
     override get memory() {
-        let memory = super.memory
-        memory.pixivnId = CANVAS_IMAGE_CONTAINER_ID
-        memory.anchor = this._anchor
-        memory.align = this._align
-        return memory
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_IMAGE_CONTAINER_ID,
+            anchor: this._anchor,
+            align: this._align,
+        }
     }
     override set memory(value) {
         super.memory = value
