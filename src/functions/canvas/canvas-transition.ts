@@ -424,11 +424,12 @@ export function zoomOut(
         return
     }
 
+    let zIndex = canvas.app.stage.getChildIndex(canvasElement)
     let container = new Container()
     container.addChild(canvasElement)
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    canvas.add(alias, container)
+    canvas.add(alias, container, { zIndex })
 
     if (props.direction == "up") {
         container.pivot.y = canvas.canvasHeight
@@ -584,8 +585,9 @@ export function pushOut(
     container.pivot.y = 0
     container.x = 0
     container.y = 0
+    let zIndex = canvas.app.stage.getChildIndex(canvasElement)
     container.addChild(canvasElement)
-    canvas.add(alias, container, { ignoreOldStyle: true })
+    canvas.add(alias, container, { ignoreOldStyle: true, zIndex })
 
     let destination = { x: 0, y: 0 }
 

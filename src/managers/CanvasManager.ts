@@ -248,21 +248,34 @@ export default class CanvasManager {
          * @default false
          */
         ignoreOldStyle?: boolean
+        /**
+         * The zIndex of the canvas element.
+         * @default undefined
+         */
+        zIndex?: number
     } = {}) {
         if (alias === CANVAS_APP_STAGE_ALIAS) {
             console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`)
             return
         }
-        let ignoreOldStyle = options?.ignoreOldStyle
+
         let oldCanvasElement = this.find(alias)
-        if (oldCanvasElement && !this.app.stage.children.includes(oldCanvasElement)) {
-            console.error(`[Pixi’VN] The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex and style will not be transferred`)
-            oldCanvasElement = undefined
+
+        let ignoreOldStyle = options?.ignoreOldStyle
+        if (oldCanvasElement && !ignoreOldStyle) {
+            this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
         }
-        if (oldCanvasElement) {
-            let zIndex = this.app.stage.getChildIndex(oldCanvasElement)
-            !ignoreOldStyle && this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
+
+        let zIndex = options.zIndex
+        if (oldCanvasElement && !this.app.stage.children.includes(oldCanvasElement)) {
+            console.error(`[Pixi’VN] The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`)
+        }
+        else if (oldCanvasElement) {
+            zIndex === undefined && (zIndex = this.app.stage.getChildIndex(oldCanvasElement))
             this.remove(alias, { ignoreTickers: true })
+        }
+
+        if (zIndex !== undefined) {
             this.app.stage.addChildAt(canvasElement, zIndex)
         }
         else {
