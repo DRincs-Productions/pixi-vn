@@ -255,6 +255,10 @@ export default class CanvasManager {
         }
         let ignoreOldStyle = options?.ignoreOldStyle
         let oldCanvasElement = this.find(alias)
+        if (oldCanvasElement && !this.app.stage.children.includes(oldCanvasElement)) {
+            console.error(`[Pixi’VN] The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex and style will not be transferred`)
+            oldCanvasElement = undefined
+        }
         if (oldCanvasElement) {
             let zIndex = this.app.stage.getChildIndex(oldCanvasElement)
             !ignoreOldStyle && this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
