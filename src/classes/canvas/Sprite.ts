@@ -1,10 +1,9 @@
-import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
-import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
-import { setMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
+import { getEventInstanceById } from "../../decorators/event-decorator";
+import { setMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import { getTextureMemory } from "../../functions/canvas/canvas-utility";
-import { getTexture } from "../../functions/texture-utility";
-import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
+import { CanvasBaseItemMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
@@ -124,50 +123,5 @@ export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>)
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
-    }
-}
-
-export function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}) {
-    setMemoryContainer(element, memory)
-    "textureImage" in memory && memory.textureImage && memory.textureImage.image && getTexture(memory.textureImage.image).then((texture) => {
-        if (texture) {
-            element.texture = texture
-        }
-    })
-    if ("textureData" in memory) {
-        if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
-            getTexture(memory.textureData.alias)
-                .then((texture) => {
-                    if (texture) {
-                        element.texture = texture
-                    }
-                })
-        }
-        else {
-            getTexture(memory.textureData.url)
-                .then((texture) => {
-                    if (texture) {
-                        element.texture = texture
-                    }
-                })
-        }
-    }
-    if ("anchor" in memory && memory.anchor) {
-        if (typeof memory.anchor === "number") {
-            element.anchor.set(memory.anchor, memory.anchor)
-        }
-        else {
-            element.anchor.set(memory.anchor.x, memory.anchor.y)
-        }
-    }
-    "roundPixels" in memory && memory.roundPixels && (element.roundPixels = memory.roundPixels)
-    if ("onEvents" in memory) {
-        for (let event in memory.onEvents) {
-            let id = memory.onEvents[event]
-            let instance = getEventTypeById(id)
-            if (instance) {
-                element.onEvent(event, instance)
-            }
-        }
     }
 }

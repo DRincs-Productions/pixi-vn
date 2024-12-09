@@ -1,7 +1,9 @@
-import { ContainerOptions, Container as PixiContainer, PointData } from "pixi.js";
-import { CanvasBaseItem, ImageContainer } from "../../classes";
+import { Assets, ContainerOptions, Container as PixiContainer, PointData } from "pixi.js";
+import { CanvasBaseItem, ImageContainer, Sprite } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
-import { CanvasBaseItemMemory } from "../../interface";
+import { getEventTypeById } from "../../decorators/event-decorator";
+import { CanvasBaseItemMemory, SpriteBaseMemory } from "../../interface";
+import { getTexture } from "../texture-utility";
 
 /**
  * Export a Canvas element to a memory object
@@ -83,5 +85,51 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
     if (!ignoreScale) {
         "width" in memory && memory.width && (element.width = memory.width)
         "height" in memory && memory.height && (element.height = memory.height)
+    }
+}
+
+export function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}) {
+    setMemoryContainer(element, memory)
+    "textureImage" in memory && memory.textureImage && memory.textureImage.image && getTexture(memory.textureImage.image)
+        .then((texture) => {
+            if (texture) {
+                element.texture = texture
+            }
+        })
+    if ("textureData" in memory) {
+        if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
+            getTexture(memory.textureData.alias)
+                .then((texture) => {
+                    if (texture) {
+                        element.texture = texture
+                    }
+                })
+        }
+        else {
+            getTexture(memory.textureData.url)
+                .then((texture) => {
+                    if (texture) {
+                        element.texture = texture
+                    }
+                })
+        }
+    }
+    if ("anchor" in memory && memory.anchor) {
+        if (typeof memory.anchor === "number") {
+            element.anchor.set(memory.anchor, memory.anchor)
+        }
+        else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y)
+        }
+    }
+    "roundPixels" in memory && memory.roundPixels && (element.roundPixels = memory.roundPixels)
+    if ("onEvents" in memory) {
+        for (let event in memory.onEvents) {
+            let id = memory.onEvents[event]
+            let instance = getEventTypeById(id)
+            if (instance) {
+                element.onEvent(event, instance)
+            }
+        }
     }
 }
