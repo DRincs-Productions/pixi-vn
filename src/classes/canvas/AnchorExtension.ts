@@ -25,7 +25,7 @@ export default class AnchorExtension extends PixiContainer {
     get anchor(): PointData {
         throw new Error("Anchor is not implemented")
     }
-    set anchor(value: PointData | number) {
+    set anchor(_value: PointData | number) {
         throw new Error("Anchor is not implemented")
     }
 }

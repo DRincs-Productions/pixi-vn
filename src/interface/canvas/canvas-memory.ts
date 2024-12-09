@@ -24,6 +24,7 @@ export interface ContainerMemory<C extends ContainerChild = ContainerChild> exte
 export interface ImageContainerMemory extends ContainerMemory<ImageSprite> {
     elements: ImageSpriteMemory[],
     anchor?: PointData
+    align: Partial<PointData>
 }
 
 export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {

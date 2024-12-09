@@ -43,6 +43,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Shake", shakeStageTest, {}),
             new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOption("Image container", imageContainerTest, {}),
+            new ChoiceMenuOption("Align", alignTest, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -481,5 +482,21 @@ const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
         let container = new ImageContainer(undefined, [helmlokImage, skullyImage])
         canvas.add("container", container)
         await container.load()
+    },
+])
+
+const alignTest = newLabel("___pixi_vn_images_align_test___", [
+    async () => {
+        narration.dialogue = {
+            character: juliette,
+            text: `Now I will show a test for the align.`
+        }
+        canvas.removeAll()
+        let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage])
+        container.x = 300
+        container.y = 300
+        await showWithDissolveTransition("container", container)
+        container.anchor = 0.5
+        container.align = 0.5
     },
 ])

@@ -40,6 +40,7 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
 
     if (element instanceof ImageContainer) {
         "anchor" in memory && memory.anchor && (element.anchor = memory.anchor as number | PointData)
+        "align" in memory && memory.align && (element.align = memory.align as Partial<PointData>)
     }
     "isRenderGroup" in memory && memory.isRenderGroup && (element.isRenderGroup = memory.isRenderGroup)
     "blendMode" in memory && memory.blendMode && (element.blendMode = memory.blendMode)

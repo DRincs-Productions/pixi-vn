@@ -1,6 +1,8 @@
 import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
+import { canvas } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory } from "../../interface";
+import AlignExtension, { AlignExtensionProps } from "./AlignExtension";
 import AnchorExtension, { AnchorExtensionProps } from "./AnchorExtension";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -17,8 +19,8 @@ import ImageSprite from "./ImageSprite";
  *  canvas.add(container);
  * ```
  */
-export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension {
-    constructor(options?: ContainerOptions<ImageSprite> & AnchorExtensionProps, textureAliases: string[] = []) {
+export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension, AlignExtension {
+    constructor(options?: ContainerOptions<ImageSprite> & AnchorExtensionProps & AlignExtensionProps, textureAliases: string[] = []) {
         super(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {
@@ -28,18 +30,21 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         if (options?.anchor !== undefined) {
             this.anchor = options.anchor
         }
+        if (options?.align !== undefined) {
+            this.align = options.align
+        }
     }
     override get memory() {
         let memory = super.memory
         memory.pixivnId = CANVAS_IMAGE_CONTAINER_ID
         memory.anchor = this._anchor
+        memory.align = this._align
         return memory
     }
     override set memory(value) {
         super.memory = value
-        if (value.anchor) {
-            this.reloadAnchor()
-        }
+        this.reloadAnchor()
+        this.reloadAlign()
     }
     pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
     /** 
@@ -53,9 +58,8 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             }
         })
         return Promise.all(list).then((res) => {
-            if (this._anchor) {
-                this.reloadAnchor()
-            }
+            this.reloadAnchor()
+            this.reloadAlign()
             return res
         })
     }
@@ -106,5 +110,74 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     override set pivot(value: ObservablePoint) {
         this._anchor = undefined
         super.pivot = value
+    }
+
+    /** Align */
+    private _align: Partial<PointData> = {}
+    /**
+     * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
+     * For example, if you set align to 0.5, the element will be in the center of the canvas.
+     * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
+     * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
+     */
+    set align(value: Partial<PointData> | number) {
+        if (typeof value === "number") {
+            this._align.x = value
+            this._align.y = value
+        } else {
+            value.x !== undefined && (this._align.x = value.x)
+            value.y !== undefined && (this._align.y = value.y)
+        }
+        this.reloadAlign()
+    }
+    /**
+     * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
+     * For example, if you set align to 0.5, the element will be in the center of the canvas.
+     * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
+     * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
+     */
+    set xAlign(value: number) {
+        this._align.x = value
+        this.reloadAlign()
+    }
+    /**
+     * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
+     * For example, if you set align to 0.5, the element will be in the center of the canvas.
+     * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
+     * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
+     */
+    set yAlign(value: number) {
+        this._align.y = value
+        this.reloadAlign()
+    }
+    private reloadAlign() {
+        if (this._align.x !== undefined) {
+            this.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+        }
+        if (this._align.y !== undefined) {
+            this.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+        }
+    }
+    override get position(): ObservablePoint {
+        return super.position
+    }
+    override set position(value: ObservablePoint) {
+        this._align.x = undefined
+        this._align.y = undefined
+        super.position = value
+    }
+    override get x(): number {
+        return super.x
+    }
+    override set x(value: number) {
+        this._align.x = undefined
+        super.x = value
+    }
+    override get y(): number {
+        return super.y
+    }
+    override set y(value: number) {
+        this._align.y = undefined
+        super.y = value
     }
 }
