@@ -6,6 +6,7 @@ export interface AlignExtensionProps {
      * For example, if you set align to 0.5, the element will be in the center of the canvas.
      * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
      * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
+     * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
     align?: PointData | number
 }
@@ -16,6 +17,7 @@ export default class AlignExtension extends PixiContainer {
      * For example, if you set align to 0.5, the element will be in the center of the canvas.
      * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
      * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
+     * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
     set align(_value: Partial<PointData> | number) {
         throw new Error("Method not implemented.");
@@ -25,6 +27,7 @@ export default class AlignExtension extends PixiContainer {
      * For example, if you set align to 0.5, the element will be in the center of the canvas.
      * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
      * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
+     * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
     set xAlign(_value: number) {
         throw new Error("Method not implemented.");
@@ -34,6 +37,7 @@ export default class AlignExtension extends PixiContainer {
      * For example, if you set align to 0.5, the element will be in the center of the canvas.
      * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
      * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
+     * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
     set yAlign(_value: number) {
         throw new Error("Method not implemented.");
