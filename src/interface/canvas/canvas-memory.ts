@@ -1,6 +1,5 @@
 import { ContainerOptions, PointData, SpriteOptions, TextOptions } from "pixi.js";
-import { ImageSprite } from "../../classes";
-import { ContainerChild } from "../../classes/canvas/Container";
+import { ContainerChild, ImageSprite } from "../../classes";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import TextureMemory from "./TextureMemory";

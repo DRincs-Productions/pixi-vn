@@ -19,7 +19,7 @@ export {
      * @deprecated use "import { Container } from '@drincs/pixi-vn';"
      */
     default as CanvasContainer,
-    default as Container
+    default as Container, ContainerChild
 } from './canvas/Container';
 export { default as ImageContainer } from './canvas/ImageContainer';
 export {
