@@ -114,12 +114,6 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
 
     /** Align */
     private _align: Partial<PointData> = {}
-    /**
-     * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
-     * For example, if you set align to 0.5, the element will be in the center of the canvas.
-     * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
-     * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
-     */
     set align(value: Partial<PointData> | number) {
         if (typeof value === "number") {
             this._align.x = value
@@ -130,22 +124,10 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         }
         this.reloadAlign()
     }
-    /**
-     * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
-     * For example, if you set align to 0.5, the element will be in the center of the canvas.
-     * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
-     * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
-     */
     set xAlign(value: number) {
         this._align.x = value
         this.reloadAlign()
     }
-    /**
-     * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
-     * For example, if you set align to 0.5, the element will be in the center of the canvas.
-     * If you set align to 0, the left end and a top end of the element will be in the left end and top end of the canvas.
-     * If you set align to 1, the right end and a bottom end of the element will be in the right end and bottom end of the canvas.
-     */
     set yAlign(value: number) {
         this._align.y = value
         this.reloadAlign()
