@@ -1,5 +1,4 @@
-import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, PointData, TextOptions } from "pixi.js";
-import { canvas } from "../..";
+import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { setMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
@@ -87,21 +86,6 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
      */
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents<ContainerChild> & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
         return super.on(event, fn, context)
-    }
-    set align(value: PointData | number) {
-        if (typeof value === "number") {
-            this.x = value
-            this.y = value
-        } else {
-            this.x = value.x
-            this.y = value.y
-        }
-    }
-    set xAlign(value: number) {
-        this.x = value * (canvas.screen.width - this.width - this.pivot.x)
-    }
-    set yAlign(value: number) {
-        this.y = value * (canvas.screen.height - this.height - this.pivot.y)
     }
 }
 

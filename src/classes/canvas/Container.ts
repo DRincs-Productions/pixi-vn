@@ -1,5 +1,4 @@
-import { ContainerOptions, Container as PixiContainer, PointData } from "pixi.js";
-import { canvas } from "../..";
+import { ContainerOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
 import { exportCanvasElement, importCanvasElement, setMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
 import { ContainerMemory } from "../../interface";
@@ -43,21 +42,6 @@ export default class Container<C extends ContainerChild = ContainerChild, Memory
         value.elements.forEach(child => {
             this.addChild(importCanvasElement<C>(child))
         })
-    }
-    set align(value: PointData | number) {
-        if (typeof value === "number") {
-            this.x = value
-            this.y = value
-        } else {
-            this.x = value.x
-            this.y = value.y
-        }
-    }
-    set xAlign(value: number) {
-        this.x = value * (canvas.screen.width - this.width - this.pivot.x)
-    }
-    set yAlign(value: number) {
-        this.y = value * (canvas.screen.height - this.height - this.pivot.y)
     }
 }
 
