@@ -1,6 +1,7 @@
 import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory } from "../../interface";
+import AnchorExtension, { AnchorExtensionProps } from "./AnchorExtension";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
 
@@ -16,17 +17,15 @@ import ImageSprite from "./ImageSprite";
  *  canvas.add(container);
  * ```
  */
-export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
-    constructor(options?: ContainerOptions<ImageSprite> & {
-        anchor: PointData | number
-    }, textureAliases: string[] = []) {
+export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension {
+    constructor(options?: ContainerOptions<ImageSprite> & AnchorExtensionProps, textureAliases: string[] = []) {
         super(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {
                 this.addChild(new ImageSprite(undefined, textureAlias))
             })
         }
-        if (options?.anchor) {
+        if (options?.anchor !== undefined) {
             this.anchor = options.anchor
         }
     }
@@ -80,24 +79,8 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         return this.children.some(child => child.texture._source.label === "EMPTY")
     }
 
+    /** Anchor */
     private _anchor?: PointData
-    /**
-     * The anchor sets the origin point of the imageContainer. The default value is taken from the {@link Texture}
-     * and passed to the constructor.
-     *
-     * The default is `(0,0)`, this means the imageContainer's origin is the top left.
-     *
-     * Setting the anchor to `(0.5,0.5)` means the imageContainer's origin is centered.
-     *
-     * Setting the anchor to `(1,1)` would mean the imageContainer's origin point will be the bottom right corner.
-     *
-     * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
-     * @example
-     * import { ImageContainer } from '@drincs/pixi-vn';
-     *
-     * const imageContainer = new ImageContainer();
-     * imageContainer.anchor = 0.5;
-     */
     get anchor(): PointData {
         let x = super.pivot.x / this.width
         let y = super.pivot.y / this.height
