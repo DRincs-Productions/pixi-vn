@@ -54,7 +54,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         })
         return Promise.all(list).then((res) => {
             if (this._anchor) {
-                this.anchor = this._anchor
+                this.reloadAnchor()
             }
             return res
         })
