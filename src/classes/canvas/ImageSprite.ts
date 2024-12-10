@@ -68,7 +68,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         if (!image) {
             image = this.textureAlias
         }
-        return getTexture(this.textureAlias)
+        return getTexture(image)
             .then((texture) => {
                 if (texture) {
                     this.texture = texture
