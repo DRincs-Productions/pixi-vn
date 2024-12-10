@@ -36,12 +36,11 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             currentTime: this.currentTime,
         }
     }
-    override set memory(memory: VideoSpriteMemory) {
-        super.memory = memory
-        this.loop = memory.loop
-        this.currentTime = memory.currentTime
-        this.paused = memory.paused
-        this.load()
+    override async setMemory(value: VideoSpriteMemory) {
+        await super.setMemory(value)
+        this.loop = value.loop
+        this.currentTime = value.currentTime
+        this.paused = value.paused
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
