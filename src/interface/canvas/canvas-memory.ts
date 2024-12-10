@@ -25,6 +25,7 @@ export interface ImageContainerMemory extends ContainerMemory<ImageSprite> {
     elements: ImageSpriteMemory[],
     anchor?: PointData
     align?: Partial<PointData>
+    loadIsStarted: boolean
 }
 
 export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {
@@ -57,6 +58,7 @@ export interface ImageSpriteMemory extends SpriteBaseMemory {
      */
     imageLink?: string,
     align?: Partial<PointData>
+    loadIsStarted: boolean
 }
 
 /**

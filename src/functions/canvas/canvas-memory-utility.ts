@@ -80,6 +80,7 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
     if (element instanceof ImageContainer) {
         "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData)
         "align" in memory && memory.align !== undefined && (element.align = memory.align as Partial<PointData>)
+        "loadIsStarted" in memory && memory.loadIsStarted && (element.load())
     }
     // width and height must be set after the scale
     if (!ignoreScale) {
@@ -117,6 +118,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: 
     if (element instanceof ImageSprite) {
         "align" in memory && memory.align !== undefined && (element.align = (memory as ImageSpriteMemory).align!)
         "imageLink" in memory && memory.imageLink !== undefined && (element.textureAlias = (memory as ImageSpriteMemory).imageLink!)
+        "loadIsStarted" in memory && memory.loadIsStarted && (element.load())
     }
     if ("anchor" in memory && memory.anchor !== undefined) {
         if (typeof memory.anchor === "number") {

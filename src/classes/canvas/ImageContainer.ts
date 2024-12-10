@@ -1,5 +1,5 @@
 import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
-import { canvas, getTexture } from "../..";
+import { canvas } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory } from "../../interface";
 import AlignExtension, { AlignExtensionProps } from "./AlignExtension";
@@ -34,12 +34,13 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             this.align = options.align
         }
     }
-    override get memory() {
+    override get memory(): ImageContainerMemory {
         return {
             ...super.memory,
             pixivnId: CANVAS_IMAGE_CONTAINER_ID,
             anchor: this._anchor,
             align: this._align,
+            loadIsStarted: this._loadIsStarted,
         }
     }
     override async setMemory(value: ImageContainerMemory) {
@@ -48,31 +49,30 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this.reloadAlign()
     }
     pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
+    private _loadIsStarted: boolean = false
+    get loadIsStarted() {
+        return this._loadIsStarted
+    }
     /** 
      * Load the children images.
      * @returns A promise that resolves when the images are loaded.
      */
     async load() {
-        let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(this.children.length)
+        this._loadIsStarted = true
+        let promises: Promise<void>[] = Array<Promise<void>>(this.children.length)
         for (let i = 0; i < this.children.length; i++) {
-            promises[i] = getTexture(this.children[i].textureAlias)
+            promises[i] = this.children[i].load()
         }
         // wait for all promises
         return Promise.all(promises)
-            .then((textures) => {
-                textures.map((texture, index) => {
-                    try {
-                        if (texture) {
-                            this.children[index].texture = texture
-                        }
-                        this.children[index].load()
-                    }
-                    catch (e) {
-                        console.error(`[Pixi’VN] Error into ImageContainer.load(), the children ${index} could not be loaded`, e)
-                    }
-                })
+            .then(() => {
+                this._loadIsStarted = false
                 this.reloadAnchor()
                 this.reloadAlign()
+            })
+            .catch((e) => {
+                this._loadIsStarted = false
+                console.error("[Pixi’VN] Error into ImageContainer.load()", e)
             })
     }
 

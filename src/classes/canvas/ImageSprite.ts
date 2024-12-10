@@ -47,6 +47,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             ...getMemorySprite(this),
             pixivnId: this.pixivnId,
             align: this._align,
+            loadIsStarted: this._loadIsStarted,
         }
     }
     override async setMemory(value: ImageSpriteMemory) {
@@ -59,22 +60,29 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         mySprite.texture = sprite.texture
         return mySprite
     }
+    private _loadIsStarted: boolean = false
+    get loadIsStarted() {
+        return this._loadIsStarted
+    }
     /** 
      * Load the image from the link and set the texture of the sprite.
      * @param image The link of the image. If it is not set, it will use the {@link Sprite.textureAlias} property.
      * @returns A promise that resolves when the image is loaded.
      */
     async load(image?: string) {
+        this._loadIsStarted = true
         if (!image) {
             image = this.textureAlias
         }
         return getTexture(image)
             .then((texture) => {
+                this._loadIsStarted = false
                 if (texture) {
                     this.texture = texture
                 }
             })
             .catch((e) => {
+                this._loadIsStarted = false
                 console.error("[Pixi’VN] Error into ImageSprite.load()", e)
             })
     }
