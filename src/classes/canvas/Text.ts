@@ -29,8 +29,11 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
     get memory(): TextMemory {
         return getMemoryText(this)
     }
+    setMemory(value: TextMemory) {
+        return setMemoryText(this, value)
+    }
     set memory(value: TextMemory) {
-        setMemoryText(this, value)
+        this.setMemory(value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
     get onEvents() {

@@ -21,12 +21,12 @@ export function exportCanvasElement<T extends CanvasBaseItem<any>>(
  * @param memory Memory object of the canvas
  * @returns Canvas element
  */
-export function importCanvasElement<T extends CanvasBaseItem<any>>(
+export async function importCanvasElement<T extends CanvasBaseItem<any>>(
     memory: CanvasBaseItemMemory,
-): T {
+): Promise<T> {
     let element = getCanvasElementInstanceById<T>(memory.pixivnId)
     if (element) {
-        element.memory = memory
+        await element.setMemory(memory)
     }
     else {
         throw new Error("[Pixi’VN] The element " + memory.pixivnId + " could not be created")
@@ -87,14 +87,14 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
     }
 }
 
-export function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}) {
+export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}) {
     setMemoryContainer(element, memory)
-    "textureImage" in memory && memory.textureImage && memory.textureImage.image && getTexture(memory.textureImage.image)
-        .then((texture) => {
-            if (texture) {
-                element.texture = texture
-            }
-        })
+    if ("textureImage" in memory && memory.textureImage && memory.textureImage.image) {
+        let texture = await getTexture(memory.textureImage.image)
+        if (texture) {
+            element.texture = texture
+        }
+    }
     if ("textureData" in memory) {
         if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
             getTexture(memory.textureData.alias)

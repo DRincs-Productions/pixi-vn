@@ -116,7 +116,7 @@ export default class CanvasManager {
      * @param newAlias New alias
      * @returns 
      */
-    copyCanvasElementProperty<T extends CanvasBaseItemMemory>(oldAlias: T | CanvasBaseItem<T> | string, newAlias: CanvasBaseItem<T> | string) {
+    async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(oldAlias: T | CanvasBaseItem<T> | string, newAlias: CanvasBaseItem<T> | string) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias)
             if (element) {
@@ -150,7 +150,7 @@ export default class CanvasManager {
         "height" in oldAlias && delete oldAlias.height
         "width" in oldAlias && delete oldAlias.width
         if (newAlias instanceof Sprite) {
-            setMemorySprite(newAlias, oldAlias)
+            await setMemorySprite(newAlias, oldAlias)
         }
         else if (newAlias instanceof Text) {
             setMemoryText(newAlias, oldAlias)
@@ -920,26 +920,28 @@ export default class CanvasManager {
      * Import the canvas and the tickers from a JSON string.
      * @param dataString The JSON string.
      */
-    public importJson(dataString: string) {
-        this.import(JSON.parse(dataString))
+    public async importJson(dataString: string) {
+        await this.import(JSON.parse(dataString))
     }
     /**
      * Import the canvas and the tickers from an object.
      * @param data The object.
      */
-    public import(data: object) {
+    public async import(data: object) {
         this.clear()
         try {
             let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let currentElements = (data as ExportedCanvas)["elements"]
                 let elementAliasesOrder = (data as ExportedCanvas)["elementAliasesOrder"]
-                elementAliasesOrder.forEach((alias) => {
-                    if (currentElements[alias]) {
-                        let element = importCanvasElement(currentElements[alias])
-                        this.add(alias, element)
-                        CanvasManagerStatic.childrenAliasesOrder.push(alias)
-                    }
+                let promises = elementAliasesOrder
+                    .filter((alias) => currentElements[alias])
+                    .map((alias) => importCanvasElement(currentElements[alias]))
+                let list = await Promise.all(promises)
+                list.forEach((element, i) => {
+                    let alias = elementAliasesOrder[i]
+                    this.add(alias, element)
+                    CanvasManagerStatic.childrenAliasesOrder.push(alias)
                 })
             }
             else {

@@ -2,7 +2,6 @@ import { ObservablePoint, Sprite as PixiSprite, PointData, SpriteOptions, Textur
 import { canvas } from "../..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
-import { setMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory } from "../../interface";
 import AlignExtension, { AlignExtensionProps } from "./AlignExtension";
@@ -50,10 +49,10 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             align: this._align,
         }
     }
-    override set memory(memory: ImageSpriteMemory) {
-        setMemorySprite(this, memory)
-        if ("imageLink" in memory && memory.imageLink) {
-            this.textureAlias = memory.imageLink
+    override async setMemory(value: ImageSpriteMemory) {
+        await super.setMemory(value)
+        if ("imageLink" in value && value.imageLink) {
+            this.textureAlias = value.imageLink
         }
         this.reloadAlign()
     }

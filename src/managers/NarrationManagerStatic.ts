@@ -330,7 +330,7 @@ export default class NarrationManagerStatic {
         NarrationManagerStatic._originalStepData = restoredStep
         NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels)
         storage.import(createExportableElement(restoredStep.storage))
-        canvas.import(createExportableElement(restoredStep.canvas))
+        await canvas.import(createExportableElement(restoredStep.canvas))
         sound.import(createExportableElement(restoredStep.sound), NarrationManagerStatic._lastStepIndex - 1)
         navigate(restoredStep.path)
     }

@@ -48,8 +48,11 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
     get memory(): Memory | SpriteMemory {
         return getMemorySprite(this)
     }
+    setMemory(value: Memory | SpriteMemory): Promise<void> {
+        return setMemorySprite(this, value)
+    }
     set memory(value: SpriteMemory) {
-        setMemorySprite(this, value)
+        this.setMemory(value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
     get onEvents() {
