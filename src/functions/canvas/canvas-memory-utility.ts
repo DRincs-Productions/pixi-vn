@@ -1,8 +1,8 @@
 import { Assets, ContainerOptions, Container as PixiContainer, PointData } from "pixi.js";
-import { CanvasBaseItem, ImageContainer, ImageSprite, Sprite } from "../../classes";
+import { CanvasBaseItem, ImageContainer, ImageSprite, Sprite, VideoSprite } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
 import { getEventTypeById } from "../../decorators/event-decorator";
-import { CanvasBaseItemMemory, ImageSpriteMemory, SpriteBaseMemory } from "../../interface";
+import { CanvasBaseItemMemory, ImageSpriteMemory, SpriteBaseMemory, VideoSpriteMemory } from "../../interface";
 import { getTexture } from "../texture-utility";
 
 /**
@@ -134,5 +134,10 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: 
                 element.onEvent(event, instance)
             }
         }
+    }
+    if (element instanceof VideoSprite) {
+        "loop" in memory && memory.loop && (element.loop = (memory as VideoSpriteMemory).loop!)
+        "currentTime" in memory && memory.currentTime && (element.currentTime = (memory as VideoSpriteMemory).currentTime!)
+        "paused" in memory && memory.paused && (element.paused = (memory as VideoSpriteMemory).paused!)
     }
 }
