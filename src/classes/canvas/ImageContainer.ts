@@ -125,8 +125,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     }
 
     /** Align */
-    private _align: Partial<PointData> = {}
+    private _align: Partial<PointData> | undefined = undefined
     set align(value: Partial<PointData> | number) {
+        this._align === undefined && (this._align = {})
         if (typeof value === "number") {
             this._align.x = value
             this._align.y = value
@@ -137,40 +138,46 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this.reloadAlign()
     }
     set xAlign(value: number) {
+        this._align === undefined && (this._align = {})
         this._align.x = value
         this.reloadAlign()
     }
     set yAlign(value: number) {
+        this._align === undefined && (this._align = {})
         this._align.y = value
         this.reloadAlign()
     }
     private reloadAlign() {
+        this._align === undefined && (this._align = {})
         if (this._align.x !== undefined) {
-            this.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+            super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
         }
         if (this._align.y !== undefined) {
-            this.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+            super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
         }
     }
-    override get position(): ObservablePoint {
+    get position(): ObservablePoint {
         return super.position
     }
-    override set position(value: ObservablePoint) {
+    set position(value: ObservablePoint) {
+        this._align === undefined && (this._align = {})
         this._align.x = undefined
         this._align.y = undefined
         super.position = value
     }
-    override get x(): number {
+    get x(): number {
         return super.x
     }
-    override set x(value: number) {
+    set x(value: number) {
+        this._align === undefined && (this._align = {})
         this._align.x = undefined
         super.x = value
     }
-    override get y(): number {
+    get y(): number {
         return super.y
     }
-    override set y(value: number) {
+    set y(value: number) {
+        this._align === undefined && (this._align = {})
         this._align.y = undefined
         super.y = value
     }

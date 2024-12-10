@@ -1,9 +1,12 @@
-import { Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { ObservablePoint, Sprite as PixiSprite, PointData, SpriteOptions, Texture, TextureSource, TextureSourceLike } from "pixi.js";
+import { canvas } from "../..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
+import { setMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory } from "../../interface";
-import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
+import AlignExtension, { AlignExtensionProps } from "./AlignExtension";
+import Sprite, { getMemorySprite } from "./Sprite";
 
 /**
  * This class is a extension of the {@link Sprite} class, it has the same properties and methods,
@@ -29,24 +32,30 @@ import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
  * await alien.load()
  * ```
  */
-export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> {
+export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> implements AlignExtension {
     pixivnId: string = CANVAS_IMAGE_ID
-    constructor(options?: SpriteOptions | Texture | undefined, textureAlias?: string) {
+    constructor(options?: (SpriteOptions & AlignExtensionProps) | Texture | undefined, textureAlias?: string) {
         super(options)
         if (textureAlias) {
             this.textureAlias = textureAlias
+        }
+        if (options && "align" in options && options?.align !== undefined) {
+            this.align = options.align
         }
     }
     override get memory(): ImageSpriteMemory {
         return {
             ...getMemorySprite(this),
             pixivnId: this.pixivnId,
+            align: this._align,
         }
     }
     override set memory(memory: ImageSpriteMemory) {
         setMemorySprite(this, memory)
-        if ("imageLink" in memory && memory.imageLink)
+        if ("imageLink" in memory && memory.imageLink) {
             this.textureAlias = memory.imageLink
+        }
+        this.reloadAlign()
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
@@ -74,11 +83,81 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             })
     }
 
+    override set texture(value: Texture<TextureSource<any>>) {
+        super.texture = value
+        // if this is initialized
+        if (this) {
+            this.reloadAlign()
+        }
+    }
+    override get texture(): Texture<TextureSource<any>> {
+        return super.texture
+    }
+
     /**
      * Check if the texture is empty.
      * @returns A boolean that is true if the texture is empty.
      */
     get haveEmptyTexture() {
         return this.texture._source.label === "EMPTY"
+    }
+
+    /** Align */
+    private _align: Partial<PointData> | undefined = undefined
+    set align(value: Partial<PointData> | number) {
+        this._align === undefined && (this._align = {})
+        if (typeof value === "number") {
+            this._align.x = value
+            this._align.y = value
+        } else {
+            value.x !== undefined && (this._align.x = value.x)
+            value.y !== undefined && (this._align.y = value.y)
+        }
+        this.reloadAlign()
+    }
+    set xAlign(value: number) {
+        this._align === undefined && (this._align = {})
+        this._align.x = value
+        this.reloadAlign()
+    }
+    set yAlign(value: number) {
+        this._align === undefined && (this._align = {})
+        this._align.y = value
+        this.reloadAlign()
+    }
+    private reloadAlign() {
+        if (this._align) {
+            if (this._align.x !== undefined) {
+                super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+            }
+            if (this._align.y !== undefined) {
+                super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+            }
+        }
+    }
+    override get position(): ObservablePoint {
+        return super.position
+    }
+    set position(value: ObservablePoint) {
+        this._align === undefined && (this._align = {})
+        this._align.x = undefined
+        this._align.y = undefined
+        super.position = value
+    }
+    get x(): number {
+        return super.x
+    }
+    set x(value: number) {
+        this._align === undefined && (this._align = {})
+        this._align.x = undefined
+        super.x = value
+    }
+    override get y(): number {
+        return super.y
+    }
+    override set y(value: number) {
+        this._align === undefined && (this._align = {})
+        this._align.y = undefined
+        super.y = value
     }
 }

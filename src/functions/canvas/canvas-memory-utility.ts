@@ -1,5 +1,5 @@
 import { Assets, ContainerOptions, Container as PixiContainer, PointData } from "pixi.js";
-import { CanvasBaseItem, ImageContainer, Sprite } from "../../classes";
+import { CanvasBaseItem, ImageContainer, ImageSprite, Sprite } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
 import { getEventTypeById } from "../../decorators/event-decorator";
 import { CanvasBaseItemMemory, SpriteBaseMemory } from "../../interface";
@@ -113,6 +113,9 @@ export function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite
                     }
                 })
         }
+    }
+    if (element instanceof ImageSprite) {
+        "align" in memory && memory.align && (element.align = memory.align as Partial<PointData>)
     }
     if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {

@@ -5,6 +5,7 @@ import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
 import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
+import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
 import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
 
@@ -43,7 +44,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOption("Shake", shakeStageTest, {}),
             new ChoiceMenuOption("Add same alias", imagesAddSameAliasTestLabel, {}),
             new ChoiceMenuOption("Image container", imageContainerTest, {}),
-            new ChoiceMenuOption("Align", alignTest, {}),
+            new ChoiceMenuOption("Align", customPositionTest, {}),
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
@@ -485,18 +486,27 @@ const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
     },
 ])
 
-const alignTest = newLabel("___pixi_vn_images_align_test___", [
-    async () => {
+const customPositionTest = newLabel("___pixi_vn_images_custom_position_test___", [
+    () => {
         narration.dialogue = {
             character: juliette,
-            text: `Now I will show a test for the align.`
+            text: `Now I will show a test for the align.
+- The container will be added with the anchor set to 0.5 and align set to 0.5.
+- ${helmlokName} will be added with the anchor set to 1 and align set to 0.
+- ${skullyName} will be added with the anchor set to 0.5 and align set to 0.25.`
         }
         canvas.removeAll()
-        let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage])
-        container.x = 300
-        container.y = 300
-        await showWithDissolveTransition("container", container)
+        let container = addImageCointainer("container", [eggHeadImage, flowerTopImage])
         container.anchor = 0.5
         container.align = 0.5
+        let helmlok = addImage("helmlok", helmlokImage)
+        helmlok.xAlign = 1
+        helmlok.yAlign = 0
+        let skully = addImage("skully", skullyImage)
+        skully.xAlign = 0.25
+        skully.yAlign = 0.5
+        container.load()
+        helmlok.load()
+        skully.load()
     },
 ])
