@@ -1,7 +1,7 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
-import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
-import { setMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
+import { getEventInstanceById } from "../../decorators/event-decorator";
+import { setMemoryText } from "../../functions/canvas/canvas-memory-utility";
 import { getTextStyle } from "../../functions/texture-utility";
 import { TextMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
@@ -103,30 +103,5 @@ export function getMemoryText<T extends Text>(element: T | Text): TextMemory {
         style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
-    }
-}
-
-export function setMemoryText(element: Text, memory: TextMemory | {}) {
-    setMemoryContainer(element, memory)
-    if ("anchor" in memory && memory.anchor) {
-        if (typeof memory.anchor === "number") {
-            element.anchor.set(memory.anchor, memory.anchor)
-        }
-        else {
-            element.anchor.set(memory.anchor.x, memory.anchor.y)
-        }
-    }
-    "text" in memory && memory.text && (element.text = memory.text)
-    "resolution" in memory && memory.resolution && (element.resolution = memory.resolution)
-    "style" in memory && memory.style && (element.style = memory.style)
-    "roundPixels" in memory && memory.roundPixels && (element.roundPixels = memory.roundPixels)
-    if ("onEvents" in memory) {
-        for (let event in memory.onEvents) {
-            let id = memory.onEvents[event]
-            let instance = getEventTypeById(id)
-            if (instance) {
-                element.onEvent(event as CanvasEventNamesType, instance)
-            }
-        }
     }
 }

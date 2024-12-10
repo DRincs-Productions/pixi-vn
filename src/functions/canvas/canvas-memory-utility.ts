@@ -1,8 +1,9 @@
 import { Assets, ContainerOptions, Container as PixiContainer, PointData } from "pixi.js";
-import { CanvasBaseItem, ImageContainer, ImageSprite, Sprite, VideoSprite } from "../../classes";
+import { CanvasBaseItem, ImageContainer, ImageSprite, Sprite, Text, VideoSprite } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
 import { getEventTypeById } from "../../decorators/event-decorator";
-import { CanvasBaseItemMemory, ImageSpriteMemory, SpriteBaseMemory, VideoSpriteMemory } from "../../interface";
+import { CanvasBaseItemMemory, ImageSpriteMemory, SpriteBaseMemory, TextMemory, VideoSpriteMemory } from "../../interface";
+import { CanvasEventNamesType } from "../../types";
 import { getTexture } from "../texture-utility";
 
 /**
@@ -139,5 +140,30 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: 
         "loop" in memory && memory.loop && (element.loop = (memory as VideoSpriteMemory).loop!)
         "currentTime" in memory && memory.currentTime && (element.currentTime = (memory as VideoSpriteMemory).currentTime!)
         "paused" in memory && memory.paused && (element.paused = (memory as VideoSpriteMemory).paused!)
+    }
+}
+
+export function setMemoryText(element: Text, memory: TextMemory | {}) {
+    setMemoryContainer(element, memory)
+    if ("anchor" in memory && memory.anchor) {
+        if (typeof memory.anchor === "number") {
+            element.anchor.set(memory.anchor, memory.anchor)
+        }
+        else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y)
+        }
+    }
+    "text" in memory && memory.text && (element.text = memory.text)
+    "resolution" in memory && memory.resolution && (element.resolution = memory.resolution)
+    "style" in memory && memory.style && (element.style = memory.style)
+    "roundPixels" in memory && memory.roundPixels && (element.roundPixels = memory.roundPixels)
+    if ("onEvents" in memory) {
+        for (let event in memory.onEvents) {
+            let id = memory.onEvents[event]
+            let instance = getEventTypeById(id)
+            if (instance) {
+                element.onEvent(event as CanvasEventNamesType, instance)
+            }
+        }
     }
 }
