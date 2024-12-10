@@ -53,11 +53,24 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
      * @returns A promise that resolves when the images are loaded.
      */
     async load() {
-        let list = this.children.map(child => {
-            if (child instanceof ImageSprite) {
-                return child.load()
-            }
-        })
+        let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(this.children.length)
+        for (let i = 0; i < this.children.length; i++) {
+            promises[i] = getTexture(this.children[i].textureAlias)
+        }
+        // wait for all promises
+        return Promise.all(promises)
+            .then((textures) => {
+                textures.map((texture, index) => {
+                    try {
+                        if (texture) {
+                            this.children[index].texture = texture
+                        }
+                        this.children[index].load()
+                    }
+                    catch (e) {
+                        console.error(`[Pixi’VN] Error into ImageContainer.load(), the children ${index} could not be loaded`, e)
+                    }
+                })
         return Promise.all(list).then((res) => {
             this.reloadAnchor()
             this.reloadAlign()
