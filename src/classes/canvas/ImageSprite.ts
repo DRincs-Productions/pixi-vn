@@ -51,9 +51,6 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     }
     override async setMemory(value: ImageSpriteMemory) {
         await super.setMemory(value)
-        if ("imageLink" in value && value.imageLink) {
-            this.textureAlias = value.imageLink
-        }
         this.reloadAlign()
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {

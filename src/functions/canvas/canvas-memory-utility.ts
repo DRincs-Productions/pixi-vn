@@ -2,7 +2,7 @@ import { Assets, ContainerOptions, Container as PixiContainer, PointData } from 
 import { CanvasBaseItem, ImageContainer, ImageSprite, Sprite } from "../../classes";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
 import { getEventTypeById } from "../../decorators/event-decorator";
-import { CanvasBaseItemMemory, SpriteBaseMemory } from "../../interface";
+import { CanvasBaseItemMemory, ImageSpriteMemory, SpriteBaseMemory } from "../../interface";
 import { getTexture } from "../texture-utility";
 
 /**
@@ -114,7 +114,8 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: 
         }
     }
     if (element instanceof ImageSprite) {
-        "align" in memory && memory.align && (element.align = memory.align as Partial<PointData>)
+        "align" in memory && memory.align && (element.align = (memory as ImageSpriteMemory).align!)
+        "imageLink" in memory && memory.imageLink && (element.textureAlias = (memory as ImageSpriteMemory).imageLink!)
     }
     if ("anchor" in memory && memory.anchor) {
         if (typeof memory.anchor === "number") {
