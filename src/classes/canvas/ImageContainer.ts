@@ -1,5 +1,5 @@
 import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
-import { canvas } from "../..";
+import { canvas, getTexture } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory } from "../../interface";
 import AlignExtension, { AlignExtensionProps } from "./AlignExtension";
@@ -71,11 +71,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
                         console.error(`[Pixi’VN] Error into ImageContainer.load(), the children ${index} could not be loaded`, e)
                     }
                 })
-        return Promise.all(list).then((res) => {
-            this.reloadAnchor()
-            this.reloadAlign()
-            return res
-        })
+                this.reloadAnchor()
+                this.reloadAlign()
+            })
     }
 
     /**
