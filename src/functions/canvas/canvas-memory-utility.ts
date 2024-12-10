@@ -99,20 +99,16 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: 
     }
     if ("textureData" in memory) {
         if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
-            getTexture(memory.textureData.alias)
-                .then((texture) => {
-                    if (texture) {
-                        element.texture = texture
-                    }
-                })
+            let texture = await getTexture(memory.textureData.alias)
+            if (texture) {
+                element.texture = texture
+            }
         }
         else {
-            getTexture(memory.textureData.url)
-                .then((texture) => {
-                    if (texture) {
-                        element.texture = texture
-                    }
-                })
+            let texture = await getTexture(memory.textureData.url)
+            if (texture) {
+                element.texture = texture
+            }
         }
     }
     if (element instanceof ImageSprite) {
