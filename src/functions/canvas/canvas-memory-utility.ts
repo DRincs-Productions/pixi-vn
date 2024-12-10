@@ -39,11 +39,6 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
     ignoreScale?: boolean,
 }) {
     let ignoreScale = opstions?.ignoreScale || false
-
-    if (element instanceof ImageContainer) {
-        "anchor" in memory && memory.anchor && (element.anchor = memory.anchor as number | PointData)
-        "align" in memory && memory.align && (element.align = memory.align as Partial<PointData>)
-    }
     "isRenderGroup" in memory && memory.isRenderGroup && (element.isRenderGroup = memory.isRenderGroup)
     "blendMode" in memory && memory.blendMode && (element.blendMode = memory.blendMode)
     "tint" in memory && memory.tint && (element.tint = memory.tint)
@@ -81,6 +76,10 @@ export function setMemoryContainer<T extends PixiContainer>(element: T | PixiCon
     "hitArea" in memory && memory.hitArea && (element.hitArea = memory.hitArea)
 
     // end
+    if (element instanceof ImageContainer) {
+        "anchor" in memory && memory.anchor && (element.anchor = memory.anchor as number | PointData)
+        "align" in memory && memory.align && (element.align = memory.align as Partial<PointData>)
+    }
     // width and height must be set after the scale
     if (!ignoreScale) {
         "width" in memory && memory.width && (element.width = memory.width)
