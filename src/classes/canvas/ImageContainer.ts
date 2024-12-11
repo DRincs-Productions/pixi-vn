@@ -33,6 +33,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         if (options?.align !== undefined) {
             this.align = options.align
         }
+        if (options?.percentagePosition !== undefined) {
+            this.percentagePosition = options.percentagePosition
+        }
     }
     override get memory(): ImageContainerMemory {
         return {
@@ -40,13 +43,14 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             pixivnId: CANVAS_IMAGE_CONTAINER_ID,
             anchor: this._anchor,
             align: this._align,
+            percentagePosition: this._percentagePosition,
             loadIsStarted: this._loadIsStarted,
         }
     }
     override async setMemory(value: ImageContainerMemory) {
         await super.setMemory(value)
         this.reloadAnchor()
-        this.reloadAlign()
+        this.reloadPosition()
     }
     pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
     private _loadIsStarted: boolean = false
@@ -68,7 +72,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             .then(() => {
                 this._loadIsStarted = false
                 this.reloadAnchor()
-                this.reloadAlign()
+                this.reloadPosition()
             })
             .catch((e) => {
                 this._loadIsStarted = false
@@ -124,9 +128,10 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         super.pivot = value
     }
 
-    /** Align */
+    /** AdditionalPositions */
     private _align: Partial<PointData> | undefined = undefined
     set align(value: Partial<PointData> | number) {
+        this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
         if (typeof value === "number") {
             this._align.x = value
@@ -135,50 +140,85 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             value.x !== undefined && (this._align.x = value.x)
             value.y !== undefined && (this._align.y = value.y)
         }
-        this.reloadAlign()
+        this.reloadPosition()
     }
     set xAlign(value: number) {
+        this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
         this._align.x = value
-        this.reloadAlign()
+        this.reloadPosition()
     }
     set yAlign(value: number) {
+        this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
         this._align.y = value
-        this.reloadAlign()
+        this.reloadPosition()
     }
-    private reloadAlign() {
-        this._align === undefined && (this._align = {})
-        if (this._align.x !== undefined) {
-            super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+    private _percentagePosition: Partial<PointData> | undefined = undefined
+    set percentagePosition(value: Partial<PointData> | number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        if (typeof value === "number") {
+            this._percentagePosition.x = value
+            this._percentagePosition.y = value
+        } else {
+            value.x !== undefined && (this._percentagePosition.x = value.x)
+            value.y !== undefined && (this._percentagePosition.y = value.y)
         }
-        if (this._align.y !== undefined) {
-            super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+        this.reloadPosition()
+    }
+    set xPercentagePosition(_value: number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        this._percentagePosition.x = _value
+        this.reloadPosition()
+    }
+    set yPercentagePosition(_value: number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        this._percentagePosition.y = _value
+        this.reloadPosition()
+    }
+    private reloadPosition() {
+        if (this._align) {
+            if (this._align.x !== undefined) {
+                super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+            }
+            if (this._align.y !== undefined) {
+                super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+            }
+        }
+        else if (this._percentagePosition) {
+            if (this._percentagePosition.x !== undefined) {
+                super.x = (this._percentagePosition.x * canvas.screen.width)
+            }
+            if (this._percentagePosition.y !== undefined) {
+                super.y = (this._percentagePosition.y * canvas.screen.height)
+            }
         }
     }
     get position(): ObservablePoint {
         return super.position
     }
     set position(value: ObservablePoint) {
-        this._align === undefined && (this._align = {})
-        this._align.x = undefined
-        this._align.y = undefined
+        this._align = undefined
+        this._percentagePosition = undefined
         super.position = value
     }
     get x(): number {
         return super.x
     }
     set x(value: number) {
-        this._align === undefined && (this._align = {})
-        this._align.x = undefined
+        this._align = undefined
+        this._percentagePosition = undefined
         super.x = value
     }
-    get y(): number {
+    override get y(): number {
         return super.y
     }
-    set y(value: number) {
-        this._align === undefined && (this._align = {})
-        this._align.y = undefined
+    override set y(value: number) {
+        this._align = undefined
+        this._percentagePosition = undefined
         super.y = value
     }
 }

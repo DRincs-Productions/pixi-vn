@@ -25,6 +25,7 @@ export interface ImageContainerMemory extends ContainerMemory<ImageSprite> {
     elements: ImageSpriteMemory[],
     anchor?: PointData
     align?: Partial<PointData>
+    percentagePosition?: Partial<PointData>
     loadIsStarted: boolean
 }
 

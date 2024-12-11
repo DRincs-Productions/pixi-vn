@@ -106,7 +106,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         return this.texture._source.label === "EMPTY"
     }
 
-    /** Align */
+    /** AdditionalPositions */
     private _align: Partial<PointData> | undefined = undefined
     set align(value: Partial<PointData> | number) {
         this._percentagePosition = undefined
@@ -175,7 +175,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             }
         }
     }
-    override get position(): ObservablePoint {
+    get position(): ObservablePoint {
         return super.position
     }
     set position(value: ObservablePoint) {
