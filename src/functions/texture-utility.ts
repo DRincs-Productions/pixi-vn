@@ -73,7 +73,7 @@ export function getTextStyle(style: TextStyle): TextStyleOptions {
     }
 }
 
-export function checkIfTextureIsEmpty<T extends Container | CanvasBaseItem<any> = Container>(element: T) {
+export function checkIfTextureNotIsEmpty<T extends Container | CanvasBaseItem<any> = Container>(element: T) {
     if ((element instanceof ImageSprite || element instanceof ImageContainer) && element.haveEmptyTexture) {
         return false
     }
