@@ -66,15 +66,11 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     }
     /** 
      * Load the image from the link and set the texture of the sprite.
-     * @param image The link of the image. If it is not set, it will use the {@link Sprite.textureAlias} property.
      * @returns A promise that resolves when the image is loaded.
      */
-    async load(image?: string) {
+    async load() {
         this._loadIsStarted = true
-        if (!image) {
-            image = this.textureAlias
-        }
-        return getTexture(image)
+        return getTexture(this.textureAlias)
             .then((texture) => {
                 this._loadIsStarted = false
                 if (texture) {
