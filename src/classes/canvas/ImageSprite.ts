@@ -89,10 +89,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
 
     override set texture(value: Texture<TextureSource<any>>) {
         super.texture = value
-        // if this is initialized
-        if (this) {
-            this.reloadPosition()
-        }
+        this.reloadPosition()
     }
     override get texture(): Texture<TextureSource<any>> {
         return super.texture
@@ -160,10 +157,10 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
-                super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+                super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x + (this.anchor.x * this.width)
             }
             if (this._align.y !== undefined) {
-                super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+                super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y + (this.anchor.y * this.height)
             }
         }
         else if (this._percentagePosition) {
