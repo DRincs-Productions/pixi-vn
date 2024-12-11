@@ -16,7 +16,7 @@ export interface AlignExtensionProps {
      * - If you set percentagePosition to 0, the center of the element will be in the left end and top end of the canvas.
      * - If you set percentagePosition to 1, the center of the element will be in the right end and bottom end of the canvas.
      * 
-     * **Important:** The {@link PixiContainer.pivot} field does affect the alignment.
+     * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
     percentagePosition?: PointData | number
 }
@@ -65,7 +65,7 @@ export default class AlignExtension extends PixiContainer {
      * - If you set percentagePosition to 0, the center of the element will be in the left end and top end of the canvas.
      * - If you set percentagePosition to 1, the center of the element will be in the right end and bottom end of the canvas.
      * 
-     * **Important:** The {@link PixiContainer.pivot} field does affect the alignment.
+     * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
     set percentagePosition(_value: Partial<PointData> | number) {
         throw new Error("Method not implemented.");
@@ -77,7 +77,7 @@ export default class AlignExtension extends PixiContainer {
      * - If you set percentagePosition to 0, the center of the element will be in the left end and top end of the canvas.
      * - If you set percentagePosition to 1, the center of the element will be in the right end and bottom end of the canvas.
      * 
-     * **Important:** The {@link PixiContainer.pivot} field does affect the alignment.
+     * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
     set xPercentagePosition(_value: number) {
         throw new Error("Method not implemented.");
@@ -89,7 +89,7 @@ export default class AlignExtension extends PixiContainer {
      * - If you set percentagePosition to 0, the center of the element will be in the left end and top end of the canvas.
      * - If you set percentagePosition to 1, the center of the element will be in the right end and bottom end of the canvas.
      * 
-     * **Important:** The {@link PixiContainer.pivot} field does affect the alignment.
+     * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
     set yPercentagePosition(_value: number) {
         throw new Error("Method not implemented.");
