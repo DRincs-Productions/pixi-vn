@@ -47,6 +47,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             loadIsStarted: this._loadIsStarted,
         }
     }
+    override set memory(value: ImageContainerMemory) {
+        this.setMemory(value)
+    }
     override async setMemory(value: ImageContainerMemory) {
         await super.setMemory(value)
         this.reloadAnchor()
