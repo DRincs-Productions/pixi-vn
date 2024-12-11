@@ -4,7 +4,7 @@ import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory } from "../../interface";
-import AlignExtension, { AlignExtensionProps } from "./AlignExtension";
+import AdditionalPositionsExtension, { AdditionalPositionsExtensionProps } from "./AdditionalPositions";
 import Sprite, { getMemorySprite } from "./Sprite";
 
 /**
@@ -31,9 +31,9 @@ import Sprite, { getMemorySprite } from "./Sprite";
  * await alien.load()
  * ```
  */
-export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> implements AlignExtension {
+export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> implements AdditionalPositionsExtension {
     pixivnId: string = CANVAS_IMAGE_ID
-    constructor(options?: (SpriteOptions & AlignExtensionProps) | Texture | undefined, textureAlias?: string) {
+    constructor(options?: (SpriteOptions & AdditionalPositionsExtensionProps) | Texture | undefined, textureAlias?: string) {
         super(options)
         if (textureAlias) {
             this.textureAlias = textureAlias

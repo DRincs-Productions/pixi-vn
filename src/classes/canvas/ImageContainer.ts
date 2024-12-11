@@ -2,7 +2,7 @@ import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
 import { canvas } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory } from "../../interface";
-import AlignExtension, { AlignExtensionProps } from "./AlignExtension";
+import AdditionalPositionsExtension, { AdditionalPositionsExtensionProps } from "./AdditionalPositions";
 import AnchorExtension, { AnchorExtensionProps } from "./AnchorExtension";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -19,8 +19,8 @@ import ImageSprite from "./ImageSprite";
  *  canvas.add(container);
  * ```
  */
-export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension, AlignExtension {
-    constructor(options?: ContainerOptions<ImageSprite> & AnchorExtensionProps & AlignExtensionProps, textureAliases: string[] = []) {
+export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension, AdditionalPositionsExtension {
+    constructor(options?: ContainerOptions<ImageSprite> & AnchorExtensionProps & AdditionalPositionsExtensionProps, textureAliases: string[] = []) {
         super(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {

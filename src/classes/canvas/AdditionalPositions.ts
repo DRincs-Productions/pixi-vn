@@ -1,6 +1,6 @@
 import { Container as PixiContainer, PointData } from "pixi.js";
 
-export interface AlignExtensionProps {
+export interface AdditionalPositionsExtensionProps {
     /**
      * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
      * For example, if you set align to 0.5, the element will be in the center of the canvas.
@@ -21,7 +21,7 @@ export interface AlignExtensionProps {
     percentagePosition?: PointData | number
 }
 
-export default class AlignExtension extends PixiContainer {
+export default class AdditionalPositionsExtension extends PixiContainer {
     /**
      * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
      * For example:
