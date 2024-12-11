@@ -58,6 +58,7 @@ export interface ImageSpriteMemory extends SpriteBaseMemory {
      */
     imageLink?: string,
     align?: Partial<PointData>
+    percentagePosition?: Partial<PointData>
     loadIsStarted: boolean
 }
 

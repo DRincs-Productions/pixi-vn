@@ -41,18 +41,22 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         if (options && "align" in options && options?.align !== undefined) {
             this.align = options.align
         }
+        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+            this.percentagePosition = options.percentagePosition
+        }
     }
     override get memory(): ImageSpriteMemory {
         return {
             ...getMemorySprite(this),
             pixivnId: this.pixivnId,
             align: this._align,
+            percentagePosition: this._percentagePosition,
             loadIsStarted: this._loadIsStarted,
         }
     }
     override async setMemory(value: ImageSpriteMemory) {
         await super.setMemory(value)
-        this.reloadAlign()
+        this.reloadPosition()
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
@@ -87,7 +91,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         super.texture = value
         // if this is initialized
         if (this) {
-            this.reloadAlign()
+            this.reloadPosition()
         }
     }
     override get texture(): Texture<TextureSource<any>> {
@@ -105,6 +109,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     /** Align */
     private _align: Partial<PointData> | undefined = undefined
     set align(value: Partial<PointData> | number) {
+        this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
         if (typeof value === "number") {
             this._align.x = value
@@ -113,19 +118,46 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             value.x !== undefined && (this._align.x = value.x)
             value.y !== undefined && (this._align.y = value.y)
         }
-        this.reloadAlign()
+        this.reloadPosition()
     }
     set xAlign(value: number) {
+        this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
         this._align.x = value
-        this.reloadAlign()
+        this.reloadPosition()
     }
     set yAlign(value: number) {
+        this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
         this._align.y = value
-        this.reloadAlign()
+        this.reloadPosition()
     }
-    private reloadAlign() {
+    private _percentagePosition: Partial<PointData> | undefined = undefined
+    set percentagePosition(value: Partial<PointData> | number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        if (typeof value === "number") {
+            this._percentagePosition.x = value
+            this._percentagePosition.y = value
+        } else {
+            value.x !== undefined && (this._percentagePosition.x = value.x)
+            value.y !== undefined && (this._percentagePosition.y = value.y)
+        }
+        this.reloadPosition()
+    }
+    set xPercentagePosition(_value: number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        this._percentagePosition.x = _value
+        this.reloadPosition()
+    }
+    set yPercentagePosition(_value: number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        this._percentagePosition.y = _value
+        this.reloadPosition()
+    }
+    private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
                 super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
@@ -134,30 +166,37 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                 super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
             }
         }
+        else if (this._percentagePosition) {
+            if (this._percentagePosition.x !== undefined) {
+                super.x = (this._percentagePosition.x * canvas.screen.width)
+            }
+            if (this._percentagePosition.y !== undefined) {
+                super.y = (this._percentagePosition.y * canvas.screen.height)
+            }
+        }
     }
     override get position(): ObservablePoint {
         return super.position
     }
     set position(value: ObservablePoint) {
-        this._align === undefined && (this._align = {})
-        this._align.x = undefined
-        this._align.y = undefined
+        this._align = undefined
+        this._percentagePosition = undefined
         super.position = value
     }
     get x(): number {
         return super.x
     }
     set x(value: number) {
-        this._align === undefined && (this._align = {})
-        this._align.x = undefined
+        this._align = undefined
+        this._percentagePosition = undefined
         super.x = value
     }
     override get y(): number {
         return super.y
     }
     override set y(value: number) {
-        this._align === undefined && (this._align = {})
-        this._align.y = undefined
+        this._align = undefined
+        this._percentagePosition = undefined
         super.y = value
     }
 }
