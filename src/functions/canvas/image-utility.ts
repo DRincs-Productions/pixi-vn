@@ -35,9 +35,7 @@ export function addImage(alias: string, imageUrl?: string): ImageSprite {
 }
 
 /**
- * Show a list of images in the canvas, at the same time.
- * @param canvasImages is a list of images to show.
- * @returns the list of images.
+ * @deprecated
  */
 export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Promise<ImageSprite[]> {
     if (!Array.isArray(canvasImages)) {
