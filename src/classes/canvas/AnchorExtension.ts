@@ -1,7 +1,7 @@
 import { Container as PixiContainer, PointData } from "pixi.js";
 
 export interface AnchorExtensionProps {
-    anchor: PointData | number
+    anchor?: PointData | number
 }
 
 export default class AnchorExtension extends PixiContainer {
