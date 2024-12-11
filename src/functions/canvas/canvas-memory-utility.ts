@@ -118,7 +118,9 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: 
     if (element instanceof ImageSprite) {
         "align" in memory && memory.align !== undefined && (element.align = (memory as ImageSpriteMemory).align!)
         "imageLink" in memory && memory.imageLink !== undefined && (element.textureAlias = (memory as ImageSpriteMemory).imageLink!)
-        "loadIsStarted" in memory && memory.loadIsStarted && (element.load())
+        if ("loadIsStarted" in memory && memory.loadIsStarted) {
+            await element.load()
+        }
     }
     if ("anchor" in memory && memory.anchor !== undefined) {
         if (typeof memory.anchor === "number") {

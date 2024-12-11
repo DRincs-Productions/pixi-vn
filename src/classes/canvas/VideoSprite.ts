@@ -32,7 +32,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             ...super.memory,
             pixivnId: this.pixivnId,
             loop: this.loop,
-            paused: this.paused,
+            paused: this._paused,
             currentTime: this.currentTime,
         }
     }
