@@ -47,7 +47,7 @@ export function getSaveJson() {
 export async function loadSaveData(data: SaveData, navigate: (path: string) => void) {
     await narration.import(data.stepData);
     storage.import(data.storageData);
-    canvas.import(data.canvasData);
+    await canvas.import(data.canvasData);
     sound.import(data.soundData);
     navigate(data.path);
 }

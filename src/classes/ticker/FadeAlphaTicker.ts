@@ -1,7 +1,7 @@
 import { Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
-import { checkIfTextureIsEmpty } from "../../functions/texture-utility";
+import { checkIfTextureNotIsEmpty } from "../../functions/texture-utility";
 import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";
@@ -55,7 +55,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     return false
                 }
                 if (args.startOnlyIfHaveTexture) {
-                    if (!checkIfTextureIsEmpty(element)) {
+                    if (!checkIfTextureNotIsEmpty(element)) {
                         return false
                     }
                 }

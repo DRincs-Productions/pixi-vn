@@ -1,6 +1,7 @@
 export { shakeEffect } from './canvas/canvas-effect';
 export { moveIn, moveOut, pushIn, pushOut, removeWithDissolveTransition, removeWithFadeTransition, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from './canvas/canvas-transition';
 export { removeCanvasElement } from './canvas/canvas-utility';
+export { addImageCointainer, showImageContainer } from './canvas/image-container-utility';
 export { addImage, loadImage, showImage } from './canvas/image-utility';
 export { addVideo, loadVideo, showVideo } from './canvas/video-utility';
 export { clearChoiceMenuOptions, clearDialogue, getChoiceMenuOptions, getDialogue, setChoiceMenuOptions, setDialogue } from './dialogue-utility';

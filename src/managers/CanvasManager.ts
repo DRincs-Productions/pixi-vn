@@ -3,12 +3,10 @@ import { TickerValue } from "..";
 import { Sprite, Text } from "../classes";
 import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
 import { getMemoryContainer } from "../classes/canvas/Container";
-import { setMemorySprite } from "../classes/canvas/Sprite";
-import { setMemoryText } from "../classes/canvas/Text";
 import TickerBase from "../classes/ticker/TickerBase";
 import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
-import { exportCanvasElement, importCanvasElement, setMemoryContainer } from '../functions/canvas/canvas-memory-utility';
+import { exportCanvasElement, importCanvasElement, setMemoryContainer, setMemorySprite, setMemoryText } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
 import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
 import { TickersStep } from "../interface/TickersSteps";
@@ -117,7 +115,7 @@ export default class CanvasManager {
      * @param newAlias New alias
      * @returns 
      */
-    copyCanvasElementProperty<T extends CanvasBaseItemMemory>(oldAlias: T | CanvasBaseItem<T> | string, newAlias: CanvasBaseItem<T> | string) {
+    async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(oldAlias: T | CanvasBaseItem<T> | string, newAlias: CanvasBaseItem<T> | string) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias)
             if (element) {
@@ -151,7 +149,7 @@ export default class CanvasManager {
         "height" in oldAlias && delete oldAlias.height
         "width" in oldAlias && delete oldAlias.width
         if (newAlias instanceof Sprite) {
-            setMemorySprite(newAlias, oldAlias)
+            await setMemorySprite(newAlias, oldAlias)
         }
         else if (newAlias instanceof Text) {
             setMemoryText(newAlias, oldAlias)
@@ -249,17 +247,34 @@ export default class CanvasManager {
          * @default false
          */
         ignoreOldStyle?: boolean
+        /**
+         * The zIndex of the canvas element.
+         * @default undefined
+         */
+        zIndex?: number
     } = {}) {
         if (alias === CANVAS_APP_STAGE_ALIAS) {
             console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`)
             return
         }
-        let ignoreOldStyle = options?.ignoreOldStyle
+
         let oldCanvasElement = this.find(alias)
-        if (oldCanvasElement) {
-            let zIndex = this.app.stage.getChildIndex(oldCanvasElement)
-            !ignoreOldStyle && this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
+
+        let ignoreOldStyle = options?.ignoreOldStyle
+        if (oldCanvasElement && !ignoreOldStyle) {
+            this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
+        }
+
+        let zIndex = options.zIndex
+        if (oldCanvasElement && !this.app.stage.children.includes(oldCanvasElement)) {
+            console.error(`[Pixi’VN] The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`)
+        }
+        else if (oldCanvasElement) {
+            zIndex === undefined && (zIndex = this.app.stage.getChildIndex(oldCanvasElement))
             this.remove(alias, { ignoreTickers: true })
+        }
+
+        if (zIndex !== undefined) {
             this.app.stage.addChildAt(canvasElement, zIndex)
         }
         else {
@@ -904,26 +919,28 @@ export default class CanvasManager {
      * Import the canvas and the tickers from a JSON string.
      * @param dataString The JSON string.
      */
-    public importJson(dataString: string) {
-        this.import(JSON.parse(dataString))
+    public async importJson(dataString: string) {
+        await this.import(JSON.parse(dataString))
     }
     /**
      * Import the canvas and the tickers from an object.
      * @param data The object.
      */
-    public import(data: object) {
+    public async import(data: object) {
         this.clear()
         try {
             let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let currentElements = (data as ExportedCanvas)["elements"]
                 let elementAliasesOrder = (data as ExportedCanvas)["elementAliasesOrder"]
-                elementAliasesOrder.forEach((alias) => {
-                    if (currentElements[alias]) {
-                        let element = importCanvasElement(currentElements[alias])
-                        this.add(alias, element)
-                        CanvasManagerStatic.childrenAliasesOrder.push(alias)
-                    }
+                let promises = elementAliasesOrder
+                    .filter((alias) => currentElements[alias])
+                    .map((alias) => importCanvasElement(currentElements[alias]))
+                let list = await Promise.all(promises)
+                list.forEach((element, i) => {
+                    let alias = elementAliasesOrder[i]
+                    this.add(alias, element)
+                    CanvasManagerStatic.childrenAliasesOrder.push(alias)
                 })
             }
             else {

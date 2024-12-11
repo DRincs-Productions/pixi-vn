@@ -1,6 +1,9 @@
 import { ContainerOptions, ObservablePoint, PointData, Texture } from "pixi.js";
+import { canvas } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory } from "../../interface";
+import AdditionalPositionsExtension, { AdditionalPositionsExtensionProps } from "./AdditionalPositions";
+import AnchorExtension, { AnchorExtensionProps } from "./AnchorExtension";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";
 
@@ -16,49 +19,65 @@ import ImageSprite from "./ImageSprite";
  *  canvas.add(container);
  * ```
  */
-export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
-    constructor(options?: ContainerOptions<ImageSprite> & {
-        anchor: PointData | number
-    }, textureAliases: string[] = []) {
+export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension, AdditionalPositionsExtension {
+    constructor(options?: ContainerOptions<ImageSprite> & AnchorExtensionProps & AdditionalPositionsExtensionProps, textureAliases: string[] = []) {
         super(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {
                 this.addChild(new ImageSprite(undefined, textureAlias))
             })
         }
-        if (options?.anchor) {
+        if (options?.anchor !== undefined) {
             this.anchor = options.anchor
         }
-    }
-    override get memory() {
-        let memory = super.memory
-        memory.pixivnId = CANVAS_IMAGE_CONTAINER_ID
-        memory.anchor = this._anchor
-        return memory
-    }
-    override set memory(value) {
-        super.memory = value
-        if (value.anchor) {
-            this.reloadAnchor()
+        if (options?.align !== undefined) {
+            this.align = options.align
+        }
+        if (options?.percentagePosition !== undefined) {
+            this.percentagePosition = options.percentagePosition
         }
     }
+    override get memory(): ImageContainerMemory {
+        return {
+            ...super.memory,
+            pixivnId: CANVAS_IMAGE_CONTAINER_ID,
+            anchor: this._anchor,
+            align: this._align,
+            percentagePosition: this._percentagePosition,
+            loadIsStarted: this._loadIsStarted,
+        }
+    }
+    override async setMemory(value: ImageContainerMemory) {
+        await super.setMemory(value)
+        this.reloadAnchor()
+        this.reloadPosition()
+    }
     pixivnId: string = CANVAS_IMAGE_CONTAINER_ID
+    private _loadIsStarted: boolean = false
+    get loadIsStarted() {
+        return this._loadIsStarted
+    }
     /** 
      * Load the children images.
      * @returns A promise that resolves when the images are loaded.
      */
     async load() {
-        let list = this.children.map(child => {
-            if (child instanceof ImageSprite) {
-                return child.load()
-            }
-        })
-        return Promise.all(list).then((res) => {
-            if (this._anchor) {
-                this.anchor = this._anchor
-            }
-            return res
-        })
+        this._loadIsStarted = true
+        let promises: Promise<void>[] = Array<Promise<void>>(this.children.length)
+        for (let i = 0; i < this.children.length; i++) {
+            promises[i] = this.children[i].load()
+        }
+        // wait for all promises
+        return Promise.all(promises)
+            .then(() => {
+                this._loadIsStarted = false
+                this.reloadAnchor()
+                this.reloadPosition()
+            })
+            .catch((e) => {
+                this._loadIsStarted = false
+                console.error("[Pixi’VN] Error into ImageContainer.load()", e)
+            })
     }
 
     /**
@@ -80,24 +99,8 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         return this.children.some(child => child.texture._source.label === "EMPTY")
     }
 
+    /** Anchor */
     private _anchor?: PointData
-    /**
-     * The anchor sets the origin point of the imageContainer. The default value is taken from the {@link Texture}
-     * and passed to the constructor.
-     *
-     * The default is `(0,0)`, this means the imageContainer's origin is the top left.
-     *
-     * Setting the anchor to `(0.5,0.5)` means the imageContainer's origin is centered.
-     *
-     * Setting the anchor to `(1,1)` would mean the imageContainer's origin point will be the bottom right corner.
-     *
-     * If you pass only single parameter, it will set both x and y to the same value as shown in the example below.
-     * @example
-     * import { ImageContainer } from '@drincs/pixi-vn';
-     *
-     * const imageContainer = new ImageContainer();
-     * imageContainer.anchor = 0.5;
-     */
     get anchor(): PointData {
         let x = super.pivot.x / this.width
         let y = super.pivot.y / this.height
@@ -123,5 +126,99 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     override set pivot(value: ObservablePoint) {
         this._anchor = undefined
         super.pivot = value
+    }
+
+    /** AdditionalPositions */
+    private _align: Partial<PointData> | undefined = undefined
+    set align(value: Partial<PointData> | number) {
+        this._percentagePosition = undefined
+        this._align === undefined && (this._align = {})
+        if (typeof value === "number") {
+            this._align.x = value
+            this._align.y = value
+        } else {
+            value.x !== undefined && (this._align.x = value.x)
+            value.y !== undefined && (this._align.y = value.y)
+        }
+        this.reloadPosition()
+    }
+    set xAlign(value: number) {
+        this._percentagePosition = undefined
+        this._align === undefined && (this._align = {})
+        this._align.x = value
+        this.reloadPosition()
+    }
+    set yAlign(value: number) {
+        this._percentagePosition = undefined
+        this._align === undefined && (this._align = {})
+        this._align.y = value
+        this.reloadPosition()
+    }
+    private _percentagePosition: Partial<PointData> | undefined = undefined
+    set percentagePosition(value: Partial<PointData> | number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        if (typeof value === "number") {
+            this._percentagePosition.x = value
+            this._percentagePosition.y = value
+        } else {
+            value.x !== undefined && (this._percentagePosition.x = value.x)
+            value.y !== undefined && (this._percentagePosition.y = value.y)
+        }
+        this.reloadPosition()
+    }
+    set xPercentagePosition(_value: number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        this._percentagePosition.x = _value
+        this.reloadPosition()
+    }
+    set yPercentagePosition(_value: number) {
+        this._align = undefined
+        this._percentagePosition === undefined && (this._percentagePosition = {})
+        this._percentagePosition.y = _value
+        this.reloadPosition()
+    }
+    private reloadPosition() {
+        if (this._align) {
+            if (this._align.x !== undefined) {
+                super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+            }
+            if (this._align.y !== undefined) {
+                super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+            }
+        }
+        else if (this._percentagePosition) {
+            if (this._percentagePosition.x !== undefined) {
+                super.x = (this._percentagePosition.x * canvas.screen.width)
+            }
+            if (this._percentagePosition.y !== undefined) {
+                super.y = (this._percentagePosition.y * canvas.screen.height)
+            }
+        }
+    }
+    get position(): ObservablePoint {
+        return super.position
+    }
+    set position(value: ObservablePoint) {
+        this._align = undefined
+        this._percentagePosition = undefined
+        super.position = value
+    }
+    get x(): number {
+        return super.x
+    }
+    set x(value: number) {
+        this._align = undefined
+        this._percentagePosition = undefined
+        super.x = value
+    }
+    override get y(): number {
+        return super.y
+    }
+    override set y(value: number) {
+        this._align = undefined
+        this._percentagePosition = undefined
+        super.y = value
     }
 }
