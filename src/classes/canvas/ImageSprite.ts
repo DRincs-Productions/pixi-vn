@@ -1,10 +1,10 @@
-import { ObservablePoint, Sprite as PixiSprite, PointData, SpriteOptions, Texture, TextureSource, TextureSourceLike } from "pixi.js";
+import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { canvas } from "../..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
-import { ImageSpriteMemory } from "../../interface";
-import AdditionalPositionsExtension, { AdditionalPositionsExtensionProps } from "./AdditionalPositions";
+import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
+import AdditionalPositionsExtension from "./AdditionalPositions";
 import Sprite, { getMemorySprite } from "./Sprite";
 
 /**
@@ -33,7 +33,7 @@ import Sprite, { getMemorySprite } from "./Sprite";
  */
 export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> implements AdditionalPositionsExtension {
     pixivnId: string = CANVAS_IMAGE_ID
-    constructor(options?: (SpriteOptions & AdditionalPositionsExtensionProps) | Texture | undefined, textureAlias?: string) {
+    constructor(options?: ImageSpriteOptions | Texture | undefined, textureAlias?: string) {
         super(options)
         if (textureAlias) {
             this.textureAlias = textureAlias
