@@ -21,7 +21,6 @@ export {
     default as CanvasContainer,
     default as Container
 } from './canvas/Container';
-export type { default as ContainerChild } from './canvas/ContainerChild';
 export { default as ImageContainer } from './canvas/ImageContainer';
 export {
     /**

@@ -2,8 +2,8 @@ import { ContainerOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
 import { exportCanvasElement, importCanvasElement, setMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
 import { ContainerMemory } from "../../interface";
+import ContainerChild from "../../types/ContainerChild";
 import CanvasBaseItem from "./CanvasBaseItem";
-import ContainerChild from "./ContainerChild";
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods, 
