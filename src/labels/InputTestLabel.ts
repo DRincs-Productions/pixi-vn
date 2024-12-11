@@ -11,7 +11,7 @@ export const inputTestLabel = newLabel(INPUT_TEST_LABEL,
                 character: juliette,
                 text: "What is your name?"
             }
-            narration.requestInput({ type: "string" })
+            narration.requestInput({ type: "string" }, "default value")
         },
         () => {
             narration.dialogue = {

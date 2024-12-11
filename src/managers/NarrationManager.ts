@@ -886,7 +886,7 @@ export default class NarrationManager {
         (info as InputInfo).isRequired = true
         storage.setVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY, info)
         if (defaultValue !== undefined) {
-            this.inputValue = defaultValue
+            storage.setVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY, defaultValue)
         }
         else {
             storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY)
