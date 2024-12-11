@@ -98,14 +98,18 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: 
         }
     }
     if ("textureData" in memory) {
-        if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
-            let texture = await getTexture(memory.textureData.alias)
-            if (texture) {
-                element.texture = texture
+        if (memory.textureData.alias) {
+            if (element instanceof ImageSprite) {
+                element.textureAlias = memory.textureData.alias
             }
         }
-        else {
-            let texture = await getTexture(memory.textureData.url)
+
+        if (memory.textureData.url !== "EMPTY") {
+            let textureUrl: string = memory.textureData.url
+            if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
+                textureUrl = memory.textureData.alias
+            }
+            let texture = await getTexture(textureUrl)
             if (texture) {
                 element.texture = texture
             }
