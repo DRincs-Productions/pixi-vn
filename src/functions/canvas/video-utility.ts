@@ -35,9 +35,7 @@ export function addVideo(alias: string, videoUrl?: string): VideoSprite {
 }
 
 /**
- * Show a list of videos in the canvas, at the same time.
- * @param canvasVideos is a list of videos to show.
- * @returns the list of videos.
+ * @deprecated
  */
 export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Promise<VideoSprite[]> {
     if (!Array.isArray(canvasVideos)) {
