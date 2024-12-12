@@ -121,13 +121,17 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this.reloadPosition()
     }
     set xAlign(value: number) {
-        this._percentagePosition = undefined
+        if (this._percentagePosition) {
+            this._percentagePosition.x = undefined
+        }
         this._align === undefined && (this._align = {})
         this._align.x = value
         this.reloadPosition()
     }
     set yAlign(value: number) {
-        this._percentagePosition = undefined
+        if (this._percentagePosition) {
+            this._percentagePosition.y = undefined
+        }
         this._align === undefined && (this._align = {})
         this._align.y = value
         this.reloadPosition()
@@ -146,13 +150,17 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this.reloadPosition()
     }
     set xPercentagePosition(_value: number) {
-        this._align = undefined
+        if (this._align) {
+            this._align.x = undefined
+        }
         this._percentagePosition === undefined && (this._percentagePosition = {})
         this._percentagePosition.x = _value
         this.reloadPosition()
     }
     set yPercentagePosition(_value: number) {
-        this._align = undefined
+        if (this._align) {
+            this._align.y = undefined
+        }
         this._percentagePosition === undefined && (this._percentagePosition = {})
         this._percentagePosition.y = _value
         this.reloadPosition()
