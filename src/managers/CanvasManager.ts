@@ -941,7 +941,6 @@ export default class CanvasManager {
      * @param data The object.
      */
     public async import(data: object) {
-        this.clear()
         try {
             let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
@@ -951,6 +950,7 @@ export default class CanvasManager {
                     .filter((alias) => currentElements[alias])
                     .map((alias) => importCanvasElement(currentElements[alias]))
                 let list = await Promise.all(promises)
+                this.clear()
                 list.forEach((element, i) => {
                     let alias = elementAliasesOrder[i]
                     this.add(alias, element)
