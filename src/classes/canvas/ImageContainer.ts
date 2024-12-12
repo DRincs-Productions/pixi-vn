@@ -2,7 +2,7 @@ import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { canvas } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
-import AdditionalPositionsExtension from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -22,6 +22,7 @@ import ImageSprite from "./ImageSprite";
 export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension, AdditionalPositionsExtension {
     constructor(options?: ImageContainerOptions<ImageSprite>, textureAliases: string[] = []) {
         super(options)
+        options = analizePositionsExtensionProps(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {
                 this.addChild(new ImageSprite(undefined, textureAlias))
