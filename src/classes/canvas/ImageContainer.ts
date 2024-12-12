@@ -52,7 +52,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this.setMemory(value)
     }
     override async setMemory(value: ImageContainerMemory) {
-        await super.setMemory(value)
+        await setMemoryImageContainer(this, value)
         this.reloadAnchor()
         this.reloadPosition()
     }
@@ -238,11 +238,13 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
 export async function setMemoryImageContainer(element: ImageContainer, memory: ImageContainerOptions | {}, opstions?: {
     ignoreScale?: boolean,
 }) {
+    memory = analizePositionsExtensionProps(memory)!
     setMemoryContainer(element, memory, {
         ...opstions,
         end: async () => {
             "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData)
             "align" in memory && memory.align !== undefined && (element.align = memory.align as Partial<PointData>)
+            "percentagePosition" in memory && memory.percentagePosition !== undefined && (element.percentagePosition = memory.percentagePosition as Partial<PointData>)
             if ("loadIsStarted" in memory && memory.loadIsStarted) {
                 await element.load()
             }

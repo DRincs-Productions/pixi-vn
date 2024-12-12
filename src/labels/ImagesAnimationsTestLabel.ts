@@ -496,9 +496,8 @@ const customPositionTest = newLabel("___pixi_vn_images_custom_position_test___",
 - ${skullyName} will be added with the anchor set to 0.5 and align set to 0.25.`
         }
         canvas.removeAll()
-        let container = addImageCointainer("container", [eggHeadImage, flowerTopImage])
-        container.anchor = 0.5
-        container.align = 0.5
+        let container = new ImageContainer({ anchor: 0.5, align: 0.5 }, [eggHeadImage, flowerTopImage])
+        canvas.add("container", container)
         let helmlok = addImage("helmlok", helmlokImage)
         helmlok.anchor = 0.5
         helmlok.xAlign = 1

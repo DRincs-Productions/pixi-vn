@@ -59,7 +59,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this.setMemory(value)
     }
     override async setMemory(value: ImageSpriteMemory) {
-        await super.setMemory(value)
+        await setMemoryImageSprite(this, value)
         this.reloadPosition()
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
@@ -203,9 +203,11 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
 }
 
 export async function setMemoryImageSprite(element: ImageSprite, memory: ImageSpriteMemory | {}) {
+    memory = analizePositionsExtensionProps(memory)!
     return await setMemorySprite(element, memory, {
         half: async () => {
             "align" in memory && memory.align !== undefined && (element.align = memory.align)
+            "percentagePosition" in memory && memory.percentagePosition !== undefined && (element.percentagePosition = memory.percentagePosition)
             "imageLink" in memory && memory.imageLink !== undefined && (element.textureAlias = memory.imageLink)
             if ("loadIsStarted" in memory && memory.loadIsStarted) {
                 await element.load()
