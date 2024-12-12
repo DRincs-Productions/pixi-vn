@@ -1,5 +1,6 @@
 import { ContainerOptions, PointData, SpriteOptions, TextOptions } from "pixi.js";
 import { ImageSprite } from "../../classes";
+import { AdditionalPositionsExtensionProps } from "../../classes/canvas/AdditionalPositions";
 import { CanvasEventNamesType, ContainerChild } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import TextureMemory from "./TextureMemory";
@@ -21,11 +22,9 @@ export interface ContainerMemory<C extends ContainerChild = ContainerChild> exte
 /**
  * Interface for the canvas container memory
  */
-export interface ImageContainerMemory extends ContainerMemory<ImageSprite> {
+export interface ImageContainerMemory extends ContainerMemory<ImageSprite>, AdditionalPositionsExtensionProps {
     elements: ImageSpriteMemory[],
     anchor?: PointData
-    align?: Partial<PointData>
-    percentagePosition?: Partial<PointData>
     loadIsStarted: boolean
 }
 
@@ -53,13 +52,11 @@ export interface TextMemory extends TextOptions, CanvasBaseItemMemory {
 /**
  * The memory of the image. It uses for save the state of the image.
  */
-export interface ImageSpriteMemory extends SpriteBaseMemory {
+export interface ImageSpriteMemory extends SpriteBaseMemory, AdditionalPositionsExtensionProps {
     /**
      * @deprecated use SpriteBaseMemory.textureAlias
      */
     imageLink?: string,
-    align?: Partial<PointData>
-    percentagePosition?: Partial<PointData>
     loadIsStarted: boolean
 }
 
