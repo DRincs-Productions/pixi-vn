@@ -142,31 +142,47 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
     if (!props) {
         return props
     }
-    if (props.align != undefined) {
-        if (typeof props.align === "number") {
-            props.xAlign = props.align
-            props.yAlign = props.align
-        }
-        else {
-            if (props.align.x != undefined) {
-                props.xAlign = props.align.x
+    if (typeof props.align !== "number") {
+        if (props.xAlign != undefined) {
+            if (props.align === undefined) {
+                props.align = { x: props.xAlign }
+                delete props.xAlign
             }
-            if (props.align.y != undefined) {
-                props.yAlign = props.align.y
+            else {
+                props.align.x = props.xAlign
+                delete props.xAlign
+            }
+        }
+        if (props.yAlign != undefined) {
+            if (props.align === undefined) {
+                props.align = { y: props.yAlign }
+                delete props.yAlign
+            }
+            else {
+                props.align.y = props.yAlign
+                delete props.yAlign
             }
         }
     }
-    if (props.percentagePosition != undefined) {
-        if (typeof props.percentagePosition === "number") {
-            props.xPercentagePosition = props.percentagePosition
-            props.yPercentagePosition = props.percentagePosition
-        }
-        else {
-            if (props.percentagePosition.x != undefined) {
-                props.xPercentagePosition = props.percentagePosition.x
+    if (typeof props.percentagePosition !== "number") {
+        if (props.xPercentagePosition != undefined) {
+            if (props.percentagePosition === undefined) {
+                props.percentagePosition = { x: props.xPercentagePosition }
+                delete props.xPercentagePosition
             }
-            if (props.percentagePosition.y != undefined) {
-                props.yPercentagePosition = props.percentagePosition.y
+            else {
+                props.percentagePosition.x = props.xPercentagePosition
+                delete props.xPercentagePosition
+            }
+        }
+        if (props.yPercentagePosition != undefined) {
+            if (props.percentagePosition === undefined) {
+                props.percentagePosition = { y: props.yPercentagePosition }
+                delete props.yPercentagePosition
+            }
+            else {
+                props.percentagePosition.y = props.yPercentagePosition
+                delete props.yPercentagePosition
             }
         }
     }

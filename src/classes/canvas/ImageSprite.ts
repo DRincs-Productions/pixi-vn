@@ -4,7 +4,7 @@ import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
-import AdditionalPositionsExtension from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
 
 /**
@@ -35,20 +35,15 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     pixivnId: string = CANVAS_IMAGE_ID
     constructor(options?: ImageSpriteOptions | Texture | undefined, textureAlias?: string) {
         super(options)
+        options = analizePositionsExtensionProps(options as any)
         if (textureAlias) {
             this.textureAlias = textureAlias
         }
-        if (options && "xAlign" in options && options?.xAlign !== undefined) {
-            this.xAlign = options.xAlign
+        if (options && "align" in options && options?.align !== undefined) {
+            this.align = options.align
         }
-        if (options && "yAlign" in options && options?.yAlign !== undefined) {
-            this.yAlign = options.yAlign
-        }
-        if (options && "xPercentagePosition" in options && options?.xPercentagePosition !== undefined) {
-            this.xPercentagePosition = options.xPercentagePosition
-        }
-        if (options && "yPercentagePosition" in options && options?.yPercentagePosition !== undefined) {
-            this.yPercentagePosition = options.yPercentagePosition
+        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+            this.percentagePosition = options.percentagePosition
         }
     }
     override get memory(): ImageSpriteMemory {

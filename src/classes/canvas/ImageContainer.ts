@@ -31,17 +31,11 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         if (options?.anchor !== undefined) {
             this.anchor = options.anchor
         }
-        if (options && "xAlign" in options && options?.xAlign !== undefined) {
-            this.xAlign = options.xAlign
+        if (options && "align" in options && options?.align !== undefined) {
+            this.align = options.align
         }
-        if (options && "yAlign" in options && options?.yAlign !== undefined) {
-            this.yAlign = options.yAlign
-        }
-        if (options && "xPercentagePosition" in options && options?.xPercentagePosition !== undefined) {
-            this.xPercentagePosition = options.xPercentagePosition
-        }
-        if (options && "yPercentagePosition" in options && options?.yPercentagePosition !== undefined) {
-            this.yPercentagePosition = options.yPercentagePosition
+        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+            this.percentagePosition = options.percentagePosition
         }
     }
     override get memory(): ImageContainerMemory {
