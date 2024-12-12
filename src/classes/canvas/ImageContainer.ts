@@ -52,6 +52,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this.setMemory(value)
     }
     override async setMemory(value: ImageContainerMemory) {
+        await this.importChildren(value)
         await setMemoryImageContainer(this, value)
         this.reloadAnchor()
         this.reloadPosition()

@@ -41,12 +41,15 @@ export default class Container<C extends ContainerChild = ContainerChild, Memory
         this.setMemory(value)
     }
     async setMemory(value: Memory): Promise<void> {
+        await this.importChildren(value)
+        return await setMemoryContainer(this, value)
+    }
+    protected async importChildren(value: Memory) {
         for (let i = 0; i < value.elements.length; i++) {
             let child = value.elements[i]
             let element = await importCanvasElement<C>(child)
             this.addChild(element)
         }
-        return await setMemoryContainer(this, value)
     }
 }
 
