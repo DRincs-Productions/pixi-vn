@@ -4,7 +4,7 @@ import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
 import AdditionalPositionsExtension from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
-import Container from "./Container";
+import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";
 
 /**
@@ -224,4 +224,19 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this._percentagePosition = undefined
         super.y = value
     }
+}
+
+export async function setMemoryImageContainer(element: ImageContainer, memory: ImageContainerOptions | {}, opstions?: {
+    ignoreScale?: boolean,
+}) {
+    setMemoryContainer(element, memory, {
+        ...opstions,
+        end: async () => {
+            "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData)
+            "align" in memory && memory.align !== undefined && (element.align = memory.align as Partial<PointData>)
+            if ("loadIsStarted" in memory && memory.loadIsStarted) {
+                await element.load()
+            }
+        }
+    })
 }

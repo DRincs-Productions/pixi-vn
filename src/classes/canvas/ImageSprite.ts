@@ -5,7 +5,7 @@ import { addImage, loadImage, showWithDissolveTransition } from "../../functions
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
 import AdditionalPositionsExtension from "./AdditionalPositions";
-import Sprite, { getMemorySprite } from "./Sprite";
+import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
 
 /**
  * This class is a extension of the {@link Sprite} class, it has the same properties and methods,
@@ -199,4 +199,16 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this._percentagePosition = undefined
         super.y = value
     }
+}
+
+export async function setMemoryImageSprite(element: ImageSprite, memory: ImageSpriteMemory | {}) {
+    return await setMemorySprite(element, memory, {
+        half: async () => {
+            "align" in memory && memory.align !== undefined && (element.align = memory.align)
+            "imageLink" in memory && memory.imageLink !== undefined && (element.textureAlias = memory.imageLink)
+            if ("loadIsStarted" in memory && memory.loadIsStarted) {
+                await element.load()
+            }
+        }
+    })
 }

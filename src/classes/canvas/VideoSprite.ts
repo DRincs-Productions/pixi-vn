@@ -2,7 +2,7 @@ import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
 import { VideoSpriteMemory } from "../../interface";
-import ImageSprite from "./ImageSprite";
+import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
 
 /**
  * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,
@@ -40,7 +40,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         this.setMemory(value)
     }
     override async setMemory(value: VideoSpriteMemory) {
-        await super.setMemory(value)
+        return await setMemoryVideoSprite(this, value)
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PixiSprite.from(source, skipCache)
@@ -137,4 +137,11 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             return this.texture.source.resource.duration || 0
         }
     }
+}
+
+export async function setMemoryVideoSprite(element: VideoSprite, memory: VideoSpriteMemory | {}) {
+    await setMemoryImageSprite(element, memory)
+    "loop" in memory && memory.loop !== undefined && (element.loop = memory.loop)
+    "currentTime" in memory && memory.currentTime !== undefined && (element.currentTime = memory.currentTime)
+    "paused" in memory && memory.paused !== undefined && (element.paused = memory.paused)
 }

@@ -1,14 +1,13 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
-import { getEventInstanceById } from "../../decorators/event-decorator";
-import { setMemoryText } from "../../functions/canvas/canvas-memory-utility";
+import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTextStyle } from "../../functions/texture-utility";
 import { TextMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
-import { getMemoryContainer } from "./Container";
+import { getMemoryContainer, setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -32,8 +31,8 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
     set memory(value: TextMemory) {
         this.setMemory(value)
     }
-    setMemory(value: TextMemory) {
-        return setMemoryText(this, value)
+    async setMemory(value: TextMemory) {
+        return await setMemoryText(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
     get onEvents() {
@@ -103,5 +102,30 @@ export function getMemoryText<T extends Text>(element: T | Text): TextMemory {
         style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
+    }
+}
+
+export async function setMemoryText(element: Text, memory: TextMemory | {}) {
+    await setMemoryContainer(element, memory)
+    if ("anchor" in memory && memory.anchor !== undefined) {
+        if (typeof memory.anchor === "number") {
+            element.anchor.set(memory.anchor, memory.anchor)
+        }
+        else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y)
+        }
+    }
+    "text" in memory && memory.text !== undefined && (element.text = memory.text)
+    "resolution" in memory && memory.resolution !== undefined && (element.resolution = memory.resolution)
+    "style" in memory && memory.style !== undefined && (element.style = memory.style)
+    "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels)
+    if ("onEvents" in memory) {
+        for (let event in memory.onEvents) {
+            let id = memory.onEvents[event]
+            let instance = getEventTypeById(id)
+            if (instance) {
+                element.onEvent(event as CanvasEventNamesType, instance)
+            }
+        }
     }
 }

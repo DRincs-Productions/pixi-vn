@@ -1,12 +1,17 @@
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
-import { Sprite, Text } from "../classes";
+import { ImageContainer, ImageSprite, Sprite, Text, VideoSprite } from "../classes";
 import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
-import { getMemoryContainer } from "../classes/canvas/Container";
+import { getMemoryContainer, setMemoryContainer } from "../classes/canvas/Container";
+import { setMemoryImageContainer } from "../classes/canvas/ImageContainer";
+import { setMemoryImageSprite } from "../classes/canvas/ImageSprite";
+import { setMemorySprite } from "../classes/canvas/Sprite";
+import { setMemoryText } from "../classes/canvas/Text";
+import { setMemoryVideoSprite } from "../classes/canvas/VideoSprite";
 import TickerBase from "../classes/ticker/TickerBase";
 import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
-import { exportCanvasElement, importCanvasElement, setMemoryContainer, setMemorySprite, setMemoryText } from '../functions/canvas/canvas-memory-utility';
+import { exportCanvasElement, importCanvasElement } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
 import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
 import { TickersStep } from "../interface/TickersSteps";
@@ -148,14 +153,23 @@ export default class CanvasManager {
         "style" in oldAlias && delete oldAlias.style
         "height" in oldAlias && delete oldAlias.height
         "width" in oldAlias && delete oldAlias.width
-        if (newAlias instanceof Sprite) {
+        if (newAlias instanceof VideoSprite) {
+            await setMemoryVideoSprite(newAlias, oldAlias)
+        }
+        else if (newAlias instanceof ImageSprite) {
+            await setMemoryImageSprite(newAlias, oldAlias)
+        }
+        else if (newAlias instanceof Sprite) {
             await setMemorySprite(newAlias, oldAlias)
         }
         else if (newAlias instanceof Text) {
-            setMemoryText(newAlias, oldAlias)
+            await setMemoryText(newAlias, oldAlias)
+        }
+        else if (newAlias instanceof ImageContainer) {
+            await setMemoryImageContainer(newAlias, oldAlias)
         }
         else if (newAlias instanceof PixiContainer) {
-            setMemoryContainer(newAlias, oldAlias)
+            await setMemoryContainer(newAlias, oldAlias)
         }
     }
     /**

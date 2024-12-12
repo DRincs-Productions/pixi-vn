@@ -1,14 +1,14 @@
-import { ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
-import { getEventInstanceById } from "../../decorators/event-decorator";
-import { setMemorySprite } from "../../functions/canvas/canvas-memory-utility";
+import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
+import { getTexture } from "../../functions";
 import { getTextureMemory } from "../../functions/canvas/canvas-utility";
-import { CanvasBaseItemMemory, SpriteMemory } from "../../interface";
+import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
-import { getMemoryContainer } from "./Container";
+import { getMemoryContainer, setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
@@ -51,8 +51,8 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
     set memory(value: SpriteMemory) {
         this.setMemory(value)
     }
-    setMemory(value: Memory | SpriteMemory): Promise<void> {
-        return setMemorySprite(this, value)
+    async setMemory(value: Memory | SpriteMemory): Promise<void> {
+        return await setMemorySprite(this, value)
     }
     private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
     get onEvents() {
@@ -126,5 +126,55 @@ export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>)
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
         onEvents: element.onEvents,
+    }
+}
+
+export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}, options?: {
+    half?: () => Promise<void>
+}) {
+    await setMemoryContainer(element, memory)
+    if ("textureImage" in memory && memory.textureImage && memory.textureImage.image) {
+        let texture = await getTexture(memory.textureImage.image)
+        if (texture) {
+            element.texture = texture
+        }
+    }
+    if ("textureData" in memory) {
+        if (memory.textureData.alias) {
+            element.textureAlias = memory.textureData.alias
+        }
+
+        if (memory.textureData.url !== "EMPTY") {
+            let textureUrl: string = memory.textureData.url
+            if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
+                textureUrl = memory.textureData.alias
+            }
+            let texture = await getTexture(textureUrl)
+            if (texture) {
+                element.texture = texture
+            }
+        }
+    }
+    let half = options?.half
+    if (half) {
+        await half()
+    }
+    if ("anchor" in memory && memory.anchor !== undefined) {
+        if (typeof memory.anchor === "number") {
+            element.anchor.set(memory.anchor, memory.anchor)
+        }
+        else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y)
+        }
+    }
+    "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels)
+    if ("onEvents" in memory) {
+        for (let event in memory.onEvents) {
+            let id = memory.onEvents[event]
+            let instance = getEventTypeById(id)
+            if (instance) {
+                element.onEvent(event, instance)
+            }
+        }
     }
 }
