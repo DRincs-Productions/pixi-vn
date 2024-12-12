@@ -1,6 +1,14 @@
 import { CharacterInterface } from "../interface"
 
-export const registeredCharacters: { [id: string]: CharacterInterface } = {}
+export const registeredCharacters: { [id: string]: CharacterInterface } = {
+    '___pixivn_juliette___': {
+        id: '___pixivn_juliette___',
+        name: 'Juliette',
+        age: 25,
+        icon: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fcharacters%2Fjuliette-square.webp?alt=media",
+        color: "#ac0086"
+    }
+}
 /**
  * Is a function that saves the character. If the character already exists, it will be overwritten.
  * @param character is the character to save

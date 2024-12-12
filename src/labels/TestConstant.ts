@@ -1,15 +1,4 @@
-import { CharacterBaseModel } from "../classes";
-import { saveCharacter } from "../decorators";
-
-export const juliette: any = new CharacterBaseModel('___pixivn_juliette___', {
-    name: 'Juliette',
-    age: 25,
-    icon: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fcharacters%2Fjuliette-square.webp?alt=media",
-    color: "#ac0086"
-});
-
-saveCharacter(juliette);
-
+export const juliette = "___pixivn_juliette___"
 export const eggHeadImage = "https://pixijs.com/assets/eggHead.png"
 export const eggHeadName = `<span style="color:purple">Egg Head</span>`
 export const flowerTopImage = "https://pixijs.com/assets/flowerTop.png"

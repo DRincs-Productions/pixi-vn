@@ -1,6 +1,6 @@
 import { ChoiceMenuOption } from "../classes";
 import { PIXIVN_VERSION } from "../constants";
-import { newLabel } from "../decorators";
+import { getCharacterById, newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
 import { baseCanvasElementTestLabel } from "./BaseCanvasElementTestLabel";
 import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
@@ -27,7 +27,8 @@ export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___"
             } else {
                 currentTimeName = "night🌙"
             }
-            narration.dialogue = { character: juliette, text: `Good ${currentTimeName}! I'm ${juliette.name}, your virtual assistant. I'm here to help you with your tests.` }
+            let julietteObj = getCharacterById(juliette)!
+            narration.dialogue = { character: juliette, text: `Good ${currentTimeName}! I'm ${julietteObj.name}, your virtual assistant. I'm here to help you with your tests.` }
         },
         () => narration.dialogue = { character: juliette, text: `You are running the Pixi’VN v${PIXIVN_VERSION} test. This test will guide you through the different features of the library.` },
         (props) => narration.jumpLabel(pixivnTestStartLabel2, props),
