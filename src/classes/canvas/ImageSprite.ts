@@ -38,11 +38,17 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         if (textureAlias) {
             this.textureAlias = textureAlias
         }
-        if (options && "align" in options && options?.align !== undefined) {
-            this.align = options.align
+        if (options && "xAlign" in options && options?.xAlign !== undefined) {
+            this.xAlign = options.xAlign
         }
-        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
-            this.percentagePosition = options.percentagePosition
+        if (options && "yAlign" in options && options?.yAlign !== undefined) {
+            this.yAlign = options.yAlign
+        }
+        if (options && "xPercentagePosition" in options && options?.xPercentagePosition !== undefined) {
+            this.xPercentagePosition = options.xPercentagePosition
+        }
+        if (options && "yPercentagePosition" in options && options?.yPercentagePosition !== undefined) {
+            this.yPercentagePosition = options.yPercentagePosition
         }
     }
     override get memory(): ImageSpriteMemory {
