@@ -130,28 +130,32 @@ export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>)
 }
 
 export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}, options?: {
-    half?: () => Promise<void>
+    half?: () => Promise<void>,
+    ignoreTexture?: boolean,
 }) {
+    let ignoreTexture = options?.ignoreTexture || false
     await setMemoryContainer(element, memory)
-    if ("textureImage" in memory && memory.textureImage && memory.textureImage.image) {
-        let texture = await getTexture(memory.textureImage.image)
-        if (texture) {
-            element.texture = texture
-        }
-    }
-    if ("textureData" in memory) {
-        if (memory.textureData.alias) {
-            element.textureAlias = memory.textureData.alias
-        }
-
-        if (memory.textureData.url !== "EMPTY") {
-            let textureUrl: string = memory.textureData.url
-            if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
-                textureUrl = memory.textureData.alias
-            }
-            let texture = await getTexture(textureUrl)
+    if (!ignoreTexture) {
+        if ("textureImage" in memory && memory.textureImage && memory.textureImage.image) {
+            let texture = await getTexture(memory.textureImage.image)
             if (texture) {
                 element.texture = texture
+            }
+        }
+        if ("textureData" in memory) {
+            if (memory.textureData.alias) {
+                element.textureAlias = memory.textureData.alias
+            }
+
+            if (memory.textureData.url !== "EMPTY") {
+                let textureUrl: string = memory.textureData.url
+                if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
+                    textureUrl = memory.textureData.alias
+                }
+                let texture = await getTexture(textureUrl)
+                if (texture) {
+                    element.texture = texture
+                }
             }
         }
     }

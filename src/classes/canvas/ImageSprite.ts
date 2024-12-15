@@ -202,16 +202,22 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     }
 }
 
-export async function setMemoryImageSprite(element: ImageSprite, memory: ImageSpriteMemory | {}) {
+export async function setMemoryImageSprite(element: ImageSprite, memory: ImageSpriteMemory | {}, options?: {
+    ignoreTexture?: boolean,
+}) {
+    let ignoreTexture = options?.ignoreTexture || false
     memory = analizePositionsExtensionProps(memory)!
     return await setMemorySprite(element, memory, {
         half: async () => {
             "align" in memory && memory.align !== undefined && (element.align = memory.align)
             "percentagePosition" in memory && memory.percentagePosition !== undefined && (element.percentagePosition = memory.percentagePosition)
-            "imageLink" in memory && memory.imageLink !== undefined && (element.textureAlias = memory.imageLink)
+            if (!ignoreTexture) {
+                "imageLink" in memory && memory.imageLink !== undefined && (element.textureAlias = memory.imageLink)
+            }
             if ("loadIsStarted" in memory && memory.loadIsStarted) {
                 await element.load()
             }
-        }
+        },
+        ignoreTexture: options?.ignoreTexture,
     })
 }

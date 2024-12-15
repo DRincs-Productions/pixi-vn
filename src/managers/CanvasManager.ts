@@ -154,13 +154,13 @@ export default class CanvasManager {
         "height" in oldAlias && delete oldAlias.height
         "width" in oldAlias && delete oldAlias.width
         if (newAlias instanceof VideoSprite) {
-            await setMemoryVideoSprite(newAlias, oldAlias)
+            await setMemoryVideoSprite(newAlias, oldAlias, { ignoreTexture: true })
         }
         else if (newAlias instanceof ImageSprite) {
-            await setMemoryImageSprite(newAlias, oldAlias)
+            await setMemoryImageSprite(newAlias, oldAlias, { ignoreTexture: true })
         }
         else if (newAlias instanceof Sprite) {
-            await setMemorySprite(newAlias, oldAlias)
+            await setMemorySprite(newAlias, oldAlias, { ignoreTexture: true })
         }
         else if (newAlias instanceof Text) {
             await setMemoryText(newAlias, oldAlias)

@@ -139,8 +139,10 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
     }
 }
 
-export async function setMemoryVideoSprite(element: VideoSprite, memory: VideoSpriteMemory | {}) {
-    await setMemoryImageSprite(element, memory)
+export async function setMemoryVideoSprite(element: VideoSprite, memory: VideoSpriteMemory | {}, options?: {
+    ignoreTexture?: boolean,
+}) {
+    await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture })
     "loop" in memory && memory.loop !== undefined && (element.loop = memory.loop)
     "currentTime" in memory && memory.currentTime !== undefined && (element.currentTime = memory.currentTime)
     "paused" in memory && memory.paused !== undefined && (element.paused = memory.paused)
