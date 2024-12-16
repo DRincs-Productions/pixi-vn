@@ -753,6 +753,7 @@ export default class NarrationManager {
             let glueDialogue = storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue
             if (glueDialogue) {
                 dialogue.text = `${glueDialogue.text}${dialogue.text}`
+                dialogue.character = dialogue.character || glueDialogue.character
             }
             this.dialogGlue = false
         }
