@@ -1,10 +1,9 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
-import { canvas } from "../..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
 import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
 
 /**
@@ -161,18 +160,18 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
-                super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x + (this.anchor.x * this.width)
+                super.x = calculateAlign("width", this._align.x, this.width, this.pivot.x, this.anchor.x)
             }
             if (this._align.y !== undefined) {
-                super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y + (this.anchor.y * this.height)
+                super.y = calculateAlign("height", this._align.y, this.height, this.pivot.y, this.anchor.y)
             }
         }
         else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = (this._percentagePosition.x * canvas.screen.width)
+                super.x = calculatePercentagePosition("width", this._percentagePosition.x)
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = (this._percentagePosition.y * canvas.screen.height)
+                super.y = calculatePercentagePosition("height", this._percentagePosition.y)
             }
         }
     }
