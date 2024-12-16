@@ -313,6 +313,11 @@ export default class NarrationManager {
     get canGoNext(): boolean {
         let options = this.choiceMenuOptions
         if (options && options.length > 0) {
+            console.warn("[Pixi’VN] The player must make a choice")
+            return false
+        }
+        if (this.isRequiredInput) {
+            console.warn("[Pixi’VN] The player must enter a value")
             return false
         }
         return true
@@ -343,7 +348,6 @@ export default class NarrationManager {
      */
     public async goNext(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
         if (!this.canGoNext) {
-            console.warn("[Pixi’VN] The player must make a choice")
             return
         }
         if (this.currentLabel && this.currentLabel.onStepEnd) {
