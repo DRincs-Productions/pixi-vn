@@ -306,21 +306,31 @@ export default class NarrationManager {
 
     /* Run Methods */
 
+    private getCanGoNext(options?: {
+        /**
+         * If true, show a warning in the console.
+         * @default false
+         */
+        showWarn?: boolean
+    }): boolean {
+        let showWarn = options?.showWarn || false
+        let choiceMenuOptions = this.choiceMenuOptions
+        if (choiceMenuOptions && choiceMenuOptions.length > 0) {
+            showWarn && console.warn("[Pixi’VN] The player must make a choice")
+            return false
+        }
+        if (this.isRequiredInput) {
+            showWarn && console.warn("[Pixi’VN] The player must enter a value")
+            return false
+        }
+        return true
+    }
     /**
      * Return if can go to the next step.
      * @returns True if can go to the next step.
      */
     get canGoNext(): boolean {
-        let options = this.choiceMenuOptions
-        if (options && options.length > 0) {
-            console.warn("[Pixi’VN] The player must make a choice")
-            return false
-        }
-        if (this.isRequiredInput) {
-            console.warn("[Pixi’VN] The player must enter a value")
-            return false
-        }
-        return true
+        return this.getCanGoNext()
     }
     /**
      * Execute the next step and add it to the history.
@@ -347,7 +357,7 @@ export default class NarrationManager {
      * ```
      */
     public async goNext(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
-        if (!this.canGoNext) {
+        if (!this.getCanGoNext({ showWarn: true })) {
             return
         }
         if (this.currentLabel && this.currentLabel.onStepEnd) {
