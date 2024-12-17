@@ -1,5 +1,5 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
-import { TickerValue } from "../..";
+import { createExportableElement, TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { checkIfTextureNotIsEmpty } from "../../functions/texture-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
@@ -7,6 +7,25 @@ import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";
 import { calculateAlign, calculatePercentagePosition } from "../canvas/AdditionalPositions";
 import TickerBase from "./TickerBase";
+
+function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, element: T) {
+    let destination = createExportableElement(args.destination)
+    if (destination.type === "align") {
+        let anchorx = undefined
+        let anchory = undefined
+        if (element instanceof PixiSprite) {
+            anchorx = element.anchor.x
+            anchory = element.anchor.y
+        }
+        destination.x = calculateAlign("width", destination.x, element.width, element.pivot.x, anchorx)
+        destination.y = calculateAlign("height", destination.y, element.height, element.pivot.y, anchory)
+    }
+    if (destination.type === "percentage") {
+        destination.x = calculatePercentagePosition("width", destination.x)
+        destination.y = calculatePercentagePosition("height", destination.y)
+    }
+    return destination
+}
 
 /**
  * A ticker that moves the canvas element of the canvas.
@@ -64,22 +83,8 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             })
             .forEach((alias) => {
                 let element = canvas.find(alias)
-                let destination = args.destination
                 if (element && element instanceof PixiContainer) {
-                    if (destination.type === "align") {
-                        let anchorx = undefined
-                        let anchory = undefined
-                        if (element instanceof PixiSprite) {
-                            anchorx = element.anchor.x
-                            anchory = element.anchor.y
-                        }
-                        destination.x = calculateAlign("width", destination.x, element.width, element.pivot.x, anchorx)
-                        destination.y = calculateAlign("height", destination.y, element.height, element.pivot.y, anchory)
-                    }
-                    if (destination.type === "percentage") {
-                        destination.x = calculatePercentagePosition("width", destination.x)
-                        destination.y = calculatePercentagePosition("height", destination.y)
-                    }
+                    let destination = calculateDestination(args, element)
                     let xDistance = (destination.x - element.x) > 0 ? 1 : -1
                     if (xDistance != 0) {
                         element.x += xDistance * xSpeed * ticker.deltaTime
@@ -119,7 +124,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias)
             if (element) {
-                let destination = args.destination
+                let destination = calculateDestination(args, element)
                 element.x = destination.x
                 element.y = destination.y
                 if (args.isPushInOut && element.children.length > 0) {

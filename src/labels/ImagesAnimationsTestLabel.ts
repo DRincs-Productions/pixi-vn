@@ -205,7 +205,7 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
 - ${eggHeadName} will move to { x: 500, y: 100 } with a speed of 24.
-- ${flowerTopName} will move to { x: 500, y: 300 } with a speed of 18.
+- ${flowerTopName} will move to { x: 0.5, y: 0.5, type: "align" } with a speed of 18.
 - ${helmlokName} will move to { x: 100, y: 500 } with a speed of 150 and a linear speed progression of -2 ( limit 10 ), and then move to { x: 1700, y: 500 } with a speed of 10 and a linear speed progression of 2 ( limit 150 ), and repeat.
 - ${skullyName} will move to { x: 500, y: 500 } with a speed of 40, wait for 0.5 seconds, and move to { x: 100, y: 100 } with a speed of 40.`
         }
@@ -214,7 +214,7 @@ const imagesMoveTest = newLabel("___pixi_vn_images_move_test___", [
             speed: 24,
         }))
         canvas.addTicker("flowerTop", new MoveTicker({
-            destination: { x: 500, y: 300 },
+            destination: { x: 0.5, y: 0.5, type: "align" },
             speed: 18,
         }))
         canvas.addTickersSteps("helmlok", [
