@@ -1,8 +1,7 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
-import { canvas } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -195,18 +194,18 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
-                super.x = (this._align.x * (canvas.screen.width - this.width)) + this.pivot.x
+                super.x = calculateAlign("width", this._align.x, this.width, this.pivot.x)
             }
             if (this._align.y !== undefined) {
-                super.y = (this._align.y * (canvas.screen.height - this.height)) + this.pivot.y
+                super.y = calculateAlign("height", this._align.y, this.height, this.pivot.y)
             }
         }
         else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = (this._percentagePosition.x * canvas.screen.width)
+                super.x = calculatePercentagePosition("width", this._percentagePosition.x)
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = (this._percentagePosition.y * canvas.screen.height)
+                super.y = calculatePercentagePosition("height", this._percentagePosition.y)
             }
         }
     }

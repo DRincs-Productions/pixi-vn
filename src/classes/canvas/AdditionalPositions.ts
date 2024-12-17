@@ -1,4 +1,5 @@
 import { Container as PixiContainer, PointData } from "pixi.js";
+import { canvas } from "../..";
 
 export interface AdditionalPositionsExtensionProps {
     /**
@@ -187,4 +188,22 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
         }
     }
     return props
+}
+
+export function calculateAlign(type: "width" | "height", align: number, width: number, pivot: number, anchor: number = 0): number {
+    if (type === "width") {
+        return (align * (canvas.screen.width - width)) + pivot + (anchor * width)
+    }
+    else {
+        return (align * (canvas.screen.height - width)) + pivot + (anchor * width)
+    }
+}
+
+export function calculatePercentagePosition(type: "width" | "height", percentage: number) {
+    if (type === "width") {
+        return percentage * canvas.screen.width
+    }
+    else {
+        return percentage * canvas.screen.height
+    }
 }
