@@ -1,4 +1,5 @@
 import { ImageContainer, ImageSprite } from '../../classes';
+import { ImageContainerOptions } from '../../interface';
 import { canvas } from '../../managers';
 
 /**
@@ -7,6 +8,7 @@ import { canvas } from '../../managers';
  * If you want to show the image, then you need to use the function {@link ImageSprite.load()}.
  * @param alias is the unique alias of the image. You can use this alias to refer to this image
  * @param imageUrls is the url of the image. If you don't provide the url, then the alias is used as the url.
+ * @param options The options of the image.
  * @returns the container of the image.
  * @example
  * ```typescript
@@ -14,8 +16,8 @@ import { canvas } from '../../managers';
  * await bunny.load()
  * ```
  */
-export function addImageCointainer(alias: string, imageUrls: string[]): ImageContainer {
-    let container = new ImageContainer(undefined, imageUrls)
+export function addImageCointainer(alias: string, imageUrls: string[], options?: ImageContainerOptions<ImageSprite>): ImageContainer {
+    let container = new ImageContainer(options, imageUrls)
     canvas.add(alias, container)
     return container
 }
@@ -24,14 +26,16 @@ export function addImageCointainer(alias: string, imageUrls: string[]): ImageCon
  * Add a list of images in the container, after that, the images are added and shown in the canvas.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param imageUrls The url of the image.
+ * @param options The options of the image.
  * @returns A promise that is resolved when the image is loaded.
  * @example
  * ```typescript
  * let bunny = showImageContainer("bunny", ["https://pixijs.com/assets/bunny-body.png", "https://pixijs.com/assets/bunny-eyes.png"])
  * ```
  */
-export async function showImageContainer(alias: string, imageUrls: string[]): Promise<ImageContainer> {
-    let container = addImageCointainer(alias, imageUrls)
+export async function showImageContainer(alias: string, imageUrls: string[], options?: ImageContainerOptions<ImageSprite>): Promise<ImageContainer> {
+    let container = new ImageContainer(options, imageUrls)
     await container.load()
+    canvas.add(alias, container)
     return container
 }
