@@ -1,7 +1,7 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import { addVideo, loadVideo, showWithDissolveTransition } from "../../functions";
-import { VideoSpriteMemory } from "../../interface";
+import { VideoSpriteMemory, VideoSpriteOptions } from "../../interface";
 import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
 
 /**
@@ -26,7 +26,7 @@ import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
  * ```
  */
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
-    constructor(options?: VideoSpriteMemory | Texture | undefined, textureAlias?: string) {
+    constructor(options?: VideoSpriteOptions | Texture | undefined, textureAlias?: string) {
         let loop = undefined
         let paused = undefined
         let currentTime = undefined

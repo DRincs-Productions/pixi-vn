@@ -29,7 +29,7 @@ export type {
      */
     VideoSpriteMemory as CanvasVideoMemory, ContainerMemory, ImageContainerMemory, ImageSpriteMemory, SpriteBaseMemory, SpriteMemory, TextMemory, VideoSpriteMemory
 } from './canvas/canvas-memory';
-export type { ImageContainerOptions, ImageSpriteOptions } from './canvas/canvas-options';
+export type { ImageContainerOptions, ImageSpriteOptions, VideoSpriteOptions } from './canvas/canvas-options';
 export type { ShakeEffectProps } from './canvas/effect-props';
 export type { default as TextureMemory } from './canvas/TextureMemory';
 export type { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from './canvas/transition-props';

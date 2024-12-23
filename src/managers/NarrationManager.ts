@@ -399,7 +399,7 @@ export default class NarrationManager {
                         canvas.forceCompletionOfReportedTickers()
                     }
                     NarrationManagerStatic.stepsRunning++
-                    let result = await step(props)
+                    let result = await step(props, { labelId: currentLabel.id })
 
                     if (this.choiceMenuOptions?.length === 1 && this.choiceMenuOptions[0].autoSelect) {
                         let choice = this.choiceMenuOptions[0]
@@ -442,7 +442,7 @@ export default class NarrationManager {
             else if (this.openedLabels.length === 1) {
                 NarrationManagerStatic.restoreLastLabelList()
                 if (this.onGameEnd) {
-                    return await this.onGameEnd(props)
+                    return await this.onGameEnd(props, { labelId: "end" })
                 }
                 return
             }
@@ -450,7 +450,7 @@ export default class NarrationManager {
         else if (this.openedLabels.length === 0) {
             NarrationManagerStatic.restoreLastLabelList()
             if (this.onGameEnd) {
-                return await this.onGameEnd(props)
+                return await this.onGameEnd(props, { labelId: "end" })
             }
             console.error("[Pixi’VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game")
             return
