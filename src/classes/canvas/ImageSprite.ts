@@ -33,16 +33,26 @@ import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
 export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> implements AdditionalPositionsExtension {
     pixivnId: string = CANVAS_IMAGE_ID
     constructor(options?: ImageSpriteOptions | Texture | undefined, textureAlias?: string) {
-        super(options)
         options = analizePositionsExtensionProps(options as any)
+        let align = undefined
+        let percentagePosition = undefined
+        if (options && "align" in options && options?.align !== undefined) {
+            align = options.align
+            delete options.align
+        }
+        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+            percentagePosition = options.percentagePosition
+            delete options.percentagePosition
+        }
+        super(options)
         if (textureAlias) {
             this.textureAlias = textureAlias
         }
-        if (options && "align" in options && options?.align !== undefined) {
-            this.align = options.align
+        if (align) {
+            this.align = align
         }
-        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
-            this.percentagePosition = options.percentagePosition
+        if (percentagePosition) {
+            this.percentagePosition = percentagePosition
         }
     }
     override get memory(): ImageSpriteMemory {

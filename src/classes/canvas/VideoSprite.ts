@@ -26,6 +26,33 @@ import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
  * ```
  */
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
+    constructor(options?: VideoSpriteMemory | Texture | undefined, textureAlias?: string) {
+        let loop = undefined
+        let paused = undefined
+        let currentTime = undefined
+        if (options && "loop" in options && options?.loop !== undefined) {
+            loop = options.loop
+            delete options.loop
+        }
+        if (options && "paused" in options && options?.paused !== undefined) {
+            paused = options.paused
+            delete options.paused
+        }
+        if (options && "currentTime" in options && options?.currentTime !== undefined) {
+            currentTime = options.currentTime
+            delete options.currentTime
+        }
+        super(options, textureAlias)
+        if (loop) {
+            this.loop = loop
+        }
+        if (paused) {
+            this.paused = paused
+        }
+        if (currentTime) {
+            this.currentTime = currentTime
+        }
+    }
     pixivnId: string = CANVAS_VIDEO_ID
     override get memory(): VideoSpriteMemory {
         return {

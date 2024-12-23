@@ -20,6 +20,22 @@ import ImageSprite from "./ImageSprite";
  */
 export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> implements AnchorExtension, AdditionalPositionsExtension {
     constructor(options?: ImageContainerOptions<ImageSprite>, textureAliases: string[] = []) {
+        options = analizePositionsExtensionProps(options as any)
+        let align = undefined
+        let percentagePosition = undefined
+        let anchor = undefined
+        if (options && "anchor" in options && options?.anchor !== undefined) {
+            anchor = options.anchor
+            delete options.anchor
+        }
+        if (options && "align" in options && options?.align !== undefined) {
+            align = options.align
+            delete options.align
+        }
+        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+            percentagePosition = options.percentagePosition
+            delete options.percentagePosition
+        }
         super(options)
         options = analizePositionsExtensionProps(options)
         if (textureAliases) {
@@ -27,14 +43,14 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
                 this.addChild(new ImageSprite(undefined, textureAlias))
             })
         }
-        if (options?.anchor !== undefined) {
-            this.anchor = options.anchor
+        if (anchor) {
+            this.anchor = anchor
         }
-        if (options && "align" in options && options?.align !== undefined) {
-            this.align = options.align
+        if (align) {
+            this.align = align
         }
-        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
-            this.percentagePosition = options.percentagePosition
+        if (percentagePosition) {
+            this.percentagePosition = percentagePosition
         }
     }
     override get memory(): ImageContainerMemory {

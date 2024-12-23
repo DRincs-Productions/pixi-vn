@@ -3,7 +3,7 @@ import ImageContainer from "../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
 import { newLabel } from "../decorators"
-import { addImage, loadImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
@@ -22,13 +22,8 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
         flowerTop.x = 300
         flowerTop.y = 100
         flowerTop.load()
-        let helmlok = addImage("helmlok", helmlokImage)
-        helmlok.x = 100
-        helmlok.y = 300
-        let skully = addImage("skully", skullyImage)
-        skully.x = 300
-        skully.y = 300
-        await loadImage([helmlok, skully])
+        showImage("helmlok", helmlokImage, { x: 100, y: 300 })
+        showImage("skully", skullyImage, { xAlign: 0.5, yAlign: 0.5 })
     },
     async () => {
         narration.dialogue = { character: juliette, text: "Here's what they can do." }

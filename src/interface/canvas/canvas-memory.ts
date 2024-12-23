@@ -64,7 +64,7 @@ export interface ImageSpriteMemory extends SpriteBaseMemory, AdditionalPositions
  * The memory of the video. It uses for save the state of the video.
  */
 export interface VideoSpriteMemory extends ImageSpriteMemory {
-    loop: boolean,
-    paused: boolean,
-    currentTime: number,
+    loop?: boolean,
+    paused?: boolean,
+    currentTime?: number,
 }
