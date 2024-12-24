@@ -23,7 +23,7 @@ export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
         flowerTop.y = 100
         flowerTop.load()
         showImage("helmlok", helmlokImage, { x: 100, y: 300 })
-        showImage("skully", skullyImage, { xAlign: 0.5, yAlign: 0.5 })
+        showImage("skully", skullyImage, { x: 300, y: 300 })
     },
     async () => {
         narration.dialogue = { character: juliette, text: "Here's what they can do." }
