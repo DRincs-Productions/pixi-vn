@@ -223,7 +223,13 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
         canvas.add(alias, canvasElement)
     }
 
-    let destination = { x: canvasElement.x, y: canvasElement.y }
+    let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
+    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
+        destination = canvasElement.positionInfo
+    }
+    else {
+        destination = { x: canvasElement.x, y: canvasElement.y, type: "pixel" }
+    }
     switch (direction) {
         case "up":
             canvasElement.y = canvas.canvasHeight + canvasElement.height

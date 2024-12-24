@@ -167,6 +167,24 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this._percentagePosition.y = _value
         this.reloadPosition()
     }
+    get positionType(): "pixel" | "percentage" | "align" {
+        if (this._align) {
+            return "align"
+        }
+        else if (this._percentagePosition) {
+            return "percentage"
+        }
+        return "pixel"
+    }
+    get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align"; } {
+        if (this._align) {
+            return { x: this._align.x!, y: this._align.y!, type: "align" }
+        }
+        else if (this._percentagePosition) {
+            return { x: this._percentagePosition.x!, y: this._percentagePosition.y!, type: "percentage" }
+        }
+        return { x: this.x, y: this.y, type: "pixel" }
+    }
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {

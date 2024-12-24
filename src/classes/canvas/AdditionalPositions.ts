@@ -137,6 +137,12 @@ export default class AdditionalPositionsExtension extends PixiContainer {
     set yPercentagePosition(_value: number) {
         throw new Error("Method not implemented.");
     }
+    get positionType(): "pixel" | "percentage" | "align" {
+        throw new Error("Method not implemented.");
+    }
+    get positionInfo(): { x: number, y: number, type: "pixel" | "percentage" | "align" } {
+        throw new Error("Method not implemented.");
+    }
 }
 
 export function analizePositionsExtensionProps<T extends AdditionalPositionsExtensionProps>(props?: T): T | undefined {
