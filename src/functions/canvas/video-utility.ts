@@ -1,6 +1,6 @@
 import { Assets, Texture } from 'pixi.js';
 import VideoSprite from '../../classes/canvas/VideoSprite';
-import { VideoSpriteMemory } from '../../interface';
+import { VideoSpriteOptions } from '../../interface';
 import { canvas } from '../../managers';
 import { getTexture } from '../texture-utility';
 
@@ -21,7 +21,7 @@ import { getTexture } from '../texture-utility';
  * await video2.load()
  * ```
  */
-export function addVideo(alias: string, videoUrl?: string, options?: VideoSpriteMemory): VideoSprite {
+export function addVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): VideoSprite {
     if (!videoUrl) {
         if (Assets.resolver.hasKey(alias)) {
             videoUrl = alias
@@ -72,7 +72,7 @@ export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Prom
  * let video2 = showVideo("video2")
  * ```
  */
-export async function showVideo(alias: string, videoUrl?: string, options?: VideoSpriteMemory): Promise<VideoSprite> {
+export async function showVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): Promise<VideoSprite> {
     if (!videoUrl) {
         if (Assets.resolver.hasKey(alias)) {
             videoUrl = alias
