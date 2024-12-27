@@ -835,7 +835,7 @@ export default class CanvasManager {
      * This method is used for example into a transition between scenes.
      * @param step The step that the ticker must be completed before the next step.
      */
-    addTickerMustBeCompletedBeforeNextStep(step: {
+    tickerMustBeCompletedBeforeNextStep(step: {
         /**
          * The id of the step.
          */
