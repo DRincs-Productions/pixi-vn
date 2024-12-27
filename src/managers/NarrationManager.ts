@@ -313,6 +313,9 @@ export default class NarrationManager {
          */
         showWarn?: boolean
     }): boolean {
+        if (NarrationManagerStatic.stepsRunning !== 0) {
+            return true
+        }
         let showWarn = options?.showWarn || false
         let choiceMenuOptions = this.choiceMenuOptions
         if (choiceMenuOptions && choiceMenuOptions.length > 0) {
