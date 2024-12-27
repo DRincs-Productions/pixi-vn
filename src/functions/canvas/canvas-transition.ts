@@ -58,7 +58,7 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
     }, 10, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
@@ -95,7 +95,7 @@ export function removeWithDissolveTransition(
     }, 10, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
 }
@@ -160,11 +160,11 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
     let res: undefined | string[] = undefined
     if (id1) {
         res = [id1]
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
     }
     if (id2) {
         res ? res.push(id2) : res = [id2]
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
@@ -255,7 +255,7 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
@@ -315,7 +315,7 @@ export function moveOut(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
 }
@@ -398,7 +398,7 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
@@ -476,7 +476,7 @@ export function zoomOut(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
 }
@@ -554,7 +554,7 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
@@ -622,7 +622,7 @@ export function pushOut(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, id)
-        mustBeCompletedBeforeNextStep && canvas.addTickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
 }
