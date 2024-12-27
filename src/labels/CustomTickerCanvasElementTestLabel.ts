@@ -2,7 +2,7 @@ import { Rectangle } from "pixi.js";
 import { Assets, Texture, TextureSourceLike, TickerValue } from "..";
 import { Sprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
-import { canvasElementDecorator, newLabel, tickerDecorator } from "../decorators";
+import { canvasComponentDecorator, newLabel, tickerDecorator } from "../decorators";
 import { SpriteBaseMemory, SpriteMemory } from "../interface";
 import { canvas, narration } from "../managers";
 import { eggHeadImage, eggHeadName, juliette } from "./TestConstant";
@@ -13,7 +13,7 @@ interface IAlienTintingMemory extends SpriteBaseMemory {
     speed: number
 }
 
-@canvasElementDecorator("___pixi_vn_custom_canvas_element___")
+@canvasComponentDecorator("___pixi_vn_custom_canvas_element___")
 class AlienTintingTest extends Sprite<IAlienTintingMemory> {
     override get memory() {
         return {

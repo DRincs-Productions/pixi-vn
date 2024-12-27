@@ -9,7 +9,7 @@ export const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof C
  * @param name Name of the canvas element, by default it will use the class name. If the name is already registered, it will show a warning
  * @returns 
  */
-export default function canvasElementDecorator(name?: CanvasElementAliasType) {
+export default function canvasComponentDecorator(name?: CanvasElementAliasType) {
     return function (target: typeof CanvasBaseItem<any>) {
         if (!name) {
             name = target.name
