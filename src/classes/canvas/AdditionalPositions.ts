@@ -1,4 +1,5 @@
 import { Container as PixiContainer, PointData } from "pixi.js";
+import { canvas } from "../..";
 
 export interface AdditionalPositionsExtensionProps {
     /**
@@ -195,10 +196,32 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
     return props
 }
 
-export function calculateAlign(maxValue: number, align: number, value: number, pivot: number, anchor: number = 0): number {
+function calculateAlign(maxValue: number, align: number, value: number, pivot: number, anchor: number = 0): number {
     return (align * (maxValue - value)) + pivot + (anchor * value)
 }
 
-export function calculatePercentagePosition(maxValue: number, percentage: number) {
+function calculatePercentagePosition(maxValue: number, percentage: number): number {
     return percentage * maxValue
+}
+
+export function calculateAlignByComponent(canvasComponent: PixiContainer, value: number, type: "width" | "height", anchor?: number) {
+    if (type === "width") {
+        let width = canvasComponent.parent ? canvasComponent.parent.width : canvas.screen.width
+        return calculateAlign(width, value, canvasComponent.width, canvasComponent.pivot.x, anchor)
+    }
+    else {
+        let height = canvasComponent.parent ? canvasComponent.parent.height : canvas.screen.height
+        return calculateAlign(height, value, canvasComponent.height, canvasComponent.pivot.y, anchor)
+    }
+}
+
+export function calculatePercentagePositionByComponent(canvasComponent: PixiContainer, percentage: number, type: "width" | "height") {
+    if (type === "width") {
+        let width = canvasComponent.parent ? canvasComponent.parent.width : canvas.screen.width
+        return calculatePercentagePosition(width, percentage)
+    }
+    else {
+        let height = canvasComponent.parent ? canvasComponent.parent.height : canvas.screen.height
+        return calculatePercentagePosition(height, percentage)
+    }
 }

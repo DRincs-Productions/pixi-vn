@@ -5,7 +5,7 @@ import { checkIfTextureNotIsEmpty } from "../../functions/texture-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";
-import { calculateAlign, calculatePercentagePosition } from "../canvas/AdditionalPositions";
+import { calculateAlignByComponent, calculatePercentagePositionByComponent } from "../canvas/AdditionalPositions";
 import TickerBase from "./TickerBase";
 
 function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, element: T) {
@@ -17,16 +17,12 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
             anchorx = element.anchor.x
             anchory = element.anchor.y
         }
-        let width = element.parent ? element.parent.width : canvas.screen.width
-        destination.x = calculateAlign(width, destination.x, element.width, element.pivot.x, anchorx)
-        let height = element.parent ? element.parent.height : canvas.screen.height
-        destination.y = calculateAlign(height, destination.y, element.height, element.pivot.y, anchory)
+        destination.x = calculateAlignByComponent(element, destination.x, "width", anchorx)
+        destination.y = calculateAlignByComponent(element, destination.y, "height", anchory)
     }
     if (destination.type === "percentage") {
-        let width = element.parent ? element.parent.width : canvas.screen.width
-        destination.x = calculatePercentagePosition(width, destination.x)
-        let height = element.parent ? element.parent.height : canvas.screen.height
-        destination.y = calculatePercentagePosition(height, destination.y)
+        destination.x = calculatePercentagePositionByComponent(element, destination.x, "width")
+        destination.y = calculatePercentagePositionByComponent(element, destination.y, "height")
     }
     return destination
 }
