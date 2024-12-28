@@ -757,40 +757,75 @@ export default class CanvasManager {
         }
     }
     /**
-     * Remove all tickers from a canvas element.
+     * Remove a ticker by the alias of the canvas element that will use the ticker.
      * @param alias The alias of the canvas element that will use the ticker.
      */
-    private removeTickerByAlias(alias: string | string[]) {
+    removeTickerByAlias(alias: string | string[], options?: {
+        /**
+         * If true, the tickers will be be completed and removed.
+         * @default false
+         */
+        forceCompletion?: boolean
+    }) {
         if (typeof alias === "string") {
             alias = [alias]
         }
-        alias.forEach((alias) => {
-            Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-                if (ticker.canvasElementAliases.includes(alias)) {
-                    if (ticker.canvasElementAliases.length === 1) {
-                        this.removeTicker(id)
+        let forceCompletion = options?.forceCompletion
+        if (forceCompletion) {
+            alias.forEach((alias) => {
+            })
+        }
+        else {
+            alias.forEach((alias) => {
+                Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
+                    if (ticker.canvasElementAliases.includes(alias)) {
+                        if (ticker.canvasElementAliases.length === 1) {
+                            this.removeTicker(id)
+                        }
+                        else {
+                            ticker.canvasElementAliases = ticker.canvasElementAliases.filter((t) => t !== alias)
+                        }
                     }
-                    else {
-                        ticker.canvasElementAliases = ticker.canvasElementAliases.filter((t) => t !== alias)
+                })
+                if (CanvasManagerStatic._currentTickersSteps[alias]) {
+                    delete CanvasManagerStatic._currentTickersSteps[alias]
+                }
+                CanvasManagerStatic.removeTickerTimeoutsByAlias(alias, false)
+                delete CanvasManagerStatic._currentTickersSteps[alias]
+            })
+        }
+    }
+    /**
+     * Remove a ticker by the id.
+     * @param tickerId The id of the ticker.
+     */
+    removeTicker(tickerId: string | string[], options?: {
+        /**
+         * If true, the tickers will be be completed and removed.
+         * @default false
+         */
+        forceCompletion?: boolean
+    }) {
+        if (typeof tickerId === "string") {
+            tickerId = [tickerId]
+        }
+        let forceCompletion = options?.forceCompletion
+        if (forceCompletion) {
+            tickerId.forEach((tickerId) => {
+            })
+        }
+        else {
+            tickerId.forEach((tickerId) => {
+                let ticker = CanvasManagerStatic._currentTickers[tickerId]
+                if (ticker) {
+                    if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
+                        let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter
+                        this.remove(aliasToRemoveAfter)
                     }
+                    this.app.ticker.remove(ticker.fn)
+                    delete CanvasManagerStatic._currentTickers[tickerId]
                 }
             })
-            if (CanvasManagerStatic._currentTickersSteps[alias]) {
-                delete CanvasManagerStatic._currentTickersSteps[alias]
-            }
-            CanvasManagerStatic.removeTickerTimeoutsByAlias(alias, false)
-            delete CanvasManagerStatic._currentTickersSteps[alias]
-        })
-    }
-    private removeTicker(tickerId: string) {
-        let ticker = CanvasManagerStatic._currentTickers[tickerId]
-        if (ticker) {
-            if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
-                let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter
-                this.remove(aliasToRemoveAfter)
-            }
-            this.app.ticker.remove(ticker.fn)
-            delete CanvasManagerStatic._currentTickers[tickerId]
         }
     }
 
@@ -867,13 +902,13 @@ export default class CanvasManager {
             }
         })
         CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
-            let ticker = CanvasManagerStatic._currentTickersSteps[alias]
-            if (ticker && ticker[id]) {
-                if (ticker[id].steps.includes(Repeat)) {
-                    console.error(`[Pixi’VN] The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`, ticker[id])
+            let tickers = CanvasManagerStatic._currentTickersSteps[alias]
+            if (tickers && tickers[id]) {
+                if (tickers[id].steps.includes(Repeat)) {
+                    console.error(`[Pixi’VN] The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`, tickers[id])
                 }
                 else {
-                    ticker[id].steps.forEach((step) => {
+                    tickers[id].steps.forEach((step) => {
                         if (typeof step === "object" && "ticker" in step) {
                             let ticker = geTickerInstanceById<any>((step as TickersStep<any>).ticker, (step as TickersStep<any>).args, step.duration, (step as TickersStep<any>).priority)
                             if (ticker) {
