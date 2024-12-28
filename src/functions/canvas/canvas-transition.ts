@@ -6,8 +6,28 @@ import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
 import { checkIfVideo } from "./canvas-utility"
+import { addImageCointainer } from "./image-container-utility"
 import { addImage } from "./image-utility"
 import { addVideo } from "./video-utility"
+
+type TComponent = CanvasBaseItem<any> | string | string[]
+function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<any> {
+    if (typeof canvasElement === "string") {
+        if (checkIfVideo(canvasElement)) {
+            return addVideo(alias, canvasElement)
+        }
+        else {
+            return addImage(alias, canvasElement)
+        }
+    }
+    else if (Array.isArray(canvasElement)) {
+        return addImageCointainer(alias, canvasElement)
+    }
+    else {
+        canvas.add(alias, canvasElement)
+        return canvasElement
+    }
+}
 
 /**
  * Show a image in the canvas with a disolve effect.
@@ -20,7 +40,7 @@ import { addVideo } from "./video-utility"
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithDissolveTransition<T extends CanvasBaseItem<any> | string = string>(
+export async function showWithDissolveTransition<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ShowWithDissolveTransitionProps = {},
@@ -33,19 +53,7 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
         canvas.editAlias(alias, oldCanvasAlias)
     }
 
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = addVideo(alias, image)
-        }
-        else {
-            canvasElement = addImage(alias, image)
-        }
-    }
-    else {
-        canvasElement = image
-        canvas.add(alias, canvasElement)
-    }
+    let canvasElement = addComponent(alias, image)
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
@@ -110,7 +118,7 @@ export function removeWithDissolveTransition(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithFadeTransition<T extends CanvasBaseItem<any> | string = string>(
+export async function showWithFadeTransition<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ShowWithFadeTransitionProps = {},
@@ -124,19 +132,7 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
     let oldCanvasAlias = alias + "_temp_fade"
     canvas.editAlias(alias, oldCanvasAlias)
 
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = addVideo(alias, image)
-        }
-        else {
-            canvasElement = addImage(alias, image)
-        }
-    }
-    else {
-        canvasElement = image
-        canvas.add(alias, canvasElement)
-    }
+    let canvasElement = addComponent(alias, image)
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
@@ -199,7 +195,7 @@ export function removeWithFadeTransition(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
+export async function moveIn<T extends TComponent = string>(
     alias: string,
     image: T,
     props: MoveInOutProps = {},
@@ -209,20 +205,8 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = addVideo(alias, image)
-        }
-        else {
-            canvasElement = addImage(alias, image)
-        }
-    }
-    else {
-        canvasElement = image
-        canvas.add(alias, canvasElement)
-    }
 
+    let canvasElement = addComponent(alias, image)
     let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         destination = canvasElement.positionInfo
@@ -329,7 +313,7 @@ export function moveOut(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
+export async function zoomIn<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ZoomInOutProps = { direction: "right" },
@@ -338,19 +322,8 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = new VideoSprite({}, image)
-        }
-        else {
-            canvasElement = new ImageSprite({}, image)
-        }
-    }
-    else {
-        canvasElement = image
-    }
 
+    let canvasElement = addComponent(alias, image)
     if (canvas.find(alias)) {
         canvas.copyCanvasElementProperty(alias, canvasElement)
     }
@@ -490,7 +463,7 @@ export function zoomOut(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
+export async function pushIn<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ZoomInOutProps = { direction: "right" },
@@ -500,19 +473,8 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = new VideoSprite({}, image)
-        }
-        else {
-            canvasElement = new ImageSprite({}, image)
-        }
-    }
-    else {
-        canvasElement = image
-    }
 
+    let canvasElement = addComponent(alias, image)
     let oldCanvas = canvas.find(alias)
     if (oldCanvas) {
         canvas.copyCanvasElementProperty(oldCanvas, canvasElement)
