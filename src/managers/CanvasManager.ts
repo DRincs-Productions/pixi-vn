@@ -330,11 +330,10 @@ export default class CanvasManager {
             alias = [alias]
         }
         alias.forEach((alias) => {
-            let canvasComponent = this.find(alias)
-            if (canvasComponent) {
+            this.app.stage.getChildrenByLabel(alias).forEach((canvasComponent) => {
                 this.app.stage.removeChild(canvasComponent)
                 !ignoreTickers && this.removeTickerByCanvasElement(alias)
-            }
+            })
         })
     }
     /**
