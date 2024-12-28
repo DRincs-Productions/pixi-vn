@@ -1,10 +1,9 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
-import { canvas } from "../..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlignByComponent, calculatePercentagePositionByComponent } from "./AdditionalPositions";
 import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
 
 /**
@@ -189,22 +188,18 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
-                let width = this.parent ? this.parent.width : canvas.screen.width
-                super.x = calculateAlign(width, this._align.x, this.width, this.pivot.x, this.anchor.x)
+                super.x = calculateAlignByComponent(this, this._align.x, "width", this.pivot.x)
             }
             if (this._align.y !== undefined) {
-                let height = this.parent ? this.parent.height : canvas.screen.height
-                super.y = calculateAlign(height, this._align.y, this.height, this.pivot.y, this.anchor.y)
+                super.y = calculateAlignByComponent(this, this._align.y, "height", this.pivot.y)
             }
         }
         else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                let width = this.parent ? this.parent.width : canvas.screen.width
-                super.x = calculatePercentagePosition(width, this._percentagePosition.x)
+                super.x = calculatePercentagePositionByComponent(this, this._percentagePosition.x, "width")
             }
             if (this._percentagePosition.y !== undefined) {
-                let height = this.parent ? this.parent.height : canvas.screen.height
-                super.y = calculatePercentagePosition(height, this._percentagePosition.y)
+                super.y = calculatePercentagePositionByComponent(this, this._percentagePosition.y, "height")
             }
         }
     }
