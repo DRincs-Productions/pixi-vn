@@ -109,10 +109,10 @@ export default class CanvasManager {
     /* Edit Canvas Elements Methods */
 
     /**
-     * This is a dictionary that contains all Canvas Elements of Canvas, currently.
+     * The children of the canvas.
      */
-    get currentCanvasElements() {
-        return CanvasManagerStatic._children
+    get children() {
+        return CanvasManagerStatic.app.stage.children
     }
     /**
      * Copy the properties of an old canvas element to a new canvas element.
@@ -246,7 +246,7 @@ export default class CanvasManager {
      * If there is a canvas element with the same alias, all "style", zIndex, and {@link TickerBase} will be transferred to the new canvas element,
      * and the old canvas element will be removed.
      * @param alias The alias of the canvas element.
-     * @param canvasElement The canvas elements to be added.
+     * @param canvasComponent The canvas elements to be added.
      * @param options The options of the canvas element.
      * @example
      * ```typescript
@@ -255,7 +255,7 @@ export default class CanvasManager {
      * canvas.add("bunny", sprite);
      * ```
      */
-    public add(alias: string, canvasElement: CanvasBaseItem<any>, options: {
+    public add(alias: string, canvasComponent: CanvasBaseItem<any>, options: {
         /**
          * If there is a canvas element with the same alias, the "style" of the old canvas element will be imported to the new canvas element.
          * @default false
@@ -276,7 +276,7 @@ export default class CanvasManager {
 
         let ignoreOldStyle = options?.ignoreOldStyle
         if (oldCanvasElement && !ignoreOldStyle) {
-            this.copyCanvasElementProperty(oldCanvasElement, canvasElement)
+            this.copyCanvasElementProperty(oldCanvasElement, canvasComponent)
         }
 
         let zIndex = options.zIndex
@@ -289,12 +289,13 @@ export default class CanvasManager {
         }
 
         if (zIndex !== undefined) {
-            this.app.stage.addChildAt(canvasElement, zIndex)
+            canvasComponent.label = alias
+            this.app.stage.addChildAt(canvasComponent, zIndex)
         }
         else {
-            this.app.stage.addChild(canvasElement)
+            canvasComponent.label = alias
+            this.app.stage.addChild(canvasComponent)
         }
-        CanvasManagerStatic._children[alias] = canvasElement
     }
     /**
      * @deprecated use canvas.add
@@ -329,9 +330,9 @@ export default class CanvasManager {
             alias = [alias]
         }
         alias.forEach((alias) => {
-            if (CanvasManagerStatic._children[alias]) {
-                this.app.stage.removeChild(CanvasManagerStatic._children[alias])
-                delete CanvasManagerStatic._children[alias]
+            let canvasComponent = this.find(alias)
+            if (canvasComponent) {
+                this.app.stage.removeChild(canvasComponent)
                 !ignoreTickers && this.removeTickerByCanvasElement(alias)
             }
         })
@@ -355,7 +356,11 @@ export default class CanvasManager {
         if (alias === CANVAS_APP_STAGE_ALIAS) {
             return this.app.stage as T
         }
-        return CanvasManagerStatic._children[alias] as T | undefined
+        let canvasComponent = this.app.stage.getChildByLabel(alias)
+        if (canvasComponent) {
+            return canvasComponent as T
+        }
+        return undefined
     }
     /**
      * @deprecated use canvas.find
@@ -377,7 +382,6 @@ export default class CanvasManager {
      */
     public removeAll() {
         this.app.stage.removeChildren()
-        CanvasManagerStatic._children = {}
         this.removeAllTickers()
     }
     /**
@@ -393,9 +397,9 @@ export default class CanvasManager {
          */
         ignoreTickers?: boolean
     } = {}) {
-        if (CanvasManagerStatic._children[oldAlias]) {
-            CanvasManagerStatic._children[newAlias] = CanvasManagerStatic._children[oldAlias]
-            delete CanvasManagerStatic._children[oldAlias]
+        let canvasComponent = this.find(oldAlias)
+        if (canvasComponent) {
+            canvasComponent.label = newAlias
         }
         !options.ignoreTickers && this.transferTickers(oldAlias, newAlias, "move")
     }
@@ -719,7 +723,7 @@ export default class CanvasManager {
      */
     private removeTickersWithoutAssociatedCanvasElement() {
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-            ticker.canvasElementAliases = ticker.canvasElementAliases.filter((e) => CanvasManagerStatic._children[e])
+            ticker.canvasElementAliases = ticker.canvasElementAliases.filter((e) => this.find(e))
             if (ticker.canvasElementAliases.length === 0) {
                 this.onEndOfTicker(id,
                     {
@@ -917,9 +921,11 @@ export default class CanvasManager {
      */
     public export(): ExportedCanvas {
         let currentElements: { [alias: string]: CanvasBaseItemMemory } = {}
-        for (let alias in CanvasManagerStatic._children) {
-            currentElements[alias] = exportCanvasElement(CanvasManagerStatic._children[alias])
-        }
+        this.children.forEach((child) => {
+            if (child.label) {
+                currentElements[child.label] = exportCanvasElement(child)
+            }
+        })
         return {
             tickers: createExportableElement(CanvasManagerStatic.currentTickersWithoutCreatedBySteps),
             tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSteps),

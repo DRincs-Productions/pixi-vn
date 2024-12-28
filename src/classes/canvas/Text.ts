@@ -91,17 +91,22 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
     }
 }
 
-export function getMemoryText<T extends Text>(element: T | Text): TextMemory {
+export function getMemoryText<T extends PixiText>(element: T | Text): TextMemory {
     let temp = getMemoryContainer(element)
+    let className = temp.pixivnId ?? CANVAS_TEXT_ID
+    let onEvents = {}
+    if (element instanceof Text) {
+        onEvents = element.onEvents
+    }
     return {
         ...temp,
-        pixivnId: element.pixivnId,
+        pixivnId: className,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         text: element.text,
         resolution: element.resolution,
         style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
-        onEvents: element.onEvents,
+        onEvents: onEvents,
     }
 }
 

@@ -1,7 +1,6 @@
 import { initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions } from "pixi.js";
-import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
 import { asciiArtLog } from '../functions/easter-egg';
 import { TickerHistory, TickersSteps, TickerTimeoutHistory } from "../interface";
 import PauseTickerType from '../types/PauseTickerType';
@@ -138,15 +137,14 @@ export default class CanvasManagerStatic {
 
     /* Edit Canvas Elements Methods */
 
-    static _children: { [alias: string]: CanvasBaseItem<any> } = {}
     /**
      * The order of the elements in the canvas, is determined by the zIndex.
      */
     static get childrenAliasesOrder(): string[] {
-        return Object
-            .entries(CanvasManagerStatic._children)
-            .sort((a, b) => CanvasManagerStatic.app.stage.getChildIndex(a[1]) - CanvasManagerStatic.app.stage.getChildIndex(b[1]))
-            .map(([alias, _]) => alias)
+        return this.app.stage.children
+            .filter((child) => child.label)
+            .sort((a, b) => CanvasManagerStatic.app.stage.getChildIndex(a) - CanvasManagerStatic.app.stage.getChildIndex(b))
+            .map((item) => item.label)
     }
 
     /** Edit Tickers Methods */
