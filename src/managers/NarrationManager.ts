@@ -399,7 +399,7 @@ export default class NarrationManager {
                 }
                 try {
                     if (NarrationManagerStatic.stepsRunning === 0) {
-                        canvas.forceCompletionOfReportedTickers()
+                        canvas.forceCompletionOfTicker()
                     }
                     NarrationManagerStatic.stepsRunning++
                     let result = await step(props, { labelId: currentLabel.id })
