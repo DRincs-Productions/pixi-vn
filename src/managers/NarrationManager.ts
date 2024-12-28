@@ -1,5 +1,5 @@
 import { diff } from "deep-diff"
-import { canvas, storage } from "."
+import { canvas, CanvasManagerStatic, storage } from "."
 import { Dialogue, Label } from "../classes"
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption"
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel"
@@ -399,8 +399,15 @@ export default class NarrationManager {
                 }
                 try {
                     if (NarrationManagerStatic.stepsRunning === 0) {
-                        canvas.forceCompletionOfReportedTickers()
+                        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.forEach(({ id }) => {
+                            canvas.forceCompletionOfTicker(id)
+                        })
+                        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
+                            canvas.forceCompletionOfTicker(id, alias)
+                        })
                     }
+                    CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
+
                     NarrationManagerStatic.stepsRunning++
                     let result = await step(props, { labelId: currentLabel.id })
 
