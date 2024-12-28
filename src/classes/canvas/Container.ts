@@ -1,7 +1,7 @@
 import { ContainerOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
-import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
-import { CanvasBaseItemMemory, ContainerMemory } from "../../interface";
+import { getMemoryContainer, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
+import { ContainerMemory } from "../../interface";
 import ContainerChild from "../../types/ContainerChild";
 import CanvasBaseItem from "./CanvasBaseItem";
 
@@ -44,53 +44,6 @@ export default class Container<C extends ContainerChild = ContainerChild, Memory
             let element = await importCanvasElement<C>(child)
             this.addChild(element)
         }
-    }
-}
-
-export function getMemoryContainer<T extends PixiContainer>(element: T, options?: {
-    childrenExport?: boolean
-}): ContainerMemory {
-    let className = CANVAS_CONTAINER_ID
-    let childrenExport = options?.childrenExport || false
-    if (element.hasOwnProperty("pixivnId")) {
-        className = (element as any).pixivnId
-    }
-    let elements: CanvasBaseItemMemory[] = []
-    if (childrenExport) {
-        element.children
-            .sort((a, b) => element.getChildIndex(a) - element.getChildIndex(b))
-            .forEach(child => {
-                elements.push(exportCanvasElement(child as CanvasBaseItem<any>))
-            })
-    }
-    return {
-        pixivnId: className,
-        elements: elements,
-
-        width: element.width,
-        height: element.height,
-
-        isRenderGroup: element.isRenderGroup,
-        blendMode: element.blendMode,
-        tint: element.tint,
-        alpha: element.alpha,
-        angle: element.angle,
-        renderable: element.renderable,
-        rotation: element.rotation,
-        scale: { x: element.scale.x, y: element.scale.y },
-        pivot: { x: element.pivot.x, y: element.pivot.y },
-        position: { x: element.position.x, y: element.position.y },
-        skew: { x: element.skew.x, y: element.skew.y },
-        visible: element.visible,
-        x: element.x,
-        y: element.y,
-        boundsArea: element.boundsArea,
-
-        cursor: element.cursor,
-        eventMode: element.eventMode,
-        interactive: element.interactive,
-        interactiveChildren: element.interactiveChildren,
-        hitArea: element.hitArea
     }
 }
 

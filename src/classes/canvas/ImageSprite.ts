@@ -1,16 +1,17 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
-import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
+import { addImage, showWithDissolveTransition } from "../../functions";
+import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
-import Sprite, { getMemorySprite, setMemorySprite } from "./Sprite";
+import Sprite, { setMemorySprite } from "./Sprite";
 
 /**
  * This class is a extension of the {@link Sprite} class, it has the same properties and methods,
  * but it has some features that make texture management easier.
  * You need to use {@link ImageSprite.load()} to show the image in the canvas.
- * This class is used for functions like {@link addImage}, {@link loadImage} and {@link showWithDissolveTransition}.
+ * This class is used for functions like {@link addImage} and {@link showWithDissolveTransition}.
  * @example
  * ```typescript
  * let alien = new ImageSprite({

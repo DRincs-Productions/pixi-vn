@@ -2,13 +2,13 @@ import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSp
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTexture } from "../../functions";
-import { getTextureMemory } from "../../functions/canvas/canvas-utility";
+import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
-import { getMemoryContainer, setMemoryContainer } from "./Container";
+import { setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
@@ -114,29 +114,6 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         let mySprite = new Sprite()
         mySprite.texture = sprite.texture
         return mySprite
-    }
-}
-
-export function getMemorySprite<T extends PixiSprite>(element: T | Sprite<any>): SpriteMemory {
-    let temp = getMemoryContainer(element)
-    let className = temp.pixivnId ?? CANVAS_SPRITE_ID
-    let onEvents
-    let textureData
-    if (element instanceof Sprite) {
-        onEvents = element.onEvents
-        textureData = getTextureMemory(element.texture, element.textureAlias)
-    }
-    else {
-        onEvents = {}
-        textureData = getTextureMemory(element.texture)
-    }
-    return {
-        ...temp,
-        pixivnId: className,
-        textureData: textureData,
-        anchor: { x: element.anchor.x, y: element.anchor.y },
-        roundPixels: element.roundPixels,
-        onEvents: onEvents,
     }
 }
 

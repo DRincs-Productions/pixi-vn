@@ -1,13 +1,13 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
-import { getTextStyle } from "../../functions/texture-utility";
+import { getMemoryText } from "../../functions/canvas/canvas-memory-utility";
 import { TextMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
-import { getMemoryContainer, setMemoryContainer } from "./Container";
+import { setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -88,25 +88,6 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
      */
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents<ContainerChild> & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
         return super.on(event, fn, context)
-    }
-}
-
-export function getMemoryText<T extends PixiText>(element: T | Text): TextMemory {
-    let temp = getMemoryContainer(element)
-    let className = temp.pixivnId ?? CANVAS_TEXT_ID
-    let onEvents = {}
-    if (element instanceof Text) {
-        onEvents = element.onEvents
-    }
-    return {
-        ...temp,
-        pixivnId: className,
-        anchor: { x: element.anchor.x, y: element.anchor.y },
-        text: element.text,
-        resolution: element.resolution,
-        style: getTextStyle(element.style),
-        roundPixels: element.roundPixels,
-        onEvents: onEvents,
     }
 }
 
