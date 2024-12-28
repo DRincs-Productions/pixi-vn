@@ -1,4 +1,4 @@
-import { Texture } from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 import { videoFormats } from "../../constants";
 import { TextureMemory } from "../../interface";
 import { canvas } from "../../managers";
@@ -24,8 +24,14 @@ export function removeCanvasElement(alias: string | string[]) {
     canvas.remove(alias)
 }
 
-export function checkIfVideo(imageUrl: string): boolean {
-    if (imageUrl.match(new RegExp(`(${videoFormats.join('|')})$`))) {
+export function checkIfVideo(textureAlias: string): boolean {
+    if (Assets.cache.has(textureAlias)) {
+        let texture = Assets.get(textureAlias)
+        if (texture && texture instanceof Texture) {
+            textureAlias = texture.source.label
+        }
+    }
+    if (textureAlias.match(new RegExp(`(${videoFormats.join('|')})$`))) {
         return true
     } else {
         return false

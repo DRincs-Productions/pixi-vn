@@ -1,10 +1,12 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
+import { checkIfVideo } from "../../functions/canvas/canvas-utility";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";
+import VideoSprite from "./VideoSprite";
 
 /**
  * This class is a extension of the {@link Container}, it has the same properties and methods, 
@@ -40,7 +42,14 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         options = analizePositionsExtensionProps(options)
         if (textureAliases) {
             textureAliases.forEach(textureAlias => {
-                this.addChild(new ImageSprite(undefined, textureAlias))
+                let component
+                if (checkIfVideo(textureAlias)) {
+                    component = new VideoSprite(undefined, textureAlias)
+                }
+                else {
+                    component = new ImageSprite(undefined, textureAlias)
+                }
+                this.addChild(component)
             })
         }
         if (anchor) {

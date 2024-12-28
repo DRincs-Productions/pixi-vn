@@ -6,8 +6,28 @@ import { Pause } from "../../constants"
 import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
 import { checkIfVideo } from "./canvas-utility"
+import { addImageCointainer } from "./image-container-utility"
 import { addImage } from "./image-utility"
 import { addVideo } from "./video-utility"
+
+type TComponent = CanvasBaseItem<any> | string | string[]
+function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<any> {
+    if (typeof canvasElement === "string") {
+        if (checkIfVideo(canvasElement)) {
+            return addVideo(alias, canvasElement)
+        }
+        else {
+            return addImage(alias, canvasElement)
+        }
+    }
+    else if (Array.isArray(canvasElement)) {
+        return addImageCointainer(alias, canvasElement)
+    }
+    else {
+        canvas.add(alias, canvasElement)
+        return canvasElement
+    }
+}
 
 /**
  * Show a image in the canvas with a disolve effect.
@@ -15,12 +35,13 @@ import { addVideo } from "./video-utility"
  * If exist a image with the same alias, then the image is replaced and the first image is removed after the effect is done.
  * This transition is done with a {@link FadeAlphaTicker} effect.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithDissolveTransition<T extends CanvasBaseItem<any> | string = string>(
+export async function showWithDissolveTransition<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ShowWithDissolveTransitionProps = {},
@@ -33,19 +54,7 @@ export async function showWithDissolveTransition<T extends CanvasBaseItem<any> |
         canvas.editAlias(alias, oldCanvasAlias)
     }
 
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = addVideo(alias, image)
-        }
-        else {
-            canvasElement = addImage(alias, image)
-        }
-    }
-    else {
-        canvasElement = image
-        canvas.add(alias, canvasElement)
-    }
+    let canvasElement = addComponent(alias, image)
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
@@ -105,12 +114,13 @@ export function removeWithDissolveTransition(
  * Fade effect is a effect that the image is shown with a fade in.
  * If exist a image with the same alias, the existing image is removed with a fade transition, and after the effect is done, the new image is shown with a fade transition.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithFadeTransition<T extends CanvasBaseItem<any> | string = string>(
+export async function showWithFadeTransition<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ShowWithFadeTransitionProps = {},
@@ -124,19 +134,7 @@ export async function showWithFadeTransition<T extends CanvasBaseItem<any> | str
     let oldCanvasAlias = alias + "_temp_fade"
     canvas.editAlias(alias, oldCanvasAlias)
 
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = addVideo(alias, image)
-        }
-        else {
-            canvasElement = addImage(alias, image)
-        }
-    }
-    else {
-        canvasElement = image
-        canvas.add(alias, canvasElement)
-    }
+    let canvasElement = addComponent(alias, image)
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
@@ -194,12 +192,13 @@ export function removeWithFadeTransition(
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
+export async function moveIn<T extends TComponent = string>(
     alias: string,
     image: T,
     props: MoveInOutProps = {},
@@ -209,20 +208,8 @@ export async function moveIn<T extends CanvasBaseItem<any> | string = string>(
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = addVideo(alias, image)
-        }
-        else {
-            canvasElement = addImage(alias, image)
-        }
-    }
-    else {
-        canvasElement = image
-        canvas.add(alias, canvasElement)
-    }
 
+    let canvasElement = addComponent(alias, image)
     let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         destination = canvasElement.positionInfo
@@ -324,12 +311,13 @@ export function moveOut(
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
+export async function zoomIn<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ZoomInOutProps = { direction: "right" },
@@ -338,19 +326,8 @@ export async function zoomIn<T extends CanvasBaseItem<any> | string = string>(
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = new VideoSprite({}, image)
-        }
-        else {
-            canvasElement = new ImageSprite({}, image)
-        }
-    }
-    else {
-        canvasElement = image
-    }
 
+    let canvasElement = addComponent(alias, image)
     if (canvas.find(alias)) {
         canvas.copyCanvasElementProperty(alias, canvasElement)
     }
@@ -485,12 +462,13 @@ export function zoomOut(
  * Show a image in the canvas with a push effect. The new image is pushed in from the inside of the canvas and the old image is pushed out to the outside of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
+export async function pushIn<T extends TComponent = string>(
     alias: string,
     image: T,
     props: ZoomInOutProps = { direction: "right" },
@@ -500,19 +478,8 @@ export async function pushIn<T extends CanvasBaseItem<any> | string = string>(
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement: CanvasBaseItem<any>
-    if (typeof image === "string") {
-        if (checkIfVideo(image)) {
-            canvasElement = new VideoSprite({}, image)
-        }
-        else {
-            canvasElement = new ImageSprite({}, image)
-        }
-    }
-    else {
-        canvasElement = image
-    }
 
+    let canvasElement = addComponent(alias, image)
     let oldCanvas = canvas.find(alias)
     if (oldCanvas) {
         canvas.copyCanvasElementProperty(oldCanvas, canvasElement)
