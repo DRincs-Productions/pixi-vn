@@ -1,7 +1,7 @@
 import { ContainerOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
 import { exportCanvasElement, importCanvasElement } from "../../functions/canvas/canvas-memory-utility";
-import { ContainerMemory } from "../../interface";
+import { CanvasBaseItemMemory, ContainerMemory } from "../../interface";
 import ContainerChild from "../../types/ContainerChild";
 import CanvasBaseItem from "./CanvasBaseItem";
 
@@ -29,13 +29,7 @@ export default class Container<C extends ContainerChild = ContainerChild, Memory
     }
     pixivnId: string = CANVAS_CONTAINER_ID
     get memory(): Memory {
-        let memory = getMemoryContainer(this)
-        this.children
-            .sort((a, b) => this.getChildIndex(a) - this.getChildIndex(b))
-            .forEach(child => {
-                memory.elements.push(exportCanvasElement(child as CanvasBaseItem<any>))
-            })
-        return memory as Memory
+        return getMemoryContainer(this, { childrenExport: true }) as Memory
     }
     set memory(value: Memory) {
         this.setMemory(value)
@@ -53,14 +47,25 @@ export default class Container<C extends ContainerChild = ContainerChild, Memory
     }
 }
 
-export function getMemoryContainer<T extends PixiContainer>(element: T): ContainerMemory {
+export function getMemoryContainer<T extends PixiContainer>(element: T, options?: {
+    childrenExport?: boolean
+}): ContainerMemory {
     let className = CANVAS_CONTAINER_ID
+    let childrenExport = options?.childrenExport || false
     if (element.hasOwnProperty("pixivnId")) {
         className = (element as any).pixivnId
     }
+    let elements: CanvasBaseItemMemory[] = []
+    if (childrenExport) {
+        element.children
+            .sort((a, b) => element.getChildIndex(a) - element.getChildIndex(b))
+            .forEach(child => {
+                elements.push(exportCanvasElement(child as CanvasBaseItem<any>))
+            })
+    }
     return {
         pixivnId: className,
-        elements: [],
+        elements: elements,
 
         width: element.width,
         height: element.height,

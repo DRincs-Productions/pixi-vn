@@ -117,15 +117,26 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
     }
 }
 
-export function getMemorySprite<T extends Sprite<any>>(element: T | Sprite<any>): SpriteMemory {
+export function getMemorySprite<T extends PixiSprite>(element: T | Sprite<any>): SpriteMemory {
     let temp = getMemoryContainer(element)
+    let className = temp.pixivnId ?? CANVAS_SPRITE_ID
+    let onEvents
+    let textureData
+    if (element instanceof Sprite) {
+        onEvents = element.onEvents
+        textureData = getTextureMemory(element.texture, element.textureAlias)
+    }
+    else {
+        onEvents = {}
+        textureData = getTextureMemory(element.texture)
+    }
     return {
         ...temp,
-        pixivnId: element.pixivnId,
-        textureData: getTextureMemory((element as any).texture, element.textureAlias),
+        pixivnId: className,
+        textureData: textureData,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
-        onEvents: element.onEvents,
+        onEvents: onEvents,
     }
 }
 
