@@ -868,15 +868,17 @@ export default class CanvasManager {
     /**
      * This method force the completion of the tickers that are running.
      * This funcions is called in the next step.
+     * @param id The id of the ticker. If the alias provided, the id is the id of the sequence of tickers.
+     * @param alias The alias of the sequence of tickers.
      */
-    forceCompletionOfTicker() {
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.forEach(({ id }) => {
+    forceCompletionOfTicker(id: string, alias?: string) {
+        if (!alias) {
             let ticker = CanvasManagerStatic._currentTickers[id]
             if (ticker) {
                 ticker.onEndOfTicker()
             }
-        })
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
+        }
+        else {
             let tickers = CanvasManagerStatic._currentTickersSteps[alias]
             if (tickers && tickers[id]) {
                 if (tickers[id].steps.includes(Repeat)) {
@@ -893,8 +895,7 @@ export default class CanvasManager {
                     })
                 }
             }
-        })
-        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
+        }
     }
 
     /* Other Methods */
