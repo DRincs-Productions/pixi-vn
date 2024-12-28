@@ -332,7 +332,7 @@ export default class CanvasManager {
         alias.forEach((alias) => {
             this.app.stage.getChildrenByLabel(alias).forEach((canvasComponent) => {
                 this.app.stage.removeChild(canvasComponent)
-                !ignoreTickers && this.removeTickerByCanvasElement(alias)
+                !ignoreTickers && this.removeTickerByAlias(alias)
             })
         })
     }
@@ -760,7 +760,7 @@ export default class CanvasManager {
      * Remove all tickers from a canvas element.
      * @param alias The alias of the canvas element that will use the ticker.
      */
-    private removeTickerByCanvasElement(alias: string | string[]) {
+    private removeTickerByAlias(alias: string | string[]) {
         if (typeof alias === "string") {
             alias = [alias]
         }
