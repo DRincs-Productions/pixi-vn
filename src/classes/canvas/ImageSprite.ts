@@ -1,4 +1,5 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
+import { canvas } from "../..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, loadImage, showWithDissolveTransition } from "../../functions";
 import { getTexture } from "../../functions/texture-utility";
@@ -188,18 +189,22 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
-                super.x = calculateAlign("width", this._align.x, this.width, this.pivot.x, this.anchor.x)
+                let width = this.parent ? this.parent.width : canvas.screen.width
+                super.x = calculateAlign(width, this._align.x, this.width, this.pivot.x, this.anchor.x)
             }
             if (this._align.y !== undefined) {
-                super.y = calculateAlign("height", this._align.y, this.height, this.pivot.y, this.anchor.y)
+                let height = this.parent ? this.parent.height : canvas.screen.height
+                super.y = calculateAlign(height, this._align.y, this.height, this.pivot.y, this.anchor.y)
             }
         }
         else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = calculatePercentagePosition("width", this._percentagePosition.x)
+                let width = this.parent ? this.parent.width : canvas.screen.width
+                super.x = calculatePercentagePosition(width, this._percentagePosition.x)
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = calculatePercentagePosition("height", this._percentagePosition.y)
+                let height = this.parent ? this.parent.height : canvas.screen.height
+                super.y = calculatePercentagePosition(height, this._percentagePosition.y)
             }
         }
     }

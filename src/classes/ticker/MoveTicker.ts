@@ -17,12 +17,16 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
             anchorx = element.anchor.x
             anchory = element.anchor.y
         }
-        destination.x = calculateAlign("width", destination.x, element.width, element.pivot.x, anchorx)
-        destination.y = calculateAlign("height", destination.y, element.height, element.pivot.y, anchory)
+        let width = element.parent ? element.parent.width : canvas.screen.width
+        destination.x = calculateAlign(width, destination.x, element.width, element.pivot.x, anchorx)
+        let height = element.parent ? element.parent.height : canvas.screen.height
+        destination.y = calculateAlign(height, destination.y, element.height, element.pivot.y, anchory)
     }
     if (destination.type === "percentage") {
-        destination.x = calculatePercentagePosition("width", destination.x)
-        destination.y = calculatePercentagePosition("height", destination.y)
+        let width = element.parent ? element.parent.width : canvas.screen.width
+        destination.x = calculatePercentagePosition(width, destination.x)
+        let height = element.parent ? element.parent.height : canvas.screen.height
+        destination.y = calculatePercentagePosition(height, destination.y)
     }
     return destination
 }
