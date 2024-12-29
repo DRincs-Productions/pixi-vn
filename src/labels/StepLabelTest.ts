@@ -1,9 +1,8 @@
-import { newLabel } from "../decorators"
+import { Label } from "../classes"
 import { narration } from "../managers"
-import { juliette } from "./TestConstant"
+import { juliette, STEP_LABEL_TEST_LABEL } from "./TestConstant"
 
-const STEP_LABEL_TEST_LABEL = "___pixi_vn_step_label_test___"
-export const stepLabelTestLAbel = newLabel(STEP_LABEL_TEST_LABEL, [
+export const stepLabelTestLAbel = new Label(STEP_LABEL_TEST_LABEL, [
     async () => {
         narration.dialogue = { character: juliette, text: "Pixi'VN manages the succession of \"screens\" with steps. Each step is a function that can be asynchronous." }
     },

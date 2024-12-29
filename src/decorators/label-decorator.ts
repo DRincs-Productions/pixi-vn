@@ -8,7 +8,8 @@ import { imagesAnimationsTest } from "../labels/ImagesAnimationsTestLabel"
 import { inputTestLabel } from "../labels/InputTestLabel"
 import { markdownTest } from "../labels/MarkdownTest"
 import { soundTestLabel } from "../labels/SoundTestLabel"
-import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, MARKDOWN_TEST_LABEL, SOUND_TEST_LABEL } from "../labels/TestConstant"
+import { stepLabelTestLAbel } from "../labels/StepLabelTest"
+import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, MARKDOWN_TEST_LABEL, SOUND_TEST_LABEL, STEP_LABEL_TEST_LABEL } from "../labels/TestConstant"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
@@ -20,6 +21,7 @@ export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label
     [INPUT_TEST_LABEL]: inputTestLabel,
     [MARKDOWN_TEST_LABEL]: markdownTest,
     [SOUND_TEST_LABEL]: soundTestLabel,
+    [STEP_LABEL_TEST_LABEL]: stepLabelTestLAbel,
 }
 
 /**
