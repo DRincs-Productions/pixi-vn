@@ -3,14 +3,20 @@ import { CanvasBaseItem, Container, ImageSprite, VideoSprite } from "../../class
 import ImageContainer from "../../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { Pause } from "../../constants"
-import { MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
+import { ImageContainerOptions, ImageSpriteOptions, MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
 import { checkIfVideo } from "./canvas-utility"
 import { addImageCointainer } from "./image-container-utility"
 import { addImage } from "./image-utility"
 import { addVideo } from "./video-utility"
 
-type TComponent = CanvasBaseItem<any> | string | string[]
+type TComponent = CanvasBaseItem<any> | string | string[] | {
+    value: string,
+    options: ImageSpriteOptions
+} | {
+    value: string[],
+    options: ImageContainerOptions
+}
 function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<any> {
     if (typeof canvasElement === "string") {
         if (checkIfVideo(canvasElement)) {
@@ -23,10 +29,21 @@ function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<
     else if (Array.isArray(canvasElement)) {
         return addImageCointainer(alias, canvasElement)
     }
-    else {
-        canvas.add(alias, canvasElement)
-        return canvasElement
+    else if (typeof canvasElement === "object" && "value" in canvasElement && "options" in canvasElement) {
+        if (typeof canvasElement.value === "string") {
+            if (checkIfVideo(canvasElement.value)) {
+                return addVideo(alias, canvasElement.value, canvasElement.options)
+            }
+            else {
+                return addImage(alias, canvasElement.value, canvasElement.options)
+            }
+        }
+        else if (Array.isArray(canvasElement.value)) {
+            return addImageCointainer(alias, canvasElement.value, canvasElement.options as any)
+        }
     }
+    canvas.add(alias, canvasElement as CanvasBaseItem<any>)
+    return canvasElement as CanvasBaseItem<any>
 }
 
 /**
