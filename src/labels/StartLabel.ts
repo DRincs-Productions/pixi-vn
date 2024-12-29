@@ -2,14 +2,13 @@ import { ChoiceMenuOption } from "../classes";
 import { PIXIVN_VERSION } from "../constants";
 import { getCharacterById, newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
-import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
 import { customTickerCanvasElementTestLabel } from "./CustomTickerCanvasElementTestLabel";
 import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
 import { inputTestLabel } from "./InputTestLabel";
 import { markdownTest } from "./MarkdownTest";
 import { soundTestLabel } from "./SoundTestLabel";
 import { stepLabelTestLAbel } from "./StepLabelTest";
-import { BASE_CANVAS_ELEMENT_LABEL, juliette } from "./TestConstant";
+import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, juliette } from "./TestConstant";
 import { videoTest } from "./VideoTestLabel";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
@@ -58,7 +57,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Open Pixi’VN Github Issues", openLink, { link: "https://github.com/DRincs-Productions/pixi-vn/issues" }),
                 new ChoiceMenuOption("Images, Transitions and Animations Test", imagesAnimationsTest, {}),
                 new ChoiceMenuOption("Video Test", videoTest, {}),
-                new ChoiceMenuOption("Canvas Events Test", canvasEventsTestLabel, {}),
+                new ChoiceMenuOption("Canvas Events Test", CANVAS_EVENTS_TEST_LABEL, {}),
                 new ChoiceMenuOption("Sound Test", soundTestLabel, {}),
                 new ChoiceMenuOption("Base Canvas Element Test", BASE_CANVAS_ELEMENT_LABEL, {}),
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),

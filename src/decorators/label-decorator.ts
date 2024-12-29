@@ -2,12 +2,14 @@ import { Label } from "../classes"
 import LabelAbstract from "../classes/LabelAbstract"
 import { LabelProps } from "../interface"
 import { baseCanvasElementTestLabel } from "../labels/BaseCanvasElementTestLabel"
-import { BASE_CANVAS_ELEMENT_LABEL } from "../labels/TestConstant"
+import { canvasEventsTestLabel } from "../labels/CanvasEventsTestLabel"
+import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL } from "../labels/TestConstant"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
 export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label<any>) } = {
-    [BASE_CANVAS_ELEMENT_LABEL]: baseCanvasElementTestLabel
+    [BASE_CANVAS_ELEMENT_LABEL]: baseCanvasElementTestLabel,
+    [CANVAS_EVENTS_TEST_LABEL]: canvasEventsTestLabel,
 }
 
 /**

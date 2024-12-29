@@ -1,9 +1,9 @@
 import { Assets, Texture } from "pixi.js";
-import { CanvasEvent, Sprite } from "../classes";
-import { eventDecorator, newLabel } from "../decorators";
+import { CanvasEvent, Label, Sprite } from "../classes";
+import { eventDecorator } from "../decorators";
 import { canvas, narration } from "../managers";
 import { CanvasEventNamesType } from "../types";
-import { bunnyImage, bunnyName, juliette } from "./TestConstant";
+import { bunnyImage, bunnyName, CANVAS_EVENTS_TEST_LABEL, juliette } from "./TestConstant";
 
 @eventDecorator("___pixi_vn_canvas_events_test_event1___")
 export class EventTest1 extends CanvasEvent<Sprite> {
@@ -48,9 +48,7 @@ export class EventTest2 extends CanvasEvent<Sprite> {
     }
 }
 
-const CANVAS_EVENTS_TEST_LABEL = "___pixi_vn_canvas_events_test___"
-
-export const canvasEventsTestLabel = newLabel(CANVAS_EVENTS_TEST_LABEL,
+export const canvasEventsTestLabel = new Label(CANVAS_EVENTS_TEST_LABEL,
     [
         () => narration.dialogue = {
             character: juliette,
