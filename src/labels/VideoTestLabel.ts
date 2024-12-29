@@ -1,11 +1,9 @@
-import { VideoSprite } from "../classes"
-import { newLabel } from "../decorators"
+import { Label, VideoSprite } from "../classes"
 import { showWithDissolveTransition } from "../functions"
 import { canvas, narration } from "../managers"
-import { juliette, videoLink } from "./TestConstant"
+import { juliette, VIDEO_TEST_LABEL, videoLink } from "./TestConstant"
 
-const VIDEO_TEST_LABEL = "___pixi_vn_video_test___"
-export const videoTest = newLabel(VIDEO_TEST_LABEL, [
+export const videoTest = new Label(VIDEO_TEST_LABEL, [
     async () => {
         narration.dialogue = {
             character: juliette,

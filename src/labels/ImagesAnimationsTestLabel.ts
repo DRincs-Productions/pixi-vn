@@ -42,7 +42,7 @@ export const imagesAnimationsTest = new Label(IMAGE_ANIMAIONS_TEST_LABEL, [
             new ChoiceMenuOptionClose("Cancel", { closeCurrentLabel: true }),
         ]
     },
-    (props) => narration.jumpLabel(IMAGE_ANIMAIONS_TEST_LABEL, props),
+    (props, { labelId }) => narration.jumpLabel(labelId, props),
 ])
 
 const imagesDissolveTest = newLabel("___pixi_vn_images_dissolve_test___", [

@@ -1,11 +1,10 @@
-import { ChoiceMenuOption } from "../classes";
+import { ChoiceMenuOption, Label } from "../classes";
 import { PIXIVN_VERSION } from "../constants";
 import { getCharacterById, newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
-import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, juliette, MARKDOWN_TEST_LABEL, SOUND_TEST_LABEL, STEP_LABEL_TEST_LABEL } from "./TestConstant";
-import { videoTest } from "./VideoTestLabel";
+import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, juliette, MARKDOWN_TEST_LABEL, SOUND_TEST_LABEL, STEP_LABEL_TEST_LABEL, TEST_LABEL, VIDEO_TEST_LABEL } from "./TestConstant";
 
-export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
+export const pixivnTestStartLabel = new Label(TEST_LABEL,
     [
         () => {
             let currentTimeName = ""
@@ -50,7 +49,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Open Pixi’VN Discord", openLink, { link: "https://discord.gg/E95FZWakzp" }),
                 new ChoiceMenuOption("Open Pixi’VN Github Issues", openLink, { link: "https://github.com/DRincs-Productions/pixi-vn/issues" }),
                 new ChoiceMenuOption("Images, Transitions and Animations Test", IMAGE_ANIMAIONS_TEST_LABEL, {}),
-                new ChoiceMenuOption("Video Test", videoTest, {}),
+                new ChoiceMenuOption("Video Test", VIDEO_TEST_LABEL, {}),
                 new ChoiceMenuOption("Canvas Events Test", CANVAS_EVENTS_TEST_LABEL, {}),
                 new ChoiceMenuOption("Sound Test", SOUND_TEST_LABEL, {}),
                 new ChoiceMenuOption("Base Canvas Element Test", BASE_CANVAS_ELEMENT_LABEL, {}),
