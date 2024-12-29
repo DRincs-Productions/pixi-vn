@@ -1,8 +1,8 @@
-import { newLabel } from "../decorators";
+import { Label } from "../classes";
 import { narration } from "../managers";
 import { INPUT_TEST_LABEL, juliette } from "./TestConstant";
 
-export const inputTestLabel = newLabel(INPUT_TEST_LABEL,
+export const inputTestLabel = new Label(INPUT_TEST_LABEL,
     [
         () => {
             narration.dialogue = {

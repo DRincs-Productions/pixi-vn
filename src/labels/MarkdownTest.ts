@@ -1,9 +1,8 @@
-import { newLabel } from "../decorators"
+import { Label } from "../classes"
 import { narration } from "../managers"
-import { juliette } from "./TestConstant"
+import { juliette, MARKDOWN_TEST_LABEL } from "./TestConstant"
 
-const MARKDOWN_TEST_LABEL = "___pixi_vn_markdown_test___"
-export const markdownTest = newLabel(MARKDOWN_TEST_LABEL, [
+export const markdownTest = new Label(MARKDOWN_TEST_LABEL, [
     async () => {
         narration.dialogue = {
             character: juliette, text: `

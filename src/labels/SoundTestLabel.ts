@@ -1,11 +1,9 @@
+import { Label } from "../classes";
 import { filters } from "../constants";
-import { newLabel } from "../decorators";
 import { narration, sound } from "../managers";
-import { juliette, musicalAudio } from "./TestConstant";
+import { juliette, musicalAudio, SOUND_TEST_LABEL } from "./TestConstant";
 
-const SOUND_TEST_LABEL = "___pixi_vn_sound_test___"
-
-export const soundTestLabel = newLabel(SOUND_TEST_LABEL,
+export const soundTestLabel = new Label(SOUND_TEST_LABEL,
     [
         () => {
             narration.dialogue = {
