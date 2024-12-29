@@ -1,8 +1,8 @@
 import { ChoiceMenuOption, Label } from "../classes";
 import { PIXIVN_VERSION } from "../constants";
-import { getCharacterById, newLabel } from "../decorators";
+import { getCharacterById } from "../decorators";
 import { canvas, narration } from "../managers";
-import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, juliette, MARKDOWN_TEST_LABEL, SOUND_TEST_LABEL, STEP_LABEL_TEST_LABEL, TEST_LABEL, VIDEO_TEST_LABEL } from "./TestConstant";
+import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, juliette, MARKDOWN_TEST_LABEL, OPEN_LINK_LABEL, RESTART_TEST_LABEL, SOUND_TEST_LABEL, STEP_LABEL_TEST_LABEL, TEST_LABEL, VIDEO_TEST_LABEL } from "./TestConstant";
 
 export const pixivnTestStartLabel = new Label(TEST_LABEL,
     [
@@ -26,9 +26,7 @@ export const pixivnTestStartLabel = new Label(TEST_LABEL,
     ]
 )
 
-const openLink = newLabel<{
-    link: string
-}>("___pixi_vn_open_link___",
+export const openLink = new Label<{ link: string }>(OPEN_LINK_LABEL,
     [
         async (props) => {
             window.open(props.link)
@@ -37,9 +35,7 @@ const openLink = newLabel<{
     ]
 )
 
-
-const RESTART_TEST_LABEL = "___pixi_vn_restart_test_label___"
-export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
+export const pixivnTestStartLabel2 = new Label(RESTART_TEST_LABEL,
     [
         () => {
             canvas.clear()

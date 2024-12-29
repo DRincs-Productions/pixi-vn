@@ -9,8 +9,9 @@ import { imagesAnimationsTest } from "../labels/ImagesAnimationsTestLabel"
 import { inputTestLabel } from "../labels/InputTestLabel"
 import { markdownTest } from "../labels/MarkdownTest"
 import { soundTestLabel } from "../labels/SoundTestLabel"
+import { openLink, pixivnTestStartLabel2 } from "../labels/StartLabel"
 import { stepLabelTestLAbel } from "../labels/StepLabelTest"
-import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, MARKDOWN_TEST_LABEL, SOUND_TEST_LABEL, STEP_LABEL_TEST_LABEL, TEST_LABEL, VIDEO_TEST_LABEL } from "../labels/TestConstant"
+import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL, MARKDOWN_TEST_LABEL, OPEN_LINK_LABEL, RESTART_TEST_LABEL, SOUND_TEST_LABEL, STEP_LABEL_TEST_LABEL, TEST_LABEL, VIDEO_TEST_LABEL } from "../labels/TestConstant"
 import { videoTest } from "../labels/VideoTestLabel"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
@@ -26,6 +27,8 @@ export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label
     [STEP_LABEL_TEST_LABEL]: stepLabelTestLAbel,
     [VIDEO_TEST_LABEL]: videoTest,
     [TEST_LABEL]: pixivnTestStartLabel,
+    [OPEN_LINK_LABEL]: openLink,
+    [RESTART_TEST_LABEL]: pixivnTestStartLabel2,
 }
 
 /**
