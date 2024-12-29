@@ -2,12 +2,11 @@ import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite, Label } from "../
 import ImageContainer from "../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
-import { newLabel } from "../decorators"
 import { addImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
-import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, IMAGE_ANIMAIONS_TEST_LABEL, IMAGE_DISSOLVE_TEST_LABEL, IMAGE_FADE_TEST_LABEL, IMAGE_MOVE_IN_OUT_TEST_LABEL, IMAGE_MOVE_TEST_LABEL, IMAGE_ROTATE_TEST_LABEL, IMAGE_ZOOM_TEST_LABEL, juliette, skullyImage, skullyName } from "./TestConstant"
+import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, IMAGE_ANIMAIONS_TEST_LABEL, IMAGE_CONTAINER_TEST_LABEL, IMAGE_DISSOLVE_TEST_LABEL, IMAGE_FADE_TEST_LABEL, IMAGE_MOVE_IN_OUT_TEST_LABEL, IMAGE_MOVE_TEST_LABEL, IMAGE_PUSH_IN_OUT_TEST_LABEL, IMAGE_ROTATE_TEST_LABEL, IMAGE_ZOOM_IN_OUT_TEST_LABEL, IMAGE_ZOOM_TEST_LABEL, IMAGES_ADD_SAME_TAG_TEST_LABEL, IMAGES_CUSTOM_POSITION_TEST_LABEL, IMAGES_SHAKE_STAGE_TEST_LABEL, juliette, skullyImage, skullyName } from "./TestConstant"
 
 export const imagesAnimationsTest = new Label(IMAGE_ANIMAIONS_TEST_LABEL, [
     async () => {
@@ -322,7 +321,7 @@ export const imagesMoveInOutTest = new Label(IMAGE_MOVE_IN_OUT_TEST_LABEL, [
     }
 ])
 
-export const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
+export const imagesZoomInOutTest = new Label(IMAGE_ZOOM_IN_OUT_TEST_LABEL, [
     async () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
@@ -360,7 +359,7 @@ export const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test_
     },
 ])
 
-const imagesPushInOutTest = newLabel("___pixi_vn_images_push_in_out_test___", [
+export const imagesPushInOutTest = new Label(IMAGE_PUSH_IN_OUT_TEST_LABEL, [
     async () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:`
@@ -394,7 +393,7 @@ const imagesPushInOutTest = newLabel("___pixi_vn_images_push_in_out_test___", [
     },
 ])
 
-const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_test___", [
+export const imagesAddSameAliasTestLabel = new Label(IMAGES_ADD_SAME_TAG_TEST_LABEL, [
     () => {
         narration.dialogue = {
             character: juliette,
@@ -440,7 +439,7 @@ const imagesAddSameAliasTestLabel = newLabel("___pixi_vn_images_add_same_tag_tes
     async () => await pushIn("eggHead", eggHeadImage),
 ])
 
-const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
+export const shakeStageTest = new Label(IMAGES_SHAKE_STAGE_TEST_LABEL, [
     () => {
         narration.dialogue = {
             character: juliette,
@@ -457,7 +456,7 @@ const shakeStageTest = newLabel("___pixi_vn_images_shake_stage_test___", [
     },
 ])
 
-const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
+export const imageContainerTest = new Label(IMAGE_CONTAINER_TEST_LABEL, [
     async () => {
         narration.dialogue = {
             character: juliette,
@@ -480,7 +479,7 @@ const imageContainerTest = newLabel("___pixi_vn_image_container_test___", [
     },
 ])
 
-const customPositionTest = newLabel("___pixi_vn_images_custom_position_test___", [
+export const customPositionTest = new Label(IMAGES_CUSTOM_POSITION_TEST_LABEL, [
     () => {
         narration.dialogue = {
             character: juliette,
