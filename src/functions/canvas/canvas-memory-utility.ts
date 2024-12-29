@@ -3,8 +3,8 @@ import { CanvasBaseItem } from "../../classes";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { getCanvasElementInstanceById } from "../../decorators/canvas-element-decorator";
 import { CanvasBaseItemMemory, ContainerMemory, SpriteMemory, TextMemory } from "../../interface";
-import { getTextStyle } from "../texture-utility";
 import { getTextureMemory } from "./canvas-utility";
+import { getTextStyle } from "./texture-utility";
 
 /**
  * Export a Canvas element to a memory object

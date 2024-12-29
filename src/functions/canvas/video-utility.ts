@@ -2,7 +2,7 @@ import { Assets, Texture } from 'pixi.js';
 import VideoSprite from '../../classes/canvas/VideoSprite';
 import { VideoSpriteOptions } from '../../interface';
 import { canvas } from '../../managers';
-import { getTexture } from '../texture-utility';
+import { getTexture } from './texture-utility';
 
 /**
  * Add a video in the canvas.

@@ -1,7 +1,7 @@
 import { Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
-import { checkIfTextureNotIsEmpty } from "../../functions/texture-utility";
+import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
 import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";

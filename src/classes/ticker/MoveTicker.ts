@@ -1,7 +1,7 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { createExportableElement, TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
-import { checkIfTextureNotIsEmpty } from "../../functions/texture-utility";
+import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";

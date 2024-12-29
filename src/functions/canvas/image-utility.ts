@@ -2,7 +2,7 @@ import { Assets, Texture } from 'pixi.js';
 import { ImageSprite } from '../../classes';
 import { ImageSpriteOptions } from '../../interface';
 import { canvas } from '../../managers';
-import { getTexture } from '../texture-utility';
+import { getTexture } from './texture-utility';
 
 /**
  * Add a image in the canvas.

@@ -1,8 +1,7 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
-import { addImage, showWithDissolveTransition } from "../../functions";
+import { addImage, getTexture, showWithDissolveTransition } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
-import { getTexture } from "../../functions/texture-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
 import Sprite, { setMemorySprite } from "./Sprite";
