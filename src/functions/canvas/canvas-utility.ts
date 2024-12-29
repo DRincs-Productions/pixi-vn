@@ -1,7 +1,6 @@
 import { Assets, Texture } from "pixi.js";
 import { videoFormats } from "../../constants";
 import { TextureMemory } from "../../interface";
-import { canvas } from "../../managers";
 
 /**
  * Get the memory object of the PixiJS texture
@@ -15,13 +14,6 @@ export function getTextureMemory(texture: Texture, alias?: string): TextureMemor
         alias: alias === url ? undefined : alias,
     }
     return textureMemory
-}
-
-/**
- * @deprecated use canvas.remove
- */
-export function removeCanvasElement(alias: string | string[]) {
-    canvas.remove(alias)
 }
 
 export function checkIfVideo(textureAlias: string): boolean {
