@@ -7,7 +7,7 @@ import { addImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFade
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
-import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, IMAGE_ANIMAIONS_TEST_LABEL, IMAGE_DISSOLVE_TEST_LABEL, IMAGE_FADE_TEST_LABEL, IMAGE_MOVE_IN_TEST_LABEL, IMAGE_MOVE_TEST_LABEL, IMAGE_ROTATE_TEST_LABEL, IMAGE_ZOOM_TEST_LABEL, juliette, skullyImage, skullyName } from "./TestConstant"
+import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, IMAGE_ANIMAIONS_TEST_LABEL, IMAGE_DISSOLVE_TEST_LABEL, IMAGE_FADE_TEST_LABEL, IMAGE_MOVE_IN_OUT_TEST_LABEL, IMAGE_MOVE_TEST_LABEL, IMAGE_ROTATE_TEST_LABEL, IMAGE_ZOOM_TEST_LABEL, juliette, skullyImage, skullyName } from "./TestConstant"
 
 export const imagesAnimationsTest = new Label(IMAGE_ANIMAIONS_TEST_LABEL, [
     async () => {
@@ -290,7 +290,7 @@ export const imagesZoomTest = new Label(IMAGE_ZOOM_TEST_LABEL, [
     }
 ])
 
-export const imagesMoveInOutTest = new Label(IMAGE_MOVE_IN_TEST_LABEL, [
+export const imagesMoveInOutTest = new Label(IMAGE_MOVE_IN_OUT_TEST_LABEL, [
     async () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
@@ -322,7 +322,7 @@ export const imagesMoveInOutTest = new Label(IMAGE_MOVE_IN_TEST_LABEL, [
     }
 ])
 
-const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
+export const imagesZoomInOutTest = newLabel("___pixi_vn_images_zoom_in_out_test___", [
     async () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
