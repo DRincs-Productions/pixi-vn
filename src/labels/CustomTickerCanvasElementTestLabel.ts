@@ -1,11 +1,11 @@
 import { Rectangle } from "pixi.js";
 import { Assets, Texture, TextureSourceLike, TickerValue } from "..";
-import { Sprite } from "../classes";
+import { Label, Sprite } from "../classes";
 import { TickerBase } from "../classes/ticker";
-import { canvasComponentDecorator, newLabel, tickerDecorator } from "../decorators";
+import { canvasComponentDecorator, tickerDecorator } from "../decorators";
 import { SpriteBaseMemory, SpriteMemory } from "../interface";
 import { canvas, narration } from "../managers";
-import { eggHeadImage, eggHeadName, juliette } from "./TestConstant";
+import { CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, eggHeadImage, eggHeadName, juliette } from "./TestConstant";
 
 interface IAlienTintingMemory extends SpriteBaseMemory {
     direction: number
@@ -81,12 +81,10 @@ export class TintingTestTicker extends TickerBase<TintingTestTickerArgs> {
     }
 }
 
-const CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL = "___pixi_vn_custom_ticker_canvas_element_test___"
-
 /**
  * https://pixijs.com/examples/basic/tinting
  */
-export const customTickerCanvasElementTestLabel = newLabel(CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL,
+export const customTickerCanvasElementTestLabel = new Label(CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL,
     [
         async () => {
             const totalDudes = 100;
