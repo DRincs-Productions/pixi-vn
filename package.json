@@ -26,10 +26,10 @@
   "funding": "https://github.com/DRincs-Productions/pixi-vn?sponsor=1",
   "dependencies": {
     "@pixi/sound": "^6.0.1",
-    "pixi.js": "^8.6.4"
+    "pixi.js": "^8.6.6"
   },
   "devDependencies": {
-    "@drincs/pixi-vn": "^0.9.1",
+    "@drincs/pixi-vn": "^0.9.10",
     "@pixi/devtools": "^2.0.1",
     "@types/crypto-js": "^4.2.2",
     "@types/deep-diff": "^1.0.5",
