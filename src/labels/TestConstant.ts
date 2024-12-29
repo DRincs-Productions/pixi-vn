@@ -12,3 +12,4 @@ export const bunnyName = `Bunny`
 export const videoLink = "https://pixijs.com/assets/video.mp4"
 export const birdAudio = "https://pixijs.io/sound/examples/resources/bird.mp3"
 export const musicalAudio = "https://pixijs.io/sound/examples/resources/musical.mp3"
+export const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"

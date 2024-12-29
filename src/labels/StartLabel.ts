@@ -2,7 +2,6 @@ import { ChoiceMenuOption } from "../classes";
 import { PIXIVN_VERSION } from "../constants";
 import { getCharacterById, newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
-import { baseCanvasElementTestLabel } from "./BaseCanvasElementTestLabel";
 import { canvasEventsTestLabel } from "./CanvasEventsTestLabel";
 import { customTickerCanvasElementTestLabel } from "./CustomTickerCanvasElementTestLabel";
 import { imagesAnimationsTest } from "./ImagesAnimationsTestLabel";
@@ -10,7 +9,7 @@ import { inputTestLabel } from "./InputTestLabel";
 import { markdownTest } from "./MarkdownTest";
 import { soundTestLabel } from "./SoundTestLabel";
 import { stepLabelTestLAbel } from "./StepLabelTest";
-import { juliette } from "./TestConstant";
+import { BASE_CANVAS_ELEMENT_LABEL, juliette } from "./TestConstant";
 import { videoTest } from "./VideoTestLabel";
 
 export const pixivnTestStartLabel = newLabel("___pixi_vn_example_start_label___",
@@ -61,7 +60,7 @@ export const pixivnTestStartLabel2 = newLabel(RESTART_TEST_LABEL,
                 new ChoiceMenuOption("Video Test", videoTest, {}),
                 new ChoiceMenuOption("Canvas Events Test", canvasEventsTestLabel, {}),
                 new ChoiceMenuOption("Sound Test", soundTestLabel, {}),
-                new ChoiceMenuOption("Base Canvas Element Test", baseCanvasElementTestLabel, {}),
+                new ChoiceMenuOption("Base Canvas Element Test", BASE_CANVAS_ELEMENT_LABEL, {}),
                 new ChoiceMenuOption("Custom Ticker Canvas Element Test", customTickerCanvasElementTestLabel, {}),
                 new ChoiceMenuOption("Steps and Labels Test", stepLabelTestLAbel, {}),
                 new ChoiceMenuOption("Markdown Test", markdownTest, {}),

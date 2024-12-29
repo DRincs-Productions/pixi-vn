@@ -1,13 +1,10 @@
 import { Assets, Color, FillGradient, TextStyle } from "pixi.js";
-import { Container, Sprite, Text } from "../classes";
+import { Container, Label, Sprite, Text } from "../classes";
 import { RotateTicker } from "../classes/ticker";
-import { newLabel } from "../decorators";
 import { canvas, narration } from "../managers";
-import { bunnyImage, juliette } from "./TestConstant";
+import { BASE_CANVAS_ELEMENT_LABEL, bunnyImage, juliette } from "./TestConstant";
 
-const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"
-
-export const baseCanvasElementTestLabel = newLabel(BASE_CANVAS_ELEMENT_LABEL,
+export const baseCanvasElementTestLabel = new Label(BASE_CANVAS_ELEMENT_LABEL,
     [
         async () => {
             let number = 25

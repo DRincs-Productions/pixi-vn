@@ -1,10 +1,14 @@
 import { Label } from "../classes"
 import LabelAbstract from "../classes/LabelAbstract"
 import { LabelProps } from "../interface"
+import { baseCanvasElementTestLabel } from "../labels/BaseCanvasElementTestLabel"
+import { BASE_CANVAS_ELEMENT_LABEL } from "../labels/TestConstant"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
-export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label<any>) } = {}
+export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label<any>) } = {
+    [BASE_CANVAS_ELEMENT_LABEL]: baseCanvasElementTestLabel
+}
 
 /**
  * Creates a new label and registers it in the system.
