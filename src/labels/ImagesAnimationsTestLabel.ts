@@ -1,4 +1,4 @@
-import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite } from "../classes"
+import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite, Label } from "../classes"
 import ImageContainer from "../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
@@ -7,10 +7,9 @@ import { addImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFade
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
-import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, juliette, skullyImage, skullyName } from "./TestConstant"
+import { eggHeadImage, eggHeadName, flowerTopImage, flowerTopName, helmlokImage, helmlokName, IMAGE_ANIMAIONS_TEST_LABEL, juliette, skullyImage, skullyName } from "./TestConstant"
 
-const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
-export const imagesAnimationsTest = newLabel(IMAGE_ANIMAIONS_TEST_LABEL, [
+export const imagesAnimationsTest = new Label(IMAGE_ANIMAIONS_TEST_LABEL, [
     async () => {
         canvas.removeAll()
         narration.dialogue = { character: juliette, text: `These are my 4 puppets: ${eggHeadName}, ${flowerTopName}, ${helmlokName} and ${skullyName}. They can appear, disappear and animate at my will.` }

@@ -15,3 +15,5 @@ export const musicalAudio = "https://pixijs.io/sound/examples/resources/musical.
 export const BASE_CANVAS_ELEMENT_LABEL = "___pixi_vn_base_canvas_element_label___"
 export const CANVAS_EVENTS_TEST_LABEL = "___pixi_vn_canvas_events_test___"
 export const CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL = "___pixi_vn_custom_ticker_canvas_element_test___"
+export const IMAGE_ANIMAIONS_TEST_LABEL = "___pixi_vn_images_animations_test___"
+export const INPUT_TEST_LABEL = "___pixi_vn_input_test___"

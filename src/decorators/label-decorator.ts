@@ -4,7 +4,9 @@ import { LabelProps } from "../interface"
 import { baseCanvasElementTestLabel } from "../labels/BaseCanvasElementTestLabel"
 import { canvasEventsTestLabel } from "../labels/CanvasEventsTestLabel"
 import { customTickerCanvasElementTestLabel } from "../labels/CustomTickerCanvasElementTestLabel"
-import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL } from "../labels/TestConstant"
+import { imagesAnimationsTest } from "../labels/ImagesAnimationsTestLabel"
+import { inputTestLabel } from "../labels/InputTestLabel"
+import { BASE_CANVAS_ELEMENT_LABEL, CANVAS_EVENTS_TEST_LABEL, CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL, IMAGE_ANIMAIONS_TEST_LABEL, INPUT_TEST_LABEL } from "../labels/TestConstant"
 import { StepLabelType } from "../types"
 import { LabelIdType } from "../types/LabelIdType"
 
@@ -12,6 +14,8 @@ export const registeredLabels: { [key: LabelIdType]: (LabelAbstract<any> | Label
     [BASE_CANVAS_ELEMENT_LABEL]: baseCanvasElementTestLabel,
     [CANVAS_EVENTS_TEST_LABEL]: canvasEventsTestLabel,
     [CUSTOM_TICKER_CANVAS_ELEMENT_TEST_LABEL]: customTickerCanvasElementTestLabel,
+    [IMAGE_ANIMAIONS_TEST_LABEL]: imagesAnimationsTest,
+    [INPUT_TEST_LABEL]: inputTestLabel,
 }
 
 /**

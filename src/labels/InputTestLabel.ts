@@ -1,8 +1,6 @@
 import { newLabel } from "../decorators";
 import { narration } from "../managers";
-import { juliette } from "./TestConstant";
-
-const INPUT_TEST_LABEL = "___pixi_vn_input_test___"
+import { INPUT_TEST_LABEL, juliette } from "./TestConstant";
 
 export const inputTestLabel = newLabel(INPUT_TEST_LABEL,
     [
