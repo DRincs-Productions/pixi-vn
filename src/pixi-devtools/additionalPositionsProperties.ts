@@ -45,7 +45,7 @@ const additionalPositionsProperties: PropertiesExtension = {
                 value: container.positionType,
                 prop: 'positionType',
                 entry: {
-                    section: 'Custom Position',
+                    section: 'Transform',
                     type: "text",
                     label: 'Position Type',
                 },
@@ -54,7 +54,7 @@ const additionalPositionsProperties: PropertiesExtension = {
                 value: container.xAlign * 100,
                 prop: 'xAlign',
                 entry: {
-                    section: 'Custom Position',
+                    section: 'Transform',
                     type: "range",
                     label: 'X Align',
                     tooltip: '0% is left, 100% is right',
@@ -68,7 +68,7 @@ const additionalPositionsProperties: PropertiesExtension = {
                 value: container.yAlign * 100,
                 prop: 'yAlign',
                 entry: {
-                    section: 'Custom Position',
+                    section: 'Transform',
                     type: "range",
                     label: 'Y Align',
                     tooltip: '0% is top, 100% is bottom',
@@ -82,7 +82,7 @@ const additionalPositionsProperties: PropertiesExtension = {
                 value: container.xPercentagePosition * 100,
                 prop: 'xPercentagePosition',
                 entry: {
-                    section: 'Custom Position',
+                    section: 'Transform',
                     type: "range",
                     label: 'X Percentage Position',
                     tooltip: '0% is left, 100% is right',
@@ -96,7 +96,7 @@ const additionalPositionsProperties: PropertiesExtension = {
                 value: container.yPercentagePosition * 100,
                 prop: 'yPercentagePosition',
                 entry: {
-                    section: 'Custom Position',
+                    section: 'Transform',
                     type: "range",
                     label: 'Y Percentage Position',
                     tooltip: '0% is top, 100% is bottom',
