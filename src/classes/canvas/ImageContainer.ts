@@ -136,7 +136,6 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         return { x, y }
     }
     set anchor(value: PointData | number) {
-        console.log("anchor", value)
         if (typeof value === "number") {
             this._anchor = { x: value, y: value }
         }
