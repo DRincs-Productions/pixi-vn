@@ -58,9 +58,9 @@ function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithDissolveTransition<T extends TComponent = string>(
+export async function showWithDissolveTransition(
     alias: string,
-    image: T,
+    image: TComponent,
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
@@ -137,9 +137,9 @@ export function removeWithDissolveTransition(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithFadeTransition<T extends TComponent = string>(
+export async function showWithFadeTransition(
     alias: string,
-    image: T,
+    image: TComponent,
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
@@ -215,9 +215,9 @@ export function removeWithFadeTransition(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function moveIn<T extends TComponent = string>(
+export async function moveIn(
     alias: string,
-    image: T,
+    image: TComponent,
     props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
@@ -334,9 +334,9 @@ export function moveOut(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function zoomIn<T extends TComponent = string>(
+export async function zoomIn(
     alias: string,
-    image: T,
+    image: TComponent,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
@@ -485,9 +485,9 @@ export function zoomOut(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function pushIn<T extends TComponent = string>(
+export async function pushIn(
     alias: string,
-    image: T,
+    image: TComponent,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
