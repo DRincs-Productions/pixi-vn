@@ -3,6 +3,7 @@ import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions } from "pixi.js";
 import { asciiArtLog } from '../functions/easter-egg';
 import { TickerHistory, TickersSteps, TickerTimeoutHistory } from "../interface";
+import additionalPositionsProperties from '../pixi-devtools/additionalPositionsProperties';
 import PauseTickerType from '../types/PauseTickerType';
 
 /**
@@ -48,7 +49,7 @@ export default class CanvasManagerStatic {
             const { app = CanvasManagerStatic.app, extensions = [], ...devtoolsOptionsRest } = devtoolsOptions || {}
             initDevtools({
                 app: app,
-                extensions: [...extensions],
+                extensions: [additionalPositionsProperties, ...extensions],
                 ...devtoolsOptionsRest
             });
 
