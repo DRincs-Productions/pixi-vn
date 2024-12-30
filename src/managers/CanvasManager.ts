@@ -1,3 +1,4 @@
+import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
 import { ImageContainer, ImageSprite, Sprite, Text, VideoSprite } from "../classes";
@@ -67,12 +68,13 @@ export default class CanvasManager {
     }
 
     /**
-     * Initialize the PIXI Application and the interface div.
+     * Initialize the PixiJS Application and the interface div.
      * This method should be called before any other method.
      * @param element The html element where I will put the canvas. Example: document.body
      * @param width The width of the canvas
      * @param height The height of the canvas
-     * @param options The options of PIXI Application
+     * @param options The options of PixiJS Application
+     * @param devtoolsOptions The options of the devtools. You can read more about it in the [PixiJS Devtools documentation](https://pixijs.io/devtools/docs/plugin/)
      * @example
      * ```typescript
      * const body = document.body
@@ -84,8 +86,14 @@ export default class CanvasManager {
      * })
      * ```
      */
-    public async initialize(element: HTMLElement, width: number, height: number, options?: Partial<ApplicationOptions>): Promise<void> {
-        return await CanvasManagerStatic.initialize(element, width, height, options)
+    public async initialize(
+        element: HTMLElement,
+        width: number,
+        height: number,
+        options?: Partial<ApplicationOptions>,
+        devtoolsOptions?: Devtools,
+    ): Promise<void> {
+        return await CanvasManagerStatic.initialize(element, width, height, options, devtoolsOptions)
     }
     /**
      * Initialize the interface div and add it into a html element.

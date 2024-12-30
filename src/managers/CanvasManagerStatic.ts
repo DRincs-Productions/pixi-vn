@@ -1,8 +1,9 @@
-import { initDevtools } from '@pixi/devtools';
+import { Devtools, initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions } from "pixi.js";
 import { asciiArtLog } from '../functions/easter-egg';
 import { TickerHistory, TickersSteps, TickerTimeoutHistory } from "../interface";
+import additionalPositionsProperties from '../pixi-devtools/additionalPositionsProperties';
 import PauseTickerType from '../types/PauseTickerType';
 
 /**
@@ -28,7 +29,13 @@ export default class CanvasManagerStatic {
     static canvasHeight: number = 300
     static _isInitialized: boolean = false
 
-    static async initialize(element: HTMLElement, width: number, height: number, options?: Partial<ApplicationOptions>): Promise<void> {
+    static async initialize(
+        element: HTMLElement,
+        width: number,
+        height: number,
+        options?: Partial<ApplicationOptions>,
+        devtoolsOptions?: Devtools
+    ): Promise<void> {
         CanvasManagerStatic.canvasWidth = width
         CanvasManagerStatic.canvasHeight = height
         CanvasManagerStatic._app = new Application()
@@ -39,7 +46,12 @@ export default class CanvasManagerStatic {
             height: height,
             ...options
         }).then(() => {
-            initDevtools({ app: CanvasManagerStatic.app });
+            const { app = CanvasManagerStatic.app, extensions = [], ...devtoolsOptionsRest } = devtoolsOptions || {}
+            initDevtools({
+                app: app,
+                extensions: [additionalPositionsProperties, ...extensions],
+                ...devtoolsOptionsRest
+            });
 
             CanvasManagerStatic._isInitialized = true
             // Manager.app.ticker.add(Manager.update)

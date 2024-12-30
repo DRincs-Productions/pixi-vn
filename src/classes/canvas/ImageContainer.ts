@@ -2,7 +2,7 @@ import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { checkIfVideo } from "../../functions/canvas/canvas-utility";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -136,6 +136,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         return { x, y }
     }
     set anchor(value: PointData | number) {
+        console.log("anchor", value)
         if (typeof value === "number") {
             this._anchor = { x: value, y: value }
         }
@@ -179,6 +180,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this._align.x = value
         this.reloadPosition()
     }
+    get xAlign() {
+        return calculateAlignByPosition("width", this.x, this.width, this.pivot.x, this.anchor.x)
+    }
     set yAlign(value: number) {
         if (this._percentagePosition) {
             this._percentagePosition.y = undefined
@@ -186,6 +190,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this._align === undefined && (this._align = {})
         this._align.y = value
         this.reloadPosition()
+    }
+    get yAlign() {
+        return calculateAlignByPosition("height", this.y, this.height, this.pivot.y, this.anchor.y)
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined
     set percentagePosition(value: Partial<PointData> | number) {
@@ -208,6 +215,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this._percentagePosition.x = _value
         this.reloadPosition()
     }
+    get xPercentagePosition() {
+        return calculatePercentagePositionByPosition("width", this.x)
+    }
     set yPercentagePosition(_value: number) {
         if (this._align) {
             this._align.y = undefined
@@ -215,6 +225,9 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this._percentagePosition === undefined && (this._percentagePosition = {})
         this._percentagePosition.y = _value
         this.reloadPosition()
+    }
+    get yPercentagePosition() {
+        return calculatePercentagePositionByPosition("height", this.y)
     }
     get positionType(): "pixel" | "percentage" | "align" {
         if (this._align) {
@@ -237,18 +250,18 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
-                super.x = calculateAlign("width", this._align.x, this.width, this.pivot.x)
+                super.x = calculatePositionByAlign("width", this._align.x, this.width, this.pivot.x)
             }
             if (this._align.y !== undefined) {
-                super.y = calculateAlign("height", this._align.y, this.height, this.pivot.y)
+                super.y = calculatePositionByAlign("height", this._align.y, this.height, this.pivot.y)
             }
         }
         else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = calculatePercentagePosition("width", this._percentagePosition.x)
+                super.x = calculatePositionByPercentagePosition("width", this._percentagePosition.x)
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = calculatePercentagePosition("height", this._percentagePosition.y)
+                super.y = calculatePositionByPercentagePosition("height", this._percentagePosition.y)
             }
         }
     }

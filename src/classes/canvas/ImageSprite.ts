@@ -3,7 +3,7 @@ import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, getTexture, showWithDissolveTransition } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlign, calculatePercentagePosition } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "./AdditionalPositions";
 import Sprite, { setMemorySprite } from "./Sprite";
 
 /**
@@ -136,11 +136,17 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this._align.x = value
         this.reloadPosition()
     }
+    get xAlign() {
+        return calculateAlignByPosition("width", this.x, this.width, this.pivot.x, this.anchor.x)
+    }
     set yAlign(value: number) {
         this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
         this._align.y = value
         this.reloadPosition()
+    }
+    get yAlign() {
+        return calculateAlignByPosition("height", this.y, this.height, this.pivot.y, this.anchor.y)
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined
     set percentagePosition(value: Partial<PointData> | number) {
@@ -155,11 +161,17 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         }
         this.reloadPosition()
     }
+    get xPercentagePosition() {
+        return calculatePercentagePositionByPosition("width", this.x)
+    }
     set xPercentagePosition(_value: number) {
         this._align = undefined
         this._percentagePosition === undefined && (this._percentagePosition = {})
         this._percentagePosition.x = _value
         this.reloadPosition()
+    }
+    get yPercentagePosition() {
+        return calculatePercentagePositionByPosition("height", this.y)
     }
     set yPercentagePosition(_value: number) {
         this._align = undefined
@@ -188,18 +200,18 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     private reloadPosition() {
         if (this._align) {
             if (this._align.x !== undefined) {
-                super.x = calculateAlign("width", this._align.x, this.width, this.pivot.x, this.anchor.x)
+                super.x = calculatePositionByAlign("width", this._align.x, this.width, this.pivot.x, this.anchor.x)
             }
             if (this._align.y !== undefined) {
-                super.y = calculateAlign("height", this._align.y, this.height, this.pivot.y, this.anchor.y)
+                super.y = calculatePositionByAlign("height", this._align.y, this.height, this.pivot.y, this.anchor.y)
             }
         }
         else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = calculatePercentagePosition("width", this._percentagePosition.x)
+                super.x = calculatePositionByPercentagePosition("width", this._percentagePosition.x)
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = calculatePercentagePosition("height", this._percentagePosition.y)
+                super.y = calculatePositionByPercentagePosition("height", this._percentagePosition.y)
             }
         }
     }
