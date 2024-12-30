@@ -89,6 +89,9 @@ export default class AdditionalPositionsExtension extends PixiContainer {
     set xAlign(_value: number) {
         throw new Error("Method not implemented.");
     }
+    get xAlign(): number {
+        throw new Error("Method not implemented.");
+    }
     /**
      * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
      * For example:
@@ -99,6 +102,9 @@ export default class AdditionalPositionsExtension extends PixiContainer {
      * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
     set yAlign(_value: number) {
+        throw new Error("Method not implemented.");
+    }
+    get yAlign(): number {
         throw new Error("Method not implemented.");
     }
     /**
@@ -113,6 +119,9 @@ export default class AdditionalPositionsExtension extends PixiContainer {
     set percentagePosition(_value: Partial<PointData> | number) {
         throw new Error("Method not implemented.");
     }
+    get percentagePosition(): Partial<PointData> | number {
+        throw new Error("Method not implemented.");
+    }
     /**
      * is a way to set the position of the element in the canvas calculated in percentage.
      * For example, if you set the {@link PixiContainer.pivot} to 0.5, and:
@@ -125,6 +134,9 @@ export default class AdditionalPositionsExtension extends PixiContainer {
     set xPercentagePosition(_value: number) {
         throw new Error("Method not implemented.");
     }
+    get xPercentagePosition(): number {
+        throw new Error("Method not implemented.");
+    }
     /**
      * is a way to set the position of the element in the canvas calculated in percentage.
      * For example, if you set the {@link PixiContainer.pivot} to 0.5, and:
@@ -135,6 +147,9 @@ export default class AdditionalPositionsExtension extends PixiContainer {
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
     set yPercentagePosition(_value: number) {
+        throw new Error("Method not implemented.");
+    }
+    get yPercentagePosition(): number {
         throw new Error("Method not implemented.");
     }
     get positionType(): "pixel" | "percentage" | "align" {
@@ -196,7 +211,7 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
     return props
 }
 
-export function calculateAlign(type: "width" | "height", align: number, width: number, pivot: number, anchor: number = 0): number {
+export function calculatePositionByAlign(type: "width" | "height", align: number, width: number, pivot: number, anchor: number = 0): number {
     if (type === "width") {
         return (align * (canvas.screen.width - width)) + pivot + (anchor * width)
     }
@@ -205,11 +220,29 @@ export function calculateAlign(type: "width" | "height", align: number, width: n
     }
 }
 
-export function calculatePercentagePosition(type: "width" | "height", percentage: number) {
+export function calculateAlignByPosition(type: "width" | "height", position: number, width: number, pivot: number, anchor: number = 0): number {
+    if (type === "width") {
+        return ((position - pivot - (anchor * width)) / (canvas.screen.width - width))
+    }
+    else {
+        return ((position - pivot - (anchor * width)) / (canvas.screen.height - width))
+    }
+}
+
+export function calculatePositionByPercentagePosition(type: "width" | "height", percentage: number) {
     if (type === "width") {
         return percentage * canvas.screen.width
     }
     else {
         return percentage * canvas.screen.height
+    }
+}
+
+export function calculatePercentagePositionByPosition(type: "width" | "height", position: number) {
+    if (type === "width") {
+        return position / canvas.screen.width
+    }
+    else {
+        return position / canvas.screen.height
     }
 }

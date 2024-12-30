@@ -11,10 +11,8 @@ const additionalPositionsProperties: PropertiesExtension = {
     },
     testProp(prop) {
         switch (prop) {
-            case "align":
             case "xAlign":
             case "yAlign":
-            case "percentagePosition":
             case "xPercentagePosition":
             case "yPercentagePosition":
             case "positionType":
@@ -26,23 +24,17 @@ const additionalPositionsProperties: PropertiesExtension = {
     setProperty(container, prop, value) {
         if (container instanceof ImageSprite || container instanceof VideoSprite || container instanceof ImageContainer) {
             switch (prop) {
-                case "align":
-                    container.align = value;
-                    break;
                 case "xAlign":
-                    container.xAlign = value;
+                    container.xAlign = value / 100;
                     break;
                 case "yAlign":
-                    container.yAlign = value;
-                    break;
-                case "percentagePosition":
-                    container.percentagePosition = value;
+                    container.yAlign = value / 100;
                     break;
                 case "xPercentagePosition":
-                    container.xPercentagePosition = value;
+                    container.xPercentagePosition = value / 100;
                     break;
                 case "yPercentagePosition":
-                    container.yPercentagePosition = value;
+                    container.yPercentagePosition = value / 100;
                     break;
             }
         }
@@ -50,67 +42,68 @@ const additionalPositionsProperties: PropertiesExtension = {
     getProperties(container: ImageSprite | VideoSprite | ImageContainer) {
         return [
             {
-                value: container.align,
-                prop: 'align',
-                entry: {
-                    section: 'Position',
-                    type: "vector2",
-                    label: 'Align',
-                },
-            },
-            {
-                value: container.xAlign,
-                prop: 'xAlign',
-                entry: {
-                    section: 'Position',
-                    type: "number",
-                    label: 'X Align',
-                },
-            },
-            {
-                value: container.yAlign,
-                prop: 'yAlign',
-                entry: {
-                    section: 'Position',
-                    type: "number",
-                    label: 'Y Align',
-                },
-            },
-            {
-                value: container.percentagePosition,
-                prop: 'percentagePosition',
-                entry: {
-                    section: 'Position',
-                    type: "vector2",
-                    label: 'Percentage Position',
-                },
-            },
-            {
-                value: container.xPercentagePosition,
-                prop: 'xPercentagePosition',
-                entry: {
-                    section: 'Position',
-                    type: "number",
-                    label: 'X Percentage Position',
-                },
-            },
-            {
-                value: container.yPercentagePosition,
-                prop: 'yPercentagePosition',
-                entry: {
-                    section: 'Position',
-                    type: "number",
-                    label: 'Y Percentage Position',
-                },
-            },
-            {
                 value: container.positionType,
                 prop: 'positionType',
                 entry: {
-                    section: 'Position',
-                    type: "select",
+                    section: 'Custom Position',
+                    type: "text",
                     label: 'Position Type',
-                    options: ["pixel", "percentage", "align"],
+                },
+            },
+            {
+                value: container.xAlign * 100,
+                prop: 'xAlign',
+                entry: {
+                    section: 'Custom Position',
+                    type: "range",
+                    label: 'X Align',
+                    tooltip: '0% is left, 100% is right',
+                    options: {
+                        min: 0,
+                        max: 100,
+                    },
+                },
+            },
+            {
+                value: container.yAlign * 100,
+                prop: 'yAlign',
+                entry: {
+                    section: 'Custom Position',
+                    type: "range",
+                    label: 'Y Align',
+                    tooltip: '0% is top, 100% is bottom',
+                    options: {
+                        min: 0,
+                        max: 100,
+                    },
+                },
+            },
+            {
+                value: container.xPercentagePosition * 100,
+                prop: 'xPercentagePosition',
+                entry: {
+                    section: 'Custom Position',
+                    type: "range",
+                    label: 'X Percentage Position',
+                    tooltip: '0% is left, 100% is right',
+                    options: {
+                        min: 0,
+                        max: 100,
+                    },
+                },
+            },
+            {
+                value: container.yPercentagePosition * 100,
+                prop: 'yPercentagePosition',
+                entry: {
+                    section: 'Custom Position',
+                    type: "range",
+                    label: 'Y Percentage Position',
+                    tooltip: '0% is top, 100% is bottom',
+                    options: {
+                        min: 0,
+                        max: 100,
+                    },
                 },
             },
         ];
