@@ -81,7 +81,7 @@ export async function showWithDissolveTransition(
         type: "show",
         aliasToRemoveAfter: oldCanvasAlias,
         startOnlyIfHaveTexture: true,
-    }, 10, priority)
+    }, undefined, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
@@ -118,7 +118,7 @@ export function removeWithDissolveTransition(
         type: 'hide',
         aliasToRemoveAfter: alias,
         startOnlyIfHaveTexture: true,
-    }, 10, priority)
+    }, undefined, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
