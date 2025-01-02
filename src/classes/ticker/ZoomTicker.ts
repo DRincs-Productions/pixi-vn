@@ -7,7 +7,7 @@ import { canvas } from "../../managers";
 import { ZoomTickerProps } from "../../types/ticker";
 import TickerBase from "./TickerBase";
 
-const DEFAULT_SPEED = 0.1
+const DEFAULT_SPEED = 10
 
 /**
  * A ticker that zooms the canvas element of the canvas.
@@ -35,12 +35,12 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         let ySpeed = DEFAULT_SPEED
         if (args.speed) {
             if (typeof args.speed === "number") {
-                xSpeed = this.speedConvert(args.speed)
-                ySpeed = this.speedConvert(args.speed)
+                xSpeed = this.speedConvert(args.speed) / 100
+                ySpeed = this.speedConvert(args.speed) / 100
             }
             else {
-                xSpeed = this.speedConvert(args.speed.x)
-                ySpeed = this.speedConvert(args.speed.y)
+                xSpeed = this.speedConvert(args.speed.x) / 100
+                ySpeed = this.speedConvert(args.speed.y) / 100
             }
         }
         let aliasToRemoveAfter = args.aliasToRemoveAfter || []
