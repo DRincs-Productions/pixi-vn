@@ -51,7 +51,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         let xSpeed
         let ySpeed
         if (!args.speed) {
-            args.speed = 10
+            args.speed = 50
         }
         if (typeof args.speed === "number") {
             xSpeed = this.speedConvert(args.speed)
