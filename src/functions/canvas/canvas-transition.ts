@@ -51,18 +51,22 @@ function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<
  * If exist a image with the same alias, then the image is replaced and the first image is removed after the effect is done.
  * This transition is done with a {@link FadeAlphaTicker} effect.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+ * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function showWithDissolveTransition(
     alias: string,
-    image: TComponent,
+    image?: TComponent,
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    if (!image) {
+        image = alias
+    }
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let oldCanvasAlias: string | undefined = undefined
     if (canvas.find(alias)) {
@@ -130,18 +134,22 @@ export function removeWithDissolveTransition(
  * Fade effect is a effect that the image is shown with a fade in.
  * If exist a image with the same alias, the existing image is removed with a fade transition, and after the effect is done, the new image is shown with a fade transition.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+ * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function showWithFadeTransition(
     alias: string,
-    image: TComponent,
+    image?: TComponent,
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    if (!image) {
+        image = alias
+    }
     if (!canvas.find(alias)) {
         return showWithDissolveTransition(alias, image, props, priority)
     }
@@ -208,18 +216,22 @@ export function removeWithFadeTransition(
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+ * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function moveIn(
     alias: string,
-    image: TComponent,
+    image?: TComponent,
     props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    if (!image) {
+        image = alias
+    }
     let direction = props.direction || "right"
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
@@ -287,7 +299,7 @@ export function moveOut(
     tickerAliasToResume.push(alias)
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
-        console.warn("[Pixi’VN] The canvas element is not found.")
+        console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
 
@@ -327,18 +339,22 @@ export function moveOut(
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+ * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function zoomIn(
     alias: string,
-    image: TComponent,
+    image?: TComponent,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    if (!image) {
+        image = alias
+    }
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
@@ -419,7 +435,7 @@ export function zoomOut(
     tickerAliasToResume.push(alias)
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
-        console.warn("[Pixi’VN] The canvas element is not found.")
+        console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
 
@@ -478,18 +494,22 @@ export function zoomOut(
  * Show a image in the canvas with a push effect. The new image is pushed in from the inside of the canvas and the old image is pushed out to the outside of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas element. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+ * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function pushIn(
     alias: string,
-    image: TComponent,
+    image?: TComponent,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    if (!image) {
+        image = alias
+    }
     let oldCanvasAlias = alias + "_temp_push"
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
@@ -565,7 +585,7 @@ export function pushOut(
     tickerAliasToResume.push(alias)
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
-        console.warn("[Pixi’VN] The canvas element is not found.")
+        console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
 
