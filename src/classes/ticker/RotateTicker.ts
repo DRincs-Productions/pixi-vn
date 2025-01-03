@@ -68,6 +68,6 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
             updateTickerProgression(args, "speed", speedProgression)
     }
     private speedConvert(speed: number): number {
-        return speed / 60
+        return speed / 100
     }
 }
