@@ -37,7 +37,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 args.speed = DEFAULT_SPEED
             }
             else {
-                args.speed = 1 / (args.duration * 60)
+                args.speed = 600 / (args.duration * 60)
             }
         }
 

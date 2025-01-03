@@ -163,14 +163,6 @@ export async function showWithFadeTransition(
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
 
-    let id2 = canvas.addTicker(alias,
-        new FadeAlphaTicker({
-            ...props,
-            type: "show",
-            startOnlyIfHaveTexture: true,
-            aliasToRemoveAfter: oldCanvasAlias,
-        }, undefined, priority)
-    )
     let id1 = canvas.addTicker(oldCanvasAlias,
         new FadeAlphaTicker({
             ...props,
@@ -179,6 +171,15 @@ export async function showWithFadeTransition(
             tickerAliasToResume: alias
         }, undefined, priority),
     )
+    let id2 = canvas.addTicker(alias,
+        new FadeAlphaTicker({
+            ...props,
+            type: "show",
+            startOnlyIfHaveTexture: true,
+            aliasToRemoveAfter: oldCanvasAlias,
+        }, undefined, priority)
+    )
+    canvas.putOnPauseTicker(alias)
     let res: undefined | string[] = undefined
     if (id1) {
         res = [id1]
