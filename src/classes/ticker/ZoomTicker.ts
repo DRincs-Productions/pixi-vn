@@ -31,27 +31,22 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         alias: string[],
         tickerId: string
     ): void {
-        let xSpeed = DEFAULT_SPEED
-        let ySpeed = DEFAULT_SPEED
-        if (args.speed) {
-            if (typeof args.speed === "number") {
-                xSpeed = this.speedConvert(args.speed) / 100
-                ySpeed = this.speedConvert(args.speed) / 100
-            }
-            else {
-                xSpeed = this.speedConvert(args.speed.x) / 100
-                ySpeed = this.speedConvert(args.speed.y) / 100
-            }
+        if (args.speed === undefined) {
+            args.speed = DEFAULT_SPEED
         }
-        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
-        if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter]
+
+        const { speed, type = "zoom", startOnlyIfHaveTexture, speedProgression } = args
+
+        let xSpeed
+        let ySpeed
+        if (typeof speed === "number") {
+            xSpeed = this.speedConvert(speed)
+            ySpeed = this.speedConvert(speed)
         }
-        let tickerAliasToResume = args.tickerAliasToResume || []
-        if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume]
+        else {
+            xSpeed = this.speedConvert(speed.x)
+            ySpeed = this.speedConvert(speed.y)
         }
-        let type = args.type || "zoom"
         let limit = this.getLimit(args)
         alias
             .filter((alias) => {
@@ -59,7 +54,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 if (!element) {
                     return false
                 }
-                if (args.startOnlyIfHaveTexture) {
+                if (startOnlyIfHaveTexture) {
                     if (!checkIfTextureNotIsEmpty(element)) {
                         return false
                     }
@@ -110,17 +105,18 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                     }
                 }
             })
-        if (args.speedProgression)
-            updateTickerProgression(args, "speed", args.speedProgression, this.speedConvert)
+        if (speedProgression)
+            updateTickerProgression(args, "speed", speedProgression)
     }
     private speedConvert(speed: number): number {
-        return speed / 60
+        return speed / 60 / 100
     }
     override onEndOfTicker(
         alias: string | string[],
         tickerId: string,
         args: ZoomTickerProps,
     ): void {
+        const { isZoomInOut } = args
         if (typeof alias === "string") {
             alias = [alias]
         }
@@ -132,7 +128,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                     element.scale.x = limit.x
                     element.scale.y = limit.y
                 }
-                if (args.isZoomInOut && element.children.length > 0) {
+                if (isZoomInOut && element.children.length > 0) {
                     let elementChild = element.children[0]
                     canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
                 }
@@ -141,35 +137,34 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         super.onEndOfTicker(alias, tickerId, args)
     }
     private getLimit(args: ZoomTickerProps): { x: number, y: number } {
-        let type = args.type || "zoom"
+        const { type = "zoom", limit } = args
         let xLimit = type === "zoom" ? Infinity : 0
         let yLimit = type === "zoom" ? Infinity : 0
-        if (args.limit) {
-            if (typeof args.limit === "number") {
-                xLimit = args.limit
-                yLimit = args.limit
+        if (limit) {
+            if (typeof limit === "number") {
+                xLimit = limit
+                yLimit = limit
             }
             else {
-                xLimit = args.limit.x
-                yLimit = args.limit.y
+                xLimit = limit.x
+                yLimit = limit.y
             }
         }
         return { x: xLimit, y: yLimit }
     }
     private isStop(args: ZoomTickerProps): boolean {
-        let xSpeed = DEFAULT_SPEED
-        let ySpeed = DEFAULT_SPEED
-        if (args.speed) {
-            if (typeof args.speed === "number") {
-                xSpeed = this.speedConvert(args.speed)
-                ySpeed = this.speedConvert(args.speed)
-            }
-            else {
-                xSpeed = this.speedConvert(args.speed.x)
-                ySpeed = this.speedConvert(args.speed.y)
-            }
+        const { speed = DEFAULT_SPEED, speedProgression } = args
+        let xSpeed
+        let ySpeed
+        if (typeof speed === "number") {
+            xSpeed = this.speedConvert(speed)
+            ySpeed = this.speedConvert(speed)
         }
-        if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
+        else {
+            xSpeed = this.speedConvert(speed.x)
+            ySpeed = this.speedConvert(speed.y)
+        }
+        if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
             return true
         }
         return false

@@ -30,18 +30,10 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         aliases: string[],
         tickerId: string
     ): void {
-        let type = args.type === undefined ? "hide" : args.type
+        const { type = "hide", duration = 1, startOnlyIfHaveTexture } = args
+
         let limit = this.getLimit(args)
-        let duration = args.duration === undefined ? 1 : args.duration
-        let speed = 1 / (duration * 60)
-        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
-        if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter]
-        }
-        let tickerAliasToResume = args.tickerAliasToResume || []
-        if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume]
-        }
+        const speed = 1 / (duration * 60)
         if (type === "hide" && limit < 0) {
             limit = 0
         }
@@ -54,7 +46,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 if (!element) {
                     return false
                 }
-                if (args.startOnlyIfHaveTexture) {
+                if (startOnlyIfHaveTexture) {
                     if (!checkIfTextureNotIsEmpty(element)) {
                         return false
                     }
@@ -97,8 +89,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         super.onEndOfTicker(alias, tickerId, args)
     }
     private getLimit(args: FadeAlphaTickerProps): number {
-        let type = args.type === undefined ? "hide" : args.type
-        let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
+        const { type = "hide", limit = type === "hide" ? 0 : 1 } = args
         return limit
     }
 }

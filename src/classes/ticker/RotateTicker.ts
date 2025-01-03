@@ -7,6 +7,8 @@ import { canvas } from "../../managers";
 import { RotateTickerProps } from "../../types/ticker/RotateTickerProps";
 import TickerBase from "./TickerBase";
 
+const DEFAULT_SPEED = 1
+
 /**
  * A ticker that rotates the canvas element of the canvas. For centre rotation, set the anchor of the canvas element to 0.5.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
@@ -30,16 +32,13 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         aliases: string[],
         tickerId: string
     ): void {
-        let speed = this.speedConvert(args.speed === undefined ? 1 : args.speed)
-        let clockwise = args.clockwise === undefined ? true : args.clockwise
-        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
-        if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter]
+        if (args.speed === undefined) {
+            args.speed = DEFAULT_SPEED
         }
-        let tickerAliasToResume = args.tickerAliasToResume || []
-        if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume]
-        }
+
+        const { clockwise = true, speedProgression } = args
+        const speed = this.speedConvert(args.speed)
+
         aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
@@ -60,13 +59,13 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                         element.rotation += speed * ticker.deltaTime
                     else
                         element.rotation -= speed * ticker.deltaTime
-                    if (speed < 0.00001 && !(args.speedProgression && args.speedProgression.type == "linear" && args.speedProgression.amt != 0)) {
+                    if (speed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
                         this.onEndOfTicker(alias, tickerId, args)
                     }
                 }
             })
-        if (args.speedProgression)
-            updateTickerProgression(args, "speed", args.speedProgression, this.speedConvert)
+        if (speedProgression)
+            updateTickerProgression(args, "speed", speedProgression)
     }
     private speedConvert(speed: number): number {
         return speed / 60

@@ -8,6 +8,8 @@ import { MoveTickerProps } from "../../types/ticker";
 import { calculatePositionByAlign, calculatePositionByPercentagePosition } from "../canvas/AdditionalPositions";
 import TickerBase from "./TickerBase";
 
+const DEFAULT_SPEED = 100
+
 function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, element: T) {
     let destination = createExportableElement(args.destination)
     if (destination.type === "align") {
@@ -48,26 +50,21 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         aliases: string[],
         tickerId: string
     ): void {
+        if (args.speed === undefined) {
+            args.speed = DEFAULT_SPEED
+        }
+
+        const { speed, startOnlyIfHaveTexture, speedProgression } = args
+
         let xSpeed
         let ySpeed
-        if (args.speed === undefined) {
-            args.speed = 100
-        }
-        if (typeof args.speed === "number") {
-            xSpeed = this.speedConvert(args.speed)
-            ySpeed = this.speedConvert(args.speed)
+        if (typeof speed === "number") {
+            xSpeed = this.speedConvert(speed)
+            ySpeed = this.speedConvert(speed)
         }
         else {
-            xSpeed = this.speedConvert(args.speed.x)
-            ySpeed = this.speedConvert(args.speed.y)
-        }
-        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
-        if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter]
-        }
-        let tickerAliasToResume = args.tickerAliasToResume || []
-        if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume]
+            xSpeed = this.speedConvert(speed.x)
+            ySpeed = this.speedConvert(speed.y)
         }
         aliases
             .filter((alias) => {
@@ -75,7 +72,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 if (!element) {
                     return false
                 }
-                if (args.startOnlyIfHaveTexture) {
+                if (startOnlyIfHaveTexture) {
                     if (!checkIfTextureNotIsEmpty(element)) {
                         return false
                     }
@@ -115,8 +112,8 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                     }
                 }
             })
-        if (args.speedProgression)
-            updateTickerProgression(args, "speed", args.speedProgression, this.speedConvert)
+        if (speedProgression)
+            updateTickerProgression(args, "speed", speedProgression)
     }
     override onEndOfTicker(
         alias: string | string[],
@@ -124,6 +121,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         args: MoveTickerProps,
         options: { editPosition: boolean } = { editPosition: true }
     ): void {
+        const { isPushInOut } = args
         if (typeof alias === "string") {
             alias = [alias]
         }
@@ -135,7 +133,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                     element.x = destination.x
                     element.y = destination.y
                 }
-                if (args.isPushInOut && element.children.length > 0) {
+                if (isPushInOut && element.children.length > 0) {
                     let elementChild = element.children[0]
                     canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
                 }
