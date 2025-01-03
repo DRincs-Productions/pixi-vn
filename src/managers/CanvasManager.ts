@@ -811,7 +811,6 @@ export default class CanvasManager {
     /**
      * Resume a ticker.
      * @param alias The alias of the canvas element that will use the ticker.
-     * @param tickerId The ticker that will be resumed.
      */
     resumeTickerPaused(alias: string | string[]) {
         if (typeof alias === "string") {
