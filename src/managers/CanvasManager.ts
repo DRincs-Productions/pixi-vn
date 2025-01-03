@@ -198,7 +198,7 @@ export default class CanvasManager {
         }
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
             if (ticker.createdByTicketSteps?.canvasElementAlias === oldAlias) {
-                this.removeTickerById(id)
+                this.removeTicker(id)
             }
             if (ticker.canvasElementAliases.includes(oldAlias)) {
                 if (mode === "move") {
@@ -341,7 +341,7 @@ export default class CanvasManager {
         alias.forEach((alias) => {
             this.app.stage.getChildrenByLabel(alias).forEach((canvasComponent) => {
                 this.app.stage.removeChild(canvasComponent)
-                !ignoreTickers && this.removeTicker(alias)
+                !ignoreTickers && this.removeAssociationBetweenTickerCanvasElement(alias)
             })
         })
     }
@@ -641,7 +641,7 @@ export default class CanvasManager {
                     Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
                         if (ticker.createdByTicketSteps?.canvasElementAlias === alias) {
                             if (ticker.createdByTicketSteps.id === key) {
-                                this.removeTickerById(id)
+                                this.removeTicker(id)
                             }
                         }
                     })
@@ -662,7 +662,7 @@ export default class CanvasManager {
         this.remove(options.aliasToRemoveAfter)
         this.resumeTickerPaused(options.tickerAliasToResume)
         if (tickerData) {
-            this.removeTickerById(tickerId)
+            this.removeTicker(tickerId)
             if (!ignoreTickerSteps && tickerData.duration == undefined && tickerData.createdByTicketSteps) {
                 this.nextTickerStep(tickerData.createdByTicketSteps.canvasElementAlias, tickerData.createdByTicketSteps.id)
             }
@@ -673,7 +673,6 @@ export default class CanvasManager {
      * And remove the ticker if there is no canvas element connected to it.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param ticker The ticker class to be removed.
-     * @param options The options
      * @example
      * ```typescript
      * canvas.removeAssociationBetweenTickerCanvasElement("alien", RotateTicker)
@@ -681,15 +680,32 @@ export default class CanvasManager {
      */
     public removeAssociationBetweenTickerCanvasElement(
         alias: string | string[],
-        ticker: typeof TickerBase<any> | TickerBase<any> | string,
-        options: {
-            /**
-             * If true, the tickers that are connected to the canvas element will not be removed.
-             * @default false
-             */
-            ignoreTickerSteps?: boolean
-        } = {}
+        ticker?: typeof TickerBase<any> | TickerBase<any> | string,
     ) {
+        if (typeof alias === "string") {
+            alias = [alias]
+        }
+
+        if (!ticker) {
+            alias.forEach((alias) => {
+                Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
+                    if (ticker.canvasElementAliases.includes(alias)) {
+                        if (ticker.canvasElementAliases.length === 1) {
+                            this.removeTicker(id)
+                        }
+                        else {
+                            ticker.canvasElementAliases = ticker.canvasElementAliases.filter((t) => t !== alias)
+                        }
+                    }
+                })
+                if (CanvasManagerStatic._currentTickersSteps[alias]) {
+                    delete CanvasManagerStatic._currentTickersSteps[alias]
+                }
+                CanvasManagerStatic.removeTickerTimeoutsByAlias(alias, false)
+            })
+            return
+        }
+
         let tickerId: TickerIdType
         if (typeof ticker === "string") {
             tickerId = ticker
@@ -700,20 +716,15 @@ export default class CanvasManager {
         else {
             tickerId = ticker.prototype.id
         }
-        if (typeof alias === "string") {
-            alias = [alias]
-        }
-        if (!options.ignoreTickerSteps) {
-            alias.forEach((alias) => {
-                if (CanvasManagerStatic._currentTickersSteps[alias]) {
-                    Object.entries(CanvasManagerStatic._currentTickersSteps[alias]).forEach(([id, ticker]) => {
-                        if (ticker.steps.find((t) => typeof t === "object" && "ticker" in t && t.ticker === tickerId)) {
-                            delete CanvasManagerStatic._currentTickersSteps[alias][id]
-                        }
-                    })
-                }
-            })
-        }
+        alias.forEach((alias) => {
+            if (CanvasManagerStatic._currentTickersSteps[alias]) {
+                Object.entries(CanvasManagerStatic._currentTickersSteps[alias]).forEach(([id, ticker]) => {
+                    if (ticker.steps.find((t) => typeof t === "object" && "ticker" in t && t.ticker === tickerId)) {
+                        delete CanvasManagerStatic._currentTickersSteps[alias][id]
+                    }
+                })
+            }
+        })
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
             if (ticker.id === tickerId) {
                 CanvasManagerStatic._currentTickers[id].canvasElementAliases = ticker.canvasElementAliases.filter((e) => !alias.includes(e))
@@ -758,7 +769,7 @@ export default class CanvasManager {
     public removeAllTickers() {
         CanvasManagerStatic._currentTickersSteps = {}
         Object.keys(CanvasManagerStatic._currentTickers).forEach((id) => {
-            this.removeTickerById(id)
+            this.removeTicker(id)
         })
         CanvasManagerStatic._currentTickers = {}
         for (let timeout in CanvasManagerStatic._currentTickersTimeouts) {
@@ -766,36 +777,10 @@ export default class CanvasManager {
         }
     }
     /**
-     * Remove a ticker by the alias of the canvas element that will use the ticker.
-     * @param alias The alias of the canvas element that will use the ticker.
-     */
-    removeTicker(alias: string | string[]) {
-        if (typeof alias === "string") {
-            alias = [alias]
-        }
-        alias.forEach((alias) => {
-            Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-                if (ticker.canvasElementAliases.includes(alias)) {
-                    if (ticker.canvasElementAliases.length === 1) {
-                        this.removeTickerById(id)
-                    }
-                    else {
-                        ticker.canvasElementAliases = ticker.canvasElementAliases.filter((t) => t !== alias)
-                    }
-                }
-            })
-            if (CanvasManagerStatic._currentTickersSteps[alias]) {
-                delete CanvasManagerStatic._currentTickersSteps[alias]
-            }
-            CanvasManagerStatic.removeTickerTimeoutsByAlias(alias, false)
-            delete CanvasManagerStatic._currentTickersSteps[alias]
-        })
-    }
-    /**
      * Remove a ticker by the id.
      * @param tickerId The id of the ticker.
      */
-    removeTickerById(tickerId: string | string[]) {
+    removeTicker(tickerId: string | string[]) {
         if (typeof tickerId === "string") {
             tickerId = [tickerId]
         }
