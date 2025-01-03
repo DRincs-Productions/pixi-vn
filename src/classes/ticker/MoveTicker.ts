@@ -8,7 +8,7 @@ import { MoveTickerProps } from "../../types/ticker";
 import { calculatePositionByAlign, calculatePositionByPercentagePosition } from "../canvas/AdditionalPositions";
 import TickerBase from "./TickerBase";
 
-const DEFAULT_SPEED = 100
+const DEFAULT_SPEED = 10
 
 function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, element: T) {
     let destination = createExportableElement(args.destination)
@@ -152,6 +152,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         super.onEndOfTicker(alias, tickerId, args)
     }
     private speedConvert(speed: number): number {
-        return speed / 6
+        // 10 pixels per second
+        return speed * (66 / 400)
     }
 }
