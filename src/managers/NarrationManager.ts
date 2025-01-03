@@ -405,9 +405,8 @@ export default class NarrationManager {
                         CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
                             canvas.forceCompletionOfTicker(id, alias)
                         })
+                        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
                     }
-                    CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
-
                     NarrationManagerStatic.stepsRunning++
                     let result = await step(props, { labelId: currentLabel.id })
 
