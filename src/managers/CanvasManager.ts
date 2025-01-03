@@ -529,7 +529,7 @@ export default class CanvasManager {
      * ])
      * ```
      */
-    addTickersSteps<TArgs extends TickerArgs>(alias: string, steps: (Ticker<TArgs> | RepeatType | PauseType)[], currentStepNumber = 0) {
+    addTickersSteps(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
             console.warn("[Pixi’VN] The steps of the tickers is empty")
             return
@@ -546,10 +546,10 @@ export default class CanvasManager {
                 if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
                     return step as PauseType
                 }
-                let tickerId = (step as Ticker<TArgs>).id
+                let tickerId = (step as Ticker<any>).id
                 return {
                     ticker: tickerId,
-                    args: createExportableElement((step as TickerBase<TArgs>).args),
+                    args: createExportableElement((step as TickerBase<any>).args),
                     duration: step.duration,
                 }
             })
