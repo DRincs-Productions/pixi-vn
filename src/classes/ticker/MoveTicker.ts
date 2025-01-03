@@ -56,16 +56,6 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
 
         const { speed, startOnlyIfHaveTexture, speedProgression } = args
 
-        let xSpeed
-        let ySpeed
-        if (typeof speed === "number") {
-            xSpeed = this.speedConvert(speed)
-            ySpeed = this.speedConvert(speed)
-        }
-        else {
-            xSpeed = this.speedConvert(speed.x)
-            ySpeed = this.speedConvert(speed.y)
-        }
         aliases
             .filter((alias) => {
                 let element = canvas.find(alias)
@@ -83,22 +73,42 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 let element = canvas.find(alias)
                 if (element && element instanceof PixiContainer) {
                     let destination = calculateDestination(args, element)
-                    let xDistance = (destination.x - element.x) > 0 ? 1 : -1
-                    if (xDistance != 0 && xSpeed > 0) {
-                        element.x += xDistance * xSpeed * ticker.deltaTime
+                    let xDistance = (destination.x - element.x)
+                    let yDistance = (destination.y - element.y)
+                    let xStep: 1 | -1 = xDistance > 0 ? 1 : -1
+                    let yStep: 1 | -1 = yDistance > 0 ? 1 : -1
+
+                    let xSpeed
+                    let ySpeed
+                    if (typeof speed === "number") {
+                        let s = this.speedConvert(speed)
+                        if (xDistance === 0 || yDistance === 0) {
+                            xSpeed = ySpeed = s
+                        }
+                        else {
+                            xSpeed = Math.abs(xDistance / (xDistance + yDistance)) * s
+                            ySpeed = Math.abs(yDistance / (xDistance + yDistance)) * s
+                        }
+                    }
+                    else {
+                        xSpeed = this.speedConvert(speed.x)
+                        ySpeed = this.speedConvert(speed.y)
+                    }
+
+                    if (xSpeed > 0) {
+                        element.x += xStep * xSpeed * ticker.deltaTime
                         let newDistance = destination.x - element.x
-                        if (xDistance < 0 && newDistance > 0 ||
-                            xDistance > 0 && newDistance < 0
+                        if (xStep < 0 && newDistance > 0 ||
+                            xStep > 0 && newDistance < 0
                         ) {
                             element.x = destination.x
                         }
                     }
-                    let yDistance = (destination.y - element.y) > 0 ? 1 : -1
-                    if (yDistance != 0 && ySpeed > 0) {
-                        element.y += yDistance * ySpeed * ticker.deltaTime
+                    if (ySpeed > 0) {
+                        element.y += yStep * ySpeed * ticker.deltaTime
                         let newDistance = destination.y - element.y
-                        if (yDistance < 0 && newDistance > 0 ||
-                            yDistance > 0 && newDistance < 0
+                        if (yStep < 0 && newDistance > 0 ||
+                            yStep > 0 && newDistance < 0
                         ) {
                             element.y = destination.y
                         }
