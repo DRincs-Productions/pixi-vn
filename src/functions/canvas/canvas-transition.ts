@@ -2,7 +2,6 @@ import { UPDATE_PRIORITY } from "pixi.js"
 import { CanvasBaseItem, Container, ImageSprite, VideoSprite } from "../../classes"
 import ImageContainer from "../../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
-import { Pause } from "../../constants"
 import { ImageContainerOptions, ImageSpriteOptions, MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
 import { checkIfVideo } from "./canvas-utility"
@@ -156,22 +155,22 @@ export async function showWithFadeTransition(
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
     canvasElement.alpha = 0
 
-    let id1 = canvas.addTickersSteps(oldCanvasAlias, [
-        new FadeAlphaTicker({
-            ...props,
-            type: "hide",
-            startOnlyIfHaveTexture: true,
-        }, undefined, priority),
-    ])
-    let id2 = canvas.addTickersSteps(alias, [
-        Pause(props.duration || 1),
+    let id2 = canvas.addTicker(alias,
         new FadeAlphaTicker({
             ...props,
             type: "show",
             startOnlyIfHaveTexture: true,
             aliasToRemoveAfter: oldCanvasAlias,
         }, undefined, priority)
-    ])
+    )
+    let id1 = canvas.addTicker(oldCanvasAlias,
+        new FadeAlphaTicker({
+            ...props,
+            type: "hide",
+            startOnlyIfHaveTexture: true,
+            tickerAliasToResume: alias
+        }, undefined, priority),
+    )
     let res: undefined | string[] = undefined
     if (id1) {
         res = [id1]

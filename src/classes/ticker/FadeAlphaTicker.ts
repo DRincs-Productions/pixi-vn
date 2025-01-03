@@ -6,6 +6,8 @@ import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";
 
+const DEFAULT_SPEED = 1
+
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
@@ -30,10 +32,20 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         aliases: string[],
         tickerId: string
     ): void {
-        const { type = "hide", duration = 1, startOnlyIfHaveTexture } = args
+        if (args.speed === undefined) {
+            if (args.duration === undefined) {
+                args.speed = DEFAULT_SPEED
+            }
+            else {
+                args.speed = 1 / (args.duration * 60)
+            }
+        }
+
+        const { type = "hide", startOnlyIfHaveTexture } = args
+        const speed = this.speedConvert(args.speed)
 
         let limit = this.getLimit(args)
-        const speed = 1 / (duration * 60)
+
         if (type === "hide" && limit < 0) {
             limit = 0
         }
@@ -91,5 +103,8 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     private getLimit(args: FadeAlphaTickerProps): number {
         const { type = "hide", limit = type === "hide" ? 0 : 1 } = args
         return limit
+    }
+    private speedConvert(speed: number): number {
+        return speed / 600
     }
 }

@@ -1,10 +1,14 @@
 export type FadeAlphaTickerProps = {
     /**
-     * The duration of the fade, in seconds.
-     * in reality the duration is not exactly in seconds because it is based on the frame rate of the game.
+     * @deprecated use speed instead
      * @default 1
      */
     duration?: number
+    /**
+     * The speed of the effect
+     * @default 1
+     */
+    speed?: number
     /**
      * The type of the fade
      * @default "hide"
