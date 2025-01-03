@@ -50,7 +50,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
     ): void {
         let xSpeed
         let ySpeed
-        if (!args.speed) {
+        if (args.speed === undefined) {
             args.speed = 100
         }
         if (typeof args.speed === "number") {
@@ -87,7 +87,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 if (element && element instanceof PixiContainer) {
                     let destination = calculateDestination(args, element)
                     let xDistance = (destination.x - element.x) > 0 ? 1 : -1
-                    if (xDistance != 0) {
+                    if (xDistance != 0 && xSpeed > 0) {
                         element.x += xDistance * xSpeed * ticker.deltaTime
                         let newDistance = destination.x - element.x
                         if (xDistance < 0 && newDistance > 0 ||
@@ -97,7 +97,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     let yDistance = (destination.y - element.y) > 0 ? 1 : -1
-                    if (yDistance != 0) {
+                    if (yDistance != 0 && ySpeed > 0) {
                         element.y += yDistance * ySpeed * ticker.deltaTime
                         let newDistance = destination.y - element.y
                         if (yDistance < 0 && newDistance > 0 ||
@@ -109,6 +109,10 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                     if (element.x == destination.x && element.y == destination.y) {
                         this.onEndOfTicker(alias, tickerId, args)
                     }
+                    if (xSpeed <= 0 && ySpeed <= 0) {
+                        console.warn("[Pixi’VN] The speed of the MoveTicker must be greater than 0.")
+                        this.onEndOfTicker(alias, tickerId, args, { editPosition: false })
+                    }
                 }
             })
         if (args.speedProgression)
@@ -118,6 +122,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         alias: string | string[],
         tickerId: string,
         args: MoveTickerProps,
+        options: { editPosition: boolean } = { editPosition: true }
     ): void {
         if (typeof alias === "string") {
             alias = [alias]
@@ -126,8 +131,10 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             let element = canvas.find(alias)
             if (element) {
                 let destination = calculateDestination(args, element)
-                element.x = destination.x
-                element.y = destination.y
+                if (options.editPosition) {
+                    element.x = destination.x
+                    element.y = destination.y
+                }
                 if (args.isPushInOut && element.children.length > 0) {
                     let elementChild = element.children[0]
                     canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
