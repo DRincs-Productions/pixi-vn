@@ -361,26 +361,31 @@ export async function zoomIn(
     tickerAliasToResume.push(alias)
 
     let canvasElement = addComponent(alias, image)
-    if (canvas.find(alias)) {
-        canvas.copyCanvasElementProperty(alias, canvasElement)
-    }
     canvas.add(alias, canvasElement)
 
     if (props.direction == "up") {
-        canvasElement.pivot.y = canvas.canvasHeight - canvasElement.pivot.y - canvasElement.y
-        canvasElement.pivot.x = canvas.canvasWidth / 2 - canvasElement.pivot.x - canvasElement.x
+        canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
+        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
+        canvasElement.y = canvas.canvasHeight
+        canvasElement.x = canvas.canvasWidth / 2
     }
     else if (props.direction == "down") {
-        canvasElement.pivot.y = 0 - canvasElement.pivot.y - canvasElement.y
-        canvasElement.pivot.x = canvas.canvasWidth / 2 - canvasElement.pivot.x - canvasElement.x
+        canvasElement.pivot.y = 0 - canvasElement.y
+        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
+        canvasElement.y = 0
+        canvasElement.x = canvas.canvasWidth / 2
     }
     else if (props.direction == "left") {
-        canvasElement.pivot.x = canvas.canvasWidth - canvasElement.pivot.x - canvasElement.x
-        canvasElement.pivot.y = canvas.canvasHeight / 2 - canvasElement.pivot.y - canvasElement.y
+        canvasElement.pivot.x = canvas.canvasWidth - canvasElement.x
+        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
+        canvasElement.x = canvas.canvasWidth
+        canvasElement.y = canvas.canvasHeight / 2
     }
     else if (props.direction == "right") {
-        canvasElement.pivot.x = 0 - canvasElement.pivot.x - canvasElement.x
-        canvasElement.pivot.y = canvas.canvasHeight / 2 - canvasElement.pivot.y - canvasElement.y
+        canvasElement.pivot.x = 0 - canvasElement.x
+        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
+        canvasElement.x = 0
+        canvasElement.y = canvas.canvasHeight / 2
     }
     canvasElement.scale.set(0)
 
