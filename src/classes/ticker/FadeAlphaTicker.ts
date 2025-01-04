@@ -7,7 +7,7 @@ import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";
 
-const DEFAULT_SPEED = 1
+const DEFAULT_SPEED = 5
 
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.

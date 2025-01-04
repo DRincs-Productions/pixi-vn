@@ -8,7 +8,7 @@ export type FadeAlphaTickerProps = {
     duration?: number
     /**
      * The speed of the effect (1 alpha per 10 second)
-     * @default 1
+     * @default 5
      */
     speed?: number
     /**
