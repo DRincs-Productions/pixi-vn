@@ -39,7 +39,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
             args.speed = DEFAULT_SPEED
         }
 
-        const { clockwise = true, speedProgression } = args
+        const { clockwise = true, speedProgression, limit } = args
         const speed = this.speedConvert(args.speed)
 
         aliases
@@ -62,15 +62,45 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                         element.rotation += speed * ticker.deltaTime
                     else
                         element.rotation -= speed * ticker.deltaTime
+                    if (limit !== undefined) {
+                        if (clockwise && element.rotation >= limit) {
+                            element.rotation = limit
+                            this.onEndOfTicker(alias, tickerId, args)
+                        }
+                        else if (!clockwise && element.rotation <= limit) {
+                            element.rotation = limit
+                            this.onEndOfTicker(alias, tickerId, args)
+                        }
+                    }
                     if (speed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
                         console.warn("[Pixi’VN] The speed of the RotateTicker must be greater than 0.")
-                        this.onEndOfTicker(alias, tickerId, args)
+                        this.onEndOfTicker(alias, tickerId, args, { editRotation: false })
                         return
                     }
                 }
             })
         if (speedProgression)
             updateTickerProgression(args, "speed", speedProgression)
+    }
+    override onEndOfTicker(
+        alias: string | string[],
+        tickerId: string,
+        args: RotateTickerProps,
+        options: { editRotation?: boolean } = { editRotation: true }
+    ): void {
+        const { limit } = args
+        if (typeof alias === "string") {
+            alias = [alias]
+        }
+        alias.forEach((alias) => {
+            let element = canvas.find(alias)
+            if (element) {
+                if (options.editRotation && limit !== undefined) {
+                    element.rotation = limit
+                }
+            }
+        })
+        super.onEndOfTicker(alias, tickerId, args)
     }
     private speedConvert(speed: number): number {
         return speed / 100

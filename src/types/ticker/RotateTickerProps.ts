@@ -12,6 +12,11 @@ export type RotateTickerProps = {
      */
     clockwise?: boolean
     /**
+     * The limit of the rotation, is specified in radians (2 * Math.PI = 360 degree)
+     * @default undefined
+     */
+    limit?: number
+    /**
      * The progression of the speed
      */
     speedProgression?: TickerProgrationType
