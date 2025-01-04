@@ -116,7 +116,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                     if (element.x == destination.x && element.y == destination.y) {
                         this.onEndOfTicker(alias, tickerId, args)
                     }
-                    if (xSpeed <= 0 && ySpeed <= 0) {
+                    if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
                         console.warn("[Pixi’VN] The speed of the MoveTicker must be greater than 0.")
                         this.onEndOfTicker(alias, tickerId, args, { editPosition: false })
                     }
