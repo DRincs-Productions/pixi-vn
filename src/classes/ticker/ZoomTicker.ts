@@ -90,6 +90,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         }
                         if (element.scale.x >= limit.x && element.scale.y >= limit.y) {
                             this.onEndOfTicker(alias, tickerId, args)
+                            return
                         }
                     }
                     else if (type === "unzoom") {
@@ -101,6 +102,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         }
                         if (element.scale.x <= limit.x && element.scale.y <= limit.y) {
                             this.onEndOfTicker(alias, tickerId, args)
+                            return
                         }
                     }
                     if (
@@ -112,6 +114,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                     ) {
                         console.warn("[Pixi’VN] The speed of the ZoomTicker must be greater than 0.")
                         this.onEndOfTicker(alias, tickerId, args, { editScale: false })
+                        return
                     }
                 }
             })

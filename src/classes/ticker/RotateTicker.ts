@@ -65,6 +65,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                     if (speed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
                         console.warn("[Pixi’VN] The speed of the RotateTicker must be greater than 0.")
                         this.onEndOfTicker(alias, tickerId, args)
+                        return
                     }
                 }
             })

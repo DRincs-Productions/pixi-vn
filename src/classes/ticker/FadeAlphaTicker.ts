@@ -80,13 +80,16 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     }
                     if (type === "show" && element.alpha >= limit) {
                         this.onEndOfTicker(alias, tickerId, args)
+                        return
                     }
                     else if (type === "hide" && element.alpha <= limit) {
                         this.onEndOfTicker(alias, tickerId, args)
+                        return
                     }
                     if (speed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
                         console.warn("[Pixi’VN] The speed of the FadeAlphaTicker must be greater than 0.")
                         this.onEndOfTicker(alias, tickerId, args, { editAlpha: false })
+                        return
                     }
                 }
             })
