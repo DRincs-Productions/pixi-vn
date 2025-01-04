@@ -103,7 +103,14 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             this.onEndOfTicker(alias, tickerId, args)
                         }
                     }
-                    if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
+                    if (
+                        ((xSpeed < 0.00001 && ySpeed < 0.00001) ||
+                            (xSpeed < 0.00001 && element.scale.y == limit.y) ||
+                            (ySpeed < 0.00001 && element.scale.x == limit.x)
+                        ) &&
+                        (!(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0))
+                    ) {
+                        console.warn("[Pixi’VN] The speed of the ZoomTicker must be greater than 0.")
                         this.onEndOfTicker(alias, tickerId, args, { editScale: false })
                     }
                 }
