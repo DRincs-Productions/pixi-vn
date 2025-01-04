@@ -241,10 +241,10 @@ export const imagesZoomTest = new Label(IMAGE_ZOOM_TEST_LABEL, [
     () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
-- ${eggHeadName} will zoom out with a speed of 30 and a limit of -0.5.
-- ${flowerTopName} will zoom in with a speed of 30 and a limit of 2.
-- ${helmlokName} will unzoom with a speed of 30 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
-- ${skullyName} will zoom in with a speed of 1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
+- ${eggHeadName} will zoom out with a speed of 30 and a limit of -5.
+- ${flowerTopName} will zoom in with a speed of 30 and a limit of 20.
+- ${helmlokName} will unzoom with a speed of 30 and a limit of -10, and zoom in with a speed of 3 and a limit of 10, and repeat.
+- ${skullyName} will zoom in with a speed of 1 and a limit of 50, wait for 0.5 seconds, and zoom out with a speed of 30 and a limit of 10.`
         }
         let eggHead = canvas.find<ImageSprite>("eggHead")
         if (eggHead)
@@ -254,36 +254,36 @@ export const imagesZoomTest = new Label(IMAGE_ZOOM_TEST_LABEL, [
             helmlok.anchor.set(0.5);
         canvas.addTicker("eggHead", new ZoomTicker({
             speed: 30,
-            limit: -0.5,
+            limit: -5,
             type: "unzoom"
         }))
         canvas.addTicker("flowerTop", new ZoomTicker({
             speed: 30,
-            limit: 2,
+            limit: 20,
         }))
         canvas.addTickersSteps("helmlok", [
             new ZoomTicker({
                 speed: 30,
-                limit: -1,
+                limit: -10,
                 type: "unzoom"
             }),
             new ZoomTicker({
                 speed: 30,
-                limit: 1,
+                limit: 10,
             }),
             Repeat,
         ])
         canvas.addTickersSteps("skully", [
             new ZoomTicker({
                 speed: 1,
-                limit: 5,
+                limit: 50,
                 speedProgression: { type: "exponential", percentage: 0.02 }
             }),
             Pause(0.5),
             new ZoomTicker({
                 "type": "unzoom",
                 speed: 30,
-                limit: 1,
+                limit: 10,
             }),
         ])
     }
@@ -325,35 +325,35 @@ export const imagesZoomInOutTest = new Label(IMAGE_ZOOM_IN_OUT_TEST_LABEL, [
     async () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
-- ${eggHeadName} will zoom in with a speed of 3. If you go next, ${eggHeadName} will zoom out with a speed of 3.
-- ${flowerTopName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${flowerTopName} will zoom out with a speed of 3.
-- ${helmlokName} will zoom in with a speed of 3. If you go next, ${helmlokName} will zoom out with a speed of 1.
-- ${skullyName} will zoom in with a speed of 3 and a speed progression of 0.02. If you go next, ${skullyName} will zoom out with a speed of 3 and a speed progression of 0.02.`
+- ${eggHeadName} will zoom in with a speed of 30. If you go next, ${eggHeadName} will zoom out with a speed of 30.
+- ${flowerTopName} will zoom in with a speed of 30 and a speed progression of 0.02. If you go next, ${flowerTopName} will zoom out with a speed of 30.
+- ${helmlokName} will zoom in with a speed of 30. If you go next, ${helmlokName} will zoom out with a speed of 10.
+- ${skullyName} will zoom in with a speed of 30 and a speed progression of 0.02. If you go next, ${skullyName} will zoom out with a speed of 30 and a speed progression of 0.02.`
         }
         let eggHead = new ImageSprite({ x: 100, y: 100 }, eggHeadImage)
         let flowerTop = new ImageSprite({ x: 300, y: 100 }, flowerTopImage)
         let helmlok = new ImageSprite({ x: 100, y: 300 }, helmlokImage)
         let skully = new ImageSprite({ x: 300, y: 300 }, skullyImage)
-        zoomIn("eggHead", eggHead, { speed: 3, direction: "down" })
+        zoomIn("eggHead", eggHead, { speed: 30, direction: "down" })
         zoomIn("flowerTop", flowerTop, {
-            speed: 3, direction: "left",
+            speed: 30, direction: "left",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
-        zoomIn("helmlok", helmlok, { speed: 3, direction: "right" })
+        zoomIn("helmlok", helmlok, { speed: 30, direction: "right" })
         zoomIn("skully", skully, {
-            speed: 3, direction: "up",
+            speed: 30, direction: "up",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
     },
     async () => {
         zoomOut("eggHead", {
-            speed: 3, direction: "down",
+            speed: 30, direction: "down",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
-        zoomOut("flowerTop", { speed: 3, direction: "left" })
-        zoomOut("helmlok", { speed: 1, direction: "right" })
+        zoomOut("flowerTop", { speed: 30, direction: "left" })
+        zoomOut("helmlok", { speed: 10, direction: "right" })
         zoomOut("skully", {
-            speed: 3, direction: "up",
+            speed: 30, direction: "up",
             speedProgression: { type: "exponential", percentage: 0.02 }
         })
     },
