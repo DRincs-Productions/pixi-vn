@@ -152,7 +152,6 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         super.onEndOfTicker(alias, tickerId, args)
     }
     private speedConvert(speed: number): number {
-        // 10 pixels per second
         return speed * (66 / 400)
     }
 }
