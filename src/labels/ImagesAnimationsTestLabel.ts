@@ -241,10 +241,10 @@ export const imagesZoomTest = new Label(IMAGE_ZOOM_TEST_LABEL, [
     () => {
         narration.dialogue = {
             character: juliette, text: `Here's what's going to happen:
-- ${eggHeadName} will zoom out with a speed of 3 and a limit of -0.5.
-- ${flowerTopName} will zoom in with a speed of 3 and a limit of 2.
-- ${helmlokName} will unzoom with a speed of 3 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
-- ${skullyName} will zoom in with a speed of 0.1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
+- ${eggHeadName} will zoom out with a speed of 30 and a limit of -0.5.
+- ${flowerTopName} will zoom in with a speed of 30 and a limit of 2.
+- ${helmlokName} will unzoom with a speed of 30 and a limit of -1, and zoom in with a speed of 3 and a limit of 1, and repeat.
+- ${skullyName} will zoom in with a speed of 1 and a limit of 5, wait for 0.5 seconds, and zoom out with a speed of 3 and a limit of 1.`
         }
         let eggHead = canvas.find<ImageSprite>("eggHead")
         if (eggHead)
@@ -253,36 +253,36 @@ export const imagesZoomTest = new Label(IMAGE_ZOOM_TEST_LABEL, [
         if (helmlok)
             helmlok.anchor.set(0.5);
         canvas.addTicker("eggHead", new ZoomTicker({
-            speed: 3,
+            speed: 30,
             limit: -0.5,
             type: "unzoom"
         }))
         canvas.addTicker("flowerTop", new ZoomTicker({
-            speed: 3,
+            speed: 30,
             limit: 2,
         }))
         canvas.addTickersSteps("helmlok", [
             new ZoomTicker({
-                speed: 3,
+                speed: 30,
                 limit: -1,
                 type: "unzoom"
             }),
             new ZoomTicker({
-                speed: 3,
+                speed: 30,
                 limit: 1,
             }),
             Repeat,
         ])
         canvas.addTickersSteps("skully", [
             new ZoomTicker({
-                speed: 0.1,
+                speed: 1,
                 limit: 5,
                 speedProgression: { type: "exponential", percentage: 0.02 }
             }),
             Pause(0.5),
             new ZoomTicker({
                 "type": "unzoom",
-                speed: 3,
+                speed: 30,
                 limit: 1,
             }),
         ])
