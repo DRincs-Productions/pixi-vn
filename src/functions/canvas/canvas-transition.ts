@@ -364,37 +364,25 @@ export async function zoomIn(
     if (canvas.find(alias)) {
         canvas.copyCanvasElementProperty(alias, canvasElement)
     }
-    let container = new Container()
-    container.addChild(canvasElement)
-    container.height = canvas.canvasHeight
-    container.width = canvas.canvasWidth
-    canvas.add(alias, container, { ignoreOldStyle: true })
+    canvas.add(alias, canvasElement)
 
     if (props.direction == "up") {
-        container.pivot.y = canvas.canvasHeight
-        container.pivot.x = canvas.canvasWidth / 2
-        container.y = canvas.canvasHeight
-        container.x = canvas.canvasWidth / 2
+        canvasElement.pivot.y = canvas.canvasHeight - canvasElement.pivot.y - canvasElement.y
+        canvasElement.pivot.x = canvas.canvasWidth / 2 - canvasElement.pivot.x - canvasElement.x
     }
     else if (props.direction == "down") {
-        container.pivot.y = 0
-        container.pivot.x = canvas.canvasWidth / 2
-        container.y = 0
-        container.x = canvas.canvasWidth / 2
+        canvasElement.pivot.y = 0 - canvasElement.pivot.y - canvasElement.y
+        canvasElement.pivot.x = canvas.canvasWidth / 2 - canvasElement.pivot.x - canvasElement.x
     }
     else if (props.direction == "left") {
-        container.pivot.x = canvas.canvasWidth
-        container.pivot.y = canvas.canvasHeight / 2
-        container.x = canvas.canvasWidth
-        container.y = canvas.canvasHeight / 2
+        canvasElement.pivot.x = canvas.canvasWidth - canvasElement.pivot.x - canvasElement.x
+        canvasElement.pivot.y = canvas.canvasHeight / 2 - canvasElement.pivot.y - canvasElement.y
     }
     else if (props.direction == "right") {
-        container.pivot.x = 0
-        container.pivot.y = canvas.canvasHeight / 2
-        container.x = 0
-        container.y = canvas.canvasHeight / 2
+        canvasElement.pivot.x = 0 - canvasElement.pivot.x - canvasElement.x
+        canvasElement.pivot.y = canvas.canvasHeight / 2 - canvasElement.pivot.y - canvasElement.y
     }
-    container.scale.set(0)
+    canvasElement.scale.set(0)
 
     let effect = new ZoomTicker({
         ...props,
