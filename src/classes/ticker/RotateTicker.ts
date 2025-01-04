@@ -1,4 +1,4 @@
-import { Container as PixiContainer } from "pixi.js";
+import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
@@ -26,6 +26,9 @@ const DEFAULT_SPEED = 1
  */
 @tickerDecorator()
 export default class RotateTicker extends TickerBase<RotateTickerProps> {
+    constructor(args: RotateTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
+        super(args, duration, priority)
+    }
     override fn(
         ticker: TickerValue,
         args: RotateTickerProps,

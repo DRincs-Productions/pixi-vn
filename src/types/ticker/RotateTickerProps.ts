@@ -2,7 +2,7 @@ import { TickerProgrationType } from "../../interface"
 
 export type RotateTickerProps = {
     /**
-     * The speed of the rotation
+     * The speed of the rotation (360 degree per 10 second)
      * @default 1
      */
     speed?: number
