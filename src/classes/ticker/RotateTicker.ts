@@ -63,12 +63,12 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                     else
                         element.rotation -= speed * ticker.deltaTime
                     if (limit !== undefined) {
-                        if (clockwise && element.rotation >= limit) {
-                            element.rotation = limit
+                        if (clockwise && element.angle >= limit) {
+                            element.angle = limit
                             this.onEndOfTicker(alias, tickerId, args)
                         }
-                        else if (!clockwise && element.rotation <= limit) {
-                            element.rotation = limit
+                        else if (!clockwise && element.angle <= limit) {
+                            element.angle = limit
                             this.onEndOfTicker(alias, tickerId, args)
                         }
                     }
@@ -96,7 +96,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
             let element = canvas.find(alias)
             if (element) {
                 if (options.editRotation && limit !== undefined) {
-                    element.rotation = limit
+                    element.angle = limit
                 }
             }
         })
