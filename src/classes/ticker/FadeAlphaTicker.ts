@@ -2,6 +2,7 @@ import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
+import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";
@@ -44,7 +45,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
             }
         }
 
-        const { type = "hide", startOnlyIfHaveTexture } = args
+        const { type = "hide", startOnlyIfHaveTexture, speedProgression } = args
         const speed = this.speedConvert(args.speed)
 
         let limit = this.getLimit(args)
@@ -83,13 +84,19 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     else if (type === "hide" && element.alpha <= limit) {
                         this.onEndOfTicker(alias, tickerId, args)
                     }
+                    if (speed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
+                        this.onEndOfTicker(alias, tickerId, args, { editAlpha: false })
+                    }
                 }
             })
+        if (speedProgression)
+            updateTickerProgression(args, "speed", speedProgression)
     }
     override onEndOfTicker(
         alias: string | string[],
         tickerId: string,
         args: FadeAlphaTickerProps,
+        options: { editAlpha?: boolean } = { editAlpha: true }
     ): void {
         if (typeof alias === "string") {
             alias = [alias]
@@ -97,8 +104,10 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias)
             if (element) {
-                let limit = this.getLimit(args)
-                element.alpha = limit
+                if (options.editAlpha) {
+                    let limit = this.getLimit(args)
+                    element.alpha = limit
+                }
             }
         })
         super.onEndOfTicker(alias, tickerId, args)

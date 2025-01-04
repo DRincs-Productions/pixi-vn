@@ -1,3 +1,5 @@
+import { TickerProgrationType } from "../../interface"
+
 export type FadeAlphaTickerProps = {
     /**
      * @deprecated use speed instead
@@ -19,6 +21,10 @@ export type FadeAlphaTickerProps = {
      * @default type === "hide" ? 0 : 1
      */
     limit?: number
+    /**
+     * The progression of the speed
+     */
+    speedProgression?: TickerProgrationType
     /**
      * The alias to remove after the fade is done
      * @default []
