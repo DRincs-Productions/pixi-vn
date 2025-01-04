@@ -2,7 +2,7 @@ import { TickerProgrationType } from "../../interface"
 
 export type ZoomTickerProps = {
     /**
-     * The speed of the zoom effect
+     * The speed of the zoom effect (100% zoom per 10 second)
      * @default 10
      */
     speed?: number | { x: number, y: number }

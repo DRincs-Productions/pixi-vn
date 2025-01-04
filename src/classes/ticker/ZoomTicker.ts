@@ -1,4 +1,4 @@
-import { Container as PixiContainer } from "pixi.js";
+import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
@@ -25,6 +25,9 @@ const DEFAULT_SPEED = 10
  */
 @tickerDecorator()
 export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
+    constructor(args: ZoomTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
+        super(args, duration, priority)
+    }
     override fn(
         ticker: TickerValue,
         args: ZoomTickerProps,
@@ -109,7 +112,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
             updateTickerProgression(args, "speed", speedProgression)
     }
     private speedConvert(speed: number): number {
-        return speed / 60 / 100
+        return speed / 600
     }
     override onEndOfTicker(
         alias: string | string[],
