@@ -103,8 +103,8 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             this.onEndOfTicker(alias, tickerId, args)
                         }
                     }
-                    if (this.isStop(args)) {
-                        this.onEndOfTicker(alias, tickerId, args)
+                    if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
+                        this.onEndOfTicker(alias, tickerId, args, { editScale: false })
                     }
                 }
             })
@@ -118,6 +118,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         alias: string | string[],
         tickerId: string,
         args: ZoomTickerProps,
+        options: { editScale?: boolean } = { editScale: true }
     ): void {
         const { isZoomInOut } = args
         if (typeof alias === "string") {
@@ -126,7 +127,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias)
             if (element) {
-                if (!this.isStop(args)) {
+                if (options.editScale) {
                     let limit = this.getLimit(args)
                     element.scale.x = limit.x
                     element.scale.y = limit.y
@@ -154,22 +155,5 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
             }
         }
         return { x: xLimit, y: yLimit }
-    }
-    private isStop(args: ZoomTickerProps): boolean {
-        const { speed = DEFAULT_SPEED, speedProgression } = args
-        let xSpeed
-        let ySpeed
-        if (typeof speed === "number") {
-            xSpeed = this.speedConvert(speed)
-            ySpeed = this.speedConvert(speed)
-        }
-        else {
-            xSpeed = this.speedConvert(speed.x)
-            ySpeed = this.speedConvert(speed.y)
-        }
-        if (xSpeed < 0.00001 && ySpeed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
-            return true
-        }
-        return false
     }
 }
