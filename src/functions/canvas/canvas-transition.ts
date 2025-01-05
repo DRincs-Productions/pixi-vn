@@ -351,7 +351,14 @@ export function moveOut(
 export async function zoomIn(
     alias: string,
     image?: TComponent,
-    props: ZoomInOutProps = { direction: "right" },
+    props: ZoomInOutProps & {
+        /**
+         * If true, then the old component is removed when the image is zoomed out, after the new image is zoomed in.
+         * @default false
+         */
+        removeOldComponentWithZoomOut?: boolean
+    }
+        = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     if (!image) {
@@ -400,10 +407,25 @@ export async function zoomIn(
     canvasElement.scale.set(0)
 
     let isZoomInOut = oldCanvas ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } } : undefined
+
+    let aliasToRemoveAfter: string[] = []
+    if (oldCanvasAlias) {
+        if (props.removeOldComponentWithZoomOut) {
+            let idOut = zoomOut(oldCanvasAlias, props, priority)
+            if (idOut) {
+                canvas.putOnPauseTicker(oldCanvasAlias)
+                tickerAliasToResume.push(oldCanvasAlias)
+            }
+        }
+        else {
+            aliasToRemoveAfter.push(oldCanvasAlias)
+        }
+    }
+
     let effect = new ZoomTicker({
         ...props,
-        tickerAliasToResume: tickerAliasToResume,
-        aliasToRemoveAfter: oldCanvasAlias,
+        tickerAliasToResume,
+        aliasToRemoveAfter,
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
@@ -469,6 +491,7 @@ export function zoomOut(
         canvasElement.x = 0
         canvasElement.y = (canvas.canvasHeight / 2)
     }
+    canvasElement.pivot = getPivotBySuperPivot(canvasElement.pivot, canvasElement.angle)
     canvasElement.scale.set(1)
 
     let effect = new ZoomTicker({

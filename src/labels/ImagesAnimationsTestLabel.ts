@@ -337,7 +337,8 @@ export const imagesZoomInOutTest = new Label(IMAGE_ZOOM_IN_OUT_TEST_LABEL, [
         zoomIn("eggHead", eggHead, { speed: 30, direction: "down" })
         zoomIn("flowerTop", flowerTop, {
             speed: 30, direction: "left",
-            speedProgression: { type: "exponential", percentage: 0.02 }
+            speedProgression: { type: "exponential", percentage: 0.02 },
+            removeOldComponentWithZoomOut: true
         })
         zoomIn("helmlok", helmlok, { speed: 30, direction: "right" })
         zoomIn("skully", skully, {
