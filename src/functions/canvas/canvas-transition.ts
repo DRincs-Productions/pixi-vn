@@ -394,6 +394,7 @@ export async function zoomIn(
         canvasElement.x = 0
         canvasElement.y = canvas.canvasHeight / 2
     }
+    canvasElement.pivot = getPivotBySuperPivot(canvasElement.pivot, canvasElement.angle)
     canvasElement.scale.set(0)
 
     let effect = new ZoomTicker({
