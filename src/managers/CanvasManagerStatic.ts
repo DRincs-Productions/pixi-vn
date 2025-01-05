@@ -219,5 +219,5 @@ export default class CanvasManagerStatic {
         })
     }
 
-    static _tickersOnPause: { [alias: string]: PauseTickerType } = {}
+    static _tickersOnPause: { [aliasOrId: string]: PauseTickerType } = {}
 }

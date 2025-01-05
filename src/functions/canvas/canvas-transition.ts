@@ -89,7 +89,7 @@ export async function showWithDissolveTransition(
         let ids = removeWithDissolveTransition(oldComponentAlias, props, priority)
         if (ids) {
             res.push(...ids)
-            canvas.putOnPauseTicker(oldComponentAlias)
+            canvas.putOnPauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
             tickerAliasToResume.push(oldComponentAlias)
         }
     }
@@ -193,9 +193,9 @@ export async function showWithFadeTransition(
     if (idShow) {
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
         res.push(idShow)
+        // pause the ticker
+        canvas.putOnPauseTicker(alias, { tickerIdsIncluded: [idShow] })
     }
-    // pause the ticker
-    canvas.putOnPauseTicker(alias)
     // remove the old component
     let idHide = removeWithDissolveTransition(oldCanvasAlias, {
         ...props,
@@ -289,7 +289,7 @@ export async function moveIn(
 
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, id)
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
@@ -349,7 +349,7 @@ export function moveOut(
 
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, id)
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
@@ -452,7 +452,7 @@ export async function zoomIn(
 
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, id)
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
@@ -523,7 +523,7 @@ export function zoomOut(
 
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, id)
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
@@ -595,7 +595,7 @@ export async function pushIn(
 
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, id)
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
@@ -663,7 +663,7 @@ export function pushOut(
 
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, id)
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }

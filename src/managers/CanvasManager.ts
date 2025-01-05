@@ -17,6 +17,7 @@ import { exportCanvasElement, getMemoryContainer } from '../functions/canvas/can
 import { createExportableElement } from "../functions/export-utility";
 import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
 import { TickersStep } from "../interface/TickersSteps";
+import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
@@ -800,13 +801,10 @@ export default class CanvasManager {
     /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param alias The alias of the canvas element that will use the ticker.
-     * @param tickerIdsExcluded The tickers that will not be paused.
+     * @param options The options of the pause ticker.
      */
-    putOnPauseTicker(alias: string, tickerIdsExcluded: string[] | string = []) {
-        if (typeof tickerIdsExcluded === "string") {
-            tickerIdsExcluded = [tickerIdsExcluded]
-        }
-        CanvasManagerStatic._tickersOnPause[alias] = { tickerIdsExcluded: tickerIdsExcluded }
+    putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
+        CanvasManagerStatic._tickersOnPause[alias] = options
     }
     /**
      * Resume a ticker.
@@ -827,9 +825,15 @@ export default class CanvasManager {
      * @returns If the ticker is paused.
      */
     isTickerPaused(alias: string, tickerId?: string): boolean {
-        if (CanvasManagerStatic._tickersOnPause[alias]) {
+        let tickersOnPauseData = CanvasManagerStatic._tickersOnPause[alias]
+        if (tickersOnPauseData) {
             if (tickerId) {
-                return !CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded.includes(tickerId)
+                if ("tickerIdsExcluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsExcluded) {
+                    return !tickersOnPauseData.tickerIdsExcluded.includes(tickerId)
+                }
+                else if ("tickerIdsIncluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsIncluded) {
+                    return tickersOnPauseData.tickerIdsIncluded.includes(tickerId)
+                }
             }
             return true
         }
@@ -994,8 +998,11 @@ export default class CanvasManager {
                 })
                 Object.keys(tickersOnPause).forEach((alias) => {
                     let tickerOnPause = tickersOnPause[alias]
-                    if (tickerOnPause.tickerIdsExcluded) {
+                    if ("tickerIdsExcluded" in tickerOnPause && tickerOnPause.tickerIdsExcluded) {
                         tickerOnPause.tickerIdsExcluded = tickerOnPause.tickerIdsExcluded.map((id: string) => tickersToTrasfer[id] || id)
+                    }
+                    if ("tickerIdsIncluded" in tickerOnPause && tickerOnPause.tickerIdsIncluded) {
+                        tickerOnPause.tickerIdsIncluded = tickerOnPause.tickerIdsIncluded.map((id: string) => tickersToTrasfer[id] || id)
                     }
                 })
             }

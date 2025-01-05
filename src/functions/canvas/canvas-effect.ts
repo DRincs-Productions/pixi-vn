@@ -101,6 +101,6 @@ export async function shakeEffect(
     let id = canvas.addTickersSteps(alias, moveTickers)
     if (id) {
         canvas.tickerMustBeCompletedBeforeNextStep({ id: id, alias: alias })
-        canvas.putOnPauseTicker(alias, id)
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
     }
 }
