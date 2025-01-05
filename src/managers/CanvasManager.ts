@@ -978,21 +978,24 @@ export default class CanvasManager {
             }
             if (data.hasOwnProperty("tickers")) {
                 let tickers = (data as ExportedCanvas)["tickers"]
+                let tickersToTrasfer: { [oldId: string]: string } = {}
                 Object.entries(tickers).forEach(([oldId, t]) => {
                     let aliases: string[] = t.canvasElementAliases
                     let ticker = geTickerInstanceById(t.id, t.args, t.duration, t.priority)
                     if (ticker) {
                         let id = this.addTicker(aliases, ticker)
                         if (id) {
-                            aliases.forEach((alias) => {
-                                if (tickersOnPause[alias]) {
-                                    tickersOnPause[alias].tickerIdsExcluded = tickersOnPause[alias].tickerIdsExcluded.map((t) => t === oldId ? id : t)
-                                }
-                            })
+                            tickersToTrasfer[oldId] = id
                         }
                     }
                     else {
                         console.error(`[Pixi’VN] Ticker ${t.id} not found`)
+                    }
+                })
+                Object.keys(tickersOnPause).forEach((alias) => {
+                    let tickerOnPause = tickersOnPause[alias]
+                    if (tickerOnPause.tickerIdsExcluded) {
+                        tickerOnPause.tickerIdsExcluded = tickerOnPause.tickerIdsExcluded.map((id: string) => tickersToTrasfer[id] || id)
                     }
                 })
             }
