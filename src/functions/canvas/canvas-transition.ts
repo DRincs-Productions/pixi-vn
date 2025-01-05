@@ -153,7 +153,7 @@ export function removeWithDissolveTransition(
  * Fade effect is a effect that the image is shown with a fade in.
  * If exist a image with the same alias, the existing image is removed with a fade transition, and after the effect is done, the new image is shown with a fade transition.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
@@ -162,56 +162,56 @@ export function removeWithDissolveTransition(
  */
 export async function showWithFadeTransition(
     alias: string,
-    image?: TComponent,
+    component?: TComponent,
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    if (!image) {
-        image = alias
+    let { mustBeCompletedBeforeNextStep = true } = props
+    let res: string[] = []
+    if (!component) {
+        component = alias
     }
+    // check if the alias is already exist
     if (!canvas.find(alias)) {
-        return showWithDissolveTransition(alias, image, props, priority)
+        return showWithDissolveTransition(alias, component, props, priority)
     }
-
-    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let oldCanvasAlias = alias + "_temp_fade"
     canvas.editAlias(alias, oldCanvasAlias)
-
-    let canvasElement = addComponent(alias, image)
-    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
+    // add the new component and transfer the properties of the old component to the new component
+    component = addComponent(alias, component)
     oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
-    canvasElement.alpha = 0
-
-    let id1 = canvas.addTicker(oldCanvasAlias,
-        new FadeAlphaTicker({
-            ...props,
-            type: "hide",
-            startOnlyIfHaveTexture: true,
-            tickerAliasToResume: alias
-        }, undefined, priority),
-    )
-    let id2 = canvas.addTicker(alias,
-        new FadeAlphaTicker({
-            ...props,
-            type: "show",
-            startOnlyIfHaveTexture: true,
-            aliasToRemoveAfter: oldCanvasAlias,
-        }, undefined, priority)
-    )
+    // edit the properties of the new component
+    component.alpha = 0
+    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    let effect = new FadeAlphaTicker({
+        ...props,
+        type: "show",
+        startOnlyIfHaveTexture: true,
+        aliasToRemoveAfter: oldCanvasAlias,
+    }, undefined, priority)
+    let idShow = canvas.addTicker(alias, effect)
+    if (idShow) {
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        res.push(idShow)
+    }
+    // pause the ticker
     canvas.putOnPauseTicker(alias)
-    let res: undefined | string[] = undefined
-    if (id1) {
-        res = [id1]
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id1, alias: alias })
+    // remove the old component
+    let idHide = removeWithDissolveTransition(oldCanvasAlias, {
+        ...props,
+        tickerAliasToResume: alias,
+    }, priority)
+    if (idHide) {
+        res.push(...idHide)
     }
-    if (id2) {
-        res ? res.push(id2) : res = [id2]
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id2, alias: alias })
+    // load the image if the image is not loaded
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load()
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
+    // return the ids of the tickers
+    if (res.length > 0) {
+        return res
     }
-    return res
 }
 
 /**

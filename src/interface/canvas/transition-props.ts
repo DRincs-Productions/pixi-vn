@@ -1,5 +1,4 @@
 import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../../types/ticker"
-import { aliasToRemoveAfterType } from "../../types/ticker/AliasToRemoveAfterType"
 
 interface BaseTransitionProps {
     /**
@@ -10,9 +9,9 @@ interface BaseTransitionProps {
     mustBeCompletedBeforeNextStep?: boolean,
 }
 
-export interface ShowWithDissolveTransitionProps extends BaseTransitionProps, Omit<FadeAlphaTickerProps, "type" | aliasToRemoveAfterType | "startOnlyIfHaveTexture"> { }
-export interface ShowWithFadeTransitionProps extends BaseTransitionProps, Omit<FadeAlphaTickerProps, "type" | aliasToRemoveAfterType | "startOnlyIfHaveTexture"> { }
-export interface MoveInOutProps extends BaseTransitionProps, Omit<MoveTickerProps, aliasToRemoveAfterType | "startOnlyIfHaveTexture" | "destination" | "isPushInOut"> {
+export interface ShowWithDissolveTransitionProps extends BaseTransitionProps, Omit<FadeAlphaTickerProps, "type" | "startOnlyIfHaveTexture"> { }
+export interface ShowWithFadeTransitionProps extends BaseTransitionProps, Omit<FadeAlphaTickerProps, "type" | "startOnlyIfHaveTexture"> { }
+export interface MoveInOutProps extends BaseTransitionProps, Omit<MoveTickerProps, "startOnlyIfHaveTexture" | "destination" | "isPushInOut"> {
     /**
      * The direction of the movement.
      * @default "right"
