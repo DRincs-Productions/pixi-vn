@@ -2,8 +2,9 @@ import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSourc
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, getTexture, showWithDissolveTransition } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
+import { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "../../functions/canvas/canvas-property-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "./AdditionalPositions";
+import AdditionalPositionsExtension from "./AdditionalPositions";
 import Sprite, { setMemorySprite } from "./Sprite";
 
 /**

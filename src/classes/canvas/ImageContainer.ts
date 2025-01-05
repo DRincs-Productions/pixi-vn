@@ -1,8 +1,9 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
+import { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "../../functions/canvas/canvas-property-utility";
 import { checkIfVideo } from "../../functions/canvas/canvas-utility";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "./AdditionalPositions";
+import AdditionalPositionsExtension from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";

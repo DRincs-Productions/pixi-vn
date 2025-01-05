@@ -1,11 +1,11 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { createExportableElement, TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
+import { calculatePositionByAlign, calculatePositionByPercentagePosition } from "../../functions/canvas/canvas-property-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";
-import { calculatePositionByAlign, calculatePositionByPercentagePosition } from "../canvas/AdditionalPositions";
 import TickerBase from "./TickerBase";
 
 const DEFAULT_SPEED = 10
