@@ -4,6 +4,7 @@ import ImageContainer from "../../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { ImageContainerOptions, ImageSpriteOptions, MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
 import { canvas } from "../../managers"
+import { getPivotBySuperPivot } from "./canvas-property-utility"
 import { checkIfVideo } from "./canvas-utility"
 import { addImageCointainer } from "./image-container-utility"
 import { addImage } from "./image-utility"
@@ -369,6 +370,7 @@ export async function zoomIn(
 
     let canvasElement = addComponent(alias, image)
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
+    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "move")
 
     if (props.direction == "up") {
         canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
@@ -443,38 +445,31 @@ export function zoomOut(
         return
     }
 
-    let zIndex = canvas.app.stage.getChildIndex(canvasElement)
-    let container = new Container()
-    container.addChild(canvasElement)
-    container.height = canvas.canvasHeight
-    container.width = canvas.canvasWidth
-    canvas.add(alias, container, { zIndex })
-
     if (props.direction == "up") {
-        container.pivot.y = canvas.canvasHeight
-        container.pivot.x = canvas.canvasWidth / 2
-        container.y = canvas.canvasHeight
-        container.x = canvas.canvasWidth / 2
+        canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
+        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
+        canvasElement.y = canvas.canvasHeight
+        canvasElement.x = (canvas.canvasWidth / 2)
     }
     else if (props.direction == "down") {
-        container.pivot.y = 0
-        container.pivot.x = canvas.canvasWidth / 2
-        container.y = 0
-        container.x = canvas.canvasWidth / 2
+        canvasElement.pivot.y = 0 - canvasElement.y
+        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
+        canvasElement.y = 0
+        canvasElement.x = (canvas.canvasWidth / 2)
     }
     else if (props.direction == "left") {
-        container.pivot.x = canvas.canvasWidth
-        container.pivot.y = canvas.canvasHeight / 2
-        container.x = canvas.canvasWidth
-        container.y = canvas.canvasHeight / 2
+        canvasElement.pivot.x = canvas.canvasWidth - canvasElement.x
+        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
+        canvasElement.x = canvas.canvasWidth
+        canvasElement.y = (canvas.canvasHeight / 2)
     }
     else if (props.direction == "right") {
-        container.pivot.x = 0
-        container.pivot.y = canvas.canvasHeight / 2
-        container.x = 0
-        container.y = canvas.canvasHeight / 2
+        canvasElement.pivot.x = 0 - canvasElement.x
+        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
+        canvasElement.x = 0
+        canvasElement.y = (canvas.canvasHeight / 2)
     }
-    container.scale.set(1)
+    canvasElement.scale.set(1)
 
     let effect = new ZoomTicker({
         ...props,
@@ -483,7 +478,6 @@ export function zoomOut(
         type: "unzoom",
         limit: 0,
         aliasToRemoveAfter: alias,
-        isZoomInOut: true,
     }, undefined, priority)
 
     let id = canvas.addTicker(alias, effect)

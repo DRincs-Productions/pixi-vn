@@ -120,12 +120,12 @@ export function getPivotBySuperPivot(superPivot: { x: number, y: number }, angle
         }
     }
     else if (angle > 90 && angle < 180) {
-        let angleRad = (angle + 19) * Math.PI / 180
+        let angleRad = (angle - 90) * Math.PI / 180
         let cos = Math.cos(angleRad)
         let sin = Math.sin(angleRad)
         return {
-            x: - superPivot.y * cos - superPivot.x * sin,
-            y: superPivot.y * sin - superPivot.x * cos
+            x: superPivot.y * cos - superPivot.x * sin,
+            y: - superPivot.y * sin - superPivot.x * cos
         }
     }
     else if (angle > 180 && angle < 270) {
