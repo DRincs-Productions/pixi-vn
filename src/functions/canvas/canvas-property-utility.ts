@@ -93,6 +93,48 @@ export function getSuperPivot(canvasElement: PixiContainer): { x: number, y: num
     return { x: 0, y: 0 }
 }
 
+export function getPivotBySuperPivot(superPivot: { x: number, y: number }, angle: number): { x: number, y: number } {
+    angle = angle % 360
+    if (angle < 0) {
+        angle += 360
+    }
+    if (angle === 0) {
+        return { x: superPivot.x, y: superPivot.y }
+    }
+    else if (angle === 90) {
+        return { x: superPivot.y, y: - superPivot.x }
+    }
+    else if (angle === 180) {
+        return { x: - superPivot.x, y: - superPivot.y }
+    }
+    else if (angle === 270) {
+        return { x: - superPivot.y, y: superPivot.x }
+    }
+    else if (angle > 0 && angle < 90) {
+        let angleRad = angle * Math.PI / 180
+        let cos = Math.cos(angleRad)
+        let sin = Math.sin(angleRad)
+        return {
+            x: superPivot.x * cos + superPivot.y * sin,
+            y: - superPivot.x * sin + superPivot.y * cos
+        }
+    }
+    else if (angle > 90 && angle < 180) {
+    }
+    else if (angle > 180 && angle < 270) {
+        let angleRad = (angle - 180) * Math.PI / 180
+        let cos = Math.cos(angleRad)
+        let sin = Math.sin(angleRad)
+        return {
+            x: - superPivot.x * cos - superPivot.y * sin,
+            y: superPivot.x * sin - superPivot.y * cos
+        }
+    }
+    else if (angle > 270 && angle < 360) {
+    }
+    return { x: 0, y: 0 }
+}
+
 export function getSuperWidth(canvasElement: PixiContainer): number {
     let width = canvasElement.width
     let angle = canvasElement.angle % 360

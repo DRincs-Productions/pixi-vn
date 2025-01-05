@@ -361,14 +361,14 @@ export async function zoomIn(
     tickerAliasToResume.push(alias)
 
     let oldCanvasAlias: string | undefined = undefined
-    if (canvas.find(alias)) {
+    let oldCanvas = canvas.find(alias)
+    if (oldCanvas) {
         oldCanvasAlias = alias + "_temp_zoom"
         canvas.editAlias(alias, oldCanvasAlias)
     }
 
     let canvasElement = addComponent(alias, image)
     oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
-    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
 
     if (props.direction == "up") {
         canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
@@ -397,6 +397,7 @@ export async function zoomIn(
     canvasElement.pivot = getPivotBySuperPivot(canvasElement.pivot, canvasElement.angle)
     canvasElement.scale.set(0)
 
+    let isZoomInOut = oldCanvas ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } } : undefined
     let effect = new ZoomTicker({
         ...props,
         tickerAliasToResume: tickerAliasToResume,
@@ -404,7 +405,7 @@ export async function zoomIn(
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
-        isZoomInOut: true,
+        isZoomInOut,
     }, undefined, priority)
 
     let id = canvas.addTicker(alias, effect)
