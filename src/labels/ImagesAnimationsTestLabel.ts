@@ -492,6 +492,7 @@ export const customPositionTest = new Label(IMAGES_CUSTOM_POSITION_TEST_LABEL, [
         let container = new ImageContainer({ anchor: 0.5, align: 0.5 }, [eggHeadImage, flowerTopImage])
         canvas.add("container", container)
         let helmlok = addImage("helmlok", helmlokImage)
+        helmlok.angle = 45
         helmlok.anchor = 0.5
         helmlok.xAlign = 1
         helmlok.yAlign = 0
