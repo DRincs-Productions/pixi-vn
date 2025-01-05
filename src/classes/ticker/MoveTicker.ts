@@ -1,7 +1,7 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { createExportableElement, TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
-import { calculatePositionByAlign, calculatePositionByPercentagePosition } from "../../functions/canvas/canvas-property-utility";
+import { calculatePositionByAlign, calculatePositionByPercentagePosition, getSuperHeight, getSuperPivot, getSuperWidth } from "../../functions/canvas/canvas-property-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
@@ -19,8 +19,9 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
             anchorx = element.anchor.x
             anchory = element.anchor.y
         }
-        destination.x = calculatePositionByAlign("width", destination.x, element.width, element.pivot.x, anchorx)
-        destination.y = calculatePositionByAlign("height", destination.y, element.height, element.pivot.y, anchory)
+        let superPivot = getSuperPivot(element)
+        destination.x = calculatePositionByAlign("width", destination.x, getSuperWidth(element), superPivot.x, anchorx)
+        destination.y = calculatePositionByAlign("height", destination.y, getSuperHeight(element), superPivot.y, anchory)
     }
     if (destination.type === "percentage") {
         destination.x = calculatePositionByPercentagePosition("width", destination.x)

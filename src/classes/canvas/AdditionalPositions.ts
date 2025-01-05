@@ -158,3 +158,54 @@ export default class AdditionalPositionsExtension extends PixiContainer {
         throw new Error("Method not implemented.");
     }
 }
+
+export function analizePositionsExtensionProps<T extends AdditionalPositionsExtensionProps>(props?: T): T | undefined {
+    if (!props) {
+        return props
+    }
+    if (typeof props.align !== "number") {
+        if (props.xAlign != undefined) {
+            if (props.align === undefined) {
+                props.align = { x: props.xAlign }
+                delete props.xAlign
+            }
+            else {
+                props.align.x = props.xAlign
+                delete props.xAlign
+            }
+        }
+        if (props.yAlign != undefined) {
+            if (props.align === undefined) {
+                props.align = { y: props.yAlign }
+                delete props.yAlign
+            }
+            else {
+                props.align.y = props.yAlign
+                delete props.yAlign
+            }
+        }
+    }
+    if (typeof props.percentagePosition !== "number") {
+        if (props.xPercentagePosition != undefined) {
+            if (props.percentagePosition === undefined) {
+                props.percentagePosition = { x: props.xPercentagePosition }
+                delete props.xPercentagePosition
+            }
+            else {
+                props.percentagePosition.x = props.xPercentagePosition
+                delete props.xPercentagePosition
+            }
+        }
+        if (props.yPercentagePosition != undefined) {
+            if (props.percentagePosition === undefined) {
+                props.percentagePosition = { y: props.yPercentagePosition }
+                delete props.yPercentagePosition
+            }
+            else {
+                props.percentagePosition.y = props.yPercentagePosition
+                delete props.yPercentagePosition
+            }
+        }
+    }
+    return props
+}

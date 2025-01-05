@@ -1,9 +1,9 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
-import { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "../../functions/canvas/canvas-property-utility";
+import { calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition, getSuperHeight, getSuperPivot, getSuperWidth } from "../../functions/canvas/canvas-property-utility";
 import { checkIfVideo } from "../../functions/canvas/canvas-utility";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
-import AdditionalPositionsExtension from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";
@@ -181,7 +181,8 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this.reloadPosition()
     }
     get xAlign() {
-        return calculateAlignByPosition("width", this.x, this.width, this.pivot.x, this.anchor.x)
+        let superPivot = getSuperPivot(this)
+        return calculateAlignByPosition("width", this.x, getSuperWidth(this), superPivot.x, this.anchor.x)
     }
     set yAlign(value: number) {
         if (this._percentagePosition) {
@@ -192,7 +193,8 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         this.reloadPosition()
     }
     get yAlign() {
-        return calculateAlignByPosition("height", this.y, this.height, this.pivot.y, this.anchor.y)
+        let superPivot = getSuperPivot(this)
+        return calculateAlignByPosition("height", this.y, getSuperHeight(this), superPivot.y, this.anchor.y)
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined
     set percentagePosition(value: Partial<PointData> | number) {
@@ -249,11 +251,12 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     }
     private reloadPosition() {
         if (this._align) {
+            let superPivot = getSuperPivot(this)
             if (this._align.x !== undefined) {
-                super.x = calculatePositionByAlign("width", this._align.x, this.width, this.pivot.x)
+                super.x = calculatePositionByAlign("width", this._align.x, getSuperWidth(this), superPivot.x)
             }
             if (this._align.y !== undefined) {
-                super.y = calculatePositionByAlign("height", this._align.y, this.height, this.pivot.y)
+                super.y = calculatePositionByAlign("height", this._align.y, getSuperHeight(this), superPivot.y)
             }
         }
         else if (this._percentagePosition) {

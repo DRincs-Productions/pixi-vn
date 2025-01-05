@@ -1,57 +1,5 @@
 import { Container as PixiContainer } from "pixi.js"
 import { canvas } from "../.."
-import { AdditionalPositionsExtensionProps } from "../../classes/canvas/AdditionalPositions"
-
-export function analizePositionsExtensionProps<T extends AdditionalPositionsExtensionProps>(props?: T): T | undefined {
-    if (!props) {
-        return props
-    }
-    if (typeof props.align !== "number") {
-        if (props.xAlign != undefined) {
-            if (props.align === undefined) {
-                props.align = { x: props.xAlign }
-                delete props.xAlign
-            }
-            else {
-                props.align.x = props.xAlign
-                delete props.xAlign
-            }
-        }
-        if (props.yAlign != undefined) {
-            if (props.align === undefined) {
-                props.align = { y: props.yAlign }
-                delete props.yAlign
-            }
-            else {
-                props.align.y = props.yAlign
-                delete props.yAlign
-            }
-        }
-    }
-    if (typeof props.percentagePosition !== "number") {
-        if (props.xPercentagePosition != undefined) {
-            if (props.percentagePosition === undefined) {
-                props.percentagePosition = { x: props.xPercentagePosition }
-                delete props.xPercentagePosition
-            }
-            else {
-                props.percentagePosition.x = props.xPercentagePosition
-                delete props.xPercentagePosition
-            }
-        }
-        if (props.yPercentagePosition != undefined) {
-            if (props.percentagePosition === undefined) {
-                props.percentagePosition = { y: props.yPercentagePosition }
-                delete props.yPercentagePosition
-            }
-            else {
-                props.percentagePosition.y = props.yPercentagePosition
-                delete props.yPercentagePosition
-            }
-        }
-    }
-    return props
-}
 
 export function calculatePositionByAlign(type: "width" | "height", align: number, width: number, pivot: number, anchor: number = 0): number {
     if (type === "width") {
@@ -143,4 +91,38 @@ export function getSuperPivot(canvasElement: PixiContainer): { x: number, y: num
         }
     }
     return { x: 0, y: 0 }
+}
+
+export function getSuperWidth(canvasElement: PixiContainer): number {
+    let width = canvasElement.width
+    let angle = canvasElement.angle % 360
+    if (angle < 0) {
+        angle += 360
+    }
+    if (angle === 0 || angle === 180) {
+        return width
+    }
+    else if (angle === 90 || angle === 270) {
+        return canvasElement.height
+    }
+    else {
+        return Math.abs(width * Math.cos(angle * Math.PI / 180)) + Math.abs(canvasElement.height * Math.sin(angle * Math.PI / 180))
+    }
+}
+
+export function getSuperHeight(canvasElement: PixiContainer): number {
+    let height = canvasElement.height
+    let angle = canvasElement.angle % 360
+    if (angle < 0) {
+        angle += 360
+    }
+    if (angle === 0 || angle === 180) {
+        return height
+    }
+    else if (angle === 90 || angle === 270) {
+        return canvasElement.width
+    }
+    else {
+        return Math.abs(height * Math.cos(angle * Math.PI / 180)) + Math.abs(canvasElement.width * Math.sin(angle * Math.PI / 180))
+    }
 }
