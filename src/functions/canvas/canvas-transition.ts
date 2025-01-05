@@ -360,8 +360,15 @@ export async function zoomIn(
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
 
+    let oldCanvasAlias: string | undefined = undefined
+    if (canvas.find(alias)) {
+        oldCanvasAlias = alias + "_temp_zoom"
+        canvas.editAlias(alias, oldCanvasAlias)
+    }
+
     let canvasElement = addComponent(alias, image)
-    canvas.add(alias, canvasElement)
+    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
+    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
 
     if (props.direction == "up") {
         canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
@@ -392,6 +399,7 @@ export async function zoomIn(
     let effect = new ZoomTicker({
         ...props,
         tickerAliasToResume: tickerAliasToResume,
+        aliasToRemoveAfter: oldCanvasAlias,
         startOnlyIfHaveTexture: true,
         type: "zoom",
         limit: 1,
