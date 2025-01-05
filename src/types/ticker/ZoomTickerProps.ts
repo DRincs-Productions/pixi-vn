@@ -41,8 +41,10 @@ export type ZoomTickerProps = {
     tickerAliasToResume?: string[] | string
     /**
      * Is a special prop used in the zoom in/out transition.
-     * If true, get the first child of the container and add it to canvas on the end of the effect.
      * @default false
      */
-    isZoomInOut?: boolean
+    isZoomInOut?: {
+        pivot: { x: number, y: number },
+        position: { x: number, y: number }
+    }
 }

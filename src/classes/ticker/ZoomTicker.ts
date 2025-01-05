@@ -142,9 +142,10 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                     element.scale.x = limit.x
                     element.scale.y = limit.y
                 }
-                if (isZoomInOut && element.children.length > 0) {
-                    let elementChild = element.children[0]
-                    canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
+                if (isZoomInOut) {
+                    let { pivot, position } = isZoomInOut
+                    element.pivot = pivot.x
+                    element.position = position
                 }
             }
         })
