@@ -286,6 +286,26 @@ export async function moveIn(
     else {
         destination = { x: component.x, y: component.y, type: "pixel" }
     }
+    // remove the old component
+    let ids: string[] | undefined = undefined
+    if (oldComponentAlias) {
+        if (props.removeOldComponentWithMoveOut) {
+            ids = moveOut(oldComponentAlias, props, priority)
+            if (ids) {
+                res.push(...ids)
+                tickerAliasToResume.push(oldComponentAlias)
+            }
+        }
+        else {
+            aliasToRemoveAfter.push(oldComponentAlias)
+        }
+    }
+    // load the image if the image is not loaded
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load()
+    }
+    // special
+    oldComponentAlias && canvas.putOnPauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
     switch (direction) {
         case "up":
             component.y = canvas.canvasHeight + component.height
@@ -300,20 +320,6 @@ export async function moveIn(
             component.x = -(component.width)
             break
     }
-    // remove the old component
-    if (oldComponentAlias) {
-        if (props.removeOldComponentWithMoveOut) {
-            let ids = moveOut(oldComponentAlias, props, priority)
-            if (ids) {
-                res.push(...ids)
-                canvas.putOnPauseTicker(alias, { tickerIdsIncluded: ids })
-                tickerAliasToResume.push(oldComponentAlias)
-            }
-        }
-        else {
-            aliasToRemoveAfter.push(oldComponentAlias)
-        }
-    }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new MoveTicker({
         ...props,
@@ -326,10 +332,6 @@ export async function moveIn(
     if (idShow) {
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
         res.push(idShow)
-    }
-    // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load()
     }
     // return the ids of the tickers
     if (res.length > 0) {
