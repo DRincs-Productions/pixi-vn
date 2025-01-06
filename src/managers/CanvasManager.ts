@@ -804,7 +804,27 @@ export default class CanvasManager {
      * @param options The options of the pause ticker.
      */
     putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
-        CanvasManagerStatic._tickersOnPause[alias] = options
+        let oldOptions = CanvasManagerStatic._tickersOnPause[alias]
+        if (!oldOptions) {
+            CanvasManagerStatic._tickersOnPause[alias] = options
+            return
+        }
+        if (options.tickerIdsExcluded) {
+            if (oldOptions.tickerIdsExcluded) {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = [...oldOptions.tickerIdsExcluded, ...options.tickerIdsExcluded]
+            }
+            else {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = options.tickerIdsExcluded
+            }
+        }
+        if (options.tickerIdsIncluded) {
+            if (oldOptions.tickerIdsIncluded) {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = [...oldOptions.tickerIdsIncluded, ...options.tickerIdsIncluded]
+            }
+            else {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = options.tickerIdsIncluded
+            }
+        }
     }
     /**
      * Resume a ticker.
@@ -828,11 +848,11 @@ export default class CanvasManager {
         let tickersOnPauseData = CanvasManagerStatic._tickersOnPause[alias]
         if (tickersOnPauseData) {
             if (tickerId) {
+                if ("tickerIdsIncluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsIncluded) {
+                    return tickersOnPauseData.tickerIdsIncluded.includes(tickerId)
+                }
                 if ("tickerIdsExcluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsExcluded) {
                     return !tickersOnPauseData.tickerIdsExcluded.includes(tickerId)
-                }
-                else if ("tickerIdsIncluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsIncluded) {
-                    return tickersOnPauseData.tickerIdsIncluded.includes(tickerId)
                 }
             }
             return true
