@@ -306,7 +306,7 @@ export async function moveIn(
             let ids = moveOut(oldComponentAlias, props, priority)
             if (ids) {
                 res.push(...ids)
-                canvas.putOnPauseTicker(oldComponentAlias)
+                canvas.putOnPauseTicker(alias, { tickerIdsIncluded: ids })
                 tickerAliasToResume.push(oldComponentAlias)
             }
         }
