@@ -238,7 +238,7 @@ export function removeWithFadeTransition(
  * Show a image in the canvas with a move effect. The image is moved from outside the canvas to the x and y position of the image.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
@@ -247,58 +247,93 @@ export function removeWithFadeTransition(
  */
 export async function moveIn(
     alias: string,
-    image?: TComponent,
-    props: MoveInOutProps = {},
+    component?: TComponent,
+    props: MoveInOutProps & {
+        /**
+         * If true, then the old component is removed with a move out, after the new image is moved in.
+         * @default false
+         */
+        removeOldComponentWithMoveOut?: boolean,
+    } = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    if (!image) {
-        image = alias
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [] } = props
+    let res: string[] = []
+    if (!component) {
+        component = alias
     }
-    let direction = props.direction || "right"
-    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
-    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
-    tickerAliasToResume.push(alias)
-
-    let canvasElement = addComponent(alias, image)
+    if (typeof tickerAliasToResume === "string") {
+        tickerAliasToResume = [tickerAliasToResume]
+    }
+    if (typeof aliasToRemoveAfter === "string") {
+        aliasToRemoveAfter = [aliasToRemoveAfter]
+    }
+    // check if the alias is already exist
+    let oldComponentAlias: string | undefined = undefined
+    if (canvas.find(alias)) {
+        oldComponentAlias = alias + "_temp_movein"
+        canvas.editAlias(alias, oldComponentAlias)
+    }
+    // add the new component and transfer the properties of the old component to the new component
+    component = addComponent(alias, component)
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move")
+    // edit the properties of the new component
     let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
-        destination = canvasElement.positionInfo
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        destination = component.positionInfo
     }
     else {
-        destination = { x: canvasElement.x, y: canvasElement.y, type: "pixel" }
+        destination = { x: component.x, y: component.y, type: "pixel" }
     }
     switch (direction) {
         case "up":
-            canvasElement.y = canvas.canvasHeight + canvasElement.height
+            component.y = canvas.canvasHeight + component.height
             break
         case "down":
-            canvasElement.y = -(canvasElement.height)
+            component.y = -(component.height)
             break
         case "left":
-            canvasElement.x = canvas.canvasWidth + canvasElement.width
+            component.x = canvas.canvasWidth + component.width
             break
         case "right":
-            canvasElement.x = -(canvasElement.width)
+            component.x = -(component.width)
             break
     }
-
+    // remove the old component
+    if (oldComponentAlias) {
+        if (props.removeOldComponentWithMoveOut) {
+            let ids = moveOut(oldComponentAlias, props, priority)
+            if (ids) {
+                res.push(...ids)
+                canvas.putOnPauseTicker(oldComponentAlias)
+                tickerAliasToResume.push(oldComponentAlias)
+            }
+        }
+        else {
+            aliasToRemoveAfter.push(oldComponentAlias)
+        }
+    }
+    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new MoveTicker({
         ...props,
-        tickerAliasToResume: tickerAliasToResume,
+        tickerAliasToResume,
+        aliasToRemoveAfter,
         destination,
         startOnlyIfHaveTexture: true,
     }, undefined, priority)
-
-    let id = canvas.addTicker(alias, effect)
-    if (id) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
+    let idShow = canvas.addTicker(alias, effect)
+    if (idShow) {
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        res.push(idShow)
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
+    // load the image if the image is not loaded
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load()
     }
-    if (id) {
-        return [id]
+    // return the ids of the tickers
+    if (res.length > 0) {
+        return res
     }
 }
 
@@ -373,12 +408,11 @@ export async function zoomIn(
     image?: TComponent,
     props: ZoomInOutProps & {
         /**
-         * If true, then the old component is removed when the image is zoomed out, after the new image is zoomed in.
+         * If true, then the old component is removed with a zoom out, after the new image is zoomed in.
          * @default false
          */
         removeOldComponentWithZoomOut?: boolean
-    }
-        = { direction: "right" },
+    } = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     if (!image) {

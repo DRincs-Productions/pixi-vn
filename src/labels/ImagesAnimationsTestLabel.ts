@@ -310,7 +310,8 @@ export const imagesMoveInOutTest = new Label(IMAGE_MOVE_IN_OUT_TEST_LABEL, [
         moveIn("helmlok", helmlok, { speed: 80, direction: "right" })
         moveIn("skully", skully, {
             speed: 80, direction: "up",
-            speedProgression: { type: "exponential", percentage: 0.02 }
+            speedProgression: { type: "exponential", percentage: 0.02 },
+            removeOldComponentWithMoveOut: true
         })
     },
     () => {
