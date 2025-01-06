@@ -325,6 +325,7 @@ export async function moveIn(
             break
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    tickerAliasToResume.push(alias)
     let effect = new MoveTicker({
         ...props,
         tickerAliasToResume,
@@ -334,6 +335,7 @@ export async function moveIn(
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
         res.push(idShow)
     }
@@ -430,12 +432,6 @@ export async function zoomIn(
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter]
     }
-
-
-
-    tickerAliasToResume.push(alias)
-
-
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined
     let oldCanvas = canvas.find(alias)
@@ -474,13 +470,13 @@ export async function zoomIn(
     }
     canvasElement.pivot = getPivotBySuperPivot(canvasElement.pivot, canvasElement.angle)
     canvasElement.scale.set(0)
-
     let isZoomInOut = oldCanvas ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } } : undefined
-
+    // remove the old component
     if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            let idOut = zoomOut(oldComponentAlias, props, priority)
-            if (idOut) {
+            let ids = zoomOut(oldComponentAlias, props, priority)
+            if (ids) {
+                res.push(...ids)
                 canvas.putOnPauseTicker(oldComponentAlias)
                 tickerAliasToResume.push(oldComponentAlias)
             }
@@ -489,7 +485,8 @@ export async function zoomIn(
             aliasToRemoveAfter.push(oldComponentAlias)
         }
     }
-
+    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    tickerAliasToResume.push(alias)
     let effect = new ZoomTicker({
         ...props,
         tickerAliasToResume,
@@ -499,17 +496,19 @@ export async function zoomIn(
         limit: 1,
         isZoomInOut,
     }, undefined, priority)
-
-    let id = canvas.addTicker(alias, effect)
-    if (id) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
+    let idShow = canvas.addTicker(alias, effect)
+    if (idShow) {
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        res.push(idShow)
     }
+    // load the image if the image is not loaded
     if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
         await canvasElement.load()
     }
-    if (id) {
-        return [id]
+    // return the ids of the tickers
+    if (res.length > 0) {
+        return res
     }
 }
 
