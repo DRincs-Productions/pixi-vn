@@ -400,7 +400,7 @@ export function moveOut(
  * Show a image in the canvas with a zoom effect. The image is zoomed in from the center of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
@@ -409,53 +409,64 @@ export function moveOut(
  */
 export async function zoomIn(
     alias: string,
-    image?: TComponent,
+    component?: TComponent,
     props: ZoomInOutProps & {
         /**
          * If true, then the old component is removed with a zoom out, after the new image is zoomed in.
          * @default false
          */
         removeOldComponentWithZoomOut?: boolean
-    } = { direction: "right" },
+    } = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    if (!image) {
-        image = alias
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [] } = props
+    let res: string[] = []
+    if (!component) {
+        component = alias
     }
-    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
-    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
+    if (typeof tickerAliasToResume === "string") {
+        tickerAliasToResume = [tickerAliasToResume]
+    }
+    if (typeof aliasToRemoveAfter === "string") {
+        aliasToRemoveAfter = [aliasToRemoveAfter]
+    }
+
+
+
     tickerAliasToResume.push(alias)
 
-    let oldCanvasAlias: string | undefined = undefined
+
+    // check if the alias is already exist
+    let oldComponentAlias: string | undefined = undefined
     let oldCanvas = canvas.find(alias)
     if (oldCanvas) {
-        oldCanvasAlias = alias + "_temp_zoom"
-        canvas.editAlias(alias, oldCanvasAlias)
+        oldComponentAlias = alias + "_temp_zoom"
+        canvas.editAlias(alias, oldComponentAlias)
     }
-
-    let canvasElement = addComponent(alias, image)
-    oldCanvasAlias && canvas.copyCanvasElementProperty(oldCanvasAlias, alias)
-    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "move")
-
-    if (props.direction == "up") {
+    // add the new component and transfer the properties of the old component to the new component
+    let canvasElement = addComponent(alias, component)
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move")
+    // edit the properties of the new component
+    if (direction == "up") {
         canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
         canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
         canvasElement.y = canvas.canvasHeight
         canvasElement.x = canvas.canvasWidth / 2
     }
-    else if (props.direction == "down") {
+    else if (direction == "down") {
         canvasElement.pivot.y = 0 - canvasElement.y
         canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
         canvasElement.y = 0
         canvasElement.x = canvas.canvasWidth / 2
     }
-    else if (props.direction == "left") {
+    else if (direction == "left") {
         canvasElement.pivot.x = canvas.canvasWidth - canvasElement.x
         canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
         canvasElement.x = canvas.canvasWidth
         canvasElement.y = canvas.canvasHeight / 2
     }
-    else if (props.direction == "right") {
+    else if (direction == "right") {
         canvasElement.pivot.x = 0 - canvasElement.x
         canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
         canvasElement.x = 0
@@ -466,17 +477,16 @@ export async function zoomIn(
 
     let isZoomInOut = oldCanvas ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } } : undefined
 
-    let aliasToRemoveAfter: string[] = []
-    if (oldCanvasAlias) {
+    if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            let idOut = zoomOut(oldCanvasAlias, props, priority)
+            let idOut = zoomOut(oldComponentAlias, props, priority)
             if (idOut) {
-                canvas.putOnPauseTicker(oldCanvasAlias)
-                tickerAliasToResume.push(oldCanvasAlias)
+                canvas.putOnPauseTicker(oldComponentAlias)
+                tickerAliasToResume.push(oldComponentAlias)
             }
         }
         else {
-            aliasToRemoveAfter.push(oldCanvasAlias)
+            aliasToRemoveAfter.push(oldComponentAlias)
         }
     }
 
