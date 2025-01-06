@@ -393,6 +393,7 @@ export function moveOut(
     }, undefined, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
@@ -522,37 +523,39 @@ export async function zoomIn(
  */
 export function zoomOut(
     alias: string,
-    props: ZoomInOutProps = { direction: "right" },
+    props: ZoomInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
-    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
-    tickerAliasToResume.push(alias)
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
+    if (typeof aliasToRemoveAfter === "string") {
+        aliasToRemoveAfter = [aliasToRemoveAfter]
+    }
+    aliasToRemoveAfter.push(...alias)
+    // get the destination
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
-
-    if (props.direction == "up") {
+    if (direction == "up") {
         canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
         canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
         canvasElement.y = canvas.canvasHeight
         canvasElement.x = (canvas.canvasWidth / 2)
     }
-    else if (props.direction == "down") {
+    else if (direction == "down") {
         canvasElement.pivot.y = 0 - canvasElement.y
         canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
         canvasElement.y = 0
         canvasElement.x = (canvas.canvasWidth / 2)
     }
-    else if (props.direction == "left") {
+    else if (direction == "left") {
         canvasElement.pivot.x = canvas.canvasWidth - canvasElement.x
         canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
         canvasElement.x = canvas.canvasWidth
         canvasElement.y = (canvas.canvasHeight / 2)
     }
-    else if (props.direction == "right") {
+    else if (direction == "right") {
         canvasElement.pivot.x = 0 - canvasElement.x
         canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
         canvasElement.x = 0
@@ -560,16 +563,14 @@ export function zoomOut(
     }
     canvasElement.pivot = getPivotBySuperPivot(canvasElement.pivot, canvasElement.angle)
     canvasElement.scale.set(1)
-
+    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new ZoomTicker({
         ...props,
-        tickerAliasToResume: tickerAliasToResume,
         startOnlyIfHaveTexture: true,
         type: "unzoom",
         limit: 0,
-        aliasToRemoveAfter: alias,
+        aliasToRemoveAfter,
     }, undefined, priority)
-
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
