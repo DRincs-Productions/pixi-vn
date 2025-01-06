@@ -81,6 +81,7 @@ export async function showWithDissolveTransition(
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component)
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate")
     // edit the properties of the new component
     component.alpha = 0
@@ -175,11 +176,12 @@ export async function showWithFadeTransition(
     if (!canvas.find(alias)) {
         return showWithDissolveTransition(alias, component, props, priority)
     }
-    let oldCanvasAlias = alias + "_temp_fade"
-    canvas.editAlias(alias, oldCanvasAlias)
+    let oldComponentAlias = alias + "_temp_fade"
+    canvas.editAlias(alias, oldComponentAlias)
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component)
-    oldCanvasAlias && canvas.transferTickers(oldCanvasAlias, alias, "duplicate")
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate")
     // edit the properties of the new component
     component.alpha = 0
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
@@ -187,7 +189,7 @@ export async function showWithFadeTransition(
         ...props,
         type: "show",
         startOnlyIfHaveTexture: true,
-        aliasToRemoveAfter: oldCanvasAlias,
+        aliasToRemoveAfter: oldComponentAlias,
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
@@ -197,7 +199,7 @@ export async function showWithFadeTransition(
         canvas.putOnPauseTicker(alias, { tickerIdsIncluded: [idShow] })
     }
     // remove the old component
-    let idHide = removeWithDissolveTransition(oldCanvasAlias, {
+    let idHide = removeWithDissolveTransition(oldComponentAlias, {
         ...props,
         tickerAliasToResume: alias,
     }, priority)
