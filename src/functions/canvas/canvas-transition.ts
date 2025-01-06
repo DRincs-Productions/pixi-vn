@@ -131,15 +131,19 @@ export function removeWithDissolveTransition(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let { mustBeCompletedBeforeNextStep = true } = props
+    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
     if (typeof alias === "string") {
         alias = [alias]
     }
+    if (typeof aliasToRemoveAfter === "string") {
+        aliasToRemoveAfter = [aliasToRemoveAfter]
+    }
+    aliasToRemoveAfter.push(...alias)
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new FadeAlphaTicker({
         ...props,
         type: 'hide',
-        aliasToRemoveAfter: alias,
+        aliasToRemoveAfter,
         startOnlyIfHaveTexture: true,
     }, undefined, priority)
     let id = canvas.addTicker(alias, effect)
@@ -352,16 +356,17 @@ export function moveOut(
     props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let direction = props.direction || "right"
-    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
-    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
-    tickerAliasToResume.push(alias)
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
+    if (typeof aliasToRemoveAfter === "string") {
+        aliasToRemoveAfter = [aliasToRemoveAfter]
+    }
+    aliasToRemoveAfter.push(...alias)
+    // get the destination
     let canvasElement = canvas.find(alias)
     if (!canvasElement) {
         console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
-
     let destination = { x: canvasElement.x, y: canvasElement.y }
     switch (direction) {
         case "up":
@@ -377,18 +382,15 @@ export function moveOut(
             destination.x = canvas.canvasWidth + canvasElement.width
             break
     }
-
+    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new MoveTicker({
         ...props,
-        tickerAliasToResume: tickerAliasToResume,
         destination,
         startOnlyIfHaveTexture: true,
-        aliasToRemoveAfter: alias,
+        aliasToRemoveAfter,
     }, undefined, priority)
-
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
         return [id]
     }
