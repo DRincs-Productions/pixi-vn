@@ -364,24 +364,24 @@ export function moveOut(
     }
     aliasToRemoveAfter.push(...alias)
     // get the destination
-    let canvasElement = canvas.find(alias)
-    if (!canvasElement) {
+    let component = canvas.find(alias)
+    if (!component) {
         console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
-    let destination = { x: canvasElement.x, y: canvasElement.y }
+    let destination = { x: component.x, y: component.y }
     switch (direction) {
         case "up":
-            destination.y = -(canvasElement.height)
+            destination.y = -(component.height)
             break
         case "down":
-            destination.y = canvas.canvasHeight + canvasElement.height
+            destination.y = canvas.canvasHeight + component.height
             break
         case "left":
-            destination.x = -(canvasElement.width)
+            destination.x = -(component.width)
             break
         case "right":
-            destination.x = canvas.canvasWidth + canvasElement.width
+            destination.x = canvas.canvasWidth + component.width
             break
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
@@ -532,37 +532,37 @@ export function zoomOut(
     }
     aliasToRemoveAfter.push(...alias)
     // get the destination
-    let canvasElement = canvas.find(alias)
-    if (!canvasElement) {
+    let component = canvas.find(alias)
+    if (!component) {
         console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
     if (direction == "up") {
-        canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
-        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
-        canvasElement.y = canvas.canvasHeight
-        canvasElement.x = (canvas.canvasWidth / 2)
+        component.pivot.y = canvas.canvasHeight - component.y
+        component.pivot.x = (canvas.canvasWidth / 2) - component.x
+        component.y = canvas.canvasHeight
+        component.x = (canvas.canvasWidth / 2)
     }
     else if (direction == "down") {
-        canvasElement.pivot.y = 0 - canvasElement.y
-        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
-        canvasElement.y = 0
-        canvasElement.x = (canvas.canvasWidth / 2)
+        component.pivot.y = 0 - component.y
+        component.pivot.x = (canvas.canvasWidth / 2) - component.x
+        component.y = 0
+        component.x = (canvas.canvasWidth / 2)
     }
     else if (direction == "left") {
-        canvasElement.pivot.x = canvas.canvasWidth - canvasElement.x
-        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
-        canvasElement.x = canvas.canvasWidth
-        canvasElement.y = (canvas.canvasHeight / 2)
+        component.pivot.x = canvas.canvasWidth - component.x
+        component.pivot.y = (canvas.canvasHeight / 2) - component.y
+        component.x = canvas.canvasWidth
+        component.y = (canvas.canvasHeight / 2)
     }
     else if (direction == "right") {
-        canvasElement.pivot.x = 0 - canvasElement.x
-        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
-        canvasElement.x = 0
-        canvasElement.y = (canvas.canvasHeight / 2)
+        component.pivot.x = 0 - component.x
+        component.pivot.y = (canvas.canvasHeight / 2) - component.y
+        component.x = 0
+        component.y = (canvas.canvasHeight / 2)
     }
-    canvasElement.pivot = getPivotBySuperPivot(canvasElement.pivot, canvasElement.angle)
-    canvasElement.scale.set(1)
+    component.pivot = getPivotBySuperPivot(component.pivot, component.angle)
+    component.scale.set(1)
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new ZoomTicker({
         ...props,
@@ -583,7 +583,7 @@ export function zoomOut(
  * Show a image in the canvas with a push effect. The new image is pushed in from the inside of the canvas and the old image is pushed out to the outside of the canvas.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param image The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+ * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
@@ -592,22 +592,22 @@ export function zoomOut(
  */
 export async function pushIn(
     alias: string,
-    image?: TComponent,
+    component?: TComponent,
     props: ZoomInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    if (!image) {
-        image = alias
+    if (!component) {
+        component = alias
     }
     let oldCanvasAlias = alias + "_temp_push"
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
 
-    let canvasElement = addComponent(alias, image)
+    component = addComponent(alias, component)
     let oldCanvas = canvas.find(alias)
     if (oldCanvas) {
-        canvas.copyCanvasElementProperty(oldCanvas, canvasElement)
+        canvas.copyCanvasElementProperty(oldCanvas, component)
         canvas.editAlias(alias, oldCanvasAlias, { ignoreTickers: true })
         pushOut(oldCanvasAlias, props, priority)
     }
@@ -615,7 +615,7 @@ export async function pushIn(
     let container = new Container()
     container.height = canvas.canvasHeight
     container.width = canvas.canvasWidth
-    container.addChild(canvasElement)
+    container.addChild(component)
     canvas.add(alias, container, { ignoreOldStyle: true })
 
     if (props.direction == "up") {
@@ -648,8 +648,8 @@ export async function pushIn(
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
     }
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load()
     }
     if (id) {
         return [id]
@@ -672,8 +672,8 @@ export function pushOut(
     let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
     let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-    let canvasElement = canvas.find(alias)
-    if (!canvasElement) {
+    let component = canvas.find(alias)
+    if (!component) {
         console.warn("[Pixi’VN] The canvas component is not found.")
         return
     }
@@ -683,8 +683,8 @@ export function pushOut(
     container.pivot.y = 0
     container.x = 0
     container.y = 0
-    let zIndex = canvas.app.stage.getChildIndex(canvasElement)
-    container.addChild(canvasElement)
+    let zIndex = canvas.app.stage.getChildIndex(component)
+    container.addChild(component)
     canvas.add(alias, container, { ignoreOldStyle: true, zIndex })
 
     let destination = { x: 0, y: 0 }
