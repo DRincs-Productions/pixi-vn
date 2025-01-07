@@ -618,7 +618,7 @@ export async function pushIn(
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component)
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate")
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move")
     // edit the properties of the new component
     let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
@@ -644,10 +644,10 @@ export async function pushIn(
         let ids = pushOut(oldComponentAlias, props, priority)
         if (ids) {
             res.push(...ids)
-            canvas.putOnPauseTicker(oldComponentAlias)
         }
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    tickerAliasToResume.push(alias)
     let effect = new MoveTicker({
         ...props,
         tickerAliasToResume,

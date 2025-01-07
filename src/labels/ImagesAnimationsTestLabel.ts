@@ -437,8 +437,8 @@ export const imagesAddSameAliasTestLabel = new Label(IMAGES_ADD_SAME_TAG_TEST_LA
     async () => await showWithDissolveTransition("eggHead", helmlokImage),
     async () => await showWithFadeTransition("eggHead", skullyImage),
     async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
-    async () => await zoomIn("eggHead", eggHeadImage),
-    async () => await pushIn("eggHead", eggHeadImage),
+    async () => await zoomIn("eggHead", flowerTopImage),
+    async () => await pushIn("eggHead", helmlokImage, { speed: 100 }),
 ])
 
 export const shakeStageTest = new Label(IMAGES_SHAKE_STAGE_TEST_LABEL, [
