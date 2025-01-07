@@ -266,7 +266,7 @@ export async function moveIn(
     } = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [] } = props
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [], removeOldComponentWithMoveOut } = props
     let res: string[] = []
     if (!component) {
         component = alias
@@ -298,7 +298,7 @@ export async function moveIn(
     // remove the old component
     let ids: string[] | undefined = undefined
     if (oldComponentAlias) {
-        if (props.removeOldComponentWithMoveOut) {
+        if (removeOldComponentWithMoveOut) {
             ids = moveOut(oldComponentAlias, props, priority)
             if (ids) {
                 res.push(...ids)
