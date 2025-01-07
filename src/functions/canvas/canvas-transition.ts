@@ -593,17 +593,24 @@ export function zoomOut(
 export async function pushIn(
     alias: string,
     component?: TComponent,
-    props: ZoomInOutProps = { direction: "right" },
+    props: ZoomInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [] } = props
+    let res: string[] = []
     if (!component) {
         component = alias
     }
+    if (typeof tickerAliasToResume === "string") {
+        tickerAliasToResume = [tickerAliasToResume]
+    }
+    if (typeof aliasToRemoveAfter === "string") {
+        aliasToRemoveAfter = [aliasToRemoveAfter]
+    }
+    // check if the alias is already exist
     let oldCanvasAlias = alias + "_temp_push"
-    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
-    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
     tickerAliasToResume.push(alias)
-
+    // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component)
     let oldCanvas = canvas.find(alias)
     if (oldCanvas) {
