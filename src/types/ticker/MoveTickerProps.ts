@@ -40,10 +40,4 @@ export type MoveTickerProps = {
      * @default []
      */
     tickerAliasToResume?: string[] | string
-    /**
-     * Is a special prop used in the push in/out transition.
-     * If true, get the first child of the container and add it to canvas on the end of the effect.
-     * @default false
-     */
-    isPushInOut?: boolean
 }

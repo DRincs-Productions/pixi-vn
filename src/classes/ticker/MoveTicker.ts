@@ -134,7 +134,6 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         args: MoveTickerProps,
         options: { editPosition: boolean } = { editPosition: true }
     ): void {
-        const { isPushInOut } = args
         if (typeof alias === "string") {
             alias = [alias]
         }
@@ -145,10 +144,6 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 if (options.editPosition) {
                     element.x = destination.x
                     element.y = destination.y
-                }
-                if (isPushInOut && element.children.length > 0) {
-                    let elementChild = element.children[0]
-                    canvas.add(alias, elementChild as any, { ignoreOldStyle: true })
                 }
             }
         })

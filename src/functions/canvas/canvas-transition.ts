@@ -1,8 +1,9 @@
 import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBaseItem, Container, ImageSprite, VideoSprite } from "../../classes"
+import { CanvasBaseItem, ImageSprite, VideoSprite } from "../../classes"
 import ImageContainer from "../../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
 import { ImageContainerOptions, ImageSpriteOptions, MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
+import { PushInOutProps } from "../../interface/canvas/transition-props"
 import { canvas } from "../../managers"
 import { getPivotBySuperPivot } from "./canvas-property-utility"
 import { checkIfVideo } from "./canvas-utility"
@@ -171,10 +172,13 @@ export async function showWithFadeTransition(
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true } = props
+    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
     let res: string[] = []
     if (!component) {
         component = alias
+    }
+    if (typeof aliasToRemoveAfter === "string") {
+        aliasToRemoveAfter = [aliasToRemoveAfter]
     }
     // check if the alias is already exist
     if (!canvas.find(alias)) {
@@ -182,6 +186,7 @@ export async function showWithFadeTransition(
     }
     let oldComponentAlias = alias + "_temp_fade"
     canvas.editAlias(alias, oldComponentAlias)
+    aliasToRemoveAfter.push(oldComponentAlias)
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component)
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
@@ -193,7 +198,7 @@ export async function showWithFadeTransition(
         ...props,
         type: "show",
         startOnlyIfHaveTexture: true,
-        aliasToRemoveAfter: oldComponentAlias,
+        aliasToRemoveAfter,
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
@@ -372,16 +377,16 @@ export function moveOut(
     let destination = { x: component.x, y: component.y }
     switch (direction) {
         case "up":
-            destination.y = -(component.height)
-            break
-        case "down":
             destination.y = canvas.canvasHeight + component.height
             break
+        case "down":
+            destination.y = -(component.height)
+            break
         case "left":
-            destination.x = -(component.width)
+            destination.x = canvas.canvasWidth + component.width
             break
         case "right":
-            destination.x = canvas.canvasWidth + component.width
+            destination.x = -(component.width)
             break
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
@@ -441,36 +446,36 @@ export async function zoomIn(
         canvas.editAlias(alias, oldComponentAlias)
     }
     // add the new component and transfer the properties of the old component to the new component
-    let canvasElement = addComponent(alias, component)
+    component = addComponent(alias, component)
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move")
     // edit the properties of the new component
     if (direction == "up") {
-        canvasElement.pivot.y = canvas.canvasHeight - canvasElement.y
-        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
-        canvasElement.y = canvas.canvasHeight
-        canvasElement.x = canvas.canvasWidth / 2
+        component.pivot.y = canvas.canvasHeight - component.y
+        component.pivot.x = (canvas.canvasWidth / 2) - component.x
+        component.y = canvas.canvasHeight
+        component.x = canvas.canvasWidth / 2
     }
     else if (direction == "down") {
-        canvasElement.pivot.y = 0 - canvasElement.y
-        canvasElement.pivot.x = (canvas.canvasWidth / 2) - canvasElement.x
-        canvasElement.y = 0
-        canvasElement.x = canvas.canvasWidth / 2
+        component.pivot.y = 0 - component.y
+        component.pivot.x = (canvas.canvasWidth / 2) - component.x
+        component.y = 0
+        component.x = canvas.canvasWidth / 2
     }
     else if (direction == "left") {
-        canvasElement.pivot.x = canvas.canvasWidth - canvasElement.x
-        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
-        canvasElement.x = canvas.canvasWidth
-        canvasElement.y = canvas.canvasHeight / 2
+        component.pivot.x = canvas.canvasWidth - component.x
+        component.pivot.y = (canvas.canvasHeight / 2) - component.y
+        component.x = canvas.canvasWidth
+        component.y = canvas.canvasHeight / 2
     }
     else if (direction == "right") {
-        canvasElement.pivot.x = 0 - canvasElement.x
-        canvasElement.pivot.y = (canvas.canvasHeight / 2) - canvasElement.y
-        canvasElement.x = 0
-        canvasElement.y = canvas.canvasHeight / 2
+        component.pivot.x = 0 - component.x
+        component.pivot.y = (canvas.canvasHeight / 2) - component.y
+        component.x = 0
+        component.y = canvas.canvasHeight / 2
     }
-    canvasElement.pivot = getPivotBySuperPivot(canvasElement.pivot, canvasElement.angle)
-    canvasElement.scale.set(0)
+    component.pivot = getPivotBySuperPivot(component.pivot, component.angle)
+    component.scale.set(0)
     let isZoomInOut = oldCanvas ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } } : undefined
     // remove the old component
     if (oldComponentAlias) {
@@ -504,8 +509,8 @@ export async function zoomIn(
         res.push(idShow)
     }
     // load the image if the image is not loaded
-    if ((canvasElement instanceof ImageSprite || canvasElement instanceof ImageContainer) && canvasElement.haveEmptyTexture) {
-        await canvasElement.load()
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load()
     }
     // return the ids of the tickers
     if (res.length > 0) {
@@ -593,10 +598,10 @@ export function zoomOut(
 export async function pushIn(
     alias: string,
     component?: TComponent,
-    props: ZoomInOutProps = {},
+    props: PushInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [] } = props
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [] } = props
     let res: string[] = []
     if (!component) {
         component = alias
@@ -604,62 +609,64 @@ export async function pushIn(
     if (typeof tickerAliasToResume === "string") {
         tickerAliasToResume = [tickerAliasToResume]
     }
-    if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter]
-    }
     // check if the alias is already exist
-    let oldCanvasAlias = alias + "_temp_push"
-    tickerAliasToResume.push(alias)
+    let oldComponentAlias: string | undefined = undefined
+    if (canvas.find(alias)) {
+        oldComponentAlias = alias + "_temp_push"
+        canvas.editAlias(alias, oldComponentAlias)
+    }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component)
-    let oldCanvas = canvas.find(alias)
-    if (oldCanvas) {
-        canvas.copyCanvasElementProperty(oldCanvas, component)
-        canvas.editAlias(alias, oldCanvasAlias, { ignoreTickers: true })
-        pushOut(oldCanvasAlias, props, priority)
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate")
+    // edit the properties of the new component
+    let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        destination = component.positionInfo
     }
-
-    let container = new Container()
-    container.height = canvas.canvasHeight
-    container.width = canvas.canvasWidth
-    container.addChild(component)
-    canvas.add(alias, container, { ignoreOldStyle: true })
-
-    if (props.direction == "up") {
-        container.x = 0
-        container.y = -canvas.canvasHeight
+    else {
+        destination = { x: component.x, y: component.y, type: "pixel" }
     }
-    else if (props.direction == "down") {
-        container.x = 0
-        container.y = canvas.canvasHeight
+    if (direction == "up") {
+        component.y = -canvas.canvasHeight + component.y
     }
-    else if (props.direction == "left") {
-        container.x = canvas.canvasWidth
-        container.y = 0
+    else if (direction == "down") {
+        component.y = canvas.canvasHeight + component.y
     }
-    else if (props.direction == "right") {
-        container.x = -canvas.canvasWidth
-        container.y = 0
+    else if (direction == "left") {
+        component.x = -canvas.canvasWidth + component.x
     }
-
+    else if (direction == "right") {
+        component.x = canvas.canvasWidth + component.x
+    }
+    // remove the old component
+    if (oldComponentAlias) {
+        let ids = pushOut(oldComponentAlias, props, priority)
+        if (ids) {
+            res.push(...ids)
+            canvas.putOnPauseTicker(oldComponentAlias)
+        }
+    }
+    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new MoveTicker({
         ...props,
-        tickerAliasToResume: tickerAliasToResume,
+        tickerAliasToResume,
         startOnlyIfHaveTexture: true,
-        isPushInOut: true,
-        destination: { x: 0, y: 0 }
+        destination,
     }, undefined, priority)
-
-    let id = canvas.addTicker(alias, effect)
-    if (id) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
+    let idShow = canvas.addTicker(alias, effect)
+    if (idShow) {
+        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
+        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        res.push(idShow)
     }
+    // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
         await component.load()
     }
-    if (id) {
-        return [id]
+    // return the ids of the tickers
+    if (res.length > 0) {
+        return res
     }
 }
 
@@ -673,55 +680,8 @@ export async function pushIn(
  */
 export function pushOut(
     alias: string,
-    props: ZoomInOutProps = { direction: "right" },
+    props: PushInOutProps = { direction: "right" },
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let mustBeCompletedBeforeNextStep = props.mustBeCompletedBeforeNextStep ?? true
-    let tickerAliasToResume = typeof props.tickerAliasToResume === "string" ? [props.tickerAliasToResume] : props.tickerAliasToResume || []
-    tickerAliasToResume.push(alias)
-    let component = canvas.find(alias)
-    if (!component) {
-        console.warn("[Pixi’VN] The canvas component is not found.")
-        return
-    }
-
-    let container = new Container()
-    container.pivot.x = 0
-    container.pivot.y = 0
-    container.x = 0
-    container.y = 0
-    let zIndex = canvas.app.stage.getChildIndex(component)
-    container.addChild(component)
-    canvas.add(alias, container, { ignoreOldStyle: true, zIndex })
-
-    let destination = { x: 0, y: 0 }
-
-    if (props.direction == "up") {
-        destination.y = canvas.canvasHeight
-    }
-    else if (props.direction == "down") {
-        destination.y = -canvas.canvasHeight
-    }
-    else if (props.direction == "left") {
-        destination.x = -canvas.canvasWidth
-    }
-    else if (props.direction == "right") {
-        destination.x = canvas.canvasWidth
-    }
-
-    let effect = new MoveTicker({
-        ...props,
-        tickerAliasToResume: tickerAliasToResume,
-        startOnlyIfHaveTexture: true,
-        destination: destination,
-        aliasToRemoveAfter: alias,
-        isPushInOut: true,
-    }, undefined, priority)
-
-    let id = canvas.addTicker(alias, effect)
-    if (id) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
-        return [id]
-    }
+    return moveOut(alias, props, priority)
 }
