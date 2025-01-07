@@ -13,4 +13,8 @@ export default interface ExportedCanvas {
     stage: Partial<ContainerMemory>
     elementAliasesOrder: string[]
     tickersOnPause: { [alias: string]: PauseTickerType }
+    tickersToCompleteOnStepEnd: {
+        tikersIds: { id: string }[],
+        stepAlias: { id: string, alias: string }[],
+    }
 }

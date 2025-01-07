@@ -399,13 +399,13 @@ export default class NarrationManager {
                 }
                 try {
                     if (NarrationManagerStatic.stepsRunning === 0) {
-                        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.forEach(({ id }) => {
+                        CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
                             canvas.forceCompletionOfTicker(id)
                         })
-                        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.forEach(({ alias, id }) => {
+                        CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
                             canvas.forceCompletionOfTicker(id, alias)
                         })
-                        CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep = { tikersIds: [], stepAlias: [] }
+                        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] }
                     }
                     NarrationManagerStatic.stepsRunning++
                     let result = await step(props, { labelId: currentLabel.id })
