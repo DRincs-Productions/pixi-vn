@@ -483,13 +483,13 @@ export async function zoomIn(
             let ids = zoomOut(oldComponentAlias, props, priority)
             if (ids) {
                 res.push(...ids)
-                canvas.putOnPauseTicker(oldComponentAlias)
                 tickerAliasToResume.push(oldComponentAlias)
             }
         }
         else {
             aliasToRemoveAfter.push(oldComponentAlias)
         }
+        canvas.putOnPauseTicker(oldComponentAlias)
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     tickerAliasToResume.push(alias)
