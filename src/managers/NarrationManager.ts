@@ -366,6 +366,15 @@ export default class NarrationManager {
         if (this.currentLabel && this.currentLabel.onStepEnd) {
             await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel)
         }
+        if (NarrationManagerStatic.stepsRunning === 0) {
+            CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
+                canvas.forceCompletionOfTicker(id)
+            })
+            CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
+                canvas.forceCompletionOfTicker(id, alias)
+            })
+            CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] }
+        }
         NarrationManagerStatic.increaseCurrentStepIndex()
         return await this.runCurrentStep(props, choiseMade)
     }
@@ -398,15 +407,6 @@ export default class NarrationManager {
                     console.warn("[Pixi’VN] stepSha not found")
                 }
                 try {
-                    if (NarrationManagerStatic.stepsRunning === 0) {
-                        CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
-                            canvas.forceCompletionOfTicker(id)
-                        })
-                        CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
-                            canvas.forceCompletionOfTicker(id, alias)
-                        })
-                        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] }
-                    }
                     NarrationManagerStatic.stepsRunning++
                     let result = await step(props, { labelId: currentLabel.id })
 
