@@ -1041,6 +1041,12 @@ export default class CanvasManager {
                 })
                 CanvasManagerStatic._tickersOnPause = tickersOnPause
             }
+            if (data.hasOwnProperty("tickersToCompleteOnStepEnd")) {
+                let tickersToCompleteOnStepEnd = (data as ExportedCanvas)["tickersToCompleteOnStepEnd"]
+                let tikersIds = tickersToCompleteOnStepEnd.tikersIds.map((t) => ({ id: tickersToTrasfer[t.id] || t.id }))
+                let stepAlias = tickersToCompleteOnStepEnd.stepAlias.map((t) => ({ id: t.id, alias: t.alias }))
+                CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds, stepAlias }
+            }
         }
         catch (e) {
             console.error("[Pixi’VN] Error importing data", e)
