@@ -1,10 +1,16 @@
+import { TickerProgrationType } from "../../interface"
+
 export type FadeAlphaTickerProps = {
     /**
-     * The duration of the fade, in seconds.
-     * in reality the duration is not exactly in seconds because it is based on the frame rate of the game.
+     * @deprecated use speed instead
      * @default 1
      */
     duration?: number
+    /**
+     * The speed of the effect (1 alpha per 10 second)
+     * @default 5
+     */
+    speed?: number
     /**
      * The type of the fade
      * @default "hide"
@@ -15,6 +21,10 @@ export type FadeAlphaTickerProps = {
      * @default type === "hide" ? 0 : 1
      */
     limit?: number
+    /**
+     * The progression of the speed
+     */
+    speedProgression?: TickerProgrationType
     /**
      * The alias to remove after the fade is done
      * @default []

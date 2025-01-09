@@ -9,8 +9,8 @@ import { TickerProgrationExponential, TickerProgrationLinear, TickerProgrationTy
  * @param valueConvert The function that converts the amount and limit of progression
  * @returns 
  */
-export function updateTickerProgression<T extends {}>(args: T, propertyName: keyof T, progression: TickerProgrationType, valueConvert?: (value: number) => number) {
-    let limit = valueConvert && progression.limit ? valueConvert(progression.limit) : progression.limit
+export function updateTickerProgression<T extends {}>(args: T, propertyName: keyof T, progression: TickerProgrationType): void {
+    let { limit } = progression
     if (args[propertyName] === undefined
         || !progression
         || args[propertyName] === limit
@@ -45,9 +45,8 @@ export function updateTickerProgression<T extends {}>(args: T, propertyName: key
     }
 }
 
-function getLinearProgression(number: number, progression: TickerProgrationLinear, valueConvert?: (value: number) => number): number {
-    let limit = valueConvert && progression.limit ? valueConvert(progression.limit) : progression.limit
-    let amt = valueConvert ? valueConvert(progression.amt) : progression.amt
+function getLinearProgression(number: number, progression: TickerProgrationLinear): number {
+    let { limit, amt } = progression
     if (limit !== undefined) {
         if (number > limit && amt > 0) {
             return limit
@@ -59,8 +58,8 @@ function getLinearProgression(number: number, progression: TickerProgrationLinea
     return number + amt
 }
 
-function getExponentialProgression(number: number, progression: TickerProgrationExponential, valueConvert?: (value: number) => number): number {
-    let limit = valueConvert && progression.limit ? valueConvert(progression.limit) : progression.limit
+function getExponentialProgression(number: number, progression: TickerProgrationExponential): number {
+    let { limit } = progression
     if (limit !== undefined) {
         if (number > limit && progression.percentage > 0) {
             return limit

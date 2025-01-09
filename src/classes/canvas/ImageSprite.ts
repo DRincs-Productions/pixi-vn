@@ -2,8 +2,9 @@ import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSourc
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { addImage, getTexture, showWithDissolveTransition } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
+import { calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition, getSuperHeight, getSuperPivot, getSuperWidth } from "../../functions/canvas/canvas-property-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps, calculateAlignByPosition, calculatePercentagePositionByPosition, calculatePositionByAlign, calculatePositionByPercentagePosition } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import Sprite, { setMemorySprite } from "./Sprite";
 
 /**
@@ -130,6 +131,13 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         }
         this.reloadPosition()
     }
+    get align() {
+        let superPivot = getSuperPivot(this)
+        return {
+            x: calculateAlignByPosition("width", this.x, getSuperWidth(this), superPivot.x, this.anchor.x),
+            y: calculateAlignByPosition("height", this.y, getSuperHeight(this), superPivot.y, this.anchor.y),
+        }
+    }
     set xAlign(value: number) {
         this._percentagePosition = undefined
         this._align === undefined && (this._align = {})
@@ -137,7 +145,8 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this.reloadPosition()
     }
     get xAlign() {
-        return calculateAlignByPosition("width", this.x, this.width, this.pivot.x, this.anchor.x)
+        let superPivot = getSuperPivot(this)
+        return calculateAlignByPosition("width", this.x, getSuperWidth(this), superPivot.x, this.anchor.x)
     }
     set yAlign(value: number) {
         this._percentagePosition = undefined
@@ -146,7 +155,8 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this.reloadPosition()
     }
     get yAlign() {
-        return calculateAlignByPosition("height", this.y, this.height, this.pivot.y, this.anchor.y)
+        let superPivot = getSuperPivot(this)
+        return calculateAlignByPosition("height", this.y, getSuperHeight(this), superPivot.y, this.anchor.y)
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined
     set percentagePosition(value: Partial<PointData> | number) {
@@ -160,6 +170,12 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             value.y !== undefined && (this._percentagePosition.y = value.y)
         }
         this.reloadPosition()
+    }
+    get percentagePosition() {
+        return {
+            x: calculatePercentagePositionByPosition("width", this.x),
+            y: calculatePercentagePositionByPosition("height", this.y),
+        }
     }
     get xPercentagePosition() {
         return calculatePercentagePositionByPosition("width", this.x)
@@ -190,20 +206,21 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     }
     get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align"; } {
         if (this._align) {
-            return { x: this._align.x!, y: this._align.y!, type: "align" }
+            return { x: this._align.x || 0, y: this._align.y || 0, type: "align" }
         }
         else if (this._percentagePosition) {
-            return { x: this._percentagePosition.x!, y: this._percentagePosition.y!, type: "percentage" }
+            return { x: this._percentagePosition.x || 0, y: this._percentagePosition.y || 0, type: "percentage" }
         }
         return { x: this.x, y: this.y, type: "pixel" }
     }
     private reloadPosition() {
         if (this._align) {
+            let superPivot = getSuperPivot(this)
             if (this._align.x !== undefined) {
-                super.x = calculatePositionByAlign("width", this._align.x, this.width, this.pivot.x, this.anchor.x)
+                super.x = calculatePositionByAlign("width", this._align.x, getSuperWidth(this), superPivot.x, this.anchor.x)
             }
             if (this._align.y !== undefined) {
-                super.y = calculatePositionByAlign("height", this._align.y, this.height, this.pivot.y, this.anchor.y)
+                super.y = calculatePositionByAlign("height", this._align.y, getSuperHeight(this), superPivot.y, this.anchor.y)
             }
         }
         else if (this._percentagePosition) {

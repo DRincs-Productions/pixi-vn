@@ -200,6 +200,7 @@ export default class NarrationManagerStatic {
                     tickers: {},
                     tickersSteps: {},
                     tickersOnPause: {},
+                    tickersToCompleteOnStepEnd: { tikersIds: [], stepAlias: [] },
                 },
                 sound: {
                     soundAliasesOrder: [],

@@ -1,5 +1,4 @@
 import { Container as PixiContainer, PointData } from "pixi.js";
-import { canvas } from "../..";
 
 export interface AdditionalPositionsExtensionProps {
     /**
@@ -75,6 +74,9 @@ export default class AdditionalPositionsExtension extends PixiContainer {
      * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
     set align(_value: Partial<PointData> | number) {
+        throw new Error("Method not implemented.");
+    }
+    get align(): Partial<PointData> | number {
         throw new Error("Method not implemented.");
     }
     /**
@@ -209,40 +211,4 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
         }
     }
     return props
-}
-
-export function calculatePositionByAlign(type: "width" | "height", align: number, width: number, pivot: number, anchor: number = 0): number {
-    if (type === "width") {
-        return (align * (canvas.screen.width - width)) + pivot + (anchor * width)
-    }
-    else {
-        return (align * (canvas.screen.height - width)) + pivot + (anchor * width)
-    }
-}
-
-export function calculateAlignByPosition(type: "width" | "height", position: number, width: number, pivot: number, anchor: number = 0): number {
-    if (type === "width") {
-        return ((position - pivot - (anchor * width)) / (canvas.screen.width - width))
-    }
-    else {
-        return ((position - pivot - (anchor * width)) / (canvas.screen.height - width))
-    }
-}
-
-export function calculatePositionByPercentagePosition(type: "width" | "height", percentage: number) {
-    if (type === "width") {
-        return percentage * canvas.screen.width
-    }
-    else {
-        return percentage * canvas.screen.height
-    }
-}
-
-export function calculatePercentagePositionByPosition(type: "width" | "height", position: number) {
-    if (type === "width") {
-        return position / canvas.screen.width
-    }
-    else {
-        return position / canvas.screen.height
-    }
 }

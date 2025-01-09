@@ -17,6 +17,7 @@ import { exportCanvasElement, getMemoryContainer } from '../functions/canvas/can
 import { createExportableElement } from "../functions/export-utility";
 import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
 import { TickersStep } from "../interface/TickersSteps";
+import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
@@ -775,6 +776,8 @@ export default class CanvasManager {
         for (let timeout in CanvasManagerStatic._currentTickersTimeouts) {
             CanvasManagerStatic.removeTickerTimeout(timeout)
         }
+        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] }
+        CanvasManagerStatic._tickersOnPause = {}
     }
     /**
      * Remove a ticker by the id.
@@ -800,13 +803,30 @@ export default class CanvasManager {
     /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param alias The alias of the canvas element that will use the ticker.
-     * @param tickerIdsExcluded The tickers that will not be paused.
+     * @param options The options of the pause ticker.
      */
-    putOnPauseTicker(alias: string, tickerIdsExcluded: string[] | string = []) {
-        if (typeof tickerIdsExcluded === "string") {
-            tickerIdsExcluded = [tickerIdsExcluded]
+    putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
+        let oldOptions = CanvasManagerStatic._tickersOnPause[alias]
+        if (!oldOptions) {
+            CanvasManagerStatic._tickersOnPause[alias] = options
+            return
         }
-        CanvasManagerStatic._tickersOnPause[alias] = { tickerIdsExcluded: tickerIdsExcluded }
+        if (options.tickerIdsExcluded) {
+            if (oldOptions.tickerIdsExcluded) {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = [...oldOptions.tickerIdsExcluded, ...options.tickerIdsExcluded]
+            }
+            else {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = options.tickerIdsExcluded
+            }
+        }
+        if (options.tickerIdsIncluded) {
+            if (oldOptions.tickerIdsIncluded) {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = [...oldOptions.tickerIdsIncluded, ...options.tickerIdsIncluded]
+            }
+            else {
+                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = options.tickerIdsIncluded
+            }
+        }
     }
     /**
      * Resume a ticker.
@@ -827,9 +847,15 @@ export default class CanvasManager {
      * @returns If the ticker is paused.
      */
     isTickerPaused(alias: string, tickerId?: string): boolean {
-        if (CanvasManagerStatic._tickersOnPause[alias]) {
+        let tickersOnPauseData = CanvasManagerStatic._tickersOnPause[alias]
+        if (tickersOnPauseData) {
             if (tickerId) {
-                return !CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded.includes(tickerId)
+                if ("tickerIdsIncluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsIncluded) {
+                    return tickersOnPauseData.tickerIdsIncluded.includes(tickerId)
+                }
+                if ("tickerIdsExcluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsExcluded) {
+                    return !tickersOnPauseData.tickerIdsExcluded.includes(tickerId)
+                }
             }
             return true
         }
@@ -851,10 +877,10 @@ export default class CanvasManager {
         alias?: string
     }) {
         if (step.alias) {
-            CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.stepAlias.push({ id: step.id, alias: step.alias })
+            CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.push({ id: step.id, alias: step.alias })
         }
         else {
-            CanvasManagerStatic._tickersMustBeCompletedBeforeNextStep.tikersIds.push({ id: step.id })
+            CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.push({ id: step.id })
         }
     }
 
@@ -936,6 +962,7 @@ export default class CanvasManager {
             stage: createExportableElement(getMemoryContainer(this.app.stage)),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
             tickersOnPause: createExportableElement(CanvasManagerStatic._tickersOnPause),
+            tickersToCompleteOnStepEnd: createExportableElement(CanvasManagerStatic._tickersToCompleteOnStepEnd),
         }
     }
     /**
@@ -951,7 +978,7 @@ export default class CanvasManager {
      */
     public async import(data: object) {
         try {
-            let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"] || {}
+            let tickersToTrasfer: { [oldId: string]: string } = {}
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let currentElements = (data as ExportedCanvas)["elements"]
                 let elementAliasesOrder = (data as ExportedCanvas)["elementAliasesOrder"]
@@ -984,11 +1011,7 @@ export default class CanvasManager {
                     if (ticker) {
                         let id = this.addTicker(aliases, ticker)
                         if (id) {
-                            aliases.forEach((alias) => {
-                                if (tickersOnPause[alias]) {
-                                    tickersOnPause[alias].tickerIdsExcluded = tickersOnPause[alias].tickerIdsExcluded.map((t) => t === oldId ? id : t)
-                                }
-                            })
+                            tickersToTrasfer[oldId] = id
                         }
                     }
                     else {
@@ -1005,8 +1028,24 @@ export default class CanvasManager {
                     })
                 })
             }
-            if (tickersOnPause) {
+            if (data.hasOwnProperty("tickersOnPause")) {
+                let tickersOnPause = (data as ExportedCanvas)["tickersOnPause"]
+                Object.keys(tickersOnPause).forEach((alias) => {
+                    let data = tickersOnPause[alias]
+                    if ("tickerIdsExcluded" in data && data.tickerIdsExcluded) {
+                        tickersOnPause[alias].tickerIdsExcluded = data.tickerIdsExcluded.map((id: string) => tickersToTrasfer[id] || id)
+                    }
+                    if ("tickerIdsIncluded" in data && data.tickerIdsIncluded) {
+                        tickersOnPause[alias].tickerIdsIncluded = data.tickerIdsIncluded.map((id: string) => tickersToTrasfer[id] || id)
+                    }
+                })
                 CanvasManagerStatic._tickersOnPause = tickersOnPause
+            }
+            if (data.hasOwnProperty("tickersToCompleteOnStepEnd")) {
+                let tickersToCompleteOnStepEnd = (data as ExportedCanvas)["tickersToCompleteOnStepEnd"]
+                let tikersIds = tickersToCompleteOnStepEnd.tikersIds.map((t) => ({ id: tickersToTrasfer[t.id] || t.id }))
+                let stepAlias = tickersToCompleteOnStepEnd.stepAlias.map((t) => ({ id: t.id, alias: t.alias }))
+                CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds, stepAlias }
             }
         }
         catch (e) {

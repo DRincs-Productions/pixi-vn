@@ -1,10 +1,13 @@
-import { Container as PixiContainer } from "pixi.js";
+import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
+import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { FadeAlphaTickerProps } from "../../types/ticker/FadeAlphaTickerProps";
 import TickerBase from "./TickerBase";
+
+const DEFAULT_SPEED = 5
 
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
@@ -24,24 +27,29 @@ import TickerBase from "./TickerBase";
  */
 @tickerDecorator()
 export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
+    constructor(args: FadeAlphaTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
+        super(args, duration, priority)
+    }
     override fn(
         ticker: TickerValue,
         args: FadeAlphaTickerProps,
         aliases: string[],
         tickerId: string
     ): void {
-        let type = args.type === undefined ? "hide" : args.type
+        if (args.speed === undefined) {
+            if (args.duration === undefined) {
+                args.speed = DEFAULT_SPEED
+            }
+            else {
+                args.speed = 600 / (args.duration * 60)
+            }
+        }
+
+        const { type = "hide", startOnlyIfHaveTexture, speedProgression } = args
+        const speed = this.speedConvert(args.speed)
+
         let limit = this.getLimit(args)
-        let duration = args.duration === undefined ? 1 : args.duration
-        let speed = 1 / (duration * 60)
-        let aliasToRemoveAfter = args.aliasToRemoveAfter || []
-        if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter]
-        }
-        let tickerAliasToResume = args.tickerAliasToResume || []
-        if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume]
-        }
+
         if (type === "hide" && limit < 0) {
             limit = 0
         }
@@ -54,7 +62,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 if (!element) {
                     return false
                 }
-                if (args.startOnlyIfHaveTexture) {
+                if (startOnlyIfHaveTexture) {
                     if (!checkIfTextureNotIsEmpty(element)) {
                         return false
                     }
@@ -72,17 +80,27 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                     }
                     if (type === "show" && element.alpha >= limit) {
                         this.onEndOfTicker(alias, tickerId, args)
+                        return
                     }
                     else if (type === "hide" && element.alpha <= limit) {
                         this.onEndOfTicker(alias, tickerId, args)
+                        return
+                    }
+                    if (speed < 0.00001 && !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)) {
+                        console.warn("[Pixi’VN] The speed of the FadeAlphaTicker must be greater than 0.")
+                        this.onEndOfTicker(alias, tickerId, args, { editAlpha: false })
+                        return
                     }
                 }
             })
+        if (speedProgression)
+            updateTickerProgression(args, "speed", speedProgression)
     }
     override onEndOfTicker(
         alias: string | string[],
         tickerId: string,
         args: FadeAlphaTickerProps,
+        options: { editAlpha?: boolean } = { editAlpha: true }
     ): void {
         if (typeof alias === "string") {
             alias = [alias]
@@ -90,15 +108,19 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias)
             if (element) {
-                let limit = this.getLimit(args)
-                element.alpha = limit
+                if (options.editAlpha) {
+                    let limit = this.getLimit(args)
+                    element.alpha = limit
+                }
             }
         })
         super.onEndOfTicker(alias, tickerId, args)
     }
     private getLimit(args: FadeAlphaTickerProps): number {
-        let type = args.type === undefined ? "hide" : args.type
-        let limit = args.limit === undefined ? type === "hide" ? 0 : 1 : args.limit
+        const { type = "hide", limit = type === "hide" ? 0 : 1 } = args
         return limit
+    }
+    private speedConvert(speed: number): number {
+        return speed / 600
     }
 }

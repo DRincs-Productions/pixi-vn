@@ -167,10 +167,11 @@ export default class CanvasManagerStatic {
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
     static _currentTickersSteps: { [alias: string]: { [tickerId: string]: TickersSteps } } = {}
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {}
-    static _tickersMustBeCompletedBeforeNextStep: {
+    static _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[],
         stepAlias: { id: string, alias: string }[],
     } = { tikersIds: [], stepAlias: [] }
+    static _tickersOnPause: { [aliasOrId: string]: PauseTickerType } = {}
     static generateTickerId(tickerData: TickerHistory<any> | TickersSteps): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)
@@ -218,6 +219,4 @@ export default class CanvasManagerStatic {
             }
         })
     }
-
-    static _tickersOnPause: { [alias: string]: PauseTickerType } = {}
 }

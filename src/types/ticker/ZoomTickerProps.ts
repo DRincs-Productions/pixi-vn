@@ -2,7 +2,7 @@ import { TickerProgrationType } from "../../interface"
 
 export type ZoomTickerProps = {
     /**
-     * The speed of the zoom effect
+     * The speed of the zoom effect (100% zoom per 10 second)
      * @default 10
      */
     speed?: number | { x: number, y: number }
@@ -41,8 +41,10 @@ export type ZoomTickerProps = {
     tickerAliasToResume?: string[] | string
     /**
      * Is a special prop used in the zoom in/out transition.
-     * If true, get the first child of the container and add it to canvas on the end of the effect.
      * @default false
      */
-    isZoomInOut?: boolean
+    isZoomInOut?: {
+        pivot: { x: number, y: number },
+        position: { x: number, y: number }
+    }
 }
