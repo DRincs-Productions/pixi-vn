@@ -193,6 +193,14 @@ export async function showWithFadeTransition(
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate")
     // edit the properties of the new component
     component.alpha = 0
+    // remove the old component
+    let idHide = removeWithDissolveTransition(oldComponentAlias, {
+        ...props,
+        tickerAliasToResume: alias,
+    }, priority)
+    if (idHide) {
+        res.push(...idHide)
+    }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new FadeAlphaTicker({
         ...props,
@@ -206,14 +214,6 @@ export async function showWithFadeTransition(
         res.push(idShow)
         // pause the ticker
         canvas.putOnPauseTicker(alias, { tickerIdsIncluded: [idShow] })
-    }
-    // remove the old component
-    let idHide = removeWithDissolveTransition(oldComponentAlias, {
-        ...props,
-        tickerAliasToResume: alias,
-    }, priority)
-    if (idHide) {
-        res.push(...idHide)
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
