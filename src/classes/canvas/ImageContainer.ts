@@ -172,6 +172,13 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         }
         this.reloadPosition()
     }
+    get align() {
+        let superPivot = getSuperPivot(this)
+        return {
+            x: calculateAlignByPosition("width", this.x, getSuperWidth(this), superPivot.x, this.anchor.x),
+            y: calculateAlignByPosition("height", this.y, getSuperHeight(this), superPivot.y, this.anchor.y)
+        }
+    }
     set xAlign(value: number) {
         if (this._percentagePosition) {
             this._percentagePosition.x = undefined
@@ -209,6 +216,12 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
         }
         this.reloadPosition()
     }
+    get percentagePosition() {
+        return {
+            x: calculatePercentagePositionByPosition("width", this.x),
+            y: calculatePercentagePositionByPosition("height", this.y)
+        }
+    }
     set xPercentagePosition(_value: number) {
         if (this._align) {
             this._align.x = undefined
@@ -242,10 +255,10 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     }
     get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align"; } {
         if (this._align) {
-            return { x: this._align.x!, y: this._align.y!, type: "align" }
+            return { x: this._align.x || 0, y: this._align.y || 0, type: "align" }
         }
         else if (this._percentagePosition) {
-            return { x: this._percentagePosition.x!, y: this._percentagePosition.y!, type: "percentage" }
+            return { x: this._percentagePosition.x || 0, y: this._percentagePosition.y || 0, type: "percentage" }
         }
         return { x: this.x, y: this.y, type: "pixel" }
     }

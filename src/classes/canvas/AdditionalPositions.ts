@@ -76,6 +76,9 @@ export default class AdditionalPositionsExtension extends PixiContainer {
     set align(_value: Partial<PointData> | number) {
         throw new Error("Method not implemented.");
     }
+    get align(): Partial<PointData> | number {
+        throw new Error("Method not implemented.");
+    }
     /**
      * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
      * For example:
