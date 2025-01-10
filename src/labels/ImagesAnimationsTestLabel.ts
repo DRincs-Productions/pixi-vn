@@ -2,7 +2,7 @@ import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite, Label } from "../
 import ImageContainer from "../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
-import { addImage, moveIn, moveOut, removeWithDissolveTransition, removeWithFadeTransition, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, moveIn, moveOut, removeWithDissolve, removeWithFade, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
@@ -53,7 +53,7 @@ export const imagesDissolveTest = new Label(IMAGE_DISSOLVE_TEST_LABEL, [
 - ${helmlokName} will disappear with a fade effect and reappear with a fade effect, and repeat.
 - ${skullyName} will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
         }
-        removeWithDissolveTransition(["eggHead"], { duration: 2 })
+        removeWithDissolve(["eggHead"], { duration: 2 })
         let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
         showWithDissolveTransition('flowerTop', eggHead, { duration: 1 })
         canvas.addTickersSteps("helmlok",
@@ -98,7 +98,7 @@ export const imagesFadeTest = new Label(IMAGE_FADE_TEST_LABEL, [
 - ${helmlokName} will disappear with a fade effect and reappear with a fade effect, and repeat.
 - ${skullyName} will disappear with a fade effect, wait for 0.5 seconds, and reappear with a fade effect.`
         }
-        removeWithFadeTransition(["eggHead"], { duration: 2 })
+        removeWithFade(["eggHead"], { duration: 2 })
         let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
         showWithFadeTransition('flowerTop', eggHead, { duration: 1 })
         canvas.addTickersSteps("helmlok",

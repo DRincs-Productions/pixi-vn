@@ -1,5 +1,17 @@
 export { shakeEffect } from './canvas/canvas-effect';
-export { moveIn, moveOut, pushIn, pushOut, removeWithDissolveTransition, removeWithFadeTransition, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from './canvas/canvas-transition';
+export {
+    moveIn, moveOut, pushIn, pushOut, removeWithDissolve,
+    /**
+     * @deprecated Use `removeWithDissolve` instead
+     */
+    removeWithDissolve as removeWithDissolveTransition,
+    removeWithFade,
+    /**
+     * @deprecated Use `removeWithFade` instead
+     */
+    removeWithFade as removeWithFadeTransition,
+    showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut
+} from './canvas/canvas-transition';
 export { addImageCointainer, showImageContainer } from './canvas/image-container-utility';
 export { addImage, loadImage, showImage } from './canvas/image-utility';
 export { getTexture } from './canvas/texture-utility';

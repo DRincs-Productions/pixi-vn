@@ -88,7 +88,7 @@ export async function showWithDissolveTransition(
     component.alpha = 0
     // remove the old component
     if (oldComponentAlias) {
-        let ids = removeWithDissolveTransition(oldComponentAlias, props, priority)
+        let ids = removeWithDissolve(oldComponentAlias, props, priority)
         if (ids) {
             res.push(...ids)
             canvas.putOnPauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
@@ -121,13 +121,13 @@ export async function showWithDissolveTransition(
  * Remove a image from the canvas with a disolve effect.
  * Disolve effect is a effect that the image is removed with a fade out.
  * This transition is done with a {@link FadeAlphaTicker} effect.
- * This function is equivalent to {@link removeWithFadeTransition}.
+ * This function is equivalent to {@link removeWithFade}.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function removeWithDissolveTransition(
+export function removeWithDissolve(
     alias: string | string[],
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
@@ -194,7 +194,7 @@ export async function showWithFadeTransition(
     // edit the properties of the new component
     component.alpha = 0
     // remove the old component
-    let idHide = removeWithDissolveTransition(oldComponentAlias, {
+    let idHide = removeWithDissolve(oldComponentAlias, {
         ...props,
         tickerAliasToResume: alias,
     }, priority)
@@ -229,18 +229,18 @@ export async function showWithFadeTransition(
  * Remove a image from the canvas with a fade effect.
  * Fade effect is a effect that the image is removed with a fade out.
  * This transition is done with a {@link FadeAlphaTicker} effect.
- * This function is equivalent to {@link removeWithDissolveTransition}.
+ * This function is equivalent to {@link removeWithDissolve}.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function removeWithFadeTransition(
+export function removeWithFade(
     alias: string | string[],
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    return removeWithDissolveTransition(alias, props, priority)
+    return removeWithDissolve(alias, props, priority)
 }
 
 /**
