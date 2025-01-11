@@ -242,12 +242,12 @@ export default class CanvasManager {
         })
         if (CanvasManagerStatic._currentTickersSteps[newAlias]) {
             Object.keys(CanvasManagerStatic._currentTickersSteps[newAlias]).forEach((key) => {
-                this.runTickersSteps(newAlias, key)
+                this.runTickersSequence(newAlias, key)
             })
         }
         if (mode === "duplicate" && CanvasManagerStatic._currentTickersSteps[oldAlias]) {
             Object.keys(CanvasManagerStatic._currentTickersSteps[oldAlias]).forEach((key) => {
-                this.runTickersSteps(oldAlias, key)
+                this.runTickersSequence(oldAlias, key)
             })
         }
     }
@@ -563,10 +563,10 @@ export default class CanvasManager {
         }
         let key = CanvasManagerStatic.generateTickerId(step)
         CanvasManagerStatic._currentTickersSteps[alias][key] = step
-        this.runTickersSteps(alias, key)
+        this.runTickersSequence(alias, key)
         return key
     }
-    private runTickersSteps<TArgs extends TickerArgs>(alias: string, key: string) {
+    private runTickersSequence<TArgs extends TickerArgs>(alias: string, key: string) {
         if (!CanvasManagerStatic._currentTickersSteps[alias] || !(CanvasManagerStatic._currentTickersSteps[alias][key])) {
             return
         }
@@ -640,7 +640,7 @@ export default class CanvasManager {
             if (steps.currentStepNumber + 1 < steps.steps.length) {
                 steps.currentStepNumber++
                 CanvasManagerStatic._currentTickersSteps[alias][key] = steps
-                this.runTickersSteps(alias, key)
+                this.runTickersSequence(alias, key)
             }
             else {
                 if (key && CanvasManagerStatic._currentTickersSteps[alias] && CanvasManagerStatic._currentTickersSteps[alias][key]) {
@@ -1030,7 +1030,7 @@ export default class CanvasManager {
                 Object.entries(tickersSteps).forEach(([alias, steps]) => {
                     CanvasManagerStatic._currentTickersSteps[alias] = steps
                     Object.keys(steps).forEach((key) => {
-                        this.runTickersSteps(alias, key)
+                        this.runTickersSequence(alias, key)
                     })
                 })
             }
