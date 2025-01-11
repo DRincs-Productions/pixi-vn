@@ -104,7 +104,7 @@ export async function showWithDissolve(
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
     }
     // load the image if the image is not loaded
@@ -149,7 +149,7 @@ export function removeWithDissolve(
     }, undefined, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
         return [id]
     }
 }
@@ -210,7 +210,7 @@ export async function showWithFade(
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
         // pause the ticker
         canvas.putOnPauseTicker(alias, { tickerIdsIncluded: [idShow] })
@@ -341,7 +341,7 @@ export async function moveIn(
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
     }
     // return the ids of the tickers
@@ -399,7 +399,7 @@ export function moveOut(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
         return [id]
     }
 }
@@ -505,7 +505,7 @@ export async function zoomIn(
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
     }
     // load the image if the image is not loaded
@@ -579,7 +579,7 @@ export function zoomOut(
     let id = canvas.addTicker(alias, effect)
     if (id) {
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: id })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
         return [id]
     }
 }
@@ -657,7 +657,7 @@ export async function pushIn(
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
-        mustBeCompletedBeforeNextStep && canvas.tickerMustBeCompletedBeforeNextStep({ id: idShow })
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
     }
     // load the image if the image is not loaded
