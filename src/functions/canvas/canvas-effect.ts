@@ -98,7 +98,7 @@ export async function shakeEffect(
         startOnlyIfHaveTexture,
         tickerAliasToResume: alias,
     }, undefined, priority))
-    let id = canvas.addTickersSteps(alias, moveTickers)
+    let id = canvas.addTickersSequence(alias, moveTickers)
     if (id) {
         canvas.completeTickerOnStepEnd({ id: id, alias: alias })
         canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })

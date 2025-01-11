@@ -515,6 +515,12 @@ export default class CanvasManager {
         }
     }
     /**
+     * @deprecated use canvas.addTickersSequence
+     */
+    addTickersSteps(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
+        return this.addTickersSequence(alias, steps, currentStepNumber)
+    }
+    /**
      * Run a sequence of tickers.
      * @param alias The alias of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
@@ -522,7 +528,7 @@ export default class CanvasManager {
      * @returns The id of the sequence of tickers.
      * @example
      * ```typescript
-     * canvas.addTickersSteps("alien", [
+     * canvas.addTickersSequence("alien", [
      *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
      *     Pause(1), // 1 second
      *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
@@ -530,7 +536,7 @@ export default class CanvasManager {
      * ])
      * ```
      */
-    addTickersSteps(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
+    addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
             console.warn("[Pixi’VN] The steps of the tickers is empty")
             return
