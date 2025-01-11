@@ -165,7 +165,7 @@ export default class CanvasManagerStatic {
         return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketSteps))
     }
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
-    static _currentTickersSteps: { [alias: string]: { [tickerId: string]: TickersSequence } } = {}
+    static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } = {}
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {}
     static _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[],
