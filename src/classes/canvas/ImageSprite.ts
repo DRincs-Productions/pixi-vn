@@ -65,10 +65,9 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             loadIsStarted: this._loadIsStarted,
         }
     }
-    override set memory(value: ImageSpriteMemory) {
-        this.setMemory(value)
-    }
+    override set memory(_value: ImageSpriteMemory) { }
     override async setMemory(value: ImageSpriteMemory) {
+        this.memory = value
         await setMemoryImageSprite(this, value)
         this.reloadPosition()
     }
