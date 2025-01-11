@@ -2,7 +2,7 @@ import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite, Label } from "../
 import ImageContainer from "../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
-import { addImage, moveIn, moveOut, removeWithDissolve, removeWithFade, shakeEffect, showImage, showWithDissolve, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, moveIn, moveOut, removeWithDissolve, removeWithFade, shakeEffect, showImage, showWithDissolve, showWithFade, zoomIn, zoomOut } from "../functions"
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
@@ -100,7 +100,7 @@ export const imagesFadeTest = new Label(IMAGE_FADE_TEST_LABEL, [
         }
         removeWithFade(["eggHead"], { duration: 2 })
         let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
-        showWithFadeTransition('flowerTop', eggHead, { duration: 1 })
+        showWithFade('flowerTop', eggHead, { duration: 1 })
         canvas.addTickersSteps("helmlok",
             [
                 new FadeAlphaTicker({
@@ -133,7 +133,7 @@ export const imagesFadeTest = new Label(IMAGE_FADE_TEST_LABEL, [
         let eggHeadOld = canvas.find<ImageSprite>("eggHead")
         if (eggHeadOld)
             eggHeadOld.alpha = 0
-        showWithFadeTransition('eggHead', eggHeadImage, { duration: 0.5 })
+        showWithFade('eggHead', eggHeadImage, { duration: 0.5 })
     }
 ])
 
@@ -435,7 +435,7 @@ export const imagesAddSameAliasTestLabel = new Label(IMAGES_ADD_SAME_TAG_TEST_LA
     },
     async () => await showImage("eggHead", flowerTopImage),
     async () => await showWithDissolve("eggHead", helmlokImage),
-    async () => await showWithFadeTransition("eggHead", skullyImage),
+    async () => await showWithFade("eggHead", skullyImage),
     async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
     async () => await zoomIn("eggHead", flowerTopImage),
     async () => await pushIn("eggHead", helmlokImage, { speed: 100 }),

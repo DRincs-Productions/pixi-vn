@@ -166,7 +166,7 @@ export function removeWithDissolve(
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithFadeTransition(
+export async function showWithFade(
     alias: string,
     component?: TComponent,
     props: ShowWithFadeTransitionProps = {},
