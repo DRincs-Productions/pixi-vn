@@ -807,7 +807,7 @@ export default class CanvasManager {
     }
 
     /**
-     * @deprecated use canvas.putOnPauseTicker
+     * @deprecated use canvas.pauseTicker
      */
     putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
         this.pauseTicker(alias, options)
@@ -841,7 +841,7 @@ export default class CanvasManager {
         }
     }
     /**
-     * @deprecated use canvas.resumeTickerPaused
+     * @deprecated use canvas.resumeTicker
      */
     resumeTickerPaused(alias: string | string[]) {
         this.resumeTicker(alias)
