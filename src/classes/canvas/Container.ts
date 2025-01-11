@@ -32,10 +32,9 @@ export default class Container<C extends ContainerChild = ContainerChild, Memory
     get memory(): Memory {
         return getMemoryContainer(this, { childrenExport: true }) as Memory
     }
-    set memory(value: Memory) {
-        this.setMemory(value)
-    }
+    set memory(_value: Memory) { }
     async setMemory(value: Memory): Promise<void> {
+        this.memory = value
         await this.importChildren(value)
         return await setMemoryContainer(this, value)
     }
