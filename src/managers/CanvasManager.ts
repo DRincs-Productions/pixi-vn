@@ -15,8 +15,8 @@ import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { importCanvasElement } from "../functions/canvas/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
-import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
-import { TickersStep } from "../interface/TickersSteps";
+import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSequence } from "../interface";
+import { TickersStep } from "../interface/TickersSequence";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -544,7 +544,7 @@ export default class CanvasManager {
         if (!(alias in CanvasManagerStatic._currentTickersSteps)) {
             CanvasManagerStatic._currentTickersSteps[alias] = {}
         }
-        let step: TickersSteps = {
+        let step: TickersSequence = {
             currentStepNumber: currentStepNumber,
             steps: steps.map((step) => {
                 if (step === Repeat) {

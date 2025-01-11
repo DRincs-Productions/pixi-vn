@@ -48,6 +48,6 @@ export type { default as Ticker } from './Ticker';
 export type { default as TickerArgs } from './TickerArgs';
 export type { default as TickerHistory, TickerHistoryForExport } from './TickerHistory';
 export type { TickerProgrationExponential, TickerProgrationLinear, default as TickerProgrationType } from './TickerProgrationType';
-export type { default as TickersSteps } from './TickersSteps';
+export type { default as TickersSequence } from './TickersSequence';
 export type { default as TickerTimeoutHistory } from './TickerTimeoutHistory';
 
