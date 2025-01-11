@@ -342,7 +342,7 @@ export default class CanvasManager {
         alias.forEach((alias) => {
             this.app.stage.getChildrenByLabel(alias).forEach((canvasComponent) => {
                 this.app.stage.removeChild(canvasComponent)
-                !ignoreTickers && this.removeAssociationBetweenTickerCanvasElement(alias)
+                !ignoreTickers && this.unlinkComponentFromTicker(alias)
             })
         })
     }
@@ -676,10 +676,10 @@ export default class CanvasManager {
      * @param ticker The ticker class to be removed.
      * @example
      * ```typescript
-     * canvas.removeAssociationBetweenTickerCanvasElement("alien", RotateTicker)
+     * canvas.unlinkComponentFromTicker("alien", RotateTicker)
      * ```
      */
-    public removeAssociationBetweenTickerCanvasElement(
+    public unlinkComponentFromTicker(
         alias: string | string[],
         ticker?: typeof TickerBase<any> | TickerBase<any> | string,
     ) {
