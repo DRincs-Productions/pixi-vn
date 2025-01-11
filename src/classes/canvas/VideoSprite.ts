@@ -1,6 +1,6 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
-import { addVideo, showWithDissolveTransition } from "../../functions";
+import { addVideo, showWithDissolve } from "../../functions";
 import { VideoSpriteMemory, VideoSpriteOptions } from "../../interface";
 import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
 
@@ -8,7 +8,7 @@ import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
  * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,
  * but it has some features that make video management easier.
  * You need to use {@link VideoSprite.load()} to show the video in the canvas.
- * This class is used for functions like {@link addVideo} and {@link showWithDissolveTransition}.
+ * This class is used for functions like {@link addVideo} and {@link showWithDissolve}.
  * @example
  * ```typescript
  * let film = new VideoSprite({

@@ -10,7 +10,12 @@ export {
      * @deprecated Use `removeWithFade` instead
      */
     removeWithFade as removeWithFadeTransition,
-    showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut
+    showWithDissolve,
+    /**
+     * @deprecated Use `removeWithFade` instead
+     */
+    showWithDissolve as showWithDissolveTransition,
+    showWithFadeTransition, zoomIn, zoomOut
 } from './canvas/canvas-transition';
 export { addImageCointainer, showImageContainer } from './canvas/image-container-utility';
 export { addImage, loadImage, showImage } from './canvas/image-utility';

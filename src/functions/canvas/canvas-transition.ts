@@ -60,7 +60,7 @@ function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<
  * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
-export async function showWithDissolveTransition(
+export async function showWithDissolve(
     alias: string,
     component?: TComponent,
     props: ShowWithDissolveTransitionProps = {},
@@ -182,7 +182,7 @@ export async function showWithFadeTransition(
     }
     // check if the alias is already exist
     if (!canvas.find(alias)) {
-        return showWithDissolveTransition(alias, component, props, priority)
+        return showWithDissolve(alias, component, props, priority)
     }
     let oldComponentAlias = alias + "_temp_fade"
     canvas.editAlias(alias, oldComponentAlias)

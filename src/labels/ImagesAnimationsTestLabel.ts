@@ -2,7 +2,7 @@ import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite, Label } from "../
 import ImageContainer from "../classes/canvas/ImageContainer"
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker"
 import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants"
-import { addImage, moveIn, moveOut, removeWithDissolve, removeWithFade, shakeEffect, showImage, showWithDissolveTransition, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
+import { addImage, moveIn, moveOut, removeWithDissolve, removeWithFade, shakeEffect, showImage, showWithDissolve, showWithFadeTransition, zoomIn, zoomOut } from "../functions"
 import { pushIn, pushOut } from "../functions/canvas/canvas-transition"
 import { addImageCointainer } from "../functions/canvas/image-container-utility"
 import { canvas, narration } from "../managers"
@@ -55,7 +55,7 @@ export const imagesDissolveTest = new Label(IMAGE_DISSOLVE_TEST_LABEL, [
         }
         removeWithDissolve(["eggHead"], { duration: 2 })
         let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
-        showWithDissolveTransition('flowerTop', eggHead, { duration: 1 })
+        showWithDissolve('flowerTop', eggHead, { duration: 1 })
         canvas.addTickersSteps("helmlok",
             [
                 new FadeAlphaTicker({
@@ -85,7 +85,7 @@ export const imagesDissolveTest = new Label(IMAGE_DISSOLVE_TEST_LABEL, [
         )
     },
     async () => {
-        showWithDissolveTransition('eggHead', eggHeadImage, { duration: 0.5 })
+        showWithDissolve('eggHead', eggHeadImage, { duration: 0.5 })
     }
 ])
 
@@ -434,7 +434,7 @@ export const imagesAddSameAliasTestLabel = new Label(IMAGES_ADD_SAME_TAG_TEST_LA
         ])
     },
     async () => await showImage("eggHead", flowerTopImage),
-    async () => await showWithDissolveTransition("eggHead", helmlokImage),
+    async () => await showWithDissolve("eggHead", helmlokImage),
     async () => await showWithFadeTransition("eggHead", skullyImage),
     async () => await moveIn("eggHead", eggHeadImage, { speed: 100 }),
     async () => await zoomIn("eggHead", flowerTopImage),
@@ -468,7 +468,7 @@ export const imageContainerTest = new Label(IMAGE_CONTAINER_TEST_LABEL, [
         let container = new ImageContainer(undefined, [eggHeadImage, flowerTopImage])
         container.x = 300
         container.y = 300
-        showWithDissolveTransition("container", container)
+        showWithDissolve("container", container)
         container.anchor = 0.5
         canvas.addTicker("container", new RotateTicker({
             speed: 6,
