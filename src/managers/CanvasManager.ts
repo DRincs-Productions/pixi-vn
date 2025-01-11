@@ -667,7 +667,7 @@ export default class CanvasManager {
         let tickerData = CanvasManagerStatic._currentTickers[tickerId]
         let ignoreTickerSteps = options.ignoreTickerSteps || false
         this.remove(options.aliasToRemoveAfter)
-        this.resumeTickerPaused(options.tickerAliasToResume)
+        this.resumeTicker(options.tickerAliasToResume)
         if (tickerData) {
             this.removeTicker(tickerId)
             if (!ignoreTickerSteps && tickerData.duration == undefined && tickerData.createdByTicketSteps) {
@@ -841,10 +841,16 @@ export default class CanvasManager {
         }
     }
     /**
+     * @deprecated use canvas.resumeTickerPaused
+     */
+    resumeTickerPaused(alias: string | string[]) {
+        this.resumeTicker(alias)
+    }
+    /**
      * Resume a ticker.
      * @param alias The alias of the canvas element that will use the ticker.
      */
-    resumeTickerPaused(alias: string | string[]) {
+    resumeTicker(alias: string | string[]) {
         if (typeof alias === "string") {
             alias = [alias]
         }
