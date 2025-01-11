@@ -56,7 +56,7 @@ export const imagesDissolveTest = new Label(IMAGE_DISSOLVE_TEST_LABEL, [
         removeWithDissolve(["eggHead"], { duration: 2 })
         let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
         showWithDissolve('flowerTop', eggHead, { duration: 1 })
-        canvas.addTickersSteps("helmlok",
+        canvas.addTickersSequence("helmlok",
             [
                 new FadeAlphaTicker({
                     duration: 1,
@@ -69,7 +69,7 @@ export const imagesDissolveTest = new Label(IMAGE_DISSOLVE_TEST_LABEL, [
                 Repeat,
             ]
         )
-        canvas.addTickersSteps("skully",
+        canvas.addTickersSequence("skully",
             [
                 new FadeAlphaTicker({
                     duration: 0.5,
@@ -101,7 +101,7 @@ export const imagesFadeTest = new Label(IMAGE_FADE_TEST_LABEL, [
         removeWithFade(["eggHead"], { duration: 2 })
         let eggHead = new ImageSprite({ x: 300, y: 100 }, eggHeadImage)
         showWithFade('flowerTop', eggHead, { duration: 1 })
-        canvas.addTickersSteps("helmlok",
+        canvas.addTickersSequence("helmlok",
             [
                 new FadeAlphaTicker({
                     duration: 1,
@@ -114,7 +114,7 @@ export const imagesFadeTest = new Label(IMAGE_FADE_TEST_LABEL, [
                 Repeat,
             ]
         )
-        canvas.addTickersSteps("skully",
+        canvas.addTickersSequence("skully",
             [
                 new FadeAlphaTicker({
                     duration: 0.5,
@@ -167,7 +167,7 @@ export const imagesRotateTest = new Label(IMAGE_ROTATE_TEST_LABEL, [
             clockwise: false,
             speedProgression: { type: "exponential", percentage: 0.01, limit: 300 }
         }))
-        canvas.addTickersSteps("helmlok", [
+        canvas.addTickersSequence("helmlok", [
             new RotateTicker({
                 speed: 6,
                 clockwise: true,
@@ -179,7 +179,7 @@ export const imagesRotateTest = new Label(IMAGE_ROTATE_TEST_LABEL, [
             }),
             Repeat,
         ])
-        canvas.addTickersSteps("skully", [
+        canvas.addTickersSequence("skully", [
             new RotateTicker({
                 speed: 6,
                 clockwise: true,
@@ -210,7 +210,7 @@ export const imagesMoveTest = new Label(IMAGE_MOVE_TEST_LABEL, [
             destination: { x: 0.5, y: 0.5, type: "align" },
             speed: 18,
         }))
-        canvas.addTickersSteps("helmlok", [
+        canvas.addTickersSequence("helmlok", [
             new MoveTicker({
                 destination: { x: 100, y: 500 },
                 speed: 150,
@@ -223,7 +223,7 @@ export const imagesMoveTest = new Label(IMAGE_MOVE_TEST_LABEL, [
             }),
             Repeat,
         ])
-        canvas.addTickersSteps("skully", [
+        canvas.addTickersSequence("skully", [
             new MoveTicker({
                 destination: { x: 500, y: 500 },
                 speed: 40,
@@ -261,7 +261,7 @@ export const imagesZoomTest = new Label(IMAGE_ZOOM_TEST_LABEL, [
             speed: 30,
             limit: 20,
         }))
-        canvas.addTickersSteps("helmlok", [
+        canvas.addTickersSequence("helmlok", [
             new ZoomTicker({
                 speed: 30,
                 limit: -10,
@@ -273,7 +273,7 @@ export const imagesZoomTest = new Label(IMAGE_ZOOM_TEST_LABEL, [
             }),
             Repeat,
         ])
-        canvas.addTickersSteps("skully", [
+        canvas.addTickersSequence("skully", [
             new ZoomTicker({
                 speed: 1,
                 limit: 50,
@@ -413,7 +413,7 @@ export const imagesAddSameAliasTestLabel = new Label(IMAGES_ADD_SAME_TAG_TEST_LA
         canvas.addTicker("eggHead", new RotateTicker({
             speed: 6,
         }))
-        canvas.addTickersSteps("eggHead", [
+        canvas.addTickersSequence("eggHead", [
             new MoveTicker({
                 destination: { x: 100, y: 100 },
                 speed: 200,

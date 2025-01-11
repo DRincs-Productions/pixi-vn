@@ -25,7 +25,7 @@ export interface TickersStep<TArgs extends TickerArgs> {
 /**
  * The steps of the tickers
  */
-export default interface TickersSteps {
+export default interface TickersSequence {
     /**
      * The step number
      */

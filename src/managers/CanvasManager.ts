@@ -15,8 +15,8 @@ import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { importCanvasElement } from "../functions/canvas/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from '../functions/canvas/canvas-memory-utility';
 import { createExportableElement } from "../functions/export-utility";
-import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSteps } from "../interface";
-import { TickersStep } from "../interface/TickersSteps";
+import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSequence } from "../interface";
+import { TickersStep } from "../interface/TickersSequence";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -189,12 +189,12 @@ export default class CanvasManager {
      * @param mode If "move", the old alias will be removed from the ticker. If "duplicate", the old alias will be kept in the ticker.
      */
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
-        if (CanvasManagerStatic._currentTickersSteps[oldAlias]) {
+        if (CanvasManagerStatic._currentTickersSequence[oldAlias]) {
             if (mode === "move") {
-                CanvasManagerStatic._currentTickersSteps[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSteps[oldAlias])
+                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSequence[oldAlias])
             }
             else if (mode === "duplicate") {
-                CanvasManagerStatic._currentTickersSteps[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSteps[oldAlias])
+                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(CanvasManagerStatic._currentTickersSequence[oldAlias])
             }
         }
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
@@ -240,14 +240,14 @@ export default class CanvasManager {
                 }
             }
         })
-        if (CanvasManagerStatic._currentTickersSteps[newAlias]) {
-            Object.keys(CanvasManagerStatic._currentTickersSteps[newAlias]).forEach((key) => {
-                this.runTickersSteps(newAlias, key)
+        if (CanvasManagerStatic._currentTickersSequence[newAlias]) {
+            Object.keys(CanvasManagerStatic._currentTickersSequence[newAlias]).forEach((key) => {
+                this.runTickersSequence(newAlias, key)
             })
         }
-        if (mode === "duplicate" && CanvasManagerStatic._currentTickersSteps[oldAlias]) {
-            Object.keys(CanvasManagerStatic._currentTickersSteps[oldAlias]).forEach((key) => {
-                this.runTickersSteps(oldAlias, key)
+        if (mode === "duplicate" && CanvasManagerStatic._currentTickersSequence[oldAlias]) {
+            Object.keys(CanvasManagerStatic._currentTickersSequence[oldAlias]).forEach((key) => {
+                this.runTickersSequence(oldAlias, key)
             })
         }
     }
@@ -428,7 +428,7 @@ export default class CanvasManager {
      * The steps of the tickers
      */
     public get currentTickersSteps() {
-        return CanvasManagerStatic._currentTickersSteps
+        return CanvasManagerStatic._currentTickersSequence
     }
     /**
      * Run a ticker. You can run multiple addTicker with the same alias and different tickerClasses.
@@ -515,6 +515,12 @@ export default class CanvasManager {
         }
     }
     /**
+     * @deprecated use canvas.addTickersSequence
+     */
+    addTickersSteps(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
+        return this.addTickersSequence(alias, steps, currentStepNumber)
+    }
+    /**
      * Run a sequence of tickers.
      * @param alias The alias of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
@@ -522,7 +528,7 @@ export default class CanvasManager {
      * @returns The id of the sequence of tickers.
      * @example
      * ```typescript
-     * canvas.addTickersSteps("alien", [
+     * canvas.addTickersSequence("alien", [
      *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
      *     Pause(1), // 1 second
      *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
@@ -530,15 +536,15 @@ export default class CanvasManager {
      * ])
      * ```
      */
-    addTickersSteps(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
+    addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
             console.warn("[Pixi’VN] The steps of the tickers is empty")
             return
         }
-        if (!(alias in CanvasManagerStatic._currentTickersSteps)) {
-            CanvasManagerStatic._currentTickersSteps[alias] = {}
+        if (!(alias in CanvasManagerStatic._currentTickersSequence)) {
+            CanvasManagerStatic._currentTickersSequence[alias] = {}
         }
-        let step: TickersSteps = {
+        let step: TickersSequence = {
             currentStepNumber: currentStepNumber,
             steps: steps.map((step) => {
                 if (step === Repeat) {
@@ -556,18 +562,18 @@ export default class CanvasManager {
             })
         }
         let key = CanvasManagerStatic.generateTickerId(step)
-        CanvasManagerStatic._currentTickersSteps[alias][key] = step
-        this.runTickersSteps(alias, key)
+        CanvasManagerStatic._currentTickersSequence[alias][key] = step
+        this.runTickersSequence(alias, key)
         return key
     }
-    private runTickersSteps<TArgs extends TickerArgs>(alias: string, key: string) {
-        if (!CanvasManagerStatic._currentTickersSteps[alias] || !(CanvasManagerStatic._currentTickersSteps[alias][key])) {
+    private runTickersSequence<TArgs extends TickerArgs>(alias: string, key: string) {
+        if (!CanvasManagerStatic._currentTickersSequence[alias] || !(CanvasManagerStatic._currentTickersSequence[alias][key])) {
             return
         }
-        let step = CanvasManagerStatic._currentTickersSteps[alias][key].steps[CanvasManagerStatic._currentTickersSteps[alias][key].currentStepNumber]
+        let step = CanvasManagerStatic._currentTickersSequence[alias][key].steps[CanvasManagerStatic._currentTickersSequence[alias][key].currentStepNumber]
         if (step === Repeat) {
-            step = CanvasManagerStatic._currentTickersSteps[alias][key].steps[0]
-            CanvasManagerStatic._currentTickersSteps[alias][key].currentStepNumber = 0
+            step = CanvasManagerStatic._currentTickersSequence[alias][key].steps[0]
+            CanvasManagerStatic._currentTickersSequence[alias][key].currentStepNumber = 0
             if (step === Repeat) {
                 console.error("[Pixi’VN] TikersSteps has a RepeatType in the first step")
                 return
@@ -629,16 +635,16 @@ export default class CanvasManager {
         }
     }
     private nextTickerStep(alias: string, key: string) {
-        if (CanvasManagerStatic._currentTickersSteps[alias] && CanvasManagerStatic._currentTickersSteps[alias][key]) {
-            let steps = CanvasManagerStatic._currentTickersSteps[alias][key]
+        if (CanvasManagerStatic._currentTickersSequence[alias] && CanvasManagerStatic._currentTickersSequence[alias][key]) {
+            let steps = CanvasManagerStatic._currentTickersSequence[alias][key]
             if (steps.currentStepNumber + 1 < steps.steps.length) {
                 steps.currentStepNumber++
-                CanvasManagerStatic._currentTickersSteps[alias][key] = steps
-                this.runTickersSteps(alias, key)
+                CanvasManagerStatic._currentTickersSequence[alias][key] = steps
+                this.runTickersSequence(alias, key)
             }
             else {
-                if (key && CanvasManagerStatic._currentTickersSteps[alias] && CanvasManagerStatic._currentTickersSteps[alias][key]) {
-                    delete CanvasManagerStatic._currentTickersSteps[alias][key]
+                if (key && CanvasManagerStatic._currentTickersSequence[alias] && CanvasManagerStatic._currentTickersSequence[alias][key]) {
+                    delete CanvasManagerStatic._currentTickersSequence[alias][key]
                     Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
                         if (ticker.createdByTicketSteps?.canvasElementAlias === alias) {
                             if (ticker.createdByTicketSteps.id === key) {
@@ -661,7 +667,7 @@ export default class CanvasManager {
         let tickerData = CanvasManagerStatic._currentTickers[tickerId]
         let ignoreTickerSteps = options.ignoreTickerSteps || false
         this.remove(options.aliasToRemoveAfter)
-        this.resumeTickerPaused(options.tickerAliasToResume)
+        this.resumeTicker(options.tickerAliasToResume)
         if (tickerData) {
             this.removeTicker(tickerId)
             if (!ignoreTickerSteps && tickerData.duration == undefined && tickerData.createdByTicketSteps) {
@@ -699,8 +705,8 @@ export default class CanvasManager {
                         }
                     }
                 })
-                if (CanvasManagerStatic._currentTickersSteps[alias]) {
-                    delete CanvasManagerStatic._currentTickersSteps[alias]
+                if (CanvasManagerStatic._currentTickersSequence[alias]) {
+                    delete CanvasManagerStatic._currentTickersSequence[alias]
                 }
                 CanvasManagerStatic.removeTickerTimeoutsByAlias(alias, false)
             })
@@ -718,10 +724,10 @@ export default class CanvasManager {
             tickerId = ticker.prototype.id
         }
         alias.forEach((alias) => {
-            if (CanvasManagerStatic._currentTickersSteps[alias]) {
-                Object.entries(CanvasManagerStatic._currentTickersSteps[alias]).forEach(([id, ticker]) => {
+            if (CanvasManagerStatic._currentTickersSequence[alias]) {
+                Object.entries(CanvasManagerStatic._currentTickersSequence[alias]).forEach(([id, ticker]) => {
                     if (ticker.steps.find((t) => typeof t === "object" && "ticker" in t && t.ticker === tickerId)) {
-                        delete CanvasManagerStatic._currentTickersSteps[alias][id]
+                        delete CanvasManagerStatic._currentTickersSequence[alias][id]
                     }
                 })
             }
@@ -753,9 +759,9 @@ export default class CanvasManager {
                     })
             }
         })
-        Object.entries(CanvasManagerStatic._currentTickersSteps).forEach(([alias, ticker]) => {
+        Object.entries(CanvasManagerStatic._currentTickersSequence).forEach(([alias, ticker]) => {
             if (ticker === undefined) {
-                delete CanvasManagerStatic._currentTickersSteps[alias]
+                delete CanvasManagerStatic._currentTickersSequence[alias]
             }
         })
         Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(([timeout, { aliases: aliases }]) => {
@@ -768,7 +774,7 @@ export default class CanvasManager {
      * Remove all tickers from the canvas.
      */
     public removeAllTickers() {
-        CanvasManagerStatic._currentTickersSteps = {}
+        CanvasManagerStatic._currentTickersSequence = {}
         Object.keys(CanvasManagerStatic._currentTickers).forEach((id) => {
             this.removeTicker(id)
         })
@@ -801,11 +807,17 @@ export default class CanvasManager {
     }
 
     /**
+     * @deprecated use canvas.pauseTicker
+     */
+    putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
+        this.pauseTicker(alias, options)
+    }
+    /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param options The options of the pause ticker.
      */
-    putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
+    pauseTicker(alias: string, options: PauseTickerType = {}) {
         let oldOptions = CanvasManagerStatic._tickersOnPause[alias]
         if (!oldOptions) {
             CanvasManagerStatic._tickersOnPause[alias] = options
@@ -829,10 +841,16 @@ export default class CanvasManager {
         }
     }
     /**
+     * @deprecated use canvas.resumeTicker
+     */
+    resumeTickerPaused(alias: string | string[]) {
+        this.resumeTicker(alias)
+    }
+    /**
      * Resume a ticker.
      * @param alias The alias of the canvas element that will use the ticker.
      */
-    resumeTickerPaused(alias: string | string[]) {
+    resumeTicker(alias: string | string[]) {
         if (typeof alias === "string") {
             alias = [alias]
         }
@@ -898,7 +916,7 @@ export default class CanvasManager {
             }
         }
         else {
-            let tickers = CanvasManagerStatic._currentTickersSteps[alias]
+            let tickers = CanvasManagerStatic._currentTickersSequence[alias]
             if (tickers && tickers[id]) {
                 if (tickers[id].steps.includes(Repeat)) {
                     console.error(`[Pixi’VN] The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`, tickers[id])
@@ -957,7 +975,7 @@ export default class CanvasManager {
         })
         return {
             tickers: createExportableElement(CanvasManagerStatic.currentTickersWithoutCreatedBySteps),
-            tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSteps),
+            tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSequence),
             elements: createExportableElement(currentElements),
             stage: createExportableElement(getMemoryContainer(this.app.stage)),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
@@ -1022,9 +1040,9 @@ export default class CanvasManager {
             if (data.hasOwnProperty("tickersSteps")) {
                 let tickersSteps = (data as ExportedCanvas)["tickersSteps"]
                 Object.entries(tickersSteps).forEach(([alias, steps]) => {
-                    CanvasManagerStatic._currentTickersSteps[alias] = steps
+                    CanvasManagerStatic._currentTickersSequence[alias] = steps
                     Object.keys(steps).forEach((key) => {
-                        this.runTickersSteps(alias, key)
+                        this.runTickersSequence(alias, key)
                     })
                 })
             }

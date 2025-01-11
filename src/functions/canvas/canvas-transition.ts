@@ -91,7 +91,7 @@ export async function showWithDissolve(
         let ids = removeWithDissolve(oldComponentAlias, props, priority)
         if (ids) {
             res.push(...ids)
-            canvas.putOnPauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
+            canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
             tickerAliasToResume.push(oldComponentAlias)
         }
     }
@@ -213,7 +213,7 @@ export async function showWithFade(
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
         // pause the ticker
-        canvas.putOnPauseTicker(alias, { tickerIdsIncluded: [idShow] })
+        canvas.pauseTicker(alias, { tickerIdsIncluded: [idShow] })
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
@@ -314,7 +314,7 @@ export async function moveIn(
         await component.load()
     }
     // special
-    oldComponentAlias && canvas.putOnPauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
+    oldComponentAlias && canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
     switch (direction) {
         case "up":
             component.y = canvas.canvasHeight + component.height
@@ -340,7 +340,7 @@ export async function moveIn(
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] })
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
     }
@@ -398,7 +398,7 @@ export function moveOut(
     }, undefined, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
         return [id]
     }
@@ -489,7 +489,7 @@ export async function zoomIn(
         else {
             aliasToRemoveAfter.push(oldComponentAlias)
         }
-        canvas.putOnPauseTicker(oldComponentAlias)
+        canvas.pauseTicker(oldComponentAlias)
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     tickerAliasToResume.push(alias)
@@ -504,7 +504,7 @@ export async function zoomIn(
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] })
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
     }
@@ -578,7 +578,7 @@ export function zoomOut(
     }, undefined, priority)
     let id = canvas.addTicker(alias, effect)
     if (id) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [id] })
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] })
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
         return [id]
     }
@@ -656,7 +656,7 @@ export async function pushIn(
     }, undefined, priority)
     let idShow = canvas.addTicker(alias, effect)
     if (idShow) {
-        canvas.putOnPauseTicker(alias, { tickerIdsExcluded: [idShow] })
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] })
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
         res.push(idShow)
     }

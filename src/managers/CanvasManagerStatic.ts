@@ -2,7 +2,7 @@ import { Devtools, initDevtools } from '@pixi/devtools';
 import sha1 from 'crypto-js/sha1';
 import { Application, ApplicationOptions } from "pixi.js";
 import { asciiArtLog } from '../functions/easter-egg';
-import { TickerHistory, TickersSteps, TickerTimeoutHistory } from "../interface";
+import { TickerHistory, TickersSequence, TickerTimeoutHistory } from "../interface";
 import additionalPositionsProperties from '../pixi-devtools/additionalPositionsProperties';
 import PauseTickerType from '../types/PauseTickerType';
 
@@ -165,14 +165,14 @@ export default class CanvasManagerStatic {
         return Object.fromEntries(Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketSteps))
     }
     static _currentTickers: { [id: string]: TickerHistory<any> } = {}
-    static _currentTickersSteps: { [alias: string]: { [tickerId: string]: TickersSteps } } = {}
+    static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } = {}
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {}
     static _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[],
         stepAlias: { id: string, alias: string }[],
     } = { tikersIds: [], stepAlias: [] }
     static _tickersOnPause: { [aliasOrId: string]: PauseTickerType } = {}
-    static generateTickerId(tickerData: TickerHistory<any> | TickersSteps): string {
+    static generateTickerId(tickerData: TickerHistory<any> | TickersSequence): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7)
         }
