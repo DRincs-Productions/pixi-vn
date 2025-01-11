@@ -807,11 +807,17 @@ export default class CanvasManager {
     }
 
     /**
+     * @deprecated use canvas.putOnPauseTicker
+     */
+    putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
+        this.pauseTicker(alias, options)
+    }
+    /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param options The options of the pause ticker.
      */
-    putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
+    pauseTicker(alias: string, options: PauseTickerType = {}) {
         let oldOptions = CanvasManagerStatic._tickersOnPause[alias]
         if (!oldOptions) {
             CanvasManagerStatic._tickersOnPause[alias] = options
