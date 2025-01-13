@@ -29,8 +29,12 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 
 * [Why Pixi’VN?](https://pixi-vn.web.app/start/why.html)
 * [Get Started](https://pixi-vn.web.app/start/getting-started.html)
+* Make your first:
+  * [Visual Novel](https://pixi-vn.web.app/start/make-visual-novel.html)
+  * [Point and Click adventure game](https://pixi-vn.web.app/start/make-point-and-click.html)
+  * [RPG game](https://pixi-vn.web.app/start/make-rpg.html)
 
-### First steps
+## First steps
 
 * [Characters](https://pixi-vn.web.app/start/character.html)
 * [Narration](https://pixi-vn.web.app/start/narration.html):
@@ -42,9 +46,10 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
     * [Input](https://pixi-vn.web.app/ink/ink-input.html)
     * [Canvas](https://pixi-vn.web.app/ink/ink-canvas.html)
     * [Sounds and Music](https://pixi-vn.web.app/ink/ink-sound.html)
+    * [Assets management](https://pixi-vn.web.app/ink/ink-assets.html)
     * [Pause](https://pixi-vn.web.app/ink/ink-pause.html)
-    * [Translating](https://pixi-vn.web.app/ink/ink-translate.html)
     * [Text replacement](https://pixi-vn.web.app/ink/ink-replacement.html)
+    * [Translating](https://pixi-vn.web.app/ink/ink-translate.html)
     * [Custom Hashtag Script](https://pixi-vn.web.app/ink/ink-hashtag.html)
   * [Narration with Ren’Py](https://pixi-vn.web.app/renpy/renpy.html)
   * Narration with JS/TS:
@@ -56,29 +61,41 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
     * [Input](https://pixi-vn.web.app/start/input.html)
     * [History](https://pixi-vn.web.app/start/history.html)
     * [Translating](https://pixi-vn.web.app/start/translate.html)
-    * [Typewriter effect](https://pixi-vn.web.app/start/typewriter.html)
-    * [Style Text (Markdown)](https://pixi-vn.web.app/start/markdown.html)
+    * [Markup language (to add text style)](https://pixi-vn.web.app/start/markup.html)
+      * [Markdown](https://pixi-vn.web.app/start/markup-markdown.html)
+      * [Typewriter effect](https://pixi-vn.web.app/start/markup-typewriter.html)
     * [Other features](https://pixi-vn.web.app/start/other-narrative-features.html)
 * [PixiJS Canvas](https://pixi-vn.web.app/start/canvas.html):
-  * [Images](https://pixi-vn.web.app/start/images.html)
-  * [Video](https://pixi-vn.web.app/start/videos.html)
-  * [Transitions](https://pixi-vn.web.app/start/transition.html)
-  * [Canvas Elements](https://pixi-vn.web.app/start/canvas-elements.html)
-  * [Animations and Effects](https://pixi-vn.web.app/start/animations-effects.html)
-  * [Tickers](https://pixi-vn.web.app/start/tickers.html)
+  * [Initialize the canvas](https://pixi-vn.web.app/start/canvas-initialize.html)
+  * [Canvas alias](https://pixi-vn.web.app/start/canvas-alias.html)
+  * [Canvas Components](https://pixi-vn.web.app/start/canvas-components.html)
+    * [ImageSprite](https://pixi-vn.web.app/start/canvas-images.html)
+    * [ImageContainer](https://pixi-vn.web.app/start/canvas-image-container.html)
+    * [VideoSprite](https://pixi-vn.web.app/start/canvas-videos.html)
+    * [Filters](https://pixi-vn.web.app/start/canvas-filters.html)
+    * [Lights](https://pixi-vn.web.app/start/canvas-lights.html)
+    * [Spine 2D](https://pixi-vn.web.app/start/canvas-spine2d.html)
+  * [Canvas functions](https://pixi-vn.web.app/start/canvas-functions.html)
+  * [Position properties](https://pixi-vn.web.app/start/canvas-position.html)
+  * [Transitions](https://pixi-vn.web.app/start/canvas-transition.html)
+  * [Animations and Effects](https://pixi-vn.web.app/start/canvas-animations-effects.html)
+    * [Primitives (ticker)](https://pixi-vn.web.app/start/canvas-tickers.html)
+      * [Tickers methods](https://pixi-vn.web.app/start/canvas-tickers-functions.html)
+    * [Articulated](https://pixi-vn.web.app/start/canvas-articulated-animations-effects.html)
 * [Sounds and Music](https://pixi-vn.web.app/start/sound.html)
-* [Assets management](https://pixi-vn.web.app/start/assets-management.html)
+* [Assets](https://pixi-vn.web.app/start/assets.html)
+  * [Assets management](https://pixi-vn.web.app/start/assets-management.html)
 * [Game storage](https://pixi-vn.web.app/start/storage.html):
   * [Flags Management](https://pixi-vn.web.app/start/flags.html)
   * [Stored Classes](https://pixi-vn.web.app/start/stored-classes.html)
-* [Save and Load](https://pixi-vn.web.app/start/save.html)
 * [UI with JavaScript Framework](https://pixi-vn.web.app/start/interface.html)
   * JavaScript Frameworks
-    * [Angular](https://pixi-vn.web.app/start/interface-angular.html)
-    * [React Interface](https://pixi-vn.web.app/start/interface-react.html)
-    * [Vue](https://pixi-vn.web.app/start/interface-vue.html)
+    * [Angular UI](https://pixi-vn.web.app/start/interface-angular.html)
+    * [React UI](https://pixi-vn.web.app/start/interface-react.html)
+    * [Vue UI](https://pixi-vn.web.app/start/interface-vue.html)
   * [Navigate/switch between UI screens](https://pixi-vn.web.app/start/interface-navigate.html)
   * [Connect the UI with the storage](https://pixi-vn.web.app/start/interface-connect-storage.html)
+* [Save and Load](https://pixi-vn.web.app/start/save.html)
 
 ## Advanced topics
 
