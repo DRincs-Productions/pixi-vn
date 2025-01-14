@@ -7,7 +7,7 @@ export default defineConfig({
     dts: true, // Generate declaration file (.d.ts)
     // treeshake: true,
     // splitting: false,
-    // sourcemap: true, // Generate sourcemap, it was removed because otherwise it would explode
+    sourcemap: true, // Generate sourcemap
     clean: true,
     // minify: true,
     // bundle: true,
