@@ -25,12 +25,12 @@
   "homepage": "https://pixi-vn.web.app/",
   "funding": "https://github.com/DRincs-Productions/pixi-vn?sponsor=1",
   "dependencies": {
+    "@pixi/devtools": "^2.0.1",
     "@pixi/sound": "^6.0.1",
     "pixi.js": "^8.6.6"
   },
   "devDependencies": {
     "@drincs/pixi-vn": "^0.10.1",
-    "@pixi/devtools": "^2.0.1",
     "@types/crypto-js": "^4.2.2",
     "@types/deep-diff": "^1.0.5",
     "crypto-js": "^4.2.0",
