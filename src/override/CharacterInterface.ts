@@ -74,9 +74,9 @@ export default interface CharacterInterface {
     /**
      * The icon of the character.
      */
-    icon?: string
+    readonly icon?: string
     /**
      * The color of the character.
      */
-    color?: string
+    readonly color?: string
 }
