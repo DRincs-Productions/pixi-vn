@@ -1,13 +1,18 @@
 {
-    // Formatter
-    "[javascript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features",
-        "editor.formatOnSave": true
-    },
-    "[typescript]": {
-        "editor.defaultFormatter": "vscode.typescript-language-features",
-        "editor.formatOnSave": true
-    },
+	// Formatter
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode",
+		"editor.formatOnSave": true
+	},
+	"prettier.jsxSingleQuote": true,
+	"prettier.printWidth": 120,
+	"prettier.useTabs": true,
+	"prettier.singleAttributePerLine": false,
+	"prettier.tabWidth": 4,
     // reorganise imports
     "editor.codeActionsOnSave": {
         "source.organizeImports": "explicit"
