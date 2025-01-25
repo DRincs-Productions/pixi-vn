@@ -1,6 +1,6 @@
 {
   "name": "@drincs/pixi-vn",
-  "version": "0.10.5",
+  "version": "0.10.6",
   "type": "module",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.cjs",
@@ -42,7 +42,9 @@
     "vitest": "^2.1.8"
   },
   "keywords": [
+    "engine",
     "game",
+    "game-engine",
     "js",
     "novel",
     "pixi",
