@@ -1,12 +1,12 @@
-import { narration } from "."
-import { createExportableElement } from "../functions/export-utility"
-import { ExportedStorage } from "../interface"
-import { StorageElementType } from "../types/StorageElementType"
-import StorageManagerStatic from "./StorageManagerStatic"
+import { narration } from ".";
+import { createExportableElement } from "../functions/export-utility";
+import { ExportedStorage } from "../interface";
+import { StorageElementType } from "../types/StorageElementType";
+import StorageManagerStatic from "./StorageManagerStatic";
 
 export default class StorageManager {
     get keysSystem() {
-        return StorageManagerStatic._keysSystem
+        return StorageManagerStatic._keysSystem;
     }
     /**
      * Set a variable in the storage
@@ -15,14 +15,14 @@ export default class StorageManager {
      * @returns
      */
     public setVariable(key: string, value: StorageElementType) {
-        key = key.toLowerCase()
+        key = key.toLowerCase();
         if (value === undefined || value === null) {
             if (StorageManagerStatic.storage.hasOwnProperty(key)) {
-                delete StorageManagerStatic.storage[key]
+                delete StorageManagerStatic.storage[key];
             }
-            return
+            return;
         }
-        StorageManagerStatic.storage[key] = value
+        StorageManagerStatic.storage[key] = value;
     }
     /**
      * Get a variable from the storage. If the variable is a temporary variable, it will return the temporary variable
@@ -30,14 +30,14 @@ export default class StorageManager {
      * @returns The value of the variable. If the variable does not exist, it will return undefined
      */
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
-        key = key.toLowerCase()
+        key = key.toLowerCase();
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
-            return StorageManagerStatic.getTempVariable<T>(key)
+            return StorageManagerStatic.getTempVariable<T>(key);
         }
         if (StorageManagerStatic.storage.hasOwnProperty(key)) {
-            return createExportableElement(StorageManagerStatic.storage[key]) as T
+            return createExportableElement(StorageManagerStatic.storage[key]) as T;
         }
-        return undefined
+        return undefined;
     }
     /**
      * Remove a variable from the storage
@@ -45,9 +45,9 @@ export default class StorageManager {
      * @returns
      */
     public removeVariable(key: string) {
-        key = key.toLowerCase()
+        key = key.toLowerCase();
         if (StorageManagerStatic.storage.hasOwnProperty(key)) {
-            delete StorageManagerStatic.storage[key]
+            delete StorageManagerStatic.storage[key];
         }
     }
     /**
@@ -55,68 +55,65 @@ export default class StorageManager {
      * To get the temporary variable, use {@link this.getVariable}
      * @param key The key of the temporary variable
      * @param value The value of the temporary variable. If undefined, the variable will be removed
-     * @returns 
+     * @returns
      */
     public setTempVariable(key: string, value: StorageElementType) {
-        key = key.toLowerCase()
-        let tempStorage = StorageManagerStatic.tempStorage
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
+        key = key.toLowerCase();
+        let tempStorage = StorageManagerStatic.tempStorage;
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
         if (value === undefined || value === null) {
-            this.removeTempVariable(key)
-            return
-        }
-        else {
-            tempStorage[key] = value
+            this.removeTempVariable(key);
+            return;
+        } else {
+            tempStorage[key] = value;
             if (!tempStorageDeadlines.hasOwnProperty(key)) {
-                tempStorageDeadlines[key] = narration.openedLabels.length
+                tempStorageDeadlines[key] = narration.openedLabels.length;
             }
         }
-        StorageManagerStatic.tempStorage = tempStorage
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
+        StorageManagerStatic.tempStorage = tempStorage;
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     /**
      * Remove a temporary variable
      * @param key The key of the temporary variable
      */
     public removeTempVariable(key: string) {
-        key = key.toLowerCase()
-        let tempStorage = StorageManagerStatic.tempStorage
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
+        key = key.toLowerCase();
+        let tempStorage = StorageManagerStatic.tempStorage;
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
         if (tempStorage.hasOwnProperty(key)) {
-            delete tempStorage[key]
-            delete tempStorageDeadlines[key]
+            delete tempStorage[key];
+            delete tempStorageDeadlines[key];
         }
-        StorageManagerStatic.tempStorage = tempStorage
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
+        StorageManagerStatic.tempStorage = tempStorage;
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     /**
      * Clear the storage and the oidsUsed
      * @returns
      */
     public clear() {
-        StorageManagerStatic.storage = { ...StorageManagerStatic.baseStorage }
+        StorageManagerStatic.storage = { ...StorageManagerStatic.baseStorage };
     }
     public exportJson(): string {
-        return JSON.stringify(this.export())
+        return JSON.stringify(this.export());
     }
     public export(): ExportedStorage {
-        return createExportableElement(StorageManagerStatic.storage)
+        return createExportableElement(StorageManagerStatic.storage);
     }
     public importJson(dataString: string) {
-        this.import(JSON.parse(dataString))
+        this.import(JSON.parse(dataString));
     }
     public import(data: object) {
-        this.clear()
+        this.clear();
         try {
             if (data) {
-                StorageManagerStatic.storage = (data as ExportedStorage)
+                StorageManagerStatic.storage = data as ExportedStorage;
+            } else {
+                console.warn("[Pixi’VN] No storage data found");
             }
-            else {
-                console.warn("[Pixi’VN] No storage data found")
-            }
-        }
-        catch (e) {
-            console.error("[Pixi’VN] Error importing data", e)
+        } catch (e) {
+            console.error("[Pixi’VN] Error importing data", e);
         }
     }
 }
