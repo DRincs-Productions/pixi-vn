@@ -10,7 +10,7 @@ import { setMemorySprite } from "../classes/canvas/Sprite";
 import { setMemoryText } from "../classes/canvas/Text";
 import { setMemoryVideoSprite } from "../classes/canvas/VideoSprite";
 import TickerBase from "../classes/ticker/TickerBase";
-import { CANVAS_APP_STAGE_ALIAS, Repeat } from "../constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { geTickerInstanceById } from "../decorators/ticker-decorator";
 import { importCanvasElement } from "../functions/canvas/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "../functions/canvas/canvas-memory-utility";
@@ -34,6 +34,9 @@ export default class CanvasManager {
      */
     get app() {
         return CanvasManagerStatic.app;
+    }
+    get gameLayer() {
+        return CanvasManagerStatic.gameLayer;
     }
     /**
      * If the manager is initialized.
@@ -122,7 +125,7 @@ export default class CanvasManager {
      * The children of the canvas.
      */
     get children() {
-        return CanvasManagerStatic.app.stage.children;
+        return CanvasManagerStatic.gameLayer.children;
     }
     /**
      * Copy the properties of an old canvas element to a new canvas element.
@@ -281,8 +284,8 @@ export default class CanvasManager {
             zIndex?: number;
         } = {}
     ) {
-        if (alias === CANVAS_APP_STAGE_ALIAS) {
-            console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`);
+        if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
         }
 
@@ -294,21 +297,21 @@ export default class CanvasManager {
         }
 
         let zIndex = options.zIndex;
-        if (oldCanvasElement && !this.app.stage.children.includes(oldCanvasElement)) {
+        if (oldCanvasElement && !this.gameLayer.children.includes(oldCanvasElement)) {
             console.error(
                 `[Pixi’VN] The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`
             );
         } else if (oldCanvasElement) {
-            zIndex === undefined && (zIndex = this.app.stage.getChildIndex(oldCanvasElement));
+            zIndex === undefined && (zIndex = this.gameLayer.getChildIndex(oldCanvasElement));
             this.remove(alias, { ignoreTickers: true });
         }
 
         if (zIndex !== undefined) {
             canvasComponent.label = alias;
-            this.app.stage.addChildAt(canvasComponent, zIndex);
+            this.gameLayer.addChildAt(canvasComponent, zIndex);
         } else {
             canvasComponent.label = alias;
-            this.app.stage.addChild(canvasComponent);
+            this.gameLayer.addChild(canvasComponent);
         }
     }
     /**
@@ -338,8 +341,8 @@ export default class CanvasManager {
             ignoreTickers?: boolean;
         } = {}
     ) {
-        if (alias === CANVAS_APP_STAGE_ALIAS) {
-            console.error(`[Pixi’VN] The alias ${CANVAS_APP_STAGE_ALIAS} is reserved`);
+        if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
         }
         let ignoreTickers = options.ignoreTickers;
@@ -347,8 +350,8 @@ export default class CanvasManager {
             alias = [alias];
         }
         alias.forEach((alias) => {
-            this.app.stage.getChildrenByLabel(alias).forEach((canvasComponent) => {
-                this.app.stage.removeChild(canvasComponent);
+            this.gameLayer.getChildrenByLabel(alias).forEach((canvasComponent) => {
+                this.gameLayer.removeChild(canvasComponent);
                 !ignoreTickers && this.unlinkComponentFromTicker(alias);
             });
         });
@@ -369,10 +372,10 @@ export default class CanvasManager {
      * ```
      */
     public find<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
-        if (alias === CANVAS_APP_STAGE_ALIAS) {
-            return this.app.stage as T;
+        if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
+            return this.gameLayer as T;
         }
-        let canvasComponent = this.app.stage.getChildByLabel(alias);
+        let canvasComponent = this.gameLayer.getChildByLabel(alias);
         if (canvasComponent) {
             return canvasComponent as T;
         }
@@ -390,14 +393,14 @@ export default class CanvasManager {
      * @returns If the DisplayObject is on the canvas.
      */
     public canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T) {
-        return this.app.stage.children.includes(pixiElement);
+        return this.gameLayer.children.includes(pixiElement);
     }
     /**
      * Remove all canvas elements from the canvas.
      * And remove all tickers that are not connected to any canvas element.
      */
     public removeAll() {
-        this.app.stage.removeChildren();
+        this.gameLayer.removeChildren();
         this.removeAllTickers();
     }
     /**
@@ -977,6 +980,39 @@ export default class CanvasManager {
         }
     }
 
+    /* Layers Methods */
+
+    /**
+     * Add a layer to the canvas.
+     * @param label The label of the layer.
+     * @param layer The layer to be added.
+     * @returns The layer.
+     * @example
+     * ```typescript
+     * const uiLayer = new Container();
+     * canvas.addLayer("ui", uiLayer);
+     * ```
+     */
+    addLayer(label: string, layer: PixiContainer) {
+        if (label === CANVAS_APP_GAME_LAYER_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
+            return;
+        }
+        return CanvasManagerStatic.app.stage.addChild(layer);
+    }
+
+    /**
+     * Remove a layer from the canvas.
+     * @param label The label of the layer to be removed.
+     * @example
+     * ```typescript
+     * const uiLayer = canvas.removeLayer("ui");
+     * ```
+     */
+    getLayer(label: string) {
+        return CanvasManagerStatic.app.stage.getChildByLabel(label);
+    }
+
     /* Other Methods */
 
     /**
@@ -984,7 +1020,7 @@ export default class CanvasManager {
      * @returns The image as a base64 string.
      */
     async extractImage() {
-        const image = await this.app.renderer.extract.image(this.app.stage);
+        const image = await this.app.renderer.extract.image(this.gameLayer);
         return image.src;
     }
 
@@ -1019,7 +1055,7 @@ export default class CanvasManager {
             tickers: createExportableElement(CanvasManagerStatic.currentTickersWithoutCreatedBySteps),
             tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSequence),
             elements: createExportableElement(currentElements),
-            stage: createExportableElement(getMemoryContainer(this.app.stage)),
+            stage: createExportableElement(getMemoryContainer(this.gameLayer)),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
             tickersOnPause: createExportableElement(CanvasManagerStatic._tickersOnPause),
             tickersToCompleteOnStepEnd: createExportableElement(CanvasManagerStatic._tickersToCompleteOnStepEnd),
@@ -1057,7 +1093,7 @@ export default class CanvasManager {
                 return;
             }
             if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
-                setMemoryContainer(this.app.stage, (data as ExportedCanvas)["stage"], { ignoreScale: true });
+                setMemoryContainer(this.gameLayer, (data as ExportedCanvas)["stage"], { ignoreScale: true });
             } else {
                 console.error("[Pixi’VN] The data does not have the properties stage");
             }

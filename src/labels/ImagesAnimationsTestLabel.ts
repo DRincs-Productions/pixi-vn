@@ -1,7 +1,7 @@
 import { ChoiceMenuOption, ChoiceMenuOptionClose, ImageSprite, Label } from "../classes";
 import ImageContainer from "../classes/canvas/ImageContainer";
 import { FadeAlphaTicker, MoveTicker, RotateTicker, ZoomTicker } from "../classes/ticker";
-import { CANVAS_APP_STAGE_ALIAS, Pause, Repeat } from "../constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, Repeat } from "../constants";
 import {
     addImage,
     moveIn,
@@ -537,7 +537,7 @@ export const shakeStageTest = new Label(IMAGES_SHAKE_STAGE_TEST_LABEL, [
             character: juliette,
             text: `Now the whole stage will shake.`,
         };
-        shakeEffect(CANVAS_APP_STAGE_ALIAS);
+        shakeEffect(CANVAS_APP_GAME_LAYER_ALIAS);
     },
 ]);
 

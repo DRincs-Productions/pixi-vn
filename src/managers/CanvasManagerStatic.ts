@@ -1,6 +1,7 @@
 import { Devtools, initDevtools } from "@pixi/devtools";
 import sha1 from "crypto-js/sha1";
-import { Application, ApplicationOptions } from "pixi.js";
+import { Application, ApplicationOptions, Container as PixiContainer } from "pixi.js";
+import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
 import { asciiArtLog } from "../functions/easter-egg";
 import { TickerHistory, TickersSequence, TickerTimeoutHistory } from "../interface";
 import additionalPositionsProperties from "../pixi-devtools/additionalPositionsProperties";
@@ -18,6 +19,15 @@ export default class CanvasManagerStatic {
             throw new Error("[Pixi’VN] CanvasManagerStatic.app is undefined");
         }
         return CanvasManagerStatic._app;
+    }
+    static get gameLayer() {
+        let layer = this.app.stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
+        if (!layer) {
+            layer = new PixiContainer();
+            layer.label = CANVAS_APP_GAME_LAYER_ALIAS;
+            this.app.stage.addChild(layer);
+        }
+        return layer;
     }
     /**
      * This is the div that have same size of the canvas.
@@ -67,6 +77,9 @@ export default class CanvasManagerStatic {
 
                 // call it manually once so we are sure we are the correct size after starting
                 CanvasManagerStatic.resize();
+
+                // add the game layer
+                CanvasManagerStatic.gameLayer;
 
                 asciiArtLog();
             });
@@ -158,11 +171,11 @@ export default class CanvasManagerStatic {
      * The order of the elements in the canvas, is determined by the zIndex.
      */
     static get childrenAliasesOrder(): string[] {
-        return this.app.stage.children
+        return CanvasManagerStatic.gameLayer.children
             .filter((child) => child.label)
             .sort(
                 (a, b) =>
-                    CanvasManagerStatic.app.stage.getChildIndex(a) - CanvasManagerStatic.app.stage.getChildIndex(b)
+                    CanvasManagerStatic.gameLayer.getChildIndex(a) - CanvasManagerStatic.gameLayer.getChildIndex(b)
             )
             .map((item) => item.label);
     }
