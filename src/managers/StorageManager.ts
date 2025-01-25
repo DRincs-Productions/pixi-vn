@@ -88,6 +88,37 @@ export default class StorageManager {
         StorageManagerStatic.tempStorage = tempStorage;
         StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
+
+    /**
+     * Set a flag to true or false.
+     * @param name The name of the flag
+     * @param value The value of the flag.
+     */
+    setFlag(name: string, value: boolean) {
+        let flags = this.getVariable<string[]>(this.keysSystem.FLAGS_CATEGORY_KEY) || [];
+        if (value) {
+            if (!flags.includes(name)) {
+                flags.push(name);
+            }
+        } else {
+            let index = flags.indexOf(name);
+            if (index > -1) {
+                flags.splice(index, 1);
+            }
+        }
+        this.setVariable(this.keysSystem.FLAGS_CATEGORY_KEY, flags);
+    }
+
+    /**
+     * Get the value of a flag
+     * @param name The name of the flag
+     * @returns The value of the flag
+     */
+    getFlag(name: string): boolean {
+        let flags = this.getVariable<string[]>(this.keysSystem.FLAGS_CATEGORY_KEY) || [];
+        return flags.includes(name);
+    }
+
     /**
      * Clear the storage and the oidsUsed
      * @returns
