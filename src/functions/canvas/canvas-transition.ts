@@ -1,50 +1,57 @@
-import { UPDATE_PRIORITY } from "pixi.js"
-import { CanvasBaseItem, ImageSprite, VideoSprite } from "../../classes"
-import ImageContainer from "../../classes/canvas/ImageContainer"
-import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker"
-import { ImageContainerOptions, ImageSpriteOptions, MoveInOutProps, ShowWithDissolveTransitionProps, ShowWithFadeTransitionProps, ZoomInOutProps } from "../../interface"
-import { PushInOutProps } from "../../interface/canvas/transition-props"
-import { canvas } from "../../managers"
-import { getPivotBySuperPivot } from "./canvas-property-utility"
-import { checkIfVideo } from "./canvas-utility"
-import { addImageCointainer } from "./image-container-utility"
-import { addImage } from "./image-utility"
-import { addVideo } from "./video-utility"
+import { UPDATE_PRIORITY } from "pixi.js";
+import { CanvasBaseItem, ImageSprite, VideoSprite } from "../../classes";
+import ImageContainer from "../../classes/canvas/ImageContainer";
+import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker";
+import {
+    ImageContainerOptions,
+    ImageSpriteOptions,
+    MoveInOutProps,
+    ShowWithDissolveTransitionProps,
+    ShowWithFadeTransitionProps,
+    ZoomInOutProps,
+} from "../../interface";
+import { PushInOutProps } from "../../interface/canvas/transition-props";
+import { canvas } from "../../managers";
+import { getPivotBySuperPivot } from "./canvas-property-utility";
+import { checkIfVideo } from "./canvas-utility";
+import { addImageCointainer } from "./image-container-utility";
+import { addImage } from "./image-utility";
+import { addVideo } from "./video-utility";
 
-type TComponent = CanvasBaseItem<any> | string | string[] | {
-    value: string,
-    options: ImageSpriteOptions
-} | {
-    value: string[],
-    options: ImageContainerOptions
-}
+type TComponent =
+    | CanvasBaseItem<any>
+    | string
+    | string[]
+    | {
+          value: string;
+          options: ImageSpriteOptions;
+      }
+    | {
+          value: string[];
+          options: ImageContainerOptions;
+      };
 function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<any> {
     if (typeof canvasElement === "string") {
         if (checkIfVideo(canvasElement)) {
-            return addVideo(alias, canvasElement)
+            return addVideo(alias, canvasElement);
+        } else {
+            return addImage(alias, canvasElement);
         }
-        else {
-            return addImage(alias, canvasElement)
-        }
-    }
-    else if (Array.isArray(canvasElement)) {
-        return addImageCointainer(alias, canvasElement)
-    }
-    else if (typeof canvasElement === "object" && "value" in canvasElement && "options" in canvasElement) {
+    } else if (Array.isArray(canvasElement)) {
+        return addImageCointainer(alias, canvasElement);
+    } else if (typeof canvasElement === "object" && "value" in canvasElement && "options" in canvasElement) {
         if (typeof canvasElement.value === "string") {
             if (checkIfVideo(canvasElement.value)) {
-                return addVideo(alias, canvasElement.value, canvasElement.options)
+                return addVideo(alias, canvasElement.value, canvasElement.options);
+            } else {
+                return addImage(alias, canvasElement.value, canvasElement.options);
             }
-            else {
-                return addImage(alias, canvasElement.value, canvasElement.options)
-            }
-        }
-        else if (Array.isArray(canvasElement.value)) {
-            return addImageCointainer(alias, canvasElement.value, canvasElement.options as any)
+        } else if (Array.isArray(canvasElement.value)) {
+            return addImageCointainer(alias, canvasElement.value, canvasElement.options as any);
         }
     }
-    canvas.add(alias, canvasElement as CanvasBaseItem<any>)
-    return canvasElement as CanvasBaseItem<any>
+    canvas.add(alias, canvasElement as CanvasBaseItem<any>);
+    return canvasElement as CanvasBaseItem<any>;
 }
 
 /**
@@ -64,56 +71,60 @@ export async function showWithDissolve(
     alias: string,
     component?: TComponent,
     props: ShowWithDissolveTransitionProps = {},
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [] } = props
-    let res: string[] = []
+    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [] } = props;
+    let res: string[] = [];
     if (!component) {
-        component = alias
+        component = alias;
     }
     if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume]
+        tickerAliasToResume = [tickerAliasToResume];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined
+    let oldComponentAlias: string | undefined = undefined;
     if (canvas.find(alias)) {
-        oldComponentAlias = alias + "_temp_disolve"
-        canvas.editAlias(alias, oldComponentAlias)
+        oldComponentAlias = alias + "_temp_disolve";
+        canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component)
-    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate")
+    component = addComponent(alias, component);
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
-    component.alpha = 0
+    component.alpha = 0;
     // remove the old component
     if (oldComponentAlias) {
-        let ids = removeWithDissolve(oldComponentAlias, props, priority)
+        let ids = removeWithDissolve(oldComponentAlias, props, priority);
         if (ids) {
-            res.push(...ids)
-            canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
-            tickerAliasToResume.push(oldComponentAlias)
+            res.push(...ids);
+            canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids });
+            tickerAliasToResume.push(oldComponentAlias);
         }
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new FadeAlphaTicker({
-        ...props,
-        type: "show",
-        tickerAliasToResume,
-        startOnlyIfHaveTexture: true,
-    }, undefined, priority)
-    let idShow = canvas.addTicker(alias, effect)
+    let effect = new FadeAlphaTicker(
+        {
+            ...props,
+            type: "show",
+            tickerAliasToResume,
+            startOnlyIfHaveTexture: true,
+        },
+        undefined,
+        priority
+    );
+    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
-        res.push(idShow)
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
+        res.push(idShow);
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load()
+        await component.load();
     }
     // return the ids of the tickers
     if (res.length > 0) {
-        return res
+        return res;
     }
 }
 
@@ -130,27 +141,31 @@ export async function showWithDissolve(
 export function removeWithDissolve(
     alias: string | string[],
     props: ShowWithDissolveTransitionProps = {},
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): string[] | undefined {
-    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
+    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
     if (typeof alias === "string") {
-        alias = [alias]
+        alias = [alias];
     }
     if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter]
+        aliasToRemoveAfter = [aliasToRemoveAfter];
     }
-    aliasToRemoveAfter.push(...alias)
+    aliasToRemoveAfter.push(...alias);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new FadeAlphaTicker({
-        ...props,
-        type: 'hide',
-        aliasToRemoveAfter,
-        startOnlyIfHaveTexture: true,
-    }, undefined, priority)
-    let id = canvas.addTicker(alias, effect)
+    let effect = new FadeAlphaTicker(
+        {
+            ...props,
+            type: "hide",
+            aliasToRemoveAfter,
+            startOnlyIfHaveTexture: true,
+        },
+        undefined,
+        priority
+    );
+    let id = canvas.addTicker(alias, effect);
     if (id) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
-        return [id]
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
+        return [id];
     }
 }
 
@@ -170,58 +185,66 @@ export async function showWithFade(
     alias: string,
     component?: TComponent,
     props: ShowWithFadeTransitionProps = {},
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
-    let res: string[] = []
+    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
+    let res: string[] = [];
     if (!component) {
-        component = alias
+        component = alias;
     }
     if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter]
+        aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
     if (!canvas.find(alias)) {
-        return showWithDissolve(alias, component, props, priority)
+        return showWithDissolve(alias, component, props, priority);
     }
-    let oldComponentAlias = alias + "_temp_fade"
-    canvas.editAlias(alias, oldComponentAlias)
-    aliasToRemoveAfter.push(oldComponentAlias)
+    let oldComponentAlias = alias + "_temp_fade";
+    canvas.editAlias(alias, oldComponentAlias);
+    aliasToRemoveAfter.push(oldComponentAlias);
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component)
-    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate")
+    component = addComponent(alias, component);
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
-    component.alpha = 0
+    component.alpha = 0;
     // remove the old component
-    let idHide = removeWithDissolve(oldComponentAlias, {
-        ...props,
-        tickerAliasToResume: alias,
-    }, priority)
+    let idHide = removeWithDissolve(
+        oldComponentAlias,
+        {
+            ...props,
+            tickerAliasToResume: alias,
+        },
+        priority
+    );
     if (idHide) {
-        res.push(...idHide)
+        res.push(...idHide);
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new FadeAlphaTicker({
-        ...props,
-        type: "show",
-        startOnlyIfHaveTexture: true,
-        aliasToRemoveAfter,
-    }, undefined, priority)
-    let idShow = canvas.addTicker(alias, effect)
+    let effect = new FadeAlphaTicker(
+        {
+            ...props,
+            type: "show",
+            startOnlyIfHaveTexture: true,
+            aliasToRemoveAfter,
+        },
+        undefined,
+        priority
+    );
+    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
-        res.push(idShow)
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
+        res.push(idShow);
         // pause the ticker
-        canvas.pauseTicker(alias, { tickerIdsIncluded: [idShow] })
+        canvas.pauseTicker(alias, { tickerIdsIncluded: [idShow] });
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load()
+        await component.load();
     }
     // return the ids of the tickers
     if (res.length > 0) {
-        return res
+        return res;
     }
 }
 
@@ -238,9 +261,9 @@ export async function showWithFade(
 export function removeWithFade(
     alias: string | string[],
     props: ShowWithFadeTransitionProps = {},
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): string[] | undefined {
-    return removeWithDissolve(alias, props, priority)
+    return removeWithDissolve(alias, props, priority);
 }
 
 /**
@@ -262,91 +285,99 @@ export async function moveIn(
          * If true, then the old component is removed with a move out, after the new image is moved in.
          * @default false
          */
-        removeOldComponentWithMoveOut?: boolean,
+        removeOldComponentWithMoveOut?: boolean;
     } = {},
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [], removeOldComponentWithMoveOut } = props
-    let res: string[] = []
+    let {
+        direction = "right",
+        mustBeCompletedBeforeNextStep = true,
+        tickerAliasToResume = [],
+        aliasToRemoveAfter = [],
+        removeOldComponentWithMoveOut,
+    } = props;
+    let res: string[] = [];
     if (!component) {
-        component = alias
+        component = alias;
     }
     if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume]
+        tickerAliasToResume = [tickerAliasToResume];
     }
     if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter]
+        aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined
+    let oldComponentAlias: string | undefined = undefined;
     if (canvas.find(alias)) {
-        oldComponentAlias = alias + "_temp_movein"
-        canvas.editAlias(alias, oldComponentAlias)
+        oldComponentAlias = alias + "_temp_movein";
+        canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component)
-    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move")
+    component = addComponent(alias, component);
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
+    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        destination = component.positionInfo
-    }
-    else {
-        destination = { x: component.x, y: component.y, type: "pixel" }
+        destination = component.positionInfo;
+    } else {
+        destination = { x: component.x, y: component.y, type: "pixel" };
     }
     // remove the old component
-    let ids: string[] | undefined = undefined
+    let ids: string[] | undefined = undefined;
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            ids = moveOut(oldComponentAlias, props, priority)
+            ids = moveOut(oldComponentAlias, props, priority);
             if (ids) {
-                res.push(...ids)
-                tickerAliasToResume.push(oldComponentAlias)
+                res.push(...ids);
+                tickerAliasToResume.push(oldComponentAlias);
             }
-        }
-        else {
-            aliasToRemoveAfter.push(oldComponentAlias)
+        } else {
+            aliasToRemoveAfter.push(oldComponentAlias);
         }
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load()
+        await component.load();
     }
     // special
-    oldComponentAlias && canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids })
+    oldComponentAlias && canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids });
     switch (direction) {
         case "up":
-            component.y = canvas.canvasHeight + component.height
-            break
+            component.y = canvas.canvasHeight + component.height;
+            break;
         case "down":
-            component.y = -(component.height)
-            break
+            component.y = -component.height;
+            break;
         case "left":
-            component.x = canvas.canvasWidth + component.width
-            break
+            component.x = canvas.canvasWidth + component.width;
+            break;
         case "right":
-            component.x = -(component.width)
-            break
+            component.x = -component.width;
+            break;
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    tickerAliasToResume.push(alias)
-    let effect = new MoveTicker({
-        ...props,
-        tickerAliasToResume,
-        aliasToRemoveAfter,
-        destination,
-        startOnlyIfHaveTexture: true,
-    }, undefined, priority)
-    let idShow = canvas.addTicker(alias, effect)
+    tickerAliasToResume.push(alias);
+    let effect = new MoveTicker(
+        {
+            ...props,
+            tickerAliasToResume,
+            aliasToRemoveAfter,
+            destination,
+            startOnlyIfHaveTexture: true,
+        },
+        undefined,
+        priority
+    );
+    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] })
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
-        res.push(idShow)
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
+        res.push(idShow);
     }
     // return the ids of the tickers
     if (res.length > 0) {
-        return res
+        return res;
     }
 }
 
@@ -358,49 +389,49 @@ export async function moveIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function moveOut(
-    alias: string,
-    props: MoveInOutProps = {},
-    priority?: UPDATE_PRIORITY,
-): string[] | undefined {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
+export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
     if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter]
+        aliasToRemoveAfter = [aliasToRemoveAfter];
     }
-    aliasToRemoveAfter.push(...alias)
+    aliasToRemoveAfter.push(...alias);
     // get the destination
-    let component = canvas.find(alias)
+    let component = canvas.find(alias);
     if (!component) {
-        console.warn("[Pixi’VN] The canvas component is not found.")
-        return
+        console.warn("[Pixi’VN] The canvas component is not found.");
+        return;
     }
-    let destination = { x: component.x, y: component.y }
+    let destination = { x: component.x, y: component.y };
     switch (direction) {
         case "up":
-            destination.y = canvas.canvasHeight + component.height
-            break
+            destination.y = canvas.canvasHeight + component.height;
+            break;
         case "down":
-            destination.y = -(component.height)
-            break
+            destination.y = -component.height;
+            break;
         case "left":
-            destination.x = canvas.canvasWidth + component.width
-            break
+            destination.x = canvas.canvasWidth + component.width;
+            break;
         case "right":
-            destination.x = -(component.width)
-            break
+            destination.x = -component.width;
+            break;
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new MoveTicker({
-        ...props,
-        destination,
-        startOnlyIfHaveTexture: true,
-        aliasToRemoveAfter,
-    }, undefined, priority)
-    let id = canvas.addTicker(alias, effect)
+    let effect = new MoveTicker(
+        {
+            ...props,
+            destination,
+            startOnlyIfHaveTexture: true,
+            aliasToRemoveAfter,
+        },
+        undefined,
+        priority
+    );
+    let id = canvas.addTicker(alias, effect);
     if (id) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
-        return [id]
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
+        return [id];
     }
 }
 
@@ -423,98 +454,105 @@ export async function zoomIn(
          * If true, then the old component is removed with a zoom out, after the new image is zoomed in.
          * @default false
          */
-        removeOldComponentWithZoomOut?: boolean
+        removeOldComponentWithZoomOut?: boolean;
     } = {},
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [] } = props
-    let res: string[] = []
+    let {
+        direction = "right",
+        mustBeCompletedBeforeNextStep = true,
+        tickerAliasToResume = [],
+        aliasToRemoveAfter = [],
+    } = props;
+    let res: string[] = [];
     if (!component) {
-        component = alias
+        component = alias;
     }
     if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume]
+        tickerAliasToResume = [tickerAliasToResume];
     }
     if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter]
+        aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined
-    let oldCanvas = canvas.find(alias)
+    let oldComponentAlias: string | undefined = undefined;
+    let oldCanvas = canvas.find(alias);
     if (oldCanvas) {
-        oldComponentAlias = alias + "_temp_zoom"
-        canvas.editAlias(alias, oldComponentAlias)
+        oldComponentAlias = alias + "_temp_zoom";
+        canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component)
-    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move")
+    component = addComponent(alias, component);
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
     if (direction == "up") {
-        component.pivot.y = canvas.canvasHeight - component.y
-        component.pivot.x = (canvas.canvasWidth / 2) - component.x
-        component.y = canvas.canvasHeight
-        component.x = canvas.canvasWidth / 2
+        component.pivot.y = canvas.canvasHeight - component.y;
+        component.pivot.x = canvas.canvasWidth / 2 - component.x;
+        component.y = canvas.canvasHeight;
+        component.x = canvas.canvasWidth / 2;
+    } else if (direction == "down") {
+        component.pivot.y = 0 - component.y;
+        component.pivot.x = canvas.canvasWidth / 2 - component.x;
+        component.y = 0;
+        component.x = canvas.canvasWidth / 2;
+    } else if (direction == "left") {
+        component.pivot.x = canvas.canvasWidth - component.x;
+        component.pivot.y = canvas.canvasHeight / 2 - component.y;
+        component.x = canvas.canvasWidth;
+        component.y = canvas.canvasHeight / 2;
+    } else if (direction == "right") {
+        component.pivot.x = 0 - component.x;
+        component.pivot.y = canvas.canvasHeight / 2 - component.y;
+        component.x = 0;
+        component.y = canvas.canvasHeight / 2;
     }
-    else if (direction == "down") {
-        component.pivot.y = 0 - component.y
-        component.pivot.x = (canvas.canvasWidth / 2) - component.x
-        component.y = 0
-        component.x = canvas.canvasWidth / 2
-    }
-    else if (direction == "left") {
-        component.pivot.x = canvas.canvasWidth - component.x
-        component.pivot.y = (canvas.canvasHeight / 2) - component.y
-        component.x = canvas.canvasWidth
-        component.y = canvas.canvasHeight / 2
-    }
-    else if (direction == "right") {
-        component.pivot.x = 0 - component.x
-        component.pivot.y = (canvas.canvasHeight / 2) - component.y
-        component.x = 0
-        component.y = canvas.canvasHeight / 2
-    }
-    component.pivot = getPivotBySuperPivot(component.pivot, component.angle)
-    component.scale.set(0)
-    let isZoomInOut = oldCanvas ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } } : undefined
+    component.pivot = getPivotBySuperPivot(component.pivot, component.angle);
+    component.scale.set(0);
+    let isZoomInOut = oldCanvas
+        ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } }
+        : undefined;
     // remove the old component
     if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            let ids = zoomOut(oldComponentAlias, props, priority)
+            let ids = zoomOut(oldComponentAlias, props, priority);
             if (ids) {
-                res.push(...ids)
-                tickerAliasToResume.push(oldComponentAlias)
+                res.push(...ids);
+                tickerAliasToResume.push(oldComponentAlias);
             }
+        } else {
+            aliasToRemoveAfter.push(oldComponentAlias);
         }
-        else {
-            aliasToRemoveAfter.push(oldComponentAlias)
-        }
-        canvas.pauseTicker(oldComponentAlias)
+        canvas.pauseTicker(oldComponentAlias);
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    tickerAliasToResume.push(alias)
-    let effect = new ZoomTicker({
-        ...props,
-        tickerAliasToResume,
-        aliasToRemoveAfter,
-        startOnlyIfHaveTexture: true,
-        type: "zoom",
-        limit: 1,
-        isZoomInOut,
-    }, undefined, priority)
-    let idShow = canvas.addTicker(alias, effect)
+    tickerAliasToResume.push(alias);
+    let effect = new ZoomTicker(
+        {
+            ...props,
+            tickerAliasToResume,
+            aliasToRemoveAfter,
+            startOnlyIfHaveTexture: true,
+            type: "zoom",
+            limit: 1,
+            isZoomInOut,
+        },
+        undefined,
+        priority
+    );
+    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] })
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
-        res.push(idShow)
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
+        res.push(idShow);
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load()
+        await component.load();
     }
     // return the ids of the tickers
     if (res.length > 0) {
-        return res
+        return res;
     }
 }
 
@@ -526,61 +564,58 @@ export async function zoomIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function zoomOut(
-    alias: string,
-    props: ZoomInOutProps = {},
-    priority?: UPDATE_PRIORITY,
-): string[] | undefined {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props
+export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
     if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter]
+        aliasToRemoveAfter = [aliasToRemoveAfter];
     }
-    aliasToRemoveAfter.push(...alias)
+    aliasToRemoveAfter.push(...alias);
     // get the destination
-    let component = canvas.find(alias)
+    let component = canvas.find(alias);
     if (!component) {
-        console.warn("[Pixi’VN] The canvas component is not found.")
-        return
+        console.warn("[Pixi’VN] The canvas component is not found.");
+        return;
     }
     if (direction == "up") {
-        component.pivot.y = canvas.canvasHeight - component.y
-        component.pivot.x = (canvas.canvasWidth / 2) - component.x
-        component.y = canvas.canvasHeight
-        component.x = (canvas.canvasWidth / 2)
+        component.pivot.y = canvas.canvasHeight - component.y;
+        component.pivot.x = canvas.canvasWidth / 2 - component.x;
+        component.y = canvas.canvasHeight;
+        component.x = canvas.canvasWidth / 2;
+    } else if (direction == "down") {
+        component.pivot.y = 0 - component.y;
+        component.pivot.x = canvas.canvasWidth / 2 - component.x;
+        component.y = 0;
+        component.x = canvas.canvasWidth / 2;
+    } else if (direction == "left") {
+        component.pivot.x = canvas.canvasWidth - component.x;
+        component.pivot.y = canvas.canvasHeight / 2 - component.y;
+        component.x = canvas.canvasWidth;
+        component.y = canvas.canvasHeight / 2;
+    } else if (direction == "right") {
+        component.pivot.x = 0 - component.x;
+        component.pivot.y = canvas.canvasHeight / 2 - component.y;
+        component.x = 0;
+        component.y = canvas.canvasHeight / 2;
     }
-    else if (direction == "down") {
-        component.pivot.y = 0 - component.y
-        component.pivot.x = (canvas.canvasWidth / 2) - component.x
-        component.y = 0
-        component.x = (canvas.canvasWidth / 2)
-    }
-    else if (direction == "left") {
-        component.pivot.x = canvas.canvasWidth - component.x
-        component.pivot.y = (canvas.canvasHeight / 2) - component.y
-        component.x = canvas.canvasWidth
-        component.y = (canvas.canvasHeight / 2)
-    }
-    else if (direction == "right") {
-        component.pivot.x = 0 - component.x
-        component.pivot.y = (canvas.canvasHeight / 2) - component.y
-        component.x = 0
-        component.y = (canvas.canvasHeight / 2)
-    }
-    component.pivot = getPivotBySuperPivot(component.pivot, component.angle)
-    component.scale.set(1)
+    component.pivot = getPivotBySuperPivot(component.pivot, component.angle);
+    component.scale.set(1);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new ZoomTicker({
-        ...props,
-        startOnlyIfHaveTexture: true,
-        type: "unzoom",
-        limit: 0,
-        aliasToRemoveAfter,
-    }, undefined, priority)
-    let id = canvas.addTicker(alias, effect)
+    let effect = new ZoomTicker(
+        {
+            ...props,
+            startOnlyIfHaveTexture: true,
+            type: "unzoom",
+            limit: 0,
+            aliasToRemoveAfter,
+        },
+        undefined,
+        priority
+    );
+    let id = canvas.addTicker(alias, effect);
     if (id) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] })
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id })
-        return [id]
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
+        return [id];
     }
 }
 
@@ -599,74 +634,74 @@ export async function pushIn(
     alias: string,
     component?: TComponent,
     props: PushInOutProps = {},
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [] } = props
-    let res: string[] = []
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [] } = props;
+    let res: string[] = [];
     if (!component) {
-        component = alias
+        component = alias;
     }
     if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume]
+        tickerAliasToResume = [tickerAliasToResume];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined
+    let oldComponentAlias: string | undefined = undefined;
     if (canvas.find(alias)) {
-        oldComponentAlias = alias + "_temp_push"
-        canvas.editAlias(alias, oldComponentAlias)
+        oldComponentAlias = alias + "_temp_push";
+        canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component)
-    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias)
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move")
+    component = addComponent(alias, component);
+    oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number, y: number, type: "pixel" | "percentage" | "align" }
+    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        destination = component.positionInfo
-    }
-    else {
-        destination = { x: component.x, y: component.y, type: "pixel" }
+        destination = component.positionInfo;
+    } else {
+        destination = { x: component.x, y: component.y, type: "pixel" };
     }
     if (direction == "up") {
-        component.y = -canvas.canvasHeight + component.y
-    }
-    else if (direction == "down") {
-        component.y = canvas.canvasHeight + component.y
-    }
-    else if (direction == "left") {
-        component.x = -canvas.canvasWidth + component.x
-    }
-    else if (direction == "right") {
-        component.x = canvas.canvasWidth + component.x
+        component.y = -canvas.canvasHeight + component.y;
+    } else if (direction == "down") {
+        component.y = canvas.canvasHeight + component.y;
+    } else if (direction == "left") {
+        component.x = -canvas.canvasWidth + component.x;
+    } else if (direction == "right") {
+        component.x = canvas.canvasWidth + component.x;
     }
     // remove the old component
     if (oldComponentAlias) {
-        let ids = pushOut(oldComponentAlias, props, priority)
+        let ids = pushOut(oldComponentAlias, props, priority);
         if (ids) {
-            res.push(...ids)
+            res.push(...ids);
         }
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    tickerAliasToResume.push(alias)
-    let effect = new MoveTicker({
-        ...props,
-        tickerAliasToResume,
-        startOnlyIfHaveTexture: true,
-        destination,
-    }, undefined, priority)
-    let idShow = canvas.addTicker(alias, effect)
+    tickerAliasToResume.push(alias);
+    let effect = new MoveTicker(
+        {
+            ...props,
+            tickerAliasToResume,
+            startOnlyIfHaveTexture: true,
+            destination,
+        },
+        undefined,
+        priority
+    );
+    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] })
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow })
-        res.push(idShow)
+        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
+        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
+        res.push(idShow);
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load()
+        await component.load();
     }
     // return the ids of the tickers
     if (res.length > 0) {
-        return res
+        return res;
     }
 }
 
@@ -681,7 +716,7 @@ export async function pushIn(
 export function pushOut(
     alias: string,
     props: PushInOutProps = { direction: "right" },
-    priority?: UPDATE_PRIORITY,
+    priority?: UPDATE_PRIORITY
 ): string[] | undefined {
-    return moveOut(alias, props, priority)
+    return moveOut(alias, props, priority);
 }
