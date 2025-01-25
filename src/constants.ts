@@ -1,5 +1,4 @@
 import { filters as f } from "@pixi/sound";
-import { canvas } from "./managers";
 import { PauseType, RepeatType } from "./types";
 
 export { version as PIXIVN_VERSION } from "../package.json";
@@ -130,9 +129,9 @@ export const videoFormats = [
 ];
 
 /**
- * Is a special alias to indicate {@link canvas.app.stage}.
+ * Is a special alias to indicate the game layer.
  */
-export const CANVAS_APP_STAGE_ALIAS = "_stage_";
+export const CANVAS_APP_GAME_LAYER_ALIAS = "__game_layer__";
 
 export const CANVAS_CONTAINER_ID = "Container";
 export const CANVAS_IMAGE_CONTAINER_ID = "ImageContainer";
