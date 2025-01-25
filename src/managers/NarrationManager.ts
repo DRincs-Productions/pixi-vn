@@ -342,7 +342,7 @@ export default class NarrationManager {
         showWarn?: boolean;
     }): boolean {
         if (NarrationManagerStatic.stepsRunning !== 0) {
-            return true;
+            return false;
         }
         let showWarn = options?.showWarn || false;
         let choiceMenuOptions = this.choiceMenuOptions;

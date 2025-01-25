@@ -318,7 +318,7 @@ export async function moveIn(
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
     let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+    if (component instanceof ImageSprite || component instanceof ImageContainer) {
         destination = component.positionInfo;
     } else {
         destination = { x: component.x, y: component.y, type: "pixel" };
