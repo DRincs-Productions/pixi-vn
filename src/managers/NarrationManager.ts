@@ -5,7 +5,6 @@ import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } fr
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel";
 import LabelAbstract from "../classes/LabelAbstract";
 import { getLabelById } from "../decorators/label-decorator";
-import { getFlag, setFlag } from "../functions";
 import { CharacterInterface, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
 import {
@@ -912,10 +911,10 @@ export default class NarrationManager {
      * If true, the next dialogue text will be added to the current dialogue text.
      */
     public get dialogGlue(): boolean {
-        return getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY);
+        return storage.getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY);
     }
     public set dialogGlue(value: boolean) {
-        setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, value);
+        storage.setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, value);
     }
     /**
      * The input value to be inserted by the player.
