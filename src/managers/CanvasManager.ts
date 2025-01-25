@@ -980,6 +980,39 @@ export default class CanvasManager {
         }
     }
 
+    /* Layers Methods */
+
+    /**
+     * Add a layer to the canvas.
+     * @param label The label of the layer.
+     * @param layer The layer to be added.
+     * @returns The layer.
+     * @example
+     * ```typescript
+     * const uiLayer = new Container();
+     * canvas.addLayer("ui", uiLayer);
+     * ```
+     */
+    addLayer(label: string, layer: PixiContainer) {
+        if (label === CANVAS_APP_GAME_LAYER_ALIAS) {
+            console.error(`[Pixi’VN] The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
+            return;
+        }
+        return CanvasManagerStatic.app.stage.addChild(layer);
+    }
+
+    /**
+     * Remove a layer from the canvas.
+     * @param label The label of the layer to be removed.
+     * @example
+     * ```typescript
+     * const uiLayer = canvas.removeLayer("ui");
+     * ```
+     */
+    getLayer(label: string) {
+        return CanvasManagerStatic.app.stage.getChildByLabel(label);
+    }
+
     /* Other Methods */
 
     /**
