@@ -12,7 +12,6 @@ export default defineConfig({
     minify: true,
     bundle: true,
     skipNodeModulesBundle: false, // Skip bundling of node_modules
-    entryPoints: ['src/index.ts'],
-    noExternal: ['pixi.js', '@pixi/sound', '@pixi/devtools'],
-
+    entryPoints: ["src/index.ts"],
+    noExternal: ["pixi.js", "@pixi/sound", "@pixi/devtools"],
 });
