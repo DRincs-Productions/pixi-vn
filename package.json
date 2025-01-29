@@ -27,19 +27,18 @@
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
     "@pixi/sound": "^6.0.1",
-    "pixi.js": "^8.6.6"
+    "pixi.js": "^8.7.2"
   },
   "devDependencies": {
-    "@drincs/pixi-vn": "^0.10.1",
     "@types/crypto-js": "^4.2.2",
     "@types/deep-diff": "^1.0.5",
     "crypto-js": "^4.2.0",
     "deep-diff": "^1.0.2",
     "jsdom": "^26.0.0",
     "ts-node": "^10.9.2",
-    "tsup": "^8.3.5",
+    "tsup": "^8.3.6",
     "typescript": "^5.7.3",
-    "vitest": "^2.1.8"
+    "vitest": "^3.0.4"
   },
   "keywords": [
     "engine",
