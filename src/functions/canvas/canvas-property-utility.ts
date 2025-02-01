@@ -9,6 +9,7 @@ export function calculatePositionByAlign(
     negativeScale: boolean,
     anchor: number = 0
 ): number {
+    pivot = pivot * (negativeScale ? -1 : 1);
     if (type === "width") {
         return align * (canvas.screen.width - value) + pivot + anchor * value + (negativeScale ? value : 0);
     } else {
@@ -24,6 +25,7 @@ export function calculateAlignByPosition(
     negativeScale: boolean,
     anchor: number = 0
 ): number {
+    pivot = pivot * (negativeScale ? -1 : 1);
     if (type === "width") {
         return (position - pivot - anchor * value - (negativeScale ? value : 0)) / (canvas.screen.width - value);
     } else {
