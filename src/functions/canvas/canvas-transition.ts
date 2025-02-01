@@ -12,7 +12,7 @@ import {
 } from "../../interface";
 import { PushInOutProps } from "../../interface/canvas/transition-props";
 import { canvas } from "../../managers";
-import { getPivotBySuperPivot } from "./canvas-property-utility";
+import { getPointBySuperPoint } from "./canvas-property-utility";
 import { checkIfVideo } from "./canvas-utility";
 import { addImageCointainer } from "./image-container-utility";
 import { addImage } from "./image-utility";
@@ -507,7 +507,7 @@ export async function zoomIn(
         component.x = 0;
         component.y = canvas.canvasHeight / 2;
     }
-    component.pivot = getPivotBySuperPivot(component.pivot, component.angle);
+    component.pivot = getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
     let isZoomInOut = oldCanvas
         ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } }
@@ -597,7 +597,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         component.x = 0;
         component.y = canvas.canvasHeight / 2;
     }
-    component.pivot = getPivotBySuperPivot(component.pivot, component.angle);
+    component.pivot = getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(1);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let effect = new ZoomTicker(

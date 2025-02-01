@@ -4,14 +4,15 @@ import { canvas } from "../..";
 export function calculatePositionByAlign(
     type: "width" | "height",
     align: number,
-    width: number,
+    value: number,
     pivot: number,
+    negativeScale: boolean,
     anchor: number = 0
 ): number {
     if (type === "width") {
-        return align * (canvas.screen.width - width) + pivot + anchor * width;
+        return align * (canvas.screen.width - value) + pivot + anchor * value + (negativeScale ? value : 0);
     } else {
-        return align * (canvas.screen.height - width) + pivot + anchor * width;
+        return align * (canvas.screen.height - value) + pivot + anchor * value + (negativeScale ? value : 0);
     }
 }
 
@@ -20,6 +21,7 @@ export function calculateAlignByPosition(
     position: number,
     width: number,
     pivot: number,
+    _negativeScale: boolean,
     anchor: number = 0
 ): number {
     if (type === "width") {
@@ -45,99 +47,99 @@ export function calculatePercentagePositionByPosition(type: "width" | "height", 
     }
 }
 
-export function getSuperPivot(canvasElement: PixiContainer): { x: number; y: number } {
-    let angle = canvasElement.angle % 360;
-    if (angle < 0) {
-        angle += 360;
-    }
-    if (angle === 0) {
-        return { x: canvasElement.pivot.x, y: canvasElement.pivot.y };
-    } else if (angle === 90) {
-        return { x: -canvasElement.pivot.y, y: canvasElement.pivot.x };
-    } else if (angle === 180) {
-        return { x: -canvasElement.pivot.x, y: -canvasElement.pivot.y };
-    } else if (angle === 270) {
-        return { x: canvasElement.pivot.y, y: -canvasElement.pivot.x };
-    } else if (angle > 0 && angle < 90) {
-        let angleRad = (angle * Math.PI) / 180;
-        let cos = Math.cos(angleRad);
-        let sin = Math.sin(angleRad);
-        return {
-            x: canvasElement.pivot.x * cos - canvasElement.pivot.y * sin,
-            y: canvasElement.pivot.x * sin + canvasElement.pivot.y * cos,
-        };
-    } else if (angle > 90 && angle < 180) {
-        let angleRad = ((angle - 90) * Math.PI) / 180;
-        let cos = Math.cos(angleRad);
-        let sin = Math.sin(angleRad);
-        return {
-            x: -canvasElement.pivot.y * sin - canvasElement.pivot.x * cos,
-            y: canvasElement.pivot.y * cos - canvasElement.pivot.x * sin,
-        };
-    } else if (angle > 180 && angle < 270) {
-        let angleRad = ((angle - 180) * Math.PI) / 180;
-        let cos = Math.cos(angleRad);
-        let sin = Math.sin(angleRad);
-        return {
-            x: -canvasElement.pivot.x * cos + canvasElement.pivot.y * sin,
-            y: -canvasElement.pivot.x * sin - canvasElement.pivot.y * cos,
-        };
-    } else if (angle > 270 && angle < 360) {
-        let angleRad = ((angle - 270) * Math.PI) / 180;
-        let cos = Math.cos(angleRad);
-        let sin = Math.sin(angleRad);
-        return {
-            x: canvasElement.pivot.y * sin - canvasElement.pivot.x * cos,
-            y: -canvasElement.pivot.y * cos - canvasElement.pivot.x * sin,
-        };
-    }
-    return { x: 0, y: 0 };
-}
-
-export function getPivotBySuperPivot(superPivot: { x: number; y: number }, angle: number): { x: number; y: number } {
+export function getSuperPoint(point: { x: number; y: number }, angle: number): { x: number; y: number } {
     angle = angle % 360;
     if (angle < 0) {
         angle += 360;
     }
     if (angle === 0) {
-        return { x: superPivot.x, y: superPivot.y };
+        return { x: point.x, y: point.y };
     } else if (angle === 90) {
-        return { x: superPivot.y, y: -superPivot.x };
+        return { x: -point.y, y: point.x };
     } else if (angle === 180) {
-        return { x: -superPivot.x, y: -superPivot.y };
+        return { x: -point.x, y: -point.y };
     } else if (angle === 270) {
-        return { x: -superPivot.y, y: superPivot.x };
+        return { x: point.y, y: -point.x };
     } else if (angle > 0 && angle < 90) {
         let angleRad = (angle * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
         return {
-            x: superPivot.x * cos + superPivot.y * sin,
-            y: -superPivot.x * sin + superPivot.y * cos,
+            x: point.x * cos - point.y * sin,
+            y: point.x * sin + point.y * cos,
         };
     } else if (angle > 90 && angle < 180) {
         let angleRad = ((angle - 90) * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
         return {
-            x: superPivot.y * cos - superPivot.x * sin,
-            y: -superPivot.y * sin - superPivot.x * cos,
+            x: -point.y * sin - point.x * cos,
+            y: point.y * cos - point.x * sin,
         };
     } else if (angle > 180 && angle < 270) {
         let angleRad = ((angle - 180) * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
         return {
-            x: -superPivot.x * cos - superPivot.y * sin,
-            y: superPivot.x * sin - superPivot.y * cos,
+            x: -point.x * cos + point.y * sin,
+            y: -point.x * sin - point.y * cos,
         };
     } else if (angle > 270 && angle < 360) {
         let angleRad = ((angle - 270) * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
         return {
-            x: -superPivot.y * cos + superPivot.x * sin,
-            y: superPivot.y * sin + superPivot.x * cos,
+            x: point.y * sin - point.x * cos,
+            y: -point.y * cos - point.x * sin,
+        };
+    }
+    return { x: 0, y: 0 };
+}
+
+export function getPointBySuperPoint(superPoint: { x: number; y: number }, angle: number): { x: number; y: number } {
+    angle = angle % 360;
+    if (angle < 0) {
+        angle += 360;
+    }
+    if (angle === 0) {
+        return { x: superPoint.x, y: superPoint.y };
+    } else if (angle === 90) {
+        return { x: superPoint.y, y: -superPoint.x };
+    } else if (angle === 180) {
+        return { x: -superPoint.x, y: -superPoint.y };
+    } else if (angle === 270) {
+        return { x: -superPoint.y, y: superPoint.x };
+    } else if (angle > 0 && angle < 90) {
+        let angleRad = (angle * Math.PI) / 180;
+        let cos = Math.cos(angleRad);
+        let sin = Math.sin(angleRad);
+        return {
+            x: superPoint.x * cos + superPoint.y * sin,
+            y: -superPoint.x * sin + superPoint.y * cos,
+        };
+    } else if (angle > 90 && angle < 180) {
+        let angleRad = ((angle - 90) * Math.PI) / 180;
+        let cos = Math.cos(angleRad);
+        let sin = Math.sin(angleRad);
+        return {
+            x: superPoint.y * cos - superPoint.x * sin,
+            y: -superPoint.y * sin - superPoint.x * cos,
+        };
+    } else if (angle > 180 && angle < 270) {
+        let angleRad = ((angle - 180) * Math.PI) / 180;
+        let cos = Math.cos(angleRad);
+        let sin = Math.sin(angleRad);
+        return {
+            x: -superPoint.x * cos - superPoint.y * sin,
+            y: superPoint.x * sin - superPoint.y * cos,
+        };
+    } else if (angle > 270 && angle < 360) {
+        let angleRad = ((angle - 270) * Math.PI) / 180;
+        let cos = Math.cos(angleRad);
+        let sin = Math.sin(angleRad);
+        return {
+            x: -superPoint.y * cos + superPoint.x * sin,
+            y: superPoint.y * sin + superPoint.x * cos,
         };
     }
     return { x: 0, y: 0 };
