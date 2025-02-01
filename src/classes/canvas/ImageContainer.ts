@@ -204,7 +204,7 @@ export default class ImageContainer
     }
     set xAlign(value: number) {
         if (this._percentagePosition) {
-            this._percentagePosition.x = undefined;
+            this._percentagePosition = undefined;
         }
         this._align === undefined && (this._align = {});
         this._align.x = value;
@@ -224,7 +224,7 @@ export default class ImageContainer
     }
     set yAlign(value: number) {
         if (this._percentagePosition) {
-            this._percentagePosition.y = undefined;
+            this._percentagePosition = undefined;
         }
         this._align === undefined && (this._align = {});
         this._align.y = value;
@@ -263,7 +263,7 @@ export default class ImageContainer
     }
     set xPercentagePosition(_value: number) {
         if (this._align) {
-            this._align.x = undefined;
+            this._align = undefined;
         }
         this._percentagePosition === undefined && (this._percentagePosition = {});
         this._percentagePosition.x = _value;
@@ -274,7 +274,7 @@ export default class ImageContainer
     }
     set yPercentagePosition(_value: number) {
         if (this._align) {
-            this._align.y = undefined;
+            this._align = undefined;
         }
         this._percentagePosition === undefined && (this._percentagePosition = {});
         this._percentagePosition.y = _value;
