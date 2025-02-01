@@ -299,6 +299,15 @@ export default class ImageContainer
         }
         return { x: this.x, y: this.y, type: "pixel" };
     }
+    set positionInfo(value: { x: number; y: number; type?: "pixel" | "percentage" | "align" }) {
+        if (value.type === "align") {
+            this.align = { x: value.x, y: value.y };
+        } else if (value.type === "percentage") {
+            this.percentagePosition = { x: value.x, y: value.y };
+        } else {
+            this.position.set(value.x, value.y);
+        }
+    }
     private reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);

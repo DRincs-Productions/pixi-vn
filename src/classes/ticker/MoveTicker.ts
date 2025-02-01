@@ -1,5 +1,5 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
-import { createExportableElement, TickerValue } from "../..";
+import { createExportableElement, ImageContainer, ImageSprite, TickerValue } from "../..";
 import { tickerDecorator } from "../../decorators";
 import {
     calculatePositionByAlign,
@@ -152,10 +152,14 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias);
             if (element) {
-                let destination = calculateDestination(args, element);
+                let destination = args.destination;
                 if (options.editPosition) {
-                    element.x = destination.x;
-                    element.y = destination.y;
+                    if (element instanceof ImageSprite || element instanceof ImageContainer) {
+                        element.positionInfo = destination;
+                    } else {
+                        element.x = destination.x;
+                        element.y = destination.y;
+                    }
                 }
             }
         });
