@@ -19,15 +19,15 @@ export function calculatePositionByAlign(
 export function calculateAlignByPosition(
     type: "width" | "height",
     position: number,
-    width: number,
+    value: number,
     pivot: number,
-    _negativeScale: boolean,
+    negativeScale: boolean,
     anchor: number = 0
 ): number {
     if (type === "width") {
-        return (position - pivot - anchor * width) / (canvas.screen.width - width);
+        return (position - pivot - anchor * value - (negativeScale ? value : 0)) / (canvas.screen.width - value);
     } else {
-        return (position - pivot - anchor * width) / (canvas.screen.height - width);
+        return (position - pivot - anchor * value - (negativeScale ? value : 0)) / (canvas.screen.height - value);
     }
 }
 
