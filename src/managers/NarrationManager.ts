@@ -363,7 +363,8 @@ export default class NarrationManager {
         return this.getCanGoNext();
     }
     /**
-     * Execute the next step and add it to the history.
+     * Execute the next step and add it to the history. If a step is already running, it will put the request in the queue,
+     * and when the step is finished, it will execute the next step.
      * @param props The props to pass to the step.
      * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
      * @returns StepLabelResultType or undefined.
