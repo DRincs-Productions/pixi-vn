@@ -394,7 +394,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
-    aliasToRemoveAfter.push(...alias);
+    aliasToRemoveAfter.push(alias);
     // get the destination
     let component = canvas.find(alias);
     if (!component) {
@@ -569,7 +569,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
-    aliasToRemoveAfter.push(...alias);
+    aliasToRemoveAfter.push(alias);
     // get the destination
     let component = canvas.find(alias);
     if (!component) {
