@@ -404,16 +404,16 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
     let destination = { x: component.x, y: component.y };
     switch (direction) {
         case "up":
-            destination.y = canvas.canvasHeight + component.height;
-            break;
-        case "down":
             destination.y = -component.height;
             break;
+        case "down":
+            destination.y = canvas.canvasHeight + component.height;
+            break;
         case "left":
-            destination.x = canvas.canvasWidth + component.width;
+            destination.x = -component.width;
             break;
         case "right":
-            destination.x = -component.width;
+            destination.x = canvas.canvasWidth + component.width;
             break;
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
@@ -672,7 +672,15 @@ export async function pushIn(
     }
     // remove the old component
     if (oldComponentAlias) {
-        let ids = pushOut(oldComponentAlias, props, priority);
+        let ids = pushOut(
+            oldComponentAlias,
+            {
+                ...props,
+                direction:
+                    direction == "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
+            },
+            priority
+        );
         if (ids) {
             res.push(...ids);
         }
