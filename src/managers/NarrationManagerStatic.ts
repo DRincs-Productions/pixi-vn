@@ -30,6 +30,11 @@ export default class NarrationManagerStatic {
      * If you run a step that have a goNext, this number is > 1.
      */
     static stepsRunning: number = 0;
+    /**
+     * Number of requests to go to the next step.
+     * If it is > 0, after the stepsRunning is 0, the next step will be executed
+     */
+    static goNextRequests: number = 0;
     static choiseMadeTemp: undefined | number = undefined;
     /**
      * is a list of all labels that have been opened during the progression of the steps.
