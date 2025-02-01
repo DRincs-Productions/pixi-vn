@@ -121,12 +121,16 @@ If you want to start a new project, you can use the following command to initial
 ```bash
 # npm
 npm create pixi-vn@latest
+
 # yarn
 yarn create pixi-vn
+
 # pnpm
 pnpm create pixi-vn
+
 # bun
 bun create pixi-vn
+
 # deno
 deno init --npm pixi-vn
 ```
