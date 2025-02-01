@@ -145,6 +145,7 @@ export function getPivotBySuperPivot(superPivot: { x: number; y: number }, angle
 
 export function getSuperWidth(canvasElement: PixiContainer): number {
     let width = canvasElement.width;
+    let height = canvasElement.height;
     let angle = canvasElement.angle % 360;
     if (angle < 0) {
         angle += 360;
@@ -152,16 +153,16 @@ export function getSuperWidth(canvasElement: PixiContainer): number {
     if (angle === 0 || angle === 180) {
         return width;
     } else if (angle === 90 || angle === 270) {
-        return canvasElement.height;
+        return height;
     } else {
         return (
-            Math.abs(width * Math.cos((angle * Math.PI) / 180)) +
-            Math.abs(canvasElement.height * Math.sin((angle * Math.PI) / 180))
+            Math.abs(width * Math.cos((angle * Math.PI) / 180)) + Math.abs(height * Math.sin((angle * Math.PI) / 180))
         );
     }
 }
 
 export function getSuperHeight(canvasElement: PixiContainer): number {
+    let width = canvasElement.width;
     let height = canvasElement.height;
     let angle = canvasElement.angle % 360;
     if (angle < 0) {
@@ -170,11 +171,10 @@ export function getSuperHeight(canvasElement: PixiContainer): number {
     if (angle === 0 || angle === 180) {
         return height;
     } else if (angle === 90 || angle === 270) {
-        return canvasElement.width;
+        return width;
     } else {
         return (
-            Math.abs(height * Math.cos((angle * Math.PI) / 180)) +
-            Math.abs(canvasElement.width * Math.sin((angle * Math.PI) / 180))
+            Math.abs(height * Math.cos((angle * Math.PI) / 180)) + Math.abs(width * Math.sin((angle * Math.PI) / 180))
         );
     }
 }
