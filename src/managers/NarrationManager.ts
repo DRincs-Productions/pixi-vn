@@ -340,9 +340,6 @@ export default class NarrationManager {
          */
         showWarn?: boolean;
     }): boolean {
-        if (NarrationManagerStatic.stepsRunning !== 0) {
-            return false;
-        }
         let showWarn = options?.showWarn || false;
         let choiceMenuOptions = this.choiceMenuOptions;
         if (choiceMenuOptions && choiceMenuOptions.length > 0) {
@@ -360,10 +357,14 @@ export default class NarrationManager {
      * @returns True if can go to the next step.
      */
     get canGoNext(): boolean {
+        if (NarrationManagerStatic.stepsRunning !== 0) {
+            return false;
+        }
         return this.getCanGoNext();
     }
     /**
-     * Execute the next step and add it to the history.
+     * Execute the next step and add it to the history. If a step is already running, it will put the request in the queue,
+     * and when the step is finished, it will execute the next step.
      * @param props The props to pass to the step.
      * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
      * @returns StepLabelResultType or undefined.
@@ -388,6 +389,10 @@ export default class NarrationManager {
      */
     public async goNext(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
         if (!this.getCanGoNext({ showWarn: true })) {
+            return;
+        }
+        if (NarrationManagerStatic.stepsRunning !== 0) {
+            NarrationManagerStatic.goNextRequests++;
             return;
         }
         if (this.currentLabel && this.currentLabel.onStepEnd) {
@@ -462,6 +467,11 @@ export default class NarrationManager {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha || "error", NarrationManagerStatic.choiseMadeTemp);
                         NarrationManagerStatic.choiseMadeTemp = undefined;
+
+                        if (NarrationManagerStatic.goNextRequests > 0) {
+                            NarrationManagerStatic.goNextRequests--;
+                            return await this.goNext(props);
+                        }
                     }
                     return result;
                 } catch (e) {
