@@ -366,7 +366,7 @@ export default class NarrationManager {
      * Execute the next step and add it to the history. If a step is already running, it will put the request in the queue,
      * and when the step is finished, it will execute the next step.
      * @param props The props to pass to the step.
-     * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
+     * @param options The options.
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
@@ -387,7 +387,16 @@ export default class NarrationManager {
      * }
      * ```
      */
-    public async goNext(props: StepLabelPropsType, choiseMade?: number): Promise<StepLabelResultType> {
+    public async goNext(
+        props: StepLabelPropsType,
+        options: {
+            /**
+             * The index of the choise made by the player. (This params is used in the choice menu)
+             */
+            choiseMade?: number;
+        } = {}
+    ): Promise<StepLabelResultType> {
+        const { choiseMade } = options;
         if (!this.getCanGoNext({ showWarn: true })) {
             return;
         }
@@ -408,18 +417,24 @@ export default class NarrationManager {
             CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
-        return await this.runCurrentStep(props, choiseMade);
+        return await this.runCurrentStep(props, options);
     }
     /**
      * Execute the current step and add it to the history.
      * @param props The props to pass to the step.
-     * @param choiseMade The choise made by the player.
+     * @param options The options.
      * @returns StepLabelResultType or undefined.
      */
-    async runCurrentStep<T extends {}>(
+    private async runCurrentStep<T extends {}>(
         props: StepLabelPropsType<T>,
-        choiseMade?: number
+        options: {
+            /**
+             * The index of the choise made by the player. (This params is used in the choice menu)
+             */
+            choiseMade?: number;
+        } = {}
     ): Promise<StepLabelResultType> {
+        const { choiseMade } = options;
         if (NarrationManagerStatic.currentLabelId) {
             let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
             if (currentLabelStepIndex === null) {
@@ -485,7 +500,7 @@ export default class NarrationManager {
                 }
             } else if (this.openedLabels.length > 1) {
                 this.closeCurrentLabel();
-                return await this.goNext(props, choiseMade);
+                return await this.goNext(props, options);
             } else if (this.openedLabels.length === 1) {
                 NarrationManagerStatic.restoreLastLabelList();
                 if (this.onGameEnd) {
@@ -569,7 +584,7 @@ export default class NarrationManager {
             console.error("[Pixi’VN] Error calling label", e);
             return;
         }
-        return await this.runCurrentStep<T>(props, choiseMade);
+        return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
     }
     /**
      * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
@@ -635,7 +650,7 @@ export default class NarrationManager {
             console.error("[Pixi’VN] Error jumping label", e);
             return;
         }
-        return await this.runCurrentStep<T>(props, choiseMade);
+        return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
     }
     /**
      * Select a choice from the choice menu. and close the choice menu.
@@ -698,7 +713,7 @@ export default class NarrationManager {
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
         }
-        return this.goNext(props, choiseMade);
+        return this.goNext(props, { choiseMade: choiseMade });
     }
 
     /* Go Back & Refresh Methods */
