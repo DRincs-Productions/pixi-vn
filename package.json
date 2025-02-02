@@ -1,6 +1,6 @@
 {
   "name": "@drincs/pixi-vn",
-  "version": "0.10.11",
+  "version": "0.10.12",
   "type": "module",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.cjs",
