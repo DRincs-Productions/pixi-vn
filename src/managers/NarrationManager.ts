@@ -394,13 +394,17 @@ export default class NarrationManager {
              * The index of the choise made by the player. (This params is used in the choice menu)
              */
             choiseMade?: number;
+            /**
+             * If true, ignore the running step and run the next step immediately.
+             */
+            runNow?: boolean;
         } = {}
     ): Promise<StepLabelResultType> {
-        const { choiseMade } = options;
+        const { runNow = false } = options;
         if (!this.getCanGoNext({ showWarn: true })) {
             return;
         }
-        if (NarrationManagerStatic.stepsRunning !== 0) {
+        if (!runNow && NarrationManagerStatic.stepsRunning !== 0) {
             NarrationManagerStatic.goNextRequests++;
             return;
         }
