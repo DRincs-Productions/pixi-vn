@@ -395,13 +395,13 @@ export default class NarrationManager {
              */
             choiseMade?: number;
             /**
-             * If true, ignore the running step and run the next step immediately.
+             * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
              */
             runNow?: boolean;
         } = {}
     ): Promise<StepLabelResultType> {
         const { runNow = false } = options;
-        if (!this.getCanGoNext({ showWarn: true })) {
+        if (!runNow && !this.getCanGoNext({ showWarn: true })) {
             return;
         }
         if (!runNow && NarrationManagerStatic.stepsRunning !== 0) {
