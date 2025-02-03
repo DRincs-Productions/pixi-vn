@@ -998,7 +998,21 @@ export default class CanvasManager {
             console.error(`[Pixi’VN] The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
         }
+        layer.label = label;
         return CanvasManagerStatic.app.stage.addChild(layer);
+    }
+
+    /**
+     * Get a layer from the canvas.
+     * @param label The label of the layer.
+     * @returns The layer.
+     * @example
+     * ```typescript
+     * const uiLayer = canvas.getLayer("ui");
+     * ```
+     */
+    getLayer(label: string) {
+        return CanvasManagerStatic.app.stage.getChildByLabel(label);
     }
 
     /**
@@ -1006,11 +1020,11 @@ export default class CanvasManager {
      * @param label The label of the layer to be removed.
      * @example
      * ```typescript
-     * const uiLayer = canvas.removeLayer("ui");
+     * canvas.removeLayer("ui");
      * ```
      */
-    getLayer(label: string) {
-        return CanvasManagerStatic.app.stage.getChildByLabel(label);
+    removeLayer(label: string) {
+        CanvasManagerStatic.app.stage.getChildrenByLabel(label);
     }
 
     /* Other Methods */
