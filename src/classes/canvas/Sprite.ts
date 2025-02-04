@@ -65,7 +65,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         this.memory = value;
         return await setMemorySprite(this, value);
     }
-    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {};
+    private _onEvents: { [name: string]: EventIdType } = {};
     get onEvents() {
         return this._onEvents;
     }
@@ -98,7 +98,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
      * canvas.add("bunny", sprite);
      * ```
      */
-    onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
+    onEvent<T extends typeof CanvasEvent<typeof this>>(event: CanvasEventNamesType, eventClass: T) {
         let id = eventClass.prototype.id;
         let instance = getEventInstanceById(id);
         this._onEvents[event] = id;
@@ -189,7 +189,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
             let id = memory.onEvents[event];
             let instance = getEventTypeById(id);
             if (instance) {
-                element.onEvent(event, instance);
+                element.onEvent(event as any, instance);
             }
         }
     }
