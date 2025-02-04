@@ -1,4 +1,13 @@
-import { Assets, ContainerChild, ContainerEvents, EventEmitter, Sprite as PixiSprite, SpriteOptions, Texture, TextureSourceLike } from "pixi.js";
+import {
+    Assets,
+    ContainerChild,
+    ContainerEvents,
+    EventEmitter,
+    Sprite as PixiSprite,
+    SpriteOptions,
+    Texture,
+    TextureSourceLike,
+} from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTexture } from "../../functions";
@@ -29,39 +38,42 @@ import { setMemoryContainer } from "./Container";
  * canvas.add("bunny", sprite);
  * ```
  */
-export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory> extends PixiSprite implements CanvasBaseItem<Memory | SpriteMemory> {
+export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory>
+    extends PixiSprite
+    implements CanvasBaseItem<Memory | SpriteMemory>
+{
     constructor(options?: SpriteOptions | Texture) {
-        super(options)
-        this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID
+        super(options);
+        this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID;
     }
-    pixivnId: string = CANVAS_SPRITE_ID
-    private _textureAlias?: string
+    pixivnId: string = CANVAS_SPRITE_ID;
+    private _textureAlias?: string;
     public get textureAlias() {
         if (this._textureAlias) {
-            return this._textureAlias
+            return this._textureAlias;
         }
-        return this.texture.source.label
+        return this.texture.source.label;
     }
     public set textureAlias(value: string) {
-        this._textureAlias = value
+        this._textureAlias = value;
     }
     get memory(): Memory | SpriteMemory {
-        return getMemorySprite(this)
+        return getMemorySprite(this);
     }
-    set memory(_value: Memory | SpriteMemory) { }
+    set memory(_value: Memory | SpriteMemory) {}
     async setMemory(value: Memory | SpriteMemory): Promise<void> {
-        this.memory = value
-        return await setMemorySprite(this, value)
+        this.memory = value;
+        return await setMemorySprite(this, value);
     }
-    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {}
+    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {};
     get onEvents() {
-        return this._onEvents
+        return this._onEvents;
     }
     /**
      * is same function as on(), but it keeps in memory the children.
      * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
      * @param eventClass The class that extends CanvasEvent.
-     * @returns 
+     * @returns
      * @example
      * ```typescript
      * \@eventDecorator()
@@ -74,7 +86,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
      *     }
      * }
      * ```
-     * 
+     *
      * ```typescript
      * let sprite = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
      * await sprite.load()
@@ -87,84 +99,95 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
      * ```
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
-        let id = eventClass.prototype.id
-        let instance = getEventInstanceById(id)
-        this._onEvents[event] = id
+        let id = eventClass.prototype.id;
+        let instance = getEventInstanceById(id);
+        this._onEvents[event] = id;
         if (instance) {
             super.on(event, () => {
-                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this)
-            })
+                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
+            });
         }
-        return this
+        return this;
     }
     /**
      * on() does not keep in memory the event class, use onEvent() instead
      * @deprecated
      * @private
-     * @param event 
-     * @param fn 
-     * @param context 
+     * @param event
+     * @param fn
+     * @param context
      */
-    override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>(event: T, fn: (...args: EventEmitter.ArgumentMap<ContainerEvents<ContainerChild> & { [K: symbol]: any;[K: {} & string]: any; }>[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any;[K: {} & string]: any; }>]) => void, context?: any): this {
-        return super.on(event, fn, context)
+    override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
+        event: T,
+        fn: (
+            ...args: EventEmitter.ArgumentMap<
+                ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
+            >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
+        ) => void,
+        context?: any
+    ): this {
+        return super.on(event, fn, context);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
-        let sprite = PixiSprite.from(source, skipCache)
-        let mySprite = new Sprite()
-        mySprite.texture = sprite.texture
-        return mySprite
+        let sprite = PixiSprite.from(source, skipCache);
+        let mySprite = new Sprite();
+        mySprite.texture = sprite.texture;
+        return mySprite;
     }
 }
 
-export async function setMemorySprite<Memory extends SpriteBaseMemory>(element: Sprite<any>, memory: Memory | {}, options?: {
-    half?: () => Promise<void>,
-    ignoreTexture?: boolean,
-}) {
-    let ignoreTexture = options?.ignoreTexture || false
-    await setMemoryContainer(element, memory)
+export async function setMemorySprite<Memory extends SpriteBaseMemory>(
+    element: Sprite<any>,
+    memory: Memory | {},
+    options?: {
+        half?: () => Promise<void>;
+        ignoreTexture?: boolean;
+    }
+) {
+    let ignoreTexture = options?.ignoreTexture || false;
+    await setMemoryContainer(element, memory);
     if (!ignoreTexture) {
         if ("textureImage" in memory && memory.textureImage && memory.textureImage.image) {
-            let texture = await getTexture(memory.textureImage.image)
+            let texture = await getTexture(memory.textureImage.image);
             if (texture) {
-                element.texture = texture
+                element.texture = texture;
             }
         }
         if ("textureData" in memory) {
             if (memory.textureData.alias) {
-                element.textureAlias = memory.textureData.alias
+                element.textureAlias = memory.textureData.alias;
             }
 
             if (memory.textureData.url !== "EMPTY") {
-                let textureUrl: string = memory.textureData.url
+                let textureUrl: string = memory.textureData.url;
                 if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
-                    textureUrl = memory.textureData.alias
+                    textureUrl = memory.textureData.alias;
                 }
-                let texture = await getTexture(textureUrl)
+                let texture = await getTexture(textureUrl);
                 if (texture) {
-                    element.texture = texture
+                    element.texture = texture;
                 }
             }
         }
     }
-    let half = options?.half
+    let half = options?.half;
     if (half) {
-        await half()
+        await half();
     }
     if ("anchor" in memory && memory.anchor !== undefined) {
         if (typeof memory.anchor === "number") {
-            element.anchor.set(memory.anchor, memory.anchor)
-        }
-        else {
-            element.anchor.set(memory.anchor.x, memory.anchor.y)
+            element.anchor.set(memory.anchor, memory.anchor);
+        } else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y);
         }
     }
-    "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels)
+    "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
     if ("onEvents" in memory) {
         for (let event in memory.onEvents) {
-            let id = memory.onEvents[event]
-            let instance = getEventTypeById(id)
+            let id = memory.onEvents[event];
+            let instance = getEventTypeById(id);
             if (instance) {
-                element.onEvent(event, instance)
+                element.onEvent(event, instance);
             }
         }
     }
