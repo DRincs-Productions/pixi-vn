@@ -106,6 +106,10 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
             super.on(event, () => {
                 (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
             });
+            if (!this.interactive) {
+                this.interactive = true;
+                this.eventMode = "dynamic";
+            }
         } else {
             console.error(`[Pixi’VN] Event ${id} not found`);
         }

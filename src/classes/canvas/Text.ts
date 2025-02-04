@@ -75,6 +75,10 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                 (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
             });
         }
+        if (!this.interactive) {
+            this.interactive = true;
+            this.eventMode = "dynamic";
+        }
         return this;
     }
     /**
