@@ -682,11 +682,11 @@ export default class NarrationManager {
     ): Promise<StepLabelResultType> {
         this.choiceMenuOptions = undefined;
         if (item.type == "call") {
-            return await this.callLabel(item.label, props);
+            return await this.callLabel(item.label, { ...item.props, ...props });
         } else if (item.type == "jump") {
-            return await this.jumpLabel(item.label, props);
+            return await this.jumpLabel(item.label, { ...item.props, ...props });
         } else if (item.type == "close") {
-            return await this.closeChoiceMenu(item, props);
+            return await this.closeChoiceMenu(item, { ...item.props, ...props });
         } else {
             throw new Error(`[Pixi’VN] Type ${item.type} not found`);
         }
