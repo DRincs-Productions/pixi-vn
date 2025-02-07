@@ -55,7 +55,7 @@ export default class Container<
             this.addChild(element);
         }
     }
-    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {};
+    private _onEvents: { [name: string]: EventIdType } = {};
     get onEvents() {
         return this._onEvents;
     }

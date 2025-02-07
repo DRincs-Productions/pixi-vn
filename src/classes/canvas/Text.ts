@@ -33,7 +33,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
         this.memory = value;
         return await setMemoryText(this, value);
     }
-    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {};
+    private _onEvents: { [name: string]: EventIdType } = {};
     get onEvents() {
         return this._onEvents;
     }
@@ -66,7 +66,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
      * canvas.add("text", text);
      * ```
      */
-    onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
+    onEvent<T extends typeof CanvasEvent<typeof this>>(event: CanvasEventNamesType, eventClass: T) {
         let id = eventClass.prototype.id;
         let instance = getEventInstanceById(id);
         this._onEvents[event] = id;
@@ -74,6 +74,10 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
             super.on(event, () => {
                 (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
             });
+            if (!this.interactive) {
+                this.interactive = true;
+                this.eventMode = "dynamic";
+            }
         } else {
             console.error(`[Pixi’VN] Event ${id} not found`);
         }
