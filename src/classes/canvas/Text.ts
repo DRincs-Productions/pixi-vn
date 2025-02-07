@@ -74,6 +74,8 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
             super.on(event, () => {
                 (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
             });
+        } else {
+            console.error(`[Pixi’VN] Event ${id} not found`);
         }
         return this;
     }
