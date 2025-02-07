@@ -1,30 +1,30 @@
-import { CanvasEvent } from "../classes"
-import CanvasBaseItem from "../classes/canvas/CanvasBaseItem"
-import { CanvasEventNamesType } from "../types"
-import { EventIdType } from "../types/EventIdType"
+import { CanvasEvent } from "../classes";
+import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
+import { CanvasEventNamesType } from "../types";
+import { EventIdType } from "../types/EventIdType";
 
 /**
  * Canvas Event Register
  */
-export const registeredEvents: { [name: EventIdType]: typeof CanvasEvent<CanvasEventNamesType> } = {}
+export const registeredEvents: { [name: EventIdType]: typeof CanvasEvent<CanvasEventNamesType> } = {};
 /**
  * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
  * Thanks to this decoration the game has the possibility of updating the events to the latest modification and saving the game.
  * @param name is th identifier of the event, by default is the name of the class
- * @returns 
+ * @returns
  */
 export default function eventDecorator(name?: EventIdType) {
     return function (target: typeof CanvasEvent<any>) {
         if (!name) {
-            name = target.name
+            name = target.name;
         }
         if (registeredEvents[name]) {
-            console.info(`[Pixi’VN] Event ${name} already exists, it will be overwritten`)
+            console.info(`[Pixi’VN] Event ${name} already exists, it will be overwritten`);
         }
-        target.prototype.id = name
-        registeredEvents[name] = target
-    }
+        target.prototype.id = name;
+        registeredEvents[name] = target;
+    };
 }
 
 /**
@@ -34,17 +34,18 @@ export default function eventDecorator(name?: EventIdType) {
  */
 export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(eventId: EventIdType): T | undefined {
     try {
-        let eventType = registeredEvents[eventId]
+        let eventType = registeredEvents[eventId];
         if (!eventType) {
-            console.error(`[Pixi’VN] Event ${eventId} not found`)
-            return
+            console.error(
+                `[Pixi’VN] Event ${eventId} not found, did you forget to register it with the eventDecorator?`
+            );
+            return;
         }
-        new eventType()
-        return eventType as T
-    }
-    catch (e) {
-        console.error(`[Pixi’VN] Error while getting Event ${eventId}`, e)
-        return
+        new eventType();
+        return eventType as T;
+    } catch (e) {
+        console.error(`[Pixi’VN] Error while getting Event ${eventId}`, e);
+        return;
     }
 }
 
@@ -55,16 +56,17 @@ export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(ev
  */
 export function getEventInstanceById<T = CanvasEvent<CanvasBaseItem<any>>>(eventId: EventIdType): T | undefined {
     try {
-        let eventType = registeredEvents[eventId]
+        let eventType = registeredEvents[eventId];
         if (!eventType) {
-            console.error(`[Pixi’VN] Event ${eventId} not found`)
-            return
+            console.error(
+                `[Pixi’VN] Event ${eventId} not found, did you forget to register it with the eventDecorator?`
+            );
+            return;
         }
-        let event = new eventType()
-        return event as T
-    }
-    catch (e) {
-        console.error(`[Pixi’VN] Error while getting Event ${eventId}`, e)
-        return
+        let event = new eventType();
+        return event as T;
+    } catch (e) {
+        console.error(`[Pixi’VN] Error while getting Event ${eventId}`, e);
+        return;
     }
 }

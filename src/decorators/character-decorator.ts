@@ -1,18 +1,18 @@
-import { CharacterInterface } from "../interface"
+import { CharacterInterface } from "../interface";
 
 export const registeredCharacters: { [id: string]: CharacterInterface } = {
-    '___pixivn_juliette___': {
-        id: '___pixivn_juliette___',
-        name: 'Juliette',
+    ___pixivn_juliette___: {
+        id: "___pixivn_juliette___",
+        name: "Juliette",
         age: 25,
         icon: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fcharacters%2Fjuliette-square.webp?alt=media",
-        color: "#ac0086"
-    }
-}
+        color: "#ac0086",
+    },
+};
 /**
  * Is a function that saves the character. If the character already exists, it will be overwritten.
  * @param character is the character to save
- * @returns 
+ * @returns
  * @example
  * ```typescript
  * export const liam = new CharacterBaseModel('liam', { name: 'Liam'});
@@ -22,13 +22,13 @@ export const registeredCharacters: { [id: string]: CharacterInterface } = {
  */
 export function saveCharacter<T extends CharacterInterface = CharacterInterface>(character: T | T[]) {
     if (Array.isArray(character)) {
-        character.forEach(c => saveCharacter(c))
-        return
+        character.forEach((c) => saveCharacter(c));
+        return;
     }
     if (registeredCharacters[character.id]) {
-        console.info(`[Pixi’VN] Character id ${character.id} already exists, it will be overwritten`)
+        console.info(`[Pixi’VN] Character id ${character.id} already exists, it will be overwritten`);
     }
-    registeredCharacters[character.id] = character
+    registeredCharacters[character.id] = character;
 }
 
 /**
@@ -42,16 +42,15 @@ export function saveCharacter<T extends CharacterInterface = CharacterInterface>
  */
 export function getCharacterById<T extends CharacterInterface>(id: string): T | undefined {
     try {
-        let character = registeredCharacters[id]
+        let character = registeredCharacters[id];
         if (!character) {
-            console.error(`[Pixi’VN] Character ${id} not found`)
-            return
+            console.error(`[Pixi’VN] Character ${id} not found, did you forget to register it with the saveCharacter?`);
+            return;
         }
-        return character as T
-    }
-    catch (e) {
-        console.error(`[Pixi’VN] Error while getting Character ${id}`, e)
-        return
+        return character as T;
+    } catch (e) {
+        console.error(`[Pixi’VN] Error while getting Character ${id}`, e);
+        return;
     }
 }
 
@@ -64,5 +63,5 @@ export function getCharacterById<T extends CharacterInterface>(id: string): T | 
  * ```
  */
 export function getAllCharacters<T extends CharacterInterface>(): T[] {
-    return Object.values(registeredCharacters) as T[]
+    return Object.values(registeredCharacters) as T[];
 }
