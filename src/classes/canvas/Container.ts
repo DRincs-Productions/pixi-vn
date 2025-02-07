@@ -1,9 +1,13 @@
-import { ContainerOptions, Container as PixiContainer } from "pixi.js";
+import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
+import { getEventInstanceById } from "../../decorators/event-decorator";
 import { importCanvasElement } from "../../functions/canvas/canvas-import-utility";
 import { getMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
 import { ContainerMemory } from "../../interface";
+import { CanvasEventNamesType } from "../../types";
 import ContainerChild from "../../types/ContainerChild";
+import { EventIdType } from "../../types/EventIdType";
+import CanvasEvent from "../CanvasEvent";
 import CanvasBaseItem from "./CanvasBaseItem";
 
 /**
@@ -51,18 +55,82 @@ export default class Container<
             this.addChild(element);
         }
     }
+    private _onEvents: { [name: CanvasEventNamesType]: EventIdType } = {};
+    get onEvents() {
+        return this._onEvents;
+    }
+    /**
+     * is same function as on(), but it keeps in memory the children.
+     * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
+     * @param eventClass The class that extends CanvasEvent.
+     * @returns
+     * @example
+     * ```typescript
+     * \@eventDecorator()
+     * export class EventTest extends CanvasEvent<Container> {
+     *     override fn(event: CanvasEventNamesType, container: Container): void {
+     *         if (event === 'pointerdown') {
+     *             container.scale.x *= 1.25;
+     *             container.scale.y *= 1.25;
+     *         }
+     *     }
+     * }
+     * ```
+     *
+     * ```typescript
+     * const container = new Container();
+     *
+     * container.eventMode = 'static';
+     * container.cursor = 'pointer';
+     * container.onEvent('pointerdown', EventTest);
+     *
+     * canvas.add("container", container);
+     * ```
+     */
+    onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
+        let id = eventClass.prototype.id;
+        let instance = getEventInstanceById(id);
+        this._onEvents[event] = id;
+        if (instance) {
+            super.on(event, () => {
+                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
+            });
+        } else {
+            console.error(`[Pixi’VN] Event ${id} not found`);
+        }
+        return this;
+    }
+    /**
+     * on() does not keep in memory the event class, use onEvent() instead
+     * @deprecated
+     * @private
+     * @param event
+     * @param fn
+     * @param context
+     */
+    override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
+        event: T,
+        fn: (
+            ...args: EventEmitter.ArgumentMap<
+                ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
+            >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
+        ) => void,
+        context?: any
+    ): this {
+        return super.on(event, fn, context);
+    }
 }
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,
     memory: ContainerOptions | {},
-    opstions?: {
+    options?: {
         ignoreScale?: boolean;
         end?: () => Promise<void>;
     }
 ) {
-    let ignoreScale = opstions?.ignoreScale || false;
-    let end = opstions?.end;
+    let ignoreScale = options?.ignoreScale || false;
+    let end = options?.end;
     "isRenderGroup" in memory && memory.isRenderGroup !== undefined && (element.isRenderGroup = memory.isRenderGroup);
     "blendMode" in memory && memory.blendMode !== undefined && (element.blendMode = memory.blendMode);
     "tint" in memory && memory.tint !== undefined && (element.tint = memory.tint);
