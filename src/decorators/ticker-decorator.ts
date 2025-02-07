@@ -35,7 +35,7 @@ export default function tickerDecorator(name?: TickerIdType) {
  * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
  * @returns The instance of the ticker
  */
-export function geTickerInstanceById<TArgs extends TickerArgs>(
+export function getTickerInstanceById<TArgs extends TickerArgs>(
     tickerId: TickerIdType,
     args: TArgs,
     duration?: number,

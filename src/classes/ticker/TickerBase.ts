@@ -1,11 +1,11 @@
-import { UPDATE_PRIORITY } from "pixi.js"
-import { TickerValue } from "../.."
-import { tickerDecorator } from "../../decorators"
-import { geTickerInstanceById } from "../../decorators/ticker-decorator"
-import { TickerArgs } from "../../interface"
-import Ticker from "../../interface/Ticker"
-import { canvas } from "../../managers"
-import { TickerIdType } from "../../types/TickerIdType"
+import { UPDATE_PRIORITY } from "pixi.js";
+import { TickerValue } from "../..";
+import { tickerDecorator } from "../../decorators";
+import { getTickerInstanceById } from "../../decorators/ticker-decorator";
+import { TickerArgs } from "../../interface";
+import Ticker from "../../interface/Ticker";
+import { canvas } from "../../managers";
+import { TickerIdType } from "../../types/TickerIdType";
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.
@@ -46,18 +46,18 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
      * @param priority The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
      */
     constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
-        this.args = args
-        this.duration = duration
-        this.priority = priority
-        this.id = this.constructor.prototype.id
+        this.args = args;
+        this.duration = duration;
+        this.priority = priority;
+        this.id = this.constructor.prototype.id;
     }
     /**
-     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link geTickerInstanceById}
+     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link getTickerInstanceById}
      */
-    id: TickerIdType = 'ticker_id_not_set'
-    args: TArgs
-    duration?: number
-    priority?: UPDATE_PRIORITY
+    id: TickerIdType = "ticker_id_not_set";
+    args: TArgs;
+    duration?: number;
+    priority?: UPDATE_PRIORITY;
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
@@ -66,29 +66,29 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
      * @param _alias The alias of the canvas elements that are connected to this ticker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
-    fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void { throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden") }
+    fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void {
+        throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden");
+    }
     /**
      * This method is called when the ticker is added to the canvas.
      * @param alias The alias of the canvas elements that are connected to this ticker
      * @param tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      * @param options The options that you passed when you added the ticker
      */
-    public onEndOfTicker(
-        _alias: string | string[],
-        tickerId: string,
-        args: TArgs,
-    ) {
-        let aliasToRemoveAfter: string | string[] = "aliasToRemoveAfter" in args && args.aliasToRemoveAfter as any || []
+    public onEndOfTicker(_alias: string | string[], tickerId: string, args: TArgs) {
+        let aliasToRemoveAfter: string | string[] =
+            ("aliasToRemoveAfter" in args && (args.aliasToRemoveAfter as any)) || [];
         if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter]
+            aliasToRemoveAfter = [aliasToRemoveAfter];
         }
-        let tickerAliasToResume: string | string[] = "tickerAliasToResume" in args && args.tickerAliasToResume as any || []
+        let tickerAliasToResume: string | string[] =
+            ("tickerAliasToResume" in args && (args.tickerAliasToResume as any)) || [];
         if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume]
+            tickerAliasToResume = [tickerAliasToResume];
         }
         canvas.onEndOfTicker(tickerId, {
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
-        })
+        });
     }
 }
