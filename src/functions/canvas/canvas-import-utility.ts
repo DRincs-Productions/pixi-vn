@@ -33,18 +33,25 @@ export function getCanvasElementInstanceById<T extends CanvasBaseItem<any>>(
     try {
         let eventType = getCanvasElementTypeById(canvasId);
         if (!eventType) {
-            if (canvasId === CANVAS_CONTAINER_ID) {
-                eventType = Container;
-            } else if (canvasId === CANVAS_VIDEO_ID) {
-                eventType = VideoSprite;
-            } else if (canvasId === CANVAS_IMAGE_ID) {
-                eventType = ImageSprite;
-            } else if (canvasId === CANVAS_SPRITE_ID) {
-                eventType = Sprite;
-            } else if (canvasId === CANVAS_TEXT_ID) {
-                eventType = Text;
-            } else if (canvasId === CANVAS_IMAGE_CONTAINER_ID) {
-                eventType = ImageContainer;
+            switch (canvasId) {
+                case CANVAS_CONTAINER_ID:
+                    eventType = Container;
+                    break;
+                case CANVAS_VIDEO_ID:
+                    eventType = VideoSprite;
+                    break;
+                case CANVAS_IMAGE_ID:
+                    eventType = ImageSprite;
+                    break;
+                case CANVAS_SPRITE_ID:
+                    eventType = Sprite;
+                    break;
+                case CANVAS_TEXT_ID:
+                    eventType = Text;
+                    break;
+                case CANVAS_IMAGE_CONTAINER_ID:
+                    eventType = ImageContainer;
+                    break;
             }
         }
 
