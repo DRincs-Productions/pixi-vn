@@ -1,4 +1,4 @@
-import sha1 from 'crypto-js/sha1';
+import sha1 from "crypto-js/sha1";
 import { LabelProps } from "../interface";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelType } from "../types/StepLabelType";
@@ -10,7 +10,7 @@ import LabelAbstract from "./LabelAbstract";
  * @example
  * ```typescript
  * const START_LABEL_ID = "StartLabel"
- * 
+ *
  * export const startLabel = newLabel(START_LABEL_ID,
  *     [
  *         (props) => {
@@ -24,7 +24,7 @@ import LabelAbstract from "./LabelAbstract";
  *         (props) => narration.jumpLabel(START_LABEL_ID, props),
  *     ]
  * )
- * 
+ *
  * narration.callLabel(StartLabel)
  * ```
  */
@@ -34,28 +34,36 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: LabelProps<Label<T>>) {
-        super(id, props)
-        this._steps = steps
+    constructor(
+        id: LabelIdType,
+        steps: StepLabelType<T>[] | (() => StepLabelType<T>[] | Promise<StepLabelType<T>[]>),
+        props?: LabelProps<Label<T>>
+    ) {
+        super(id, props);
+        this._steps = steps;
     }
 
-    private _steps: StepLabelType<T>[] | (() => StepLabelType<T>[])
-    /**
-     * Get the steps of the label.
-     */
+    private _steps: StepLabelType<T>[] | (() => StepLabelType<T>[] | Promise<StepLabelType<T>[]>);
     public get steps(): StepLabelType<T>[] {
         if (typeof this._steps === "function") {
-            return this._steps()
+            return this._steps() as StepLabelType<T>[];
         }
-        return this._steps
+        return this._steps;
+    }
+
+    public async getSteps(): Promise<StepLabelType<T>[]> {
+        if (typeof this._steps === "function") {
+            return await this._steps();
+        }
+        return this._steps;
     }
 
     public getStepSha1(index: number): string | undefined {
         if (index < 0 || index >= this.steps.length) {
-            return undefined
+            return undefined;
         }
-        let step = this.steps[index]
-        let sha1String = sha1(step.toString().toLocaleLowerCase())
-        return sha1String.toString()
+        let step = this.steps[index];
+        let sha1String = sha1(step.toString().toLocaleLowerCase());
+        return sha1String.toString();
     }
 }
