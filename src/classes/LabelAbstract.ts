@@ -28,7 +28,9 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> impl
      * @deprecated Use {@link LabelAbstract.getSteps} instead
      * Get the steps of the label.
      */
-    public abstract get steps(): StepLabelType<TProps>[];
+    public get steps(): StepLabelType<TProps>[] {
+        return this.getSteps() as StepLabelType<TProps>[];
+    }
 
     public abstract getSteps(): StepLabelType<TProps>[] | Promise<StepLabelType<TProps>[]>;
 
@@ -36,7 +38,7 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> impl
      * Get the sha1 of the step
      * @param index Index of the step
      */
-    public abstract getStepSha1(index: number): string | undefined;
+    public abstract getStepSha1(index: number): Promise<string | undefined>;
 
     /**
      * Get the corresponding steps number

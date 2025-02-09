@@ -44,12 +44,6 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
     }
 
     private _steps: StepLabelType<T>[] | (() => StepLabelType<T>[] | Promise<StepLabelType<T>[]>);
-    public get steps(): StepLabelType<T>[] {
-        if (typeof this._steps === "function") {
-            return this._steps() as StepLabelType<T>[];
-        }
-        return this._steps;
-    }
 
     public async getSteps(): Promise<StepLabelType<T>[]> {
         if (typeof this._steps === "function") {
@@ -58,11 +52,12 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
         return this._steps;
     }
 
-    public getStepSha1(index: number): string | undefined {
-        if (index < 0 || index >= this.steps.length) {
+    public async getStepSha1(index: number): Promise<string | undefined> {
+        let steps = await this.getSteps();
+        if (index < 0 || index >= steps.length) {
             return undefined;
         }
-        let step = this.steps[index];
+        let step = steps[index];
         let sha1String = sha1(step.toString().toLocaleLowerCase());
         return sha1String.toString();
     }
