@@ -1,5 +1,6 @@
 import { Filter, filters } from "@pixi/sound";
 import { SoundFilterMemory } from "../types";
+import { logger } from "./log-utility";
 
 export function FilterMemoryToFilter(filter: SoundFilterMemory[]): Filter[] {
     let res: Filter[] = [];
@@ -21,7 +22,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): Filter[] {
         } else if (f.type === "DistortionFilter") {
             res.push(new filters.DistortionFilter(f.amount));
         } else {
-            console.error("Unknown sound filter type");
+            logger.error("Unknown sound filter type");
         }
     }
     return res;
@@ -75,7 +76,7 @@ export function FilterToFilterMemory(filter?: Filter[]): SoundFilterMemory[] | u
                 amount: f.amount,
             });
         } else {
-            console.error("Unknown sound filter type");
+            logger.error("Unknown sound filter type");
         }
     }
     return res;

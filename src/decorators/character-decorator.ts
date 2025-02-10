@@ -1,3 +1,4 @@
+import { logger } from "../functions/log-utility";
 import { CharacterInterface } from "../interface";
 
 export const registeredCharacters: { [id: string]: CharacterInterface } = {
@@ -44,12 +45,12 @@ export function getCharacterById<T extends CharacterInterface>(id: string): T | 
     try {
         let character = registeredCharacters[id];
         if (!character) {
-            console.error(`Character ${id} not found, did you forget to register it with the saveCharacter?`);
+            logger.error(`Character ${id} not found, did you forget to register it with the saveCharacter?`);
             return;
         }
         return character as T;
     } catch (e) {
-        console.error(`Error while getting Character ${id}`, e);
+        logger.error(`Error while getting Character ${id}`, e);
         return;
     }
 }

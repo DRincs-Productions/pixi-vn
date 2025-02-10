@@ -145,7 +145,7 @@ export default class StorageManager {
                 logger.warn("No storage data found");
             }
         } catch (e) {
-            console.error("Error importing data", e);
+            logger.error("Error importing data", e);
         }
     }
 }

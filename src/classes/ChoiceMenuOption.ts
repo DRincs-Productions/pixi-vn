@@ -1,49 +1,50 @@
-import { getLabelById } from "../decorators"
-import { Close, CloseType, LabelRunModeType, StorageObjectType } from "../types"
-import { LabelIdType } from "../types/LabelIdType"
-import newCloseLabel from "./CloseLabel"
-import Label from "./Label"
+import { getLabelById } from "../decorators";
+import { logger } from "../functions/log-utility";
+import { Close, CloseType, LabelRunModeType, StorageObjectType } from "../types";
+import { LabelIdType } from "../types/LabelIdType";
+import newCloseLabel from "./CloseLabel";
+import Label from "./Label";
 
 type ChoiceMenuOptionOptions = {
     /**
      * Type of the label to be opened. @default "call"
      */
-    type?: LabelRunModeType
+    type?: LabelRunModeType;
     /**
      * If this is true, the choice can only be made once. @default false
      */
-    oneTime?: boolean
+    oneTime?: boolean;
     /**
      * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
      * @default false
      */
-    onlyHaveNoChoice?: boolean
+    onlyHaveNoChoice?: boolean;
     /**
      * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
      * @default false
      */
-    autoSelect?: boolean
-}
+    autoSelect?: boolean;
+};
 type ChoiceMenuOptionCloseOptions = {
     /**
      * If true, the current label will be closed. @default false
      */
-    closeCurrentLabel?: boolean
+    closeCurrentLabel?: boolean;
     /**
      * If this is true, the choice can only be made once. @default false
      */
-    oneTime?: boolean
+    oneTime?: boolean;
     /**
      * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
      * @default false
      */
-    onlyHaveNoChoice?: boolean
+    onlyHaveNoChoice?: boolean;
     /**
      * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
      * @default false
      */
-    autoSelect?: boolean
-}
+    autoSelect?: boolean;
+};
 
 /**
  * ChoiceMenuOption is a class that contains a Label and a text that will be displayed in the menu.
@@ -56,41 +57,40 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
     /**
      * Text to be displayed in the menu
      */
-    text: string
-    private _label: Label<T> | LabelIdType
+    text: string;
+    private _label: Label<T> | LabelIdType;
     /**
      * Label to be opened when the option is selected
      */
     get label(): Label<T> {
-        let label = this._label
+        let label = this._label;
         if (typeof label === "string") {
-            let res = getLabelById(label)
+            let res = getLabelById(label);
             if (res) {
-                label = res
-            }
-            else {
-                console.error(`Label ${label} not found, so it will be closed`)
-                label = newCloseLabel()
+                label = res;
+            } else {
+                logger.error(`Label ${label} not found, so it will be closed`);
+                label = newCloseLabel();
             }
         }
-        return label
+        return label;
     }
     /**
      * Type of the label to be opened
      */
-    type: LabelRunModeType
+    type: LabelRunModeType;
     /**
      * If this is true, the choice can only be made once.
      */
-    oneTime: boolean
+    oneTime: boolean;
     /**
      * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
      */
-    onlyHaveNoChoice: boolean
+    onlyHaveNoChoice: boolean;
     /**
      * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
      */
-    autoSelect: boolean
+    autoSelect: boolean;
     /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
@@ -114,7 +114,7 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      * </List>
      * ```
      */
-    props: StorageObjectType = {}
+    props: StorageObjectType = {};
     /**
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected or the id of the label
@@ -122,14 +122,14 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      * @param options Options
      */
     constructor(text: string, label: Label<T> | LabelIdType, props: T, options?: ChoiceMenuOptionOptions) {
-        this.text = text
-        this._label = label
-        this.type = options?.type || "call"
-        this.oneTime = options?.oneTime || false
-        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false
-        this.autoSelect = options?.autoSelect || false
+        this.text = text;
+        this._label = label;
+        this.type = options?.type || "call";
+        this.oneTime = options?.oneTime || false;
+        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
+        this.autoSelect = options?.autoSelect || false;
         if (props) {
-            this.props = props
+            this.props = props;
         }
     }
 }
@@ -146,31 +146,31 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
     /**
      * Label to be opened when the option is selected
      */
-    label: Label<T> = newCloseLabel()
+    label: Label<T> = newCloseLabel();
     /**
      * Text to be displayed in the menu
      */
-    text: string
+    text: string;
     /**
      * If true, the current label will be closed
      */
-    closeCurrentLabel: boolean
+    closeCurrentLabel: boolean;
     /**
      * Type of the label to be opened
      */
-    type: CloseType = Close
+    type: CloseType = Close;
     /**
      * If this is true, the choice can only be made once.
      */
-    oneTime: boolean
+    oneTime: boolean;
     /**
      * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
      */
-    onlyHaveNoChoice: boolean
+    onlyHaveNoChoice: boolean;
     /**
      * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
      */
-    autoSelect: boolean
+    autoSelect: boolean;
     /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
@@ -194,93 +194,94 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      * </List>
      * ```
      */
-    props: StorageObjectType = {}
+    props: StorageObjectType = {};
     /**
      * @param text Text to be displayed in the menu
      * @param closeCurrentLabel If true, the current label will be closed. @default false
      */
     constructor(text: string, options?: ChoiceMenuOptionCloseOptions) {
-        this.text = text
-        this.closeCurrentLabel = options?.closeCurrentLabel || false
-        this.oneTime = options?.oneTime || false
-        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false
-        this.autoSelect = options?.autoSelect || false
+        this.text = text;
+        this.closeCurrentLabel = options?.closeCurrentLabel || false;
+        this.oneTime = options?.oneTime || false;
+        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
+        this.autoSelect = options?.autoSelect || false;
     }
 }
 
-export type IStoratedChoiceMenuOption = {
-    /**
-     * Text to be displayed in the menu
-     */
-    text: string
-    /**
-     * Label Id to be opened when the option is selected
-     */
-    label: LabelIdType
-    /**
-     * Type of the label to be opened
-     */
-    type: LabelRunModeType
-    /**
-     * If this is true, the choice can only be made once.
-     */
-    oneTime: boolean
-    /**
-     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
-     */
-    onlyHaveNoChoice: boolean
-    /**
-     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
-     */
-    autoSelect: boolean
-    /**
-     * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
-     * @example
-     * ```tsx
-     * narration.choiceMenuOptions = [
-     *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
-     * ]
-     * return <List>
-     *     {narration.choiceMenuOptions?.map((item, index) => {
-     *         return (
-     *             <ChoiceButton
-     *                 disabled={item.props.disabled}
-     *                 onClick={() => {
-     *                     afterSelectChoice(item)
-     *                 }}
-     *             >
-     *                 {item.text}
-     *             </ChoiceButton>
-     *         )
-     *     })}
-     * </List>
-     * ```
-     */
-    props: StorageObjectType
-} | {
-    /**
-     * Text to be displayed in the menu
-     */
-    text: string
-    /**
-     * Type of the label to be opened
-     */
-    type: CloseType
-    /**
-     * If this is true, the choice can only be made once.
-     */
-    oneTime: boolean
-    /**
-     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
-     */
-    onlyHaveNoChoice: boolean
-    /**
-     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
-     */
-    autoSelect: boolean
-    /**
-     * If true, the current label will be closed
-     */
-    closeCurrentLabel: boolean
-}
-
+export type IStoratedChoiceMenuOption =
+    | {
+          /**
+           * Text to be displayed in the menu
+           */
+          text: string;
+          /**
+           * Label Id to be opened when the option is selected
+           */
+          label: LabelIdType;
+          /**
+           * Type of the label to be opened
+           */
+          type: LabelRunModeType;
+          /**
+           * If this is true, the choice can only be made once.
+           */
+          oneTime: boolean;
+          /**
+           * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+           */
+          onlyHaveNoChoice: boolean;
+          /**
+           * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+           */
+          autoSelect: boolean;
+          /**
+           * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
+           * @example
+           * ```tsx
+           * narration.choiceMenuOptions = [
+           *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
+           * ]
+           * return <List>
+           *     {narration.choiceMenuOptions?.map((item, index) => {
+           *         return (
+           *             <ChoiceButton
+           *                 disabled={item.props.disabled}
+           *                 onClick={() => {
+           *                     afterSelectChoice(item)
+           *                 }}
+           *             >
+           *                 {item.text}
+           *             </ChoiceButton>
+           *         )
+           *     })}
+           * </List>
+           * ```
+           */
+          props: StorageObjectType;
+      }
+    | {
+          /**
+           * Text to be displayed in the menu
+           */
+          text: string;
+          /**
+           * Type of the label to be opened
+           */
+          type: CloseType;
+          /**
+           * If this is true, the choice can only be made once.
+           */
+          oneTime: boolean;
+          /**
+           * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+           */
+          onlyHaveNoChoice: boolean;
+          /**
+           * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+           */
+          autoSelect: boolean;
+          /**
+           * If true, the current label will be closed
+           */
+          closeCurrentLabel: boolean;
+      };

@@ -1,5 +1,6 @@
 import { Label } from "../classes";
 import LabelAbstract from "../classes/LabelAbstract";
+import { logger } from "../functions/log-utility";
 import { LabelProps } from "../interface";
 import { pixivnTestStartLabel } from "../labels";
 import { baseCanvasElementTestLabel } from "../labels/BaseCanvasElementTestLabel";
@@ -109,7 +110,7 @@ export function newLabel<T extends {} = {}>(
 export function getLabelById<T = Label<any>>(id: LabelIdType): T | undefined {
     let label = registeredLabels[id];
     if (!label) {
-        console.error(`Label ${id} not found`);
+        logger.error(`Label ${id} not found`);
         return;
     }
     return label as T;

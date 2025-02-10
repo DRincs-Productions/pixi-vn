@@ -10,6 +10,7 @@ import {
 } from "@pixi/sound";
 import { narration } from ".";
 import { Sound } from "../classes";
+import { logger } from "../functions/log-utility";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "../functions/sound-utility";
 import { ExportedSounds, SoundOptions, SoundPlayOptions } from "../interface";
 import { ExportedSoundPlay } from "../interface/export/ExportedSounds";
@@ -278,7 +279,7 @@ export default class SoundManager extends SoundLibrary {
             if (data.hasOwnProperty("soundAliasesOrder")) {
                 SoundManagerStatic.soundAliasesOrder = (data as ExportedSounds)["soundAliasesOrder"];
             } else {
-                console.error("The data does not have the properties soundAliasesOrder");
+                logger.error("The data does not have the properties soundAliasesOrder");
                 return;
             }
 
@@ -376,11 +377,11 @@ export default class SoundManager extends SoundLibrary {
                     }
                 }
             } else {
-                console.error("The data does not have the properties soundsPlaying");
+                logger.error("The data does not have the properties soundsPlaying");
                 return;
             }
         } catch (e) {
-            console.error("Error importing data", e);
+            logger.error("Error importing data", e);
         }
     }
 }

@@ -143,7 +143,7 @@ export default class CanvasManager {
             if (element) {
                 newAlias = element;
             } else {
-                console.error(`Canvas element ${newAlias} not found`);
+                logger.error(`Canvas element ${newAlias} not found`);
                 return;
             }
         }
@@ -152,7 +152,7 @@ export default class CanvasManager {
             if (element) {
                 oldAlias = element;
             } else {
-                console.error(`Canvas element ${oldAlias} not found`);
+                logger.error(`Canvas element ${oldAlias} not found`);
                 return;
             }
         }
@@ -286,7 +286,7 @@ export default class CanvasManager {
         } = {}
     ) {
         if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
-            console.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
+            logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
         }
 
@@ -299,7 +299,7 @@ export default class CanvasManager {
 
         let zIndex = options.zIndex;
         if (oldCanvasElement && !this.gameLayer.children.includes(oldCanvasElement)) {
-            console.error(
+            logger.error(
                 `The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`
             );
         } else if (oldCanvasElement) {
@@ -343,7 +343,7 @@ export default class CanvasManager {
         } = {}
     ) {
         if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
-            console.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
+            logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
         }
         let ignoreTickers = options.ignoreTickers;
@@ -463,7 +463,7 @@ export default class CanvasManager {
             canvasElementAlias = [canvasElementAlias];
         }
         if (!getTickerInstanceById<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
-            console.error(`Ticker ${tickerId} not found`);
+            logger.error(`Ticker ${tickerId} not found`);
             return;
         }
         let tickerHistory: TickerHistory<TArgs> = {
@@ -599,7 +599,7 @@ export default class CanvasManager {
             step = CanvasManagerStatic._currentTickersSequence[alias][key].steps[0];
             CanvasManagerStatic._currentTickersSequence[alias][key].currentStepNumber = 0;
             if (step === Repeat) {
-                console.error("TikersSteps has a RepeatType in the first step");
+                logger.error("TikersSteps has a RepeatType in the first step");
                 return;
             }
         }
@@ -623,7 +623,7 @@ export default class CanvasManager {
             (step as TickersStep<TArgs>).priority
         );
         if (!ticker) {
-            console.error(`Ticker ${(step as TickersStep<TArgs>).ticker} not found`);
+            logger.error(`Ticker ${(step as TickersStep<TArgs>).ticker} not found`);
             return;
         }
         let tickerName: TickerIdType = ticker.id;
@@ -958,7 +958,7 @@ export default class CanvasManager {
             let tickers = CanvasManagerStatic._currentTickersSequence[alias];
             if (tickers && tickers[id]) {
                 if (tickers[id].steps.includes(Repeat)) {
-                    console.error(
+                    logger.error(
                         `The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`,
                         tickers[id]
                     );
@@ -996,7 +996,7 @@ export default class CanvasManager {
      */
     addLayer(label: string, layer: PixiContainer) {
         if (label === CANVAS_APP_GAME_LAYER_ALIAS) {
-            console.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
+            logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
         }
         layer.label = label;
@@ -1104,13 +1104,13 @@ export default class CanvasManager {
                     CanvasManagerStatic.childrenAliasesOrder.push(alias);
                 });
             } else {
-                console.error("The data does not have the properties elementAliasesOrder and elements");
+                logger.error("The data does not have the properties elementAliasesOrder and elements");
                 return;
             }
             if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
                 setMemoryContainer(this.gameLayer, (data as ExportedCanvas)["stage"], { ignoreScale: true });
             } else {
-                console.error("The data does not have the properties stage");
+                logger.error("The data does not have the properties stage");
             }
             if (data.hasOwnProperty("tickers")) {
                 let tickers = (data as ExportedCanvas)["tickers"];
@@ -1123,7 +1123,7 @@ export default class CanvasManager {
                             tickersToTrasfer[oldId] = id;
                         }
                     } else {
-                        console.error(`Ticker ${t.id} not found`);
+                        logger.error(`Ticker ${t.id} not found`);
                     }
                 });
             }
@@ -1162,7 +1162,7 @@ export default class CanvasManager {
                 CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds, stepAlias };
             }
         } catch (e) {
-            console.error("Error importing data", e);
+            logger.error("Error importing data", e);
         }
     }
 }

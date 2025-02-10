@@ -2,6 +2,7 @@ import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOp
 import { CANVAS_TEXT_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getMemoryText } from "../../functions/canvas/canvas-memory-utility";
+import { logger } from "../../functions/log-utility";
 import { TextMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
@@ -79,7 +80,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                 this.eventMode = "dynamic";
             }
         } else {
-            console.error(`Event ${id} not found`);
+            logger.error(`Event ${id} not found`);
         }
         return this;
     }

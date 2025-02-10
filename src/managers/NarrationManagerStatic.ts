@@ -3,6 +3,7 @@ import { Label } from "../classes";
 import { getLabelById } from "../decorators/label-decorator";
 import { restoreDeepDiffChanges } from "../functions/diff-utility";
 import { createExportableElement } from "../functions/export-utility";
+import { logger } from "../functions/log-utility";
 import { getGamePath } from "../functions/path-utility";
 import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
 import OpenedLabel from "../interface/OpenedLabel";
@@ -49,14 +50,14 @@ export default class NarrationManagerStatic {
     static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
         if (currentLabelStepIndex === null) {
-            console.error("currentLabelStepIndex is null");
+            logger.error("currentLabelStepIndex is null");
             return null;
         }
         let currentLabelStepIndexId = `${currentLabelStepIndex}${nestedId}`;
         let labelId = NarrationManagerStatic.currentLabelId;
         let currentLabel = NarrationManagerStatic._currentLabel;
         if (!labelId || currentLabelStepIndex === null || !currentLabel) {
-            console.error("currentLabelId or currentLabelStepIndex is null or currentLabel not found");
+            logger.error("currentLabelId or currentLabelStepIndex is null or currentLabel not found");
             return null;
         }
         let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error";
@@ -75,7 +76,7 @@ export default class NarrationManagerStatic {
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId;
         let labelId = NarrationManagerStatic.currentLabelId;
         if (!labelId || currentLabelStepIndex === null) {
-            console.error("currentLabelId or currentLabelStepIndex is null");
+            logger.error("currentLabelId or currentLabelStepIndex is null");
             return;
         }
         let obj =
@@ -90,7 +91,7 @@ export default class NarrationManagerStatic {
         let lastStep = NarrationManagerStatic._lastStepIndex;
         let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(nestedId);
         if (!obj) {
-            console.error("getCurrentStepTimesCounter obj is null");
+            logger.error("getCurrentStepTimesCounter obj is null");
             return 0;
         }
         let list = obj.lastStepIndexs || [];
@@ -142,7 +143,7 @@ export default class NarrationManagerStatic {
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId;
         let labelId = NarrationManagerStatic.currentLabelId;
         if (!labelId || currentLabelStepIndex === null) {
-            console.error("currentLabelId or currentLabelStepIndex is null");
+            logger.error("currentLabelId or currentLabelStepIndex is null");
             return;
         }
         let obj =
@@ -337,7 +338,7 @@ export default class NarrationManagerStatic {
                 NarrationManagerStatic._stepsHistory.pop();
                 return NarrationManagerStatic.goBackInternal(steps - 1, result);
             } catch (e) {
-                console.error("Error applying diff", e);
+                logger.error("Error applying diff", e);
                 return restoredStep;
             }
         } else {

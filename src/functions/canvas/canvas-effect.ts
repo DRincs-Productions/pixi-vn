@@ -2,6 +2,7 @@ import { UPDATE_PRIORITY } from "pixi.js";
 import { MoveTicker } from "../../classes/ticker";
 import { ShakeEffectProps } from "../../interface";
 import { canvas } from "../../managers";
+import { logger } from "../log-utility";
 
 /**
  * Shake the canvas element.
@@ -18,7 +19,7 @@ export async function shakeEffect(
 ): Promise<void> {
     let elemet = canvas.find(alias);
     if (!elemet) {
-        console.error(`The element with the alias ${alias} does not exist. So the shake effect can't be applied.`);
+        logger.error(`The element with the alias ${alias} does not exist. So the shake effect can't be applied.`);
         return;
     }
     let position = { x: elemet.position.x, y: elemet.position.y };
@@ -29,7 +30,7 @@ export async function shakeEffect(
     let maximumShockSize = props.maximumShockSize || 10;
     let shocksNumber = (props.shocksNumber || 10) - 1;
     if (shocksNumber < 2) {
-        console.error("The number of shocks must be at least 3.");
+        logger.error("The number of shocks must be at least 3.");
         return;
     }
     let upshocksNumber = Math.floor(shocksNumber / 2);

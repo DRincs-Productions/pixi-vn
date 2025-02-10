@@ -11,6 +11,7 @@ import {
     getSuperPoint,
     getSuperWidth,
 } from "../../functions/canvas/canvas-property-utility";
+import { logger } from "../../functions/log-utility";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import Sprite, { setMemorySprite } from "./Sprite";
@@ -107,7 +108,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             })
             .catch((e) => {
                 this._loadIsStarted = false;
-                console.error("Error into ImageSprite.load()", e);
+                logger.error("Error into ImageSprite.load()", e);
             });
     }
 

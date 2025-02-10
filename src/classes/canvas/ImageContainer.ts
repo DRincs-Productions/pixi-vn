@@ -10,6 +10,7 @@ import {
     getSuperWidth,
 } from "../../functions/canvas/canvas-property-utility";
 import { checkIfVideo } from "../../functions/canvas/canvas-utility";
+import { logger } from "../../functions/log-utility";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
@@ -115,7 +116,7 @@ export default class ImageContainer
             })
             .catch((e) => {
                 this._loadIsStarted = false;
-                console.error("Error into ImageContainer.load()", e);
+                logger.error("Error into ImageContainer.load()", e);
             });
     }
 

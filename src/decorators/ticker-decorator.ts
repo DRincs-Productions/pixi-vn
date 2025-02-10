@@ -1,5 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import TickerBase from "../classes/ticker/TickerBase";
+import { logger } from "../functions/log-utility";
 import { TickerArgs } from "../interface";
 import { TickerIdType } from "../types/TickerIdType";
 
@@ -44,12 +45,12 @@ export function getTickerInstanceById<TArgs extends TickerArgs>(
     try {
         let ticker = registeredTickers[tickerId];
         if (!ticker) {
-            console.error(`Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
+            logger.error(`Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
             return;
         }
         return new ticker(args, duration, priority);
     } catch (e) {
-        console.error(`Error while getting Ticker ${tickerId}`, e);
+        logger.error(`Error while getting Ticker ${tickerId}`, e);
         return;
     }
 }

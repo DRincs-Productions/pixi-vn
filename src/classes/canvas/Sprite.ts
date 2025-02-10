@@ -12,6 +12,7 @@ import { CANVAS_SPRITE_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTexture } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
+import { logger } from "../../functions/log-utility";
 import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
@@ -111,7 +112,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
                 this.eventMode = "dynamic";
             }
         } else {
-            console.error(`Event ${id} not found`);
+            logger.error(`Event ${id} not found`);
         }
         return this;
     }

@@ -1,5 +1,6 @@
 import { CanvasEvent } from "../classes";
 import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
+import { logger } from "../functions/log-utility";
 import { CanvasEventNamesType } from "../types";
 import { EventIdType } from "../types/EventIdType";
 
@@ -36,13 +37,13 @@ export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(ev
     try {
         let eventType = registeredEvents[eventId];
         if (!eventType) {
-            console.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
+            logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
             return;
         }
         new eventType();
         return eventType as T;
     } catch (e) {
-        console.error(`Error while getting Event ${eventId}`, e);
+        logger.error(`Error while getting Event ${eventId}`, e);
         return;
     }
 }
@@ -56,13 +57,13 @@ export function getEventInstanceById<T = CanvasEvent<CanvasBaseItem<any>>>(event
     try {
         let eventType = registeredEvents[eventId];
         if (!eventType) {
-            console.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
+            logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
             return;
         }
         let event = new eventType();
         return event as T;
     } catch (e) {
-        console.error(`Error while getting Event ${eventId}`, e);
+        logger.error(`Error while getting Event ${eventId}`, e);
         return;
     }
 }

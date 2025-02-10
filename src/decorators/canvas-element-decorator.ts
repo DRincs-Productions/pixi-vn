@@ -27,7 +27,7 @@ export function getCanvasElementTypeById<T extends typeof CanvasBaseItem<any>>(
     try {
         let eventType = registeredCanvasElement[canvasId];
         if (!eventType) {
-            console.error(
+            logger.error(
                 `CanvasElement ${canvasId} not found, did you forget to register it with the canvasComponentDecorator?`
             );
             return;
@@ -35,7 +35,7 @@ export function getCanvasElementTypeById<T extends typeof CanvasBaseItem<any>>(
         new eventType();
         return eventType as T;
     } catch (e) {
-        console.error(`Error while getting CanvasElement ${canvasId}`, e);
+        logger.error(`Error while getting CanvasElement ${canvasId}`, e);
         return;
     }
 }

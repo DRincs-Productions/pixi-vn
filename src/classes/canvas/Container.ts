@@ -3,6 +3,7 @@ import { CANVAS_CONTAINER_ID } from "../../constants";
 import { getEventInstanceById } from "../../decorators/event-decorator";
 import { importCanvasElement } from "../../functions/canvas/canvas-import-utility";
 import { getMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
+import { logger } from "../../functions/log-utility";
 import { ContainerMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import ContainerChild from "../../types/ContainerChild";
@@ -96,7 +97,7 @@ export default class Container<
                 (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
             });
         } else {
-            console.error(`Event ${id} not found`);
+            logger.error(`Event ${id} not found`);
         }
         return this;
     }

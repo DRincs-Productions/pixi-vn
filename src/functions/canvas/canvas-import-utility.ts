@@ -10,6 +10,7 @@ import {
 import { getCanvasElementTypeById } from "../../decorators/canvas-element-decorator";
 import { CanvasBaseItemMemory } from "../../interface";
 import { CanvasElementAliasType } from "../../types/CanvasElementAliasType";
+import { logger } from "../log-utility";
 
 /**
  * Import a Canvas element from a memory object
@@ -56,13 +57,13 @@ export function getCanvasElementInstanceById<T extends CanvasBaseItem<any>>(
         }
 
         if (!eventType) {
-            console.error(`CanvasElement ${canvasId} not found`);
+            logger.error(`CanvasElement ${canvasId} not found`);
             return;
         }
         let canvasElement = new eventType();
         return canvasElement as T;
     } catch (e) {
-        console.error(`Error while getting CanvasElement ${canvasId}`, e);
+        logger.error(`Error while getting CanvasElement ${canvasId}`, e);
         return;
     }
 }

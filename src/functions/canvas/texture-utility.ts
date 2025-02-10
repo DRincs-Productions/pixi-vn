@@ -20,7 +20,7 @@ export async function getTexture(textureAlias?: string): Promise<Texture | void>
         return;
     }
     if (!textureAlias) {
-        console.error("Texture not found", textureAlias);
+        logger.error("Texture not found", textureAlias);
         return;
     }
     if (Assets.cache.has(textureAlias)) {
@@ -32,19 +32,19 @@ export async function getTexture(textureAlias?: string): Promise<Texture | void>
     return Assets.load(textureAlias)
         .then((texture) => {
             if (!texture) {
-                console.error("Texture not found", textureAlias);
+                logger.error("Texture not found", textureAlias);
                 return;
             }
             // if texture not is a Texture, then it is a TextureResource
             if (!(texture instanceof Texture)) {
-                console.error("File not is a file", textureAlias);
+                logger.error("File not is a file", textureAlias);
                 return;
             }
 
             return texture;
         })
         .catch((e) => {
-            console.error("Error loading file", e);
+            logger.error("Error loading file", e);
             return;
         });
 }
