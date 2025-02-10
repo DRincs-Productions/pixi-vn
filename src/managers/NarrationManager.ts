@@ -8,6 +8,7 @@ import { getLabelById } from "../decorators/label-decorator";
 import { logger } from "../functions/log-utility";
 import { CharacterInterface, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
+import NarrationManagerInterface from "../interface/managers/NarrationManagerInterface";
 import {
     ChoiceMenuOptionsType,
     Close,
@@ -25,21 +26,11 @@ import StorageManagerStatic from "./StorageManagerStatic";
 /**
  * This class is a class that manages the steps and labels of the game.
  */
-export default class NarrationManager {
-    /**
-     * stepHistory is a list of label events and steps that occurred during the progression of the steps.
-     */
+export default class NarrationManager implements NarrationManagerInterface {
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;
     }
-    /**
-     * Counter of execution times of the current step. Current execution is also included.
-     * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
-     * You can restart the counter in this way:
-     * ```typescript
-     * narration.currentStepTimesCounter = 0
-     * ```
-     */
+
     get currentStepTimesCounter(): number {
         return NarrationManagerStatic.getCurrentStepTimesCounter();
     }
@@ -719,6 +710,14 @@ export default class NarrationManager {
             this.closeCurrentLabel();
         }
         return this.goNext(props, { choiseMade: choiseMade });
+    }
+
+    /** Old Step Methods */
+    get oldStepsLimit() {
+        return NarrationManagerStatic.oldStepsLimit;
+    }
+    set oldStepsLimit(limit: number) {
+        NarrationManagerStatic.oldStepsLimit = limit;
     }
 
     /* Go Back & Refresh Methods */
