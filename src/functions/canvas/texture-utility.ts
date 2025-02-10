@@ -57,7 +57,7 @@ function getFillGradientFillPattern(
         return prop;
     }
     // TODO: FillGradient and FillPattern are not supported yet
-    logger.warn(`[Pixi’VN] Text.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop);
+    logger.warn(`Text.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop);
     return undefined;
 }
 

@@ -142,7 +142,7 @@ export default class StorageManager {
             if (data) {
                 StorageManagerStatic.storage = data as ExportedStorage;
             } else {
-                logger.warn("[Pixi’VN] No storage data found");
+                logger.warn("No storage data found");
             }
         } catch (e) {
             console.error("[Pixi’VN] Error importing data", e);

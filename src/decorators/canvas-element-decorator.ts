@@ -14,7 +14,7 @@ export default function canvasComponentDecorator(name?: CanvasElementAliasType) 
             name = target.name;
         }
         if (registeredCanvasElement[name]) {
-            logger.warn(`[Pixi’VN] CanvasElement ${name} already registered`);
+            logger.warn(`CanvasElement ${name} already registered`);
         }
         target.prototype.pixivnId = name;
         registeredCanvasElement[name] = target;

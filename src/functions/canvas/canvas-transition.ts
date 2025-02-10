@@ -399,7 +399,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
     // get the destination
     let component = canvas.find(alias);
     if (!component) {
-        logger.warn("[Pixi’VN] The canvas component is not found.");
+        logger.warn("The canvas component is not found.");
         return;
     }
     let destination = { x: component.x, y: component.y };
@@ -574,7 +574,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
     // get the destination
     let component = canvas.find(alias);
     if (!component) {
-        logger.warn("[Pixi’VN] The canvas component is not found.");
+        logger.warn("The canvas component is not found.");
         return;
     }
     if (direction == "up") {

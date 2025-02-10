@@ -161,7 +161,7 @@ export default class NarrationManager {
      */
     closeCurrentLabel() {
         if (!NarrationManagerStatic.currentLabelId) {
-            logger.warn("[Pixi’VN] No label to close");
+            logger.warn("No label to close");
             return;
         }
         if (!this.currentLabel) {
@@ -282,7 +282,7 @@ export default class NarrationManager {
         }
         let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
         if (!stepSha) {
-            logger.warn("[Pixi’VN] stepSha not found");
+            logger.warn("stepSha not found");
         }
         return NarrationManagerStatic.allChoicesMade.filter((choice) => {
             return (
@@ -344,11 +344,11 @@ export default class NarrationManager {
         let showWarn = options?.showWarn || false;
         let choiceMenuOptions = this.choiceMenuOptions;
         if (choiceMenuOptions && choiceMenuOptions.length > 0) {
-            showWarn && logger.warn("[Pixi’VN] The player must make a choice");
+            showWarn && logger.warn("The player must make a choice");
             return false;
         }
         if (this.isRequiredInput) {
-            showWarn && logger.warn("[Pixi’VN] The player must enter a value");
+            showWarn && logger.warn("The player must enter a value");
             return false;
         }
         return true;
@@ -459,7 +459,7 @@ export default class NarrationManager {
                 let step = currentLabel.steps[currentLabelStepIndex];
                 let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
                 if (!stepSha) {
-                    logger.warn("[Pixi’VN] stepSha not found");
+                    logger.warn("stepSha not found");
                 }
                 try {
                     NarrationManagerStatic.stepsRunning++;
@@ -738,11 +738,11 @@ export default class NarrationManager {
      */
     public async goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
-            logger.warn("[Pixi’VN] Steps must be greater than 0");
+            logger.warn("Steps must be greater than 0");
             return;
         }
         if (NarrationManagerStatic._stepsHistory.length <= 1) {
-            logger.warn("[Pixi’VN] No steps to go back");
+            logger.warn("No steps to go back");
             return;
         }
         let restoredStep = NarrationManagerStatic.goBackInternal(steps, NarrationManagerStatic.originalStepData);
@@ -1036,22 +1036,22 @@ export default class NarrationManager {
             if (data.hasOwnProperty("stepsHistory")) {
                 NarrationManagerStatic._stepsHistory = (data as ExportedStep)["stepsHistory"];
             } else {
-                logger.warn("[Pixi’VN] Could not import stepsHistory data, so will be ignored");
+                logger.warn("Could not import stepsHistory data, so will be ignored");
             }
             if (data.hasOwnProperty("openedLabels")) {
                 NarrationManagerStatic._openedLabels = (data as ExportedStep)["openedLabels"];
             } else {
-                logger.warn("[Pixi’VN] Could not import openedLabels data, so will be ignored");
+                logger.warn("Could not import openedLabels data, so will be ignored");
             }
             if (data.hasOwnProperty("lastStepIndex")) {
                 NarrationManagerStatic._lastStepIndex = (data as ExportedStep)["lastStepIndex"];
             } else {
-                logger.warn("[Pixi’VN] Could not import lastStepIndex data, so will be ignored");
+                logger.warn("Could not import lastStepIndex data, so will be ignored");
             }
             if (data.hasOwnProperty("originalStepData")) {
                 NarrationManagerStatic._originalStepData = (data as ExportedStep)["originalStepData"];
             } else {
-                logger.warn("[Pixi’VN] Could not import originalStepData data, so will be ignored");
+                logger.warn("Could not import originalStepData data, so will be ignored");
             }
 
             if (this.currentLabel && this.currentLabel.onLoadingLabel) {

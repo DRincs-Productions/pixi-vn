@@ -133,7 +133,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         ySpeed < 0.00001 &&
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
-                        logger.warn("[Pixi’VN] The speed of the MoveTicker must be greater than 0.");
+                        logger.warn("The speed of the MoveTicker must be greater than 0.");
                         this.onEndOfTicker(alias, tickerId, args, { editPosition: false });
                         return;
                     }

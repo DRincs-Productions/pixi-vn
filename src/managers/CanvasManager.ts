@@ -556,7 +556,7 @@ export default class CanvasManager {
      */
     addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
-            logger.warn("[Pixi’VN] The steps of the tickers is empty");
+            logger.warn("The steps of the tickers is empty");
             return;
         }
         if (!(alias in CanvasManagerStatic._currentTickersSequence)) {
