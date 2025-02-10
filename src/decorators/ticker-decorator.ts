@@ -21,7 +21,7 @@ export default function tickerDecorator(name?: TickerIdType) {
             name = target.name;
         }
         if (registeredTickers[name]) {
-            console.info(`Ticker ${name} already exists, it will be overwritten`);
+            logger.info(`Ticker ${name} already exists, it will be overwritten`);
         }
         target.prototype.id = name;
         registeredTickers[name] = target;

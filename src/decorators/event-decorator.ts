@@ -21,7 +21,7 @@ export default function eventDecorator(name?: EventIdType) {
             name = target.name;
         }
         if (registeredEvents[name]) {
-            console.info(`Event ${name} already exists, it will be overwritten`);
+            logger.info(`Event ${name} already exists, it will be overwritten`);
         }
         target.prototype.id = name;
         registeredEvents[name] = target;

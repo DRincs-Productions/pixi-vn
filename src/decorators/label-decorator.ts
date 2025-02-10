@@ -95,7 +95,7 @@ export function newLabel<T extends {} = {}>(
     props?: Omit<LabelProps<Label<T>>, "choiseIndex">
 ): Label<T> {
     if (registeredLabels[id]) {
-        console.info(`Label ${id} already exists, it will be overwritten`);
+        logger.info(`Label ${id} already exists, it will be overwritten`);
     }
     let label = new Label<T>(id, steps, props);
     registeredLabels[id] = label;

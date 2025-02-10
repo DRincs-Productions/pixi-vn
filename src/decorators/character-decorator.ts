@@ -27,7 +27,7 @@ export function saveCharacter<T extends CharacterInterface = CharacterInterface>
         return;
     }
     if (registeredCharacters[character.id]) {
-        console.info(`Character id ${character.id} already exists, it will be overwritten`);
+        logger.info(`Character id ${character.id} already exists, it will be overwritten`);
     }
     registeredCharacters[character.id] = character;
 }
