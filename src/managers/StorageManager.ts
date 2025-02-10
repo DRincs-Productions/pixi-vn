@@ -1,5 +1,6 @@
 import { narration } from ".";
 import { createExportableElement } from "../functions/export-utility";
+import { logger } from "../functions/log-utility";
 import { ExportedStorage } from "../interface";
 import { StorageElementType } from "../types/StorageElementType";
 import StorageManagerStatic from "./StorageManagerStatic";
@@ -141,7 +142,7 @@ export default class StorageManager {
             if (data) {
                 StorageManagerStatic.storage = data as ExportedStorage;
             } else {
-                console.warn("[Pixi’VN] No storage data found");
+                logger.warn("[Pixi’VN] No storage data found");
             }
         } catch (e) {
             console.error("[Pixi’VN] Error importing data", e);

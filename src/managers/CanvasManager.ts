@@ -15,6 +15,7 @@ import { getTickerInstanceById } from "../decorators/ticker-decorator";
 import { importCanvasElement } from "../functions/canvas/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "../functions/canvas/canvas-memory-utility";
 import { createExportableElement } from "../functions/export-utility";
+import { logger } from "../functions/log-utility";
 import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSequence } from "../interface";
 import { TickersStep } from "../interface/TickersSequence";
 import PauseTickerType from "../types/PauseTickerType";
@@ -555,7 +556,7 @@ export default class CanvasManager {
      */
     addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
-            console.warn("[Pixi’VN] The steps of the tickers is empty");
+            logger.warn("[Pixi’VN] The steps of the tickers is empty");
             return;
         }
         if (!(alias in CanvasManagerStatic._currentTickersSequence)) {

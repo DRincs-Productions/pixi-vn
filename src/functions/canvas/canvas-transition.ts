@@ -12,6 +12,7 @@ import {
 } from "../../interface";
 import { PushInOutProps } from "../../interface/canvas/transition-props";
 import { canvas } from "../../managers";
+import { logger } from "../log-utility";
 import { getPointBySuperPoint } from "./canvas-property-utility";
 import { checkIfVideo } from "./canvas-utility";
 import { addImageCointainer } from "./image-container-utility";
@@ -398,7 +399,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
     // get the destination
     let component = canvas.find(alias);
     if (!component) {
-        console.warn("[Pixi’VN] The canvas component is not found.");
+        logger.warn("[Pixi’VN] The canvas component is not found.");
         return;
     }
     let destination = { x: component.x, y: component.y };
@@ -573,7 +574,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
     // get the destination
     let component = canvas.find(alias);
     if (!component) {
-        console.warn("[Pixi’VN] The canvas component is not found.");
+        logger.warn("[Pixi’VN] The canvas component is not found.");
         return;
     }
     if (direction == "up") {

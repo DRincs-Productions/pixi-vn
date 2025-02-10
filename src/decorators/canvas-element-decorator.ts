@@ -1,4 +1,5 @@
 import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
+import { logger } from "../functions/log-utility";
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
 const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBaseItem<any> } = {};
@@ -13,7 +14,7 @@ export default function canvasComponentDecorator(name?: CanvasElementAliasType) 
             name = target.name;
         }
         if (registeredCanvasElement[name]) {
-            console.warn(`[Pixi’VN] CanvasElement ${name} already registered`);
+            logger.warn(`[Pixi’VN] CanvasElement ${name} already registered`);
         }
         target.prototype.pixivnId = name;
         registeredCanvasElement[name] = target;

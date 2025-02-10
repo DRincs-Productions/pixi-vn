@@ -9,6 +9,7 @@ import {
     getSuperWidth,
 } from "../../functions/canvas/canvas-property-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
+import { logger } from "../../functions/log-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";
@@ -132,7 +133,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         ySpeed < 0.00001 &&
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
-                        console.warn("[Pixi’VN] The speed of the MoveTicker must be greater than 0.");
+                        logger.warn("[Pixi’VN] The speed of the MoveTicker must be greater than 0.");
                         this.onEndOfTicker(alias, tickerId, args, { editPosition: false });
                         return;
                     }

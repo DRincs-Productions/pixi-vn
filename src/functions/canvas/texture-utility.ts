@@ -1,4 +1,14 @@
-import { Assets, ColorSource, FillGradient, FillPattern, StrokeStyle, TextStyle, TextStyleOptions, Texture } from 'pixi.js';
+import {
+    Assets,
+    ColorSource,
+    FillGradient,
+    FillPattern,
+    StrokeStyle,
+    TextStyle,
+    TextStyleOptions,
+    Texture,
+} from "pixi.js";
+import { logger } from "../log-utility";
 
 /**
  * Get a texture from a url.
@@ -7,45 +17,48 @@ import { Assets, ColorSource, FillGradient, FillPattern, StrokeStyle, TextStyle,
  */
 export async function getTexture(textureAlias?: string): Promise<Texture | void> {
     if (textureAlias === "EMPTY") {
-        return
+        return;
     }
     if (!textureAlias) {
-        console.error("[Pixi’VN] Texture not found", textureAlias)
-        return
+        console.error("[Pixi’VN] Texture not found", textureAlias);
+        return;
     }
     if (Assets.cache.has(textureAlias)) {
-        let texture = Assets.get(textureAlias)
+        let texture = Assets.get(textureAlias);
         if (texture) {
-            return texture
+            return texture;
         }
     }
     return Assets.load(textureAlias)
         .then((texture) => {
             if (!texture) {
-                console.error("[Pixi’VN] Texture not found", textureAlias)
-                return
+                console.error("[Pixi’VN] Texture not found", textureAlias);
+                return;
             }
             // if texture not is a Texture, then it is a TextureResource
             if (!(texture instanceof Texture)) {
-                console.error("[Pixi’VN] File not is a file", textureAlias)
-                return
+                console.error("[Pixi’VN] File not is a file", textureAlias);
+                return;
             }
 
-            return texture
+            return texture;
         })
         .catch((e) => {
-            console.error("[Pixi’VN] Error loading file", e)
-            return
-        })
+            console.error("[Pixi’VN] Error loading file", e);
+            return;
+        });
 }
 
-function getFillGradientFillPattern(prop: ColorSource | FillGradient | FillPattern | StrokeStyle, propName: keyof TextStyle) {
+function getFillGradientFillPattern(
+    prop: ColorSource | FillGradient | FillPattern | StrokeStyle,
+    propName: keyof TextStyle
+) {
     if (!(prop instanceof Object)) {
-        return prop
+        return prop;
     }
     // TODO: FillGradient and FillPattern are not supported yet
-    console.warn(`[Pixi’VN] Text.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop)
-    return undefined
+    logger.warn(`[Pixi’VN] Text.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop);
+    return undefined;
 }
 
 export function getTextStyle(style: TextStyle): TextStyleOptions {
@@ -69,5 +82,5 @@ export function getTextStyle(style: TextStyle): TextStyleOptions {
         whiteSpace: style.whiteSpace,
         wordWrap: style.wordWrap,
         wordWrapWidth: style.wordWrapWidth,
-    }
+    };
 }
