@@ -5,4 +5,6 @@ export namespace logger {
         console.warn(`[Pixi’VN] ${message}`, ...optionalParams);
     export const error = (message?: any, ...optionalParams: any[]) =>
         console.error(`[Pixi’VN] ${message}`, ...optionalParams);
+    export const info = (message?: any, ...optionalParams: any[]) =>
+        console.info(`[Pixi’VN] ${message}`, ...optionalParams);
 }
