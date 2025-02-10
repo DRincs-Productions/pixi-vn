@@ -96,7 +96,7 @@ export default class Container<
                 (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
             });
         } else {
-            console.error(`[Pixi’VN] Event ${id} not found`);
+            console.error(`Event ${id} not found`);
         }
         return this;
     }

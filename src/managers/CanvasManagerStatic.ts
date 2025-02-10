@@ -92,7 +92,7 @@ export default class CanvasManagerStatic {
         if (CanvasManagerStatic._isInitialized) {
             element.appendChild(CanvasManagerStatic.app.canvas as HTMLCanvasElement);
         } else {
-            console.error("[Pixi’VN] GameWindowManager is not initialized");
+            console.error("GameWindowManager is not initialized");
         }
     }
     static initializeHTMLLayout(element: HTMLElement) {

@@ -49,14 +49,14 @@ export default class NarrationManagerStatic {
     static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
         if (currentLabelStepIndex === null) {
-            console.error("[Pixi’VN] currentLabelStepIndex is null");
+            console.error("currentLabelStepIndex is null");
             return null;
         }
         let currentLabelStepIndexId = `${currentLabelStepIndex}${nestedId}`;
         let labelId = NarrationManagerStatic.currentLabelId;
         let currentLabel = NarrationManagerStatic._currentLabel;
         if (!labelId || currentLabelStepIndex === null || !currentLabel) {
-            console.error("[Pixi’VN] currentLabelId or currentLabelStepIndex is null or currentLabel not found");
+            console.error("currentLabelId or currentLabelStepIndex is null or currentLabel not found");
             return null;
         }
         let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error";
@@ -75,7 +75,7 @@ export default class NarrationManagerStatic {
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId;
         let labelId = NarrationManagerStatic.currentLabelId;
         if (!labelId || currentLabelStepIndex === null) {
-            console.error("[Pixi’VN] currentLabelId or currentLabelStepIndex is null");
+            console.error("currentLabelId or currentLabelStepIndex is null");
             return;
         }
         let obj =
@@ -90,7 +90,7 @@ export default class NarrationManagerStatic {
         let lastStep = NarrationManagerStatic._lastStepIndex;
         let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(nestedId);
         if (!obj) {
-            console.error("[Pixi’VN] getCurrentStepTimesCounter obj is null");
+            console.error("getCurrentStepTimesCounter obj is null");
             return 0;
         }
         let list = obj.lastStepIndexs || [];
@@ -142,7 +142,7 @@ export default class NarrationManagerStatic {
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId;
         let labelId = NarrationManagerStatic.currentLabelId;
         if (!labelId || currentLabelStepIndex === null) {
-            console.error("[Pixi’VN] currentLabelId or currentLabelStepIndex is null");
+            console.error("currentLabelId or currentLabelStepIndex is null");
             return;
         }
         let obj =
@@ -337,7 +337,7 @@ export default class NarrationManagerStatic {
                 NarrationManagerStatic._stepsHistory.pop();
                 return NarrationManagerStatic.goBackInternal(steps - 1, result);
             } catch (e) {
-                console.error("[Pixi’VN] Error applying diff", e);
+                console.error("Error applying diff", e);
                 return restoredStep;
             }
         } else {

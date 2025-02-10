@@ -28,14 +28,14 @@ export function getCanvasElementTypeById<T extends typeof CanvasBaseItem<any>>(
         let eventType = registeredCanvasElement[canvasId];
         if (!eventType) {
             console.error(
-                `[Pixi’VN] CanvasElement ${canvasId} not found, did you forget to register it with the canvasComponentDecorator?`
+                `CanvasElement ${canvasId} not found, did you forget to register it with the canvasComponentDecorator?`
             );
             return;
         }
         new eventType();
         return eventType as T;
     } catch (e) {
-        console.error(`[Pixi’VN] Error while getting CanvasElement ${canvasId}`, e);
+        console.error(`Error while getting CanvasElement ${canvasId}`, e);
         return;
     }
 }

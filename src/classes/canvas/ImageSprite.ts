@@ -107,7 +107,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             })
             .catch((e) => {
                 this._loadIsStarted = false;
-                console.error("[Pixi’VN] Error into ImageSprite.load()", e);
+                console.error("Error into ImageSprite.load()", e);
             });
     }
 

@@ -6,13 +6,12 @@
 export function createExportableElement<T>(element: T): T {
     try {
         if (typeof element === "undefined") {
-            return element
+            return element;
         }
-        let elementString = JSON.stringify(element)
-        return JSON.parse(elementString)
-    }
-    catch (e) {
-        console.error("[Pixi’VN] Error creating exportable element", element, e)
-        throw new Error("[Pixi’VN] Error creating exportable element")
+        let elementString = JSON.stringify(element);
+        return JSON.parse(elementString);
+    } catch (e) {
+        console.error("Error creating exportable element", element, e);
+        throw new Error("[Pixi’VN] Error creating exportable element");
     }
 }

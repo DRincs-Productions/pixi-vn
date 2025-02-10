@@ -26,7 +26,7 @@ export function saveCharacter<T extends CharacterInterface = CharacterInterface>
         return;
     }
     if (registeredCharacters[character.id]) {
-        console.info(`[Pixi’VN] Character id ${character.id} already exists, it will be overwritten`);
+        console.info(`Character id ${character.id} already exists, it will be overwritten`);
     }
     registeredCharacters[character.id] = character;
 }
@@ -44,12 +44,12 @@ export function getCharacterById<T extends CharacterInterface>(id: string): T | 
     try {
         let character = registeredCharacters[id];
         if (!character) {
-            console.error(`[Pixi’VN] Character ${id} not found, did you forget to register it with the saveCharacter?`);
+            console.error(`Character ${id} not found, did you forget to register it with the saveCharacter?`);
             return;
         }
         return character as T;
     } catch (e) {
-        console.error(`[Pixi’VN] Error while getting Character ${id}`, e);
+        console.error(`Error while getting Character ${id}`, e);
         return;
     }
 }

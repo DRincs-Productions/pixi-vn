@@ -20,7 +20,7 @@ export default function tickerDecorator(name?: TickerIdType) {
             name = target.name;
         }
         if (registeredTickers[name]) {
-            console.info(`[Pixi’VN] Ticker ${name} already exists, it will be overwritten`);
+            console.info(`Ticker ${name} already exists, it will be overwritten`);
         }
         target.prototype.id = name;
         registeredTickers[name] = target;
@@ -44,14 +44,12 @@ export function getTickerInstanceById<TArgs extends TickerArgs>(
     try {
         let ticker = registeredTickers[tickerId];
         if (!ticker) {
-            console.error(
-                `[Pixi’VN] Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`
-            );
+            console.error(`Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
             return;
         }
         return new ticker(args, duration, priority);
     } catch (e) {
-        console.error(`[Pixi’VN] Error while getting Ticker ${tickerId}`, e);
+        console.error(`Error while getting Ticker ${tickerId}`, e);
         return;
     }
 }

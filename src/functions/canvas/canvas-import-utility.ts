@@ -56,13 +56,13 @@ export function getCanvasElementInstanceById<T extends CanvasBaseItem<any>>(
         }
 
         if (!eventType) {
-            console.error(`[Pixi’VN] CanvasElement ${canvasId} not found`);
+            console.error(`CanvasElement ${canvasId} not found`);
             return;
         }
         let canvasElement = new eventType();
         return canvasElement as T;
     } catch (e) {
-        console.error(`[Pixi’VN] Error while getting CanvasElement ${canvasId}`, e);
+        console.error(`Error while getting CanvasElement ${canvasId}`, e);
         return;
     }
 }

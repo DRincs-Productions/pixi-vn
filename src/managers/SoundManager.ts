@@ -1,44 +1,56 @@
-import { Filter, filters, IMediaContext, IMediaInstance, Sound as PixiSound, sound, SoundLibrary, SoundMap } from '@pixi/sound';
-import { narration } from '.';
-import { Sound } from '../classes';
-import { FilterMemoryToFilter, FilterToFilterMemory } from '../functions/sound-utility';
-import { ExportedSounds, SoundOptions, SoundPlayOptions } from '../interface';
-import { ExportedSoundPlay } from '../interface/export/ExportedSounds';
-import SoundManagerStatic from './SoundManagerStatic';
+import {
+    Filter,
+    filters,
+    IMediaContext,
+    IMediaInstance,
+    Sound as PixiSound,
+    sound,
+    SoundLibrary,
+    SoundMap,
+} from "@pixi/sound";
+import { narration } from ".";
+import { Sound } from "../classes";
+import { FilterMemoryToFilter, FilterToFilterMemory } from "../functions/sound-utility";
+import { ExportedSounds, SoundOptions, SoundPlayOptions } from "../interface";
+import { ExportedSoundPlay } from "../interface/export/ExportedSounds";
+import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager extends SoundLibrary {
     override get context(): IMediaContext {
-        return sound.context
+        return sound.context;
     }
     override get filtersAll(): Filter[] {
-        return sound.filtersAll
+        return sound.filtersAll;
     }
     override set filtersAll(filtersAll: Filter[]) {
-        sound.filtersAll = filtersAll.filter(f => {
+        sound.filtersAll = filtersAll.filter((f) => {
             return !(f instanceof filters.Filter);
-        })
+        });
     }
     override get supported(): boolean {
-        return sound.supported
+        return sound.supported;
     }
 
     /**
      * https://github.com/pixijs/sound/blob/main/src/SoundLibrary.ts#L187
      */
-    private getOptions(source: string | ArrayBuffer | AudioBuffer | HTMLAudioElement | SoundOptions,
-        overrides?: SoundOptions): SoundOptions {
+    private getOptions(
+        source: string | ArrayBuffer | AudioBuffer | HTMLAudioElement | SoundOptions,
+        overrides?: SoundOptions
+    ): SoundOptions {
         let options: SoundOptions;
 
-        if (typeof source === 'string') {
+        if (typeof source === "string") {
             options = { url: source };
-        }
-        else if (Array.isArray(source)) {
+        } else if (Array.isArray(source)) {
             options = { url: source };
-        }
-        else if (source instanceof ArrayBuffer || source instanceof AudioBuffer || source instanceof HTMLAudioElement) {
+        } else if (
+            source instanceof ArrayBuffer ||
+            source instanceof AudioBuffer ||
+            source instanceof HTMLAudioElement
+        ) {
             options = { source } as any;
-        }
-        else {
+        } else {
             options = source as SoundOptions;
         }
         options = { ...options, ...(overrides || {}) };
@@ -50,108 +62,110 @@ export default class SoundManager extends SoundLibrary {
      * @deprecated: Use `add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;` instead.
      */
     override add(map: any, globalOptions?: SoundOptions): SoundMap;
-    public override add(alias: string, sourceOptions?: SoundOptions | string): (Sound | SoundMap) {
-        if (typeof alias === 'object') {
-            throw new Error("[Pixi’VN] The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.")
+    public override add(alias: string, sourceOptions?: SoundOptions | string): Sound | SoundMap {
+        if (typeof alias === "object") {
+            throw new Error(
+                "[Pixi’VN] The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead."
+            );
         }
         if (this.exists(alias)) {
-            this.remove(alias)
+            this.remove(alias);
         }
 
         if (sourceOptions instanceof PixiSound) {
-            sourceOptions = sourceOptions.options
+            sourceOptions = sourceOptions.options;
         }
-        let s: Sound
+        let s: Sound;
         if (sourceOptions instanceof Sound) {
-            s = sourceOptions
+            s = sourceOptions;
         } else {
             let options: SoundOptions = this.getOptions(sourceOptions || {});
             s = Sound.from(options);
         }
         s.alias = alias;
 
-        !SoundManagerStatic.soundAliasesOrder.includes(alias) && SoundManagerStatic.soundAliasesOrder.push(alias)
-        SoundManagerStatic.sounds[alias] = s
+        !SoundManagerStatic.soundAliasesOrder.includes(alias) && SoundManagerStatic.soundAliasesOrder.push(alias);
+        SoundManagerStatic.sounds[alias] = s;
         sound.add(alias, s);
         return s;
     }
     override get useLegacy(): boolean {
-        return sound.useLegacy
+        return sound.useLegacy;
     }
     override set useLegacy(legacy: boolean) {
-        sound.useLegacy = legacy
+        sound.useLegacy = legacy;
     }
     override get disableAutoPause(): boolean {
-        return sound.disableAutoPause
+        return sound.disableAutoPause;
     }
     override set disableAutoPause(autoPause: boolean) {
-        sound.disableAutoPause = autoPause
+        sound.disableAutoPause = autoPause;
     }
     override remove(alias: string): this {
-        SoundManagerStatic.soundAliasesOrder = SoundManagerStatic.soundAliasesOrder.filter((t) => t !== alias)
-        delete SoundManagerStatic.soundsPlaying[alias]
-        delete SoundManagerStatic.sounds[alias]
-        return sound.remove(alias) as this
+        SoundManagerStatic.soundAliasesOrder = SoundManagerStatic.soundAliasesOrder.filter((t) => t !== alias);
+        delete SoundManagerStatic.soundsPlaying[alias];
+        delete SoundManagerStatic.sounds[alias];
+        return sound.remove(alias) as this;
     }
     override get volumeAll(): number {
-        return sound.volumeAll
+        return sound.volumeAll;
     }
     override set volumeAll(volume: number) {
-        sound.volumeAll = volume
+        sound.volumeAll = volume;
     }
     override get speedAll(): number {
-        return sound.speedAll
+        return sound.speedAll;
     }
     override set speedAll(speed: number) {
-        sound.speedAll = speed
+        sound.speedAll = speed;
     }
     override togglePauseAll(): boolean {
-        return sound.togglePauseAll()
+        return sound.togglePauseAll();
     }
     override pauseAll(): this {
-        return sound.pauseAll() as this
+        return sound.pauseAll() as this;
     }
     override resumeAll(): this {
-        return sound.resumeAll() as this
+        return sound.resumeAll() as this;
     }
     override toggleMuteAll(): boolean {
-        return sound.toggleMuteAll()
+        return sound.toggleMuteAll();
     }
     override muteAll(): this {
-        return sound.muteAll() as this
+        return sound.muteAll() as this;
     }
     override unmuteAll(): this {
-        return sound.unmuteAll() as this
+        return sound.unmuteAll() as this;
     }
     override removeAll(): this {
-        SoundManagerStatic.soundAliasesOrder = []
-        SoundManagerStatic.soundsPlaying = {}
-        SoundManagerStatic.sounds = {}
-        return sound.removeAll() as this
+        SoundManagerStatic.soundAliasesOrder = [];
+        SoundManagerStatic.soundsPlaying = {};
+        SoundManagerStatic.sounds = {};
+        return sound.removeAll() as this;
     }
     override stopAll(): this {
         for (let alias in SoundManagerStatic.sounds) {
-            SoundManagerStatic.sounds[alias].stop()
+            SoundManagerStatic.sounds[alias].stop();
         }
-        SoundManagerStatic.soundsPlaying = {}
-        return sound.stopAll() as this
+        SoundManagerStatic.soundsPlaying = {};
+        return sound.stopAll() as this;
     }
     override exists(alias: string, assert?: boolean): boolean {
-        return sound.exists(alias, assert) || alias in SoundManagerStatic.sounds
+        return sound.exists(alias, assert) || alias in SoundManagerStatic.sounds;
     }
     override isPlaying(): boolean {
-        return sound.isPlaying()
+        return sound.isPlaying();
     }
     override find(alias: string): Sound {
-        let item = SoundManagerStatic.sounds[alias]
+        let item = SoundManagerStatic.sounds[alias];
         if (item) {
-            return item
+            return item;
         }
-        item = sound.find(alias)
+        item = sound.find(alias);
         if (item) {
-            SoundManagerStatic.sounds[alias] = item
+            SoundManagerStatic.sounds[alias] = item;
         }
-        return item
+        return item;
     }
     override play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
         if (!this.exists(alias)) {
@@ -160,64 +174,64 @@ export default class SoundManager extends SoundLibrary {
         SoundManagerStatic.soundsPlaying[alias] = {
             stepIndex: narration.lastStepIndex,
             options: options,
-            paused: false
-        }
-        return sound.play(alias, options)
+            paused: false,
+        };
+        return sound.play(alias, options);
     }
     override stop(alias: string): Sound {
         delete SoundManagerStatic.soundsPlaying[alias];
-        return sound.stop(alias)
+        return sound.stop(alias);
     }
     override pause(alias: string): Sound {
-        let item = SoundManagerStatic.soundsPlaying[alias]
+        let item = SoundManagerStatic.soundsPlaying[alias];
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             ...item,
-            paused: true
-        }
-        return sound.pause(alias)
+            paused: true,
+        };
+        return sound.pause(alias);
     }
     override resume(alias: string): Sound {
-        let item = SoundManagerStatic.soundsPlaying[alias]
+        let item = SoundManagerStatic.soundsPlaying[alias];
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             options: item.options,
             stepIndex: narration.lastStepIndex,
-            paused: false
-        }
-        return sound.resume(alias)
+            paused: false,
+        };
+        return sound.resume(alias);
     }
     override volume(alias: string, volume?: number): number {
-        return sound.volume(alias, volume)
+        return sound.volume(alias, volume);
     }
     override speed(alias: string, speed?: number): number {
-        return sound.speed(alias, speed)
+        return sound.speed(alias, speed);
     }
     override duration(alias: string): number {
-        return sound.duration(alias)
+        return sound.duration(alias);
     }
     override close(): this {
-        return sound.close() as this
+        return sound.close() as this;
     }
 
     clear() {
-        this.stopAll()
+        this.stopAll();
     }
 
     /* Export and Import Methods */
 
     public exportJson(): string {
-        return JSON.stringify(this.export())
+        return JSON.stringify(this.export());
     }
     public export(): ExportedSounds {
-        let soundElements: { [key: string]: ExportedSoundPlay } = {}
+        let soundElements: { [key: string]: ExportedSoundPlay } = {};
         for (let alias in SoundManagerStatic.soundsPlaying) {
-            let sound = SoundManagerStatic.soundsPlaying[alias]
-            let item = this.find(alias)
+            let sound = SoundManagerStatic.soundsPlaying[alias];
+            let item = this.find(alias);
             if (item) {
                 soundElements[alias] = {
                     ...sound,
@@ -232,15 +246,15 @@ export default class SoundManager extends SoundLibrary {
                             volume: item.options.volume,
                         },
                         filters: FilterToFilterMemory(item.media.filters),
-                    }
-                }
+                    },
+                };
             }
         }
         return {
             soundsPlaying: soundElements,
             soundAliasesOrder: SoundManagerStatic.soundAliasesOrder,
             filters: FilterToFilterMemory(this.filtersAll),
-        }
+        };
     }
     public removeOldSoundAndExport(): ExportedSounds {
         // let soundAliasesOrder = []
@@ -253,118 +267,120 @@ export default class SoundManager extends SoundLibrary {
         //     }
         // }
         // GameSoundManager.soundAliasesOrder = soundAliasesOrder
-        return this.export()
+        return this.export();
     }
     public importJson(dataString: string) {
-        this.import(JSON.parse(dataString))
+        this.import(JSON.parse(dataString));
     }
     public import(data: object, lastStepIndex = narration.lastStepIndex) {
-        this.clear()
+        this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {
-                SoundManagerStatic.soundAliasesOrder = (data as ExportedSounds)["soundAliasesOrder"]
-            }
-            else {
-                console.error("[Pixi’VN] The data does not have the properties soundAliasesOrder")
-                return
+                SoundManagerStatic.soundAliasesOrder = (data as ExportedSounds)["soundAliasesOrder"];
+            } else {
+                console.error("The data does not have the properties soundAliasesOrder");
+                return;
             }
 
             if (data.hasOwnProperty("filters")) {
-                let f = (data as ExportedSounds)["filters"]
+                let f = (data as ExportedSounds)["filters"];
                 if (f) {
-                    this.filtersAll = FilterMemoryToFilter(f)
+                    this.filtersAll = FilterMemoryToFilter(f);
                 }
             }
 
             if (data.hasOwnProperty("playInStepIndex")) {
-                let playInStepIndex = (data as ExportedSounds)["playInStepIndex"]
+                let playInStepIndex = (data as ExportedSounds)["playInStepIndex"];
                 if (playInStepIndex) {
-                    SoundManagerStatic.soundsPlaying = playInStepIndex
+                    SoundManagerStatic.soundsPlaying = playInStepIndex;
                 }
             }
 
             if (data.hasOwnProperty("sounds")) {
-                let sounds = (data as ExportedSounds)["sounds"]
+                let sounds = (data as ExportedSounds)["sounds"];
                 for (let alias in sounds) {
-                    let item = sounds[alias]
-                    let autoPlay = false
+                    let item = sounds[alias];
+                    let autoPlay = false;
                     let s = this.add(alias, {
                         ...item.options,
-                        autoPlay: false
-                    })
+                        autoPlay: false,
+                    });
 
                     if (alias in SoundManagerStatic.soundsPlaying) {
                         let step = SoundManagerStatic.soundsPlaying[alias];
-                        if (item.options.loop || (step.options && typeof step.options === 'object' && step.options.loop)) {
-                            autoPlay = true
+                        if (
+                            item.options.loop ||
+                            (step.options && typeof step.options === "object" && step.options.loop)
+                        ) {
+                            autoPlay = true;
                         } else if (step.stepIndex === lastStepIndex) {
-                            autoPlay = true
+                            autoPlay = true;
                         }
 
                         if (item.filters) {
-                            s.filters = FilterMemoryToFilter(item.filters)
+                            s.filters = FilterMemoryToFilter(item.filters);
                         }
 
                         if (autoPlay) {
-                            s.play()
+                            s.play();
                         }
                     }
                 }
             }
 
             if (data.hasOwnProperty("soundsPlaying")) {
-                let soundsPlaying = (data as ExportedSounds)["soundsPlaying"]
+                let soundsPlaying = (data as ExportedSounds)["soundsPlaying"];
                 for (let alias in soundsPlaying) {
-                    let op = soundsPlaying[alias]
+                    let op = soundsPlaying[alias];
                     SoundManagerStatic.soundsPlaying[alias] = {
                         paused: op.paused,
                         stepIndex: op.stepIndex,
                         options: op.options,
-                    }
+                    };
 
-                    let item = soundsPlaying[alias].sound
-                    let autoPlay = false
-                    let s: Sound
+                    let item = soundsPlaying[alias].sound;
+                    let autoPlay = false;
+                    let s: Sound;
                     if (this.exists(alias)) {
-                        s = this.find(alias)
-                        item.options.url = s.options.url
-                        item.options.volume = s.options.volume
-                        s.options = item.options
-                        s.autoPlay = false
-                        s.filters = item.filters ? FilterMemoryToFilter(item.filters) : []
-                    }
-                    else {
+                        s = this.find(alias);
+                        item.options.url = s.options.url;
+                        item.options.volume = s.options.volume;
+                        s.options = item.options;
+                        s.autoPlay = false;
+                        s.filters = item.filters ? FilterMemoryToFilter(item.filters) : [];
+                    } else {
                         s = this.add(alias, {
                             ...item.options,
-                            autoPlay: false
-                        })
+                            autoPlay: false,
+                        });
                     }
 
                     if (alias in SoundManagerStatic.soundsPlaying) {
                         let step = SoundManagerStatic.soundsPlaying[alias];
-                        if (item.options.loop || (step.options && typeof step.options === 'object' && step.options.loop)) {
-                            autoPlay = true
+                        if (
+                            item.options.loop ||
+                            (step.options && typeof step.options === "object" && step.options.loop)
+                        ) {
+                            autoPlay = true;
                         } else if (step.stepIndex === lastStepIndex) {
-                            autoPlay = true
+                            autoPlay = true;
                         }
 
                         if (item.filters) {
-                            s.filters = FilterMemoryToFilter(item.filters)
+                            s.filters = FilterMemoryToFilter(item.filters);
                         }
 
                         if (autoPlay) {
-                            s.play()
+                            s.play();
                         }
                     }
                 }
+            } else {
+                console.error("The data does not have the properties soundsPlaying");
+                return;
             }
-            else {
-                console.error("[Pixi’VN] The data does not have the properties soundsPlaying")
-                return
-            }
-        }
-        catch (e) {
-            console.error("[Pixi’VN] Error importing data", e)
+        } catch (e) {
+            console.error("Error importing data", e);
         }
     }
 }

@@ -115,7 +115,7 @@ export default class ImageContainer
             })
             .catch((e) => {
                 this._loadIsStarted = false;
-                console.error("[Pixi’VN] Error into ImageContainer.load()", e);
+                console.error("Error into ImageContainer.load()", e);
             });
     }
 

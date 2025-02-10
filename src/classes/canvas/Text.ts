@@ -79,7 +79,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                 this.eventMode = "dynamic";
             }
         } else {
-            console.error(`[Pixi’VN] Event ${id} not found`);
+            console.error(`Event ${id} not found`);
         }
         return this;
     }

@@ -20,7 +20,7 @@ export default function eventDecorator(name?: EventIdType) {
             name = target.name;
         }
         if (registeredEvents[name]) {
-            console.info(`[Pixi’VN] Event ${name} already exists, it will be overwritten`);
+            console.info(`Event ${name} already exists, it will be overwritten`);
         }
         target.prototype.id = name;
         registeredEvents[name] = target;
@@ -36,15 +36,13 @@ export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(ev
     try {
         let eventType = registeredEvents[eventId];
         if (!eventType) {
-            console.error(
-                `[Pixi’VN] Event ${eventId} not found, did you forget to register it with the eventDecorator?`
-            );
+            console.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
             return;
         }
         new eventType();
         return eventType as T;
     } catch (e) {
-        console.error(`[Pixi’VN] Error while getting Event ${eventId}`, e);
+        console.error(`Error while getting Event ${eventId}`, e);
         return;
     }
 }
@@ -58,15 +56,13 @@ export function getEventInstanceById<T = CanvasEvent<CanvasBaseItem<any>>>(event
     try {
         let eventType = registeredEvents[eventId];
         if (!eventType) {
-            console.error(
-                `[Pixi’VN] Event ${eventId} not found, did you forget to register it with the eventDecorator?`
-            );
+            console.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
             return;
         }
         let event = new eventType();
         return event as T;
     } catch (e) {
-        console.error(`[Pixi’VN] Error while getting Event ${eventId}`, e);
+        console.error(`Error while getting Event ${eventId}`, e);
         return;
     }
 }

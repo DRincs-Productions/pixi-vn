@@ -108,7 +108,7 @@ export default class NarrationManager {
                         return;
                     }
                 } catch (e) {
-                    console.error("[Pixi’VN] Error comparing openedLabels", e);
+                    console.error("Error comparing openedLabels", e);
                 }
             }
         }
@@ -165,7 +165,7 @@ export default class NarrationManager {
             return;
         }
         if (!this.currentLabel) {
-            console.error("[Pixi’VN] currentLabel not found");
+            console.error("currentLabel not found");
             return;
         }
         NarrationManagerStatic._openedLabels.pop();
@@ -443,12 +443,12 @@ export default class NarrationManager {
         if (NarrationManagerStatic.currentLabelId) {
             let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
             if (currentLabelStepIndex === null) {
-                console.error("[Pixi’VN] currentLabelStepIndex is null");
+                console.error("currentLabelStepIndex is null");
                 return;
             }
             let currentLabel = NarrationManagerStatic._currentLabel as Label<T> | undefined;
             if (!currentLabel) {
-                console.error("[Pixi’VN] currentLabel not found");
+                console.error("currentLabel not found");
                 return;
             }
             if (currentLabel.steps.length > currentLabelStepIndex) {
@@ -497,7 +497,7 @@ export default class NarrationManager {
                 } catch (e) {
                     // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
                     // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
-                    console.error("[Pixi’VN] Error running step", e);
+                    console.error("Error running step", e);
                     if (this.onStepError) {
                         this.onStepError(e, props);
                     }
@@ -519,11 +519,11 @@ export default class NarrationManager {
                 return await this.onGameEnd(props, { labelId: "end" });
             }
             console.error(
-                "[Pixi’VN] The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game"
+                "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game"
             );
             return;
         } else {
-            console.error("[Pixi’VN] currentLabelId not found");
+            console.error("currentLabelId not found");
         }
     }
     /**
@@ -586,7 +586,7 @@ export default class NarrationManager {
             }
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
         } catch (e) {
-            console.error("[Pixi’VN] Error calling label", e);
+            console.error("Error calling label", e);
             return;
         }
         return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
@@ -652,7 +652,7 @@ export default class NarrationManager {
             }
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
         } catch (e) {
-            console.error("[Pixi’VN] Error jumping label", e);
+            console.error("Error jumping label", e);
             return;
         }
         return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
@@ -749,7 +749,7 @@ export default class NarrationManager {
         if (restoredStep) {
             await NarrationManagerStatic.restoreFromHistoryStep(restoredStep, navigate);
         } else {
-            console.error("[Pixi’VN] Error going back");
+            console.error("Error going back");
         }
     }
 
@@ -1068,7 +1068,7 @@ export default class NarrationManager {
                 }
             }
         } catch (e) {
-            console.error("[Pixi’VN] Error importing data", e);
+            console.error("Error importing data", e);
         }
     }
 }

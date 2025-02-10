@@ -111,7 +111,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
                 this.eventMode = "dynamic";
             }
         } else {
-            console.error(`[Pixi’VN] Event ${id} not found`);
+            console.error(`Event ${id} not found`);
         }
         return this;
     }
