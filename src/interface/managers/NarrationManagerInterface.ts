@@ -1,4 +1,12 @@
-import { Dialogue, Label, LabelAbstract, NarrativeHistory, OpenedLabel } from "../..";
+import {
+    Dialogue,
+    Label,
+    LabelAbstract,
+    NarrativeHistory,
+    OpenedLabel,
+    StepLabelPropsType,
+    StepLabelResultType,
+} from "../..";
 import { LabelIdType } from "../../types/LabelIdType";
 import HistoryStep from "../HistoryStep";
 
@@ -97,4 +105,48 @@ export default interface NarrationManagerInterface {
     getTimesChoiceMade(index: number): number;
 
     /* Run Methods */
+
+    /**
+     * Return if can go to the next step.
+     * @returns True if can go to the next step.
+     */
+    readonly canGoNext: boolean;
+    /**
+     * Execute the next step and add it to the history. If a step is already running, it will put the request in the queue,
+     * and when the step is finished, it will execute the next step.
+     * @param props The props to pass to the step.
+     * @param options The options.
+     * @returns StepLabelResultType or undefined.
+     * @example
+     * ```typescript
+     *     function nextOnClick() {
+     *     setLoading(true)
+     *     narration.goNext(yourParams)
+     *         .then((result) => {
+     *             setUpdate((p) => p + 1)
+     *             setLoading(false)
+     *             if (result) {
+     *                 // your code
+     *             }
+     *         })
+     *         .catch((e) => {
+     *             setLoading(false)
+     *             console.error(e)
+     *         })
+     * }
+     * ```
+     */
+    goNext(
+        props: StepLabelPropsType,
+        options?: {
+            /**
+             * The index of the choise made by the player. (This params is used in the choice menu)
+             */
+            choiseMade?: number;
+            /**
+             * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
+             */
+            runNow?: boolean;
+        }
+    ): Promise<StepLabelResultType>;
 }
