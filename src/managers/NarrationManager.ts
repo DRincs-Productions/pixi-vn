@@ -415,27 +415,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabelId not found");
         }
     }
-    /**
-     * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
-     * @param label The label to execute or the id of the label
-     * @param props The props to pass to the label.
-     * @returns StepLabelResultType or undefined.
-     * @example
-     * ```typescript
-     * narration.callLabel(startLabel, yourParams).then((result) => {
-     *     if (result) {
-     *         // your code
-     *     }
-     * })
-     * ```
-     * @example
-     * ```typescript
-     * // if you use it in a step label you should return the result.
-     * return narration.callLabel(startLabel).then((result) => {
-     *     return result
-     * })
-     * ```
-     */
     public async callLabel<T extends {} = {}>(
         label: Label<T> | LabelIdType,
         props: StepLabelPropsType<T>
@@ -480,27 +459,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
     }
-    /**
-     * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
-     * @param label The label to execute.
-     * @param props The props to pass to the label or the id of the label
-     * @returns StepLabelResultType or undefined.
-     * @example
-     * ```typescript
-     * narration.jumpLabel(startLabel, yourParams).then((result) => {
-     *     if (result) {
-     *         // your code
-     *     }
-     * })
-     * ```
-     * @example
-     * ```typescript
-     * // if you use it in a step label you should return the result.
-     * return narration.jumpLabel(startLabel).then((result) => {
-     *     return result
-     * })
-     * ```
-     */
     public async jumpLabel<T extends {}>(
         label: Label<T> | LabelIdType,
         props: StepLabelPropsType<T>
@@ -546,26 +504,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
     }
-    /**
-     * Select a choice from the choice menu. and close the choice menu.
-     * @param item
-     * @param props
-     * @returns
-     * @example
-     * ```typescript
-     * narration.selectChoice(item, {
-     *     navigate: navigate,
-     *     // your props
-     *     ...item.props
-     * })
-     *     .then(() => {
-     *         // your code
-     *     })
-     *     .catch((e) => {
-     *         // your code
-     *     })
-     * ```
-     */
     public async selectChoice<T extends {}>(
         item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
         props: StepLabelPropsType<T>
@@ -581,20 +519,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw new Error(`[Pixi’VN] Type ${item.type} not found`);
         }
     }
-    /**
-     * When the player is in a choice menu, can use this function to exit to the choice menu.
-     * @param choice
-     * @param props
-     * @returns StepLabelResultType or undefined.
-     * @example
-     * ```typescript
-     * narration.closeChoiceMenu(yourParams).then((result) => {
-     *     if (result) {
-     *         // your code
-     *     }
-     * })
-     * ```
-     */
     public async closeChoiceMenu<T extends {} = {}>(
         choice: ChoiceMenuOptionClose<T>,
         props: StepLabelPropsType<T>
@@ -611,6 +535,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
 
     /** Old Step Methods */
+
     get oldStepsLimit() {
         return NarrationManagerStatic.oldStepsLimit;
     }
@@ -620,20 +545,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Go Back & Refresh Methods */
 
-    /**
-     * Go back to the last step and add it to the history.
-     * @param navigate The navigate function.
-     * @param steps The number of steps to go back.
-     * @returns
-     * @example
-     * ```typescript
-     * export function goBack(navigate: (path: string) => void, afterBack?: () => void) {
-     *     narration.goBack(navigate)
-     *     afterBack && afterBack()
-     * }
-     * ```
-     */
-    public async goBack(navigate: (path: string) => void, steps: number = 1) {
+    public async goBack(navigate: (path: string) => void, steps: number = 1): Promise<void> {
         if (steps <= 0) {
             logger.warn("Steps must be greater than 0");
             return;
@@ -649,39 +561,12 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("Error going back");
         }
     }
-
-    /**
-     * Return true if it is possible to go back.
-     */
-    public get canGoBack(): boolean {
+    get canGoBack(): boolean {
         return NarrationManagerStatic._stepsHistory.length > 1;
     }
-
-    /**
-     * Function to be executed at the end of the game. It should be set in the game initialization.
-     * @example
-     * ```typescript
-     * narration.onGameEnd = async (props) => {
-     *    props.navigate("/end")
-     * }
-     * ```
-     */
     public onGameEnd: StepLabelType | undefined = undefined;
-    /**
-     * Function to be executed when an error occurs in the step.
-     * @example
-     * ```typescript
-     * narration.onStepError = (error, props) => {
-     *    props.notify("An error occurred")
-     *    // send a notification to GlitchTip, Sentry, etc...
-     * }
-     * ```
-     */
     public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined;
 
-    /**
-     * Dialogue to be shown in the game
-     */
     public get dialogue(): Dialogue | undefined {
         return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue;
     }
@@ -741,20 +626,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType);
         storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex);
     }
-    /**
-     * The options to be shown in the game
-     * @example
-     * ```typescript
-     * narration.choiceMenuOptions = [
-     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
-     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
-     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
-     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
-     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
-     * ]
-     * ```
-     */
-    public get choiceMenuOptions(): ChoiceMenuOptionsType<{ [key: string | number | symbol]: any }> | undefined {
+    public get choiceMenuOptions(): ChoiceMenuOptionsType<any> | undefined {
         let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY);
         if (d) {
             let options: ChoiceMenuOptionsType = [];
@@ -834,19 +706,13 @@ export default class NarrationManager implements NarrationManagerInterface {
         storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value);
         storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex);
     }
-    /**
-     * If true, the next dialogue text will be added to the current dialogue text.
-     */
     public get dialogGlue(): boolean {
         return storage.getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY);
     }
     public set dialogGlue(value: boolean) {
         storage.setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, value);
     }
-    /**
-     * The input value to be inserted by the player.
-     */
-    public get inputValue(): unknown {
+    public get inputValue(): StorageElementType {
         return storage.getVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY);
     }
     public set inputValue(value: StorageElementType) {
@@ -854,20 +720,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         storage.setVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY, value);
         storage.setVariable(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex);
     }
-    /**
-     * If true, the player must enter a value.
-     */
     public get isRequiredInput(): boolean {
         return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY)?.isRequired || false;
     }
     public get inputType(): string | undefined {
         return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY)?.type;
     }
-    /**
-     * Request input from the player.
-     * @param info The input value to be inserted by the player.
-     * @param defaultValue The default value to be inserted.
-     */
     public requestInput(info: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType) {
         (info as InputInfo).isRequired = true;
         storage.setVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY, info);
@@ -877,17 +735,11 @@ export default class NarrationManager implements NarrationManagerInterface {
             storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY);
         }
     }
-    /**
-     * Remove the input request.
-     */
     public removeInputRequest() {
         storage.removeVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY);
         storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY);
     }
 
-    /**
-     * Add a label to the history.
-     */
     public clear() {
         NarrationManagerStatic._stepsHistory = [];
         NarrationManagerStatic._openedLabels = [];
@@ -897,17 +749,9 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Export and Import Methods */
 
-    /**
-     * Export the history to a JSON string.
-     * @returns The history in a JSON string.
-     */
     public exportJson(): string {
         return JSON.stringify(this.export());
     }
-    /**
-     * Export the history to an object.
-     * @returns The history in an object.
-     */
     public export(): ExportedStep {
         return {
             stepsHistory: NarrationManagerStatic._stepsHistory,
@@ -916,17 +760,9 @@ export default class NarrationManager implements NarrationManagerInterface {
             originalStepData: NarrationManagerStatic._originalStepData,
         };
     }
-    /**
-     * Import the history from a JSON string.
-     * @param dataString The history in a JSON string.
-     */
     public async importJson(dataString: string) {
         await this.import(JSON.parse(dataString));
     }
-    /**
-     * Import the history from an object.
-     * @param data The history in an object.
-     */
     public async import(data: object) {
         this.clear();
         try {

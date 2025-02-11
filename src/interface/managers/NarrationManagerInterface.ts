@@ -1,11 +1,19 @@
+import { CharacterInterface } from "@drincs/pixi-vn";
 import {
+    ChoiceMenuOption,
+    ChoiceMenuOptionClose,
+    ChoiceMenuOptionsType,
     Dialogue,
+    ExportedStep,
+    InputInfo,
     Label,
     LabelAbstract,
     NarrativeHistory,
     OpenedLabel,
     StepLabelPropsType,
     StepLabelResultType,
+    StepLabelType,
+    StorageElementType,
 } from "../..";
 import { LabelIdType } from "../../types/LabelIdType";
 import HistoryStep from "../HistoryStep";
@@ -17,7 +25,9 @@ export default interface NarrationManagerInterface {
     readonly stepsHistory: HistoryStep<Dialogue>[];
     /**
      * Counter of execution times of the current step. Current execution is also included.
+     *
      * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
+     *
      * You can restart the counter in this way:
      * ```typescript
      * narration.currentStepTimesCounter = 0
@@ -149,4 +159,231 @@ export default interface NarrationManagerInterface {
             runNow?: boolean;
         }
     ): Promise<StepLabelResultType>;
+    /**
+     * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
+     * @param label The label to execute or the id of the label
+     * @param props The props to pass to the label.
+     * @returns StepLabelResultType or undefined.
+     * @example
+     * ```typescript
+     * narration.callLabel(startLabel, yourParams).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     * @example
+     * ```typescript
+     * // if you use it in a step label you should return the result.
+     * return narration.callLabel(startLabel).then((result) => {
+     *     return result
+     * })
+     * ```
+     */
+    callLabel<T extends {} = {}>(
+        label: Label<T> | LabelIdType,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
+    /**
+     * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
+     * @param label The label to execute.
+     * @param props The props to pass to the label or the id of the label
+     * @returns StepLabelResultType or undefined.
+     * @example
+     * ```typescript
+     * narration.jumpLabel(startLabel, yourParams).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     * @example
+     * ```typescript
+     * // if you use it in a step label you should return the result.
+     * return narration.jumpLabel(startLabel).then((result) => {
+     *     return result
+     * })
+     * ```
+     */
+    jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType>;
+    /**
+     * Select a choice from the choice menu. and close the choice menu.
+     * @param item
+     * @param props
+     * @returns
+     * @example
+     * ```typescript
+     * narration.selectChoice(item, {
+     *     navigate: navigate,
+     *     // your props
+     *     ...item.props
+     * })
+     *     .then(() => {
+     *         // your code
+     *     })
+     *     .catch((e) => {
+     *         // your code
+     *     })
+     * ```
+     */
+    selectChoice<T extends {}>(
+        item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
+    /**
+     * When the player is in a choice menu, can use this function to exit to the choice menu.
+     * @param choice
+     * @param props
+     * @returns StepLabelResultType or undefined.
+     * @example
+     * ```typescript
+     * narration.closeChoiceMenu(yourParams).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     */
+    closeChoiceMenu<T extends {} = {}>(
+        choice: ChoiceMenuOptionClose<T>,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
+
+    /** Old Step Methods */
+
+    /**
+     * The number of steps to keep in the history into the save file.
+     *
+     * The other older steps will be compressed will be used in {@link NarrationManagerInterface.narrativeHistory} to show the older dialogues.
+     * In the compressed steps, the canvas and storage information will be removed.
+     *
+     * This also means that a player, after saving and loading a save, will only be able to go back to {@link NarrationManagerInterface.oldStepsLimit} steps.
+     */
+    oldStepsLimit: number;
+
+    /* Go Back & Refresh Methods */
+
+    /**
+     * Go back to the last step and add it to the history.
+     * @param navigate The navigate function.
+     * @param steps The number of steps to go back.
+     * @returns
+     * @example
+     * ```typescript
+     * export function goBack(navigate: (path: string) => void, afterBack?: () => void) {
+     *     narration.goBack(navigate)
+     *     afterBack && afterBack()
+     * }
+     * ```
+     */
+    goBack(navigate: (path: string) => void, steps?: number): Promise<void>;
+    /**
+     * Return true if it is possible to go back.
+     */
+    readonly canGoBack: boolean;
+    /**
+     * Function to be executed at the end of the game. It should be set in the game initialization.
+     * @example
+     * ```typescript
+     * narration.onGameEnd = async (props) => {
+     *    props.navigate("/end")
+     * }
+     * ```
+     */
+    onGameEnd: StepLabelType | undefined;
+    /**
+     * Function to be executed when an error occurs in the step.
+     * @example
+     * ```typescript
+     * narration.onStepError = (error, props) => {
+     *    props.notify("An error occurred")
+     *    // send a notification to GlitchTip, Sentry, etc...
+     * }
+     * ```
+     */
+    onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined;
+
+    /**
+     * Dialogue to be shown in the game
+     */
+    get dialogue(): Dialogue | undefined;
+    /**
+     * Dialogue to be shown in the game
+     */
+    set dialogue(
+        props:
+            | {
+                  character: string | CharacterInterface;
+                  text: string | string[];
+              }
+            | string
+            | string[]
+            | Dialogue
+            | undefined
+    );
+    /**
+     * The options to be shown in the game
+     * @example
+     * ```typescript
+     * narration.choiceMenuOptions = [
+     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
+     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
+     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     * ]
+     * ```
+     */
+    choiceMenuOptions: ChoiceMenuOptionsType<any> | undefined;
+    /**
+     * If true, the next dialogue text will be added to the current dialogue text.
+     */
+    dialogGlue: boolean;
+    /**
+     * The input value to be inserted by the player.
+     */
+    inputValue: StorageElementType;
+    /**
+     * If true, the player must enter a value.
+     */
+    readonly isRequiredInput: boolean;
+    readonly inputType: string | undefined;
+    /**
+     * Request input from the player.
+     * @param info The input value to be inserted by the player.
+     * @param defaultValue The default value to be inserted.
+     */
+    requestInput(info: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType): void;
+    /**
+     * Remove the input request.
+     */
+    removeInputRequest(): void;
+
+    /**
+     * Add a label to the history.
+     */
+    clear(): void;
+
+    /* Export and Import Methods */
+
+    /**
+     * Export the history to a JSON string.
+     * @returns The history in a JSON string.
+     */
+    exportJson(): string;
+    /**
+     * Export the history to an object.
+     * @returns The history in an object.
+     */
+    export(): ExportedStep;
+    /**
+     * Import the history from a JSON string.
+     * @param dataString The history in a JSON string.
+     */
+    importJson(dataString: string): Promise<void>;
+    /**
+     * Import the history from an object.
+     * @param data The history in an object.
+     */
+    import(data: object): Promise<void>;
 }
