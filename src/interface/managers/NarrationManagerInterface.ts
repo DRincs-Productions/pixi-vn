@@ -258,6 +258,8 @@ export default interface NarrationManagerInterface {
      * In the compressed steps, the canvas and storage information will be removed.
      *
      * This also means that a player, after saving and loading a save, will only be able to go back to {@link NarrationManagerInterface.oldStepsLimit} steps.
+     *
+     * If you want to keep all steps in the history, you can set this value to Infinity.
      */
     oldStepsLimit: number;
 
@@ -266,7 +268,7 @@ export default interface NarrationManagerInterface {
     /**
      * Go back to the last step and add it to the history.
      * @param navigate The navigate function.
-     * @param steps The number of steps to go back.
+     * @param steps The number of steps to go back. Must be greater than 0. @default 1
      * @returns
      * @example
      * ```typescript

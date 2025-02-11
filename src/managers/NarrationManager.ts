@@ -6,7 +6,7 @@ import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel";
 import LabelAbstract from "../classes/LabelAbstract";
 import { getLabelById } from "../decorators/label-decorator";
 import { logger } from "../functions/log-utility";
-import { CharacterInterface, HistoryStepData, NarrativeHistory } from "../interface";
+import { CharacterInterface, HistoryStep, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
 import NarrationManagerInterface from "../interface/managers/NarrationManagerInterface";
 import {
@@ -103,7 +103,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY
                 );
             }
-            NarrationManagerStatic._stepsHistory.push({
+            this.stepsHistory.push({
                 diff: data,
                 currentLabel: NarrationManagerStatic.currentLabelId,
                 dialoge: dialoge,
@@ -139,7 +139,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     get narrativeHistory(): NarrativeHistory[] {
         let list: NarrativeHistory[] = [];
-        NarrationManagerStatic._stepsHistory.forEach((step) => {
+        this.stepsHistory.forEach((step) => {
             let dialoge = step.dialoge;
             let requiredChoices = step.choices;
             let inputValue = step.inputValue;
@@ -196,7 +196,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
             // remove the first items
-            NarrationManagerStatic._stepsHistory.splice(0, itemsNumber);
+            this.stepsHistory.splice(0, itemsNumber);
         } else {
             NarrationManagerStatic._stepsHistory = [];
         }
@@ -359,9 +359,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                         result = await this.selectChoice(choice, props);
                     }
 
-                    if (choiseMade !== undefined && NarrationManagerStatic._stepsHistory.length > 0) {
-                        let lastHistoryStep =
-                            NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1];
+                    if (choiseMade !== undefined && this.stepsHistory.length > 0) {
+                        let lastHistoryStep = this.stepsHistory[this.stepsHistory.length - 1];
                         NarrationManagerStatic.addChoicesMade(
                             lastHistoryStep.currentLabel || "error",
                             typeof lastHistoryStep.labelStepIndex === "number" ? lastHistoryStep.labelStepIndex : -1,
@@ -547,11 +546,11 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     public async goBack(navigate: (path: string) => void, steps: number = 1): Promise<void> {
         if (steps <= 0) {
-            logger.warn("Steps must be greater than 0");
+            logger.warn("The parameter steps must be greater than 0");
             return;
         }
-        if (NarrationManagerStatic._stepsHistory.length <= 1) {
-            logger.warn("No steps to go back");
+        if (this.stepsHistory.length <= 1) {
+            logger.warn("You can't go back, there is no step to go back");
             return;
         }
         let restoredStep = NarrationManagerStatic.goBackInternal(steps, NarrationManagerStatic.originalStepData);
@@ -562,7 +561,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     get canGoBack(): boolean {
-        return NarrationManagerStatic._stepsHistory.length > 1;
+        return NarrationManagerStatic.lastHistoryStep?.diff ? true : false;
     }
     public onGameEnd: StepLabelType | undefined = undefined;
     public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined;
@@ -753,8 +752,13 @@ export default class NarrationManager implements NarrationManagerInterface {
         return JSON.stringify(this.export());
     }
     public export(): ExportedStep {
+        let firstStepToCompres = this.stepsHistory.length - this.oldStepsLimit;
+        let stepsHistory: HistoryStep<Dialogue<CharacterInterface>>[] = this.stepsHistory.map((step, index) => ({
+            diff: firstStepToCompres > index ? undefined : step.diff,
+            ...step,
+        }));
         return {
-            stepsHistory: NarrationManagerStatic._stepsHistory,
+            stepsHistory: stepsHistory,
             openedLabels: NarrationManagerStatic._openedLabels,
             lastStepIndex: this.lastStepIndex,
             originalStepData: NarrationManagerStatic._originalStepData,

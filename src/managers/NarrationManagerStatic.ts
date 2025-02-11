@@ -197,7 +197,7 @@ export default class NarrationManagerStatic {
     /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
      */
-    private static get lastHistoryStep(): HistoryStep | null {
+    static get lastHistoryStep(): HistoryStep | null {
         if (NarrationManagerStatic._stepsHistory.length > 0) {
             return NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1];
         }
@@ -332,7 +332,7 @@ export default class NarrationManagerStatic {
             return restoredStep;
         }
         let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
-        if (lastHistoryStep) {
+        if (lastHistoryStep?.diff) {
             try {
                 let result = restoreDeepDiffChanges(restoredStep, lastHistoryStep.diff);
                 NarrationManagerStatic._lastStepIndex = lastHistoryStep.index;
@@ -343,6 +343,7 @@ export default class NarrationManagerStatic {
                 return restoredStep;
             }
         } else {
+            logger.error("You can't go back, there is no step to go back");
             return restoredStep;
         }
     }

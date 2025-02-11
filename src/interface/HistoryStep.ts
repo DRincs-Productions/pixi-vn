@@ -42,7 +42,7 @@ export default interface HistoryStep<T extends Dialogue = Dialogue> {
     /**
      * The difference between the previous step and the current step.
      */
-    diff: deepDiff.Diff<HistoryStepData, HistoryStepData>[];
+    diff?: deepDiff.Diff<HistoryStepData, HistoryStepData>[];
     /**
      * The label id of the current step.
      */
