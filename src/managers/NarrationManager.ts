@@ -30,7 +30,6 @@ export default class NarrationManager implements NarrationManagerInterface {
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;
     }
-
     get currentStepTimesCounter(): number {
         return NarrationManagerStatic.getCurrentStepTimesCounter();
     }
@@ -43,15 +42,9 @@ export default class NarrationManager implements NarrationManagerInterface {
     get lastStepIndex() {
         return NarrationManagerStatic._lastStepIndex;
     }
-    /**
-     * The stack of the opened labels.
-     */
     get openedLabels() {
         return NarrationManagerStatic._openedLabels;
     }
-    /**
-     * currentLabel is the current label that occurred during the progression of the steps.
-     */
     get currentLabel(): Label | undefined {
         return NarrationManagerStatic._currentLabel;
     }
@@ -126,10 +119,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         NarrationManagerStatic.increaseLastStepIndex();
     }
-    /**
-     * Close the current label and add it to the history.
-     * @returns
-     */
     closeCurrentLabel() {
         if (!NarrationManagerStatic.currentLabelId) {
             logger.warn("No label to close");
@@ -142,20 +131,13 @@ export default class NarrationManager implements NarrationManagerInterface {
         NarrationManagerStatic._openedLabels.pop();
         StorageManagerStatic.clearOldTempVariables(this.openedLabels.length);
     }
-    /**
-     * Close all labels and add them to the history. **Attention: This method can cause an unhandled game ending.**
-     */
     closeAllLabels() {
         while (NarrationManagerStatic._openedLabels.length > 0) {
             this.closeCurrentLabel();
             StorageManagerStatic.clearOldTempVariables(this.openedLabels.length);
         }
     }
-    /**
-     * Get the narrative history
-     * @returns the history of the dialogues, choices and steps
-     */
-    public get narrativeHistory(): NarrativeHistory[] {
+    get narrativeHistory(): NarrativeHistory[] {
         let list: NarrativeHistory[] = [];
         NarrationManagerStatic._stepsHistory.forEach((step) => {
             let dialoge = step.dialoge;
@@ -211,10 +193,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         });
         return list;
     }
-    /**
-     * Delete the narrative history.
-     * @param itemsNumber The number of items to delete. If undefined, all items will be deleted.
-     */
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
             // remove the first items
@@ -223,11 +201,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             NarrationManagerStatic._stepsHistory = [];
         }
     }
-    /**
-     * Check if the label is already completed.
-     * @param label The label to check.
-     * @returns True if the label is already completed.
-     */
     public isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
         let labelId: LabelIdType;
         if (typeof label === "string") {
@@ -263,18 +236,10 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         });
     }
-    /**
-     * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
-     * @returns The choices already made in the current step. If there are no choices, it will return undefined.
-     */
-    public get alreadyCurrentStepMadeChoices(): number[] | undefined {
+    get alreadyCurrentStepMadeChoices(): number[] | undefined {
         return this.alreadyCurrentStepMadeChoicesObj?.map((choice) => choice.choiceIndex);
     }
-    /**
-     * Check if the current step is already completed.
-     * @returns True if the current step is already completed.
-     */
-    public get isCurrentStepAlreadyOpened(): boolean {
+    get isCurrentStepAlreadyOpened(): boolean {
         let currentLabel = NarrationManagerStatic.currentLabelId;
         if (currentLabel) {
             let lastStep = NarrationManagerStatic.allOpenedLabels[currentLabel]?.openCount || 0;
@@ -287,18 +252,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return false;
     }
-    /**
-     * Get times a label has been opened
-     * @returns times a label has been opened
-     */
     public getTimesLabelOpened(label: LabelIdType): number {
         return NarrationManagerStatic.allOpenedLabels[label]?.openCount || 0;
     }
-    /**
-     * Get times a choice has been made in the current step.
-     * @param index The index of the choice.
-     * @returns The number of times the choice has been made.
-     */
     public getTimesChoiceMade(index: number): number {
         return this.alreadyCurrentStepMadeChoicesObj?.find((choice) => choice.choiceIndex === index)?.madeTimes || 0;
     }
