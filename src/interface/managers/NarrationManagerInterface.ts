@@ -257,11 +257,11 @@ export default interface NarrationManagerInterface {
      * The other older steps will be compressed will be used in {@link NarrationManagerInterface.narrativeHistory} to show the older dialogues.
      * In the compressed steps, the canvas and storage information will be removed.
      *
-     * This also means that a player, after saving and loading a save, will only be able to go back to {@link NarrationManagerInterface.oldStepsLimit} steps.
+     * This also means that a player, after saving and loading a save, will only be able to go back to {@link NarrationManagerInterface.stepLimitSaved} steps.
      *
      * If you want to keep all steps in the history, you can set this value to Infinity.
      */
-    oldStepsLimit: number;
+    stepLimitSaved: number;
 
     /* Go Back & Refresh Methods */
 

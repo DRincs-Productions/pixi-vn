@@ -37,7 +37,7 @@ export default class NarrationManagerStatic {
      */
     static goNextRequests: number = 0;
     static choiseMadeTemp: undefined | number = undefined;
-    static oldStepsLimit: number = 20;
+    static stepLimitSaved: number = 20;
     /**
      * is a list of all labels that have been opened during the progression of the steps.
      * the key is the label id and the biggest step opened.

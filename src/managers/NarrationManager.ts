@@ -535,11 +535,11 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /** Old Step Methods */
 
-    get oldStepsLimit() {
-        return NarrationManagerStatic.oldStepsLimit;
+    get stepLimitSaved() {
+        return NarrationManagerStatic.stepLimitSaved;
     }
-    set oldStepsLimit(limit: number) {
-        NarrationManagerStatic.oldStepsLimit = limit;
+    set stepLimitSaved(limit: number) {
+        NarrationManagerStatic.stepLimitSaved = limit;
     }
 
     /* Go Back & Refresh Methods */
@@ -752,7 +752,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return JSON.stringify(this.export());
     }
     public export(): ExportedStep {
-        let firstStepToCompres = this.stepsHistory.length - this.oldStepsLimit;
+        let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
         let stepsHistory: HistoryStep<Dialogue<CharacterInterface>>[] = this.stepsHistory.map((step, index) => ({
             diff: firstStepToCompres > index ? undefined : step.diff,
             ...step,
