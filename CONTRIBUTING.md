@@ -9,9 +9,7 @@ Before opening a new issue, please try to respect the following rules:
 
 ### :beetle: Bug Reports and Other Issues
 
-A great way to contribute to the project is to send a detailed issue when you encounter a problem. We always appreciate a well-written, thorough bug report. :v:
-
-You can open a new issue [here](https://github.com/DRincs-Productions/pixi-vn/issues/new).
+A great way to contribute to the project is to send a detailed issue when you encounter a problem. We always appreciate a well-written, thorough bug report. :v: You can report a problem by creating an issue [here](https://github.com/DRincs-Productions/pixi-vn/issues/new).
 
 ## :bulb: Asking Questions
 
