@@ -23,3 +23,9 @@ Feature requests are welcome! While we will consider all requests, we cannot gua
 You can create a new discussion [here](https://github.com/DRincs-Productions/pixi-vn/discussions/new?category=ideas), also specify if you want to help with implementation or not.
 
 ## 👨‍🏫 Contribute to the development
+
+Are you a JavaScript/Typescript developer and want to contribute to the project?
+
+You can find a list of pending "features to implement" [here](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/pixi-vn-needs-help).
+
+Or you can apply by creating a thread [here](https://github.com/DRincs-Productions/pixi-vn/discussions/new?category=pixi-vn-needs-help), where you introduce yourself and list your expertise.
