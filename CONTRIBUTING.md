@@ -37,3 +37,14 @@ Before implementing any kind of change it is recommended to talk to the develope
 pixi-vn is not a huge project and the code should be quite understandable (apart from the management of Tickers).
 
 The project is divided into the following folders:
+
+* managers
+* functions
+* classes
+* decorators
+* interface
+* types
+* labels
+* pixi-devtools
+
+To export "elements" making them available to developers using this library they must be exported to index.ts files.
