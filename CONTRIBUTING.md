@@ -2,9 +2,9 @@
 
 *Pull requests, bug reports, and all other forms of contribution are welcomed and highly encouraged!* :octocat:
 
-Before opening a new issue, please try to respect the following rules:
+Before opening a new issue/discussion, please try to respect the following rules:
 
-* **Do not open a duplicate issue!** Search through existing issues to see if your issue has previously been reported. If your issue exists, comment with any additional information you have. You may simply note "I have this problem too", which helps prioritize the most common problems and requests. 
+* **Do not open a duplicate issue/discussion!** Search through existing issues to see if your issue has previously been reported. If your issue exists, comment with any additional information you have. You may simply note "I have this problem too", which helps prioritize the most common problems and requests. 
 * **Prefer using [reactions](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/)**, not comments, if you simply want to "+1" an existing issue.
 
 ### :beetle: Bug Reports and Other Issues
