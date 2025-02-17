@@ -36,6 +36,7 @@ export default class NarrationManagerStatic {
      * If it is > 0, after the stepsRunning is 0, the next step will be executed
      */
     static goNextRequests: number = 0;
+    static cleanSteps: boolean = false;
     static choiseMadeTemp: undefined | number = undefined;
     static stepLimitSaved: number = 20;
     /**

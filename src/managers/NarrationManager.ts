@@ -563,6 +563,19 @@ export default class NarrationManager implements NarrationManagerInterface {
     get canGoBack(): boolean {
         return NarrationManagerStatic.lastHistoryStep?.diff ? true : false;
     }
+    public async blockGoBack() {
+        if (NarrationManagerStatic.stepsRunning !== 0) {
+            NarrationManagerStatic.cleanSteps;
+            return;
+        }
+
+        if (this.stepsHistory.length > 1) {
+            this.stepsHistory[this.stepsHistory.length - 1] = {
+                ...this.stepsHistory[this.stepsHistory.length - 1],
+                diff: undefined,
+            };
+        }
+    }
     public onGameEnd: StepLabelType | undefined = undefined;
     public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined;
 

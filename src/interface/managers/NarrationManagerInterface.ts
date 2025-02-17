@@ -284,6 +284,10 @@ export default interface NarrationManagerInterface {
      */
     readonly canGoBack: boolean;
     /**
+     * Block the go back function.
+     */
+    blockGoBack(): void;
+    /**
      * Function to be executed at the end of the game. It should be set in the game initialization.
      * @example
      * ```typescript
