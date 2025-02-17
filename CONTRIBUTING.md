@@ -20,7 +20,7 @@ Need help? Or have a doubt? You can ask on Discord (find the invitation on the m
 
 Feature requests are welcome! While we will consider all requests, we cannot guarantee your request will be accepted. We want to avoid [feature creep](https://en.wikipedia.org/wiki/Feature_creep). Your idea may be great, but also out-of-scope for the project. If accepted, we cannot make any commitments regarding the timeline for implementation and release.
 
-
+You can create a new discussion [here](https://github.com/DRincs-Productions/pixi-vn/discussions/new?category=ideas), also specify if you want to help with implementation or not.
 
 ## :mag: Triaging Issues
 
