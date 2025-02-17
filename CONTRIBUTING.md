@@ -36,7 +36,7 @@ Before implementing any kind of change it is recommended to talk to the develope
 
 pixi-vn is not a huge project and the code should be quite understandable (apart from the management of Tickers).
 
-The project is divided into the following folders:
+The project is divided into the following folders: 
 
 * managers
 * functions
@@ -48,3 +48,5 @@ The project is divided into the following folders:
 * pixi-devtools
 
 To export "elements" making them available to developers using this library they must be exported to index.ts files.
+
+(This procedure is being improved) To give you the possibility to test and debug your work you can use the following project: https://github.com/DRincs-Productions/pixi-vn-tester
