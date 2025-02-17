@@ -29,3 +29,11 @@ Are you a JavaScript/Typescript developer and want to contribute to the project?
 You can find a list of pending "features to implement" [here](https://github.com/DRincs-Productions/pixi-vn/discussions/categories/pixi-vn-needs-help).
 
 Or you can apply by creating a thread [here](https://github.com/DRincs-Productions/pixi-vn/discussions/new?category=pixi-vn-needs-help), where you introduce yourself and list your expertise.
+
+## 🔨 Development
+
+Before implementing any kind of change it is recommended to talk to the developers first, in order to get more guidance on how to achieve what you have in mind.
+
+pixi-vn is not a huge project and the code should be quite understandable (apart from the management of Tickers).
+
+The project is divided into the following folders:
