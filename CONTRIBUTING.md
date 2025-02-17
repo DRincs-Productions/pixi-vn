@@ -127,35 +127,3 @@ Consistency is the most important. Following the existing style, formatting, and
 For example, if all private properties are prefixed with an underscore `_`, then new ones you add should be prefixed in the same way. Or, if methods are named using camelcase, like `thisIsMyNewMethod`, then do not diverge from that by writing `this_is_my_new_method`. You get the idea. If in doubt, please ask or search the codebase for something similar.
 
 When possible, style and format will be enforced with a linter.
-
-## :medal_sports: Certificate of Origin
-
-*Developer's Certificate of Origin 1.1*
-
-By making a contribution to this project, I certify that:
-
-> 1. The contribution was created in whole or in part by me and I have the right to submit it under the open source license indicated in the file; or
-> 1. The contribution is based upon previous work that, to the best of my knowledge, is covered under an appropriate open source license and I have the right under that license to submit that work with modifications, whether created in whole or in part by me, under the same open source license (unless I am permitted to submit under a different license), as indicated in the file; or
-> 1. The contribution was provided directly to me by some other person who certified (1), (2) or (3) and I have not modified it.
-> 1. I understand and agree that this project and the contribution are public and that a record of the contribution (including all personal information I submit with it, including my sign-off) is maintained indefinitely and may be redistributed consistent with this project or the open source license(s) involved.
-
-## [No Brown M&M's](https://en.wikipedia.org/wiki/Van_Halen#Contract_riders)
-
-If you are reading this, bravo dear user and (hopefully) contributor for making it this far! You are awesome. :100: 
-
-To confirm that you have read this guide and are following it as best as possible, **include this emoji at the top** of your issue or pull request: :black_heart: `:black_heart:`
-
-## :pray: Credits
-
-Written by [@jessesquires](https://github.com/jessesquires). 
-
-**Please feel free to adopt this guide in your own projects. Fork it wholesale or remix it for your needs.**
-
-*Many of the ideas and prose for the statements in this document were based on or inspired by work from the following communities:*
-
-- [Alamofire](https://github.com/Alamofire/Alamofire/blob/master/CONTRIBUTING.md)
-- [CocoaPods](https://github.com/CocoaPods/CocoaPods/blob/master/CONTRIBUTING.md)
-- [Docker](https://github.com/moby/moby/blob/master/CONTRIBUTING.md)
-- [Linux](https://elinux.org/Developer_Certificate_Of_Origin)
-
-*We commend them for their efforts to facilitate collaboration in their projects.*
