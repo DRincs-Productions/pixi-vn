@@ -36,7 +36,9 @@ export default class NarrationManagerStatic {
      * If it is > 0, after the stepsRunning is 0, the next step will be executed
      */
     static goNextRequests: number = 0;
+    static cleanSteps: boolean = false;
     static choiseMadeTemp: undefined | number = undefined;
+    static stepLimitSaved: number = 20;
     /**
      * is a list of all labels that have been opened during the progression of the steps.
      * the key is the label id and the biggest step opened.
@@ -196,7 +198,7 @@ export default class NarrationManagerStatic {
     /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
      */
-    private static get lastHistoryStep(): HistoryStep | null {
+    static get lastHistoryStep(): HistoryStep | null {
         if (NarrationManagerStatic._stepsHistory.length > 0) {
             return NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1];
         }
@@ -331,7 +333,7 @@ export default class NarrationManagerStatic {
             return restoredStep;
         }
         let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
-        if (lastHistoryStep) {
+        if (lastHistoryStep?.diff) {
             try {
                 let result = restoreDeepDiffChanges(restoredStep, lastHistoryStep.diff);
                 NarrationManagerStatic._lastStepIndex = lastHistoryStep.index;
@@ -342,6 +344,7 @@ export default class NarrationManagerStatic {
                 return restoredStep;
             }
         } else {
+            logger.error("You can't go back, there is no step to go back");
             return restoredStep;
         }
     }
