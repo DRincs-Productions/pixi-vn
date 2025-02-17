@@ -13,26 +13,6 @@ Before opening a new issue, please try to respect the following rules:
 
 Now you can open a new issue [here](https://github.com/DRincs-Productions/pixi-vn/issues/new).
 
-### Contents
-
-- [Code of Conduct](#book-code-of-conduct)
-- [Asking Questions](#bulb-asking-questions)
-- [Opening an Issue](#inbox_tray-opening-an-issue)
-- [Feature Requests](#love_letter-feature-requests)
-- [Triaging Issues](#mag-triaging-issues)
-- [Submitting Pull Requests](#repeat-submitting-pull-requests)
-- [Writing Commit Messages](#memo-writing-commit-messages)
-- [Code Review](#white_check_mark-code-review)
-- [Coding Style](#nail_care-coding-style)
-- [Certificate of Origin](#medal_sports-certificate-of-origin)
-- [Credits](#pray-credits)
-
-> **This guide serves to set clear expectations for everyone involved with the project so that we can improve it together while also creating a welcoming space for everyone to participate. Following these guidelines will help ensure a positive experience for contributors and maintainers.**
-
-## :book: Code of Conduct
-
-Please review our [Code of Conduct](https://github.com/jessesquires/.github/blob/main/CODE_OF_CONDUCT.md). It is in effect at all times. We expect it to be honored by everyone who contributes to this project. Acting like an asshole will not be tolerated.
-
 ## :bulb: Asking Questions
 
 See our [Support Guide](https://github.com/jessesquires/.github/blob/main/SUPPORT.md). In short, GitHub issues are not the appropriate place to debug your specific project, but should be reserved for filing bugs and feature requests.
