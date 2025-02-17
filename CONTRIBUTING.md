@@ -8,7 +8,7 @@ Before opening a new issue/discussion, please try to respect the following rules
 * **Prefer using [reactions](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/)**, not comments, if you simply want to "+1" an existing issue.
 * Before creating an issue, check if you are using the latest version of the project. If you are not up-to-date, see if updating fixes your issue first.
 
-### :beetle: Bug Reports and Other Issues
+## :beetle: Bug Reports and Other Issues
 
 A great way to contribute to the project is to send a detailed issue when you encounter a problem. We always appreciate a well-written, thorough bug report. :v: You can report a problem by creating an issue [here](https://github.com/DRincs-Productions/pixi-vn/issues/new).
 
