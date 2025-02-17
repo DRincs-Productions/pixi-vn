@@ -16,11 +16,6 @@ A great way to contribute to the project is to send a detailed issue when you en
 
 See our [Support Guide](https://github.com/jessesquires/.github/blob/main/SUPPORT.md). In short, GitHub issues are not the appropriate place to debug your specific project, but should be reserved for filing bugs and feature requests.
 
-### :lock: Reporting Security Issues
-
-Review our [Security Policy](https://github.com/jessesquires/.github/blob/main/SECURITY.md). **Do not** file a public issue for security vulnerabilities.
-
-
 ## :love_letter: Feature Requests
 
 Feature requests are welcome! While we will consider all requests, we cannot guarantee your request will be accepted. We want to avoid [feature creep](https://en.wikipedia.org/wiki/Feature_creep). Your idea may be great, but also out-of-scope for the project. If accepted, we cannot make any commitments regarding the timeline for implementation and release. However, you are welcome to submit a pull request to help!
