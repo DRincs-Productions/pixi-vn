@@ -113,6 +113,10 @@ export default interface NarrationManagerInterface {
      * @returns The number of times the choice has been made.
      */
     getTimesChoiceMade(index: number): number;
+    /**
+     * Save the current step to the history.
+     */
+    addCurrentStepToHistory(): void;
 
     /* Run Methods */
 

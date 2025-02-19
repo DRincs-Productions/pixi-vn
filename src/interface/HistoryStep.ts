@@ -9,6 +9,20 @@ import ExportedStorage from "./export/ExportedStorage";
 import OpenedLabel from "./OpenedLabel";
 
 /**
+ * AdditionalShaSpetsEnum is a enum that contains the additional sha1 values that can be inserted in the step sha1.
+ */
+export enum AdditionalShaSpetsEnum {
+    /**
+     * If the creation of a step function sha was not successful, this value will be inserted.
+     */
+    ERROR = "error",
+    /**
+     * If this story node was not added in the narrative but by the developer, this value will be inserted.
+     */
+    DEVELOPER = "dev",
+}
+
+/**
  * IHistoryStep is a interface that contains the information of a step in the history.
  */
 export interface HistoryStepData {
