@@ -199,34 +199,3 @@ narration.onGameEnd = async (props) => {
     props.navigate("/")
 }
 ```
-
-This is the HTML file that will be used to load the application.
-
-```html
-<!-- index.html -->
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/pixiVN.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Pixi’VN</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
-</html>
-```
-
-```css
-/* index.css */
-:root {
-  background-color: #242424;
-}
-
-body {
-  margin: 0;
-  display: flex;
-}
-```
