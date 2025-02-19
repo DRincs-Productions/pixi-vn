@@ -38,14 +38,14 @@ pixi-vn is not a huge project and the code should be quite understandable (apart
 
 The project is divided into the following folders:
 
-* managers
-* functions
-* classes
-* decorators
-* interface
-* types
-* labels
-* pixi-devtools
+* `managers`
+* `functions`
+* `classes`
+* `decorators`
+* `interface`
+* `types`
+* `labels`
+* `pixi-devtools`
 
 To export "elements" making them available to developers using this library they must be exported to index.ts files.
 
