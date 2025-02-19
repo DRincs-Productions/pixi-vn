@@ -8,6 +8,7 @@ import { getLabelById } from "../decorators/label-decorator";
 import { logger } from "../functions/log-utility";
 import { CharacterInterface, HistoryStep, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
+import { AdditionalShaSpetsEnum } from "../interface/HistoryStep";
 import NarrationManagerInterface from "../interface/managers/NarrationManagerInterface";
 import {
     ChoiceMenuOptionsType,
@@ -226,7 +227,8 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
         if (!stepSha) {
-            logger.warn("stepSha not found");
+            logger.warn("stepSha not found, setting to ERROR");
+            stepSha = AdditionalShaSpetsEnum.ERROR;
         }
         return NarrationManagerStatic.allChoicesMade.filter((choice) => {
             return (
@@ -257,6 +259,21 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public getTimesChoiceMade(index: number): number {
         return this.alreadyCurrentStepMadeChoicesObj?.find((choice) => choice.choiceIndex === index)?.madeTimes || 0;
+    }
+    addCurrentStepToHistory(): void {
+        let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
+        if (currentLabelStepIndex === null) {
+            logger.error("currentLabelStepIndex is null");
+            return;
+        }
+        let currentLabel = NarrationManagerStatic._currentLabel;
+        if (!currentLabel) {
+            logger.error("currentLabel not found");
+            return;
+        }
+        if (currentLabel.steps.length > currentLabelStepIndex) {
+            this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER);
+        }
     }
 
     /* Run Methods */
@@ -348,7 +365,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                 let step = currentLabel.steps[currentLabelStepIndex];
                 let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
                 if (!stepSha) {
-                    logger.warn("stepSha not found");
+                    logger.warn("stepSha not found, setting to ERROR");
+                    stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
                 try {
                     NarrationManagerStatic.stepsRunning++;
@@ -361,10 +379,15 @@ export default class NarrationManager implements NarrationManagerInterface {
 
                     if (choiseMade !== undefined && this.stepsHistory.length > 0) {
                         let lastHistoryStep = this.stepsHistory[this.stepsHistory.length - 1];
+                        let stepSha = lastHistoryStep.stepSha1;
+                        if (!stepSha) {
+                            logger.warn("stepSha not found, setting to ERROR");
+                            stepSha = AdditionalShaSpetsEnum.ERROR;
+                        }
                         NarrationManagerStatic.addChoicesMade(
                             lastHistoryStep.currentLabel || "error",
                             typeof lastHistoryStep.labelStepIndex === "number" ? lastHistoryStep.labelStepIndex : -1,
-                            lastHistoryStep.stepSha1 || "error",
+                            lastHistoryStep.stepSha1 || AdditionalShaSpetsEnum.ERROR,
                             choiseMade
                         );
                         NarrationManagerStatic.choiseMadeTemp = choiseMade;
@@ -373,7 +396,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     NarrationManagerStatic.stepsRunning--;
                     if (NarrationManagerStatic.stepsRunning === 0) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
-                        this.addStepHistory(stepSha || "error", NarrationManagerStatic.choiseMadeTemp);
+                        this.addStepHistory(stepSha, NarrationManagerStatic.choiseMadeTemp);
                         NarrationManagerStatic.choiseMadeTemp = undefined;
 
                         if (NarrationManagerStatic.goNextRequests > 0) {
