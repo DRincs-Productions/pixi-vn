@@ -4,7 +4,7 @@
 
 Before opening a new issue/discussion, please try to respect the following rules:
 
-* **Do not open a duplicate issue/discussion!** Search through existing issues to see if your issue has previously been reported. If your issue exists, comment with any additional information you have. You may simply note "I have this problem too", which helps prioritize the most common problems and requests. 
+* **Do not open a duplicate issue/discussion!** Search through existing issues to see if your issue has previously been reported. If your issue exists, comment with any additional information you have. You may simply note "I have this problem too", which helps prioritize the most common problems and requests.
 * **Prefer using [reactions](https://github.blog/2016-03-10-add-reactions-to-pull-requests-issues-and-comments/)**, not comments, if you simply want to "+1" an existing issue.
 * Before creating an issue, check if you are using the latest version of the project. If you are not up-to-date, see if updating fixes your issue first.
 
@@ -36,7 +36,7 @@ Before implementing any kind of change it is recommended to talk to the develope
 
 pixi-vn is not a huge project and the code should be quite understandable (apart from the management of Tickers).
 
-The project is divided into the following folders: 
+The project is divided into the following folders:
 
 * managers
 * functions
@@ -49,4 +49,4 @@ The project is divided into the following folders:
 
 To export "elements" making them available to developers using this library they must be exported to index.ts files.
 
-(This procedure is being improved) To give you the possibility to test and debug your work you can use the following project: https://github.com/DRincs-Productions/pixi-vn-tester
+(This procedure is being improved) To give you the possibility to test and debug your work you can use the following project: <https://github.com/DRincs-Productions/pixi-vn-tester>
