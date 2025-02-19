@@ -96,14 +96,15 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
   * [Navigate/switch between UI screens](https://pixi-vn.web.app/start/interface-navigate)
   * [Connect the UI with the storage](https://pixi-vn.web.app/start/interface-connect-storage)
 * [Save and Load](https://pixi-vn.web.app/start/save)
+* [Distribution](https://pixi-vn.web.app/start/distribution)
+  * [Website distribution](https://pixi-vn.web.app/start/distribution-website)
+  * [Desktop & mobile devices](https://pixi-vn.web.app/start/distribution-desktop-mobile)
 
-## Advanced topics
+## Other topics
 
-* [Intecept Events](https://pixi-vn.web.app/advanced/intercept-events)
-* [Distribution](https://pixi-vn.web.app/advanced/distribution)
-  * [Website distribution](https://pixi-vn.web.app/advanced/distribution-website)
-  * [Desktop & mobile devices](https://pixi-vn.web.app/advanced/distribution-desktop-mobile)
-* [Pixi’VN + Json](https://pixi-vn.web.app/advanced/pixi-vn-json)
+* [FAQ](https://pixi-vn.web.app/other-topics/faq)
+* [Intecept Events](https://pixi-vn.web.app/other-topics/intercept-events)
+* [Pixi’VN + Json](https://pixi-vn.web.app/other-topics/pixi-vn-json)
 
 ## Prerequisites
 
@@ -111,10 +112,13 @@ Before starting, you must have the following tools installed:
 
 * [Node.js](https://nodejs.org/) version 18 or higher.
 * Text Editor with TypeScript support.
-  * [Visual Studio Code](https://code.visualstudio.com/) is recommended.
+  * [Visual Studio Code](https://code.visualstudio.com/)
+  * [Cursor](https://www.cursor.com/)
+  * [VSCodium](https://vscodium.com/)
+* (Recommended) [Git](https://git-scm.com/)
+  * Have a [GitHub account](https://github.com/)
 
 ## Project Initialization
-
 
 If you want to start a new project, you can use the following command to initialize a new project with the Pixi’VN template:
 
