@@ -1,10 +1,10 @@
-import { createExportableElement } from "../functions/export-utility"
-import { StorageElementType } from "../types/StorageElementType"
+import { createExportableElement } from "../functions/export-utility";
+import { StorageElementType } from "../types/StorageElementType";
 
 export default class StorageManagerStatic {
-    static storage: { [key: string]: StorageElementType } = {}
-    static baseStorage: { [key: string]: StorageElementType } = {}
-    private constructor() { }
+    static storage: { [key: string]: StorageElementType } = {};
+    static baseStorage: { [key: string]: StorageElementType } = {};
+    private constructor() {}
     public static get _keysSystem() {
         return {
             /**
@@ -69,46 +69,42 @@ export default class StorageManagerStatic {
              * The key of the current step memory deadlines
              */
             TEMP_STORAGE_DEADLINES_KEY: "___temp_storage_deadlines___",
-        }
+        };
     }
     static get tempStorage(): { [key: string]: StorageElementType } {
-        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] || {} as any
+        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] || ({} as any);
     }
     static set tempStorage(value: { [key: string]: StorageElementType }) {
-        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] = value
+        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] = value;
     }
     static get tempStorageDeadlines(): { [key: string]: number } {
-        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] || {} as any
+        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] || ({} as any);
     }
     static set tempStorageDeadlines(value: { [key: string]: number }) {
-        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] = value
+        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] = value;
     }
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
-        key = key.toLowerCase()
+        key = key.toLowerCase();
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
-            return createExportableElement(StorageManagerStatic.tempStorage[key]) as T
+            return createExportableElement(StorageManagerStatic.tempStorage[key]) as T;
         }
-        return undefined
+        return undefined;
     }
     static clearOldTempVariables(openedLabelsNumber: number) {
-        let tempStorage = StorageManagerStatic.tempStorage
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines
+        let tempStorage = StorageManagerStatic.tempStorage;
+        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
         if (openedLabelsNumber === 0) {
-            tempStorage = {}
-            tempStorageDeadlines = {}
-        }
-        else {
+            tempStorage = {};
+            tempStorageDeadlines = {};
+        } else {
             for (const key in tempStorageDeadlines) {
                 if (tempStorageDeadlines[key] < openedLabelsNumber) {
-                    delete tempStorage[key]
-                    delete tempStorageDeadlines[key]
+                    delete tempStorage[key];
+                    delete tempStorageDeadlines[key];
                 }
             }
         }
-        StorageManagerStatic.tempStorage = tempStorage
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines
-    }
-    static saveStorageAsBasicStorage() {
-        StorageManagerStatic.baseStorage = { ...StorageManagerStatic.storage }
+        StorageManagerStatic.tempStorage = tempStorage;
+        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
 }
