@@ -1,9 +1,17 @@
+import { CacheableItem, CacheableMemory } from "cacheable";
 import { createExportableElement } from "../functions/export-utility";
 import { StorageElementType } from "../types/StorageElementType";
 
 export default class StorageManagerStatic {
-    static storage: { [key: string]: StorageElementType } = {};
-    static baseStorage: { [key: string]: StorageElementType } = {};
+    static _storage = new CacheableMemory();
+    static _baseStorage: CacheableItem[] = [];
+    static set baseStorage(value: { [key: string]: StorageElementType }) {
+        let data: CacheableItem[] = [];
+        for (const key in value) {
+            data.push({ key, value: value[key] });
+        }
+        StorageManagerStatic._baseStorage = data;
+    }
     private constructor() {}
     public static get _keysSystem() {
         return {
@@ -72,16 +80,24 @@ export default class StorageManagerStatic {
         };
     }
     static get tempStorage(): { [key: string]: StorageElementType } {
-        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] || ({} as any);
+        return (
+            StorageManagerStatic._storage.get<{ [key: string]: StorageElementType }>(
+                StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY
+            ) || {}
+        );
     }
     static set tempStorage(value: { [key: string]: StorageElementType }) {
-        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY] = value;
+        StorageManagerStatic._storage.set(StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY, value);
     }
     static get tempStorageDeadlines(): { [key: string]: number } {
-        return StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] || ({} as any);
+        return (
+            StorageManagerStatic._storage.get<{ [key: string]: number }>(
+                StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY
+            ) || {}
+        );
     }
     static set tempStorageDeadlines(value: { [key: string]: number }) {
-        StorageManagerStatic.storage[StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY] = value;
+        StorageManagerStatic._storage.set(StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY, value);
     }
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase();

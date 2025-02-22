@@ -18,12 +18,12 @@ export default class StorageManager {
     public setVariable(key: string, value: StorageElementType) {
         key = key.toLowerCase();
         if (value === undefined || value === null) {
-            if (StorageManagerStatic.storage.hasOwnProperty(key)) {
-                delete StorageManagerStatic.storage[key];
+            if (StorageManagerStatic._storage.has(key)) {
+                StorageManagerStatic._storage.delete(key);
             }
             return;
         }
-        StorageManagerStatic.storage[key] = value;
+        StorageManagerStatic._storage.set(key, value);
     }
     /**
      * Get a variable from the storage. If the variable is a temporary variable, it will return the temporary variable
@@ -35,8 +35,8 @@ export default class StorageManager {
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
             return StorageManagerStatic.getTempVariable<T>(key);
         }
-        if (StorageManagerStatic.storage.hasOwnProperty(key)) {
-            return createExportableElement(StorageManagerStatic.storage[key]) as T;
+        if (StorageManagerStatic._storage.has(key)) {
+            return createExportableElement(StorageManagerStatic._storage.get<T>(key));
         }
         return undefined;
     }
@@ -47,8 +47,8 @@ export default class StorageManager {
      */
     public removeVariable(key: string) {
         key = key.toLowerCase();
-        if (StorageManagerStatic.storage.hasOwnProperty(key)) {
-            delete StorageManagerStatic.storage[key];
+        if (StorageManagerStatic._storage.has(key)) {
+            StorageManagerStatic._storage.delete(key);
         }
     }
     /**
@@ -125,7 +125,8 @@ export default class StorageManager {
      * @returns
      */
     public clear() {
-        StorageManagerStatic.storage = { ...StorageManagerStatic.baseStorage };
+        StorageManagerStatic._storage.clear();
+        StorageManagerStatic._storage.setMany(StorageManagerStatic._baseStorage);
     }
     public exportJson(): string {
         return JSON.stringify(this.export());
