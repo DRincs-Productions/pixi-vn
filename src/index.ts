@@ -14,7 +14,6 @@ export { CANVAS_APP_GAME_LAYER_ALIAS, filters, Pause, Repeat } from "./constants
 export * from "./decorators";
 export * from "./functions";
 export * from "./interface";
-export * from "./labels";
 export * from "./managers";
 export * from "./types";
 export * from "./types/ticker";
@@ -26,7 +25,6 @@ import { CANVAS_APP_GAME_LAYER_ALIAS, filters, Pause, Repeat } from "./constants
 import * as decorators from "./decorators";
 import * as functions from "./functions";
 import * as pixivninterface from "./interface";
-import * as labels from "./labels";
 import * as managers from "./managers";
 
 const pixivn = {
@@ -41,7 +39,6 @@ const pixivn = {
     ...decorators,
     ...functions,
     ...pixivninterface,
-    ...labels,
     ...managers,
 };
 export default pixivn;
