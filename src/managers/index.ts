@@ -1,4 +1,4 @@
-import NarrationManagerInterface from "../interface/managers/NarrationManagerInterface";
+import { NarrationManagerInterface, StorageManagerInterface } from "../interface";
 import CanvasManager from "./CanvasManager";
 import NarrationManager from "./NarrationManager";
 import SoundManager from "./SoundManager";
@@ -30,7 +30,7 @@ export { default as StorageManagerStatic } from "./StorageManagerStatic";
 
 const sound = new SoundManager();
 const narration: NarrationManagerInterface = new NarrationManager();
-const storage = new StorageManager();
+const storage: StorageManagerInterface = new StorageManager();
 const canvas = new CanvasManager();
 
 export { canvas, narration, sound, storage };

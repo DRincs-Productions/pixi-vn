@@ -32,6 +32,7 @@
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/deep-diff": "^1.0.5",
+    "cacheable": "^1.8.8",
     "crypto-js": "^4.2.0",
     "deep-diff": "^1.0.2",
     "jsdom": "^26.0.0",
