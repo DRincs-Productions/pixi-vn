@@ -15,22 +15,22 @@ export default class StorageManager implements StorageManagerInterface {
     public setVariable(key: string, value: StorageElementType) {
         key = key.toLowerCase();
         if (value === undefined || value === null) {
-            StorageManagerStatic._storage.delete(key);
+            this.storage.delete(key);
             return;
         }
-        StorageManagerStatic._storage.set(key, value);
+        this.storage.set(key, value);
     }
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
         key = key.toLowerCase();
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
             return StorageManagerStatic.getTempVariable<T>(key);
         }
-        return createExportableElement(StorageManagerStatic._storage.get<T>(key));
+        return createExportableElement(this.storage.get<T>(key));
     }
     public removeVariable(key: string) {
         key = key.toLowerCase();
-        if (StorageManagerStatic._storage.has(key)) {
-            StorageManagerStatic._storage.delete(key);
+        if (this.storage.has(key)) {
+            this.storage.delete(key);
         }
     }
     public setTempVariable(key: string, value: StorageElementType) {
@@ -79,15 +79,14 @@ export default class StorageManager implements StorageManagerInterface {
         return flags.includes(name);
     }
     public clear() {
-        StorageManagerStatic._storage.clear();
-        StorageManagerStatic._storage.setMany(StorageManagerStatic._baseStorage);
+        this.storage.clear();
+        this.storage.setMany(StorageManagerStatic._baseStorage);
     }
     public exportJson(): string {
         return JSON.stringify(this.export());
     }
     public export(): ExportedStorage {
-        let cache = StorageManagerStatic._storage;
-        return createExportableElement([...cache.items]);
+        return createExportableElement([...this.storage.items]);
     }
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
@@ -98,13 +97,13 @@ export default class StorageManager implements StorageManagerInterface {
             if (data) {
                 // id data is array
                 if (Array.isArray(data)) {
-                    StorageManagerStatic._storage.setMany(data);
+                    this.storage.setMany(data);
                 }
                 // if data is object
                 // deprecated
                 else {
                     Object.entries(data).forEach(([key, value]) => {
-                        StorageManagerStatic._storage.set(key, value);
+                        this.storage.set(key, value);
                     });
                 }
             } else {
