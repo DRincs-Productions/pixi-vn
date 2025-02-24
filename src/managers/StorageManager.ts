@@ -13,6 +13,10 @@ export default class StorageManager implements StorageManagerInterface {
         return StorageManagerStatic._keysSystem;
     }
     public setVariable(key: string, value: StorageElementType) {
+        // TODO this if should be removed in some other version
+        if (this.storage.has(key.toLowerCase())) {
+            this.storage.delete(key.toLowerCase());
+        }
         if (value === undefined || value === null) {
             this.storage.delete(key);
             return;
@@ -20,19 +24,31 @@ export default class StorageManager implements StorageManagerInterface {
         this.storage.set(key, value);
     }
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
-        if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
-            return StorageManagerStatic.getTempVariable<T>(key);
+        let tempVariable = StorageManagerStatic.getTempVariable<T>(key);
+        if (tempVariable !== undefined) {
+            return tempVariable;
+        }
+        // TODO this if should be removed in some other version
+        if (!this.storage.has(key) && this.storage.has(key.toLowerCase())) {
+            key = key.toLowerCase();
         }
         return createExportableElement(this.storage.get<T>(key));
     }
     public removeVariable(key: string) {
-        if (this.storage.has(key)) {
-            this.storage.delete(key);
+        // TODO this if should be removed in some other version
+        if (!this.storage.has(key) && this.storage.has(key.toLowerCase())) {
+            key = key.toLowerCase();
         }
+        this.storage.delete(key);
     }
     public setTempVariable(key: string, value: StorageElementType) {
         let tempStorage = StorageManagerStatic.tempStorage;
         let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
+        // TODO this if should be removed in some other version
+        let tempVariable = StorageManagerStatic.getTempVariable(key.toLowerCase());
+        if (tempVariable !== undefined) {
+            this.removeTempVariable(key.toLowerCase());
+        }
         if (value === undefined || value === null) {
             this.removeTempVariable(key);
             return;
@@ -48,6 +64,10 @@ export default class StorageManager implements StorageManagerInterface {
     public removeTempVariable(key: string) {
         let tempStorage = StorageManagerStatic.tempStorage;
         let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
+        // TODO this if should be removed in some other version
+        if (!tempStorage.hasOwnProperty(key) && tempStorage.hasOwnProperty(key.toLowerCase())) {
+            key = key.toLowerCase();
+        }
         if (tempStorage.hasOwnProperty(key)) {
             delete tempStorage[key];
             delete tempStorageDeadlines[key];
