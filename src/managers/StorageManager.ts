@@ -132,7 +132,8 @@ export default class StorageManager {
         return JSON.stringify(this.export());
     }
     public export(): ExportedStorage {
-        return createExportableElement(StorageManagerStatic.storage);
+        let cache = StorageManagerStatic._storage;
+        return createExportableElement([...cache.items]);
     }
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
@@ -141,7 +142,19 @@ export default class StorageManager {
         this.clear();
         try {
             if (data) {
-                StorageManagerStatic.storage = data as ExportedStorage;
+                // id data is array
+                if (Array.isArray(data)) {
+                    data.forEach((item: { key: string; value: StorageElementType }) => {
+                        StorageManagerStatic._storage.set(item.key, item.value);
+                    });
+                }
+                // if data is object
+                // deprecated
+                else {
+                    Object.entries(data).forEach(([key, value]) => {
+                        StorageManagerStatic._storage.set(key, value);
+                    });
+                }
             } else {
                 logger.warn("No storage data found");
             }
