@@ -35,7 +35,7 @@ export default interface StorageManagerInterface {
     removeVariable(key: string): void;
     /**
      * Set a variable in the temporary storage. The lifespan of the variable is the number of opened labels.
-     * To get the temporary variable, use {@link this.getVariable}
+     * To get the temporary variable, use {@link getVariable}
      * @param key The key of the temporary variable
      * @param value The value of the temporary variable. If undefined, the variable will be removed
      * @returns

@@ -13,7 +13,6 @@ export default class StorageManager implements StorageManagerInterface {
         return StorageManagerStatic._keysSystem;
     }
     public setVariable(key: string, value: StorageElementType) {
-        key = key.toLowerCase();
         if (value === undefined || value === null) {
             this.storage.delete(key);
             return;
@@ -21,20 +20,17 @@ export default class StorageManager implements StorageManagerInterface {
         this.storage.set(key, value);
     }
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
-        key = key.toLowerCase();
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
             return StorageManagerStatic.getTempVariable<T>(key);
         }
         return createExportableElement(this.storage.get<T>(key));
     }
     public removeVariable(key: string) {
-        key = key.toLowerCase();
         if (this.storage.has(key)) {
             this.storage.delete(key);
         }
     }
     public setTempVariable(key: string, value: StorageElementType) {
-        key = key.toLowerCase();
         let tempStorage = StorageManagerStatic.tempStorage;
         let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
         if (value === undefined || value === null) {
@@ -50,7 +46,6 @@ export default class StorageManager implements StorageManagerInterface {
         StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     public removeTempVariable(key: string) {
-        key = key.toLowerCase();
         let tempStorage = StorageManagerStatic.tempStorage;
         let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
         if (tempStorage.hasOwnProperty(key)) {

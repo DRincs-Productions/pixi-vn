@@ -100,7 +100,6 @@ export default class StorageManagerStatic {
         StorageManagerStatic._storage.set(StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY, value);
     }
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
-        key = key.toLowerCase();
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
             return createExportableElement(StorageManagerStatic.tempStorage[key]) as T;
         }
