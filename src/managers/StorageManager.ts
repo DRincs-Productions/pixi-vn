@@ -18,9 +18,7 @@ export default class StorageManager {
     public setVariable(key: string, value: StorageElementType) {
         key = key.toLowerCase();
         if (value === undefined || value === null) {
-            if (StorageManagerStatic._storage.has(key)) {
-                StorageManagerStatic._storage.delete(key);
-            }
+            StorageManagerStatic._storage.delete(key);
             return;
         }
         StorageManagerStatic._storage.set(key, value);
@@ -35,10 +33,7 @@ export default class StorageManager {
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
             return StorageManagerStatic.getTempVariable<T>(key);
         }
-        if (StorageManagerStatic._storage.has(key)) {
-            return createExportableElement(StorageManagerStatic._storage.get<T>(key));
-        }
-        return undefined;
+        return createExportableElement(StorageManagerStatic._storage.get<T>(key));
     }
     /**
      * Remove a variable from the storage
