@@ -92,15 +92,13 @@ export default class StorageManager implements StorageManagerInterface {
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
     }
-    public import(data: object) {
+    public import(data: ExportedStorage) {
         this.clear();
         try {
             if (data) {
                 // id data is array
                 if (Array.isArray(data)) {
-                    data.forEach((item: { key: string; value: StorageElementType }) => {
-                        StorageManagerStatic._storage.set(item.key, item.value);
-                    });
+                    StorageManagerStatic._storage.setMany(data);
                 }
                 // if data is object
                 // deprecated

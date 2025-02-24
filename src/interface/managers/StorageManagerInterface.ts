@@ -84,5 +84,5 @@ export default interface StorageManagerInterface {
      * Import the storage from an object
      * @param data The object
      */
-    import(data: object): void;
+    import(data: ExportedStorage): void;
 }
