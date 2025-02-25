@@ -87,9 +87,29 @@ export default class CanvasManager {
      *     throw new Error('body element not found')
      * }
      * await canvas.initialize(body, 1920, 1080, {
+     *     width: 1920,
+     *     height: 1080,
      *     backgroundColor: "#303030"
      * })
      * ```
+     */
+    public async initialize(
+        element: HTMLElement,
+        options: Partial<ApplicationOptions> & { width: number; height: number },
+        devtoolsOptions?: Devtools
+    ): Promise<void>;
+
+    /**
+     * @deprecated
+     *
+     * This type of initialization has been deprecated move the width and height to the options parameter.
+     *
+     * ```typescript
+     * await canvas.initialize(body, {
+     *     width: 1920,
+     *     height: 1080,
+     *     // ...
+     * })
      */
     public async initialize(
         element: HTMLElement,
@@ -97,9 +117,33 @@ export default class CanvasManager {
         height: number,
         options?: Partial<ApplicationOptions>,
         devtoolsOptions?: Devtools
+    ): Promise<void>;
+
+    public async initialize(
+        element: HTMLElement,
+        widthOrOptions: any,
+        heightOrDevtoolsOptions?: any,
+        options?: any,
+        devtoolsOptions?: any
     ): Promise<void> {
-        return await CanvasManagerStatic.initialize(element, width, height, options, devtoolsOptions);
+        if (typeof widthOrOptions === "number" && typeof heightOrDevtoolsOptions === "number") {
+            return await CanvasManagerStatic.initialize(
+                element,
+                widthOrOptions,
+                heightOrDevtoolsOptions,
+                options,
+                devtoolsOptions
+            );
+        }
+        return await CanvasManagerStatic.initialize(
+            element,
+            widthOrOptions.width,
+            widthOrOptions.height,
+            widthOrOptions,
+            heightOrDevtoolsOptions
+        );
     }
+
     /**
      * Initialize the interface div and add it into a html element.
      * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
