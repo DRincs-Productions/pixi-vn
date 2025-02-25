@@ -25,6 +25,10 @@
     // move file
     "javascript.updateImportsOnFileMove.enabled": "always",
     "typescript.updateImportsOnFileMove.enabled": "always",
+	// debug
+	"terminal.integrated.defaultProfile.linux": "JavaScript Debug Terminal",
+	"terminal.integrated.defaultProfile.windows": "JavaScript Debug Terminal",
+	"terminal.integrated.defaultProfile.osx": "JavaScript Debug Terminal",
     // olther
     "extensions.ignoreRecommendations": false,
 }

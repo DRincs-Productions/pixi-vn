@@ -1,13 +1,13 @@
-import { expect, test } from 'vitest';
+import { expect, test } from "vitest";
+import { storage } from "./src";
 
-test('Pixi.js Application', async () => {
-    try {
-        // let app = new Application()
-        // await app.init()
-        expect(true).toBe(true)
-    }
-    catch (e) {
-        console.error(e)
-        expect(false).toBe(true)
-    }
+test("setVariable & getVariable", async () => {
+    storage.setVariable("test", "test");
+    expect(storage.getVariable("test")).toBe("test");
+
+    storage.setVariable("test", "test");
+    expect(storage.getVariable("Test")).toBe("test");
+
+    storage.setVariable("Test", "Test");
+    expect(storage.getVariable("test")).toBe(undefined);
 });
