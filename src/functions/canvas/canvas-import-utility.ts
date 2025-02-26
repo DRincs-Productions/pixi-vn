@@ -1,12 +1,4 @@
-import { CanvasBaseItem, Container, ImageContainer, ImageSprite, Sprite, Text, VideoSprite } from "../../classes";
-import {
-    CANVAS_CONTAINER_ID,
-    CANVAS_IMAGE_CONTAINER_ID,
-    CANVAS_IMAGE_ID,
-    CANVAS_SPRITE_ID,
-    CANVAS_TEXT_ID,
-    CANVAS_VIDEO_ID,
-} from "../../constants";
+import { CanvasBaseItem } from "../../classes";
 import { getCanvasElementTypeById } from "../../decorators/canvas-element-decorator";
 import { CanvasBaseItemMemory } from "../../interface";
 import { CanvasElementAliasType } from "../../types/CanvasElementAliasType";
@@ -34,30 +26,6 @@ export function getCanvasElementInstanceById<T extends CanvasBaseItem<any>>(
     try {
         let eventType = getCanvasElementTypeById(canvasId);
         if (!eventType) {
-            switch (canvasId) {
-                case CANVAS_CONTAINER_ID:
-                    eventType = Container;
-                    break;
-                case CANVAS_VIDEO_ID:
-                    eventType = VideoSprite;
-                    break;
-                case CANVAS_IMAGE_ID:
-                    eventType = ImageSprite;
-                    break;
-                case CANVAS_SPRITE_ID:
-                    eventType = Sprite;
-                    break;
-                case CANVAS_TEXT_ID:
-                    eventType = Text;
-                    break;
-                case CANVAS_IMAGE_CONTAINER_ID:
-                    eventType = ImageContainer;
-                    break;
-            }
-        }
-
-        if (!eventType) {
-            logger.error(`CanvasElement ${canvasId} not found`);
             return;
         }
         let canvasElement = new eventType();
