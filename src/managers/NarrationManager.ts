@@ -584,6 +584,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     get canGoBack(): boolean {
+        if (NarrationManagerStatic._stepsHistory.length <= 1) {
+            return false;
+        }
         return NarrationManagerStatic.lastHistoryStep?.diff ? true : false;
     }
     public async blockGoBack() {
