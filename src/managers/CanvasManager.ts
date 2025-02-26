@@ -86,7 +86,7 @@ export default class CanvasManager {
      * if (!body) {
      *     throw new Error('body element not found')
      * }
-     * await canvas.initialize(body, 1920, 1080, {
+     * await canvas.initialize(body, {
      *     width: 1920,
      *     height: 1080,
      *     backgroundColor: "#303030"
