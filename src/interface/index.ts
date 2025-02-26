@@ -59,6 +59,8 @@ export type { default as NarrativeHistory } from "./NarrativeHistory";
 export type { default as OpenedLabel } from "./OpenedLabel";
 export type { default as SaveData } from "./SaveData";
 export type { default as SoundOptions, SoundPlayOptions } from "./SoundOptions";
+export type { default as StepLabelProps } from "./StepLabelProps";
+export type { default as StepLabelResult } from "./StepLabelResult";
 export type { default as Ticker } from "./Ticker";
 export type { default as TickerArgs } from "./TickerArgs";
 export type { default as TickerHistory, TickerHistoryForExport } from "./TickerHistory";
