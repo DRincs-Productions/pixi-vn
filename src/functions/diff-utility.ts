@@ -26,18 +26,22 @@ function restoreMicroDiffChanges<T extends object = object>(result: T, diff: Dif
     if (diff.path && diff.path.length > 0) {
         diff.path.forEach((path, index) => {
             if (diff.path && index === diff.path.length - 1) {
-                if (diff.type === "CHANGE" || diff.type === "REMOVE") {
-                    dataToEdit[path] = diff.oldValue;
-                } else if (diff.type === "CREATE") {
-                    // if path is a number, dataToEdit is an array
-                    if (Array.isArray(dataToEdit) && typeof path === "number") {
-                        dataToEdit.splice(path, 1);
-                    }
-                    // if path is a string, dataToEdit is an object
-                    else if (typeof path === "string") {
-                        // remove key from object
-                        delete dataToEdit[path];
-                    }
+                switch (diff.type) {
+                    case "CHANGE":
+                    case "REMOVE":
+                        dataToEdit[path] = diff.oldValue;
+                        break;
+                    case "CREATE":
+                        // if path is a number, dataToEdit is an array
+                        if (Array.isArray(dataToEdit) && typeof path === "number") {
+                            dataToEdit.splice(path, 1);
+                        }
+                        // if path is a string, dataToEdit is an object
+                        else {
+                            // remove key from object
+                            delete dataToEdit[path];
+                        }
+                        break;
                 }
             } else {
                 dataToEdit = dataToEdit[path];
