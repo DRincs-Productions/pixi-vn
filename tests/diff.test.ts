@@ -3,7 +3,7 @@ import { Difference } from "microdiff";
 import { expect, test } from "vitest";
 import { restoreDiffChanges } from "../src/functions/diff-utility";
 
-test("restoreDeepDiffChanges", async () => {
+test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
     let data = {
         path: "/narration",
         storage: [
@@ -51,7 +51,7 @@ test("restoreDeepDiffChanges", async () => {
         ],
         canvas: {
             tickers: {
-                "41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm": {
+                "41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd": {
                     id: "MoveTicker",
                     args: {
                         direction: "right",
@@ -67,7 +67,7 @@ test("restoreDeepDiffChanges", async () => {
                     },
                     canvasElementAliases: ["sly"],
                 },
-                "170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh": {
+                "170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7": {
                     id: "MoveTicker",
                     args: {
                         direction: "left",
@@ -714,19 +714,19 @@ test("restoreDeepDiffChanges", async () => {
             elementAliasesOrder: ["bg", "james", "sly", "steph"],
             tickersOnPause: {
                 sly: {
-                    tickerIdsExcluded: ["41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm"],
+                    tickerIdsExcluded: ["41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd"],
                 },
                 steph: {
-                    tickerIdsExcluded: ["170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh"],
+                    tickerIdsExcluded: ["170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7"],
                 },
             },
             tickersToCompleteOnStepEnd: {
                 tikersIds: [
                     {
-                        id: "41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm",
+                        id: "41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd",
                     },
                     {
-                        id: "170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh",
+                        id: "170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7",
                     },
                 ],
                 stepAlias: [],
@@ -744,7 +744,7 @@ test("restoreDeepDiffChanges", async () => {
             },
         ],
     };
-    let differences: deepDiff.Diff<any, any>[] = [
+    let differencesOld: deepDiff.Diff<any, any>[] = [
         {
             kind: "E",
             path: ["storage", 3, "value", "start", "biggestStep"],
@@ -771,7 +771,7 @@ test("restoreDeepDiffChanges", async () => {
         },
         {
             kind: "N",
-            path: ["canvas", "tickers", "41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm"],
+            path: ["canvas", "tickers", "41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd"],
             rhs: {
                 id: "MoveTicker",
                 args: {
@@ -791,7 +791,7 @@ test("restoreDeepDiffChanges", async () => {
         },
         {
             kind: "N",
-            path: ["canvas", "tickers", "170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh"],
+            path: ["canvas", "tickers", "170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7"],
             rhs: {
                 id: "MoveTicker",
                 args: {
@@ -1215,14 +1215,14 @@ test("restoreDeepDiffChanges", async () => {
             kind: "N",
             path: ["canvas", "tickersOnPause", "sly"],
             rhs: {
-                tickerIdsExcluded: ["41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm"],
+                tickerIdsExcluded: ["41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd"],
             },
         },
         {
             kind: "N",
             path: ["canvas", "tickersOnPause", "steph"],
             rhs: {
-                tickerIdsExcluded: ["170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh"],
+                tickerIdsExcluded: ["170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7"],
             },
         },
         {
@@ -1232,7 +1232,7 @@ test("restoreDeepDiffChanges", async () => {
             item: {
                 kind: "N",
                 rhs: {
-                    id: "170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh",
+                    id: "170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7",
                 },
             },
         },
@@ -1243,7 +1243,7 @@ test("restoreDeepDiffChanges", async () => {
             item: {
                 kind: "N",
                 rhs: {
-                    id: "41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm",
+                    id: "41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd",
                 },
             },
         },
@@ -1265,1087 +1265,7 @@ test("restoreDeepDiffChanges", async () => {
             rhs: 14,
         },
     ];
-    let res = restoreDiffChanges(data, differences);
-
-    expect(res).toEqual({
-        path: "/narration",
-        storage: [
-            {
-                key: "___current_dialogue_memory___",
-                value: {
-                    text: "I know you're both watching, come on out already!",
-                    character: "james",
-                    oltherParams: {},
-                },
-            },
-            {
-                key: "___last_dialogue_added_in_step_memory___",
-                value: 13,
-            },
-            {
-                key: "___flags___",
-                value: [],
-            },
-            {
-                key: "___opened_labels_counter___",
-                value: {
-                    start: {
-                        biggestStep: 13,
-                        openCount: 1,
-                    },
-                },
-            },
-            {
-                key: "_input_value_",
-                value: "Peter",
-            },
-            {
-                key: "___last_input_added_in_step_memory___",
-                value: 5,
-            },
-            {
-                key: "___character___",
-                value: {
-                    mc: {
-                        name: "Peter",
-                    },
-                },
-            },
-        ],
-        canvas: {
-            tickers: {},
-            tickersSteps: {},
-            elements: {
-                bg: {
-                    pixivnId: "Image",
-                    elements: [],
-                    width: 1920,
-                    height: 1080,
-                    isRenderGroup: false,
-                    blendMode: "inherit",
-                    tint: 16777215,
-                    alpha: 1,
-                    angle: 0,
-                    renderable: true,
-                    rotation: 0,
-                    scale: {
-                        x: 1,
-                        y: 1,
-                    },
-                    pivot: {
-                        x: 0,
-                        y: 0,
-                    },
-                    position: {
-                        x: 0,
-                        y: 0,
-                    },
-                    skew: {
-                        x: 0,
-                        y: 0,
-                    },
-                    visible: true,
-                    x: 0,
-                    y: 0,
-                    eventMode: "passive",
-                    interactive: false,
-                    interactiveChildren: true,
-                    hitArea: null,
-                    textureData: {
-                        url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
-                        alias: "bg01-hallway",
-                    },
-                    anchor: {
-                        x: 0,
-                        y: 0,
-                    },
-                    roundPixels: false,
-                    onEvents: {},
-                    loadIsStarted: false,
-                },
-                james: {
-                    pixivnId: "ImageContainer",
-                    elements: [
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 495,
-                            height: 977,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
-                                alias: "m01-body",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 495,
-                            height: 977,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-annoy.webp?alt=media",
-                                alias: "m01-eyes-annoy",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 495,
-                            height: 977,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-annoy01.webp?alt=media",
-                                alias: "m01-mouth-annoy01",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                    ],
-                    width: 495,
-                    height: 977,
-                    isRenderGroup: false,
-                    blendMode: "inherit",
-                    tint: 16777215,
-                    alpha: 1,
-                    angle: 0,
-                    renderable: true,
-                    rotation: 0,
-                    scale: {
-                        x: 1,
-                        y: 1,
-                    },
-                    pivot: {
-                        x: 0,
-                        y: 0,
-                    },
-                    position: {
-                        x: 712.5,
-                        y: 103,
-                    },
-                    skew: {
-                        x: 0,
-                        y: 0,
-                    },
-                    visible: true,
-                    x: 712.5,
-                    y: 103,
-                    eventMode: "passive",
-                    interactive: false,
-                    interactiveChildren: true,
-                    hitArea: null,
-                    align: {
-                        x: 0.5,
-                        y: 1,
-                    },
-                    loadIsStarted: false,
-                },
-            },
-            stage: {
-                pixivnId: "Container",
-                elements: [],
-                width: 1920,
-                height: 1080,
-                isRenderGroup: false,
-                blendMode: "inherit",
-                tint: 16777215,
-                alpha: 1,
-                angle: 0,
-                renderable: true,
-                rotation: 0,
-                scale: {
-                    x: 1,
-                    y: 1,
-                },
-                pivot: {
-                    x: 0,
-                    y: 0,
-                },
-                position: {
-                    x: 0,
-                    y: 0,
-                },
-                skew: {
-                    x: 0,
-                    y: 0,
-                },
-                visible: true,
-                x: 0,
-                y: 0,
-                eventMode: "passive",
-                interactive: false,
-                interactiveChildren: true,
-                hitArea: null,
-            },
-            elementAliasesOrder: ["bg", "james"],
-            tickersOnPause: {},
-            tickersToCompleteOnStepEnd: {
-                tikersIds: [],
-                stepAlias: [],
-            },
-        },
-        sound: {
-            soundsPlaying: {},
-            soundAliasesOrder: [],
-        },
-        labelIndex: 13,
-        openedLabels: [
-            {
-                label: "start",
-                currentStepIndex: 13,
-            },
-        ],
-    });
-});
-
-test("restoreMicroDiffChanges", async () => {
-    let data = {
-        path: "/narration",
-        storage: [
-            {
-                key: "___current_dialogue_memory___",
-                value: {
-                    text: "I just wanted to see what the new guy was like.",
-                    character: "sly",
-                    oltherParams: {},
-                },
-            },
-            {
-                key: "___last_dialogue_added_in_step_memory___",
-                value: 14,
-            },
-            {
-                key: "___flags___",
-                value: [],
-            },
-            {
-                key: "___opened_labels_counter___",
-                value: {
-                    start: {
-                        biggestStep: 14,
-                        openCount: 1,
-                    },
-                },
-            },
-            {
-                key: "_input_value_",
-                value: "Peter",
-            },
-            {
-                key: "___last_input_added_in_step_memory___",
-                value: 5,
-            },
-            {
-                key: "___character___",
-                value: {
-                    mc: {
-                        name: "Peter",
-                    },
-                },
-            },
-        ],
-        canvas: {
-            tickers: {
-                "41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm": {
-                    id: "MoveTicker",
-                    args: {
-                        direction: "right",
-                        speed: 300,
-                        tickerAliasToResume: ["sly"],
-                        aliasToRemoveAfter: [],
-                        destination: {
-                            x: 0.2,
-                            y: 1,
-                            type: "align",
-                        },
-                        startOnlyIfHaveTexture: true,
-                    },
-                    canvasElementAliases: ["sly"],
-                },
-                "170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh": {
-                    id: "MoveTicker",
-                    args: {
-                        direction: "left",
-                        speed: 300,
-                        tickerAliasToResume: ["steph"],
-                        aliasToRemoveAfter: [],
-                        destination: {
-                            x: 0.8,
-                            y: 1,
-                            type: "align",
-                        },
-                        startOnlyIfHaveTexture: true,
-                    },
-                    canvasElementAliases: ["steph"],
-                },
-            },
-            tickersSteps: {},
-            elements: {
-                bg: {
-                    pixivnId: "Image",
-                    elements: [],
-                    width: 1920,
-                    height: 1080,
-                    isRenderGroup: false,
-                    blendMode: "inherit",
-                    tint: 16777215,
-                    alpha: 1,
-                    angle: 0,
-                    renderable: true,
-                    rotation: 0,
-                    scale: {
-                        x: 1,
-                        y: 1,
-                    },
-                    pivot: {
-                        x: 0,
-                        y: 0,
-                    },
-                    position: {
-                        x: 0,
-                        y: 0,
-                    },
-                    skew: {
-                        x: 0,
-                        y: 0,
-                    },
-                    visible: true,
-                    x: 0,
-                    y: 0,
-                    eventMode: "passive",
-                    interactive: false,
-                    interactiveChildren: true,
-                    hitArea: null,
-                    textureData: {
-                        url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fbg01-hallway.webp?alt=media",
-                        alias: "bg01-hallway",
-                    },
-                    anchor: {
-                        x: 0,
-                        y: 0,
-                    },
-                    roundPixels: false,
-                    onEvents: {},
-                    loadIsStarted: false,
-                },
-                james: {
-                    pixivnId: "ImageContainer",
-                    elements: [
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 495,
-                            height: 977,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-body.webp?alt=media",
-                                alias: "m01-body",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 495,
-                            height: 977,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-eyes-annoy.webp?alt=media",
-                                alias: "m01-eyes-annoy",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 495,
-                            height: 977,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Fm01%2Fm01-mouth-annoy00.webp?alt=media",
-                                alias: "m01-mouth-annoy00",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                    ],
-                    width: 495,
-                    height: 977,
-                    isRenderGroup: false,
-                    blendMode: "inherit",
-                    tint: 16777215,
-                    alpha: 1,
-                    angle: 0,
-                    renderable: true,
-                    rotation: 0,
-                    scale: {
-                        x: 1,
-                        y: 1,
-                    },
-                    pivot: {
-                        x: 0,
-                        y: 0,
-                    },
-                    position: {
-                        x: 712.5,
-                        y: 103,
-                    },
-                    skew: {
-                        x: 0,
-                        y: 0,
-                    },
-                    visible: true,
-                    x: 712.5,
-                    y: 103,
-                    eventMode: "passive",
-                    interactive: false,
-                    interactiveChildren: true,
-                    hitArea: null,
-                    align: {
-                        x: 0.5,
-                        y: 1,
-                    },
-                    loadIsStarted: false,
-                },
-                sly: {
-                    pixivnId: "ImageContainer",
-                    elements: [
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 546,
-                            height: 980,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-body.webp?alt=media",
-                                alias: "fm01-body",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 546,
-                            height: 980,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-eyes-wow.webp?alt=media",
-                                alias: "fm01-eyes-wow",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 546,
-                            height: 980,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm01%2Ffm01-mouth-soft01.webp?alt=media",
-                                alias: "fm01-mouth-soft01",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                    ],
-                    width: 546,
-                    height: 980,
-                    isRenderGroup: false,
-                    blendMode: "inherit",
-                    tint: 16777215,
-                    alpha: 1,
-                    angle: 0,
-                    renderable: true,
-                    rotation: 0,
-                    scale: {
-                        x: 1,
-                        y: 1,
-                    },
-                    pivot: {
-                        x: 0,
-                        y: 0,
-                    },
-                    position: {
-                        x: -546,
-                        y: 100,
-                    },
-                    skew: {
-                        x: 0,
-                        y: 0,
-                    },
-                    visible: true,
-                    x: -546,
-                    y: 100,
-                    eventMode: "passive",
-                    interactive: false,
-                    interactiveChildren: true,
-                    hitArea: null,
-                    loadIsStarted: false,
-                },
-                steph: {
-                    pixivnId: "ImageContainer",
-                    elements: [
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 525,
-                            height: 969,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-body.webp?alt=media",
-                                alias: "fm02-body",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 525,
-                            height: 969,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-eyes-nervous.webp?alt=media",
-                                alias: "fm02-eyes-nervous",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                        {
-                            pixivnId: "Image",
-                            elements: [],
-                            width: 525,
-                            height: 969,
-                            isRenderGroup: false,
-                            blendMode: "inherit",
-                            tint: 16777215,
-                            alpha: 1,
-                            angle: 0,
-                            renderable: true,
-                            rotation: 0,
-                            scale: {
-                                x: 1,
-                                y: 1,
-                            },
-                            pivot: {
-                                x: 0,
-                                y: 0,
-                            },
-                            position: {
-                                x: 0,
-                                y: 0,
-                            },
-                            skew: {
-                                x: 0,
-                                y: 0,
-                            },
-                            visible: true,
-                            x: 0,
-                            y: 0,
-                            eventMode: "passive",
-                            interactive: false,
-                            interactiveChildren: true,
-                            hitArea: null,
-                            textureData: {
-                                url: "https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2Fbreakdown%2Ffm02%2Ffm02-mouth-nervous00.webp?alt=media",
-                                alias: "fm02-mouth-nervous00",
-                            },
-                            anchor: {
-                                x: 0,
-                                y: 0,
-                            },
-                            roundPixels: false,
-                            onEvents: {},
-                            loadIsStarted: false,
-                        },
-                    ],
-                    width: 525,
-                    height: 969,
-                    isRenderGroup: false,
-                    blendMode: "inherit",
-                    tint: 16777215,
-                    alpha: 1,
-                    angle: 0,
-                    renderable: true,
-                    rotation: 0,
-                    scale: {
-                        x: 1,
-                        y: 1,
-                    },
-                    pivot: {
-                        x: 0,
-                        y: 0,
-                    },
-                    position: {
-                        x: 2445,
-                        y: 111,
-                    },
-                    skew: {
-                        x: 0,
-                        y: 0,
-                    },
-                    visible: true,
-                    x: 2445,
-                    y: 111,
-                    eventMode: "passive",
-                    interactive: false,
-                    interactiveChildren: true,
-                    hitArea: null,
-                    loadIsStarted: false,
-                },
-            },
-            stage: {
-                pixivnId: "Container",
-                elements: [],
-                width: 3516,
-                height: 1080,
-                isRenderGroup: false,
-                blendMode: "inherit",
-                tint: 16777215,
-                alpha: 1,
-                angle: 0,
-                renderable: true,
-                rotation: 0,
-                scale: {
-                    x: 1,
-                    y: 1,
-                },
-                pivot: {
-                    x: 0,
-                    y: 0,
-                },
-                position: {
-                    x: 0,
-                    y: 0,
-                },
-                skew: {
-                    x: 0,
-                    y: 0,
-                },
-                visible: true,
-                x: 0,
-                y: 0,
-                eventMode: "passive",
-                interactive: false,
-                interactiveChildren: true,
-                hitArea: null,
-            },
-            elementAliasesOrder: ["bg", "james", "sly", "steph"],
-            tickersOnPause: {
-                sly: {
-                    tickerIdsExcluded: ["41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm"],
-                },
-                steph: {
-                    tickerIdsExcluded: ["170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh"],
-                },
-            },
-            tickersToCompleteOnStepEnd: {
-                tikersIds: [
-                    {
-                        id: "41a8f13900d641b94fc1d547c129f5f2f3d9766b_km9knm",
-                    },
-                    {
-                        id: "170deb3d2b65d1d470ad0e59be142bcaf6933560_aiueh",
-                    },
-                ],
-                stepAlias: [],
-            },
-        },
-        sound: {
-            soundsPlaying: {},
-            soundAliasesOrder: [],
-        },
-        labelIndex: 14,
-        openedLabels: [
-            {
-                label: "start",
-                currentStepIndex: 14,
-            },
-        ],
-    };
-    let differences: Difference[] = [
+    let differencesNew: Difference[] = [
         {
             path: ["storage", 0, "value", "text"],
             type: "CHANGE",
@@ -2372,7 +1292,7 @@ test("restoreMicroDiffChanges", async () => {
         },
         {
             type: "CREATE",
-            path: ["canvas", "tickers", "41a8f13900d641b94fc1d547c129f5f2f3d9766b_cfyaw"],
+            path: ["canvas", "tickers", "41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd"],
             value: {
                 id: "MoveTicker",
                 args: {
@@ -2392,7 +1312,7 @@ test("restoreMicroDiffChanges", async () => {
         },
         {
             type: "CREATE",
-            path: ["canvas", "tickers", "170deb3d2b65d1d470ad0e59be142bcaf6933560_1q5j9"],
+            path: ["canvas", "tickers", "170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7"],
             value: {
                 id: "MoveTicker",
                 args: {
@@ -2809,28 +1729,28 @@ test("restoreMicroDiffChanges", async () => {
             type: "CREATE",
             path: ["canvas", "tickersOnPause", "sly"],
             value: {
-                tickerIdsExcluded: ["41a8f13900d641b94fc1d547c129f5f2f3d9766b_cfyaw"],
+                tickerIdsExcluded: ["41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd"],
             },
         },
         {
             type: "CREATE",
             path: ["canvas", "tickersOnPause", "steph"],
             value: {
-                tickerIdsExcluded: ["170deb3d2b65d1d470ad0e59be142bcaf6933560_1q5j9"],
+                tickerIdsExcluded: ["170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7"],
             },
         },
         {
             type: "CREATE",
             path: ["canvas", "tickersToCompleteOnStepEnd", "tikersIds", 0],
             value: {
-                id: "41a8f13900d641b94fc1d547c129f5f2f3d9766b_cfyaw",
+                id: "41a8f13900d641b94fc1d547c129f5f2f3d9766b_yf86kd",
             },
         },
         {
             type: "CREATE",
             path: ["canvas", "tickersToCompleteOnStepEnd", "tikersIds", 1],
             value: {
-                id: "170deb3d2b65d1d470ad0e59be142bcaf6933560_1q5j9",
+                id: "170deb3d2b65d1d470ad0e59be142bcaf6933560_baof7",
             },
         },
         {
@@ -2851,9 +1771,10 @@ test("restoreMicroDiffChanges", async () => {
             oldValue: 13,
         },
     ];
-    let res = restoreDiffChanges(data, differences);
+    let resOld = restoreDiffChanges(data, differencesOld);
+    let resNew = restoreDiffChanges(data, differencesNew);
 
-    expect(res).toEqual({
+    let resExpected = {
         path: "/narration",
         storage: [
             {
@@ -3187,5 +2108,19 @@ test("restoreMicroDiffChanges", async () => {
                 currentStepIndex: 13,
             },
         ],
-    });
+    };
+    expect(resOld).toEqual(resExpected);
+    expect(resNew).toEqual(resExpected);
+});
+
+test("restoreDeepDiffChanges & restoreMicroDiffChanges 2", async () => {
+    let data = {};
+    let differencesOld: deepDiff.Diff<any, any>[] = [];
+    let differencesNew: Difference[] = [];
+    let resOld = restoreDiffChanges(data, differencesOld);
+    let resNew = restoreDiffChanges(data, differencesNew);
+
+    let resExpected = {};
+    expect(resOld).toEqual(resExpected);
+    expect(resNew).toEqual(resExpected);
 });
