@@ -1,4 +1,4 @@
-import { diff } from "deep-diff";
+import diff from "microdiff";
 import { canvas, CanvasManagerStatic, storage } from ".";
 import { Dialogue, Label } from "../classes";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
