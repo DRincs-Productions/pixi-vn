@@ -8,19 +8,44 @@ export function restoreDiffChanges<T extends object = object>(
     differences: deepDiff.Diff<T, T>[] | Difference[]
 ): T {
     let result = createExportableElement(data);
+    if (differences.length > 1 && "type" in differences[0]) {
+        differences = differences.reverse();
+    }
     differences.forEach((diff) => {
-        if ("kind" in diff) {
-            restoreDeepDiffChanges<T>(result, diff);
-        } else {
+        if ("type" in diff) {
             restoreMicroDiffChanges<T>(result, diff);
+        } else {
+            restoreDeepDiffChanges<T>(result, diff);
         }
     });
     return result;
 }
 
 function restoreMicroDiffChanges<T extends object = object>(result: T, diff: Difference) {
-    console.log("log", diff, result);
-    throw new Error("Not implemented");
+    let dataToEdit: any = result;
+    if (diff.path && diff.path.length > 0) {
+        diff.path.forEach((path, index) => {
+            if (diff.path && index === diff.path.length - 1) {
+                if (diff.type === "CHANGE" || diff.type === "REMOVE") {
+                    dataToEdit[path] = diff.oldValue;
+                } else if (diff.type === "CREATE") {
+                    // if path is a number, dataToEdit is an array
+                    if (Array.isArray(dataToEdit) && typeof path === "number") {
+                        dataToEdit.splice(path, 1);
+                    }
+                    // if path is a string, dataToEdit is an object
+                    else if (typeof path === "string") {
+                        // remove key from object
+                        delete dataToEdit[path];
+                    }
+                }
+            } else {
+                dataToEdit = dataToEdit[path];
+            }
+        });
+    } else {
+        logger.warn("No path found, skipping diff", diff);
+    }
 }
 
 /**
