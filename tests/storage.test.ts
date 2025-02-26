@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { storage } from "./src";
+import { storage } from "../src";
 
 test("setVariable & getVariable", async () => {
     storage.setVariable("test", "test");
