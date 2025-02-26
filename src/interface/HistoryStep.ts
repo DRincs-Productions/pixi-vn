@@ -1,4 +1,5 @@
 import deepDiff from "deep-diff";
+import { Difference } from "microdiff";
 import { Dialogue } from "../classes";
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import { StorageElementType } from "../types";
@@ -56,7 +57,7 @@ export default interface HistoryStep<T extends Dialogue = Dialogue> {
     /**
      * The difference between the previous step and the current step.
      */
-    diff?: deepDiff.Diff<HistoryStepData, HistoryStepData>[];
+    diff?: deepDiff.Diff<HistoryStepData, HistoryStepData>[] | Difference[];
     /**
      * The label id of the current step.
      */

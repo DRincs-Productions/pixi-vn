@@ -1,7 +1,7 @@
 import { canvas, sound, storage } from ".";
 import { Label } from "../classes";
 import { getLabelById } from "../decorators/label-decorator";
-import { restoreDeepDiffChanges } from "../functions/diff-utility";
+import { restoreDiffChanges } from "../functions/diff-utility";
 import { createExportableElement } from "../functions/export-utility";
 import { logger } from "../functions/log-utility";
 import { getGamePath } from "../functions/path-utility";
@@ -335,7 +335,7 @@ export default class NarrationManagerStatic {
         let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
         if (lastHistoryStep?.diff) {
             try {
-                let result = restoreDeepDiffChanges(restoredStep, lastHistoryStep.diff);
+                let result = restoreDiffChanges(restoredStep, lastHistoryStep.diff);
                 NarrationManagerStatic._lastStepIndex = lastHistoryStep.index;
                 NarrationManagerStatic._stepsHistory.pop();
                 return NarrationManagerStatic.goBackInternal(steps - 1, result);
