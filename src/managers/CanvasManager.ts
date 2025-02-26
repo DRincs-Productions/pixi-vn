@@ -121,10 +121,10 @@ export default class CanvasManager {
 
     public async initialize(
         element: HTMLElement,
-        widthOrOptions: any,
-        heightOrDevtoolsOptions?: any,
-        options?: any,
-        devtoolsOptions?: any
+        widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number }) | number,
+        heightOrDevtoolsOptions?: Devtools | number,
+        options?: Partial<ApplicationOptions>,
+        devtoolsOptions?: Devtools
     ): Promise<void> {
         if (typeof widthOrOptions === "number" && typeof heightOrDevtoolsOptions === "number") {
             return await CanvasManagerStatic.initialize(
@@ -134,14 +134,17 @@ export default class CanvasManager {
                 options,
                 devtoolsOptions
             );
+        } else if (typeof widthOrOptions !== "number" && typeof heightOrDevtoolsOptions !== "number") {
+            return await CanvasManagerStatic.initialize(
+                element,
+                widthOrOptions.width,
+                widthOrOptions.height,
+                widthOrOptions,
+                heightOrDevtoolsOptions
+            );
+        } else {
+            throw new Error("Invalid parameters");
         }
-        return await CanvasManagerStatic.initialize(
-            element,
-            widthOrOptions.width,
-            widthOrOptions.height,
-            widthOrOptions,
-            heightOrDevtoolsOptions
-        );
     }
 
     /**
