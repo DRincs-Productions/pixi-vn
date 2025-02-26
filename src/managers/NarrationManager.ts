@@ -406,7 +406,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                     return result;
                 } catch (e) {
-                    NarrationManagerStatic.stepsRunning--;
+                    if (NarrationManagerStatic.stepsRunning > 0) {
+                        NarrationManagerStatic.stepsRunning--;
+                    }
                     // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
                     // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
                     logger.error("Error running step", e);
