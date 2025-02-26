@@ -23,6 +23,9 @@ function restoreMicroDiffChanges<T extends object = object>(result: T, diff: Dif
     throw new Error("Not implemented");
 }
 
+/**
+ * @deprecated This is the old implementation. will be removed in the future.
+ */
 function restoreDeepDiffChanges<T extends object = object>(result: T, diff: deepDiff.Diff<T, T>) {
     let dataToEdit: any = result;
     if (diff.path && diff.path.length > 0) {
