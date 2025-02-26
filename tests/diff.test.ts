@@ -1266,7 +1266,7 @@ test("restoreDeepDiffChanges", async () => {
     ];
     let res = restoreDiffChanges(data, differences);
 
-    expect(res).toBe({
+    expect(res).toEqual({
         path: "/narration",
         storage: [
             {
