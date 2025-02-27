@@ -360,7 +360,15 @@ export default class NarrationManager implements NarrationManagerInterface {
             if (currentLabel.steps.length > currentLabelStepIndex) {
                 let onStepRun = currentLabel.onStepStart;
                 if (onStepRun) {
-                    await onStepRun(currentLabelStepIndex, currentLabel);
+                    try {
+                        await onStepRun(currentLabelStepIndex, currentLabel);
+                    } catch (e) {
+                        logger.error("Error running onStepStart", e);
+                        if (this.onStepError) {
+                            this.onStepError(e, props);
+                        }
+                        return;
+                    }
                 }
                 let step = currentLabel.steps[currentLabelStepIndex];
                 let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
