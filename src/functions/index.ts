@@ -32,5 +32,4 @@ export { addImage, loadImage, showImage } from "./canvas/image-utility";
 export { getTexture } from "./canvas/texture-utility";
 export { addVideo, loadVideo, showVideo } from "./canvas/video-utility";
 export { createExportableElement } from "./export-utility";
-export { clearAllGameDatas } from "./game-utility";
-export { getSaveData, getSaveJson, loadSaveData, loadSaveJson } from "./saves-utility";
+export { clearAllGameDatas, getSaveData, getSaveJson, loadSaveData, loadSaveJson } from "./game-utility";
