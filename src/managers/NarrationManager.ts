@@ -1,5 +1,5 @@
 import diff from "microdiff";
-import { canvas, CanvasManagerStatic, storage } from ".";
+import { storage } from ".";
 import { Dialogue, Label } from "../classes";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel";
@@ -28,6 +28,14 @@ import StorageManagerStatic from "./StorageManagerStatic";
  * This class is a class that manages the steps and labels of the game.
  */
 export default class NarrationManager implements NarrationManagerInterface {
+    constructor(
+        private readonly getCurrentStepData: () => HistoryStepData,
+        private readonly restoreFromHistoryStep: (
+            restoredStep: HistoryStepData,
+            navigate: (path: string) => void
+        ) => Promise<void>,
+        private readonly forceCompletionOfTicker: () => void
+    ) {}
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;
     }
@@ -57,7 +65,7 @@ export default class NarrationManager implements NarrationManagerInterface {
      * @param label The label to add to the history.
      */
     private addStepHistory(stepSha: string, choiseMade?: number) {
-        let currentStepData: HistoryStepData = NarrationManagerStatic.currentStepData;
+        let currentStepData: HistoryStepData = this.getCurrentStepData();
         if (NarrationManagerStatic.originalStepData) {
             if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {
@@ -319,13 +327,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
         }
         if (NarrationManagerStatic.stepsRunning === 0) {
-            CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
-                canvas.forceCompletionOfTicker(id);
-            });
-            CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
-                canvas.forceCompletionOfTicker(id, alias);
-            });
-            CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+            this.forceCompletionOfTicker();
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
         return await this.runCurrentStep(props, options);
@@ -590,7 +592,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         let restoredStep = NarrationManagerStatic.goBackInternal(steps, NarrationManagerStatic.originalStepData);
         if (restoredStep) {
-            await NarrationManagerStatic.restoreFromHistoryStep(restoredStep, navigate);
+            await this.restoreFromHistoryStep(restoredStep, navigate);
         } else {
             logger.error("Error going back");
         }

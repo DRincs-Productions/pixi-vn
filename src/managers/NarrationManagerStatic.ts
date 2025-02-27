@@ -1,10 +1,9 @@
-import { canvas, sound, storage } from ".";
+import { storage } from ".";
 import { Label } from "../classes";
 import { getLabelById } from "../decorators/label-decorator";
 import { restoreDiffChanges } from "../functions/diff-utility";
 import { createExportableElement } from "../functions/export-utility";
 import { logger } from "../functions/log-utility";
-import { getGamePath } from "../functions/path-utility";
 import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
 import OpenedLabel from "../interface/OpenedLabel";
 import ChoicesMadeType from "../types/ChoicesMadeType";
@@ -235,18 +234,6 @@ export default class NarrationManagerStatic {
         NarrationManagerStatic._originalStepData = createExportableElement(value);
     }
 
-    static get currentStepData(): HistoryStepData {
-        let currentStepData: HistoryStepData = {
-            path: getGamePath(),
-            storage: storage.export(),
-            canvas: canvas.export(),
-            sound: sound.removeOldSoundAndExport(),
-            labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
-            openedLabels: createExportableElement(NarrationManagerStatic._openedLabels),
-        };
-        return currentStepData;
-    }
-
     /* Edit History Methods */
 
     /**
@@ -347,13 +334,5 @@ export default class NarrationManagerStatic {
             logger.error("You can't go back, there is no step to go back");
             return restoredStep;
         }
-    }
-    static async restoreFromHistoryStep(restoredStep: HistoryStepData, navigate: (path: string) => void) {
-        NarrationManagerStatic._originalStepData = restoredStep;
-        NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels);
-        storage.import(createExportableElement(restoredStep.storage));
-        await canvas.import(createExportableElement(restoredStep.canvas));
-        sound.import(createExportableElement(restoredStep.sound), NarrationManagerStatic._lastStepIndex - 1);
-        navigate(restoredStep.path);
     }
 }

@@ -8,15 +8,17 @@ import {
     SoundLibrary,
     SoundMap,
 } from "@pixi/sound";
-import { narration } from ".";
 import { Sound } from "../classes";
 import { logger } from "../functions/log-utility";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "../functions/sound-utility";
-import { ExportedSounds, SoundOptions, SoundPlayOptions } from "../interface";
+import { ExportedSounds, NarrationManagerInterface, SoundOptions, SoundPlayOptions } from "../interface";
 import { ExportedSoundPlay } from "../interface/export/ExportedSounds";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager extends SoundLibrary {
+    constructor(private readonly narration: NarrationManagerInterface) {
+        super();
+    }
     override get context(): IMediaContext {
         return sound.context;
     }
@@ -173,7 +175,7 @@ export default class SoundManager extends SoundLibrary {
             throw new Error("[Pixi’VN] The alias is not found in the sound library.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
-            stepIndex: narration.lastStepIndex,
+            stepIndex: this.narration.lastStepIndex,
             options: options,
             paused: false,
         };
@@ -201,7 +203,7 @@ export default class SoundManager extends SoundLibrary {
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             options: item.options,
-            stepIndex: narration.lastStepIndex,
+            stepIndex: this.narration.lastStepIndex,
             paused: false,
         };
         return sound.resume(alias);
@@ -273,7 +275,7 @@ export default class SoundManager extends SoundLibrary {
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
     }
-    public import(data: object, lastStepIndex = narration.lastStepIndex) {
+    public import(data: object, lastStepIndex = this.narration.lastStepIndex) {
         this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {
