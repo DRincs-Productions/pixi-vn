@@ -1,9 +1,8 @@
 import { StorageElementType } from "../../types/StorageElementType";
 
-interface CacheableStoreItem {
+export interface CacheableStoreItem {
     key: string;
     value: StorageElementType;
-    expires?: number;
 }
 
 /**
