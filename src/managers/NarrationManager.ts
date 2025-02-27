@@ -380,8 +380,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                     NarrationManagerStatic.stepsRunning++;
                     let result = await step(props, { labelId: currentLabel.id });
 
-                    if (this.choiceMenuOptions?.length === 1 && this.choiceMenuOptions[0].autoSelect) {
-                        let choice = this.choiceMenuOptions[0];
+                    let choiceMenuOptions = this.choiceMenuOptions;
+                    if (choiceMenuOptions?.length === 1 && choiceMenuOptions[0].autoSelect) {
+                        let choice = choiceMenuOptions[0];
                         result = await this.selectChoice(choice, props);
                     }
 
