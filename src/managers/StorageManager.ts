@@ -32,7 +32,8 @@ export default class StorageManager implements StorageManagerInterface {
         if (!this.storage.has(key) && this.storage.has(key.toLowerCase())) {
             key = key.toLowerCase();
         }
-        return createExportableElement(this.storage.get<T>(key));
+        // TODO: return createExportableElement(this.storage.get<T>(key));
+        return createExportableElement(this.storage.get(key));
     }
     public removeVariable(key: string) {
         // TODO this if should be removed in some other version
@@ -95,13 +96,22 @@ export default class StorageManager implements StorageManagerInterface {
     }
     public clear() {
         this.storage.clear();
-        this.storage.setMany(StorageManagerStatic._baseStorage);
+        // TODO: this.storage.setMany(StorageManagerStatic._baseStorage);
+        Object.entries(StorageManagerStatic._baseStorage).forEach(([key, value]) => {
+            this.storage.set(key, value);
+        });
     }
     public exportJson(): string {
         return JSON.stringify(this.export());
     }
     public export(): ExportedStorage {
-        return createExportableElement([...this.storage.items]);
+        // TODO: return createExportableElement([...this.storage.items]);
+        let data: ExportedStorage = [];
+        this.storage.keys().forEach((key) => {
+            let item = this.storage.get(key);
+            data.push({ key: key, value: item });
+        });
+        return createExportableElement(data);
     }
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
@@ -112,7 +122,10 @@ export default class StorageManager implements StorageManagerInterface {
             if (data) {
                 // id data is array
                 if (Array.isArray(data)) {
-                    this.storage.setMany(data);
+                    // TODO: this.storage.setMany(data);
+                    data.forEach(({ key, value }) => {
+                        this.storage.set(key, value);
+                    });
                 }
                 // if data is object
                 // deprecated
