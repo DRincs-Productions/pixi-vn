@@ -1,3 +1,4 @@
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { createExportableElement } from "../functions/export-utility";
 import { logger } from "../functions/log-utility";
 import { ExportedStorage, NarrationManagerInterface, StorageManagerInterface } from "../interface";
@@ -10,8 +11,11 @@ export default class StorageManager implements StorageManagerInterface {
     get storage() {
         return StorageManagerStatic.storage;
     }
+    /**
+     * @deprecated Use SYSTEM_RESERVED_STORAGE_KEYS instead
+     */
     get keysSystem() {
-        return StorageManagerStatic.keysSystem;
+        return SYSTEM_RESERVED_STORAGE_KEYS;
     }
     set startingStorage(value: { [key: string]: StorageElementType }) {
         let data: CacheableStoreItem[] = [];
@@ -21,33 +25,13 @@ export default class StorageManager implements StorageManagerInterface {
         StorageManagerStatic.startingStorage = data;
     }
     public setVariable(key: string, value: StorageElementType) {
-        // TODO this if should be removed in some other version
-        if (this.storage.has(key.toLowerCase())) {
-            this.storage.delete(key.toLowerCase());
-        }
-        if (value === undefined || value === null) {
-            this.storage.delete(key);
-            return;
-        }
-        this.storage.set(key, value);
+        return StorageManagerStatic.setVariable(key, value);
     }
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
-        let tempVariable = StorageManagerStatic.getTempVariable<T>(key);
-        if (tempVariable !== undefined) {
-            return tempVariable;
-        }
-        // TODO this if should be removed in some other version
-        if (!this.storage.has(key) && this.storage.has(key.toLowerCase())) {
-            key = key.toLowerCase();
-        }
-        return createExportableElement(this.storage.get(key));
+        return StorageManagerStatic.getVariable<T>(key);
     }
     public removeVariable(key: string) {
-        // TODO this if should be removed in some other version
-        if (!this.storage.has(key) && this.storage.has(key.toLowerCase())) {
-            key = key.toLowerCase();
-        }
-        this.storage.delete(key);
+        return StorageManagerStatic.removeVariable(key);
     }
     public setTempVariable(key: string, value: StorageElementType) {
         let tempStorage = StorageManagerStatic.tempStorage;
@@ -84,22 +68,10 @@ export default class StorageManager implements StorageManagerInterface {
         StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     setFlag(name: string, value: boolean) {
-        let flags = this.getVariable<string[]>(this.keysSystem.FLAGS_CATEGORY_KEY) || [];
-        if (value) {
-            if (!flags.includes(name)) {
-                flags.push(name);
-            }
-        } else {
-            let index = flags.indexOf(name);
-            if (index > -1) {
-                flags.splice(index, 1);
-            }
-        }
-        this.setVariable(this.keysSystem.FLAGS_CATEGORY_KEY, flags);
+        return StorageManagerStatic.setFlag(name, value);
     }
     getFlag(name: string): boolean {
-        let flags = this.getVariable<string[]>(this.keysSystem.FLAGS_CATEGORY_KEY) || [];
-        return flags.includes(name);
+        return StorageManagerStatic.getFlag(name);
     }
     public clear() {
         this.storage.clear();
