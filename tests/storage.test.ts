@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import { storage } from "../src";
+import { CacheableStoreItem } from "../src/interface/export/ExportedStorage";
 
 test("setVariable & getVariable", async () => {
     storage.setVariable("test", "test1");
@@ -28,7 +29,11 @@ test("clear & startingStorage", async () => {
     storage.setVariable("variable7", undefined);
 
     storage.clear();
-    expect([...storage.storage.items].length).toBe(0);
+    let items: CacheableStoreItem[] = [];
+    storage.storage.keys().forEach((key) => {
+        items.push({ key, value: storage.storage.get(key) });
+    });
+    expect(items.length).toBe(0);
 
     storage.startingStorage = {
         a: 1,
@@ -46,7 +51,11 @@ test("clear & startingStorage", async () => {
     storage.setVariable("variable7", undefined);
 
     storage.clear();
-    expect([...storage.storage.items].length).toBe(6);
+    let items2: CacheableStoreItem[] = [];
+    storage.storage.keys().forEach((key) => {
+        items2.push({ key, value: storage.storage.get(key) });
+    });
+    expect(items2.length).toBe(6);
 });
 
 test("import & exoprt", async () => {
@@ -67,17 +76,6 @@ test("import & exoprt", async () => {
     let exported = storage.export();
     expect(exported).toEqual([
         {
-            key: "d",
-            value: false,
-        },
-        {
-            key: "e",
-            value: null,
-        },
-        {
-            key: "f",
-        },
-        {
             key: "a",
             value: 1,
         },
@@ -88,6 +86,17 @@ test("import & exoprt", async () => {
         {
             key: "c",
             value: true,
+        },
+        {
+            key: "d",
+            value: false,
+        },
+        {
+            key: "e",
+            value: null,
+        },
+        {
+            key: "f",
         },
     ]);
 });

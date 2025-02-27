@@ -1,10 +1,10 @@
-import { CacheableItem, CacheableMemory } from "cacheable";
 import { createExportableElement } from "../functions/export-utility";
+import { CacheableStoreItem } from "../interface/export/ExportedStorage";
 import { StorageElementType } from "../types/StorageElementType";
 
 export default class StorageManagerStatic {
-    static storage = new CacheableMemory({ useClone: false });
-    static startingStorage: CacheableItem[] = [];
+    static storage = new Map<string, any>();
+    static startingStorage: CacheableStoreItem[] = [];
     private constructor() {}
     public static get keysSystem() {
         return {
@@ -73,21 +73,13 @@ export default class StorageManagerStatic {
         };
     }
     static get tempStorage(): { [key: string]: StorageElementType } {
-        return (
-            StorageManagerStatic.storage.get<{ [key: string]: StorageElementType }>(
-                StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY
-            ) || {}
-        );
+        return StorageManagerStatic.storage.get(StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY) || {};
     }
     static set tempStorage(value: { [key: string]: StorageElementType }) {
         StorageManagerStatic.storage.set(StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY, value);
     }
     static get tempStorageDeadlines(): { [key: string]: number } {
-        return (
-            StorageManagerStatic.storage.get<{ [key: string]: number }>(
-                StorageManagerStatic.keysSystem.TEMP_STORAGE_DEADLINES_KEY
-            ) || {}
-        );
+        return StorageManagerStatic.storage.get(StorageManagerStatic.keysSystem.TEMP_STORAGE_DEADLINES_KEY) || {};
     }
     static set tempStorageDeadlines(value: { [key: string]: number }) {
         StorageManagerStatic.storage.set(StorageManagerStatic.keysSystem.TEMP_STORAGE_DEADLINES_KEY, value);

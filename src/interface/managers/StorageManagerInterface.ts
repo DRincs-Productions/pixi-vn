@@ -1,4 +1,3 @@
-import { CacheableMemory } from "cacheable";
 import { StorageManagerStatic } from "../../managers";
 import { StorageElementType } from "../../types";
 import ExportedStorage from "../export/ExportedStorage";
@@ -9,7 +8,7 @@ export default interface StorageManagerInterface {
      * CacheableMemory is a cache system that can be used to store data in memory.
      * You can read more about it here: https://cacheable.org/docs/cacheable/#cacheablememory---in-memory-cache
      */
-    readonly storage: CacheableMemory;
+    readonly storage: Map<string, StorageElementType>;
     /**
      * System-reserved storage keys
      */
