@@ -1,12 +1,12 @@
 import { CacheableItem } from "cacheable";
-import { narration } from ".";
 import { createExportableElement } from "../functions/export-utility";
 import { logger } from "../functions/log-utility";
-import { ExportedStorage, StorageManagerInterface } from "../interface";
+import { ExportedStorage, NarrationManagerInterface, StorageManagerInterface } from "../interface";
 import { StorageElementType } from "../types/StorageElementType";
 import StorageManagerStatic from "./StorageManagerStatic";
 
 export default class StorageManager implements StorageManagerInterface {
+    constructor(private readonly narration: NarrationManagerInterface) {}
     get storage() {
         return StorageManagerStatic.storage;
     }
@@ -63,7 +63,7 @@ export default class StorageManager implements StorageManagerInterface {
         } else {
             tempStorage[key] = value;
             if (!tempStorageDeadlines.hasOwnProperty(key)) {
-                tempStorageDeadlines[key] = narration.openedLabels.length;
+                tempStorageDeadlines[key] = this.narration.openedLabels.length;
             }
         }
         StorageManagerStatic.tempStorage = tempStorage;
