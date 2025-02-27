@@ -1,3 +1,4 @@
+import { CacheableItem } from "cacheable";
 import { narration } from ".";
 import { createExportableElement } from "../functions/export-utility";
 import { logger } from "../functions/log-utility";
@@ -7,10 +8,17 @@ import StorageManagerStatic from "./StorageManagerStatic";
 
 export default class StorageManager implements StorageManagerInterface {
     get storage() {
-        return StorageManagerStatic._storage;
+        return StorageManagerStatic.storage;
     }
     get keysSystem() {
-        return StorageManagerStatic._keysSystem;
+        return StorageManagerStatic.keysSystem;
+    }
+    set startingStorage(value: { [key: string]: StorageElementType }) {
+        let data: CacheableItem[] = [];
+        for (const key in value) {
+            data.push({ key, value: value[key] });
+        }
+        StorageManagerStatic.startingStorage = data;
     }
     public setVariable(key: string, value: StorageElementType) {
         // TODO this if should be removed in some other version
@@ -32,8 +40,7 @@ export default class StorageManager implements StorageManagerInterface {
         if (!this.storage.has(key) && this.storage.has(key.toLowerCase())) {
             key = key.toLowerCase();
         }
-        // TODO: return createExportableElement(this.storage.get<T>(key));
-        return createExportableElement(this.storage.get(key));
+        return createExportableElement(this.storage.get<T>(key));
     }
     public removeVariable(key: string) {
         // TODO this if should be removed in some other version
@@ -96,22 +103,13 @@ export default class StorageManager implements StorageManagerInterface {
     }
     public clear() {
         this.storage.clear();
-        // TODO: this.storage.setMany(StorageManagerStatic._baseStorage);
-        Object.entries(StorageManagerStatic._baseStorage).forEach(([key, value]) => {
-            this.storage.set(key, value);
-        });
+        this.storage.setMany(StorageManagerStatic.startingStorage);
     }
     public exportJson(): string {
         return JSON.stringify(this.export());
     }
     public export(): ExportedStorage {
-        // TODO: return createExportableElement([...this.storage.items]);
-        let data: ExportedStorage = [];
-        this.storage.keys().forEach((key) => {
-            let item = this.storage.get(key);
-            data.push({ key: key, value: item });
-        });
-        return createExportableElement(data);
+        return createExportableElement([...this.storage.items]);
     }
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
@@ -122,10 +120,7 @@ export default class StorageManager implements StorageManagerInterface {
             if (data) {
                 // id data is array
                 if (Array.isArray(data)) {
-                    // TODO: this.storage.setMany(data);
-                    data.forEach(({ key, value }) => {
-                        this.storage.set(key, value);
-                    });
+                    this.storage.setMany(data);
                 }
                 // if data is object
                 // deprecated

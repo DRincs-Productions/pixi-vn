@@ -1,19 +1,12 @@
-import { CacheableItem } from "cacheable";
+import { CacheableItem, CacheableMemory } from "cacheable";
 import { createExportableElement } from "../functions/export-utility";
 import { StorageElementType } from "../types/StorageElementType";
 
 export default class StorageManagerStatic {
-    static _storage = new Map(); //   new CacheableMemory();
-    static _baseStorage: CacheableItem[] = [];
-    static set baseStorage(value: { [key: string]: StorageElementType }) {
-        let data: CacheableItem[] = [];
-        for (const key in value) {
-            data.push({ key, value: value[key] });
-        }
-        StorageManagerStatic._baseStorage = data;
-    }
+    static storage = new CacheableMemory({ useClone: false });
+    static startingStorage: CacheableItem[] = [];
     private constructor() {}
-    public static get _keysSystem() {
+    public static get keysSystem() {
         return {
             /**
              * The key of the current dialogue memory
@@ -81,21 +74,23 @@ export default class StorageManagerStatic {
     }
     static get tempStorage(): { [key: string]: StorageElementType } {
         return (
-            // TODO: StorageManagerStatic._storage.get<{ [key: string]: StorageElementType }>
-            StorageManagerStatic._storage.get(StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY) || {}
+            StorageManagerStatic.storage.get<{ [key: string]: StorageElementType }>(
+                StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY
+            ) || {}
         );
     }
     static set tempStorage(value: { [key: string]: StorageElementType }) {
-        StorageManagerStatic._storage.set(StorageManagerStatic._keysSystem.TEMP_STORAGE_KEY, value);
+        StorageManagerStatic.storage.set(StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY, value);
     }
     static get tempStorageDeadlines(): { [key: string]: number } {
         return (
-            // TODO: StorageManagerStatic._storage.get<{ [key: string]: number }>
-            StorageManagerStatic._storage.get(StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY) || {}
+            StorageManagerStatic.storage.get<{ [key: string]: number }>(
+                StorageManagerStatic.keysSystem.TEMP_STORAGE_DEADLINES_KEY
+            ) || {}
         );
     }
     static set tempStorageDeadlines(value: { [key: string]: number }) {
-        StorageManagerStatic._storage.set(StorageManagerStatic._keysSystem.TEMP_STORAGE_DEADLINES_KEY, value);
+        StorageManagerStatic.storage.set(StorageManagerStatic.keysSystem.TEMP_STORAGE_DEADLINES_KEY, value);
     }
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {

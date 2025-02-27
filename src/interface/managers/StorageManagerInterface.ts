@@ -1,19 +1,24 @@
+import { CacheableMemory } from "cacheable";
 import { StorageManagerStatic } from "../../managers";
 import { StorageElementType } from "../../types";
 import ExportedStorage from "../export/ExportedStorage";
 
 export default interface StorageManagerInterface {
-    // TODO
-    // /**
-    //  * Get the CacheableMemory storage.
-    //  * CacheableMemory is a cache system that can be used to store data in memory.
-    //  * You can read more about it here: https://cacheable.org/docs/cacheable/#cacheablememory---in-memory-cache
-    //  */
-    // readonly storage: CacheableMemory;
+    /**
+     * Get the CacheableMemory storage.
+     * CacheableMemory is a cache system that can be used to store data in memory.
+     * You can read more about it here: https://cacheable.org/docs/cacheable/#cacheablememory---in-memory-cache
+     */
+    readonly storage: CacheableMemory;
     /**
      * System-reserved storage keys
      */
-    readonly keysSystem: typeof StorageManagerStatic._keysSystem;
+    readonly keysSystem: typeof StorageManagerStatic.keysSystem;
+    /**
+     * Set the starting storage. The starting storage that will be used when the game starts.
+     * By default, the starting storage is empty.
+     */
+    set startingStorage(value: { [key: string]: StorageElementType });
     /**
      * Set a variable in the storage
      * @param key The key of the variable
