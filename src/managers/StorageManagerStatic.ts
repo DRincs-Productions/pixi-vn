@@ -1,3 +1,4 @@
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { createExportableElement } from "../functions/export-utility";
 import { CacheableStoreItem } from "../interface/export/ExportedStorage";
 import { StorageElementType } from "../types/StorageElementType";
@@ -6,71 +7,11 @@ export default class StorageManagerStatic {
     static storage = new Map<string, any>();
     static startingStorage: CacheableStoreItem[] = [];
     private constructor() {}
+    /**
+     * @deprecated Use SYSTEM_RESERVED_STORAGE_KEYS instead
+     */
     public static get keysSystem() {
-        return {
-            /**
-             * The key of the current dialogue memory
-             */
-            CURRENT_DIALOGUE_MEMORY_KEY: "___current_dialogue_memory___",
-            /**
-             * The key of the last dialogue added in the step memory
-             */
-            LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "___last_dialogue_added_in_step_memory___",
-            /**
-             * The key of the current menu options memory
-             */
-            CURRENT_MENU_OPTIONS_MEMORY_KEY: "___current_menu_options_memory___",
-            /**
-             * The key of the last menu options added in the step memory
-             */
-            LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "___last_menu_options_added_in_step_memory___",
-            /**
-             * The key of the input memory. This value can be read by pixi-vn json importer
-             */
-            CURRENT_INPUT_VALUE_MEMORY_KEY: "_input_value_",
-            /**
-             * The key of the last input added in the step memory
-             */
-            LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY: "___last_input_added_in_step_memory___",
-            /**
-             * The key of the current input info
-             */
-            CURRENT_INPUT_INFO_MEMORY_KEY: "___current_input_info_memory___",
-            /**
-             * The key of the characters memory
-             */
-            CHARACTER_CATEGORY_KEY: "___character___",
-            /**
-             * The key of the flags memory
-             */
-            FLAGS_CATEGORY_KEY: "___flags___",
-            /**
-             * This variable is used to add the next dialog text into the current dialog memory.
-             * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
-             */
-            ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY: "___glue___",
-            /**
-             * The key of a list of all labels that have been opened during the progression of the steps.
-             */
-            OPENED_LABELS_COUNTER_KEY: "___opened_labels_counter___",
-            /**
-             * The key of a list of all choices that have been made during the progression of the steps.
-             */
-            ALL_CHOICES_MADE_KEY: "___all_choices_made___",
-            /**
-             * The key of the current step times counter.
-             * This value was added to introduce Ink Sequences, cycles and other alternatives https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#sequences-cycles-and-other-alternatives
-             */
-            CURRENT_STEP_TIMES_COUNTER_KEY: "___current_step_times_counter___",
-            /**
-             * The key of the current step memory
-             */
-            TEMP_STORAGE_KEY: "___temp_storage___",
-            /**
-             * The key of the current step memory deadlines
-             */
-            TEMP_STORAGE_DEADLINES_KEY: "___temp_storage_deadlines___",
-        };
+        return SYSTEM_RESERVED_STORAGE_KEYS;
     }
     static get tempStorage(): { [key: string]: StorageElementType } {
         return StorageManagerStatic.storage.get(StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY) || {};
@@ -106,5 +47,54 @@ export default class StorageManagerStatic {
         }
         StorageManagerStatic.tempStorage = tempStorage;
         StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
+    }
+    static setVariable(key: string, value: StorageElementType) {
+        // TODO this if should be removed in some other version
+        if (StorageManagerStatic.storage.has(key.toLowerCase())) {
+            StorageManagerStatic.storage.delete(key.toLowerCase());
+        }
+        if (value === undefined || value === null) {
+            StorageManagerStatic.storage.delete(key);
+            return;
+        }
+        StorageManagerStatic.storage.set(key, value);
+    }
+    static getVariable<T extends StorageElementType>(key: string): T | undefined {
+        let tempVariable = StorageManagerStatic.getTempVariable<T>(key);
+        if (tempVariable !== undefined) {
+            return tempVariable;
+        }
+        // TODO this if should be removed in some other version
+        if (!StorageManagerStatic.storage.has(key) && StorageManagerStatic.storage.has(key.toLowerCase())) {
+            key = key.toLowerCase();
+        }
+        return createExportableElement(StorageManagerStatic.storage.get(key));
+    }
+    static removeVariable(key: string) {
+        // TODO this if should be removed in some other version
+        if (!StorageManagerStatic.storage.has(key) && StorageManagerStatic.storage.has(key.toLowerCase())) {
+            key = key.toLowerCase();
+        }
+        StorageManagerStatic.storage.delete(key);
+    }
+    static setFlag(name: string, value: boolean) {
+        let flags =
+            StorageManagerStatic.getVariable<string[]>(StorageManagerStatic.keysSystem.FLAGS_CATEGORY_KEY) || [];
+        if (value) {
+            if (!flags.includes(name)) {
+                flags.push(name);
+            }
+        } else {
+            let index = flags.indexOf(name);
+            if (index > -1) {
+                flags.splice(index, 1);
+            }
+        }
+        StorageManagerStatic.setVariable(StorageManagerStatic.keysSystem.FLAGS_CATEGORY_KEY, flags);
+    }
+    static getFlag(name: string): boolean {
+        let flags =
+            StorageManagerStatic.getVariable<string[]>(StorageManagerStatic.keysSystem.FLAGS_CATEGORY_KEY) || [];
+        return flags.includes(name);
     }
 }

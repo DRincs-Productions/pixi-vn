@@ -10,7 +10,14 @@ export type {
 } from "pixi.js";
 export * from "./classes";
 export * from "./classes/ticker";
-export { CANVAS_APP_GAME_LAYER_ALIAS, filters, Pause, Repeat } from "./constants";
+export {
+    CANVAS_APP_GAME_LAYER_ALIAS,
+    filters,
+    Pause,
+    PIXIVN_VERSION,
+    Repeat,
+    SYSTEM_RESERVED_STORAGE_KEYS,
+} from "./constants";
 export * from "./decorators";
 export * from "./functions";
 export * from "./interface";
@@ -21,7 +28,14 @@ export * from "./types/ticker";
 import { Assets, Rectangle } from "pixi.js";
 import * as classes from "./classes";
 import * as classesTicker from "./classes/ticker";
-import { CANVAS_APP_GAME_LAYER_ALIAS, filters, Pause, Repeat } from "./constants";
+import {
+    CANVAS_APP_GAME_LAYER_ALIAS,
+    filters,
+    Pause,
+    PIXIVN_VERSION,
+    Repeat,
+    SYSTEM_RESERVED_STORAGE_KEYS,
+} from "./constants";
 import * as decorators from "./decorators";
 import * as functions from "./functions";
 import * as pixivninterface from "./interface";
@@ -36,6 +50,8 @@ const pixivn = {
     filters,
     Pause,
     Repeat,
+    SYSTEM_RESERVED_STORAGE_KEYS,
+    PIXIVN_VERSION,
     ...decorators,
     ...functions,
     ...pixivninterface,

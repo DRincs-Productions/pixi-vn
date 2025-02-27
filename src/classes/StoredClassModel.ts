@@ -1,4 +1,4 @@
-import { storage } from "../managers"
+import { StorageManagerStatic } from "../managers";
 
 /**
  * StoredClassModel is a abstract class that contains the methods to store a class in the game.
@@ -34,46 +34,45 @@ export default class StoredClassModel {
      * @param id The id of instance of the class. This id must be unique for the category.
      */
     constructor(categoryId: string, id: string) {
-        this.categoryId = categoryId
-        this._id = id
+        this.categoryId = categoryId;
+        this._id = id;
     }
-    private _id: string
+    private _id: string;
     /**
      * Is id of the stored class. is unique for this class.
      */
     get id(): string {
-        return this._id
+        return this._id;
     }
-    private categoryId: string
+    private categoryId: string;
     /**
      * Update a property in the storage.
      * @param propertyName The name of the property to set.
      * @param value The value to set. If is undefined, the property will be removed from the storage.
      */
     protected setStorageProperty<T>(propertyName: string, value: T | undefined): void {
-        let storageValue = storage.getVariable<any>(this.categoryId)
+        let storageValue = StorageManagerStatic.getVariable<any>(this.categoryId);
         if (!storageValue) {
-            storageValue = {}
+            storageValue = {};
         }
         // if storage not have a key with the id
         if (!storageValue.hasOwnProperty(this.id)) {
-            storageValue[this.id] = {}
+            storageValue[this.id] = {};
         }
 
         if (value === undefined || value === null) {
             if (storageValue[this.id].hasOwnProperty(propertyName)) {
-                delete storageValue[this.id][propertyName]
+                delete storageValue[this.id][propertyName];
             }
-        }
-        else {
-            storageValue[this.id] = { ...storageValue[this.id], [propertyName]: value }
+        } else {
+            storageValue[this.id] = { ...storageValue[this.id], [propertyName]: value };
         }
 
         if (Object.keys(storageValue[this.id]).length === 0) {
-            delete storageValue[this.id]
+            delete storageValue[this.id];
         }
 
-        storage.setVariable(this.categoryId, storageValue)
+        StorageManagerStatic.setVariable(this.categoryId, storageValue);
     }
     /**
      * Get a property from the storage.
@@ -82,10 +81,14 @@ export default class StoredClassModel {
      * @returns The value of the property. If the property is not found, returns undefined.
      */
     protected getStorageProperty<T>(propertyName: string, idToUse: string = this.id): T | undefined {
-        let storageValue = storage.getVariable<any>(this.categoryId)
-        if (storageValue && storageValue.hasOwnProperty(idToUse) && storageValue[idToUse].hasOwnProperty(propertyName)) {
-            return storageValue[idToUse][propertyName]
+        let storageValue = StorageManagerStatic.getVariable<any>(this.categoryId);
+        if (
+            storageValue &&
+            storageValue.hasOwnProperty(idToUse) &&
+            storageValue[idToUse].hasOwnProperty(propertyName)
+        ) {
+            return storageValue[idToUse][propertyName];
         }
-        return undefined
+        return undefined;
     }
 }
