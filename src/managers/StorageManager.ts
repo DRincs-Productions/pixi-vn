@@ -84,7 +84,7 @@ export default class StorageManager implements StorageManagerInterface {
     }
     public export(): ExportedStorage {
         let items: CacheableStoreItem[] = [];
-        this.storage.keys().forEach((key) => {
+        [...this.storage.keys()].forEach((key) => {
             items.push({ key, value: this.storage.get(key) });
         });
         return createExportableElement(items);

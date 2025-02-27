@@ -30,7 +30,7 @@ test("clear & startingStorage", async () => {
 
     storage.clear();
     let items: CacheableStoreItem[] = [];
-    storage.storage.keys().forEach((key) => {
+    [...storage.storage.keys()].forEach((key) => {
         items.push({ key, value: storage.storage.get(key) });
     });
     expect(items.length).toBe(0);
@@ -52,7 +52,7 @@ test("clear & startingStorage", async () => {
 
     storage.clear();
     let items2: CacheableStoreItem[] = [];
-    storage.storage.keys().forEach((key) => {
+    [...storage.storage.keys()].forEach((key) => {
         items2.push({ key, value: storage.storage.get(key) });
     });
     expect(items2.length).toBe(6);
