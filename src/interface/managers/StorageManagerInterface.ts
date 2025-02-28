@@ -4,7 +4,19 @@ import ExportedStorage from "../export/ExportedStorage";
 
 export default interface StorageManagerInterface {
     /**
-     * The storage that will be used when the game starts
+     * The internal storage. Do not modify this directly.
+     *
+     * You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
+     * ```ts
+     * import { storage } from '@drincs/pixi-vn'
+     * import Keyv from 'keyv';
+     *
+     * const keyvStorage = new Keyv({ store: storage.storage });
+     *
+     * keyvStorage.get<string>("myValue").then((value) => {
+     *     console.log(value);
+     * });
+     * ```
      */
     readonly storage: Map<string, StorageElementType>;
     /**
