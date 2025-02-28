@@ -1,4 +1,4 @@
-import { StorageManagerStatic } from "../../managers";
+import StorageManagerStatic from "../../managers/StorageManagerStatic";
 import { StorageElementType } from "../../types";
 import ExportedStorage from "../export/ExportedStorage";
 

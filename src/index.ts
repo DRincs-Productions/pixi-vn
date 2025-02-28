@@ -22,6 +22,10 @@ export * from "./decorators";
 export * from "./functions";
 export * from "./interface";
 export * from "./managers";
+export { default as CanvasManagerStatic } from "./managers/CanvasManagerStatic";
+export { default as NarrationManagerStatic } from "./managers/NarrationManagerStatic";
+export { default as SoundManagerStatic } from "./managers/SoundManagerStatic";
+export { default as StorageManagerStatic } from "./managers/StorageManagerStatic";
 export * from "./types";
 export * from "./types/ticker";
 
