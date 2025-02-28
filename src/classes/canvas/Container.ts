@@ -1,5 +1,6 @@
 import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
+import { canvasComponentDecoratorFn } from "../../decorators/canvas-element-decorator";
 import { getEventInstanceById } from "../../decorators/event-decorator";
 import { importCanvasElement } from "../../functions/canvas/canvas-import-utility";
 import { getMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
@@ -121,6 +122,7 @@ export default class Container<
         return super.on(event, fn, context);
     }
 }
+canvasComponentDecoratorFn(Container, CANVAS_CONTAINER_ID);
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,

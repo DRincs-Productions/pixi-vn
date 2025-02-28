@@ -1,4 +1,4 @@
-import { StorageManagerStatic } from "../managers";
+import StorageManagerStatic from "../managers/StorageManagerStatic";
 
 /**
  * StoredClassModel is a abstract class that contains the methods to store a class in the game.

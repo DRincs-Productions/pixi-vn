@@ -1,5 +1,6 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
+import { canvasComponentDecoratorFn } from "../../decorators/canvas-element-decorator";
 import { addImage, getTexture, showWithDissolve } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import {
@@ -320,6 +321,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         super.y = value;
     }
 }
+canvasComponentDecoratorFn(ImageSprite, CANVAS_IMAGE_ID);
 
 export async function setMemoryImageSprite(
     element: ImageSprite,

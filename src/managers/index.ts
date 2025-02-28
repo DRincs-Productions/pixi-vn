@@ -27,11 +27,6 @@ export {
     default as GameStorageManager,
 } from "./StorageManager";
 
-export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
-export { default as NarrationManagerStatic } from "./NarrationManagerStatic";
-export { default as SoundManagerStatic } from "./SoundManagerStatic";
-export { default as StorageManagerStatic } from "./StorageManagerStatic";
-
 const getCurrentStepData: () => HistoryStepData = () => {
     let currentStepData: HistoryStepData = {
         path: getGamePath(),

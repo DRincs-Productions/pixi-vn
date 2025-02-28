@@ -9,6 +9,7 @@ import {
     TextureSourceLike,
 } from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
+import { canvasComponentDecoratorFn } from "../../decorators/canvas-element-decorator";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTexture } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
@@ -142,6 +143,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         return mySprite;
     }
 }
+canvasComponentDecoratorFn(Sprite, CANVAS_SPRITE_ID);
 
 export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     element: Sprite<any>,

@@ -1,4 +1,4 @@
-import { Label } from "../classes";
+import Label from "../classes/Label";
 import LabelAbstract from "../classes/LabelAbstract";
 import { logger } from "../functions/log-utility";
 import { LabelProps } from "../interface";
