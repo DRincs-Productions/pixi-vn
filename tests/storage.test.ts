@@ -1,3 +1,4 @@
+import { Keyv } from "keyv";
 import { expect, test } from "vitest";
 import { storage } from "../src";
 import { CacheableStoreItem } from "../src/interface/export/ExportedStorage";
@@ -99,4 +100,17 @@ test("import & exoprt", async () => {
             key: "f",
         },
     ]);
+});
+
+test("Keyv", async () => {
+    const keyvStorage = new Keyv({ store: storage.storage });
+    await keyvStorage.set("a", 1);
+    await keyvStorage.set("b", "test");
+    await keyvStorage.set("c", true);
+    await keyvStorage.set("d", false);
+
+    expect(await keyvStorage.get("a")).toBe(1);
+    expect(await keyvStorage.get("b")).toBe("test");
+    expect(await keyvStorage.get("c")).toBe(true);
+    expect(await keyvStorage.get("d")).toBe(false);
 });
