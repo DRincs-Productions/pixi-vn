@@ -4,9 +4,7 @@ import ExportedStorage from "../export/ExportedStorage";
 
 export default interface StorageManagerInterface {
     /**
-     * Get the CacheableMemory storage.
-     * CacheableMemory is a cache system that can be used to store data in memory.
-     * You can read more about it here: https://cacheable.org/docs/cacheable/#cacheablememory---in-memory-cache
+     * The storage that will be used when the game starts
      */
     readonly storage: Map<string, StorageElementType>;
     /**
