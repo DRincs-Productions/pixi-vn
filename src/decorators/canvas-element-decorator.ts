@@ -10,15 +10,19 @@ const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBa
  */
 export default function canvasComponentDecorator(name?: CanvasElementAliasType) {
     return function (target: typeof CanvasBaseItem<any>) {
-        if (!name) {
-            name = target.name;
-        }
-        if (registeredCanvasElement[name]) {
-            logger.warn(`CanvasElement ${name} already registered`);
-        }
-        target.prototype.pixivnId = name;
-        registeredCanvasElement[name] = target;
+        canvasComponentDecoratorFn(target, name);
     };
+}
+
+export function canvasComponentDecoratorFn(target: typeof CanvasBaseItem<any>, name?: CanvasElementAliasType) {
+    if (!name) {
+        name = target.name;
+    }
+    if (registeredCanvasElement[name]) {
+        logger.warn(`CanvasElement ${name} already registered`);
+    }
+    target.prototype.pixivnId = name;
+    registeredCanvasElement[name] = target;
 }
 
 export function getCanvasElementTypeById<T extends typeof CanvasBaseItem<any>>(

@@ -1,6 +1,6 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
-import { getCanvasElementTypeById } from "../../decorators/canvas-element-decorator";
+import { canvasComponentDecoratorFn } from "../../decorators/canvas-element-decorator";
 import { addVideo, showWithDissolve } from "../../functions";
 import { VideoSpriteMemory, VideoSpriteOptions } from "../../interface";
 import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
@@ -26,7 +26,6 @@ import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
  * await film.load()
  * ```
  */
-getCanvasElementTypeById(CANVAS_VIDEO_ID);
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
     constructor(options?: VideoSpriteOptions | Texture | undefined, textureAlias?: string) {
         let loop = undefined;
@@ -165,6 +164,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         }
     }
 }
+canvasComponentDecoratorFn(VideoSprite, CANVAS_VIDEO_ID);
 
 export async function setMemoryVideoSprite(
     element: VideoSprite,

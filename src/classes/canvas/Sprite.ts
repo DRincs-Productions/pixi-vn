@@ -8,8 +8,8 @@ import {
     Texture,
     TextureSourceLike,
 } from "pixi.js";
-import { canvasComponentDecorator } from "../..";
 import { CANVAS_SPRITE_ID } from "../../constants";
+import { canvasComponentDecoratorFn } from "../../decorators/canvas-element-decorator";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTexture } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
@@ -40,7 +40,6 @@ import { setMemoryContainer } from "./Container";
  * canvas.add("bunny", sprite);
  * ```
  */
-canvasComponentDecorator(CANVAS_SPRITE_ID);
 export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory>
     extends PixiSprite
     implements CanvasBaseItem<Memory | SpriteMemory>
@@ -144,6 +143,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         return mySprite;
     }
 }
+canvasComponentDecoratorFn(Sprite, CANVAS_SPRITE_ID);
 
 export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     element: Sprite<any>,
