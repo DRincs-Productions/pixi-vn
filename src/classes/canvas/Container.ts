@@ -1,5 +1,6 @@
 import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
+import { canvasComponentDecorator } from "../../decorators";
 import { getEventInstanceById } from "../../decorators/event-decorator";
 import { importCanvasElement } from "../../functions/canvas/canvas-import-utility";
 import { getMemoryContainer } from "../../functions/canvas/canvas-memory-utility";
@@ -28,6 +29,7 @@ import CanvasBaseItem from "./CanvasBaseItem";
  *  }
  * ```
  */
+@canvasComponentDecorator(CANVAS_CONTAINER_ID)
 export default class Container<
         C extends ContainerChild = ContainerChild,
         Memory extends ContainerMemory = ContainerMemory

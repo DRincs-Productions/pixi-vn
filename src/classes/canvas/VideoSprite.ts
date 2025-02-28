@@ -1,5 +1,6 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
+import { getCanvasElementTypeById } from "../../decorators/canvas-element-decorator";
 import { addVideo, showWithDissolve } from "../../functions";
 import { VideoSpriteMemory, VideoSpriteOptions } from "../../interface";
 import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
@@ -25,35 +26,36 @@ import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
  * await film.load()
  * ```
  */
+getCanvasElementTypeById(CANVAS_VIDEO_ID);
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
     constructor(options?: VideoSpriteOptions | Texture | undefined, textureAlias?: string) {
-        let loop = undefined
-        let paused = undefined
-        let currentTime = undefined
+        let loop = undefined;
+        let paused = undefined;
+        let currentTime = undefined;
         if (options && "loop" in options && options?.loop !== undefined) {
-            loop = options.loop
-            delete options.loop
+            loop = options.loop;
+            delete options.loop;
         }
         if (options && "paused" in options && options?.paused !== undefined) {
-            paused = options.paused
-            delete options.paused
+            paused = options.paused;
+            delete options.paused;
         }
         if (options && "currentTime" in options && options?.currentTime !== undefined) {
-            currentTime = options.currentTime
-            delete options.currentTime
+            currentTime = options.currentTime;
+            delete options.currentTime;
         }
-        super(options, textureAlias)
+        super(options, textureAlias);
         if (loop) {
-            this.loop = loop
+            this.loop = loop;
         }
         if (paused) {
-            this.paused = paused
+            this.paused = paused;
         }
         if (currentTime) {
-            this.currentTime = currentTime
+            this.currentTime = currentTime;
         }
     }
-    pixivnId: string = CANVAS_VIDEO_ID
+    pixivnId: string = CANVAS_VIDEO_ID;
     override get memory(): VideoSpriteMemory {
         return {
             ...super.memory,
@@ -61,61 +63,60 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             loop: this.loop,
             paused: this._paused,
             currentTime: this.currentTime,
-        }
+        };
     }
-    override set memory(_value: VideoSpriteMemory) { }
+    override set memory(_value: VideoSpriteMemory) {}
     override async setMemory(value: VideoSpriteMemory) {
-        this.memory = value
-        return await setMemoryVideoSprite(this, value)
+        this.memory = value;
+        return await setMemoryVideoSprite(this, value);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = PixiSprite.from(source, skipCache)
-        let mySprite = new VideoSprite()
-        mySprite.texture = sprite.texture
-        return mySprite
+        let sprite = PixiSprite.from(source, skipCache);
+        let mySprite = new VideoSprite();
+        mySprite.texture = sprite.texture;
+        return mySprite;
     }
 
     override async load() {
-        await super.load()
-        this.loop = this._looop
-        this.currentTime = this._currentTime
-        this.paused = this._paused
+        await super.load();
+        this.loop = this._looop;
+        this.currentTime = this._currentTime;
+        this.paused = this._paused;
     }
 
-    private _looop: boolean = false
+    private _looop: boolean = false;
     /**
      * Set to true if you want the video to loop.
      */
     get loop() {
-        return this.texture?.source?.resource?.loop || false
+        return this.texture?.source?.resource?.loop || false;
     }
     set loop(value: boolean) {
-        this._looop = value
+        this._looop = value;
         if (this.texture?.source?.resource) {
-            this.texture.source.resource.loop = value
+            this.texture.source.resource.loop = value;
         }
     }
 
-    private _paused: boolean = false
+    private _paused: boolean = false;
     /**
      * Set to true if you want the video to be paused.
      */
     get paused() {
-        return this.texture?.source?.resource?.paused || false
+        return this.texture?.source?.resource?.paused || false;
     }
     set paused(value: boolean) {
         if (value) {
-            this.pause()
-        }
-        else {
-            this.play()
+            this.pause();
+        } else {
+            this.play();
         }
     }
     /**
      * Pause the video.
      */
     pause() {
-        this._paused = true
+        this._paused = true;
         if (this.texture?.source?.resource) {
             this.texture.source.resource.pause();
         }
@@ -124,27 +125,27 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
      * Play the video.
      */
     play() {
-        this._paused = false
+        this._paused = false;
         if (this.texture?.source?.resource) {
             this.texture.source.resource.play();
         }
     }
 
-    private _currentTime: number = 0
+    private _currentTime: number = 0;
     /**
      * The current time of the video.
      */
     get currentTime(): number {
-        return this.texture?.source?.resource?.currentTime || 0
+        return this.texture?.source?.resource?.currentTime || 0;
     }
     set currentTime(value: number) {
-        let duration = this.duration
+        let duration = this.duration;
         if (duration && value >= duration) {
-            value = 0
+            value = 0;
         }
-        this._currentTime = value
+        this._currentTime = value;
         if (this.texture?.source?.resource) {
-            this.texture.source.resource.currentTime = value
+            this.texture.source.resource.currentTime = value;
         }
     }
 
@@ -152,7 +153,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
      * Restart the video.
      */
     restart() {
-        this.currentTime = 0
+        this.currentTime = 0;
     }
 
     /**
@@ -160,16 +161,20 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
      */
     get duration(): number | undefined {
         if (this.texture?.source?.resource) {
-            return this.texture.source.resource.duration || 0
+            return this.texture.source.resource.duration || 0;
         }
     }
 }
 
-export async function setMemoryVideoSprite(element: VideoSprite, memory: VideoSpriteMemory | {}, options?: {
-    ignoreTexture?: boolean,
-}) {
-    await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture })
-    "loop" in memory && memory.loop !== undefined && (element.loop = memory.loop)
-    "currentTime" in memory && memory.currentTime !== undefined && (element.currentTime = memory.currentTime)
-    "paused" in memory && memory.paused !== undefined && (element.paused = memory.paused)
+export async function setMemoryVideoSprite(
+    element: VideoSprite,
+    memory: VideoSpriteMemory | {},
+    options?: {
+        ignoreTexture?: boolean;
+    }
+) {
+    await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture });
+    "loop" in memory && memory.loop !== undefined && (element.loop = memory.loop);
+    "currentTime" in memory && memory.currentTime !== undefined && (element.currentTime = memory.currentTime);
+    "paused" in memory && memory.paused !== undefined && (element.paused = memory.paused);
 }

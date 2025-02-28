@@ -8,6 +8,7 @@ import {
     Texture,
     TextureSourceLike,
 } from "pixi.js";
+import { canvasComponentDecorator } from "../..";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTexture } from "../../functions";
@@ -39,6 +40,7 @@ import { setMemoryContainer } from "./Container";
  * canvas.add("bunny", sprite);
  * ```
  */
+canvasComponentDecorator(CANVAS_SPRITE_ID);
 export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory>
     extends PixiSprite
     implements CanvasBaseItem<Memory | SpriteMemory>

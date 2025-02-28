@@ -1,4 +1,5 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
+import { canvasComponentDecorator } from "../..";
 import { CANVAS_TEXT_ID } from "../../constants";
 import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getMemoryText } from "../../functions/canvas/canvas-memory-utility";
@@ -20,6 +21,7 @@ import { setMemoryContainer } from "./Container";
  * canvas.add("text", text);
  * ```
  */
+canvasComponentDecorator(CANVAS_TEXT_ID);
 export default class Text extends PixiText implements CanvasBaseItem<TextMemory> {
     constructor(options?: TextOptions) {
         super(options);

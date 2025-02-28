@@ -1,4 +1,5 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
+import { canvasComponentDecorator } from "../..";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import {
     calculateAlignByPosition,
@@ -30,6 +31,7 @@ import VideoSprite from "./VideoSprite";
  *  canvas.add(container);
  * ```
  */
+canvasComponentDecorator(CANVAS_IMAGE_CONTAINER_ID);
 export default class ImageContainer
     extends Container<ImageSprite, ImageContainerMemory>
     implements AnchorExtension, AdditionalPositionsExtension

@@ -1,5 +1,6 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
+import { getCanvasElementTypeById } from "../../decorators/canvas-element-decorator";
 import { addImage, getTexture, showWithDissolve } from "../../functions";
 import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import {
@@ -40,6 +41,7 @@ import Sprite, { setMemorySprite } from "./Sprite";
  * await alien.load()
  * ```
  */
+getCanvasElementTypeById(CANVAS_IMAGE_ID);
 export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory>
     extends Sprite<Memory>
     implements AdditionalPositionsExtension
