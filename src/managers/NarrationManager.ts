@@ -388,8 +388,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                         result = await this.selectChoice(choice, props);
                     }
 
-                    if (choiseMade !== undefined && this.stepsHistory.length > 0) {
-                        let lastHistoryStep = this.stepsHistory[this.stepsHistory.length - 1];
+                    let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
+                    if (choiseMade !== undefined && lastHistoryStep) {
                         let stepSha = lastHistoryStep.stepSha1;
                         if (!stepSha) {
                             logger.warn("stepSha not found, setting to ERROR");
