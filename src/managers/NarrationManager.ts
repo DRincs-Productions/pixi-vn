@@ -20,6 +20,7 @@ import {
 import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType";
+import GameUnifier from "../unifier";
 import { logger } from "../utils/log-utility";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import StorageManagerStatic from "./StorageManagerStatic";
@@ -35,7 +36,9 @@ export default class NarrationManager implements NarrationManagerInterface {
             navigate: (path: string) => void
         ) => Promise<void>,
         private readonly forceCompletionOfTicker: () => void
-    ) {}
+    ) {
+        GameUnifier.getLastStepIndex = () => this.lastStepIndex;
+    }
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;
     }
