@@ -2,6 +2,7 @@ import { UPDATE_PRIORITY } from "pixi.js";
 import { CanvasBaseItem, ImageSprite, VideoSprite } from "../../classes";
 import ImageContainer from "../../classes/canvas/ImageContainer";
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../../classes/ticker";
+import { logger } from "../../functions/log-utility";
 import {
     ImageContainerOptions,
     ImageSpriteOptions,
@@ -12,7 +13,6 @@ import {
 } from "../../interface";
 import { PushInOutProps } from "../../interface/canvas/transition-props";
 import { canvas } from "../../managers";
-import { logger } from "../log-utility";
 import { getPointBySuperPoint } from "./canvas-property-utility";
 import { checkIfVideo } from "./canvas-utility";
 import { addImageCointainer } from "./image-container-utility";
