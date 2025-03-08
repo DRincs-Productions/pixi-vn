@@ -1,5 +1,9 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
-import { canvasComponentDecoratorFn } from "../../canvas/decorators/canvas-element-decorator";
+import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
+import { checkIfVideo } from "../../functions/canvas/canvas-utility";
+import { logger } from "../../functions/log-utility";
+import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
+import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import {
     calculateAlignByPosition,
     calculatePercentagePositionByPosition,
@@ -8,11 +12,7 @@ import {
     getSuperHeight,
     getSuperPoint,
     getSuperWidth,
-} from "../../canvas/functions/canvas-property-utility";
-import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
-import { checkIfVideo } from "../../functions/canvas/canvas-utility";
-import { logger } from "../../functions/log-utility";
-import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
+} from "../functions/canvas-property-utility";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";

@@ -1,8 +1,8 @@
-import { Assets, Texture } from 'pixi.js';
-import VideoSprite from '../../classes/canvas/VideoSprite';
-import { VideoSpriteOptions } from '../../interface';
-import { canvas } from '../../managers';
-import { getTexture } from './texture-utility';
+import { Assets, Texture } from "pixi.js";
+import { VideoSpriteOptions } from "../../interface";
+import { canvas } from "../../managers";
+import VideoSprite from "../components/VideoSprite";
+import { getTexture } from "./texture-utility";
 
 /**
  * Add a video in the canvas.
@@ -24,15 +24,14 @@ import { getTexture } from './texture-utility';
 export function addVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): VideoSprite {
     if (!videoUrl) {
         if (Assets.resolver.hasKey(alias)) {
-            videoUrl = alias
-        }
-        else {
-            throw new Error(`The video ${alias} does not exist in the cache.`)
+            videoUrl = alias;
+        } else {
+            throw new Error(`The video ${alias} does not exist in the cache.`);
         }
     }
-    let video = new VideoSprite(options, videoUrl)
-    canvas.add(alias, video)
-    return video
+    let video = new VideoSprite(options, videoUrl);
+    canvas.add(alias, video);
+    return video;
 }
 
 /**
@@ -40,23 +39,23 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
  */
 export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Promise<VideoSprite[]> {
     if (!Array.isArray(canvasVideos)) {
-        return [canvasVideos]
+        return [canvasVideos];
     }
-    let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasVideos.length)
+    let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasVideos.length);
     for (let i = 0; i < canvasVideos.length; i++) {
-        promises[i] = getTexture(canvasVideos[i].textureAlias)
+        promises[i] = getTexture(canvasVideos[i].textureAlias);
     }
     // wait for all promises
     return Promise.all(promises).then((textures) => {
         return textures.map((texture, index) => {
             if (texture) {
-                canvasVideos[index].texture = texture
-                return canvasVideos[index]
+                canvasVideos[index].texture = texture;
+                return canvasVideos[index];
             }
-            canvasVideos[index].load()
-            return canvasVideos[index]
-        })
-    })
+            canvasVideos[index].load();
+            return canvasVideos[index];
+        });
+    });
 }
 
 /**
@@ -75,14 +74,13 @@ export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Prom
 export async function showVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): Promise<VideoSprite> {
     if (!videoUrl) {
         if (Assets.resolver.hasKey(alias)) {
-            videoUrl = alias
-        }
-        else {
-            throw new Error(`The video ${alias} does not exist in the cache.`)
+            videoUrl = alias;
+        } else {
+            throw new Error(`The video ${alias} does not exist in the cache.`);
         }
     }
-    let video = new VideoSprite(options, videoUrl)
-    await video.load()
-    canvas.add(alias, video)
-    return video
+    let video = new VideoSprite(options, videoUrl);
+    await video.load();
+    canvas.add(alias, video);
+    return video;
 }

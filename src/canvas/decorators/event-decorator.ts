@@ -1,8 +1,8 @@
 import { CanvasEvent } from "../../classes";
-import CanvasBaseItem from "../../classes/canvas/CanvasBaseItem";
 import { logger } from "../../functions/log-utility";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
+import CanvasBaseItem from "../classes/CanvasBaseItem";
 
 /**
  * Canvas Event Register

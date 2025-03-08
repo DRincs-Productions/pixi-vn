@@ -1,3 +1,49 @@
+// * This import must be imported before the ImageSprite import.
+export {
+    /**
+     * @deprecated use "import { VideoSprite } from '@drincs/pixi-vn';"
+     */
+    default as CanvasVideo,
+    default as VideoSprite,
+} from "./components/VideoSprite";
+
+export { default as CanvasEvent } from "../canvas/classes/CanvasEvent";
+export { default as ImageContainer } from "../canvas/components/ImageContainer";
+export {
+    /**
+     * @deprecated use "import { CanvasBaseItem } from '@drincs/pixi-vn';"
+     */
+    default as CanvasBase,
+    default as CanvasBaseItem,
+} from "./classes/CanvasBaseItem";
+export {
+    /**
+     * @deprecated use "import { Container } from '@drincs/pixi-vn';"
+     */
+    default as CanvasContainer,
+    default as Container,
+} from "./components/Container";
+export {
+    /**
+     * @deprecated use "import { ImageSprite } from '@drincs/pixi-vn';"
+     */
+    default as CanvasImage,
+    default as ImageSprite,
+} from "./components/ImageSprite";
+export {
+    /**
+     * @deprecated use "import { Sprite } from '@drincs/pixi-vn';"
+     */
+    default as CanvasSprite,
+    default as Sprite,
+} from "./components/Sprite";
+export {
+    /**
+     * @deprecated use "import { Text } from '@drincs/pixi-vn';"
+     */
+    default as CanvasText,
+    default as Text,
+} from "./components/Text";
 export {
     default as canvasComponentDecorator,
     /**

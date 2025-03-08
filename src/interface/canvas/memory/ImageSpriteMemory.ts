@@ -1,4 +1,4 @@
-import { AdditionalPositionsExtensionProps } from "../../../classes/canvas/AdditionalPositions";
+import { AdditionalPositionsExtensionProps } from "../../../canvas/components/AdditionalPositions";
 import { SpriteBaseMemory } from "./SpriteMemory";
 
 /**
@@ -8,6 +8,6 @@ export default interface ImageSpriteMemory extends SpriteBaseMemory, AdditionalP
     /**
      * @deprecated use SpriteBaseMemory.textureAlias
      */
-    imageLink?: string,
-    loadIsStarted: boolean
+    imageLink?: string;
+    loadIsStarted: boolean;
 }

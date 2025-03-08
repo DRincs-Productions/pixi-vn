@@ -1,5 +1,5 @@
 import { Container as PixiContainer } from "pixi.js";
-import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
+import CanvasBaseItem from "../canvas/classes/CanvasBaseItem";
 
-type ContainerChild = PixiContainer & CanvasBaseItem<any>
-export default ContainerChild
+type ContainerChild = PixiContainer & CanvasBaseItem<any>;
+export default ContainerChild;
