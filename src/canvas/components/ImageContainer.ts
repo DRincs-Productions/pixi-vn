@@ -1,7 +1,6 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
-import { checkIfVideo } from "../../utils/canvas/canvas-utility";
 import { logger } from "../../utils/log-utility";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import {
@@ -13,6 +12,7 @@ import {
     getSuperPoint,
     getSuperWidth,
 } from "../functions/canvas-property-utility";
+import { checkIfVideo } from "../functions/canvas-utility";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";

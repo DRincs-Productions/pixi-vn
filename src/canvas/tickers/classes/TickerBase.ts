@@ -1,11 +1,10 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { TickerValue } from "../../..";
-import { tickerDecorator } from "../../../decorators";
+import { canvas } from "../../..";
 import { TickerArgs } from "../../../interface";
 import Ticker from "../../../interface/Ticker";
-import { canvas } from "../../../managers";
 import { TickerIdType } from "../../../types/TickerIdType";
-import { getTickerInstanceById } from "../decorators/ticker-decorator";
+import tickerDecorator, { getTickerInstanceById } from "../decorators/ticker-decorator";
+import TickerValue from "./TickerValue";
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.

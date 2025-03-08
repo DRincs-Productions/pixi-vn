@@ -1,7 +1,6 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
-import { addImage, getTexture, showWithDissolve } from "../../utils";
 import { logger } from "../../utils/log-utility";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
@@ -14,6 +13,9 @@ import {
     getSuperPoint,
     getSuperWidth,
 } from "../functions/canvas-property-utility";
+import { showWithDissolve } from "../functions/canvas-transition";
+import { addImage } from "../functions/image-utility";
+import { getTexture } from "../functions/texture-utility";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import Sprite, { setMemorySprite } from "./Sprite";
 

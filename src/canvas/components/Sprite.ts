@@ -12,13 +12,13 @@ import { CANVAS_SPRITE_ID } from "../../constants";
 import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
-import { getTexture } from "../../utils";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import { getEventInstanceById, getEventTypeById } from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
+import { getTexture } from "../functions/texture-utility";
 import { setMemoryContainer } from "./Container";
 
 /**
