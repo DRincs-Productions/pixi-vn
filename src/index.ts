@@ -21,7 +21,6 @@ export {
 } from "./constants";
 export * from "./decorators";
 export * from "./interface";
-export * from "./managers";
 export { default as NarrationManagerStatic } from "./managers/NarrationManagerStatic";
 export { default as SoundManagerStatic } from "./managers/SoundManagerStatic";
 export { default as StorageManagerStatic } from "./managers/StorageManagerStatic";
@@ -31,6 +30,8 @@ export * from "./utils";
 
 import { Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
+import CanvasManager from "./canvas/CanvasManager";
+import CanvasManagerStatic from "./canvas/CanvasManagerStatic";
 import * as classes from "./classes";
 import {
     CANVAS_APP_GAME_LAYER_ALIAS,
@@ -42,8 +43,56 @@ import {
 } from "./constants";
 import * as decorators from "./decorators";
 import * as pixivninterface from "./interface";
-import * as managers from "./managers";
+import NarrationManager from "./managers/NarrationManager";
+import NarrationManagerStatic from "./managers/NarrationManagerStatic";
+import SoundManager from "./managers/SoundManager";
 import * as functions from "./utils";
+import { getGamePath } from "./utils/path-utility";
+
+const getCurrentStepData: () => pixivninterface.HistoryStepData = () => {
+    let currentStepData: pixivninterface.HistoryStepData = {
+        path: getGamePath(),
+        storage: storage.export(),
+        canvas: canvas.export(),
+        sound: sound.removeOldSoundAndExport(),
+        labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
+        openedLabels: functions.createExportableElement(NarrationManagerStatic._openedLabels),
+    };
+    return currentStepData;
+};
+
+const restoreFromHistoryStep: (
+    restoredStep: pixivninterface.HistoryStepData,
+    navigate: (path: string) => void
+) => Promise<void> = async (restoredStep: pixivninterface.HistoryStepData, navigate: (path: string) => void) => {
+    NarrationManagerStatic._originalStepData = restoredStep;
+    NarrationManagerStatic._openedLabels = functions.createExportableElement(restoredStep.openedLabels);
+    storage.import(functions.createExportableElement(restoredStep.storage));
+    await canvas.import(functions.createExportableElement(restoredStep.canvas));
+    sound.import(functions.createExportableElement(restoredStep.sound), NarrationManagerStatic._lastStepIndex - 1);
+    navigate(restoredStep.path);
+};
+
+const forceCompletionOfTicker = () => {
+    CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
+        canvas.forceCompletionOfTicker(id);
+    });
+    CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
+        canvas.forceCompletionOfTicker(id, alias);
+    });
+    CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+};
+
+const narration: pixivninterface.NarrationManagerInterface = new NarrationManager(
+    getCurrentStepData,
+    restoreFromHistoryStep,
+    forceCompletionOfTicker
+);
+const sound = new SoundManager(narration);
+const storage: pixivninterface.StorageManagerInterface = new StorageManager(narration);
+const canvas = new CanvasManager();
+
+export { canvas, narration, sound, storage };
 
 const pixivn = {
     Assets,
@@ -59,6 +108,9 @@ const pixivn = {
     ...decorators,
     ...functions,
     ...pixivninterface,
-    ...managers,
+    narration,
+    sound,
+    storage,
+    canvas,
 };
 export default pixivn;
