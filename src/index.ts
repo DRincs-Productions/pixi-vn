@@ -46,6 +46,7 @@ import * as pixivninterface from "./interface";
 import NarrationManager from "./managers/NarrationManager";
 import NarrationManagerStatic from "./managers/NarrationManagerStatic";
 import SoundManager from "./managers/SoundManager";
+import StorageManager from "./managers/StorageManager";
 import * as functions from "./utils";
 import { getGamePath } from "./utils/path-utility";
 
