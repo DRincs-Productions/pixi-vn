@@ -1,6 +1,6 @@
-import CanvasBaseItem from "../classes/canvas/CanvasBaseItem";
-import { logger } from "../functions/log-utility";
-import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
+import CanvasBaseItem from "../../classes/canvas/CanvasBaseItem";
+import { logger } from "../../functions/log-utility";
+import { CanvasElementAliasType } from "../../types/CanvasElementAliasType";
 
 const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBaseItem<any> } = {};
 /**

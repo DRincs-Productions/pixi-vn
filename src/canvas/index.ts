@@ -1,3 +1,12 @@
+export {
+    default as canvasComponentDecorator,
+    /**
+     * @deprecated Use canvasComponentDecorator
+     */
+    default as canvasElementDecorator,
+} from "./decorators/canvas-element-decorator";
+export { default as eventDecorator } from "./decorators/event-decorator";
+
 export { shakeEffect } from "./functions/canvas-effect";
 export {
     moveIn,
