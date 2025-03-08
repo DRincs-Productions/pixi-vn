@@ -45,6 +45,7 @@ const narration: NarrationManagerInterface = new NarrationManager(
 const pathLabel = newLabel("path", [
     () => {
         narration.dialogue = "This is a test label";
+        window.history.pushState({}, "int", "/int");
     },
     () => {
         narration.dialogue = "This is a test label 2";
@@ -73,8 +74,15 @@ test("path test", async () => {
     });
     expect(getGamePath()).toBe("/test");
     await narration.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goBack((path) => window.history.pushState({}, "test", path));
+    expect(narration.dialogue).toEqual({
+        text: "This is a test label 2",
+        oltherParams: {},
+    });
     expect(getGamePath()).toBe("/test");
     await narration.goBack((path) => window.history.pushState({}, "test", path));
-    expect(getGamePath()).toBe("/");
+    expect(narration.dialogue).toEqual({
+        text: "This is a test label",
+        oltherParams: {},
+    });
+    expect(getGamePath()).toBe("/int");
 });
