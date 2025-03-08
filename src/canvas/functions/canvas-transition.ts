@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { canvas } from "../..";
+import { canvas } from "..";
 import {
     ImageContainerOptions,
     ImageSpriteOptions,

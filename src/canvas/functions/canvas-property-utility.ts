@@ -1,5 +1,5 @@
 import { Container as PixiContainer } from "pixi.js";
-import { canvas } from "../..";
+import { canvas } from "..";
 
 export function calculatePositionByAlign(
     type: "width" | "height",

@@ -1,5 +1,5 @@
 import { Assets, Texture } from "pixi.js";
-import { canvas } from "../..";
+import { canvas } from "..";
 import { ImageSpriteOptions } from "../../interface";
 import ImageSprite from "../components/ImageSprite";
 import { getTexture } from "./texture-utility";
