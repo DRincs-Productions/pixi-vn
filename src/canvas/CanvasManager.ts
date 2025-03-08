@@ -1,17 +1,6 @@
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { TickerValue } from "..";
-import CanvasBaseItem from "../canvas/classes/CanvasBaseItem";
-import { setMemoryContainer } from "../canvas/components/Container";
-import { setMemoryImageContainer } from "../canvas/components/ImageContainer";
-import { setMemoryImageSprite } from "../canvas/components/ImageSprite";
-import { setMemorySprite } from "../canvas/components/Sprite";
-import { setMemoryText } from "../canvas/components/Text";
-import { setMemoryVideoSprite } from "../canvas/components/VideoSprite";
-import { importCanvasElement } from "../canvas/functions/canvas-import-utility";
-import { exportCanvasElement, getMemoryContainer } from "../canvas/functions/canvas-memory-utility";
-import TickerBase from "../canvas/tickers/classes/TickerBase";
-import { getTickerInstanceById } from "../canvas/tickers/decorators/ticker-decorator";
 import { ImageContainer, ImageSprite, Sprite, Text, VideoSprite } from "../classes";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../functions/export-utility";
@@ -24,6 +13,17 @@ import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
 import { aliasToRemoveAfter } from "../types/ticker/AliasToRemoveAfterType";
 import CanvasManagerStatic from "./CanvasManagerStatic";
+import CanvasBaseItem from "./classes/CanvasBaseItem";
+import { setMemoryContainer } from "./components/Container";
+import { setMemoryImageContainer } from "./components/ImageContainer";
+import { setMemoryImageSprite } from "./components/ImageSprite";
+import { setMemorySprite } from "./components/Sprite";
+import { setMemoryText } from "./components/Text";
+import { setMemoryVideoSprite } from "./components/VideoSprite";
+import { importCanvasElement } from "./functions/canvas-import-utility";
+import { exportCanvasElement, getMemoryContainer } from "./functions/canvas-memory-utility";
+import TickerBase from "./tickers/classes/TickerBase";
+import { getTickerInstanceById } from "./tickers/decorators/ticker-decorator";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.

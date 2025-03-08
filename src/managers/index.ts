@@ -1,8 +1,8 @@
+import CanvasManager from "../canvas/CanvasManager";
+import CanvasManagerStatic from "../canvas/CanvasManagerStatic";
 import { createExportableElement } from "../functions";
 import { getGamePath } from "../functions/path-utility";
 import { HistoryStepData, NarrationManagerInterface, StorageManagerInterface } from "../interface";
-import CanvasManager from "./CanvasManager";
-import CanvasManagerStatic from "./CanvasManagerStatic";
 import NarrationManager from "./NarrationManager";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import SoundManager from "./SoundManager";
@@ -13,7 +13,7 @@ export {
      *  @deprecated use "import { narration } from '@drincs/pixi-vn';"
      */
     default as GameWindowManager,
-} from "./CanvasManager";
+} from "../canvas/CanvasManager";
 export {
     /**
      *  @deprecated use "import { canvas } from '@drincs/pixi-vn';"
