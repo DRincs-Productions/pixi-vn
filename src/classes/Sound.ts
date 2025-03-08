@@ -1,7 +1,7 @@
 import { IMediaInstance, Sound as PixiSound } from "@pixi/sound";
 import { SoundOptions, SoundPlayOptions } from "../interface";
-import { narration } from "../managers";
 import SoundManagerStatic from "../managers/SoundManagerStatic";
+import GameUnifier from "../unifier";
 
 export default class Sound extends PixiSound {
     alias?: string;
@@ -9,29 +9,29 @@ export default class Sound extends PixiSound {
         if (!this.alias) {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
-        let item = SoundManagerStatic.soundsPlaying[this.alias]
+        let item = SoundManagerStatic.soundsPlaying[this.alias];
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
             ...item,
-            paused: true
-        }
+            paused: true,
+        };
         return super.pause();
     }
     override resume(): this {
         if (!this.alias) {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
-        let item = SoundManagerStatic.soundsPlaying[this.alias]
+        let item = SoundManagerStatic.soundsPlaying[this.alias];
         if (!item) {
             throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
             options: item.options,
-            stepIndex: narration.lastStepIndex,
-            paused: false
-        }
+            stepIndex: GameUnifier.getLastStepIndex(),
+            paused: false,
+        };
         return super.resume();
     }
     override destroy(): void {
@@ -48,17 +48,17 @@ export default class Sound extends PixiSound {
         return super.stop();
     }
     override play(options?: string | SoundPlayOptions): IMediaInstance | Promise<IMediaInstance> {
-        if (typeof options === 'string') {
+        if (typeof options === "string") {
             this.alias = options;
         }
         if (!this.alias) {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
-            stepIndex: narration.lastStepIndex,
+            stepIndex: GameUnifier.getLastStepIndex(),
             options: options,
-            paused: false
-        }
+            paused: false,
+        };
         return super.play(options);
     }
 
