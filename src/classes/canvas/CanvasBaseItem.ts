@@ -1,6 +1,6 @@
 import { Container as PixiContainer } from "pixi.js";
+import { getCanvasElementInstanceById } from "../../canvas/functions/canvas-import-utility";
 import { canvasComponentDecorator } from "../../decorators";
-import { getCanvasElementInstanceById } from "../../functions/canvas/canvas-import-utility";
 import { CanvasBaseItemMemory } from "../../interface";
 import { canvas } from "../../managers";
 
@@ -30,17 +30,23 @@ export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> extends Pix
     /**
      * This method return the memory of the canvas element.
      */
-    get memory(): T2 { throw new Error("[Pixi’VN] The method CanvasBaseItem.memory must be overridden") }
+    get memory(): T2 {
+        throw new Error("[Pixi’VN] The method CanvasBaseItem.memory must be overridden");
+    }
     /**
      * This method set the memory of the canvas element.
      */
-    set memory(_value: T2) { throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden") }
+    set memory(_value: T2) {
+        throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden");
+    }
     /**
      * This method set the memory of the canvas element. Is equivalent to the {@link CanvasBaseItem.memory} method, but this method is async.
      */
-    setMemory(_value: T2): Promise<void> | void { throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden") }
+    setMemory(_value: T2): Promise<void> | void {
+        throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden");
+    }
     /**
      * Get the id of the canvas element. This variable is used in the system to get the canvas element by id, {@link getCanvasElementInstanceById}
      */
-    pixivnId: string = "canvas_element_id_not_set"
+    pixivnId: string = "canvas_element_id_not_set";
 }

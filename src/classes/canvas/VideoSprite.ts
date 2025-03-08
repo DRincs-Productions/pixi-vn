@@ -1,6 +1,6 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
+import { canvasComponentDecoratorFn } from "../../canvas/decorators/canvas-element-decorator";
 import { CANVAS_VIDEO_ID } from "../../constants";
-import { canvasComponentDecoratorFn } from "../../decorators/canvas-element-decorator";
 import { addVideo, showWithDissolve } from "../../functions";
 import { VideoSpriteMemory, VideoSpriteOptions } from "../../interface";
 import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";

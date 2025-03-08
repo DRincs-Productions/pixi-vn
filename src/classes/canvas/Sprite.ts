@@ -8,11 +8,11 @@ import {
     Texture,
     TextureSourceLike,
 } from "pixi.js";
+import { canvasComponentDecoratorFn } from "../../canvas/decorators/canvas-element-decorator";
+import { getEventInstanceById, getEventTypeById } from "../../canvas/decorators/event-decorator";
+import { getMemorySprite } from "../../canvas/functions/canvas-memory-utility";
 import { CANVAS_SPRITE_ID } from "../../constants";
-import { canvasComponentDecoratorFn } from "../../decorators/canvas-element-decorator";
-import { getEventInstanceById, getEventTypeById } from "../../decorators/event-decorator";
 import { getTexture } from "../../functions";
-import { getMemorySprite } from "../../functions/canvas/canvas-memory-utility";
 import { logger } from "../../functions/log-utility";
 import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";

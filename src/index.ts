@@ -8,8 +8,8 @@ export type {
     Ticker as TickerValue,
     UPDATE_PRIORITY,
 } from "pixi.js";
+export * from "./canvas";
 export * from "./classes";
-export * from "./classes/ticker";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
@@ -30,8 +30,8 @@ export * from "./types";
 export * from "./types/ticker";
 
 import { Assets, Rectangle } from "pixi.js";
+import * as canvasUtils from "./canvas";
 import * as classes from "./classes";
-import * as classesTicker from "./classes/ticker";
 import {
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
@@ -49,7 +49,7 @@ const pixivn = {
     Assets,
     Rectangle,
     ...classes,
-    ...classesTicker,
+    canvasUtils,
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
     Pause,

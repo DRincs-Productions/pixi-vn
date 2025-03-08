@@ -1,5 +1,5 @@
+import { getEventInstanceById } from "../canvas/decorators/event-decorator";
 import { eventDecorator } from "../decorators";
-import { getEventInstanceById } from "../decorators/event-decorator";
 import { CanvasEventNamesType } from "../types";
 import { EventIdType } from "../types/EventIdType";
 
@@ -22,11 +22,13 @@ import { EventIdType } from "../types/EventIdType";
  */
 export default class CanvasEvent<C> {
     constructor() {
-        this.id = this.constructor.prototype.id
+        this.id = this.constructor.prototype.id;
     }
-    fn(_event: CanvasEventNamesType, _element: C) { throw new Error("[Pixi’VN] The method CanvasEvent.fn() must be overridden") }
+    fn(_event: CanvasEventNamesType, _element: C) {
+        throw new Error("[Pixi’VN] The method CanvasEvent.fn() must be overridden");
+    }
     /**
      * Get the id of the event. This variable is used in the system to get the event by id, {@link getEventInstanceById}
      */
-    id: EventIdType = 'event_id_not_set'
+    id: EventIdType = "event_id_not_set";
 }

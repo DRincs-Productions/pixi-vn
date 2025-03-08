@@ -1,12 +1,12 @@
 import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { TickerValue } from "../..";
+import TickerBase from "../../canvas/tickers/classes/TickerBase";
 import { tickerDecorator } from "../../decorators";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
 import { logger } from "../../functions/log-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { RotateTickerProps } from "../../types/ticker/RotateTickerProps";
-import TickerBase from "./TickerBase";
 
 const DEFAULT_SPEED = 1;
 

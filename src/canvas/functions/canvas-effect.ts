@@ -1,8 +1,8 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { MoveTicker } from "../../classes/ticker";
 import { logger } from "../../functions/log-utility";
 import { ShakeEffectProps } from "../../interface";
 import { canvas } from "../../managers";
+import { MoveTicker } from "../tickers";
 
 /**
  * Shake the canvas element.

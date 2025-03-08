@@ -1,19 +1,19 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
 import { createExportableElement, ImageContainer, ImageSprite, TickerValue } from "../..";
-import { tickerDecorator } from "../../decorators";
 import {
     calculatePositionByAlign,
     calculatePositionByPercentagePosition,
     getSuperHeight,
     getSuperPoint,
     getSuperWidth,
-} from "../../functions/canvas/canvas-property-utility";
+} from "../../canvas/functions/canvas-property-utility";
+import TickerBase from "../../canvas/tickers/classes/TickerBase";
+import { tickerDecorator } from "../../decorators";
 import { checkIfTextureNotIsEmpty } from "../../functions/canvas/ticker-utility";
 import { logger } from "../../functions/log-utility";
 import { updateTickerProgression } from "../../functions/ticker-utility";
 import { canvas } from "../../managers";
 import { MoveTickerProps } from "../../types/ticker";
-import TickerBase from "./TickerBase";
 
 const DEFAULT_SPEED = 10;
 

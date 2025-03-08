@@ -6,7 +6,6 @@ export {
     default as canvasElementDecorator,
 } from "./decorators/canvas-element-decorator";
 export { default as eventDecorator } from "./decorators/event-decorator";
-
 export { shakeEffect } from "./functions/canvas-effect";
 export {
     moveIn,
@@ -40,3 +39,4 @@ export { addImageCointainer, showImageContainer } from "./functions/image-contai
 export { addImage, loadImage, showImage } from "./functions/image-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, loadVideo, showVideo } from "./functions/video-utility";
+export * from "./tickers";
