@@ -9,11 +9,11 @@ import {
     TextureSourceLike,
 } from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
-import { getTexture } from "../../functions";
-import { logger } from "../../functions/log-utility";
 import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
+import { getTexture } from "../../utils";
+import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";

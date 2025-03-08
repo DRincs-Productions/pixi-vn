@@ -1,8 +1,8 @@
 import CanvasManager from "../canvas/CanvasManager";
 import CanvasManagerStatic from "../canvas/CanvasManagerStatic";
-import { createExportableElement } from "../functions";
-import { getGamePath } from "../functions/path-utility";
 import { HistoryStepData, NarrationManagerInterface, StorageManagerInterface } from "../interface";
+import { createExportableElement } from "../utils";
+import { getGamePath } from "../utils/path-utility";
 import NarrationManager from "./NarrationManager";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import SoundManager from "./SoundManager";

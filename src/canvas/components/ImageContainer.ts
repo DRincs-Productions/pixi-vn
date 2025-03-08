@@ -1,8 +1,8 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
-import { checkIfVideo } from "../../functions/canvas/canvas-utility";
-import { logger } from "../../functions/log-utility";
 import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
+import { checkIfVideo } from "../../utils/canvas/canvas-utility";
+import { logger } from "../../utils/log-utility";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import {
     calculateAlignByPosition,

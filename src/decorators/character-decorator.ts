@@ -1,5 +1,5 @@
-import { logger } from "../functions/log-utility";
 import { CharacterInterface } from "../interface";
+import { logger } from "../utils/log-utility";
 
 export const registeredCharacters: { [id: string]: CharacterInterface } = {};
 /**

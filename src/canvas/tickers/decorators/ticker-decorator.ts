@@ -1,7 +1,7 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { logger } from "../../../functions/log-utility";
 import { TickerArgs } from "../../../interface";
 import { TickerIdType } from "../../../types/TickerIdType";
+import { logger } from "../../../utils/log-utility";
 import TickerBase from "../classes/TickerBase";
 
 /**

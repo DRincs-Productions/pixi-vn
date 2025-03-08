@@ -1,5 +1,5 @@
-import { logger } from "../../functions/log-utility";
 import { CanvasElementAliasType } from "../../types/CanvasElementAliasType";
+import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 
 const registeredCanvasElement: { [name: CanvasElementAliasType]: typeof CanvasBaseItem<any> } = {};

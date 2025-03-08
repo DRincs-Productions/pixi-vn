@@ -5,7 +5,6 @@ import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } fr
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel";
 import LabelAbstract from "../classes/LabelAbstract";
 import { getLabelById } from "../decorators/label-decorator";
-import { logger } from "../functions/log-utility";
 import { CharacterInterface, HistoryStep, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
 import { AdditionalShaSpetsEnum } from "../interface/HistoryStep";
@@ -21,6 +20,7 @@ import {
 import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType";
+import { logger } from "../utils/log-utility";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import StorageManagerStatic from "./StorageManagerStatic";
 

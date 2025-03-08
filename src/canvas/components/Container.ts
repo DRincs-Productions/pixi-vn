@@ -1,10 +1,10 @@
 import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
-import { logger } from "../../functions/log-utility";
 import { ContainerMemory } from "../../interface";
 import { CanvasEventNamesType } from "../../types";
 import ContainerChild from "../../types/ContainerChild";
 import { EventIdType } from "../../types/EventIdType";
+import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";

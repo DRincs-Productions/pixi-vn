@@ -1,13 +1,13 @@
 import { storage } from ".";
 import { Label } from "../classes";
 import { getLabelById } from "../decorators/label-decorator";
-import { restoreDiffChanges } from "../functions/diff-utility";
-import { createExportableElement } from "../functions/export-utility";
-import { logger } from "../functions/log-utility";
 import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
 import OpenedLabel from "../interface/OpenedLabel";
 import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
+import { restoreDiffChanges } from "../utils/diff-utility";
+import { createExportableElement } from "../utils/export-utility";
+import { logger } from "../utils/log-utility";
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number; openCount: number } };
 

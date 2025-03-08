@@ -1,9 +1,9 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { createExportableElement } from "../functions/export-utility";
-import { logger } from "../functions/log-utility";
 import { ExportedStorage, NarrationManagerInterface, StorageManagerInterface } from "../interface";
 import { CacheableStoreItem } from "../interface/export/ExportedStorage";
 import { StorageElementType } from "../types/StorageElementType";
+import { createExportableElement } from "../utils/export-utility";
+import { logger } from "../utils/log-utility";
 import StorageManagerStatic from "./StorageManagerStatic";
 
 export default class StorageManager implements StorageManagerInterface {
