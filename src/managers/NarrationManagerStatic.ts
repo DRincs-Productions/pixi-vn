@@ -1,4 +1,4 @@
-import { storage } from ".";
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "..";
 import { Label } from "../classes";
 import { getLabelById } from "../decorators/label-decorator";
 import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
@@ -8,6 +8,7 @@ import { LabelIdType } from "../types/LabelIdType";
 import { restoreDiffChanges } from "../utils/diff-utility";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
+import StorageManagerStatic from "./StorageManagerStatic";
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number; openCount: number } };
 
@@ -43,10 +44,14 @@ export default class NarrationManagerStatic {
      * the key is the label id and the biggest step opened.
      */
     static get allOpenedLabels() {
-        return storage.getVariable<AllOpenedLabelsType>(storage.keysSystem.OPENED_LABELS_COUNTER_KEY) || {};
+        return (
+            StorageManagerStatic.getVariable<AllOpenedLabelsType>(
+                SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY
+            ) || {}
+        );
     }
     static set allOpenedLabels(value: AllOpenedLabelsType) {
-        storage.setVariable(storage.keysSystem.OPENED_LABELS_COUNTER_KEY, value);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY, value);
     }
     static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
@@ -63,7 +68,9 @@ export default class NarrationManagerStatic {
         }
         let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error";
         let obj =
-            storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {};
+            StorageManagerStatic.getVariable<CurrentStepTimesCounterMemoty>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
+            ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
@@ -81,12 +88,14 @@ export default class NarrationManagerStatic {
             return;
         }
         let obj =
-            storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {};
+            StorageManagerStatic.getVariable<CurrentStepTimesCounterMemoty>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
+            ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
         obj[labelId][currentLabelStepIndexId] = data;
-        storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
     }
     static getCurrentStepTimesCounter(nestedId: string = ""): number {
         let lastStep = NarrationManagerStatic._lastStepIndex;
@@ -148,21 +157,25 @@ export default class NarrationManagerStatic {
             return;
         }
         let obj =
-            storage.getVariable<CurrentStepTimesCounterMemoty>(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY) || {};
+            StorageManagerStatic.getVariable<CurrentStepTimesCounterMemoty>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
+            ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
         obj[labelId][currentLabelStepIndexId] = { lastStepIndexs: [], stepSha1: "" };
-        storage.setVariable(storage.keysSystem.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
     }
     /**
      * is a list of all choices made by the player during the progression of the steps.
      */
     static get allChoicesMade() {
-        return storage.getVariable<ChoicesMadeType[]>(storage.keysSystem.ALL_CHOICES_MADE_KEY) || [];
+        return (
+            StorageManagerStatic.getVariable<ChoicesMadeType[]>(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY) || []
+        );
     }
     static set allChoicesMade(value: ChoicesMadeType[]) {
-        storage.setVariable(storage.keysSystem.ALL_CHOICES_MADE_KEY, value);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY, value);
     }
     static _lastStepIndex: number = 0;
     /**

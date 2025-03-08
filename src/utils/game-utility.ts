@@ -1,6 +1,6 @@
+import { canvas, narration, sound, storage } from "..";
 import { PIXIVN_VERSION } from "../constants";
 import SaveData from "../interface/SaveData";
-import { canvas, narration, sound, storage } from "../managers";
 import { getGamePath } from "./path-utility";
 
 /**
