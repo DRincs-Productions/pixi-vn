@@ -1,6 +1,7 @@
 import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
-import { TickerBase, tickerDecorator, TickerValue } from "../..";
-import { canvas, ZoomTickerProps } from "../../..";
+import { TickerBase, tickerDecorator, TickerValue } from "..";
+import { canvas } from "../..";
+import { ZoomTickerProps } from "../../../types/ticker";
 import { logger } from "../../../utils/log-utility";
 import { updateTickerProgression } from "../../../utils/ticker-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";

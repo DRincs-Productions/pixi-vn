@@ -1,3 +1,5 @@
+import CanvasManager from "./CanvasManager";
+
 // * This import must be imported before the ImageSprite import.
 export {
     /**
@@ -86,3 +88,6 @@ export { addImage, loadImage, showImage } from "./functions/image-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, loadVideo, showVideo } from "./functions/video-utility";
 export * from "./tickers";
+export { canvas };
+
+const canvas = new CanvasManager();

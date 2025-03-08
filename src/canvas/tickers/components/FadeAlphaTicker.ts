@@ -1,5 +1,5 @@
 import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
-import { canvas, tickerDecorator, TickerValue } from "../../..";
+import { canvas, tickerDecorator, TickerValue } from "../..";
 import { FadeAlphaTickerProps } from "../../../types/ticker/FadeAlphaTickerProps";
 import { logger } from "../../../utils/log-utility";
 import { updateTickerProgression } from "../../../utils/ticker-utility";

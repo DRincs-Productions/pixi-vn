@@ -30,7 +30,6 @@ export * from "./utils";
 
 import { Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
-import CanvasManager from "./canvas/CanvasManager";
 import CanvasManagerStatic from "./canvas/CanvasManagerStatic";
 import * as classes from "./classes";
 import {
@@ -54,7 +53,7 @@ const getCurrentStepData: () => pixivninterface.HistoryStepData = () => {
     let currentStepData: pixivninterface.HistoryStepData = {
         path: getGamePath(),
         storage: storage.export(),
-        canvas: canvas.export(),
+        canvas: canvasUtils.canvas.export(),
         sound: sound.removeOldSoundAndExport(),
         labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
         openedLabels: functions.createExportableElement(NarrationManagerStatic._openedLabels),
@@ -69,17 +68,17 @@ const restoreFromHistoryStep: (
     NarrationManagerStatic._originalStepData = restoredStep;
     NarrationManagerStatic._openedLabels = functions.createExportableElement(restoredStep.openedLabels);
     storage.import(functions.createExportableElement(restoredStep.storage));
-    await canvas.import(functions.createExportableElement(restoredStep.canvas));
+    await canvasUtils.canvas.import(functions.createExportableElement(restoredStep.canvas));
     sound.import(functions.createExportableElement(restoredStep.sound), NarrationManagerStatic._lastStepIndex - 1);
     navigate(restoredStep.path);
 };
 
 const forceCompletionOfTicker = () => {
     CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
-        canvas.forceCompletionOfTicker(id);
+        canvasUtils.canvas.forceCompletionOfTicker(id);
     });
     CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
-        canvas.forceCompletionOfTicker(id, alias);
+        canvasUtils.canvas.forceCompletionOfTicker(id, alias);
     });
     CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
 };
@@ -91,9 +90,8 @@ const narration: pixivninterface.NarrationManagerInterface = new NarrationManage
 );
 const sound = new SoundManager(narration);
 const storage: pixivninterface.StorageManagerInterface = new StorageManager(narration);
-const canvas = new CanvasManager();
 
-export { canvas, narration, sound, storage };
+export { narration, sound, storage };
 
 const pixivn = {
     Assets,
@@ -112,6 +110,6 @@ const pixivn = {
     narration,
     sound,
     storage,
-    canvas,
+    canvas: canvasUtils.canvas,
 };
 export default pixivn;

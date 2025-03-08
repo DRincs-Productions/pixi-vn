@@ -1,6 +1,6 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
-import { ImageContainer, ImageSprite, TickerBase, tickerDecorator, TickerValue } from "../..";
-import { canvas, MoveTickerProps } from "../../..";
+import { canvas, ImageContainer, ImageSprite, TickerBase, tickerDecorator, TickerValue } from "../..";
+import { MoveTickerProps } from "../../../types/ticker";
 import { createExportableElement } from "../../../utils";
 import { logger } from "../../../utils/log-utility";
 import { updateTickerProgression } from "../../../utils/ticker-utility";
