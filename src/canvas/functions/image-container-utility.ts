@@ -1,6 +1,7 @@
-import { ImageContainer, ImageSprite } from '../../classes';
-import { ImageContainerOptions } from '../../interface';
-import { canvas } from '../../managers';
+import { canvas } from "../..";
+import { ImageContainerOptions } from "../../interface";
+import ImageContainer from "../components/ImageContainer";
+import ImageSprite from "../components/ImageSprite";
 
 /**
  * Add a list of images in the container, after that, the images are added to the canvas.
@@ -16,10 +17,14 @@ import { canvas } from '../../managers';
  * await bunny.load()
  * ```
  */
-export function addImageCointainer(alias: string, imageUrls: string[], options?: ImageContainerOptions<ImageSprite>): ImageContainer {
-    let container = new ImageContainer(options, imageUrls)
-    canvas.add(alias, container)
-    return container
+export function addImageCointainer(
+    alias: string,
+    imageUrls: string[],
+    options?: ImageContainerOptions<ImageSprite>
+): ImageContainer {
+    let container = new ImageContainer(options, imageUrls);
+    canvas.add(alias, container);
+    return container;
 }
 
 /**
@@ -33,9 +38,13 @@ export function addImageCointainer(alias: string, imageUrls: string[], options?:
  * let bunny = showImageContainer("bunny", ["https://pixijs.com/assets/bunny-body.png", "https://pixijs.com/assets/bunny-eyes.png"])
  * ```
  */
-export async function showImageContainer(alias: string, imageUrls: string[], options?: ImageContainerOptions<ImageSprite>): Promise<ImageContainer> {
-    let container = new ImageContainer(options, imageUrls)
-    await container.load()
-    canvas.add(alias, container)
-    return container
+export async function showImageContainer(
+    alias: string,
+    imageUrls: string[],
+    options?: ImageContainerOptions<ImageSprite>
+): Promise<ImageContainer> {
+    let container = new ImageContainer(options, imageUrls);
+    await container.load();
+    canvas.add(alias, container);
+    return container;
 }

@@ -8,7 +8,7 @@ import {
     TextStyleOptions,
     Texture,
 } from "pixi.js";
-import { logger } from "../log-utility";
+import { logger } from "../../utils/log-utility";
 
 /**
  * Get a texture from a url.

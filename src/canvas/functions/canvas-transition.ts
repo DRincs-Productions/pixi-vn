@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { CanvasBaseItem, ImageSprite, VideoSprite } from "../../classes";
+import { canvas } from "../..";
 import {
     ImageContainerOptions,
     ImageSpriteOptions,
@@ -9,9 +9,11 @@ import {
     ZoomInOutProps,
 } from "../../interface";
 import { PushInOutProps } from "../../interface/canvas/transition-props";
-import { canvas } from "../../managers";
 import { logger } from "../../utils/log-utility";
+import CanvasBaseItem from "../classes/CanvasBaseItem";
 import ImageContainer from "../components/ImageContainer";
+import ImageSprite from "../components/ImageSprite";
+import VideoSprite from "../components/VideoSprite";
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../tickers";
 import { getPointBySuperPoint } from "./canvas-property-utility";
 import { checkIfVideo } from "./canvas-utility";

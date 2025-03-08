@@ -1,8 +1,8 @@
-import { Assets, Texture } from 'pixi.js';
-import { ImageSprite } from '../../classes';
-import { ImageSpriteOptions } from '../../interface';
-import { canvas } from '../../managers';
-import { getTexture } from './texture-utility';
+import { Assets, Texture } from "pixi.js";
+import { canvas } from "../..";
+import { ImageSpriteOptions } from "../../interface";
+import ImageSprite from "../components/ImageSprite";
+import { getTexture } from "./texture-utility";
 
 /**
  * Add a image in the canvas.
@@ -24,15 +24,14 @@ import { getTexture } from './texture-utility';
 export function addImage(alias: string, imageUrl?: string, options?: ImageSpriteOptions): ImageSprite {
     if (!imageUrl) {
         if (Assets.resolver.hasKey(alias)) {
-            imageUrl = alias
-        }
-        else {
-            throw new Error(`The image ${alias} does not exist in the cache.`)
+            imageUrl = alias;
+        } else {
+            throw new Error(`The image ${alias} does not exist in the cache.`);
         }
     }
-    let image = new ImageSprite(options, imageUrl)
-    canvas.add(alias, image)
-    return image
+    let image = new ImageSprite(options, imageUrl);
+    canvas.add(alias, image);
+    return image;
 }
 
 /**
@@ -40,23 +39,23 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
  */
 export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Promise<ImageSprite[]> {
     if (!Array.isArray(canvasImages)) {
-        return [canvasImages]
+        return [canvasImages];
     }
-    let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasImages.length)
+    let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasImages.length);
     for (let i = 0; i < canvasImages.length; i++) {
-        promises[i] = getTexture(canvasImages[i].textureAlias)
+        promises[i] = getTexture(canvasImages[i].textureAlias);
     }
     // wait for all promises
     return Promise.all(promises).then((textures) => {
         return textures.map((texture, index) => {
             if (texture) {
-                canvasImages[index].texture = texture
-                return canvasImages[index]
+                canvasImages[index].texture = texture;
+                return canvasImages[index];
             }
-            canvasImages[index].load()
-            return canvasImages[index]
-        })
-    })
+            canvasImages[index].load();
+            return canvasImages[index];
+        });
+    });
 }
 
 /**
@@ -75,14 +74,13 @@ export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Prom
 export async function showImage(alias: string, imageUrl?: string, options?: ImageSpriteOptions): Promise<ImageSprite> {
     if (!imageUrl) {
         if (Assets.resolver.hasKey(alias)) {
-            imageUrl = alias
-        }
-        else {
-            throw new Error(`The image ${alias} does not exist in the cache.`)
+            imageUrl = alias;
+        } else {
+            throw new Error(`The image ${alias} does not exist in the cache.`);
         }
     }
-    let image = new ImageSprite(options, imageUrl)
-    await image.load()
-    canvas.add(alias, image)
-    return image
+    let image = new ImageSprite(options, imageUrl);
+    await image.load();
+    canvas.add(alias, image);
+    return image;
 }

@@ -1,6 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
+import { canvas } from "../..";
 import { ShakeEffectProps } from "../../interface";
-import { canvas } from "../../managers";
 import { logger } from "../../utils/log-utility";
 import { MoveTicker } from "../tickers";
 
