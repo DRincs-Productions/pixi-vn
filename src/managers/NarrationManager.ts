@@ -1,5 +1,5 @@
 import diff from "microdiff";
-import { storage } from ".";
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "..";
 import { Dialogue, Label } from "../classes";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "../classes/CloseLabel";
@@ -91,25 +91,28 @@ export default class NarrationManager implements NarrationManagerInterface {
             let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
             let inputValue: StorageElementType | undefined = undefined;
             if (
-                storage.getVariable<number>(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
-                this.lastStepIndex
+                StorageManagerStatic.getVariable<number>(
+                    SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY
+                ) === this.lastStepIndex
             ) {
                 dialoge = this.dialogue;
             }
             if (
-                storage.getVariable<number>(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) ===
-                this.lastStepIndex
+                StorageManagerStatic.getVariable<number>(
+                    SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY
+                ) === this.lastStepIndex
             ) {
-                requiredChoices = storage.getVariable<IStoratedChoiceMenuOption[]>(
-                    storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY
+                requiredChoices = StorageManagerStatic.getVariable<IStoratedChoiceMenuOption[]>(
+                    SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
                 );
             }
             if (
-                storage.getVariable<StorageElementType>(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY) ===
-                this.lastStepIndex
+                StorageManagerStatic.getVariable<StorageElementType>(
+                    SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY
+                ) === this.lastStepIndex
             ) {
-                inputValue = storage.getVariable<IStoratedChoiceMenuOption[]>(
-                    storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY
+                inputValue = StorageManagerStatic.getVariable<IStoratedChoiceMenuOption[]>(
+                    SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY
                 );
             }
             this.stepsHistory.push({
@@ -620,7 +623,9 @@ export default class NarrationManager implements NarrationManagerInterface {
     public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined;
 
     public get dialogue(): Dialogue | undefined {
-        return storage.getVariable<DialogueType>(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY) as Dialogue;
+        return StorageManagerStatic.getVariable<DialogueType>(
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
+        ) as Dialogue;
     }
     public set dialogue(
         props:
@@ -634,7 +639,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             | undefined
     ) {
         if (!props) {
-            storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, undefined);
+            StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, undefined);
             return;
         }
         let text = "";
@@ -665,8 +670,8 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
 
         if (this.dialogGlue) {
-            let glueDialogue = storage.getVariable<DialogueType>(
-                storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY
+            let glueDialogue = StorageManagerStatic.getVariable<DialogueType>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
             ) as Dialogue;
             if (glueDialogue) {
                 dialogue.text = `${glueDialogue.text}${dialogue.text}`;
@@ -675,11 +680,19 @@ export default class NarrationManager implements NarrationManagerInterface {
             this.dialogGlue = false;
         }
 
-        storage.setVariable(storage.keysSystem.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType);
-        storage.setVariable(storage.keysSystem.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex);
+        StorageManagerStatic.setVariable(
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
+            dialogue as DialogueType
+        );
+        StorageManagerStatic.setVariable(
+            SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
+            this.lastStepIndex
+        );
     }
     public get choiceMenuOptions(): ChoiceMenuOptionsType<any> | undefined {
-        let d = storage.getVariable<IStoratedChoiceMenuOption[]>(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY);
+        let d = StorageManagerStatic.getVariable<IStoratedChoiceMenuOption[]>(
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
+        );
         if (d) {
             let options: ChoiceMenuOptionsType = [];
             let onlyHaveNoChoice: ChoiceMenuOptionsType = [];
@@ -736,7 +749,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public set choiceMenuOptions(options: ChoiceMenuOptionsType<any> | undefined) {
         if (!options) {
-            storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined);
+            StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined);
             return;
         }
         let value: IStoratedChoiceMenuOption[] = options.map((option) => {
@@ -755,41 +768,56 @@ export default class NarrationManager implements NarrationManagerInterface {
                 label: option.label.id,
             };
         });
-        storage.setVariable(storage.keysSystem.CURRENT_MENU_OPTIONS_MEMORY_KEY, value);
-        storage.setVariable(storage.keysSystem.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, value);
+        StorageManagerStatic.setVariable(
+            SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
+            this.lastStepIndex
+        );
     }
     public get dialogGlue(): boolean {
-        return storage.getFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY);
+        return StorageManagerStatic.getFlag(
+            SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY
+        );
     }
     public set dialogGlue(value: boolean) {
-        storage.setFlag(storage.keysSystem.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, value);
+        StorageManagerStatic.setFlag(
+            SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY,
+            value
+        );
     }
     public get inputValue(): StorageElementType {
-        return storage.getVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY);
+        return StorageManagerStatic.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
     }
     public set inputValue(value: StorageElementType) {
         this.removeInputRequest();
-        storage.setVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY, value);
-        storage.setVariable(storage.keysSystem.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY, this.lastStepIndex);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY, value);
+        StorageManagerStatic.setVariable(
+            SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY,
+            this.lastStepIndex
+        );
     }
     public get isRequiredInput(): boolean {
-        return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY)?.isRequired || false;
+        return (
+            StorageManagerStatic.getVariable<InputInfo>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY)
+                ?.isRequired || false
+        );
     }
     public get inputType(): string | undefined {
-        return storage.getVariable<InputInfo>(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY)?.type;
+        return StorageManagerStatic.getVariable<InputInfo>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY)
+            ?.type;
     }
     public requestInput(info: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType) {
         (info as InputInfo).isRequired = true;
-        storage.setVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY, info);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY, info);
         if (defaultValue !== undefined) {
-            storage.setVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY, defaultValue);
+            StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY, defaultValue);
         } else {
-            storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY);
+            StorageManagerStatic.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
         }
     }
     public removeInputRequest() {
-        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_INFO_MEMORY_KEY);
-        storage.removeVariable(storage.keysSystem.CURRENT_INPUT_VALUE_MEMORY_KEY);
+        StorageManagerStatic.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY);
+        StorageManagerStatic.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
     }
 
     public clear() {
