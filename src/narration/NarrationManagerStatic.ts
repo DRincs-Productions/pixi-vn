@@ -1,7 +1,6 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "..";
 import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
 import OpenedLabel from "../interface/OpenedLabel";
-import StorageManagerStatic from "../managers/StorageManagerStatic";
 import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
 import { restoreDiffChanges } from "../utils/diff-utility";
