@@ -1,4 +1,4 @@
-import { HistoryStepData, OpenedLabel } from "./interface";
+import { ExportedCanvas, ExportedSounds, ExportedStorage, HistoryStepData, OpenedLabel } from "./interface";
 import { getGamePath } from "./utils/path-utility";
 
 export default class GameUnifier {
@@ -8,12 +8,21 @@ export default class GameUnifier {
     static getOpenedLabels: () => OpenedLabel[] = () => {
         throw new Error("Method not implemented.");
     };
+    static exportStorageData: () => ExportedStorage = () => {
+        throw new Error("Method not implemented.");
+    };
+    static exportCanvasData: () => ExportedCanvas = () => {
+        throw new Error("Method not implemented.");
+    };
+    static exportSoundData: () => ExportedSounds = () => {
+        throw new Error("Method not implemented.");
+    };
     static getCurrentStepData: () => HistoryStepData = () => {
         let currentStepData: HistoryStepData = {
             path: getGamePath(),
-            storage: storage.export(),
-            canvas: canvas.export(),
-            sound: sound.removeOldSoundAndExport(),
+            storage: GameUnifier.exportStorageData(),
+            canvas: GameUnifier.exportCanvasData(),
+            sound: GameUnifier.exportSoundData(),
             labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
             openedLabels: GameUnifier.getOpenedLabels(),
         };

@@ -8,7 +8,9 @@ import { logger } from "../utils/log-utility";
 import StorageManagerStatic from "./StorageManagerStatic";
 
 export default class StorageManager implements StorageManagerInterface {
-    constructor(private readonly getOpenedLabels: () => OpenedLabel[] = GameUnifier.getOpenedLabels) {}
+    constructor(private readonly getOpenedLabels: () => OpenedLabel[] = GameUnifier.getOpenedLabels) {
+        GameUnifier.exportStorageData = this.export;
+    }
     get storage() {
         return StorageManagerStatic.storage;
     }

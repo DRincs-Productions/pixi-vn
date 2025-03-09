@@ -19,6 +19,7 @@ import SoundManagerStatic from "./SoundManagerStatic";
 export default class SoundManager extends SoundLibrary {
     constructor(private readonly getLastStepIndex: () => number = GameUnifier.getLastStepIndex) {
         super();
+        GameUnifier.exportSoundData = this.export;
     }
     override get context(): IMediaContext {
         return sound.context;
