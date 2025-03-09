@@ -1,5 +1,5 @@
-import { CharacterInterface } from "../interface"
-import { StorageElementType } from "../types"
+import { CharacterInterface } from "../../interface"
+import { StorageElementType } from "../../types"
 
 type DialogueProps = {
     /**
