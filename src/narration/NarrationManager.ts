@@ -1,5 +1,5 @@
 import diff from "microdiff";
-import { NarrationManagerInterface, SYSTEM_RESERVED_STORAGE_KEYS } from "..";
+import { createExportableElement, NarrationManagerInterface, SYSTEM_RESERVED_STORAGE_KEYS } from "..";
 import { CharacterInterface, HistoryStep, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
 import { AdditionalShaSpetsEnum } from "../interface/HistoryStep";
@@ -37,7 +37,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         private readonly forceCompletionOfTicker: () => void = GameUnifier.forceCompletionOfTicker
     ) {
         GameUnifier.getLastStepIndex = () => this.lastStepIndex;
-        GameUnifier.getOpenedLabels = () => this.openedLabels;
+        GameUnifier.getOpenedLabels = () => createExportableElement(this.openedLabels);
     }
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;

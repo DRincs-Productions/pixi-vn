@@ -15,7 +15,7 @@ export default class GameUnifier {
             canvas: canvas.export(),
             sound: sound.removeOldSoundAndExport(),
             labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
-            openedLabels: createExportableElement(NarrationManagerStatic._openedLabels),
+            openedLabels: GameUnifier.getOpenedLabels(),
         };
         return currentStepData;
     };
