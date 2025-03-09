@@ -65,4 +65,7 @@ export default class GameUnifier {
     static setFlag: (name: string, value: boolean) => void = () => {
         throw new Error("Method not implemented.");
     };
+    static clearOldTempVariables: (openedLabelsNumber: number) => void = () => {
+        throw new Error("Method not implemented.");
+    };
 }

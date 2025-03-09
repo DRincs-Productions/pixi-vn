@@ -143,12 +143,12 @@ export default class NarrationManager implements NarrationManagerInterface {
             return;
         }
         NarrationManagerStatic._openedLabels.pop();
-        StorageManagerStatic.clearOldTempVariables(this.openedLabels.length);
+        GameUnifier.clearOldTempVariables(this.openedLabels.length);
     }
     closeAllLabels() {
         while (NarrationManagerStatic._openedLabels.length > 0) {
             this.closeCurrentLabel();
-            StorageManagerStatic.clearOldTempVariables(this.openedLabels.length);
+            GameUnifier.clearOldTempVariables(this.openedLabels.length);
         }
     }
     get narrativeHistory(): NarrativeHistory[] {

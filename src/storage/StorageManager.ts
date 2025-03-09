@@ -15,6 +15,7 @@ export default class StorageManager implements StorageManagerInterface {
         GameUnifier.removeVariable = this.removeVariable;
         GameUnifier.getFlag = this.getFlag;
         GameUnifier.setFlag = this.setFlag;
+        GameUnifier.clearOldTempVariables = StorageManagerStatic.clearOldTempVariables;
     }
     get storage() {
         return StorageManagerStatic.storage;
