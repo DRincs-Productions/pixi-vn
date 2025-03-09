@@ -1,17 +1,10 @@
 import diff from "microdiff";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "..";
-import { Dialogue, Label } from "../classes";
 import { CharacterInterface, HistoryStep, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
 import { AdditionalShaSpetsEnum } from "../interface/HistoryStep";
 import NarrationManagerInterface from "../interface/managers/NarrationManagerInterface";
-import ChoiceMenuOption, {
-    ChoiceMenuOptionClose,
-    IStoratedChoiceMenuOption,
-} from "../narration/classes/ChoiceMenuOption";
-import newCloseLabel, { CLOSE_LABEL_ID } from "../narration/classes/CloseLabel";
-import LabelAbstract from "../narration/classes/LabelAbstract";
-import { getLabelById } from "../narration/decorators/label-decorator";
+import StorageManagerStatic from "../managers/StorageManagerStatic";
 import {
     ChoiceMenuOptionsType,
     Close,
@@ -25,20 +18,25 @@ import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType";
 import GameUnifier from "../unifier";
 import { logger } from "../utils/log-utility";
+import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
+import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
+import Dialogue from "./classes/Dialogue";
+import Label from "./classes/Label";
+import LabelAbstract from "./classes/LabelAbstract";
+import { getLabelById } from "./decorators/label-decorator";
 import NarrationManagerStatic from "./NarrationManagerStatic";
-import StorageManagerStatic from "./StorageManagerStatic";
 
 /**
  * This class is a class that manages the steps and labels of the game.
  */
 export default class NarrationManager implements NarrationManagerInterface {
     constructor(
-        private readonly getCurrentStepData: () => HistoryStepData,
+        private readonly getCurrentStepData: () => HistoryStepData = GameUnifier.getCurrentStepData,
         private readonly restoreFromHistoryStep: (
             restoredStep: HistoryStepData,
             navigate: (path: string) => void
-        ) => Promise<void>,
-        private readonly forceCompletionOfTicker: () => void
+        ) => Promise<void> = GameUnifier.restoreFromHistoryStep,
+        private readonly forceCompletionOfTicker: () => void = GameUnifier.forceCompletionOfTicker
     ) {
         GameUnifier.getLastStepIndex = () => this.lastStepIndex;
     }

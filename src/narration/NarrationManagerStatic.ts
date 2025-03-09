@@ -1,14 +1,14 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "..";
-import { Label } from "../classes";
 import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
 import OpenedLabel from "../interface/OpenedLabel";
-import { getLabelById } from "../narration/decorators/label-decorator";
+import StorageManagerStatic from "../managers/StorageManagerStatic";
 import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
 import { restoreDiffChanges } from "../utils/diff-utility";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
-import StorageManagerStatic from "./StorageManagerStatic";
+import Label from "./classes/Label";
+import { getLabelById } from "./decorators/label-decorator";
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number; openCount: number } };
 

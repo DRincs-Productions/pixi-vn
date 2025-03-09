@@ -8,7 +8,7 @@ import {
     sound,
     storage,
 } from "../src";
-import NarrationManager from "../src/managers/NarrationManager";
+import NarrationManager from "../src/narration/NarrationManager";
 import { getGamePath } from "../src/utils/path-utility";
 
 const getCurrentStepData: () => HistoryStepData = () => {

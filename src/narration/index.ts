@@ -1,3 +1,6 @@
+import { NarrationManagerInterface } from "..";
+import NarrationManager from "./NarrationManager";
+
 export { default as ChoiceMenuOption, ChoiceMenuOptionClose } from "./classes/ChoiceMenuOption";
 export {
     default as Dialogue,
@@ -9,3 +12,6 @@ export {
 export { default as Label } from "./classes/Label";
 export { default as LabelAbstract } from "./classes/LabelAbstract";
 export { getLabelById, newLabel, saveLabel } from "./decorators/label-decorator";
+export { narration };
+
+const narration: NarrationManagerInterface = new NarrationManager();

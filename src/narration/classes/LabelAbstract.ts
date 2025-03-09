@@ -1,7 +1,7 @@
-import { getLabelById } from "../../decorators";
 import { LabelProps } from "../../interface";
 import { LabelIdType } from "../../types/LabelIdType";
 import { StepLabelType } from "../../types/StepLabelType";
+import { getLabelById } from "../decorators/label-decorator";
 
 export default abstract class LabelAbstract<TLabel, TProps extends {} = {}> implements LabelProps<TLabel> {
     /**
