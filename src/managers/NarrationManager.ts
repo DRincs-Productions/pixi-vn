@@ -1,7 +1,6 @@
 import diff from "microdiff";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "..";
 import { Dialogue, Label } from "../classes";
-import { getLabelById } from "../decorators/label-decorator";
 import { CharacterInterface, HistoryStep, HistoryStepData, NarrativeHistory } from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
 import { AdditionalShaSpetsEnum } from "../interface/HistoryStep";
@@ -12,6 +11,7 @@ import ChoiceMenuOption, {
 } from "../narration/classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "../narration/classes/CloseLabel";
 import LabelAbstract from "../narration/classes/LabelAbstract";
+import { getLabelById } from "../narration/decorators/label-decorator";
 import {
     ChoiceMenuOptionsType,
     Close,

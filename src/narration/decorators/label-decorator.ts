@@ -1,9 +1,9 @@
-import { LabelProps } from "../interface";
-import Label from "../narration/classes/Label";
-import LabelAbstract from "../narration/classes/LabelAbstract";
-import { StepLabelType } from "../types";
-import { LabelIdType } from "../types/LabelIdType";
-import { logger } from "../utils/log-utility";
+import { LabelProps } from "../../interface";
+import { StepLabelType } from "../../types";
+import { LabelIdType } from "../../types/LabelIdType";
+import { logger } from "../../utils/log-utility";
+import Label from "../classes/Label";
+import LabelAbstract from "../classes/LabelAbstract";
 
 export const registeredLabels: { [key: LabelIdType]: LabelAbstract<any> | Label<any> } = {};
 

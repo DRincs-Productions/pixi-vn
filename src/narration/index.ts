@@ -8,3 +8,4 @@ export {
 } from "./classes/Dialogue";
 export { default as Label } from "./classes/Label";
 export { default as LabelAbstract } from "./classes/LabelAbstract";
+export { getLabelById, newLabel, saveLabel } from "./decorators/label-decorator";
