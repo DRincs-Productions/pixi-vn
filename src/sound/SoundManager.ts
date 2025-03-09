@@ -8,15 +8,16 @@ import {
     SoundLibrary,
     SoundMap,
 } from "@pixi/sound";
-import { ExportedSounds, NarrationManagerInterface, SoundOptions, SoundPlayOptions } from "../interface";
+import { ExportedSounds, SoundOptions, SoundPlayOptions } from "../interface";
 import { ExportedSoundPlay } from "../interface/export/ExportedSounds";
+import GameUnifier from "../unifier";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager extends SoundLibrary {
-    constructor(private readonly narration: NarrationManagerInterface) {
+    constructor(private readonly getLastStepIndex: () => number = GameUnifier.getLastStepIndex) {
         super();
     }
     override get context(): IMediaContext {
@@ -175,7 +176,7 @@ export default class SoundManager extends SoundLibrary {
             throw new Error("[Pixi’VN] The alias is not found in the sound library.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
-            stepIndex: this.narration.lastStepIndex,
+            stepIndex: this.getLastStepIndex(),
             options: options,
             paused: false,
         };
@@ -203,7 +204,7 @@ export default class SoundManager extends SoundLibrary {
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             options: item.options,
-            stepIndex: this.narration.lastStepIndex,
+            stepIndex: this.getLastStepIndex(),
             paused: false,
         };
         return sound.resume(alias);
@@ -275,7 +276,7 @@ export default class SoundManager extends SoundLibrary {
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
     }
-    public import(data: object, lastStepIndex = this.narration.lastStepIndex) {
+    public import(data: object, lastStepIndex = this.getLastStepIndex()) {
         this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {
