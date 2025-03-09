@@ -3,8 +3,8 @@ import { TickerBase, tickerDecorator, TickerValue } from "..";
 import { canvas } from "../..";
 import { ZoomTickerProps } from "../../../types/ticker";
 import { logger } from "../../../utils/log-utility";
-import { updateTickerProgression } from "../../../utils/ticker-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
+import { updateTickerProgression } from "../functions/ticker-utility";
 
 const DEFAULT_SPEED = 10;
 

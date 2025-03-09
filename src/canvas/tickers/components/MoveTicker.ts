@@ -3,7 +3,6 @@ import { canvas, ImageContainer, ImageSprite, TickerBase, tickerDecorator, Ticke
 import { MoveTickerProps } from "../../../types/ticker";
 import { createExportableElement } from "../../../utils";
 import { logger } from "../../../utils/log-utility";
-import { updateTickerProgression } from "../../../utils/ticker-utility";
 import {
     calculatePositionByAlign,
     calculatePositionByPercentagePosition,
@@ -12,6 +11,7 @@ import {
     getSuperWidth,
 } from "../../functions/canvas-property-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
+import { updateTickerProgression } from "../functions/ticker-utility";
 
 const DEFAULT_SPEED = 10;
 
