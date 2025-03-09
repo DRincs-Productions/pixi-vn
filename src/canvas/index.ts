@@ -11,6 +11,7 @@ export {
 
 export { default as CanvasEvent } from "../canvas/classes/CanvasEvent";
 export { default as ImageContainer } from "../canvas/components/ImageContainer";
+export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 export {
     /**
      * @deprecated use "import { CanvasBaseItem } from '@drincs/pixi-vn';"

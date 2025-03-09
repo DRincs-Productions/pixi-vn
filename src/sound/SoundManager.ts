@@ -8,11 +8,11 @@ import {
     SoundLibrary,
     SoundMap,
 } from "@pixi/sound";
-import { Sound } from "../classes";
 import { ExportedSounds, NarrationManagerInterface, SoundOptions, SoundPlayOptions } from "../interface";
 import { ExportedSoundPlay } from "../interface/export/ExportedSounds";
 import { logger } from "../utils/log-utility";
-import { FilterMemoryToFilter, FilterToFilterMemory } from "../utils/sound-utility";
+import Sound from "./classes/Sound";
+import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager extends SoundLibrary {

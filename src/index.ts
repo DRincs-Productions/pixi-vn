@@ -9,7 +9,6 @@ export type {
     UPDATE_PRIORITY,
 } from "pixi.js";
 export * from "./canvas";
-export { default as CanvasManagerStatic } from "./canvas/CanvasManagerStatic";
 export * from "./classes";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
@@ -21,10 +20,9 @@ export {
 } from "./constants";
 export * from "./decorators";
 export * from "./interface";
-export { default as SoundManagerStatic } from "./managers/SoundManagerStatic";
 export { default as StorageManagerStatic } from "./managers/StorageManagerStatic";
 export * from "./narration";
-export { default as NarrationManagerStatic } from "./narration/NarrationManagerStatic";
+export * from "./sound";
 export * from "./types";
 export * from "./types/ticker";
 export * from "./utils";
@@ -42,21 +40,22 @@ import {
 } from "./constants";
 import * as decorators from "./decorators";
 import * as pixivninterface from "./interface";
-import SoundManager from "./managers/SoundManager";
 import StorageManager from "./managers/StorageManager";
 import * as narrationUtils from "./narration";
+import * as soundUtils from "./sound";
 import * as functions from "./utils";
 
-const sound = new SoundManager(narration);
 const storage: pixivninterface.StorageManagerInterface = new StorageManager(narration);
 
-export { narration, sound, storage };
+export { storage };
 
 const pixivn = {
     Assets,
     Rectangle,
     ...classes,
     canvasUtils,
+    narrationUtils,
+    soundUtils,
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
     Pause,
@@ -67,7 +66,7 @@ const pixivn = {
     ...functions,
     ...pixivninterface,
     narration: narrationUtils.narration,
-    sound,
+    sound: soundUtils.sound,
     storage,
     canvas: canvasUtils.canvas,
 };

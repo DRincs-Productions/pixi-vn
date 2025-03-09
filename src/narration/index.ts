@@ -12,6 +12,7 @@ export {
 export { default as Label } from "./classes/Label";
 export { default as LabelAbstract } from "./classes/LabelAbstract";
 export { getLabelById, newLabel, saveLabel } from "./decorators/label-decorator";
+export { default as NarrationManagerStatic } from "./NarrationManagerStatic";
 export { narration };
 
 const narration: NarrationManagerInterface = new NarrationManager();
