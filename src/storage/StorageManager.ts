@@ -10,6 +10,11 @@ import StorageManagerStatic from "./StorageManagerStatic";
 export default class StorageManager implements StorageManagerInterface {
     constructor(private readonly getOpenedLabels: () => OpenedLabel[] = GameUnifier.getOpenedLabels) {
         GameUnifier.exportStorageData = this.export;
+        GameUnifier.getVariable = this.getVariable;
+        GameUnifier.setVariable = this.setVariable;
+        GameUnifier.removeVariable = this.removeVariable;
+        GameUnifier.getFlag = this.getFlag;
+        GameUnifier.setFlag = this.setFlag;
     }
     get storage() {
         return StorageManagerStatic.storage;
