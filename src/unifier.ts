@@ -1,8 +1,11 @@
-import { HistoryStepData } from "./interface";
+import { HistoryStepData, OpenedLabel } from "./interface";
 import { getGamePath } from "./utils/path-utility";
 
 export default class GameUnifier {
     static getLastStepIndex: () => number = () => {
+        throw new Error("Method not implemented.");
+    };
+    static getOpenedLabels: () => OpenedLabel[] = () => {
         throw new Error("Method not implemented.");
     };
     static getCurrentStepData: () => HistoryStepData = () => {

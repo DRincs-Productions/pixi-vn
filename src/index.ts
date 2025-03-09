@@ -20,7 +20,6 @@ export {
 } from "./constants";
 export * from "./decorators";
 export * from "./interface";
-export { default as StorageManagerStatic } from "./managers/StorageManagerStatic";
 export * from "./narration";
 export * from "./sound";
 export * from "./types";
@@ -40,14 +39,10 @@ import {
 } from "./constants";
 import * as decorators from "./decorators";
 import * as pixivninterface from "./interface";
-import StorageManager from "./managers/StorageManager";
 import * as narrationUtils from "./narration";
 import * as soundUtils from "./sound";
+import * as storageUtils from "./storage";
 import * as functions from "./utils";
-
-const storage: pixivninterface.StorageManagerInterface = new StorageManager(narration);
-
-export { storage };
 
 const pixivn = {
     Assets,
@@ -65,9 +60,9 @@ const pixivn = {
     ...decorators,
     ...functions,
     ...pixivninterface,
+    canvas: canvasUtils.canvas,
     narration: narrationUtils.narration,
     sound: soundUtils.sound,
-    storage,
-    canvas: canvasUtils.canvas,
+    storage: storageUtils.storage,
 };
 export default pixivn;
