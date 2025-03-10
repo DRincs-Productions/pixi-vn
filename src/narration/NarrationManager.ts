@@ -38,6 +38,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     ) {
         GameUnifier.getLastStepIndex = () => this.lastStepIndex;
         GameUnifier.getOpenedLabels = () => createExportableElement(this.openedLabels);
+        GameUnifier.getCurrentLabelStepIndex = () => NarrationManagerStatic.currentLabelStepIndex || 0;
     }
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;

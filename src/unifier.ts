@@ -6,6 +6,9 @@ export default class GameUnifier {
     static getLastStepIndex: () => number = () => {
         throw new Error("Method not implemented.");
     };
+    static getCurrentLabelStepIndex: () => number = () => {
+        throw new Error("Method not implemented.");
+    };
     static getOpenedLabels: () => OpenedLabel[] = () => {
         throw new Error("Method not implemented.");
     };
@@ -24,7 +27,7 @@ export default class GameUnifier {
             storage: GameUnifier.exportStorageData(),
             canvas: GameUnifier.exportCanvasData(),
             sound: GameUnifier.exportSoundData(),
-            labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
+            labelIndex: GameUnifier.getCurrentLabelStepIndex(),
             openedLabels: GameUnifier.getOpenedLabels(),
         };
         return currentStepData;
