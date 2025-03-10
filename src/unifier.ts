@@ -1,4 +1,11 @@
-import { ExportedCanvas, ExportedSounds, ExportedStorage, HistoryStepData, OpenedLabel } from "./interface";
+import {
+    ExportedCanvas,
+    ExportedSounds,
+    ExportedStep,
+    ExportedStorage,
+    HistoryStepData,
+    OpenedLabel,
+} from "./interface";
 import { StorageElementType } from "./types";
 import { getGamePath } from "./utils/path-utility";
 
@@ -21,6 +28,21 @@ export default class GameUnifier {
     static exportSoundData: () => ExportedSounds = () => {
         throw new Error("Method not implemented.");
     };
+    static exportNarrationData: () => ExportedStep = () => {
+        throw new Error("Method not implemented.");
+    };
+    static importStorageData: (data: ExportedStorage) => void = () => {
+        throw new Error("Method not implemented.");
+    };
+    static importCanvasData: (data: ExportedCanvas) => Promise<void> = () => {
+        throw new Error("Method not implemented.");
+    };
+    static importSoundData: (data: ExportedSounds) => void = () => {
+        throw new Error("Method not implemented.");
+    };
+    static importNarrationData: (data: ExportedStep) => void = () => {
+        throw new Error("Method not implemented.");
+    };
     static getCurrentStepData: () => HistoryStepData = () => {
         let currentStepData: HistoryStepData = {
             path: getGamePath(),
@@ -32,18 +54,6 @@ export default class GameUnifier {
         };
         return currentStepData;
     };
-    static restoreFromHistoryStep: (restoredStep: HistoryStepData, navigate: (path: string) => void) => Promise<void> =
-        async (restoredStep: HistoryStepData, navigate: (path: string) => void) => {
-            NarrationManagerStatic._originalStepData = restoredStep;
-            NarrationManagerStatic._openedLabels = functions.createExportableElement(restoredStep.openedLabels);
-            storage.import(functions.createExportableElement(restoredStep.storage));
-            await canvasUtils.canvas.import(functions.createExportableElement(restoredStep.canvas));
-            sound.import(
-                functions.createExportableElement(restoredStep.sound),
-                NarrationManagerStatic._lastStepIndex - 1
-            );
-            navigate(restoredStep.path);
-        };
     static forceCompletionOfTicker: () => void = () => {
         CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
             canvasUtils.canvas.forceCompletionOfTicker(id);

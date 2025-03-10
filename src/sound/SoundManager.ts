@@ -20,6 +20,7 @@ export default class SoundManager extends SoundLibrary {
     constructor(private readonly getLastStepIndex: () => number = GameUnifier.getLastStepIndex) {
         super();
         GameUnifier.exportSoundData = this.export;
+        GameUnifier.importSoundData = this.import;
     }
     override get context(): IMediaContext {
         return sound.context;
@@ -277,7 +278,8 @@ export default class SoundManager extends SoundLibrary {
     public importJson(dataString: string) {
         this.import(JSON.parse(dataString));
     }
-    public import(data: object, lastStepIndex = this.getLastStepIndex()) {
+    public import(data: object) {
+        const lastStepIndex = this.getLastStepIndex() - 1;
         this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {

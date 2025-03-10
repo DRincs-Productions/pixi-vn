@@ -23,24 +23,9 @@ const getCurrentStepData: () => HistoryStepData = () => {
     return currentStepData;
 };
 
-const restoreFromHistoryStep: (
-    restoredStep: HistoryStepData,
-    navigate: (path: string) => void
-) => Promise<void> = async (restoredStep: HistoryStepData, navigate: (path: string) => void) => {
-    NarrationManagerStatic._originalStepData = restoredStep;
-    NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels);
-    storage.import(createExportableElement(restoredStep.storage));
-    sound.import(createExportableElement(restoredStep.sound), NarrationManagerStatic._lastStepIndex - 1);
-    navigate(restoredStep.path);
-};
-
 const forceCompletionOfTicker = () => {};
 
-const narration: NarrationManagerInterface = new NarrationManager(
-    getCurrentStepData,
-    restoreFromHistoryStep,
-    forceCompletionOfTicker
-);
+const narration: NarrationManagerInterface = new NarrationManager(getCurrentStepData, forceCompletionOfTicker);
 
 const pathLabel = newLabel("path", [
     () => {

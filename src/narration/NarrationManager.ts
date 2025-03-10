@@ -30,15 +30,24 @@ import NarrationManagerStatic from "./NarrationManagerStatic";
 export default class NarrationManager implements NarrationManagerInterface {
     constructor(
         private readonly getCurrentStepData: () => HistoryStepData = GameUnifier.getCurrentStepData,
-        private readonly restoreFromHistoryStep: (
-            restoredStep: HistoryStepData,
-            navigate: (path: string) => void
-        ) => Promise<void> = GameUnifier.restoreFromHistoryStep,
         private readonly forceCompletionOfTicker: () => void = GameUnifier.forceCompletionOfTicker
     ) {
         GameUnifier.getLastStepIndex = () => this.lastStepIndex;
         GameUnifier.getOpenedLabels = () => createExportableElement(this.openedLabels);
         GameUnifier.getCurrentLabelStepIndex = () => NarrationManagerStatic.currentLabelStepIndex || 0;
+        GameUnifier.exportNarrationData = this.export;
+        GameUnifier.importNarrationData = this.import;
+    }
+    private async restoreFromHistoryStep(
+        restoredStep: HistoryStepData,
+        navigate: (path: string) => void
+    ): Promise<void> {
+        NarrationManagerStatic._originalStepData = restoredStep;
+        NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels);
+        GameUnifier.importStorageData(createExportableElement(restoredStep.storage));
+        await GameUnifier.importCanvasData(createExportableElement(restoredStep.canvas));
+        GameUnifier.importSoundData(createExportableElement(restoredStep.sound));
+        navigate(restoredStep.path);
     }
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;

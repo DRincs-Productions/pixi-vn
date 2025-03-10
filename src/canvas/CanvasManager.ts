@@ -31,6 +31,7 @@ import { getTickerInstanceById } from "./tickers/decorators/ticker-decorator";
 export default class CanvasManager {
     constructor() {
         GameUnifier.exportCanvasData = this.export;
+        GameUnifier.importCanvasData = this.import;
     }
     /**
      * The PIXI Application instance.
