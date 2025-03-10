@@ -28,10 +28,7 @@ import NarrationManagerStatic from "./NarrationManagerStatic";
  * This class is a class that manages the steps and labels of the game.
  */
 export default class NarrationManager implements NarrationManagerInterface {
-    constructor(
-        private readonly getCurrentStepData: () => HistoryStepData = GameUnifier.getCurrentStepData,
-        private readonly forceCompletionOfTicker: () => void = GameUnifier.forceCompletionOfTicker
-    ) {
+    constructor() {
         GameUnifier.getLastStepIndex = () => this.lastStepIndex;
         GameUnifier.getOpenedLabels = () => createExportableElement(this.openedLabels);
         GameUnifier.getCurrentLabelStepIndex = () => NarrationManagerStatic.currentLabelStepIndex || 0;
@@ -78,7 +75,7 @@ export default class NarrationManager implements NarrationManagerInterface {
      * @param label The label to add to the history.
      */
     private addStepHistory(stepSha: string, choiseMade?: number) {
-        let currentStepData: HistoryStepData = this.getCurrentStepData();
+        let currentStepData: HistoryStepData = GameUnifier.getCurrentStepData();
         if (NarrationManagerStatic.originalStepData) {
             if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {
@@ -342,7 +339,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
         }
         if (NarrationManagerStatic.stepsRunning === 0) {
-            this.forceCompletionOfTicker();
+            GameUnifier.forceCompletionOfTicker();
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
         return await this.runCurrentStep(props, options);

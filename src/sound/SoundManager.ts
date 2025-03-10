@@ -17,7 +17,7 @@ import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-ut
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager extends SoundLibrary {
-    constructor(private readonly getLastStepIndex: () => number = GameUnifier.getLastStepIndex) {
+    constructor() {
         super();
         GameUnifier.exportSoundData = this.export;
         GameUnifier.importSoundData = this.import;
@@ -178,7 +178,7 @@ export default class SoundManager extends SoundLibrary {
             throw new Error("[Pixi’VN] The alias is not found in the sound library.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
-            stepIndex: this.getLastStepIndex(),
+            stepIndex: GameUnifier.getLastStepIndex(),
             options: options,
             paused: false,
         };
@@ -206,7 +206,7 @@ export default class SoundManager extends SoundLibrary {
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             options: item.options,
-            stepIndex: this.getLastStepIndex(),
+            stepIndex: GameUnifier.getLastStepIndex(),
             paused: false,
         };
         return sound.resume(alias);
@@ -279,7 +279,7 @@ export default class SoundManager extends SoundLibrary {
         this.import(JSON.parse(dataString));
     }
     public import(data: object) {
-        const lastStepIndex = this.getLastStepIndex() - 1;
+        const lastStepIndex = GameUnifier.getLastStepIndex() - 1;
         this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {

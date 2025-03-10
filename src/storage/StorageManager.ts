@@ -1,5 +1,5 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { ExportedStorage, OpenedLabel, StorageManagerInterface } from "../interface";
+import { ExportedStorage, StorageManagerInterface } from "../interface";
 import { CacheableStoreItem } from "../interface/export/ExportedStorage";
 import { StorageElementType } from "../types/StorageElementType";
 import GameUnifier from "../unifier";
@@ -8,7 +8,7 @@ import { logger } from "../utils/log-utility";
 import StorageManagerStatic from "./StorageManagerStatic";
 
 export default class StorageManager implements StorageManagerInterface {
-    constructor(private readonly getOpenedLabels: () => OpenedLabel[] = GameUnifier.getOpenedLabels) {
+    constructor() {
         GameUnifier.exportStorageData = this.export;
         GameUnifier.importStorageData = this.import;
         GameUnifier.getVariable = this.getVariable;
@@ -57,7 +57,7 @@ export default class StorageManager implements StorageManagerInterface {
         } else {
             tempStorage[key] = value;
             if (!tempStorageDeadlines.hasOwnProperty(key)) {
-                tempStorageDeadlines[key] = this.getOpenedLabels().length;
+                tempStorageDeadlines[key] = GameUnifier.getOpenedLabels().length;
             }
         }
         StorageManagerStatic.tempStorage = tempStorage;
