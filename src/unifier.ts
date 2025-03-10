@@ -55,13 +55,7 @@ export default class GameUnifier {
         return currentStepData;
     };
     static forceCompletionOfTicker: () => void = () => {
-        CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
-            canvasUtils.canvas.forceCompletionOfTicker(id);
-        });
-        CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
-            canvasUtils.canvas.forceCompletionOfTicker(id, alias);
-        });
-        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+        throw new Error("Method not implemented.");
     };
     static getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         throw new Error("Method not implemented.");

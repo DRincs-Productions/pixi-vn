@@ -32,6 +32,15 @@ export default class CanvasManager {
     constructor() {
         GameUnifier.exportCanvasData = this.export;
         GameUnifier.importCanvasData = this.import;
+        GameUnifier.forceCompletionOfTicker = () => {
+            CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
+                this.forceCompletionOfTicker(id);
+            });
+            CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
+                this.forceCompletionOfTicker(id, alias);
+            });
+            CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+        };
     }
     /**
      * The PIXI Application instance.
