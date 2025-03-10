@@ -1,5 +1,5 @@
 import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
-import { canvas, ImageContainer, ImageSprite, TickerBase, tickerDecorator, TickerValue } from "../..";
+import { canvas, ImageContainer, ImageSprite, TickerBase, TickerValue } from "../..";
 import { MoveTickerProps } from "../../../types/ticker";
 import { createExportableElement } from "../../../utils";
 import { logger } from "../../../utils/log-utility";
@@ -11,6 +11,7 @@ import {
     getSuperWidth,
 } from "../../functions/canvas-property-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
+import { tickerDecoratorFn } from "../decorators/ticker-decorator";
 import { updateTickerProgression } from "../functions/ticker-utility";
 
 const DEFAULT_SPEED = 10;
@@ -63,7 +64,6 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
  * }),
  * ```
  */
-@tickerDecorator()
 export default class MoveTicker extends TickerBase<MoveTickerProps> {
     override fn(ticker: TickerValue, args: MoveTickerProps, aliases: string[], tickerId: string): void {
         if (args.speed === undefined) {
@@ -168,3 +168,4 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         return speed * (66 / 400);
     }
 }
+tickerDecoratorFn(MoveTicker);

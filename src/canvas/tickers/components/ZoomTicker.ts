@@ -1,9 +1,10 @@
 import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
-import { TickerBase, tickerDecorator, TickerValue } from "..";
+import { TickerBase, TickerValue } from "..";
 import { canvas } from "../..";
 import { ZoomTickerProps } from "../../../types/ticker";
 import { logger } from "../../../utils/log-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
+import { tickerDecoratorFn } from "../decorators/ticker-decorator";
 import { updateTickerProgression } from "../functions/ticker-utility";
 
 const DEFAULT_SPEED = 10;
@@ -22,7 +23,6 @@ const DEFAULT_SPEED = 10;
  * canvas.addTicker("alien", ticker)
  * ```
  */
-@tickerDecorator()
 export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     constructor(args: ZoomTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
@@ -150,3 +150,4 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         return { x: xLimit, y: yLimit };
     }
 }
+tickerDecoratorFn(ZoomTicker);

@@ -17,15 +17,19 @@ export const registeredTickers: { [name: TickerIdType]: typeof TickerBase } = {}
  */
 export default function tickerDecorator(name?: TickerIdType) {
     return function (target: typeof TickerBase<any>) {
-        if (!name) {
-            name = target.name;
-        }
-        if (registeredTickers[name]) {
-            logger.info(`Ticker ${name} already exists, it will be overwritten`);
-        }
-        target.prototype.id = name;
-        registeredTickers[name] = target;
+        tickerDecoratorFn(target, name);
     };
+}
+
+export function tickerDecoratorFn(target: typeof TickerBase<any>, name?: TickerIdType) {
+    if (!name) {
+        name = target.name;
+    }
+    if (registeredTickers[name]) {
+        logger.info(`Ticker ${name} already exists, it will be overwritten`);
+    }
+    target.prototype.id = name;
+    registeredTickers[name] = target;
 }
 
 /**

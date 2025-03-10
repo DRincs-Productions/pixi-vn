@@ -1,9 +1,10 @@
 import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
-import { canvas, tickerDecorator, TickerValue } from "../..";
+import { canvas, TickerValue } from "../..";
 import { FadeAlphaTickerProps } from "../../../types/ticker/FadeAlphaTickerProps";
 import { logger } from "../../../utils/log-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
 import TickerBase from "../classes/TickerBase";
+import { tickerDecoratorFn } from "../decorators/ticker-decorator";
 import { updateTickerProgression } from "../functions/ticker-utility";
 
 const DEFAULT_SPEED = 5;
@@ -24,7 +25,6 @@ const DEFAULT_SPEED = 5;
  * canvas.addTicker("bunny", ticker)
  * ```
  */
-@tickerDecorator()
 export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     constructor(args: FadeAlphaTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
@@ -117,3 +117,4 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
         return speed / 600;
     }
 }
+tickerDecoratorFn(FadeAlphaTicker);
