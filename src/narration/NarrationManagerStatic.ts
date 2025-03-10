@@ -3,6 +3,7 @@ import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
 import OpenedLabel from "../interface/OpenedLabel";
 import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
+import GameUnifier from "../unifier";
 import { restoreDiffChanges } from "../utils/diff-utility";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -44,13 +45,11 @@ export default class NarrationManagerStatic {
      */
     static get allOpenedLabels() {
         return (
-            StorageManagerStatic.getVariable<AllOpenedLabelsType>(
-                SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY
-            ) || {}
+            GameUnifier.getVariable<AllOpenedLabelsType>(SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY) || {}
         );
     }
     static set allOpenedLabels(value: AllOpenedLabelsType) {
-        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY, value);
+        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY, value);
     }
     static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
@@ -67,7 +66,7 @@ export default class NarrationManagerStatic {
         }
         let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error";
         let obj =
-            StorageManagerStatic.getVariable<CurrentStepTimesCounterMemoty>(
+            GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
             ) || {};
         if (!obj[labelId]) {
@@ -87,14 +86,14 @@ export default class NarrationManagerStatic {
             return;
         }
         let obj =
-            StorageManagerStatic.getVariable<CurrentStepTimesCounterMemoty>(
+            GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
             ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
         obj[labelId][currentLabelStepIndexId] = data;
-        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
+        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
     }
     static getCurrentStepTimesCounter(nestedId: string = ""): number {
         let lastStep = NarrationManagerStatic._lastStepIndex;
@@ -156,25 +155,23 @@ export default class NarrationManagerStatic {
             return;
         }
         let obj =
-            StorageManagerStatic.getVariable<CurrentStepTimesCounterMemoty>(
+            GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
             ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
         obj[labelId][currentLabelStepIndexId] = { lastStepIndexs: [], stepSha1: "" };
-        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
+        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
     }
     /**
      * is a list of all choices made by the player during the progression of the steps.
      */
     static get allChoicesMade() {
-        return (
-            StorageManagerStatic.getVariable<ChoicesMadeType[]>(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY) || []
-        );
+        return GameUnifier.getVariable<ChoicesMadeType[]>(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY) || [];
     }
     static set allChoicesMade(value: ChoicesMadeType[]) {
-        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY, value);
+        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY, value);
     }
     static _lastStepIndex: number = 0;
     /**
