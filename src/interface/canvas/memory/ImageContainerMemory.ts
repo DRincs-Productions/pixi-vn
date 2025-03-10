@@ -1,6 +1,6 @@
 import { PointData } from "pixi.js";
+import { ImageSprite } from "../../../canvas";
 import { AdditionalPositionsExtensionProps } from "../../../canvas/components/AdditionalPositions";
-import { ImageSprite } from "../../../classes";
 import ContainerMemory from "./ContainerMemory";
 import ImageSpriteMemory from "./ImageSpriteMemory";
 

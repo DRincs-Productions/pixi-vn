@@ -1,5 +1,4 @@
-import { narration } from ".."
-import { Label } from "../classes"
+import { Label, narration } from "..";
 
 export default interface LabelProps<T> {
     /**
@@ -8,7 +7,7 @@ export default interface LabelProps<T> {
      * @param label Label
      * @returns
      */
-    onStepStart?: (stepIndex: number, label: T) => void | Promise<void>,
+    onStepStart?: (stepIndex: number, label: T) => void | Promise<void>;
     /**
      * Is a function that will be executed in {@link Label.onStepStart} if the index of the step is 0
      * and when the user laods a save file.
@@ -27,16 +26,16 @@ export default interface LabelProps<T> {
      * })
      * ```
      */
-    onLoadingLabel?: (stepIndex: number, label: T) => void | Promise<void>,
+    onLoadingLabel?: (stepIndex: number, label: T) => void | Promise<void>;
     /**
      * Is a function that will be executed when the step ends.
      * @param stepIndex Step index
      * @param label Label
      * @returns
      */
-    onStepEnd?: (stepIndex: number, label: T) => void | Promise<void>,
+    onStepEnd?: (stepIndex: number, label: T) => void | Promise<void>;
     /**
      * Is the index of the choice that the label will perform. This variable is used in the system.
      */
-    choiseIndex?: number
+    choiseIndex?: number;
 }

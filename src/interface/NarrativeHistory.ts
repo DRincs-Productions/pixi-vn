@@ -1,25 +1,25 @@
-import { Dialogue } from "../classes"
-import { HistoryChoiceMenuOption, StorageElementType } from "../types"
+import { Dialogue } from "../narration";
+import { HistoryChoiceMenuOption, StorageElementType } from "../types";
 
 export default interface NarrativeHistory {
     /**
      * Dialogue to be shown in the game
      */
-    dialoge?: Dialogue
+    dialoge?: Dialogue;
     /**
      * List of choices asked of the player
      */
-    choices?: HistoryChoiceMenuOption[]
+    choices?: HistoryChoiceMenuOption[];
     /**
      * The player made a choice
      */
-    playerMadeChoice?: boolean
+    playerMadeChoice?: boolean;
     /**
      * The index of the step in the history.
      */
-    stepIndex: number
+    stepIndex: number;
     /**
      * The input value of the player
      */
-    inputValue?: StorageElementType
+    inputValue?: StorageElementType;
 }

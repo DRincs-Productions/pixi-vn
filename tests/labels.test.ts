@@ -1,31 +1,9 @@
 import { expect, test } from "vitest";
-import {
-    createExportableElement,
-    HistoryStepData,
-    NarrationManagerInterface,
-    NarrationManagerStatic,
-    newLabel,
-    sound,
-    storage,
-} from "../src";
+import { NarrationManagerInterface, newLabel } from "../src";
 import NarrationManager from "../src/narration/NarrationManager";
 import { getGamePath } from "../src/utils/path-utility";
 
-const getCurrentStepData: () => HistoryStepData = () => {
-    let currentStepData: HistoryStepData = {
-        path: getGamePath(),
-        storage: storage.export(),
-        canvas: {} as any,
-        sound: sound.removeOldSoundAndExport(),
-        labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
-        openedLabels: createExportableElement(NarrationManagerStatic._openedLabels),
-    };
-    return currentStepData;
-};
-
-const forceCompletionOfTicker = () => {};
-
-const narration: NarrationManagerInterface = new NarrationManager(getCurrentStepData, forceCompletionOfTicker);
+const narration: NarrationManagerInterface = new NarrationManager();
 
 const pathLabel = newLabel("path", [
     () => {
