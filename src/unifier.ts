@@ -7,6 +7,7 @@ import {
     OpenedLabel,
 } from "./interface";
 import { StorageElementType } from "./types";
+import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
 export default class GameUnifier {
@@ -23,7 +24,19 @@ export default class GameUnifier {
         throw new Error("Method not implemented.");
     };
     static exportCanvasData: () => ExportedCanvas = () => {
-        throw new Error("Method not implemented.");
+        logger.error("GameUnifier.exportCanvasData not implemented. Returning empty object.");
+        return {
+            tickers: {},
+            tickersSteps: {},
+            elements: {},
+            stage: {},
+            elementAliasesOrder: [],
+            tickersOnPause: {},
+            tickersToCompleteOnStepEnd: {
+                tikersIds: [],
+                stepAlias: [],
+            },
+        };
     };
     static exportSoundData: () => ExportedSounds = () => {
         throw new Error("Method not implemented.");
