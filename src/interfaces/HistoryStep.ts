@@ -1,10 +1,10 @@
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
+import ExportedCanvas from "../canvas/interfaces/ExportedCanvas";
 import { IStoratedChoiceMenuOption } from "../narration/classes/ChoiceMenuOption";
 import Dialogue from "../narration/classes/Dialogue";
 import { StorageElementType } from "../types";
 import { LabelIdType } from "../types/LabelIdType";
-import ExportedCanvas from "./export/ExportedCanvas";
 import ExportedSounds from "./export/ExportedSounds";
 import ExportedStorage from "./export/ExportedStorage";
 import OpenedLabel from "./OpenedLabel";

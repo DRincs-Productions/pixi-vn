@@ -1,4 +1,4 @@
-import ExportedCanvas from "./export/ExportedCanvas";
+import ExportedCanvas from "../canvas/interfaces/ExportedCanvas";
 import ExportedSounds from "./export/ExportedSounds";
 import ExportedStep from "./export/ExportedStep";
 import ExportedStorage from "./export/ExportedStorage";

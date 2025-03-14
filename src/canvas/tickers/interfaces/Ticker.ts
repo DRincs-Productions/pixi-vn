@@ -1,6 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { getTickerInstanceById } from "../canvas/tickers/decorators/ticker-decorator";
-import { TickerIdType } from "../types/TickerIdType";
+import { TickerIdType } from "../../../types/TickerIdType";
+import { getTickerInstanceById } from "../decorators/ticker-decorator";
 import TickerArgs from "./TickerArgs";
 
 export default interface Ticker<TArgs extends TickerArgs> {
