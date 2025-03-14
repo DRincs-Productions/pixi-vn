@@ -1,6 +1,6 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
-import OpenedLabel from "../interface/OpenedLabel";
+import HistoryStep, { HistoryStepData } from "../interfaces/HistoryStep";
+import OpenedLabel from "../interfaces/OpenedLabel";
 import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
 import GameUnifier from "../unifier";

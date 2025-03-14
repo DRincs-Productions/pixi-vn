@@ -1,6 +1,6 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
-import { ImageContainerMemory, ImageContainerOptions } from "../../interface";
+import { ImageContainerMemory, ImageContainerOptions } from "../../interfaces";
 import { logger } from "../../utils/log-utility";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import {

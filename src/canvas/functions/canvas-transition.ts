@@ -7,8 +7,8 @@ import {
     ShowWithDissolveTransitionProps,
     ShowWithFadeTransitionProps,
     ZoomInOutProps,
-} from "../../interface";
-import { PushInOutProps } from "../../interface/canvas/transition-props";
+} from "../../interfaces";
+import { PushInOutProps } from "../../interfaces/canvas/transition-props";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import ImageContainer from "../components/ImageContainer";

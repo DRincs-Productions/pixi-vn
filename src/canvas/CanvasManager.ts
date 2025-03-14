@@ -1,8 +1,15 @@
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
-import { CanvasBaseItemMemory, ExportedCanvas, Ticker, TickerArgs, TickerHistory, TickersSequence } from "../interface";
-import { TickersStep } from "../interface/TickersSequence";
+import {
+    CanvasBaseItemMemory,
+    ExportedCanvas,
+    Ticker,
+    TickerArgs,
+    TickerHistory,
+    TickersSequence,
+} from "../interfaces";
+import { TickersStep } from "../interfaces/TickersSequence";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";

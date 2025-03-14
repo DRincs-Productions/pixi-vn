@@ -1,11 +1,11 @@
-import { TickerProgrationType } from "../../interface"
+import { TickerProgrationType } from "../../interfaces";
 
 export type MoveTickerProps = {
     /**
      * The speed of the movement (1 pixels per 0.1 second)
      * @default 10
      */
-    speed?: number | { x: number, y: number }
+    speed?: number | { x: number; y: number };
     /**
      * The destination of the movement
      */
@@ -17,27 +17,27 @@ export type MoveTickerProps = {
          * - "align": The destination is in align
          * @default "pixel"
          */
-        type?: "pixel" | "percentage" | "align",
-        y: number,
-        x: number,
-    }
+        type?: "pixel" | "percentage" | "align";
+        y: number;
+        x: number;
+    };
     /**
      * The progression of the speed
      */
-    speedProgression?: TickerProgrationType
+    speedProgression?: TickerProgrationType;
     /**
      * The alias to remove after the fade is done
      * @default []
      */
-    aliasToRemoveAfter?: string[] | string
+    aliasToRemoveAfter?: string[] | string;
     /**
      * If true, the effect only starts if the canvas element have a texture
      * @default false
      */
-    startOnlyIfHaveTexture?: boolean
+    startOnlyIfHaveTexture?: boolean;
     /**
      * The alias to resume after the effect is done
      * @default []
      */
-    tickerAliasToResume?: string[] | string
-}
+    tickerAliasToResume?: string[] | string;
+};

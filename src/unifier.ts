@@ -5,7 +5,7 @@ import {
     ExportedStorage,
     HistoryStepData,
     OpenedLabel,
-} from "./interface";
+} from "./interfaces";
 import { StorageElementType } from "./types";
 import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";

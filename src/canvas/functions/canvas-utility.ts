@@ -1,6 +1,6 @@
 import { Assets, Texture } from "pixi.js";
 import { videoFormats } from "../../constants";
-import { TextureMemory } from "../../interface";
+import { TextureMemory } from "../../interfaces";
 
 /**
  * Get the memory object of the PixiJS texture
@@ -8,24 +8,24 @@ import { TextureMemory } from "../../interface";
  * @returns Memory object of the texture
  */
 export function getTextureMemory(texture: Texture, alias?: string): TextureMemory {
-    let url = texture.source.label
+    let url = texture.source.label;
     let textureMemory: TextureMemory = {
         url: url,
         alias: alias === url ? undefined : alias,
-    }
-    return textureMemory
+    };
+    return textureMemory;
 }
 
 export function checkIfVideo(textureAlias: string): boolean {
     if (Assets.cache.has(textureAlias)) {
-        let texture = Assets.get(textureAlias)
+        let texture = Assets.get(textureAlias);
         if (texture && texture instanceof Texture) {
-            textureAlias = texture.source.label
+            textureAlias = texture.source.label;
         }
     }
-    if (textureAlias.match(new RegExp(`(${videoFormats.join('|')})$`))) {
-        return true
+    if (textureAlias.match(new RegExp(`(${videoFormats.join("|")})$`))) {
+        return true;
     } else {
-        return false
+        return false;
     }
 }

@@ -6,9 +6,9 @@ import {
     HistoryStepData,
     NarrationManagerInterface,
     NarrativeHistory,
-} from "../interface";
-import ExportedStep from "../interface/export/ExportedStep";
-import { AdditionalShaSpetsEnum } from "../interface/HistoryStep";
+} from "../interfaces";
+import ExportedStep from "../interfaces/export/ExportedStep";
+import { AdditionalShaSpetsEnum } from "../interfaces/HistoryStep";
 import {
     ChoiceMenuOptionsType,
     Close,

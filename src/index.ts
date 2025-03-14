@@ -18,7 +18,7 @@ export {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
-export * from "./interface";
+export * from "./interfaces";
 export * from "./narration";
 export * from "./sound";
 export * from "./storage";
@@ -39,7 +39,7 @@ import {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
-import * as pixivninterface from "./interface";
+import * as pixivninterface from "./interfaces";
 import * as narrationUtils from "./narration";
 import * as soundUtils from "./sound";
 import * as storageUtils from "./storage";

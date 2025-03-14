@@ -1,5 +1,5 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { CacheableStoreItem } from "../interface/export/ExportedStorage";
+import { CacheableStoreItem } from "../interfaces/export/ExportedStorage";
 import { StorageElementType } from "../types/StorageElementType";
 import { createExportableElement } from "../utils/export-utility";
 

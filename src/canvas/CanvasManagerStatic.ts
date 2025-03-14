@@ -2,7 +2,7 @@ import { Devtools, initDevtools } from "@pixi/devtools";
 import sha1 from "crypto-js/sha1";
 import { Application, ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
-import { TickerHistory, TickersSequence, TickerTimeoutHistory } from "../interface";
+import { TickerHistory, TickersSequence, TickerTimeoutHistory } from "../interfaces";
 import additionalPositionsProperties from "../pixi-devtools/additionalPositionsProperties";
 import PauseTickerType from "../types/PauseTickerType";
 import { asciiArtLog } from "../utils/easter-egg";

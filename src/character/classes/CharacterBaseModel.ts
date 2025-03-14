@@ -1,4 +1,4 @@
-import CharacterBaseModelProps from "../../interface/CharacterBaseModelProps";
+import CharacterBaseModelProps from "../../interfaces/CharacterBaseModelProps";
 import { saveCharacter } from "../decorators/character-decorator";
 import CharacterStoredClass from "./CharacterStoredClass";
 

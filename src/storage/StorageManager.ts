@@ -1,6 +1,6 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { ExportedStorage, StorageManagerInterface } from "../interface";
-import { CacheableStoreItem } from "../interface/export/ExportedStorage";
+import { ExportedStorage, StorageManagerInterface } from "../interfaces";
+import { CacheableStoreItem } from "../interfaces/export/ExportedStorage";
 import { StorageElementType } from "../types/StorageElementType";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils/export-utility";

@@ -1,6 +1,6 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
-import { TextMemory } from "../../interface";
+import { TextMemory } from "../../interfaces";
 import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import { logger } from "../../utils/log-utility";

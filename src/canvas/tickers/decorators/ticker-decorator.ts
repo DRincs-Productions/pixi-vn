@@ -1,5 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { TickerArgs } from "../../../interface";
+import { TickerArgs } from "../../../interfaces";
 import { TickerIdType } from "../../../types/TickerIdType";
 import { logger } from "../../../utils/log-utility";
 import TickerBase from "../classes/TickerBase";

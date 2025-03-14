@@ -1,6 +1,6 @@
 import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
-import { ContainerMemory } from "../../interface";
+import { ContainerMemory } from "../../interfaces";
 import { CanvasEventNamesType } from "../../types";
 import ContainerChild from "../../types/ContainerChild";
 import { EventIdType } from "../../types/EventIdType";

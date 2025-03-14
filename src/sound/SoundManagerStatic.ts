@@ -1,4 +1,4 @@
-import { SoundPlay } from "../interface/export/ExportedSounds";
+import { SoundPlay } from "../interfaces/export/ExportedSounds";
 import Sound from "./classes/Sound";
 
 export default class SoundManagerStatic {

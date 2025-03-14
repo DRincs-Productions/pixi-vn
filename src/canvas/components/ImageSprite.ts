@@ -1,6 +1,6 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
-import { ImageSpriteMemory, ImageSpriteOptions } from "../../interface";
+import { ImageSpriteMemory, ImageSpriteOptions } from "../../interfaces";
 import { logger } from "../../utils/log-utility";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";

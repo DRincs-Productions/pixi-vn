@@ -1,5 +1,5 @@
 import { IMediaInstance, Sound as PixiSound } from "@pixi/sound";
-import { SoundOptions, SoundPlayOptions } from "../../interface";
+import { SoundOptions, SoundPlayOptions } from "../../interfaces";
 import GameUnifier from "../../unifier";
 import SoundManagerStatic from "../SoundManagerStatic";
 

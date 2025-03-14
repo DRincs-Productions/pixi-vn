@@ -1,4 +1,4 @@
-import { CharacterInterface } from "../../interface";
+import { CharacterInterface } from "../../interfaces";
 import { logger } from "../../utils/log-utility";
 
 export const registeredCharacters: { [id: string]: CharacterInterface } = {};

@@ -8,8 +8,8 @@ import {
     SoundLibrary,
     SoundMap,
 } from "@pixi/sound";
-import { ExportedSounds, SoundOptions, SoundPlayOptions } from "../interface";
-import { ExportedSoundPlay } from "../interface/export/ExportedSounds";
+import { ExportedSounds, SoundOptions, SoundPlayOptions } from "../interfaces";
+import { ExportedSoundPlay } from "../interfaces/export/ExportedSounds";
 import GameUnifier from "../unifier";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
