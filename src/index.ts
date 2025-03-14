@@ -9,6 +9,7 @@ export type {
     UPDATE_PRIORITY,
 } from "pixi.js";
 export * from "./canvas";
+export * from "./character";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
@@ -110,7 +111,7 @@ export namespace Game {
     /**
      * Clear all game data. This function is used to reset the game.
      */
-    export function clearAllGameDatas() {
+    export function clear() {
         storageUtils.storage.clear();
         canvasUtils.canvas.clear();
         soundUtils.sound.clear();
@@ -118,10 +119,10 @@ export namespace Game {
     }
 
     /**
-     * Get the save data
-     * @returns The save data
+     * Get all the game data. It can be used to save the game.
+     * @returns The game data
      */
-    export function getSaveData(): pixivninterface.SaveData {
+    export function exportGameState(): pixivninterface.SaveData {
         return {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
@@ -148,8 +149,8 @@ export namespace Game {
      * }
      * ```
      */
-    export function getSaveJson() {
-        const saveData = getSaveData();
+    export function exportGameJsonState() {
+        const saveData = exportGameState();
         return JSON.stringify(saveData);
     }
 
@@ -158,7 +159,7 @@ export namespace Game {
      * @param data The save data
      * @param navigate The function to navigate to a path
      */
-    export async function loadSaveData(data: pixivninterface.SaveData, navigate: (path: string) => void) {
+    export async function importGameState(data: pixivninterface.SaveData, navigate: (path: string) => void) {
         await narrationUtils.narration.import(data.stepData);
         storageUtils.storage.import(data.storageData);
         await canvasUtils.canvas.import(data.canvasData);
@@ -194,8 +195,8 @@ export namespace Game {
      * }
      * ```
      */
-    export async function loadSaveJson(dataString: string, navigate: (path: string) => void) {
-        await loadSaveData(jsonToSaveData(dataString), navigate);
+    export async function importGameJsonState(dataString: string, navigate: (path: string) => void) {
+        await importGameState(jsonToGameState(dataString), navigate);
     }
 
     /**
@@ -203,7 +204,7 @@ export namespace Game {
      * @param json The JSON string
      * @returns The save data
      */
-    export function jsonToSaveData(json: string): pixivninterface.SaveData {
+    export function jsonToGameState(json: string): pixivninterface.SaveData {
         return JSON.parse(json);
     }
 }
@@ -235,40 +236,40 @@ export default {
  * @deprecated Use the `Game.clearAllGameDatas` function instead
  */
 export function clearAllGameDatas() {
-    return Game.clearAllGameDatas();
+    return Game.clear();
 }
 
 /**
  * @deprecated Use the `Game.getSaveData` function instead
  */
 export function getSaveData() {
-    return Game.getSaveData();
+    return Game.exportGameState();
 }
 
 /**
  * @deprecated Use the `Game.getSaveJson` function instead
  */
 export function getSaveJson() {
-    return Game.getSaveJson();
+    return Game.exportGameJsonState();
 }
 
 /**
  * @deprecated Use the `Game.loadSaveData` function instead
  */
 export async function loadSaveData(data: pixivninterface.SaveData, navigate: (path: string) => void) {
-    return Game.loadSaveData(data, navigate);
+    return Game.importGameState(data, navigate);
 }
 
 /**
  * @deprecated Use the `Game.loadSaveJson` function instead
  */
 export async function loadSaveJson(dataString: string, navigate: (path: string) => void) {
-    return Game.loadSaveJson(dataString, navigate);
+    return Game.importGameJsonState(dataString, navigate);
 }
 
 /**
  * @deprecated Use the `Game.jsonToSaveData` function instead
  */
 export function jsonToSaveData(json: string) {
-    return Game.jsonToSaveData(json);
+    return Game.jsonToGameState(json);
 }
