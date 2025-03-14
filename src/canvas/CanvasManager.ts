@@ -1,15 +1,7 @@
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
-import {
-    CanvasBaseItemMemory,
-    ExportedCanvas,
-    Ticker,
-    TickerArgs,
-    TickerHistory,
-    TickersSequence,
-} from "../interfaces";
-import { TickersStep } from "../interfaces/TickersSequence";
+import { ExportedCanvas } from "../interfaces";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -27,9 +19,11 @@ import Text, { setMemoryText } from "./components/Text";
 import VideoSprite, { setMemoryVideoSprite } from "./components/VideoSprite";
 import { importCanvasElement } from "./functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "./functions/canvas-memory-utility";
-import { TickerValue } from "./tickers";
+import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
+import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
 import TickerBase from "./tickers/classes/TickerBase";
 import { getTickerInstanceById } from "./tickers/decorators/ticker-decorator";
+import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
