@@ -1,8 +1,8 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { TickerArgs } from "../../../interfaces";
 import { TickerIdType } from "../../../types/TickerIdType";
 import { logger } from "../../../utils/log-utility";
 import TickerBase from "../classes/TickerBase";
+import TickerArgs from "../interfaces/TickerArgs";
 
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.
