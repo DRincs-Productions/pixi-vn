@@ -1,6 +1,12 @@
 import diff from "microdiff";
-import { createExportableElement, NarrationManagerInterface, SYSTEM_RESERVED_STORAGE_KEYS } from "..";
-import { CharacterInterface, HistoryStep, HistoryStepData, NarrativeHistory } from "../interface";
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
+import {
+    CharacterInterface,
+    HistoryStep,
+    HistoryStepData,
+    NarrationManagerInterface,
+    NarrativeHistory,
+} from "../interface";
 import ExportedStep from "../interface/export/ExportedStep";
 import { AdditionalShaSpetsEnum } from "../interface/HistoryStep";
 import {
@@ -15,6 +21,7 @@ import ChoicesMadeType from "../types/ChoicesMadeType";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType";
 import GameUnifier from "../unifier";
+import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";

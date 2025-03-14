@@ -1,4 +1,4 @@
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "..";
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import HistoryStep, { HistoryStepData } from "../interface/HistoryStep";
 import OpenedLabel from "../interface/OpenedLabel";
 import ChoicesMadeType from "../types/ChoicesMadeType";
