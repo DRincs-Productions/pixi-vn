@@ -5,7 +5,6 @@ import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
 import { TickerHistory, TickersSequence, TickerTimeoutHistory } from "../interfaces";
 import additionalPositionsProperties from "../pixi-devtools/additionalPositionsProperties";
 import PauseTickerType from "../types/PauseTickerType";
-import { asciiArtLog } from "../utils/easter-egg";
 import { logger } from "../utils/log-utility";
 
 /**
@@ -81,8 +80,6 @@ export default class CanvasManagerStatic {
 
                 // add the game layer
                 CanvasManagerStatic.gameLayer;
-
-                asciiArtLog();
             });
     }
     /**

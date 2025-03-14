@@ -45,6 +45,7 @@ import * as soundUtils from "./sound";
 import * as storageUtils from "./storage";
 import GameUnifier from "./unifier";
 import * as functions from "./utils";
+import { asciiArtLog } from "./utils/easter-egg";
 import { getGamePath } from "./utils/path-utility";
 
 export namespace Game {
@@ -105,6 +106,7 @@ export namespace Game {
         GameUnifier.getCurrentLabelStepIndex = () => narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0;
         GameUnifier.exportNarrationData = narrationUtils.narration.export;
         GameUnifier.importNarrationData = narrationUtils.narration.import;
+        asciiArtLog();
         return await canvasUtils.canvas.initialize(element, options, devtoolsOptions);
     }
 
