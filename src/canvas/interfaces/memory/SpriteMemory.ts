@@ -1,6 +1,6 @@
 import { SpriteOptions } from "pixi.js";
-import { TextureMemory } from "../../../canvas";
 import { EventIdType } from "../../../types/EventIdType";
+import TextureMemory from "../TextureMemory";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
 export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {

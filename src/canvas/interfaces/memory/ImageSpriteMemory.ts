@@ -1,4 +1,4 @@
-import { AdditionalPositionsExtensionProps } from "../../../canvas/components/AdditionalPositions";
+import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositions";
 import { SpriteBaseMemory } from "./SpriteMemory";
 
 /**

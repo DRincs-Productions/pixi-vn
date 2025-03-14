@@ -88,7 +88,23 @@ export { addImageCointainer, showImageContainer } from "./functions/image-contai
 export { addImage, loadImage, showImage } from "./functions/image-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, loadVideo, showVideo } from "./functions/video-utility";
+export type { ImageContainerOptions, ImageSpriteOptions, VideoSpriteOptions } from "./interfaces/canvas-options";
+export type { ShakeEffectProps } from "./interfaces/effect-props";
+export type { default as CanvasBaseItemMemory } from "./interfaces/memory/CanvasBaseItemMemory";
+export type { default as ContainerMemory } from "./interfaces/memory/ContainerMemory";
+export type { default as ImageContainerMemory } from "./interfaces/memory/ImageContainerMemory";
+export type { default as ImageSpriteMemory } from "./interfaces/memory/ImageSpriteMemory";
+export type { SpriteBaseMemory, default as SpriteMemory } from "./interfaces/memory/SpriteMemory";
+export type { default as TextMemory } from "./interfaces/memory/TextMemory";
+export type { default as VideoSpriteMemory } from "./interfaces/memory/VideoSpriteMemory";
 export type { default as TextureMemory } from "./interfaces/TextureMemory";
+export type {
+    MoveInOutProps,
+    PushInOutProps,
+    ShowWithDissolveTransitionProps,
+    ShowWithFadeTransitionProps,
+    ZoomInOutProps,
+} from "./interfaces/transition-props";
 export * from "./tickers";
 export { canvas };
 
