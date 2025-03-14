@@ -8,7 +8,6 @@ GameUnifier.exportCanvasData = () => {
     return {} as any;
 };
 GameUnifier.importCanvasData = async () => {};
-GameUnifier.forceCompletionOfTicker;
 
 const narration: NarrationManagerInterface = new NarrationManager();
 
