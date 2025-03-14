@@ -14,16 +14,16 @@ export default class StorageManagerStatic {
         return SYSTEM_RESERVED_STORAGE_KEYS;
     }
     static get tempStorage(): { [key: string]: StorageElementType } {
-        return StorageManagerStatic.storage.get(StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY) || {};
+        return StorageManagerStatic.storage.get(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_KEY) || {};
     }
     static set tempStorage(value: { [key: string]: StorageElementType }) {
-        StorageManagerStatic.storage.set(StorageManagerStatic.keysSystem.TEMP_STORAGE_KEY, value);
+        StorageManagerStatic.storage.set(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_KEY, value);
     }
     static get tempStorageDeadlines(): { [key: string]: number } {
-        return StorageManagerStatic.storage.get(StorageManagerStatic.keysSystem.TEMP_STORAGE_DEADLINES_KEY) || {};
+        return StorageManagerStatic.storage.get(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_DEADLINES_KEY) || {};
     }
     static set tempStorageDeadlines(value: { [key: string]: number }) {
-        StorageManagerStatic.storage.set(StorageManagerStatic.keysSystem.TEMP_STORAGE_DEADLINES_KEY, value);
+        StorageManagerStatic.storage.set(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_DEADLINES_KEY, value);
     }
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
         if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
@@ -77,24 +77,22 @@ export default class StorageManagerStatic {
         }
         StorageManagerStatic.storage.delete(key);
     }
-    static setFlag(name: string, value: boolean) {
-        let flags =
-            StorageManagerStatic.getVariable<string[]>(StorageManagerStatic.keysSystem.FLAGS_CATEGORY_KEY) || [];
+    static setFlag(key: string, value: boolean) {
+        let flags = StorageManagerStatic.getVariable<string[]>(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY) || [];
         if (value) {
-            if (!flags.includes(name)) {
-                flags.push(name);
+            if (!flags.includes(key)) {
+                flags.push(key);
             }
         } else {
-            let index = flags.indexOf(name);
+            let index = flags.indexOf(key);
             if (index > -1) {
                 flags.splice(index, 1);
             }
         }
-        StorageManagerStatic.setVariable(StorageManagerStatic.keysSystem.FLAGS_CATEGORY_KEY, flags);
+        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY, flags);
     }
-    static getFlag(name: string): boolean {
-        let flags =
-            StorageManagerStatic.getVariable<string[]>(StorageManagerStatic.keysSystem.FLAGS_CATEGORY_KEY) || [];
-        return flags.includes(name);
+    static getFlag(key: string): boolean {
+        let flags = StorageManagerStatic.getVariable<string[]>(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY) || [];
+        return flags.includes(key);
     }
 }

@@ -63,16 +63,16 @@ export default interface StorageManagerInterface {
 
     /**
      * Set a flag to true or false.
-     * @param name The name of the flag
+     * @param key The name of the flag
      * @param value The value of the flag.
      */
-    setFlag(name: string, value: boolean): void;
+    setFlag(key: string, value: boolean): void;
     /**
      * Get the value of a flag
-     * @param name The name of the flag
+     * @param key The name of the flag
      * @returns The value of the flag
      */
-    getFlag(name: string): boolean;
+    getFlag(key: string): boolean;
 
     /**
      * Clear the storage and the oidsUsed

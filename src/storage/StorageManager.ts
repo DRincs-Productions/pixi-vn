@@ -8,16 +8,6 @@ import { logger } from "../utils/log-utility";
 import StorageManagerStatic from "./StorageManagerStatic";
 
 export default class StorageManager implements StorageManagerInterface {
-    constructor() {
-        GameUnifier.exportStorageData = this.export;
-        GameUnifier.importStorageData = this.import;
-        GameUnifier.getVariable = this.getVariable;
-        GameUnifier.setVariable = this.setVariable;
-        GameUnifier.removeVariable = this.removeVariable;
-        GameUnifier.getFlag = this.getFlag;
-        GameUnifier.setFlag = this.setFlag;
-        GameUnifier.clearOldTempVariables = StorageManagerStatic.clearOldTempVariables;
-    }
     get storage() {
         return StorageManagerStatic.storage;
     }
@@ -77,11 +67,11 @@ export default class StorageManager implements StorageManagerInterface {
         StorageManagerStatic.tempStorage = tempStorage;
         StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
-    setFlag(name: string, value: boolean) {
-        return StorageManagerStatic.setFlag(name, value);
+    setFlag(key: string, value: boolean) {
+        return StorageManagerStatic.setFlag(key, value);
     }
-    getFlag(name: string): boolean {
-        return StorageManagerStatic.getFlag(name);
+    getFlag(key: string): boolean {
+        return StorageManagerStatic.getFlag(key);
     }
     public clear() {
         this.storage.clear();
