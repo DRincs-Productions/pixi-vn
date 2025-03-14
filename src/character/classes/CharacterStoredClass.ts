@@ -1,5 +1,5 @@
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import StoredClassModel from "../storage/classes/StoredClassModel";
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "../../constants";
+import StoredClassModel from "../../storage/classes/StoredClassModel";
 
 const EMOTION_SEPARATOR = "@";
 export default class CharacterStoredClass extends StoredClassModel {

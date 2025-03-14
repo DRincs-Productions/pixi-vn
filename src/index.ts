@@ -9,7 +9,6 @@ export type {
     UPDATE_PRIORITY,
 } from "pixi.js";
 export * from "./canvas";
-export * from "./classes";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
@@ -18,7 +17,6 @@ export {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
-export * from "./decorators";
 export * from "./interface";
 export * from "./narration";
 export * from "./sound";
@@ -31,7 +29,7 @@ export * from "./utils";
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
-import * as classes from "./classes";
+import * as characterUtils from "./character";
 import {
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
@@ -40,7 +38,6 @@ import {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
-import * as decorators from "./decorators";
 import * as pixivninterface from "./interface";
 import * as narrationUtils from "./narration";
 import * as soundUtils from "./sound";
@@ -214,7 +211,7 @@ export namespace Game {
 export default {
     Assets,
     Rectangle,
-    ...classes,
+    characterUtils,
     canvasUtils,
     narrationUtils,
     soundUtils,
@@ -224,7 +221,6 @@ export default {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
     PIXIVN_VERSION,
-    ...decorators,
     ...functions,
     ...pixivninterface,
     canvas: canvasUtils.canvas,
