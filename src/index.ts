@@ -25,6 +25,7 @@ export * from "./sound";
 export * from "./storage";
 export * from "./types";
 export * from "./types/ticker";
+export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 
 import { Assets, Rectangle } from "pixi.js";
@@ -74,6 +75,12 @@ export namespace Game {
         // sound
         GameUnifier.exportSoundData = () => soundUtils.sound.export();
         GameUnifier.importSoundData = (data) => soundUtils.sound.import(data);
+        // narration
+        GameUnifier.getLastStepIndex = () => narrationUtils.narration.lastStepIndex;
+        GameUnifier.getOpenedLabels = () => functions.createExportableElement(narrationUtils.narration.openedLabels);
+        GameUnifier.getCurrentLabelStepIndex = () => narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0;
+        GameUnifier.exportNarrationData = narrationUtils.narration.export;
+        GameUnifier.importNarrationData = narrationUtils.narration.import;
     }
 
     /**
@@ -198,4 +205,5 @@ export default {
     sound: soundUtils.sound,
     storage: storageUtils.storage,
     Game,
+    GameUnifier,
 };

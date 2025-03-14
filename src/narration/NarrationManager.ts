@@ -28,13 +28,6 @@ import NarrationManagerStatic from "./NarrationManagerStatic";
  * This class is a class that manages the steps and labels of the game.
  */
 export default class NarrationManager implements NarrationManagerInterface {
-    constructor() {
-        GameUnifier.getLastStepIndex = () => this.lastStepIndex;
-        GameUnifier.getOpenedLabels = () => createExportableElement(this.openedLabels);
-        GameUnifier.getCurrentLabelStepIndex = () => NarrationManagerStatic.currentLabelStepIndex || 0;
-        GameUnifier.exportNarrationData = this.export;
-        GameUnifier.importNarrationData = this.import;
-    }
     private async restoreFromHistoryStep(
         restoredStep: HistoryStepData,
         navigate: (path: string) => void

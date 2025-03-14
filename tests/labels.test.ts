@@ -1,15 +1,6 @@
 import { expect, test } from "vitest";
-import { NarrationManagerInterface, newLabel } from "../src";
-import NarrationManager from "../src/narration/NarrationManager";
-import GameUnifier from "../src/unifier";
+import { narration, newLabel } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
-
-GameUnifier.exportCanvasData = () => {
-    return {} as any;
-};
-GameUnifier.importCanvasData = async () => {};
-
-const narration: NarrationManagerInterface = new NarrationManager();
 
 const pathLabel = newLabel("path", [
     () => {
