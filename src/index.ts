@@ -122,7 +122,7 @@ export namespace Game {
      * Get all the game data. It can be used to save the game.
      * @returns The game data
      */
-    export function exportGameState(): pixivninterface.SaveData {
+    export function exportGameState(): pixivninterface.GameState {
         return {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
@@ -159,7 +159,7 @@ export namespace Game {
      * @param data The save data
      * @param navigate The function to navigate to a path
      */
-    export async function importGameState(data: pixivninterface.SaveData, navigate: (path: string) => void) {
+    export async function importGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
         await narrationUtils.narration.import(data.stepData);
         storageUtils.storage.import(data.storageData);
         await canvasUtils.canvas.import(data.canvasData);
@@ -204,7 +204,7 @@ export namespace Game {
      * @param json The JSON string
      * @returns The save data
      */
-    export function jsonToGameState(json: string): pixivninterface.SaveData {
+    export function jsonToGameState(json: string): pixivninterface.GameState {
         return JSON.parse(json);
     }
 }
@@ -256,7 +256,7 @@ export function getSaveJson() {
 /**
  * @deprecated Use the `Game.loadSaveData` function instead
  */
-export async function loadSaveData(data: pixivninterface.SaveData, navigate: (path: string) => void) {
+export async function loadSaveData(data: pixivninterface.GameState, navigate: (path: string) => void) {
     return Game.importGameState(data, navigate);
 }
 
