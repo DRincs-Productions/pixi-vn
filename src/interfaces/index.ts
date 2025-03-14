@@ -38,7 +38,6 @@ export type {
     TextMemory,
     VideoSpriteMemory,
 } from "./canvas/memory";
-export type { default as TextureMemory } from "./canvas/TextureMemory";
 export type {
     MoveInOutProps,
     PushInOutProps,

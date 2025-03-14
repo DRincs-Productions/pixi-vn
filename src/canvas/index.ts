@@ -88,6 +88,7 @@ export { addImageCointainer, showImageContainer } from "./functions/image-contai
 export { addImage, loadImage, showImage } from "./functions/image-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, loadVideo, showVideo } from "./functions/video-utility";
+export type { default as TextureMemory } from "./interfaces/TextureMemory";
 export * from "./tickers";
 export { canvas };
 
