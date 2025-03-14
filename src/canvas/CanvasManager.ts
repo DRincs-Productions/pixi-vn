@@ -8,7 +8,6 @@ import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
 import { aliasToRemoveAfter } from "../types/ticker/AliasToRemoveAfterType";
-import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import CanvasManagerStatic from "./CanvasManagerStatic";
@@ -29,19 +28,6 @@ import { getTickerInstanceById } from "./tickers/decorators/ticker-decorator";
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
  */
 export default class CanvasManager {
-    constructor() {
-        GameUnifier.exportCanvasData = this.export;
-        GameUnifier.importCanvasData = this.import;
-        GameUnifier.forceCompletionOfTicker = () => {
-            CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
-                this.forceCompletionOfTicker(id);
-            });
-            CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
-                this.forceCompletionOfTicker(id, alias);
-            });
-            CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
-        };
-    }
     /**
      * The PIXI Application instance.
      * It not recommended to use this property directly.

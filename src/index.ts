@@ -59,6 +59,18 @@ export namespace Game {
         GameUnifier.setFlag = (name, value) => storageUtils.storage.setFlag(name, value);
         GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
             storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
+        // canvas
+        GameUnifier.exportCanvasData = canvasUtils.canvas.export;
+        GameUnifier.importCanvasData = canvasUtils.canvas.import;
+        GameUnifier.forceCompletionOfTicker = () => {
+            canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
+                canvasUtils.canvas.forceCompletionOfTicker(id);
+            });
+            canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
+                canvasUtils.canvas.forceCompletionOfTicker(id, alias);
+            });
+            canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+        };
     }
 
     /**
