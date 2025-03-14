@@ -1,12 +1,7 @@
+import { CharacterInterface } from "@drincs/pixi-vn";
 import diff from "microdiff";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import {
-    CharacterInterface,
-    HistoryStep,
-    HistoryStepData,
-    NarrationManagerInterface,
-    NarrativeHistory,
-} from "../interfaces";
+import { HistoryStep, HistoryStepData, NarrationManagerInterface, NarrativeHistory } from "../interfaces";
 import ExportedStep from "../interfaces/export/ExportedStep";
 import { AdditionalShaSpetsEnum } from "../interfaces/HistoryStep";
 import {

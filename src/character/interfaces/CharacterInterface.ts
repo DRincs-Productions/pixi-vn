@@ -57,5 +57,8 @@
  * ```
  */
 export default interface CharacterInterface {
+    /**
+     * The id of the character. It must be unique.
+     */
     id: string;
 }
