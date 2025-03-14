@@ -31,8 +31,6 @@ test("setup", async () => {
     GameUnifier.importNarrationData = narration.import;
 
     // canvas
-    GameUnifier.exportCanvasData = () => {
-        return {} as any;
-    };
     GameUnifier.importCanvasData = async () => {};
+    GameUnifier.forceCompletionOfTicker = () => {};
 });
