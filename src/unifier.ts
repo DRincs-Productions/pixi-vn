@@ -12,48 +12,47 @@ import { getGamePath } from "./utils/path-utility";
 
 export default class GameUnifier {
     static getLastStepIndex: () => number = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static getCurrentLabelStepIndex: () => number = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static getOpenedLabels: () => OpenedLabel[] = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static exportStorageData: () => ExportedStorage = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static exportCanvasData: () => ExportedCanvas = () => {
-        logger.error("GameUnifier.exportCanvasData not implemented. Returning empty object.");
-        return {
-            tickers: {},
-            tickersSteps: {},
-            elements: {},
-            stage: {},
-            elementAliasesOrder: [],
-            tickersOnPause: {},
-            tickersToCompleteOnStepEnd: {
-                tikersIds: [],
-                stepAlias: [],
-            },
-        };
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
     };
     static exportSoundData: () => ExportedSounds = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static exportNarrationData: () => ExportedStep = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static importStorageData: (data: ExportedStorage) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static importCanvasData: (data: ExportedCanvas) => Promise<void> = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static importSoundData: (data: ExportedSounds) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static importNarrationData: (data: ExportedStep) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static getCurrentStepData: () => HistoryStepData = () => {
@@ -68,24 +67,31 @@ export default class GameUnifier {
         return currentStepData;
     };
     static forceCompletionOfTicker: () => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static setVariable: (key: string, value: StorageElementType) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static removeVariable: (key: string) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static getFlag: (name: string) => boolean = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static setFlag: (name: string, value: boolean) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     static clearOldTempVariables: (openedLabelsNumber: number) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
 }

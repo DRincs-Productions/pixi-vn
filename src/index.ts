@@ -28,7 +28,8 @@ export * from "./types/ticker";
 export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 
-import { Assets, Rectangle } from "pixi.js";
+import { Devtools } from "@pixi/devtools";
+import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
 import * as classes from "./classes";
 import {
@@ -49,7 +50,32 @@ import * as functions from "./utils";
 import { getGamePath } from "./utils/path-utility";
 
 export namespace Game {
-    export async function initialize() {
+    /**
+     * Initialize the Game and PixiJS Application and the interface div.
+     * This method should be called before any other method.
+     * @param element The html element where I will put the canvas. Example: document.body
+     * @param width The width of the canvas
+     * @param height The height of the canvas
+     * @param options The options of PixiJS Application
+     * @param devtoolsOptions The options of the devtools. You can read more about it in the [PixiJS Devtools documentation](https://pixijs.io/devtools/docs/plugin/)
+     * @example
+     * ```typescript
+     * const body = document.body
+     * if (!body) {
+     *     throw new Error('body element not found')
+     * }
+     * await Game.initialize(body, {
+     *     width: 1920,
+     *     height: 1080,
+     *     backgroundColor: "#303030"
+     * })
+     * ```
+     */
+    export async function initialize(
+        element: HTMLElement,
+        options: Partial<ApplicationOptions> & { width: number; height: number },
+        devtoolsOptions?: Devtools
+    ) {
         // storage
         GameUnifier.exportStorageData = () => storageUtils.storage.export();
         GameUnifier.importStorageData = (data) => storageUtils.storage.import(data);
@@ -81,6 +107,7 @@ export namespace Game {
         GameUnifier.getCurrentLabelStepIndex = () => narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0;
         GameUnifier.exportNarrationData = narrationUtils.narration.export;
         GameUnifier.importNarrationData = narrationUtils.narration.import;
+        return await canvasUtils.canvas.initialize(element, options, devtoolsOptions);
     }
 
     /**

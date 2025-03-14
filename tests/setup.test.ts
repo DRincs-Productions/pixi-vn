@@ -33,4 +33,7 @@ test("setup", async () => {
     // canvas
     GameUnifier.importCanvasData = async () => {};
     GameUnifier.forceCompletionOfTicker = () => {};
+    GameUnifier.exportCanvasData = () => {
+        return {} as any;
+    };
 });
