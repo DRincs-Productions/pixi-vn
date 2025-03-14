@@ -1,5 +1,5 @@
 import { test } from "vitest";
-import { storage, StorageManagerStatic } from "../src";
+import { sound, storage, StorageManagerStatic } from "../src";
 import GameUnifier from "../src/unifier";
 
 test("setup", async () => {
@@ -13,4 +13,7 @@ test("setup", async () => {
     GameUnifier.setFlag = (name, value) => storage.setFlag(name, value);
     GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
         StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
+    // sound
+    GameUnifier.exportSoundData = () => sound.export();
+    GameUnifier.importSoundData = (data) => sound.import(data);
 });

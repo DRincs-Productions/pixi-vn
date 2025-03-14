@@ -60,8 +60,8 @@ export namespace Game {
         GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
             storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
         // canvas
-        GameUnifier.exportCanvasData = canvasUtils.canvas.export;
-        GameUnifier.importCanvasData = canvasUtils.canvas.import;
+        GameUnifier.exportCanvasData = () => canvasUtils.canvas.export();
+        GameUnifier.importCanvasData = (data) => canvasUtils.canvas.import(data);
         GameUnifier.forceCompletionOfTicker = () => {
             canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
                 canvasUtils.canvas.forceCompletionOfTicker(id);
@@ -71,6 +71,9 @@ export namespace Game {
             });
             canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
         };
+        // sound
+        GameUnifier.exportSoundData = () => soundUtils.sound.export();
+        GameUnifier.importSoundData = (data) => soundUtils.sound.import(data);
     }
 
     /**

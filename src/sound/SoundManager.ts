@@ -19,8 +19,6 @@ import SoundManagerStatic from "./SoundManagerStatic";
 export default class SoundManager extends SoundLibrary {
     constructor() {
         super();
-        GameUnifier.exportSoundData = this.export;
-        GameUnifier.importSoundData = this.import;
     }
     override get context(): IMediaContext {
         return sound.context;
