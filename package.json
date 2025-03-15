@@ -43,14 +43,20 @@
     "vitest": "^3.0.5"
   },
   "keywords": [
+    "2d",
+    "canvas",
+    "development",
     "engine",
     "game",
+    "game-development",
     "game-engine",
+    "games",
     "js",
     "novel",
     "pixi",
     "pixi-js",
     "visual",
-    "visual-novel"
+    "visual-novel",
+    "webgl"
   ]
 }
