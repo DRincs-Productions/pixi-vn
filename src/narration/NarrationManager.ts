@@ -66,10 +66,18 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /**
      * Add a label to the history.
-     * @param label The label to add to the history.
+     * @param stepSha The sha1 of the step.
+     * @param options The options.
      */
-    private addStepHistory(stepSha: string, choiseMade?: number) {
-        let currentStepData: HistoryStepData = GameUnifier.getCurrentStepData();
+    private addStepHistory(
+        stepSha: string,
+        options: {
+            choiseMade?: number;
+            ignoreSameStep?: boolean;
+        } = {}
+    ) {
+        const { choiseMade, ignoreSameStep } = options;
+        const currentStepData: HistoryStepData = GameUnifier.getCurrentStepData();
         if (NarrationManagerStatic.originalStepData) {
             if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {
@@ -78,6 +86,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     );
                     let historyStepOpenedLabelsString = JSON.stringify(currentStepData.openedLabels);
                     if (
+                        !ignoreSameStep &&
                         lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
                         NarrationManagerStatic.originalStepData.path === currentStepData.path &&
                         NarrationManagerStatic.originalStepData.labelIndex === currentStepData.labelIndex
@@ -286,7 +295,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             return;
         }
         if (currentLabel.steps.length > currentLabelStepIndex) {
-            this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER);
+            this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
         }
     }
 
@@ -413,7 +422,10 @@ export default class NarrationManager implements NarrationManagerInterface {
                     NarrationManagerStatic.stepsRunning--;
                     if (NarrationManagerStatic.stepsRunning === 0) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
-                        this.addStepHistory(stepSha, NarrationManagerStatic.choiseMadeTemp);
+                        this.addStepHistory(stepSha, {
+                            ...options,
+                            choiseMade: NarrationManagerStatic.choiseMadeTemp,
+                        });
                         NarrationManagerStatic.choiseMadeTemp = undefined;
 
                         if (NarrationManagerStatic.goNextRequests > 0) {

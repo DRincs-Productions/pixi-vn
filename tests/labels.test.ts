@@ -134,3 +134,15 @@ test("stepCounter & currentStepTimesCounter test", async () => {
             .stepCounters
     ).toEqual([2, 5]);
 });
+
+test("addCurrentStepToHistory", async () => {
+    narration.clear();
+    storage.clear();
+    await narration.callLabel(stepCounterLabel, {});
+    await narration.goNext({});
+    await narration.goNext({});
+    await narration.goNext({});
+    expect(narration.stepCounter).toBe(4);
+    narration.addCurrentStepToHistory();
+    expect(narration.stepCounter).toBe(5);
+});
