@@ -32,6 +32,9 @@ export default class GameUnifier {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
+    /**
+     * Returns the current state of the game step.
+     */
     static get currentGameStepState() {
         return GameUnifier._getCurrentGameStepState();
     }
