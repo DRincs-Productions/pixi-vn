@@ -8,12 +8,12 @@ import {
     SoundLibrary,
     SoundMap,
 } from "@pixi/sound";
-import { ExportedSounds, SoundOptions, SoundPlayOptions } from "../interfaces";
-import { ExportedSoundPlay } from "../interfaces/export/ExportedSounds";
 import GameUnifier from "../unifier";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
+import ExportedSounds, { ExportedSoundPlay } from "./interfaces/ExportedSounds";
+import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager extends SoundLibrary {

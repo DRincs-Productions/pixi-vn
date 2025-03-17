@@ -1,7 +1,7 @@
 import { IMediaInstance, Sound as PixiSound } from "@pixi/sound";
-import { SoundOptions, SoundPlayOptions } from "../../interfaces";
 import GameUnifier from "../../unifier";
 import SoundManagerStatic from "../SoundManagerStatic";
+import SoundOptions, { SoundPlayOptions } from "../interfaces/SoundOptions";
 
 export default class Sound extends PixiSound {
     alias?: string;

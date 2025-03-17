@@ -1,6 +1,7 @@
 import { ExportedCanvas } from "./canvas";
-import { ExportedSounds, ExportedStorage } from "./interfaces";
+import { ExportedStorage } from "./interfaces";
 import { ExportedStep, HistoryStepData, OpenedLabel } from "./narration";
+import { ExportedSounds } from "./sound";
 import { StorageElementType } from "./types";
 import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
