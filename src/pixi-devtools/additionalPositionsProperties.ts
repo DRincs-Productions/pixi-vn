@@ -1,13 +1,15 @@
 import { PropertiesExtension } from "@pixi/devtools";
-import { ImageContainer, ImageSprite, VideoSprite } from "../classes";
+import { ImageContainer, ImageSprite, VideoSprite } from "../canvas";
 
 const additionalPositionsProperties: PropertiesExtension = {
     extension: {
         type: "sceneProperties",
-        name: 'additional-positions',
+        name: "additional-positions",
     },
     testNode(container) {
-        return container instanceof ImageSprite || container instanceof VideoSprite || container instanceof ImageContainer
+        return (
+            container instanceof ImageSprite || container instanceof VideoSprite || container instanceof ImageContainer
+        );
     },
     testProp(prop) {
         switch (prop) {
@@ -22,7 +24,11 @@ const additionalPositionsProperties: PropertiesExtension = {
         }
     },
     setProperty(container, prop, value) {
-        if (container instanceof ImageSprite || container instanceof VideoSprite || container instanceof ImageContainer) {
+        if (
+            container instanceof ImageSprite ||
+            container instanceof VideoSprite ||
+            container instanceof ImageContainer
+        ) {
             switch (prop) {
                 case "xAlign":
                     container.xAlign = value / 100;
@@ -43,21 +49,21 @@ const additionalPositionsProperties: PropertiesExtension = {
         return [
             {
                 value: container.positionType,
-                prop: 'positionType',
+                prop: "positionType",
                 entry: {
-                    section: 'Transform',
+                    section: "Transform",
                     type: "text",
-                    label: 'Position Type',
+                    label: "Position Type",
                 },
             },
             {
                 value: container.xAlign * 100,
-                prop: 'xAlign',
+                prop: "xAlign",
                 entry: {
-                    section: 'Transform',
+                    section: "Transform",
                     type: "range",
-                    label: 'X Align',
-                    tooltip: '0% is left, 100% is right',
+                    label: "X Align",
+                    tooltip: "0% is left, 100% is right",
                     options: {
                         min: 0,
                         max: 100,
@@ -66,12 +72,12 @@ const additionalPositionsProperties: PropertiesExtension = {
             },
             {
                 value: container.yAlign * 100,
-                prop: 'yAlign',
+                prop: "yAlign",
                 entry: {
-                    section: 'Transform',
+                    section: "Transform",
                     type: "range",
-                    label: 'Y Align',
-                    tooltip: '0% is top, 100% is bottom',
+                    label: "Y Align",
+                    tooltip: "0% is top, 100% is bottom",
                     options: {
                         min: 0,
                         max: 100,
@@ -80,12 +86,12 @@ const additionalPositionsProperties: PropertiesExtension = {
             },
             {
                 value: container.xPercentagePosition * 100,
-                prop: 'xPercentagePosition',
+                prop: "xPercentagePosition",
                 entry: {
-                    section: 'Transform',
+                    section: "Transform",
                     type: "range",
-                    label: 'X Percentage Position',
-                    tooltip: '0% is left, 100% is right',
+                    label: "X Percentage Position",
+                    tooltip: "0% is left, 100% is right",
                     options: {
                         min: 0,
                         max: 100,
@@ -94,12 +100,12 @@ const additionalPositionsProperties: PropertiesExtension = {
             },
             {
                 value: container.yPercentagePosition * 100,
-                prop: 'yPercentagePosition',
+                prop: "yPercentagePosition",
                 entry: {
-                    section: 'Transform',
+                    section: "Transform",
                     type: "range",
-                    label: 'Y Percentage Position',
-                    tooltip: '0% is top, 100% is bottom',
+                    label: "Y Percentage Position",
+                    tooltip: "0% is top, 100% is bottom",
                     options: {
                         min: 0,
                         max: 100,

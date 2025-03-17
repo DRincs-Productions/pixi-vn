@@ -1,46 +1,6 @@
 import { expect, test } from "vitest";
-import {
-    createExportableElement,
-    HistoryStepData,
-    NarrationManagerInterface,
-    NarrationManagerStatic,
-    newLabel,
-    sound,
-    storage,
-} from "../src";
-import { getGamePath } from "../src/functions/path-utility";
-import NarrationManager from "../src/managers/NarrationManager";
-
-const getCurrentStepData: () => HistoryStepData = () => {
-    let currentStepData: HistoryStepData = {
-        path: getGamePath(),
-        storage: storage.export(),
-        canvas: {} as any,
-        sound: sound.removeOldSoundAndExport(),
-        labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
-        openedLabels: createExportableElement(NarrationManagerStatic._openedLabels),
-    };
-    return currentStepData;
-};
-
-const restoreFromHistoryStep: (
-    restoredStep: HistoryStepData,
-    navigate: (path: string) => void
-) => Promise<void> = async (restoredStep: HistoryStepData, navigate: (path: string) => void) => {
-    NarrationManagerStatic._originalStepData = restoredStep;
-    NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels);
-    storage.import(createExportableElement(restoredStep.storage));
-    sound.import(createExportableElement(restoredStep.sound), NarrationManagerStatic._lastStepIndex - 1);
-    navigate(restoredStep.path);
-};
-
-const forceCompletionOfTicker = () => {};
-
-const narration: NarrationManagerInterface = new NarrationManager(
-    getCurrentStepData,
-    restoreFromHistoryStep,
-    forceCompletionOfTicker
-);
+import { narration, newLabel } from "../src";
+import { getGamePath } from "../src/utils/path-utility";
 
 const pathLabel = newLabel("path", [
     () => {

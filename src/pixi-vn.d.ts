@@ -1,6 +1,10 @@
 declare module "@drincs/pixi-vn" {
     interface CharacterInterface {
         /**
+         * The id of the character. It must be unique.
+         */
+        id: string;
+        /**
          * The name of the character.
          */
         name: string;

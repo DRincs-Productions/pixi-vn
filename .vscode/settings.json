@@ -31,4 +31,5 @@
 	"terminal.integrated.defaultProfile.osx": "JavaScript Debug Terminal",
     // olther
     "extensions.ignoreRecommendations": false,
+    "git.fetchOnPull": true
 }

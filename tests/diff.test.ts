@@ -1,7 +1,7 @@
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
 import { expect, test } from "vitest";
-import { restoreDiffChanges } from "../src/functions/diff-utility";
+import { restoreDiffChanges } from "../src/utils/diff-utility";
 
 test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
     let data = {
