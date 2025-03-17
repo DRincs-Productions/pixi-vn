@@ -1,7 +1,7 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { CacheableStoreItem } from "../interfaces/export/ExportedStorage";
-import { StorageElementType } from "../types/StorageElementType";
 import { createExportableElement } from "../utils/export-utility";
+import { CacheableStoreItem } from "./interfaces/ExportedStorage";
+import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {
     static storage = new Map<string, any>();

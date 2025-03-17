@@ -1,4 +1,4 @@
-import { StorageElementType } from "../../types/StorageElementType";
+import { StorageElementType } from "../../storage/types/StorageElementType";
 
 type DialogueType = {
     /**

@@ -1,5 +1,5 @@
 import { Dialogue, HistoryChoiceMenuOption } from "..";
-import { StorageElementType } from "../../types";
+import { StorageElementType } from "../../storage";
 
 export default interface NarrativeHistory {
     /**

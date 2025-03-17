@@ -8,9 +8,9 @@ import {
     InputInfo,
     NarrationManagerInterface,
     NarrativeHistory,
+    StorageElementType,
 } from "..";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { StorageElementType } from "../types";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";

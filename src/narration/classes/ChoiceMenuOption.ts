@@ -1,4 +1,4 @@
-import { StorageObjectType } from "../../types";
+import { StorageObjectType } from "../../storage";
 import { logger } from "../../utils/log-utility";
 import { getLabelById } from "../decorators/label-decorator";
 import { Close, CloseType } from "../types/CloseType";

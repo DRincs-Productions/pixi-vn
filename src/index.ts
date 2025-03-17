@@ -22,7 +22,6 @@ export * from "./interfaces";
 export * from "./narration";
 export * from "./sound";
 export * from "./storage";
-export * from "./types";
 export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 

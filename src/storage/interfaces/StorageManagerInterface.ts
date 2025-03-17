@@ -1,6 +1,6 @@
 import StorageManagerStatic from "../../storage/StorageManagerStatic";
-import { StorageElementType } from "../../types";
-import ExportedStorage from "../export/ExportedStorage";
+import { StorageElementType } from "../types/StorageElementType";
+import ExportedStorage from "./ExportedStorage";
 
 export default interface StorageManagerInterface {
     /**

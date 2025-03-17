@@ -1,9 +1,7 @@
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
-import ExportedCanvas from "../../canvas/interfaces/ExportedCanvas";
-import ExportedStorage from "../../interfaces/export/ExportedStorage";
+import { ExportedCanvas, ExportedStorage, StorageElementType } from "../..";
 import ExportedSounds from "../../sound/interfaces/ExportedSounds";
-import { StorageElementType } from "../../types";
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import Dialogue from "../classes/Dialogue";
 import { LabelIdType } from "../types/LabelIdType";

@@ -1,11 +1,11 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { ExportedStorage, StorageManagerInterface } from "../interfaces";
-import { CacheableStoreItem } from "../interfaces/export/ExportedStorage";
-import { StorageElementType } from "../types/StorageElementType";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
+import ExportedStorage, { CacheableStoreItem } from "./interfaces/ExportedStorage";
+import StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManagerStatic from "./StorageManagerStatic";
+import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManager implements StorageManagerInterface {
     get storage() {
