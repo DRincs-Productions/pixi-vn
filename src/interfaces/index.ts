@@ -5,3 +5,4 @@ export type {
      */
     default as SaveData,
 } from "./GameState";
+export type { default as GameStepStateData } from "./GameStepStateData";
