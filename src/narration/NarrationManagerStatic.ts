@@ -13,7 +13,11 @@ import { LabelIdType } from "./types/LabelIdType";
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number; openCount: number } };
 
 type CurrentStepTimesCounterMemotyData = {
+    /**
+     * @deprecated use stepIndexs
+     */
     lastStepIndexs?: number[];
+    stepCounters?: number[];
     usedRandomNumbers?: { [minmaxkey: string]: number[] };
     stepSha1: string;
 };
@@ -102,11 +106,12 @@ export default class NarrationManagerStatic {
             logger.error("getCurrentStepTimesCounter obj is null");
             return 0;
         }
-        let list = obj.lastStepIndexs || [];
+        let list = obj.stepCounters || obj.lastStepIndexs || [];
         let listContainLastStep = list.find((item) => item === lastStep);
         if (!listContainLastStep) {
             list.push(lastStep);
-            obj.lastStepIndexs = list;
+            delete obj.lastStepIndexs;
+            obj.stepCounters = list;
             NarrationManagerStatic.setCurrentStepTimesCounterData(nestedId, obj);
         }
         return list.length;
@@ -161,7 +166,7 @@ export default class NarrationManagerStatic {
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
-        obj[labelId][currentLabelStepIndexId] = { lastStepIndexs: [], stepSha1: "" };
+        obj[labelId][currentLabelStepIndexId] = { stepCounters: [], stepSha1: "" };
         GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
     }
     /**

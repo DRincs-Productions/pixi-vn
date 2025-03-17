@@ -829,7 +829,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return {
             stepsHistory: stepsHistory,
             openedLabels: NarrationManagerStatic._openedLabels,
-            lastStepIndex: this.stepCounter,
+            stepCounter: this.stepCounter,
             originalStepData: NarrationManagerStatic._originalStepData,
         };
     }
@@ -849,10 +849,12 @@ export default class NarrationManager implements NarrationManagerInterface {
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }
-            if (data.hasOwnProperty("lastStepIndex")) {
-                NarrationManagerStatic._stepCounter = (data as ExportedStep)["lastStepIndex"];
+            if (data.hasOwnProperty("stepCounter")) {
+                NarrationManagerStatic._stepCounter = (data as ExportedStep)["stepCounter"];
+            } else if (data.hasOwnProperty("lastStepIndex")) {
+                NarrationManagerStatic._stepCounter = (data as ExportedStep)["lastStepIndex"] as number;
             } else {
-                logger.warn("Could not import lastStepIndex data, so will be ignored");
+                logger.warn("Could not import stepCounter data, so will be ignored");
             }
             if (data.hasOwnProperty("originalStepData")) {
                 NarrationManagerStatic._originalStepData = (data as ExportedStep)["originalStepData"];

@@ -277,7 +277,7 @@ export default class SoundManager extends SoundLibrary {
         this.import(JSON.parse(dataString));
     }
     public import(data: object) {
-        const lastStepIndex = GameUnifier.getStepCounter() - 1;
+        const stepCounter = GameUnifier.getStepCounter() - 1;
         this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {
@@ -318,7 +318,7 @@ export default class SoundManager extends SoundLibrary {
                             (step.options && typeof step.options === "object" && step.options.loop)
                         ) {
                             autoPlay = true;
-                        } else if (step.stepIndex === lastStepIndex) {
+                        } else if (step.stepIndex === stepCounter) {
                             autoPlay = true;
                         }
 
@@ -367,7 +367,7 @@ export default class SoundManager extends SoundLibrary {
                             (step.options && typeof step.options === "object" && step.options.loop)
                         ) {
                             autoPlay = true;
-                        } else if (step.stepIndex === lastStepIndex) {
+                        } else if (step.stepIndex === stepCounter) {
                             autoPlay = true;
                         }
 

@@ -7,6 +7,10 @@ import OpenedLabel from "./OpenedLabel";
 export default interface ExportedStep {
     stepsHistory: HistoryStep[];
     openedLabels: OpenedLabel[];
-    lastStepIndex: number;
+    /**
+     * @deprecated use stepCounter
+     */
+    lastStepIndex?: number;
+    stepCounter: number;
     originalStepData: HistoryStepData | undefined;
 }

@@ -1,7 +1,7 @@
 import { Keyv } from "keyv";
 import { expect, test } from "vitest";
 import { storage } from "../src";
-import { CacheableStoreItem } from "../src/interfaces/export/ExportedStorage";
+import { CacheableStoreItem } from "../src/storage/interfaces/ExportedStorage";
 
 test("setVariable & getVariable", async () => {
     storage.setVariable("test", "test1");
