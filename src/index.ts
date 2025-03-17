@@ -102,6 +102,16 @@ export namespace Game {
         GameUnifier.exportNarrationData = narrationUtils.narration.export;
         GameUnifier.importNarrationData = narrationUtils.narration.import;
         GameUnifier.initialize({
+            getCurrentGameStepState: () => {
+                return {
+                    path: getGamePath(),
+                    storage: GameUnifier.exportStorageData(),
+                    canvas: GameUnifier.exportCanvasData(),
+                    sound: GameUnifier.exportSoundData(),
+                    labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0,
+                    openedLabels: GameUnifier.getOpenedLabels(),
+                };
+            },
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,
         });

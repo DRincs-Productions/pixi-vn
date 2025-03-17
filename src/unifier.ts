@@ -4,7 +4,6 @@ import { ExportedStep, OpenedLabel } from "./narration";
 import { ExportedSounds } from "./sound";
 import { ExportedStorage, StorageElementType } from "./storage";
 import { logger } from "./utils/log-utility";
-import { getGamePath } from "./utils/path-utility";
 
 export default class GameUnifier {
     static initialize(options: {
@@ -12,6 +11,10 @@ export default class GameUnifier {
          * This function returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
          */
         getStepCounter: () => number;
+        /**
+         * This function returns the current state of the game step.
+         */
+        getCurrentGameStepState: () => GameStepState;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
     }
@@ -24,6 +27,13 @@ export default class GameUnifier {
      */
     static get stepCounter() {
         return GameUnifier._getStepCounter();
+    }
+    private static _getCurrentGameStepState: () => GameStepState = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
+    };
+    static get currentGameStepState() {
+        return GameUnifier._getCurrentGameStepState();
     }
     static getOpenedLabels: () => OpenedLabel[] = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -60,16 +70,6 @@ export default class GameUnifier {
     static importNarrationData: (data: ExportedStep) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
-    };
-    static getCurrentStepData: () => GameStepState = () => {
-        return {
-            path: getGamePath(),
-            storage: GameUnifier.exportStorageData(),
-            canvas: GameUnifier.exportCanvasData(),
-            sound: GameUnifier.exportSoundData(),
-            labelIndex: GameUnifier.getCurrentLabelStepIndex(),
-            openedLabels: GameUnifier.getOpenedLabels(),
-        };
     };
     static forceCompletionOfTicker: () => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");

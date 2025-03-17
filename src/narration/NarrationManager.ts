@@ -74,7 +74,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {}
     ) {
         const { choiseMade, ignoreSameStep } = options;
-        const currentStepData: GameStepState = GameUnifier.getCurrentStepData();
+        const currentStepData: GameStepState = GameUnifier._getCurrentStepData();
         if (NarrationManagerStatic.originalStepData) {
             if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {
