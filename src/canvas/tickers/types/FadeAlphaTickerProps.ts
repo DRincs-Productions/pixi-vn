@@ -1,4 +1,4 @@
-import { TickerProgrationType } from "../../../interfaces";
+import TickerProgrationType from "../interfaces/TickerProgrationType";
 
 export type FadeAlphaTickerProps = {
     /**

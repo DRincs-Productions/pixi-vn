@@ -1,4 +1,7 @@
-import { TickerProgrationExponential, TickerProgrationLinear, TickerProgrationType } from "../../../interfaces";
+import TickerProgrationType, {
+    TickerProgrationExponential,
+    TickerProgrationLinear,
+} from "../interfaces/TickerProgrationType";
 
 /**
  * This function updates the progression of the ticker.
