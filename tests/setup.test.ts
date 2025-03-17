@@ -1,13 +1,5 @@
 import { test } from "vitest";
-import {
-    createExportableElement,
-    GameUnifier,
-    narration,
-    NarrationManagerStatic,
-    sound,
-    storage,
-    StorageManagerStatic,
-} from "../src";
+import { createExportableElement, GameUnifier, narration, sound, storage, StorageManagerStatic } from "../src";
 
 test("setup", async () => {
     GameUnifier.initialize({
@@ -29,7 +21,6 @@ test("setup", async () => {
     GameUnifier.importSoundData = (data) => sound.import(data);
     // narration
     GameUnifier.getOpenedLabels = () => createExportableElement(narration.openedLabels);
-    GameUnifier.getCurrentLabelStepIndex = () => NarrationManagerStatic.currentLabelStepIndex || 0;
     GameUnifier.exportNarrationData = narration.export;
     GameUnifier.importNarrationData = narration.import;
 

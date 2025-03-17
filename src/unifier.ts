@@ -24,10 +24,6 @@ export default class GameUnifier {
     static get stepCounter() {
         return GameUnifier._getStepCounter();
     }
-    static getCurrentLabelStepIndex: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
     static getOpenedLabels: () => OpenedLabel[] = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
