@@ -24,7 +24,7 @@ export default interface NarrationManagerInterface {
      */
     readonly stepsHistory: HistoryStep<Dialogue>[];
     /**
-     * Counter of execution times of the current step. Current execution is also included.
+     * Counter of execution times of the current step. Current execution is also included. Starts from 1.
      *
      * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
      *
