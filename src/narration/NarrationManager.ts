@@ -1,4 +1,4 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
+import { CharacterInterface, GameStepState } from "@drincs/pixi-vn";
 import diff from "microdiff";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
@@ -12,7 +12,7 @@ import Label from "./classes/Label";
 import LabelAbstract from "./classes/LabelAbstract";
 import { getLabelById } from "./decorators/label-decorator";
 import ExportedStep from "./interfaces/ExportedStep";
-import HistoryStep, { AdditionalShaSpetsEnum, HistoryStepData } from "./interfaces/HistoryStep";
+import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
 import NarrativeHistory from "./interfaces/NarrativeHistory";
 import NarrationManagerStatic from "./NarrationManagerStatic";
@@ -29,10 +29,7 @@ import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/
  * This class is a class that manages the steps and labels of the game.
  */
 export default class NarrationManager implements NarrationManagerInterface {
-    private async restoreFromHistoryStep(
-        restoredStep: HistoryStepData,
-        navigate: (path: string) => void
-    ): Promise<void> {
+    private async restoreFromHistoryStep(restoredStep: GameStepState, navigate: (path: string) => void): Promise<void> {
         NarrationManagerStatic._originalStepData = restoredStep;
         NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels);
         GameUnifier.importStorageData(createExportableElement(restoredStep.storage));
@@ -77,7 +74,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {}
     ) {
         const { choiseMade, ignoreSameStep } = options;
-        const currentStepData: HistoryStepData = GameUnifier.getCurrentStepData();
+        const currentStepData: GameStepState = GameUnifier.getCurrentStepData();
         if (NarrationManagerStatic.originalStepData) {
             if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
                 try {

@@ -1,3 +1,5 @@
+import { GameStepStateData } from "./interfaces";
+
 declare module "@drincs/pixi-vn" {
     interface CharacterInterface {
         /**
@@ -31,4 +33,5 @@ declare module "@drincs/pixi-vn" {
     interface StepLabelResult {
         [key: string]: any;
     }
+    interface GameStepState extends GameStepStateData {}
 }

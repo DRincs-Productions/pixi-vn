@@ -1,3 +1,4 @@
+import { GameStepState } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
 import { restoreDiffChanges } from "../utils/diff-utility";
@@ -5,7 +6,7 @@ import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
 import { getLabelById } from "./decorators/label-decorator";
-import HistoryStep, { HistoryStepData } from "./interfaces/HistoryStep";
+import HistoryStep from "./interfaces/HistoryStep";
 import OpenedLabel from "./interfaces/OpenedLabel";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { LabelIdType } from "./types/LabelIdType";
@@ -217,8 +218,8 @@ export default class NarrationManagerStatic {
         }
         return null;
     }
-    static _originalStepData: HistoryStepData | undefined = undefined;
-    static get originalStepData(): HistoryStepData {
+    static _originalStepData: GameStepState | undefined = undefined;
+    static get originalStepData(): GameStepState {
         if (!NarrationManagerStatic._originalStepData) {
             return {
                 path: "",
@@ -244,7 +245,7 @@ export default class NarrationManagerStatic {
         }
         return createExportableElement(NarrationManagerStatic._originalStepData);
     }
-    static set originalStepData(value: HistoryStepData) {
+    static set originalStepData(value: GameStepState) {
         NarrationManagerStatic._originalStepData = createExportableElement(value);
     }
 
@@ -326,7 +327,7 @@ export default class NarrationManagerStatic {
 
     /* Go Back & Refresh Methods */
 
-    static goBackInternal(steps: number, restoredStep: HistoryStepData): HistoryStepData {
+    static goBackInternal(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
         }

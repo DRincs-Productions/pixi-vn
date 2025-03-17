@@ -1,11 +1,10 @@
+import { GameStepState } from "@drincs/pixi-vn";
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
-import { ExportedCanvas, ExportedStorage, StorageElementType } from "../..";
-import ExportedSounds from "../../sound/interfaces/ExportedSounds";
+import { StorageElementType } from "../..";
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import Dialogue from "../classes/Dialogue";
 import { LabelIdType } from "../types/LabelIdType";
-import OpenedLabel from "./OpenedLabel";
 
 /**
  * AdditionalShaSpetsEnum is a enum that contains the additional sha1 values that can be inserted in the step sha1.
@@ -21,41 +20,11 @@ export enum AdditionalShaSpetsEnum {
     DEVELOPER = "dev",
 }
 
-/**
- * IHistoryStep is a interface that contains the information of a step in the history.
- */
-export interface HistoryStepData {
-    /**
-     * The browser path that occurred during the progression of the steps.
-     */
-    path: string;
-    /**
-     * The storage that occurred during the progression of the steps.
-     */
-    storage: ExportedStorage;
-    /**
-     * The index of the label that occurred during the progression of the steps.
-     */
-    labelIndex: number;
-    /**
-     * The canvas that occurred during the progression of the steps.
-     */
-    canvas: ExportedCanvas;
-    /**
-     * The opened labels that occurred during the progression of the steps.
-     */
-    openedLabels: OpenedLabel[];
-    /**
-     * The sound data that occurred during the progression of the steps.
-     */
-    sound: ExportedSounds;
-}
-
 export default interface HistoryStep<T extends Dialogue = Dialogue> {
     /**
      * The difference between the previous step and the current step.
      */
-    diff?: deepDiff.Diff<HistoryStepData, HistoryStepData>[] | Difference[];
+    diff?: deepDiff.Diff<GameStepState, GameStepState>[] | Difference[];
     /**
      * The label id of the current step.
      */

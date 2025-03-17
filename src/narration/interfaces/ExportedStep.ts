@@ -1,4 +1,5 @@
-import HistoryStep, { HistoryStepData } from "./HistoryStep";
+import { GameStepState } from "@drincs/pixi-vn";
+import HistoryStep from "./HistoryStep";
 import OpenedLabel from "./OpenedLabel";
 
 /**
@@ -12,5 +13,5 @@ export default interface ExportedStep {
      */
     lastStepIndex?: number;
     stepCounter: number;
-    originalStepData: HistoryStepData | undefined;
+    originalStepData: GameStepState | undefined;
 }

@@ -1,5 +1,6 @@
+import { GameStepState } from "@drincs/pixi-vn";
 import { ExportedCanvas } from "./canvas";
-import { ExportedStep, HistoryStepData, OpenedLabel } from "./narration";
+import { ExportedStep, OpenedLabel } from "./narration";
 import { ExportedSounds } from "./sound";
 import { ExportedStorage, StorageElementType } from "./storage";
 import { logger } from "./utils/log-utility";
@@ -60,8 +61,8 @@ export default class GameUnifier {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
-    static getCurrentStepData: () => HistoryStepData = () => {
-        let currentStepData: HistoryStepData = {
+    static getCurrentStepData: () => GameStepState = () => {
+        return {
             path: getGamePath(),
             storage: GameUnifier.exportStorageData(),
             canvas: GameUnifier.exportCanvasData(),
@@ -69,7 +70,6 @@ export default class GameUnifier {
             labelIndex: GameUnifier.getCurrentLabelStepIndex(),
             openedLabels: GameUnifier.getOpenedLabels(),
         };
-        return currentStepData;
     };
     static forceCompletionOfTicker: () => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
