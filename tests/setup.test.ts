@@ -24,7 +24,7 @@ test("setup", async () => {
     GameUnifier.exportSoundData = () => sound.export();
     GameUnifier.importSoundData = (data) => sound.import(data);
     // narration
-    GameUnifier.getLastStepIndex = () => narration.stepCounter;
+    GameUnifier.getStepCounter = () => narration.stepCounter;
     GameUnifier.getOpenedLabels = () => createExportableElement(narration.openedLabels);
     GameUnifier.getCurrentLabelStepIndex = () => NarrationManagerStatic.currentLabelStepIndex || 0;
     GameUnifier.exportNarrationData = narration.export;

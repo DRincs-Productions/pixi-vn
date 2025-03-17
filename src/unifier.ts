@@ -6,7 +6,10 @@ import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
 export default class GameUnifier {
-    static getLastStepIndex: () => number = () => {
+    /**
+     * This function returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
+     */
+    static getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };

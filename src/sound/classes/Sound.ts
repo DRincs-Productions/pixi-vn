@@ -29,7 +29,7 @@ export default class Sound extends PixiSound {
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
             options: item.options,
-            stepIndex: GameUnifier.getLastStepIndex(),
+            stepIndex: GameUnifier.getStepCounter(),
             paused: false,
         };
         return super.resume();
@@ -55,7 +55,7 @@ export default class Sound extends PixiSound {
             throw new Error("[Pixi’VN] The alias is not defined.");
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
-            stepIndex: GameUnifier.getLastStepIndex(),
+            stepIndex: GameUnifier.getStepCounter(),
             options: options,
             paused: false,
         };
