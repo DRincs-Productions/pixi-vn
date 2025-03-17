@@ -1,8 +1,9 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { canvas, TickerArgs } from "../..";
+import { canvas } from "../..";
 import { TickerIdType } from "../../types/TickerIdType";
 import tickerDecorator, { getTickerInstanceById } from "../decorators/ticker-decorator";
 import Ticker from "../interfaces/Ticker";
+import TickerArgs from "../interfaces/TickerArgs";
 import TickerValue from "./TickerValue";
 
 /**

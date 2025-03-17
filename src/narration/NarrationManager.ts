@@ -1,16 +1,7 @@
 import { CharacterInterface } from "@drincs/pixi-vn";
 import diff from "microdiff";
-import {
-    ChoiceMenuOptionsType,
-    Close,
-    DialogueType,
-    HistoryChoiceMenuOption,
-    InputInfo,
-    NarrationManagerInterface,
-    NarrativeHistory,
-    StorageElementType,
-} from "..";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
+import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
@@ -22,8 +13,15 @@ import LabelAbstract from "./classes/LabelAbstract";
 import { getLabelById } from "./decorators/label-decorator";
 import ExportedStep from "./interfaces/ExportedStep";
 import HistoryStep, { AdditionalShaSpetsEnum, HistoryStepData } from "./interfaces/HistoryStep";
+import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
+import NarrativeHistory from "./interfaces/NarrativeHistory";
 import NarrationManagerStatic from "./NarrationManagerStatic";
+import { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 import ChoicesMadeType from "./types/ChoicesMadeType";
+import { Close } from "./types/CloseType";
+import DialogueType from "./types/DialogueType";
+import HistoryChoiceMenuOption from "./types/HistoryChoiceMenuOption";
+import { InputInfo } from "./types/InputInfo";
 import { LabelIdType } from "./types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
 
