@@ -1,7 +1,9 @@
-import { Close, CloseType, LabelRunModeType, StorageObjectType } from "../../types";
-import { LabelIdType } from "../../types/LabelIdType";
+import { StorageObjectType } from "../../types";
 import { logger } from "../../utils/log-utility";
 import { getLabelById } from "../decorators/label-decorator";
+import { Close, CloseType } from "../types/CloseType";
+import { LabelIdType } from "../types/LabelIdType";
+import LabelRunModeType from "../types/LabelRunModeType";
 import newCloseLabel from "./CloseLabel";
 import Label from "./Label";
 

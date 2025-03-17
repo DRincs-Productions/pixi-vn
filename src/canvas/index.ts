@@ -108,6 +108,9 @@ export type {
 } from "./interfaces/transition-props";
 export * from "./tickers";
 export type { default as CanvasEventNamesType } from "./types/CanvasEventNamesType";
+export type { default as ContainerChild } from "./types/ContainerChild";
+export type { PauseType } from "./types/PauseType";
+export type { RepeatType } from "./types/RepeatType";
 export { canvas };
 
 const canvas = new CanvasManager();

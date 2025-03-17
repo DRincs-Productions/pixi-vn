@@ -1,9 +1,8 @@
-import { LabelProps } from "../..";
-import { StepLabelType } from "../../types";
-import { LabelIdType } from "../../types/LabelIdType";
+import { LabelProps, StepLabelType } from "../..";
 import { logger } from "../../utils/log-utility";
 import Label from "../classes/Label";
 import LabelAbstract from "../classes/LabelAbstract";
+import { LabelIdType } from "../types/LabelIdType";
 
 export const registeredLabels: { [key: LabelIdType]: LabelAbstract<any> | Label<any> } = {};
 

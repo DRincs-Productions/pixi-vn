@@ -1,5 +1,5 @@
 import { filters as f } from "@pixi/sound";
-import { PauseType, RepeatType } from "./types";
+import { PauseType, RepeatType } from "./canvas";
 
 export { version as PIXIVN_VERSION } from "../package.json";
 export const Repeat: RepeatType = "repeat";

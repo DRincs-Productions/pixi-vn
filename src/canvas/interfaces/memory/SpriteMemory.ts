@@ -1,5 +1,5 @@
 import { SpriteOptions } from "pixi.js";
-import { EventIdType } from "../../../types/EventIdType";
+import { EventIdType } from "../../types/EventIdType";
 import TextureMemory from "../TextureMemory";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 

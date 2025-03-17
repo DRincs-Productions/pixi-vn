@@ -1,4 +1,4 @@
-import { canvas } from "../canvas";
+import { canvas } from "..";
 
 /**
  * is a string that represents a ticker id.

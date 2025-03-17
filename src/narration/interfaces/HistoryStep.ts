@@ -4,9 +4,9 @@ import ExportedCanvas from "../../canvas/interfaces/ExportedCanvas";
 import ExportedSounds from "../../interfaces/export/ExportedSounds";
 import ExportedStorage from "../../interfaces/export/ExportedStorage";
 import { StorageElementType } from "../../types";
-import { LabelIdType } from "../../types/LabelIdType";
 import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
 import Dialogue from "../classes/Dialogue";
+import { LabelIdType } from "../types/LabelIdType";
 import OpenedLabel from "./OpenedLabel";
 
 /**

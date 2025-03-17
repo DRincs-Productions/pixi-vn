@@ -4,22 +4,22 @@ type ChoicesMadeType = {
     /**
      * The label id of the current step.
      */
-    labelId: LabelIdType,
+    labelId: LabelIdType;
     /**
      * The index of the step in the history.
      */
-    stepIndex: number,
+    stepIndex: number;
     /**
      * The index of the choice made by the player.
      */
-    choiceIndex: number,
+    choiceIndex: number;
     /**
      * The sha1 of the step function.
      */
-    stepSha1: string,
+    stepSha1: string;
     /**
      * The number of times the player made a choice for this step.
      */
-    madeTimes: number,
-}
+    madeTimes: number;
+};
 export default ChoicesMadeType;

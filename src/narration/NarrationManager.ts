@@ -1,18 +1,16 @@
 import { CharacterInterface } from "@drincs/pixi-vn";
 import diff from "microdiff";
-import { NarrationManagerInterface, NarrativeHistory } from "..";
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import {
     ChoiceMenuOptionsType,
     Close,
     DialogueType,
     HistoryChoiceMenuOption,
     InputInfo,
-    StorageElementType,
-} from "../types";
-import ChoicesMadeType from "../types/ChoicesMadeType";
-import { LabelIdType } from "../types/LabelIdType";
-import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../types/StepLabelType";
+    NarrationManagerInterface,
+    NarrativeHistory,
+} from "..";
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
+import { StorageElementType } from "../types";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
@@ -25,6 +23,9 @@ import { getLabelById } from "./decorators/label-decorator";
 import ExportedStep from "./interfaces/ExportedStep";
 import HistoryStep, { AdditionalShaSpetsEnum, HistoryStepData } from "./interfaces/HistoryStep";
 import NarrationManagerStatic from "./NarrationManagerStatic";
+import ChoicesMadeType from "./types/ChoicesMadeType";
+import { LabelIdType } from "./types/LabelIdType";
+import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
 
 /**
  * This class is a class that manages the steps and labels of the game.

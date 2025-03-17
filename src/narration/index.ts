@@ -21,6 +21,14 @@ export type { default as OpenedLabel } from "./interfaces/OpenedLabel";
 export type { default as StepLabelProps } from "./interfaces/StepLabelProps";
 export type { default as StepLabelResult } from "./interfaces/StepLabelResult";
 export { default as NarrationManagerStatic } from "./NarrationManagerStatic";
+export type { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
+export { Close } from "./types/CloseType";
+export type { CloseType } from "./types/CloseType";
+export type { default as DialogueType } from "./types/DialogueType";
+export type { default as HistoryChoiceMenuOption } from "./types/HistoryChoiceMenuOption";
+export type { InputInfo } from "./types/InputInfo";
+export type { default as LabelRunModeType } from "./types/LabelRunModeType";
+export type { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
 export { narration };
 
 const narration: NarrationManagerInterface = new NarrationManager();

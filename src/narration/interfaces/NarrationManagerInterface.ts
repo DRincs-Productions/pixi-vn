@@ -15,7 +15,7 @@ import {
     StepLabelType,
     StorageElementType,
 } from "../..";
-import { LabelIdType } from "../../types/LabelIdType";
+import { LabelIdType } from "../types/LabelIdType";
 import HistoryStep from "./HistoryStep";
 
 export default interface NarrationManagerInterface {

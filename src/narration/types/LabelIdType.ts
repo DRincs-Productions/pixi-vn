@@ -1,4 +1,4 @@
-import { narration } from "../narration";
+import { narration } from "..";
 
 /**
  * is a string containing the name of the label.

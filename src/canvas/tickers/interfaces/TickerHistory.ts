@@ -1,5 +1,5 @@
 import { TickerCallback, UPDATE_PRIORITY } from "pixi.js";
-import { TickerIdType } from "../../../types/TickerIdType";
+import { TickerIdType } from "../../types/TickerIdType";
 import TickerArgs from "./TickerArgs";
 
 /**

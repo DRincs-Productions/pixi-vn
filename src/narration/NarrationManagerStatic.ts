@@ -1,6 +1,4 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import ChoicesMadeType from "../types/ChoicesMadeType";
-import { LabelIdType } from "../types/LabelIdType";
 import GameUnifier from "../unifier";
 import { restoreDiffChanges } from "../utils/diff-utility";
 import { createExportableElement } from "../utils/export-utility";
@@ -9,6 +7,8 @@ import Label from "./classes/Label";
 import { getLabelById } from "./decorators/label-decorator";
 import HistoryStep, { HistoryStepData } from "./interfaces/HistoryStep";
 import OpenedLabel from "./interfaces/OpenedLabel";
+import ChoicesMadeType from "./types/ChoicesMadeType";
+import { LabelIdType } from "./types/LabelIdType";
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number; openCount: number } };
 

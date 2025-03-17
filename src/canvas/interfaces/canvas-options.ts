@@ -1,7 +1,7 @@
 import { ContainerOptions, SpriteOptions } from "pixi.js";
-import { ContainerChild } from "../../types";
 import { AdditionalPositionsExtensionProps } from "../components/AdditionalPositions";
 import { AnchorExtensionProps } from "../components/AnchorExtension";
+import ContainerChild from "../types/ContainerChild";
 
 export interface ImageContainerOptions<C extends ContainerChild = ContainerChild>
     extends ContainerOptions<C>,

@@ -1,6 +1,6 @@
-import { EventIdType } from "../../types/EventIdType";
 import eventDecorator, { getEventInstanceById } from "../decorators/event-decorator";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
+import { EventIdType } from "../types/EventIdType";
 
 /**
  * CanvasEvent is a class that is used to create a pixi event, and connect it to a canvas element, with on().

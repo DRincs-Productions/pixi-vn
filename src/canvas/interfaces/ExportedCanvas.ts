@@ -1,5 +1,5 @@
 import { CanvasBaseItemMemory, ContainerMemory, TickerHistoryForExport, TickersSequence } from "..";
-import PauseTickerType from "../../types/PauseTickerType";
+import PauseTickerType from "../types/PauseTickerType";
 
 /**
  * Interface exported canvas

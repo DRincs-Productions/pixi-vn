@@ -1,4 +1,4 @@
-import { LabelIdType } from "../../types/LabelIdType";
+import { LabelIdType } from "../types/LabelIdType";
 
 export default interface OpenedLabel {
     label: LabelIdType;
