@@ -99,7 +99,7 @@ export namespace Game {
         GameUnifier.exportSoundData = () => soundUtils.sound.export();
         GameUnifier.importSoundData = (data) => soundUtils.sound.import(data);
         // narration
-        GameUnifier.getLastStepIndex = () => narrationUtils.narration.lastStepIndex;
+        GameUnifier.getLastStepIndex = () => narrationUtils.narration.stepCounter;
         GameUnifier.getOpenedLabels = () => functions.createExportableElement(narrationUtils.narration.openedLabels);
         GameUnifier.getCurrentLabelStepIndex = () => narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0;
         GameUnifier.exportNarrationData = narrationUtils.narration.export;

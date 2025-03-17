@@ -53,9 +53,11 @@ export default interface NarrationManagerInterface {
         }
     ): number | undefined;
     /**
-     * lastStepIndex is the last step index that occurred during the progression of the steps. **Not is the length of the stepsHistory - 1.**
+     * This counter corresponds to the total number of steps that have been executed so far.
+     *
+     * **Not is the {@link NarrationManagerInterface.stepsHistory}.length - 1.**
      */
-    readonly lastStepIndex: number;
+    readonly stepCounter: number;
     /**
      * The stack of the opened labels.
      */

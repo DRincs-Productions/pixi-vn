@@ -96,7 +96,7 @@ export default class NarrationManagerStatic {
         GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
     }
     static getCurrentStepTimesCounter(nestedId: string = ""): number {
-        let lastStep = NarrationManagerStatic._lastStepIndex;
+        let lastStep = NarrationManagerStatic._stepCounter;
         let obj = NarrationManagerStatic.getCurrentStepTimesCounterData(nestedId);
         if (!obj) {
             logger.error("getCurrentStepTimesCounter obj is null");
@@ -173,12 +173,12 @@ export default class NarrationManagerStatic {
     static set allChoicesMade(value: ChoicesMadeType[]) {
         GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY, value);
     }
-    static _lastStepIndex: number = 0;
+    static _stepCounter: number = 0;
     /**
      * Increase the last step index that occurred during the progression of the steps.
      */
-    static increaseLastStepIndex() {
-        NarrationManagerStatic._lastStepIndex++;
+    static increaseStepCounter() {
+        NarrationManagerStatic._stepCounter++;
     }
     static _openedLabels: OpenedLabel[] = [];
     static get _currentLabel(): Label | undefined {
@@ -332,7 +332,7 @@ export default class NarrationManagerStatic {
         if (lastHistoryStep?.diff) {
             try {
                 let result = restoreDiffChanges(restoredStep, lastHistoryStep.diff);
-                NarrationManagerStatic._lastStepIndex = lastHistoryStep.index;
+                NarrationManagerStatic._stepCounter = lastHistoryStep.index;
                 NarrationManagerStatic._stepsHistory.pop();
                 return NarrationManagerStatic.goBackInternal(steps - 1, result);
             } catch (e) {
