@@ -1,8 +1,8 @@
 import { CanvasBaseItemMemory } from "../../interfaces";
-import { CanvasElementAliasType } from "../../types/CanvasElementAliasType";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import { getCanvasElementTypeById } from "../decorators/canvas-element-decorator";
+import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
 /**
  * Import a Canvas element from a memory object

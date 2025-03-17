@@ -1,11 +1,11 @@
 import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { canvas, TickerValue } from "../..";
-import { FadeAlphaTickerProps } from "../../../types/ticker/FadeAlphaTickerProps";
 import { logger } from "../../../utils/log-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
 import TickerBase from "../classes/TickerBase";
 import { tickerDecoratorFn } from "../decorators/ticker-decorator";
 import { updateTickerProgression } from "../functions/ticker-utility";
+import { FadeAlphaTickerProps } from "../types/FadeAlphaTickerProps";
 
 const DEFAULT_SPEED = 5;
 

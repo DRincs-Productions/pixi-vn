@@ -6,7 +6,6 @@ import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { TickerIdType } from "../types/TickerIdType";
-import { aliasToRemoveAfter } from "../types/ticker/AliasToRemoveAfterType";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import CanvasManagerStatic from "./CanvasManagerStatic";
@@ -24,6 +23,7 @@ import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
 import TickerBase from "./tickers/classes/TickerBase";
 import { getTickerInstanceById } from "./tickers/decorators/ticker-decorator";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
+import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.

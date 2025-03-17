@@ -23,7 +23,6 @@ export * from "./narration";
 export * from "./sound";
 export * from "./storage";
 export * from "./types";
-export * from "./types/ticker";
 export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 

@@ -15,3 +15,7 @@ export type {
 } from "./interfaces/TickerProgrationType";
 export type { default as TickersSequence } from "./interfaces/TickersSequence";
 export type { default as TickerTimeoutHistory } from "./interfaces/TickerTimeoutHistory";
+export type { FadeAlphaTickerProps } from "./types/FadeAlphaTickerProps";
+export type { MoveTickerProps } from "./types/MoveTickerProps";
+export type { RotateTickerProps } from "./types/RotateTickerProps";
+export type { ZoomTickerProps } from "./types/ZoomTickerProps";
