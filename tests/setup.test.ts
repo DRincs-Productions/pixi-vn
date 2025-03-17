@@ -10,6 +10,10 @@ import {
 } from "../src";
 
 test("setup", async () => {
+    GameUnifier.initialize({
+        // narration
+        getStepCounter: () => narration.stepCounter,
+    });
     // storage
     GameUnifier.exportStorageData = () => storage.export();
     GameUnifier.importStorageData = (data) => storage.import(data);
@@ -24,7 +28,6 @@ test("setup", async () => {
     GameUnifier.exportSoundData = () => sound.export();
     GameUnifier.importSoundData = (data) => sound.import(data);
     // narration
-    GameUnifier.getStepCounter = () => narration.stepCounter;
     GameUnifier.getOpenedLabels = () => createExportableElement(narration.openedLabels);
     GameUnifier.getCurrentLabelStepIndex = () => NarrationManagerStatic.currentLabelStepIndex || 0;
     GameUnifier.exportNarrationData = narration.export;

@@ -176,7 +176,7 @@ export default class SoundManager extends SoundLibrary {
             throw new Error("[Pixi’VN] The alias is not found in the sound library.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
-            stepIndex: GameUnifier.getStepCounter(),
+            stepIndex: GameUnifier.stepCounter,
             options: options,
             paused: false,
         };
@@ -204,7 +204,7 @@ export default class SoundManager extends SoundLibrary {
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             options: item.options,
-            stepIndex: GameUnifier.getStepCounter(),
+            stepIndex: GameUnifier.stepCounter,
             paused: false,
         };
         return sound.resume(alias);
@@ -277,7 +277,7 @@ export default class SoundManager extends SoundLibrary {
         this.import(JSON.parse(dataString));
     }
     public import(data: object) {
-        const stepCounter = GameUnifier.getStepCounter() - 1;
+        const stepCounter = GameUnifier.stepCounter - 1;
         this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {

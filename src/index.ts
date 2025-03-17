@@ -98,12 +98,14 @@ export namespace Game {
         // sound
         GameUnifier.exportSoundData = () => soundUtils.sound.export();
         GameUnifier.importSoundData = (data) => soundUtils.sound.import(data);
-        // narration
-        GameUnifier.getStepCounter = () => narrationUtils.narration.stepCounter;
         GameUnifier.getOpenedLabels = () => functions.createExportableElement(narrationUtils.narration.openedLabels);
         GameUnifier.getCurrentLabelStepIndex = () => narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0;
         GameUnifier.exportNarrationData = narrationUtils.narration.export;
         GameUnifier.importNarrationData = narrationUtils.narration.import;
+        GameUnifier.initialize({
+            // narration
+            getStepCounter: () => narrationUtils.narration.stepCounter,
+        });
         asciiArtLog();
         return await canvasUtils.canvas.initialize(element, options, devtoolsOptions);
     }
