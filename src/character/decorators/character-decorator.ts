@@ -1,4 +1,4 @@
-import { CharacterInterface } from "../../interfaces";
+import { CharacterInterface } from "@drincs/pixi-vn";
 import { logger } from "../../utils/log-utility";
 
 export const registeredCharacters: { [id: string]: CharacterInterface } = {};

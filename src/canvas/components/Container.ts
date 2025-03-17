@@ -1,6 +1,5 @@
 import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
-import { CanvasEventNamesType } from "../../types";
 import ContainerChild from "../../types/ContainerChild";
 import { EventIdType } from "../../types/EventIdType";
 import { logger } from "../../utils/log-utility";
@@ -11,6 +10,7 @@ import { getEventInstanceById } from "../decorators/event-decorator";
 import { importCanvasElement } from "../functions/canvas-import-utility";
 import { getMemoryContainer } from "../functions/canvas-memory-utility";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
+import CanvasEventNamesType from "../types/CanvasEventNamesType";
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods,

@@ -9,8 +9,6 @@ import {
     TextureSourceLike,
 } from "pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
-import { CanvasBaseItemMemory, SpriteBaseMemory, SpriteMemory } from "../../interfaces";
-import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -19,6 +17,9 @@ import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorat
 import { getEventInstanceById, getEventTypeById } from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
+import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
+import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { setMemoryContainer } from "./Container";
 
 /**
