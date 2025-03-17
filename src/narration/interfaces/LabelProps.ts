@@ -1,4 +1,4 @@
-import { Label, narration } from "..";
+import { Label, narration } from "../..";
 
 export default interface LabelProps<T> {
     /**

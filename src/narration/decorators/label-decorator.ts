@@ -1,4 +1,4 @@
-import { LabelProps } from "../../interfaces";
+import { LabelProps } from "../..";
 import { StepLabelType } from "../../types";
 import { LabelIdType } from "../../types/LabelIdType";
 import { logger } from "../../utils/log-utility";

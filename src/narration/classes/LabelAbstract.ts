@@ -1,4 +1,4 @@
-import { LabelProps } from "../../interfaces";
+import { LabelProps } from "../..";
 import { LabelIdType } from "../../types/LabelIdType";
 import { StepLabelType } from "../../types/StepLabelType";
 import { getLabelById } from "../decorators/label-decorator";

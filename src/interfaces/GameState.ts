@@ -1,6 +1,6 @@
 import ExportedCanvas from "../canvas/interfaces/ExportedCanvas";
+import ExportedStep from "../narration/interfaces/ExportedStep";
 import ExportedSounds from "./export/ExportedSounds";
-import ExportedStep from "./export/ExportedStep";
 import ExportedStorage from "./export/ExportedStorage";
 
 export default interface GameState {

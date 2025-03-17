@@ -1,7 +1,6 @@
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
-import { ExportedCanvas } from "../interfaces";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -18,6 +17,7 @@ import Text, { setMemoryText } from "./components/Text";
 import VideoSprite, { setMemoryVideoSprite } from "./components/VideoSprite";
 import { importCanvasElement } from "./functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "./functions/canvas-memory-utility";
+import ExportedCanvas from "./interfaces/ExportedCanvas";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
 import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
 import TickerBase from "./tickers/classes/TickerBase";

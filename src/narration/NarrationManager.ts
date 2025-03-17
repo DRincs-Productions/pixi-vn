@@ -1,9 +1,7 @@
 import { CharacterInterface } from "@drincs/pixi-vn";
 import diff from "microdiff";
+import { NarrationManagerInterface, NarrativeHistory } from "..";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { HistoryStep, HistoryStepData, NarrationManagerInterface, NarrativeHistory } from "../interfaces";
-import ExportedStep from "../interfaces/export/ExportedStep";
-import { AdditionalShaSpetsEnum } from "../interfaces/HistoryStep";
 import {
     ChoiceMenuOptionsType,
     Close,
@@ -24,6 +22,8 @@ import Dialogue from "./classes/Dialogue";
 import Label from "./classes/Label";
 import LabelAbstract from "./classes/LabelAbstract";
 import { getLabelById } from "./decorators/label-decorator";
+import ExportedStep from "./interfaces/ExportedStep";
+import HistoryStep, { AdditionalShaSpetsEnum, HistoryStepData } from "./interfaces/HistoryStep";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 
 /**
