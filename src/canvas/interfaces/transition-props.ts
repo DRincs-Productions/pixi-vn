@@ -1,4 +1,4 @@
-import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../tickers/types";
+import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../tickers";
 
 interface BaseTransitionProps {
     /**

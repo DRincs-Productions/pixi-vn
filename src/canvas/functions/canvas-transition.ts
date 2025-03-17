@@ -1,19 +1,17 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { canvas } from "..";
-import {
-    ImageContainerOptions,
-    ImageSpriteOptions,
-    MoveInOutProps,
-    ShowWithDissolveTransitionProps,
-    ShowWithFadeTransitionProps,
-    ZoomInOutProps,
-} from "../../interfaces";
+import { canvas, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import ImageContainer from "../components/ImageContainer";
 import ImageSprite from "../components/ImageSprite";
 import VideoSprite from "../components/VideoSprite";
-import { PushInOutProps } from "../interfaces/transition-props";
+import {
+    MoveInOutProps,
+    PushInOutProps,
+    ShowWithDissolveTransitionProps,
+    ShowWithFadeTransitionProps,
+    ZoomInOutProps,
+} from "../interfaces/transition-props";
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../tickers";
 import { getPointBySuperPoint } from "./canvas-property-utility";
 import { checkIfVideo } from "./canvas-utility";

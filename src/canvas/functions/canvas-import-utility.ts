@@ -1,7 +1,7 @@
-import { CanvasBaseItemMemory } from "../../interfaces";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import { getCanvasElementTypeById } from "../decorators/canvas-element-decorator";
+import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
 /**

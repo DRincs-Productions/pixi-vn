@@ -1,5 +1,4 @@
-import { canvas } from "..";
-import { ImageContainerOptions } from "../../interfaces";
+import { canvas, ImageContainerOptions } from "..";
 import ImageContainer from "../components/ImageContainer";
 import ImageSprite from "../components/ImageSprite";
 

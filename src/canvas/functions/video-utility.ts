@@ -1,6 +1,5 @@
 import { Assets, Texture } from "pixi.js";
-import { canvas } from "..";
-import { VideoSpriteOptions } from "../../interfaces";
+import { canvas, VideoSpriteOptions } from "..";
 import VideoSprite from "../components/VideoSprite";
 import { getTexture } from "./texture-utility";
 

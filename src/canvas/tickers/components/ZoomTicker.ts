@@ -1,11 +1,10 @@
 import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
-import { TickerBase, TickerValue } from "..";
+import { TickerBase, TickerValue, ZoomTickerProps } from "..";
 import { canvas } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
 import { tickerDecoratorFn } from "../decorators/ticker-decorator";
 import { updateTickerProgression } from "../functions/ticker-utility";
-import { ZoomTickerProps } from "../types";
 
 const DEFAULT_SPEED = 10;
 

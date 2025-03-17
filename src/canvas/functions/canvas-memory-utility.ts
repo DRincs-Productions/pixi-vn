@@ -1,7 +1,10 @@
 import { Container as PixiContainer, Sprite as PixiSprite, Text as PixiText } from "pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
-import { CanvasBaseItemMemory, ContainerMemory, SpriteMemory, TextMemory } from "../../interfaces";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
+import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import ContainerMemory from "../interfaces/memory/ContainerMemory";
+import SpriteMemory from "../interfaces/memory/SpriteMemory";
+import TextMemory from "../interfaces/memory/TextMemory";
 import { getTextureMemory } from "./canvas-utility";
 import { getTextStyle } from "./texture-utility";
 

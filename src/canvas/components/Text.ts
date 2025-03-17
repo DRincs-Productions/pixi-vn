@@ -1,7 +1,5 @@
 import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText, TextOptions } from "pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
-import { TextMemory } from "../../interfaces";
-import { CanvasEventNamesType } from "../../types";
 import { EventIdType } from "../../types/EventIdType";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -9,6 +7,8 @@ import CanvasEvent from "../classes/CanvasEvent";
 import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
 import { getEventInstanceById, getEventTypeById } from "../decorators/event-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
+import TextMemory from "../interfaces/memory/TextMemory";
+import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { setMemoryContainer } from "./Container";
 
 /**

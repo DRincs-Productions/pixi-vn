@@ -1,4 +1,4 @@
-import { CharacterInterface } from "../../interfaces";
+import { CharacterInterface } from "@drincs/pixi-vn";
 import { StorageElementType } from "../../types";
 
 type DialogueProps = {

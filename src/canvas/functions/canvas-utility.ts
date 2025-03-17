@@ -1,6 +1,6 @@
 import { Assets, Texture } from "pixi.js";
 import { videoFormats } from "../../constants";
-import { TextureMemory } from "../../interfaces";
+import TextureMemory from "../interfaces/TextureMemory";
 
 /**
  * Get the memory object of the PixiJS texture

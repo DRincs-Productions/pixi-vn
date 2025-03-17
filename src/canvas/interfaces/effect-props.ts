@@ -1,4 +1,4 @@
-import TickerProgrationType from "../../interfaces/TickerProgrationType";
+import { TickerProgrationType } from "../tickers";
 
 export interface ShakeEffectProps {
     /**
