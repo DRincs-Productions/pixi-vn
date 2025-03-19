@@ -9,10 +9,14 @@ export default class GameUnifier {
     static initialize(options: {
         /**
          * This function returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
+         *
+         * If your game engine does not have a history of steps, you can return 0.
          */
         getStepCounter: () => number;
         /**
          * This function returns the current state of the game step.
+         *
+         * If your game engine does not have a history of steps, you can return an empty object.
          */
         getCurrentGameStepState: () => GameStepState;
         /**
@@ -24,6 +28,9 @@ export default class GameUnifier {
         ignoreAddChangeHistory?: (originalState: GameStepState, newState: GameStepState) => boolean;
         /**
          * This function restores the game step state.
+         *
+         * If your game engine does not have a history of steps, you can return a resolved promise.
+         *
          * @param state The state to restore.
          * @param navigate The function to navigate to the restored path.
          */
