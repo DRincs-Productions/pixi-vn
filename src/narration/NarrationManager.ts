@@ -78,7 +78,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (
             !ignoreSameStep &&
             NarrationManagerStatic.originalStepData &&
-            GameUnifier.ignoreChangeHistory(NarrationManagerStatic.originalStepData, currentStepData)
+            GameUnifier.ignoreAddChangeHistory(NarrationManagerStatic.originalStepData, currentStepData)
         ) {
             return;
         }

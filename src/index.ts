@@ -114,7 +114,7 @@ export namespace Game {
                     openedLabels: GameUnifier.getOpenedLabels(),
                 };
             },
-            ignoreChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
+            ignoreAddChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
                 if (originalState.openedLabels.length === newState.openedLabels.length) {
                     try {
                         let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
