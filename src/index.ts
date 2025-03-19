@@ -125,7 +125,7 @@ export namespace Game {
                     canvasUtils.canvas.forceCompletionOfTicker(id, alias);
                 });
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
-            };
+            },
             // storage
             getVariable: (key) => storageUtils.storage.getVariable(key),
             setVariable: (key, value) => storageUtils.storage.setVariable(key, value),
@@ -165,69 +165,16 @@ export namespace Game {
     }
 
     /**
-     * Get the save data as a JSON string
-     * @returns The save data as a JSON string
-     * @example
-     * ```typescript
-     * export function saveGame() {
-     *     const jsonString = getSaveJson()
-     *     const blob = new Blob([jsonString], { type: "application/json" });
-     *     const url = URL.createObjectURL(blob);
-     *     const a = document.createElement('a');
-     *     a.href = url;
-     *     a.download = "save.json";
-     *     a.click();
-     * }
-     * ```
-     */
-    export function exportGameJsonState() {
-        const saveData = exportGameState();
-        return JSON.stringify(saveData);
-    }
-
-    /**
      * Load the save data
      * @param data The save data
      * @param navigate The function to navigate to a path
      */
-    export async function importGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
+    export async function restoreGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
         await narrationUtils.narration.import(data.stepData);
         storageUtils.storage.import(data.storageData);
         await canvasUtils.canvas.import(data.canvasData);
         soundUtils.sound.import(data.soundData);
         navigate(data.path);
-    }
-
-    /**
-     * Load the save data from a JSON string
-     * @param dataString The save data as a JSON string
-     * @param navigate The function to navigate to a path
-     * @example
-     * ```typescript
-     * export function loadGameSave(navigate: (path: string) => void, afterLoad?: () => void) {
-     *     // load the save data from a JSON file
-     *     const input = document.createElement('input');
-     *     input.type = 'file';
-     *     input.accept = 'application/json';
-     *     input.onchange = (e) => {
-     *         const file = (e.target as HTMLInputElement).files?.[0];
-     *         if (file) {
-     *             const reader = new FileReader();
-     *             reader.onload = (e) => {
-     *                 const jsonString = e.target?.result as string;
-     *                 // load the save data from the JSON string
-     *                 loadSaveJson(jsonString, navigate);
-     *                 afterLoad && afterLoad();
-     *             };
-     *             reader.readAsText(file);
-     *         }
-     *     };
-     *     input.click();
-     * }
-     * ```
-     */
-    export async function importGameJsonState(dataString: string, navigate: (path: string) => void) {
-        await importGameState(jsonToGameState(dataString), navigate);
     }
 
     /**
@@ -288,7 +235,7 @@ export function getSaveJson() {
  * @deprecated Use the `Game.loadSaveData` function instead
  */
 export async function loadSaveData(data: pixivninterface.GameState, navigate: (path: string) => void) {
-    return Game.importGameState(data, navigate);
+    return Game.restoreGameState(data, navigate);
 }
 
 /**
