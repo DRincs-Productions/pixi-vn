@@ -78,7 +78,7 @@ export default class GameUnifier {
          *
          * @param openedLabelsNumber The number of opened labels.
          */
-        onClosedLabels?: (openedLabelsNumber: number) => void;
+        onLabelClosing?: (openedLabelsNumber: number) => void;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
@@ -91,7 +91,7 @@ export default class GameUnifier {
         GameUnifier._removeVariable = options.removeVariable;
         GameUnifier._getFlag = options.getFlag;
         GameUnifier._setFlag = options.setFlag;
-        options.onClosedLabels && (GameUnifier._onClosedLabels = options.onClosedLabels);
+        options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -213,13 +213,13 @@ export default class GameUnifier {
     static get setFlag() {
         return GameUnifier._setFlag;
     }
-    private static _onClosedLabels: (openedLabelsNumber: number) => void = () => {};
+    private static _onLabelClosing: (openedLabelsNumber: number) => void = () => {};
     /**
      * This function is called after the narration.goNext() method is executed
      * It can be used to clear old temporary variables.
      * @param openedLabelsNumber The number of opened labels.
      */
-    static get onClosedLabels() {
-        return GameUnifier._onClosedLabels;
+    static get onLabelClosing() {
+        return GameUnifier._onLabelClosing;
     }
 }

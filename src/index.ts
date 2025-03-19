@@ -75,15 +75,6 @@ export namespace Game {
         options: Partial<ApplicationOptions> & { width: number; height: number },
         devtoolsOptions?: Devtools
     ) {
-        // storage
-        GameUnifier.getVariable = (key) => storageUtils.storage.getVariable(key);
-        GameUnifier.setVariable = (key, value) => storageUtils.storage.setVariable(key, value);
-        GameUnifier.removeVariable = (key) => storageUtils.storage.removeVariable(key);
-        GameUnifier.getFlag = (key) => storageUtils.storage.getFlag(key);
-        GameUnifier.setFlag = (name, value) => storageUtils.storage.setFlag(name, value);
-        GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
-            storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
-        // sound
         GameUnifier.initialize({
             getCurrentGameStepState: () => {
                 return {
@@ -135,6 +126,14 @@ export namespace Game {
                 });
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
             };
+            // storage
+            getVariable: (key) => storageUtils.storage.getVariable(key),
+            setVariable: (key, value) => storageUtils.storage.setVariable(key, value),
+            removeVariable: (key) => storageUtils.storage.removeVariable(key),
+            getFlag: (key) => storageUtils.storage.getFlag(key),
+            setFlag: (name, value) => storageUtils.storage.setFlag(name, value),
+            onLabelClosing: (openedLabelsNumber) =>
+                storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
         });
         asciiArtLog();
         return await canvasUtils.canvas.initialize(element, options, devtoolsOptions);

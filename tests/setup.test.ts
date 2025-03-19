@@ -48,13 +48,12 @@ test("setup", async () => {
         // narration
         getStepCounter: () => narration.stepCounter,
         getOpenedLabels: () => narration.openedLabels.length,
+        // storage
+        getVariable: (key) => storage.getVariable(key),
+        setVariable: (key, value) => storage.setVariable(key, value),
+        removeVariable: (key) => storage.removeVariable(key),
+        getFlag: (key) => storage.getFlag(key),
+        setFlag: (name, value) => storage.setFlag(name, value),
+        onLabelClosing: (openedLabelsNumber) => StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
     });
-    // storage
-    GameUnifier.getVariable = (key) => storage.getVariable(key);
-    GameUnifier.setVariable = (key, value) => storage.setVariable(key, value);
-    GameUnifier.removeVariable = (key) => storage.removeVariable(key);
-    GameUnifier.getFlag = (key) => storage.getFlag(key);
-    GameUnifier.setFlag = (name, value) => storage.setFlag(name, value);
-    GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
-        StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
 });
