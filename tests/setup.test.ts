@@ -1,3 +1,4 @@
+import { GameStepState } from "@drincs/pixi-vn";
 import { test } from "vitest";
 import {
     createExportableElement,
@@ -8,6 +9,7 @@ import {
     storage,
     StorageManagerStatic,
 } from "../src";
+import { logger } from "../src/utils/log-utility";
 import { getGamePath } from "../src/utils/path-utility";
 
 test("setup", async () => {
@@ -21,6 +23,25 @@ test("setup", async () => {
                 labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
                 openedLabels: GameUnifier.getOpenedLabels(),
             };
+        },
+        ignoreChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
+            if (originalState.openedLabels.length === newState.openedLabels.length) {
+                try {
+                    let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
+                    let historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
+                    if (
+                        lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
+                        originalState.path === newState.path &&
+                        originalState.labelIndex === newState.labelIndex
+                    ) {
+                        return false;
+                    }
+                } catch (e) {
+                    logger.error("Error comparing opened labels", e);
+                    return false;
+                }
+            }
+            return true;
         },
         // narration
         getStepCounter: () => narration.stepCounter,

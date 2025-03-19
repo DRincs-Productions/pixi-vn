@@ -25,6 +25,7 @@ export * from "./storage";
 export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 
+import { GameStepState } from "@drincs/pixi-vn";
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
@@ -44,6 +45,7 @@ import * as storageUtils from "./storage";
 import GameUnifier from "./unifier";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
+import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
 export namespace Game {
@@ -111,6 +113,25 @@ export namespace Game {
                     labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0,
                     openedLabels: GameUnifier.getOpenedLabels(),
                 };
+            },
+            ignoreChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
+                if (originalState.openedLabels.length === newState.openedLabels.length) {
+                    try {
+                        let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
+                        let historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
+                        if (
+                            lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
+                            originalState.path === newState.path &&
+                            originalState.labelIndex === newState.labelIndex
+                        ) {
+                            return false;
+                        }
+                    } catch (e) {
+                        logger.error("Error comparing opened labels", e);
+                        return false;
+                    }
+                }
+                return true;
             },
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,

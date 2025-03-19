@@ -75,25 +75,12 @@ export default class NarrationManager implements NarrationManagerInterface {
     ) {
         const { choiseMade, ignoreSameStep } = options;
         const currentStepData: GameStepState = GameUnifier.currentGameStepState;
-        if (NarrationManagerStatic.originalStepData) {
-            if (NarrationManagerStatic.originalStepData.openedLabels.length === currentStepData.openedLabels.length) {
-                try {
-                    let lastStepDataOpenedLabelsString = JSON.stringify(
-                        NarrationManagerStatic.originalStepData.openedLabels
-                    );
-                    let historyStepOpenedLabelsString = JSON.stringify(currentStepData.openedLabels);
-                    if (
-                        !ignoreSameStep &&
-                        lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
-                        NarrationManagerStatic.originalStepData.path === currentStepData.path &&
-                        NarrationManagerStatic.originalStepData.labelIndex === currentStepData.labelIndex
-                    ) {
-                        return;
-                    }
-                } catch (e) {
-                    logger.error("Error comparing openedLabels", e);
-                }
-            }
+        if (
+            !ignoreSameStep &&
+            NarrationManagerStatic.originalStepData &&
+            GameUnifier.ignoreChangeHistory(NarrationManagerStatic.originalStepData, currentStepData)
+        ) {
+            return;
         }
         let data = diff(NarrationManagerStatic.originalStepData, currentStepData);
         if (data) {
