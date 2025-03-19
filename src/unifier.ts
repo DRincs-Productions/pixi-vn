@@ -43,6 +43,42 @@ export default class GameUnifier {
          * It can be used to force the completion of the ticker in the game engine.
          */
         onGoNextEnd?: () => Promise<void>;
+        /**
+         * This function returns the value of a variable.
+         * @param key The key of the variable.
+         * @returns The value of the variable.
+         */
+        getVariable: <T extends StorageElementType>(key: string) => T | undefined;
+        /**
+         * This function sets the value of a variable.
+         * @param key The key of the variable.
+         * @param value The value of the variable.
+         */
+        setVariable: (key: string, value: StorageElementType) => void;
+        /**
+         * This function removes a variable.
+         * @param key The key of the variable.
+         */
+        removeVariable: (key: string) => void;
+        /**
+         * This function returns the value of a flag.
+         * @param name The name of the flag.
+         */
+        getFlag: (name: string) => boolean;
+        /**
+         * This function sets the value of a flag.
+         * @param name The name of the flag.
+         * @param value The value of the flag.
+         */
+        setFlag: (name: string, value: boolean) => void;
+        /**
+         * This function is called after the narration.goNext() method is executed.
+         *
+         * It can be used to clear old temporary variables.
+         *
+         * @param openedLabelsNumber The number of opened labels.
+         */
+        onClosedLabels?: (openedLabelsNumber: number) => void;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
@@ -50,6 +86,12 @@ export default class GameUnifier {
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
         options.onGoNextEnd && (GameUnifier._onGoNextEnd = options.onGoNextEnd);
+        GameUnifier._getVariable = options.getVariable;
+        GameUnifier._setVariable = options.setVariable;
+        GameUnifier._removeVariable = options.removeVariable;
+        GameUnifier._getFlag = options.getFlag;
+        GameUnifier._setFlag = options.setFlag;
+        options.onClosedLabels && (GameUnifier._onClosedLabels = options.onClosedLabels);
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -105,10 +147,7 @@ export default class GameUnifier {
     static get openedLabels() {
         return GameUnifier._getOpenedLabels();
     }
-    static _onGoNextEnd: () => Promise<void> = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
+    private static _onGoNextEnd: () => Promise<void> = async () => {};
     /**
      * This function is called after the narration.goNext() method is executed.
      * It can be used to force the completion of the ticker in the game engine.
@@ -116,29 +155,71 @@ export default class GameUnifier {
     static get onGoNextEnd() {
         return GameUnifier._onGoNextEnd;
     }
-
-    static getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
+    private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
-    static setVariable: (key: string, value: StorageElementType) => void = () => {
+    /**
+     * This function returns the value of a variable.
+     * @param key The key of the variable.
+     * @returns The value of the variable.
+     */
+    static get getVariable() {
+        return GameUnifier._getVariable;
+    }
+    private static _setVariable: (key: string, value: StorageElementType) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
-    static removeVariable: (key: string) => void = () => {
+    /**
+     * This function sets the value of a variable.
+     * @param key The key of the variable.
+     * @param value The value of the variable.
+     */
+    static get setVariable() {
+        return GameUnifier._setVariable;
+    }
+    private static _removeVariable: (key: string) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
-    static getFlag: (name: string) => boolean = () => {
+    /**
+     * This function removes a variable.
+     * @param key The key of the variable.
+     */
+    static get removeVariable() {
+        return GameUnifier._removeVariable;
+    }
+    private static _getFlag: (name: string) => boolean = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
-    static setFlag: (name: string, value: boolean) => void = () => {
+    /**
+     * This function returns the value of a flag.
+     * @param name The name of the flag.
+     */
+    static get getFlag() {
+        return GameUnifier._getFlag;
+    }
+    private static _setFlag: (name: string, value: boolean) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
-    static clearOldTempVariables: (openedLabelsNumber: number) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
+    /**
+     * This function sets the value of a flag.
+     * @param name The name of the flag.
+     * @param value The value of the flag.
+     */
+    static get setFlag() {
+        return GameUnifier._setFlag;
+    }
+    private static _onClosedLabels: (openedLabelsNumber: number) => void = () => {};
+    /**
+     * This function is called after the narration.goNext() method is executed
+     * It can be used to clear old temporary variables.
+     * @param openedLabelsNumber The number of opened labels.
+     */
+    static get onClosedLabels() {
+        return GameUnifier._onClosedLabels;
+    }
 }
