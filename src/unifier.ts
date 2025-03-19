@@ -17,6 +17,7 @@ export default class GameUnifier {
         getCurrentGameStepState: () => GameStepState;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
+        GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");

@@ -1,5 +1,3 @@
-import { GameStepStateData } from "./interfaces";
-
 declare module "@drincs/pixi-vn" {
     interface CharacterInterface {
         /**
@@ -33,5 +31,30 @@ declare module "@drincs/pixi-vn" {
     interface StepLabelResult {
         [key: string]: any;
     }
-    interface GameStepState extends GameStepStateData {}
+    interface GameStepState {
+        /**
+         * The browser path that occurred during the progression of the steps.
+         */
+        path: string;
+        /**
+         * The storage that occurred during the progression of the steps.
+         */
+        storage: ExportedStorage;
+        /**
+         * The index of the label that occurred during the progression of the steps.
+         */
+        labelIndex: number;
+        /**
+         * The canvas that occurred during the progression of the steps.
+         */
+        canvas: ExportedCanvas;
+        /**
+         * The opened labels that occurred during the progression of the steps.
+         */
+        openedLabels: OpenedLabel[];
+        /**
+         * The sound data that occurred during the progression of the steps.
+         */
+        sound: ExportedSounds;
+    }
 }

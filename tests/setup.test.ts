@@ -1,8 +1,27 @@
 import { test } from "vitest";
-import { createExportableElement, GameUnifier, narration, sound, storage, StorageManagerStatic } from "../src";
+import {
+    createExportableElement,
+    GameUnifier,
+    narration,
+    NarrationManagerStatic,
+    sound,
+    storage,
+    StorageManagerStatic,
+} from "../src";
+import { getGamePath } from "../src/utils/path-utility";
 
 test("setup", async () => {
     GameUnifier.initialize({
+        getCurrentGameStepState: () => {
+            return {
+                path: getGamePath(),
+                storage: GameUnifier.exportStorageData(),
+                canvas: GameUnifier.exportCanvasData(),
+                sound: GameUnifier.exportSoundData(),
+                labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
+                openedLabels: GameUnifier.getOpenedLabels(),
+            };
+        },
         // narration
         getStepCounter: () => narration.stepCounter,
     });
