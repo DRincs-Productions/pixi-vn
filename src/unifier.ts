@@ -38,12 +38,18 @@ export default class GameUnifier {
          * If your game engine does not have a narration system, you can return 0.
          */
         getOpenedLabels: () => number;
+        /**
+         * This function is called after the narration.goNext() method is executed.
+         * It can be used to force the completion of the ticker in the game engine.
+         */
+        onGoNextEnd?: () => Promise<void>;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         options.ignoreAddChangeHistory && (GameUnifier._ignoreAddChangeHistory = options.ignoreAddChangeHistory);
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
+        options.onGoNextEnd && (GameUnifier._onGoNextEnd = options.onGoNextEnd);
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -99,11 +105,18 @@ export default class GameUnifier {
     static get openedLabels() {
         return GameUnifier._getOpenedLabels();
     }
-
-    static forceCompletionOfTicker: () => void = () => {
+    static _onGoNextEnd: () => Promise<void> = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
+    /**
+     * This function is called after the narration.goNext() method is executed.
+     * It can be used to force the completion of the ticker in the game engine.
+     */
+    static get onGoNextEnd() {
+        return GameUnifier._onGoNextEnd;
+    }
+
     static getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");

@@ -83,16 +83,6 @@ export namespace Game {
         GameUnifier.setFlag = (name, value) => storageUtils.storage.setFlag(name, value);
         GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
             storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
-        // canvas
-        GameUnifier.forceCompletionOfTicker = () => {
-            canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
-                canvasUtils.canvas.forceCompletionOfTicker(id);
-            });
-            canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
-                canvasUtils.canvas.forceCompletionOfTicker(id, alias);
-            });
-            canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
-        };
         // sound
         GameUnifier.initialize({
             getCurrentGameStepState: () => {
@@ -135,6 +125,16 @@ export namespace Game {
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
+            // canvas
+            onGoNextEnd: async () => {
+                canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
+                    canvasUtils.canvas.forceCompletionOfTicker(id);
+                });
+                canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
+                    canvasUtils.canvas.forceCompletionOfTicker(id, alias);
+                });
+                canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+            };
         });
         asciiArtLog();
         return await canvasUtils.canvas.initialize(element, options, devtoolsOptions);

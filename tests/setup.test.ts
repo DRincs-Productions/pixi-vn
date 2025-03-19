@@ -57,6 +57,4 @@ test("setup", async () => {
     GameUnifier.setFlag = (name, value) => storage.setFlag(name, value);
     GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
         StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
-    // canvas
-    GameUnifier.forceCompletionOfTicker = () => {};
 });

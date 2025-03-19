@@ -318,7 +318,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
         }
         if (NarrationManagerStatic.stepsRunning === 0) {
-            GameUnifier.forceCompletionOfTicker();
+            await GameUnifier.onGoNextEnd();
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
         return await this.runCurrentStep(props, options);
