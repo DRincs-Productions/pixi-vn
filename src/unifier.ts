@@ -1,6 +1,6 @@
 import { GameStepState } from "@drincs/pixi-vn";
 import { ExportedCanvas } from "./canvas";
-import { ExportedStep, OpenedLabel } from "./narration";
+import { ExportedStep } from "./narration";
 import { ExportedSounds } from "./sound";
 import { ExportedStorage, StorageElementType } from "./storage";
 import { logger } from "./utils/log-utility";
@@ -35,11 +35,18 @@ export default class GameUnifier {
          * @param navigate The function to navigate to the restored path.
          */
         restoreGameStepState: (state: GameStepState, navigate: (path: string) => void) => Promise<void>;
+        /**
+         * This function returns the number of opened labels.
+         *
+         * If your game engine does not have a narration system, you can return 0.
+         */
+        getOpenedLabels: () => number;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         options.ignoreAddChangeHistory && (GameUnifier._ignoreAddChangeHistory = options.ignoreAddChangeHistory);
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
+        GameUnifier._getOpenedLabels = options.getOpenedLabels;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -85,27 +92,17 @@ export default class GameUnifier {
     static get restoreGameStepState() {
         return GameUnifier._restoreGameStepState;
     }
+    private static _getOpenedLabels: () => number = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
+    };
+    /**
+     * Returns the number of opened labels.
+     */
+    static get openedLabels() {
+        return GameUnifier._getOpenedLabels();
+    }
 
-    static getOpenedLabels: () => OpenedLabel[] = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    static exportStorageData: () => ExportedStorage = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    static exportCanvasData: () => ExportedCanvas = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    static exportSoundData: () => ExportedSounds = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    static exportNarrationData: () => ExportedStep = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
     static importStorageData: (data: ExportedStorage) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");

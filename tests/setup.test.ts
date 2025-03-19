@@ -1,14 +1,6 @@
 import { GameStepState } from "@drincs/pixi-vn";
 import { test } from "vitest";
-import {
-    createExportableElement,
-    GameUnifier,
-    narration,
-    NarrationManagerStatic,
-    sound,
-    storage,
-    StorageManagerStatic,
-} from "../src";
+import { GameUnifier, narration, NarrationManagerStatic, sound, storage, StorageManagerStatic } from "../src";
 import { logger } from "../src/utils/log-utility";
 import { getGamePath } from "../src/utils/path-utility";
 
@@ -17,11 +9,13 @@ test("setup", async () => {
         getCurrentGameStepState: () => {
             return {
                 path: getGamePath(),
-                storage: GameUnifier.exportStorageData(),
-                canvas: GameUnifier.exportCanvasData(),
-                sound: GameUnifier.exportSoundData(),
+                storage: storage.export(),
+                canvas: () => {
+                    return {} as any;
+                },
+                sound: sound.export(),
                 labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
-                openedLabels: GameUnifier.getOpenedLabels(),
+                openedLabels: narration.openedLabels,
             };
         },
         ignoreAddChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
@@ -53,9 +47,9 @@ test("setup", async () => {
         },
         // narration
         getStepCounter: () => narration.stepCounter,
+        getOpenedLabels: () => narration.openedLabels.length,
     });
     // storage
-    GameUnifier.exportStorageData = () => storage.export();
     GameUnifier.importStorageData = (data) => storage.import(data);
     GameUnifier.getVariable = (key) => storage.getVariable(key);
     GameUnifier.setVariable = (key, value) => storage.setVariable(key, value);
@@ -65,17 +59,11 @@ test("setup", async () => {
     GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
         StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
     // sound
-    GameUnifier.exportSoundData = () => sound.export();
     GameUnifier.importSoundData = (data) => sound.import(data);
     // narration
-    GameUnifier.getOpenedLabels = () => createExportableElement(narration.openedLabels);
-    GameUnifier.exportNarrationData = narration.export;
     GameUnifier.importNarrationData = narration.import;
 
     // canvas
     GameUnifier.importCanvasData = async () => {};
     GameUnifier.forceCompletionOfTicker = () => {};
-    GameUnifier.exportCanvasData = () => {
-        return {} as any;
-    };
 });

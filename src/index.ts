@@ -76,7 +76,6 @@ export namespace Game {
         devtoolsOptions?: Devtools
     ) {
         // storage
-        GameUnifier.exportStorageData = () => storageUtils.storage.export();
         GameUnifier.importStorageData = (data) => storageUtils.storage.import(data);
         GameUnifier.getVariable = (key) => storageUtils.storage.getVariable(key);
         GameUnifier.setVariable = (key, value) => storageUtils.storage.setVariable(key, value);
@@ -86,7 +85,6 @@ export namespace Game {
         GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
             storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
         // canvas
-        GameUnifier.exportCanvasData = () => canvasUtils.canvas.export();
         GameUnifier.importCanvasData = (data) => canvasUtils.canvas.import(data);
         GameUnifier.forceCompletionOfTicker = () => {
             canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
@@ -98,20 +96,17 @@ export namespace Game {
             canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
         };
         // sound
-        GameUnifier.exportSoundData = () => soundUtils.sound.export();
         GameUnifier.importSoundData = (data) => soundUtils.sound.import(data);
-        GameUnifier.getOpenedLabels = () => functions.createExportableElement(narrationUtils.narration.openedLabels);
-        GameUnifier.exportNarrationData = narrationUtils.narration.export;
         GameUnifier.importNarrationData = narrationUtils.narration.import;
         GameUnifier.initialize({
             getCurrentGameStepState: () => {
                 return {
                     path: getGamePath(),
-                    storage: GameUnifier.exportStorageData(),
-                    canvas: GameUnifier.exportCanvasData(),
-                    sound: GameUnifier.exportSoundData(),
+                    storage: storageUtils.storage.export(),
+                    canvas: canvasUtils.canvas.export(),
+                    sound: soundUtils.sound.export(),
                     labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0,
-                    openedLabels: GameUnifier.getOpenedLabels(),
+                    openedLabels: narrationUtils.narration.openedLabels,
                 };
             },
             ignoreAddChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
@@ -143,6 +138,7 @@ export namespace Game {
             },
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,
+            getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
         });
         asciiArtLog();
         return await canvasUtils.canvas.initialize(element, options, devtoolsOptions);

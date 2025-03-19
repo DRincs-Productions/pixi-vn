@@ -47,7 +47,7 @@ export default class StorageManager implements StorageManagerInterface {
         } else {
             tempStorage[key] = value;
             if (!tempStorageDeadlines.hasOwnProperty(key)) {
-                tempStorageDeadlines[key] = GameUnifier.getOpenedLabels().length;
+                tempStorageDeadlines[key] = GameUnifier.openedLabels;
             }
         }
         StorageManagerStatic.tempStorage = tempStorage;
