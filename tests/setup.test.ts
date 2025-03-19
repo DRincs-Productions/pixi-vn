@@ -40,9 +40,9 @@ test("setup", async () => {
         restoreGameStepState: async (state, navigate) => {
             NarrationManagerStatic._originalStepData = state;
             NarrationManagerStatic._openedLabels = state.openedLabels;
-            await GameUnifier.importStorageData(state.storage);
-            await GameUnifier.importCanvasData(state.canvas);
-            await GameUnifier.importSoundData(state.sound);
+            storage.import(state.storage);
+            // await canvas.import(state.canvas);
+            sound.import(state.sound);
             navigate(state.path);
         },
         // narration
@@ -50,7 +50,6 @@ test("setup", async () => {
         getOpenedLabels: () => narration.openedLabels.length,
     });
     // storage
-    GameUnifier.importStorageData = (data) => storage.import(data);
     GameUnifier.getVariable = (key) => storage.getVariable(key);
     GameUnifier.setVariable = (key, value) => storage.setVariable(key, value);
     GameUnifier.removeVariable = (key) => storage.removeVariable(key);
@@ -58,12 +57,6 @@ test("setup", async () => {
     GameUnifier.setFlag = (name, value) => storage.setFlag(name, value);
     GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
         StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
-    // sound
-    GameUnifier.importSoundData = (data) => sound.import(data);
-    // narration
-    GameUnifier.importNarrationData = narration.import;
-
     // canvas
-    GameUnifier.importCanvasData = async () => {};
     GameUnifier.forceCompletionOfTicker = () => {};
 });

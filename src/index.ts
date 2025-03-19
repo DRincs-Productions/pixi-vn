@@ -76,7 +76,6 @@ export namespace Game {
         devtoolsOptions?: Devtools
     ) {
         // storage
-        GameUnifier.importStorageData = (data) => storageUtils.storage.import(data);
         GameUnifier.getVariable = (key) => storageUtils.storage.getVariable(key);
         GameUnifier.setVariable = (key, value) => storageUtils.storage.setVariable(key, value);
         GameUnifier.removeVariable = (key) => storageUtils.storage.removeVariable(key);
@@ -85,7 +84,6 @@ export namespace Game {
         GameUnifier.clearOldTempVariables = (openedLabelsNumber) =>
             storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber);
         // canvas
-        GameUnifier.importCanvasData = (data) => canvasUtils.canvas.import(data);
         GameUnifier.forceCompletionOfTicker = () => {
             canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
                 canvasUtils.canvas.forceCompletionOfTicker(id);
@@ -96,8 +94,6 @@ export namespace Game {
             canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
         };
         // sound
-        GameUnifier.importSoundData = (data) => soundUtils.sound.import(data);
-        GameUnifier.importNarrationData = narrationUtils.narration.import;
         GameUnifier.initialize({
             getCurrentGameStepState: () => {
                 return {
@@ -131,9 +127,9 @@ export namespace Game {
             restoreGameStepState: async (state, navigate) => {
                 narrationUtils.NarrationManagerStatic._originalStepData = state;
                 narrationUtils.NarrationManagerStatic._openedLabels = state.openedLabels;
-                await GameUnifier.importStorageData(state.storage);
-                await GameUnifier.importCanvasData(state.canvas);
-                await GameUnifier.importSoundData(state.sound);
+                storageUtils.storage.import(state.storage);
+                await canvasUtils.canvas.import(state.canvas);
+                soundUtils.sound.import(state.sound);
                 navigate(state.path);
             },
             // narration

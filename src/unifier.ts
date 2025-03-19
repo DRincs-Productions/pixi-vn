@@ -1,8 +1,5 @@
 import { GameStepState } from "@drincs/pixi-vn";
-import { ExportedCanvas } from "./canvas";
-import { ExportedStep } from "./narration";
-import { ExportedSounds } from "./sound";
-import { ExportedStorage, StorageElementType } from "./storage";
+import { StorageElementType } from "./storage";
 import { logger } from "./utils/log-utility";
 
 export default class GameUnifier {
@@ -103,22 +100,6 @@ export default class GameUnifier {
         return GameUnifier._getOpenedLabels();
     }
 
-    static importStorageData: (data: ExportedStorage) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    static importCanvasData: (data: ExportedCanvas) => Promise<void> = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    static importSoundData: (data: ExportedSounds) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    static importNarrationData: (data: ExportedStep) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
     static forceCompletionOfTicker: () => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
