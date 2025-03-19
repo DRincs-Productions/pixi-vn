@@ -29,14 +29,6 @@ import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/
  * This class is a class that manages the steps and labels of the game.
  */
 export default class NarrationManager implements NarrationManagerInterface {
-    private async restoreFromHistoryStep(restoredStep: GameStepState, navigate: (path: string) => void): Promise<void> {
-        NarrationManagerStatic._originalStepData = restoredStep;
-        NarrationManagerStatic._openedLabels = createExportableElement(restoredStep.openedLabels);
-        GameUnifier.importStorageData(createExportableElement(restoredStep.storage));
-        await GameUnifier.importCanvasData(createExportableElement(restoredStep.canvas));
-        GameUnifier.importSoundData(createExportableElement(restoredStep.sound));
-        navigate(restoredStep.path);
-    }
     get stepsHistory() {
         return NarrationManagerStatic._stepsHistory;
     }
@@ -592,9 +584,11 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
-        let restoredStep = NarrationManagerStatic.goBackInternal(steps, NarrationManagerStatic.originalStepData);
+        let restoredStep = createExportableElement(
+            NarrationManagerStatic.goBackInternal(steps, NarrationManagerStatic.originalStepData)
+        );
         if (restoredStep) {
-            await this.restoreFromHistoryStep(restoredStep, navigate);
+            await GameUnifier.restoreGameStepState(restoredStep, navigate);
         } else {
             logger.error("Error going back");
         }

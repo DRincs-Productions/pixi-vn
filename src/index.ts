@@ -124,14 +124,22 @@ export namespace Game {
                             originalState.path === newState.path &&
                             originalState.labelIndex === newState.labelIndex
                         ) {
-                            return false;
+                            return true;
                         }
                     } catch (e) {
                         logger.error("Error comparing opened labels", e);
-                        return false;
+                        return true;
                     }
                 }
-                return true;
+                return false;
+            },
+            restoreGameStepState: async (state, navigate) => {
+                narrationUtils.NarrationManagerStatic._originalStepData = state;
+                narrationUtils.NarrationManagerStatic._openedLabels = state.openedLabels;
+                await GameUnifier.importStorageData(state.storage);
+                await GameUnifier.importCanvasData(state.canvas);
+                await GameUnifier.importSoundData(state.sound);
+                navigate(state.path);
             },
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,

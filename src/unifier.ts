@@ -22,10 +22,17 @@ export default class GameUnifier {
          * @default () => false
          */
         ignoreAddChangeHistory?: (originalState: GameStepState, newState: GameStepState) => boolean;
+        /**
+         * This function restores the game step state.
+         * @param state The state to restore.
+         * @param navigate The function to navigate to the restored path.
+         */
+        restoreGameStepState: (state: GameStepState, navigate: (path: string) => void) => Promise<void>;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         options.ignoreAddChangeHistory && (GameUnifier._ignoreAddChangeHistory = options.ignoreAddChangeHistory);
+        GameUnifier._restoreGameStepState = options.restoreGameStepState;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -57,6 +64,19 @@ export default class GameUnifier {
      */
     static get ignoreAddChangeHistory() {
         return GameUnifier._ignoreAddChangeHistory;
+    }
+    private static _restoreGameStepState: (state: GameStepState, navigate: (path: string) => void) => Promise<void> =
+        () => {
+            logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+            throw new Error("Method not implemented.");
+        };
+    /**
+     * Restores the game step state.
+     * @param state The state to restore.
+     * @param navigate The function to navigate to the restored path.
+     */
+    static get restoreGameStepState() {
+        return GameUnifier._restoreGameStepState;
     }
 
     static getOpenedLabels: () => OpenedLabel[] = () => {
