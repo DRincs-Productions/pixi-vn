@@ -807,9 +807,6 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Export and Import Methods */
 
-    public exportJson(): string {
-        return JSON.stringify(this.export());
-    }
     public export(): ExportedStep {
         let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
         let stepsHistory: HistoryStep<Dialogue<CharacterInterface>>[] = this.stepsHistory.map((step, index) => ({
@@ -823,10 +820,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             originalStepData: NarrationManagerStatic._originalStepData,
         };
     }
-    public async importJson(dataString: string) {
-        await this.import(JSON.parse(dataString));
-    }
-    public async import(data: object) {
+    public async restore(data: object) {
         this.clear();
         try {
             if (data.hasOwnProperty("stepsHistory")) {

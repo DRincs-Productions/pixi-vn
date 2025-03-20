@@ -60,7 +60,7 @@ test("clear & startingStorage", async () => {
 });
 
 test("import & exoprt", async () => {
-    storage.import({
+    storage.restore({
         a: 1,
         b: "test",
         c: true,

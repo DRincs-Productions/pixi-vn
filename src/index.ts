@@ -108,9 +108,9 @@ export namespace Game {
             restoreGameStepState: async (state, navigate) => {
                 narrationUtils.NarrationManagerStatic._originalStepData = state;
                 narrationUtils.NarrationManagerStatic._openedLabels = state.openedLabels;
-                storageUtils.storage.import(state.storage);
-                await canvasUtils.canvas.import(state.canvas);
-                soundUtils.sound.import(state.sound);
+                storageUtils.storage.restore(state.storage);
+                await canvasUtils.canvas.restore(state.canvas);
+                soundUtils.sound.restore(state.sound);
                 navigate(state.path);
             },
             // narration
@@ -173,10 +173,10 @@ export namespace Game {
      * @param navigate The function to navigate to a path
      */
     export async function restoreGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
-        await narrationUtils.narration.import(data.stepData);
-        storageUtils.storage.import(data.storageData);
-        await canvasUtils.canvas.import(data.canvasData);
-        soundUtils.sound.import(data.soundData);
+        await narrationUtils.narration.restore(data.stepData);
+        storageUtils.storage.restore(data.storageData);
+        await canvasUtils.canvas.restore(data.canvasData);
+        soundUtils.sound.restore(data.soundData);
         navigate(data.path);
     }
 

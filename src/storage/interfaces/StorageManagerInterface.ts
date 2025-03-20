@@ -80,23 +80,13 @@ export default interface StorageManagerInterface {
      */
     clear(): void;
     /**
-     * Export the storage to a JSON string
-     * @returns The JSON string
-     */
-    exportJson(): string;
-    /**
      * Export the storage to an object
      * @returns The object
      */
     export(): ExportedStorage;
     /**
-     * Import the storage from a JSON string
-     * @param dataString The JSON string
-     */
-    importJson(dataString: string): void;
-    /**
-     * Import the storage from an object
+     * Restore the storage from an object
      * @param data The object
      */
-    import(data: ExportedStorage): void;
+    restore(data: ExportedStorage): void;
 }

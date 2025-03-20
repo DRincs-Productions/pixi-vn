@@ -1096,13 +1096,6 @@ export default class CanvasManager {
     /* Export and Import Methods */
 
     /**
-     * Export the canvas and the tickers to a JSON string.
-     * @returns The JSON string.
-     */
-    public exportJson(): string {
-        return JSON.stringify(this.export());
-    }
-    /**
      * Export the canvas and the tickers to an object.
      * @returns The object.
      */
@@ -1124,17 +1117,10 @@ export default class CanvasManager {
         };
     }
     /**
-     * Import the canvas and the tickers from a JSON string.
-     * @param dataString The JSON string.
-     */
-    public async importJson(dataString: string) {
-        await this.import(JSON.parse(dataString));
-    }
-    /**
-     * Import the canvas and the tickers from an object.
+     * Restore the canvas and the tickers from an object.
      * @param data The object.
      */
-    public async import(data: object) {
+    public async restore(data: object) {
         try {
             let tickersToTrasfer: { [oldId: string]: string } = {};
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {

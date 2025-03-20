@@ -79,9 +79,6 @@ export default class StorageManager implements StorageManagerInterface {
             this.storage.set(key, value);
         });
     }
-    public exportJson(): string {
-        return JSON.stringify(this.export());
-    }
     public export(): ExportedStorage {
         let items: CacheableStoreItem[] = [];
         [...this.storage.keys()].forEach((key) => {
@@ -89,10 +86,7 @@ export default class StorageManager implements StorageManagerInterface {
         });
         return createExportableElement(items);
     }
-    public importJson(dataString: string) {
-        this.import(JSON.parse(dataString));
-    }
-    public import(data: ExportedStorage) {
+    public restore(data: ExportedStorage) {
         this.clear();
         try {
             if (data) {

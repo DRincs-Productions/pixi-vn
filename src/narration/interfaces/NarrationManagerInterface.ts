@@ -379,23 +379,13 @@ export default interface NarrationManagerInterface {
     /* Export and Import Methods */
 
     /**
-     * Export the history to a JSON string.
-     * @returns The history in a JSON string.
-     */
-    exportJson(): string;
-    /**
      * Export the history to an object.
      * @returns The history in an object.
      */
     export(): ExportedStep;
     /**
-     * Import the history from a JSON string.
-     * @param dataString The history in a JSON string.
-     */
-    importJson(dataString: string): Promise<void>;
-    /**
-     * Import the history from an object.
+     * Restore the history from an object.
      * @param data The history in an object.
      */
-    import(data: object): Promise<void>;
+    restore(data: object): Promise<void>;
 }

@@ -40,9 +40,9 @@ test("setup", async () => {
         restoreGameStepState: async (state, navigate) => {
             NarrationManagerStatic._originalStepData = state;
             NarrationManagerStatic._openedLabels = state.openedLabels;
-            storage.import(state.storage);
-            // await canvas.import(state.canvas);
-            sound.import(state.sound);
+            storage.restore(state.storage);
+            // await canvas.restore(state.canvas);
+            sound.restore(state.sound);
             navigate(state.path);
         },
         // narration

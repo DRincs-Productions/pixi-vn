@@ -1,3 +1,8 @@
+import { ExportedCanvas } from "./canvas";
+import { ExportedStep } from "./narration";
+import { ExportedSounds } from "./sound";
+import { ExportedStorage } from "./storage";
+
 declare module "@drincs/pixi-vn" {
     interface CharacterInterface {
         /**
@@ -31,5 +36,12 @@ declare module "@drincs/pixi-vn" {
     interface StepLabelResult {
         [key: string]: any;
     }
-    interface GameStepState {}
+    interface GameStepState {
+        pixivn_version: string;
+        stepData: ExportedStep;
+        storageData: ExportedStorage;
+        canvasData: ExportedCanvas;
+        soundData: ExportedSounds;
+        path: string;
+    }
 }

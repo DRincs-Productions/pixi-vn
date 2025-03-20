@@ -228,9 +228,6 @@ export default class SoundManager extends SoundLibrary {
 
     /* Export and Import Methods */
 
-    public exportJson(): string {
-        return JSON.stringify(this.export());
-    }
     public export(): ExportedSounds {
         let soundElements: { [key: string]: ExportedSoundPlay } = {};
         for (let alias in SoundManagerStatic.soundsPlaying) {
@@ -273,10 +270,7 @@ export default class SoundManager extends SoundLibrary {
         // GameSoundManager.soundAliasesOrder = soundAliasesOrder
         return this.export();
     }
-    public importJson(dataString: string) {
-        this.import(JSON.parse(dataString));
-    }
-    public import(data: object) {
+    public restore(data: object) {
         const stepCounter = GameUnifier.stepCounter - 1;
         this.clear();
         try {
