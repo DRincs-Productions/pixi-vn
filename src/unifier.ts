@@ -81,6 +81,9 @@ export default class GameUnifier {
         onLabelClosing?: (openedLabelsNumber: number) => void;
         /**
          * This function restores the original opened labels.
+         *
+         * If your game engine does not have a narration system, you can return a resolved promise.
+         *
          * @param state The state of the game step.
          */
         restoreOriginalOpenedLabels: (state: GameStepState) => void;
