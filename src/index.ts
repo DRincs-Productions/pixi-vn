@@ -218,35 +218,35 @@ export function clearAllGameDatas() {
 }
 
 /**
- * @deprecated Use the `Game.getSaveData` function instead
+ * @deprecated Use the `Game.exportGameState()` function instead
  */
 export function getSaveData() {
     return Game.exportGameState();
 }
 
 /**
- * @deprecated Use the `Game.getSaveJson` function instead
+ * @deprecated Use the `JSON.stringify(Game.exportGameState())` function instead
  */
 export function getSaveJson() {
-    return Game.exportGameJsonState();
+    return JSON.stringify(Game.exportGameState());
 }
 
 /**
- * @deprecated Use the `Game.loadSaveData` function instead
+ * @deprecated Use the `Game.restoreGameState(data, navigate)` function instead
  */
 export async function loadSaveData(data: pixivninterface.GameState, navigate: (path: string) => void) {
     return Game.restoreGameState(data, navigate);
 }
 
 /**
- * @deprecated Use the `Game.loadSaveJson` function instead
+ * @deprecated Use the `Game.restoreGameState(JSON.parse(dataString) as GameState, navigate)` function instead
  */
 export async function loadSaveJson(dataString: string, navigate: (path: string) => void) {
-    return Game.importGameJsonState(dataString, navigate);
+    return Game.restoreGameState(JSON.parse(dataString) as pixivninterface.GameState, navigate);
 }
 
 /**
- * @deprecated Use the `Game.jsonToSaveData` function instead
+ * @deprecated Use the `Game.jsonToGameState(json)` function instead
  */
 export function jsonToSaveData(json: string) {
     return Game.jsonToGameState(json);
