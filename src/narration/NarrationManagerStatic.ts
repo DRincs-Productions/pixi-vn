@@ -319,9 +319,6 @@ export default class NarrationManagerStatic {
             };
         }
     }
-    static restoreLastLabelList() {
-        NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalStepData.openedLabels;
-    }
 
     /* Run Methods */
 

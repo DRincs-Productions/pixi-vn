@@ -79,6 +79,11 @@ export default class GameUnifier {
          * @param openedLabelsNumber The number of opened labels.
          */
         onLabelClosing?: (openedLabelsNumber: number) => void;
+        /**
+         * This function restores the original opened labels.
+         * @param state The state of the game step.
+         */
+        restoreOriginalOpenedLabels: (state: GameStepState) => void;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
@@ -92,6 +97,7 @@ export default class GameUnifier {
         GameUnifier._getFlag = options.getFlag;
         GameUnifier._setFlag = options.setFlag;
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
+        GameUnifier._restoreOriginalOpenedLabels = options.restoreOriginalOpenedLabels;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -221,5 +227,16 @@ export default class GameUnifier {
      */
     static get onLabelClosing() {
         return GameUnifier._onLabelClosing;
+    }
+    private static _restoreOriginalOpenedLabels: (state: GameStepState) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
+    };
+    /**
+     * This function restores the original opened labels.
+     * @param state The state of the game step.
+     */
+    static get restoreOriginalOpenedLabels() {
+        return GameUnifier._restoreOriginalOpenedLabels;
     }
 }

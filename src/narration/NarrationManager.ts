@@ -426,14 +426,14 @@ export default class NarrationManager implements NarrationManagerInterface {
                 this.closeCurrentLabel();
                 return await this.goNext(props, options);
             } else if (this.openedLabels.length === 1) {
-                NarrationManagerStatic.restoreLastLabelList();
+                GameUnifier.restoreOriginalOpenedLabels(NarrationManagerStatic.originalStepData);
                 if (this.onGameEnd) {
                     return await this.onGameEnd(props, { labelId: "end" });
                 }
                 return;
             }
         } else if (this.openedLabels.length === 0) {
-            NarrationManagerStatic.restoreLastLabelList();
+            GameUnifier.restoreOriginalOpenedLabels(NarrationManagerStatic.originalStepData);
             if (this.onGameEnd) {
                 return await this.onGameEnd(props, { labelId: "end" });
             }
