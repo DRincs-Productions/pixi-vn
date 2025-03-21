@@ -30,27 +30,15 @@ import { TickerIdType } from "./types/TickerIdType";
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
  */
 export default class CanvasManager implements CanvasManagerInterface {
-    /**
-     * The PIXI Application instance.
-     * It not recommended to use this property directly.
-     */
     get app() {
         return CanvasManagerStatic.app;
     }
     get gameLayer() {
         return CanvasManagerStatic.gameLayer;
     }
-    /**
-     * If the manager is initialized.
-     */
     get isInitialized() {
         return CanvasManagerStatic._isInitialized;
     }
-    /**
-     * This is the div that have same size of the canvas.
-     * This is useful to put interface elements.
-     * You can use React or other framework to put elements in this div.
-     */
     get htmlLayout(): HTMLElement | undefined {
         return CanvasManagerStatic.htmlLayout;
     }
@@ -101,40 +89,15 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
-    /**
-     * Initialize the interface div and add it into a html element.
-     * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
-     * @example
-     * ```tsx
-     * const root = document.getElementById('root')
-     * if (!root) {
-     *     throw new Error('root element not found')
-     * }
-     * canvas.initializeHTMLLayout(root)
-     * const reactRoot = createRoot(canvas.htmlLayout)
-     * reactRoot.render(
-     *     <App />
-     * )
-     * ```
-     */
     public initializeHTMLLayout(element: HTMLElement) {
         return CanvasManagerStatic.initializeHTMLLayout(element);
     }
 
     /* Edit Canvas Elements Methods */
 
-    /**
-     * The children of the canvas.
-     */
     get children() {
         return CanvasManagerStatic.gameLayer.children;
     }
-    /**
-     * Copy the properties of an old canvas element to a new canvas element.
-     * @param oldAlias Old alias
-     * @param newAlias New alias
-     * @returns
-     */
     async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseItem<T> | string,
         newAlias: CanvasBaseItem<T> | string
@@ -183,12 +146,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             await setMemoryContainer(newAlias, oldAlias);
         }
     }
-    /**
-     * Transfer the tickers from an old alias to a new alias.
-     * @param oldAlias Old alias
-     * @param newAlias New alias
-     * @param mode If "move", the old alias will be removed from the ticker. If "duplicate", the old alias will be kept in the ticker.
-     */
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
         if (CanvasManagerStatic._currentTickersSequence[oldAlias]) {
             if (mode === "move") {
@@ -256,20 +213,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             });
         }
     }
-    /**
-     * Add a canvas element to the canvas.
-     * If there is a canvas element with the same alias, all "style", zIndex, and {@link TickerBase} will be transferred to the new canvas element,
-     * and the old canvas element will be removed.
-     * @param alias The alias of the canvas element.
-     * @param canvasComponent The canvas elements to be added.
-     * @param options The options of the canvas element.
-     * @example
-     * ```typescript
-     * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
-     * const sprite = Sprite.from(texture);
-     * canvas.add("bunny", sprite);
-     * ```
-     */
     public add(
         alias: string,
         canvasComponent: CanvasBaseItem<any>,
@@ -322,17 +265,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     public addCanvasElement(alias: string, canvasElement: CanvasBaseItem<any>) {
         this.add(alias, canvasElement);
     }
-    /**
-     * Remove a canvas element from the canvas.
-     * And remove all tickers that are not connected to any canvas element.
-     * @param alias The alias of the canvas element to be removed.
-     * @param options The options of the canvas element.
-     * @returns
-     * @example
-     * ```typescript
-     * canvas.remove("bunny");
-     * ```
-     */
     public remove(
         alias: string | string[],
         options: {
@@ -364,15 +296,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     public removeCanvasElement(alias: string | string[]) {
         this.remove(alias);
     }
-    /**
-     * Get a canvas element by the alias.
-     * @param alias The alias of the canvas element.
-     * @returns The canvas element.
-     * @example
-     * ```typescript
-     * const sprite = canvas.find<Sprite>("bunny");
-     * ```
-     */
     public find<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
         if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
             return this.gameLayer as T;
@@ -389,28 +312,13 @@ export default class CanvasManager implements CanvasManagerInterface {
     public getCanvasElement<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
         return this.find<T>(alias);
     }
-    /**
-     * Check if a DisplayObject is on the canvas.
-     * @param pixiElement The DisplayObject to be checked.
-     * @returns If the DisplayObject is on the canvas.
-     */
     public canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T) {
         return this.gameLayer.children.includes(pixiElement);
     }
-    /**
-     * Remove all canvas elements from the canvas.
-     * And remove all tickers that are not connected to any canvas element.
-     */
     public removeAll() {
         this.gameLayer.removeChildren();
         this.removeAllTickers();
     }
-    /**
-     * Edit the alias of a canvas element. The tickers that are connected to the canvas element will be transferred.
-     * @param oldAlias The old alias of the canvas element.
-     * @param newAlias The new alias of the canvas element.
-     * @param options The options of the canvas element.
-     */
     public editAlias(
         oldAlias: string,
         newAlias: string,
@@ -431,33 +339,12 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     /** Edit Tickers Methods */
 
-    /**
-     * Currently tickers that are running.
-     */
     public get currentTickers() {
         return CanvasManagerStatic._currentTickers;
     }
-    public get currentTickersList() {
-        return Object.values(CanvasManagerStatic._currentTickers);
-    }
-    /**
-     * The steps of the tickers
-     */
     public get currentTickersSteps() {
         return CanvasManagerStatic._currentTickersSequence;
     }
-    /**
-     * Run a ticker. You can run multiple addTicker with the same alias and different tickerClasses.
-     * If you run a ticker with the same alias and tickerClass, the old ticker will be removed.
-     * If already exists a sequence of tickers with the same alias, it will be removed.
-     * @param canvasElementAlias The alias of the canvas element that will use the ticker.
-     * @param ticker The ticker class to be run.
-     * @returns The id of the ticker.
-     * @example
-     * ```typescript
-     * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
-     * ```
-     */
     addTicker<TArgs extends TickerArgs>(canvasElementAlias: string | string[], ticker: TickerBase<TArgs>) {
         let tickerId: TickerIdType = ticker.id;
         if (typeof canvasElementAlias === "string") {
@@ -539,22 +426,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     addTickersSteps(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         return this.addTickersSequence(alias, steps, currentStepNumber);
     }
-    /**
-     * Run a sequence of tickers.
-     * @param alias The alias of canvas element that will use the tickers.
-     * @param steps The steps of the tickers.
-     * @param currentStepNumber The current step number. It is used to continue the sequence of tickers.
-     * @returns The id of the sequence of tickers.
-     * @example
-     * ```typescript
-     * canvas.addTickersSequence("alien", [
-     *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
-     *     Pause(1), // 1 second
-     *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
-     *     Repeat,
-     * ])
-     * ```
-     */
     addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
             logger.warn("The steps of the tickers is empty");
@@ -713,16 +584,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         }
     }
-    /**
-     * Remove a connection between a canvas element and a ticker.
-     * And remove the ticker if there is no canvas element connected to it.
-     * @param alias The alias of the canvas element that will use the ticker.
-     * @param ticker The ticker class to be removed.
-     * @example
-     * ```typescript
-     * canvas.unlinkComponentFromTicker("alien", RotateTicker)
-     * ```
-     */
     public unlinkComponentFromTicker(
         alias: string | string[],
         ticker?: typeof TickerBase<any> | TickerBase<any> | string
@@ -808,9 +669,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         });
     }
-    /**
-     * Remove all tickers from the canvas.
-     */
     public removeAllTickers() {
         CanvasManagerStatic._currentTickersSequence = {};
         Object.keys(CanvasManagerStatic._currentTickers).forEach((id) => {
@@ -823,10 +681,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
         CanvasManagerStatic._tickersOnPause = {};
     }
-    /**
-     * Remove a ticker by the id.
-     * @param tickerId The id of the ticker.
-     */
     removeTicker(tickerId: string | string[]) {
         if (typeof tickerId === "string") {
             tickerId = [tickerId];
@@ -850,11 +704,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
         this.pauseTicker(alias, options);
     }
-    /**
-     * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
-     * @param alias The alias of the canvas element that will use the ticker.
-     * @param options The options of the pause ticker.
-     */
     pauseTicker(alias: string, options: PauseTickerType = {}) {
         let oldOptions = CanvasManagerStatic._tickersOnPause[alias];
         if (!oldOptions) {
@@ -888,10 +737,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     resumeTickerPaused(alias: string | string[]) {
         this.resumeTicker(alias);
     }
-    /**
-     * Resume a ticker.
-     * @param alias The alias of the canvas element that will use the ticker.
-     */
     resumeTicker(alias: string | string[]) {
         if (typeof alias === "string") {
             alias = [alias];
@@ -900,12 +745,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             delete CanvasManagerStatic._tickersOnPause[alias];
         });
     }
-    /**
-     * Check if a ticker is paused.
-     * @param alias The alias of the canvas element that will use the ticker.
-     * @param tickerId The ticker that will be checked.
-     * @returns If the ticker is paused.
-     */
     isTickerPaused(alias: string, tickerId?: string): boolean {
         let tickersOnPauseData = CanvasManagerStatic._tickersOnPause[alias];
         if (tickersOnPauseData) {
@@ -921,11 +760,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
         return false;
     }
-    /**
-     * Add a ticker that must be completed before the next step.
-     * This method is used for example into a transition between scenes.
-     * @param step The step that the ticker must be completed before the next step.
-     */
     completeTickerOnStepEnd(step: {
         /**
          * The id of the step.
@@ -943,12 +777,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
-    /**
-     * This method force the completion of the tickers that are running.
-     * This funcions is called in the next step.
-     * @param id The id of the ticker. If the alias provided, the id is the id of the sequence of tickers.
-     * @param alias The alias of the sequence of tickers.
-     */
     forceCompletionOfTicker(id: string, alias?: string) {
         if (!alias) {
             let ticker = CanvasManagerStatic._currentTickers[id];
@@ -984,17 +812,6 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     /* Layers Methods */
 
-    /**
-     * Add a layer to the canvas.
-     * @param label The label of the layer.
-     * @param layer The layer to be added.
-     * @returns The layer.
-     * @example
-     * ```typescript
-     * const uiLayer = new Container();
-     * canvas.addLayer("ui", uiLayer);
-     * ```
-     */
     addLayer(label: string, layer: PixiContainer) {
         if (label === CANVAS_APP_GAME_LAYER_ALIAS) {
             logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
@@ -1004,55 +821,27 @@ export default class CanvasManager implements CanvasManagerInterface {
         return CanvasManagerStatic.app.stage.addChild(layer);
     }
 
-    /**
-     * Get a layer from the canvas.
-     * @param label The label of the layer.
-     * @returns The layer.
-     * @example
-     * ```typescript
-     * const uiLayer = canvas.getLayer("ui");
-     * ```
-     */
     getLayer(label: string) {
         return CanvasManagerStatic.app.stage.getChildByLabel(label);
     }
 
-    /**
-     * Remove a layer from the canvas.
-     * @param label The label of the layer to be removed.
-     * @example
-     * ```typescript
-     * canvas.removeLayer("ui");
-     * ```
-     */
     removeLayer(label: string) {
         CanvasManagerStatic.app.stage.getChildrenByLabel(label);
     }
 
     /* Other Methods */
 
-    /**
-     * Extract the canvas as an image.
-     * @returns The image as a base64 string.
-     */
     async extractImage() {
         const image = await this.app.renderer.extract.image(this.gameLayer);
         return image.src;
     }
 
-    /**
-     * Clear the canvas and the tickers.
-     */
     clear() {
         this.removeAll();
     }
 
     /* Export and Import Methods */
 
-    /**
-     * Export the canvas and the tickers to an object.
-     * @returns The object.
-     */
     public export(): ExportedCanvas {
         let currentElements: { [alias: string]: CanvasBaseItemMemory } = {};
         this.children.forEach((child) => {
@@ -1070,10 +859,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             tickersToCompleteOnStepEnd: createExportableElement(CanvasManagerStatic._tickersToCompleteOnStepEnd),
         };
     }
-    /**
-     * Restore the canvas and the tickers from an object.
-     * @param data The object.
-     */
     public async restore(data: object) {
         try {
             let tickersToTrasfer: { [oldId: string]: string } = {};
