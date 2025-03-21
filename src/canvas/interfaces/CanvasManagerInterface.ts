@@ -1,106 +1,93 @@
 import { Devtools } from "@pixi/devtools";
+import { Application, Rectangle, ContainerChild } from "pixi.js";
 import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
-import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
-import { createExportableElement } from "../utils/export-utility";
-import { logger } from "../utils/log-utility";
-import CanvasManagerStatic from "./CanvasManagerStatic";
-import CanvasBaseItem from "./classes/CanvasBaseItem";
-import { setMemoryContainer } from "./components/Container";
-import ImageContainer, { setMemoryImageContainer } from "./components/ImageContainer";
-import ImageSprite, { setMemoryImageSprite } from "./components/ImageSprite";
-import Sprite, { setMemorySprite } from "./components/Sprite";
-import Text, { setMemoryText } from "./components/Text";
-import VideoSprite, { setMemoryVideoSprite } from "./components/VideoSprite";
-import { importCanvasElement } from "./functions/canvas-import-utility";
-import { exportCanvasElement, getMemoryContainer } from "./functions/canvas-memory-utility";
-import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
-import ExportedCanvas from "./interfaces/ExportedCanvas";
-import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
-import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
-import TickerBase from "./tickers/classes/TickerBase";
-import { getTickerInstanceById } from "./tickers/decorators/ticker-decorator";
-import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
-import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
-import PauseTickerType from "./types/PauseTickerType";
-import { PauseType } from "./types/PauseType";
-import { RepeatType } from "./types/RepeatType";
-import { TickerIdType } from "./types/TickerIdType";
+import CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
+import CanvasBaseItem from "../classes/CanvasBaseItem";
 
-/**
- * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
- */
-export default class CanvasManager implements CanvasManagerInterface {
+export default interface CanvasManagerInterface {
     /**
      * The PIXI Application instance.
      * It not recommended to use this property directly.
      */
-    get app() {
-        return CanvasManagerStatic.app;
-    }
-    get gameLayer() {
-        return CanvasManagerStatic.gameLayer;
-    }
+    readonly app: Application
+    /**
+     * The PIXI Container that contains all the canvas elements.
+     * 
+     */
+    readonly gameLayer : PixiContainer
     /**
      * If the manager is initialized.
      */
-    get isInitialized() {
-        return CanvasManagerStatic._isInitialized;
-    }
+    readonly isInitialized: boolean
     /**
      * This is the div that have same size of the canvas.
      * This is useful to put interface elements.
      * You can use React or other framework to put elements in this div.
      */
-    get htmlLayout(): HTMLElement | undefined {
-        return CanvasManagerStatic.htmlLayout;
-    }
-    set htmlLayout(value: HTMLElement) {
-        CanvasManagerStatic.htmlLayout = value;
-    }
-    get canvasWidth() {
-        return CanvasManagerStatic.canvasWidth;
-    }
-    get canvasHeight() {
-        return CanvasManagerStatic.canvasHeight;
-    }
-    set canvasWidth(value: number) {
-        CanvasManagerStatic.canvasWidth = value;
-    }
-    set canvasHeight(value: number) {
-        CanvasManagerStatic.canvasHeight = value;
-    }
-    get screen() {
-        return this.app.screen;
-    }
-
+    get htmlLayout(): HTMLElement | undefined 
+    /**
+     * This is the div that have same size of the canvas.
+     * This is useful to put interface elements.
+     * You can use React or other framework to put elements in this div.
+     */
+    set htmlLayout(value: HTMLElement) 
+    /**
+     * The width of the canvas.
+     */
+     canvasWidth: number
+    /**
+     * The height of the canvas.
+     */
+     canvasHeight: number
+    /**
+     * The screen of the canvas ({@link Application.screen}).
+     */
+    readonly screen: Rectangle
+    /**
+     * Initialize the PixiJS Application and the interface div.
+     * This method should be called before any other method.
+     * @param element The html element where I will put the canvas. Example: document.body
+     * @param width The width of the canvas
+     * @param height The height of the canvas
+     * @param options The options of PixiJS Application
+     * @param devtoolsOptions The options of the devtools. You can read more about it in the [PixiJS Devtools documentation](https://pixijs.io/devtools/docs/plugin/)
+     * @example
+     * ```typescript
+     * const body = document.body
+     * if (!body) {
+     *     throw new Error('body element not found')
+     * }
+     * await canvas.initialize(body, {
+     *     width: 1920,
+     *     height: 1080,
+     *     backgroundColor: "#303030"
+     * })
+     * ```
+     */
     public async initialize(
         element: HTMLElement,
-        widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number }) | number,
-        heightOrDevtoolsOptions?: Devtools | number,
+        options: Partial<ApplicationOptions> & { width: number; height: number },
+        devtoolsOptions?: Devtools
+    ): Promise<void>;
+    /**
+     * @deprecated
+     *
+     * This type of initialization has been deprecated move the width and height to the options parameter.
+     *
+     * ```typescript
+     * await canvas.initialize(body, {
+     *     width: 1920,
+     *     height: 1080,
+     *     // ...
+     * })
+     */
+    public async initialize(
+        element: HTMLElement,
+        width: number,
+        height: number,
         options?: Partial<ApplicationOptions>,
         devtoolsOptions?: Devtools
-    ): Promise<void> {
-        if (typeof widthOrOptions === "number" && typeof heightOrDevtoolsOptions === "number") {
-            return await CanvasManagerStatic.initialize(
-                element,
-                widthOrOptions,
-                heightOrDevtoolsOptions,
-                options,
-                devtoolsOptions
-            );
-        } else if (typeof widthOrOptions !== "number" && typeof heightOrDevtoolsOptions !== "number") {
-            return await CanvasManagerStatic.initialize(
-                element,
-                widthOrOptions.width,
-                widthOrOptions.height,
-                widthOrOptions,
-                heightOrDevtoolsOptions
-            );
-        } else {
-            throw new Error("Invalid parameters");
-        }
-    }
-
+    ): Promise<void>;
     /**
      * Initialize the interface div and add it into a html element.
      * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
@@ -117,72 +104,22 @@ export default class CanvasManager implements CanvasManagerInterface {
      * )
      * ```
      */
-    public initializeHTMLLayout(element: HTMLElement) {
-        return CanvasManagerStatic.initializeHTMLLayout(element);
-    }
-
-    /* Edit Canvas Elements Methods */
-
+    public initializeHTMLLayout(element: HTMLElement): void;
     /**
      * The children of the canvas.
      */
-    get children() {
-        return CanvasManagerStatic.gameLayer.children;
-    }
+    readonly children: ContainerChild[]
     /**
      * Copy the properties of an old canvas element to a new canvas element.
      * @param oldAlias Old alias
      * @param newAlias New alias
      * @returns
      */
-    async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
+    copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseItem<T> | string,
         newAlias: CanvasBaseItem<T> | string
-    ) {
-        if (typeof newAlias === "string") {
-            let element = this.find(newAlias);
-            if (element) {
-                newAlias = element;
-            } else {
-                logger.error(`Canvas element ${newAlias} not found`);
-                return;
-            }
-        }
-        if (typeof oldAlias === "string") {
-            let element = this.find(oldAlias);
-            if (element) {
-                oldAlias = element;
-            } else {
-                logger.error(`Canvas element ${oldAlias} not found`);
-                return;
-            }
-        }
-        if (oldAlias instanceof PixiContainer) {
-            oldAlias = oldAlias.memory;
-        }
-        "isRenderGroup" in oldAlias && delete oldAlias.isRenderGroup;
-        "scale" in oldAlias && delete oldAlias.scale;
-        "visible" in oldAlias && delete oldAlias.visible;
-        "boundsArea" in oldAlias && delete oldAlias.boundsArea;
-        "text" in oldAlias && delete oldAlias.text;
-        "resolution" in oldAlias && delete oldAlias.resolution;
-        "style" in oldAlias && delete oldAlias.style;
-        "height" in oldAlias && delete oldAlias.height;
-        "width" in oldAlias && delete oldAlias.width;
-        if (newAlias instanceof VideoSprite) {
-            await setMemoryVideoSprite(newAlias, oldAlias, { ignoreTexture: true });
-        } else if (newAlias instanceof ImageSprite) {
-            await setMemoryImageSprite(newAlias, oldAlias, { ignoreTexture: true });
-        } else if (newAlias instanceof Sprite) {
-            await setMemorySprite(newAlias, oldAlias, { ignoreTexture: true });
-        } else if (newAlias instanceof Text) {
-            await setMemoryText(newAlias, oldAlias);
-        } else if (newAlias instanceof ImageContainer) {
-            await setMemoryImageContainer(newAlias, oldAlias);
-        } else if (newAlias instanceof PixiContainer) {
-            await setMemoryContainer(newAlias, oldAlias);
-        }
-    }
+    ): Promise<void>
+
     /**
      * Transfer the tickers from an old alias to a new alias.
      * @param oldAlias Old alias

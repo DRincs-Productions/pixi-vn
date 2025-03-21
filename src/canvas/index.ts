@@ -89,6 +89,7 @@ export { addImage, loadImage, showImage } from "./functions/image-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, loadVideo, showVideo } from "./functions/video-utility";
 export type { ImageContainerOptions, ImageSpriteOptions, VideoSpriteOptions } from "./interfaces/canvas-options";
+export type { default as CanvasManagerInterface } from "./interfaces/CanvasManagerInterface";
 export type { ShakeEffectProps } from "./interfaces/effect-props";
 export type { default as ExportedCanvas } from "./interfaces/ExportedCanvas";
 export type { default as CanvasBaseItemMemory } from "./interfaces/memory/CanvasBaseItemMemory";
