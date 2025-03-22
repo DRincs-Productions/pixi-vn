@@ -1,4 +1,4 @@
-import { GameStepState } from "@drincs/pixi-vn";
+import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { StorageElementType } from "./storage";
 import { logger } from "./utils/log-utility";
 
@@ -93,6 +93,17 @@ export default class GameUnifier {
          * @param state The state of the game step.
          */
         restoreOriginalOpenedLabels: (state: GameStepState) => void;
+        /**
+         * Add a history step to the history.
+         * @param originalStepData The original state of the game step.
+         * @param historyInfo The history information.
+         */
+        addHistoryItem(originalStepData: GameStepState, historyInfo?: HistoryInfo): void;
+        /**
+         * This function is called to determine if the game can restore the old game state.
+         * @returns True if the game can restore the old game state.
+         */
+        canRestoreOldGameState: () => boolean;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
@@ -108,6 +119,8 @@ export default class GameUnifier {
         GameUnifier._setFlag = options.setFlag;
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._restoreOriginalOpenedLabels = options.restoreOriginalOpenedLabels;
+        GameUnifier._addHistoryItem = options.addHistoryItem;
+        GameUnifier._canRestoreOldGameState = options.canRestoreOldGameState;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -258,5 +271,27 @@ export default class GameUnifier {
      */
     static get restoreOriginalOpenedLabels() {
         return GameUnifier._restoreOriginalOpenedLabels;
+    }
+    private static _addHistoryItem: (originalStepData: GameStepState, historyInfo?: HistoryInfo) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
+    };
+    /**
+     * Add a history step to the history.
+     * @param originalStepData The original state of the game step.
+     * @param historyInfo The history information.
+     */
+    static get addHistoryItem() {
+        return GameUnifier._addHistoryItem;
+    }
+    private static _canRestoreOldGameState: () => boolean = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
+    };
+    /**
+     * This function is called to determine if the game can restore the old game state.
+     */
+    static get canRestoreOldGameState() {
+        return GameUnifier._canRestoreOldGameState;
     }
 }
