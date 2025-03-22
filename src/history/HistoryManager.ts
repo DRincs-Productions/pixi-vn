@@ -15,7 +15,7 @@ export default class HistoryManager implements HistoryManagerInterface {
     get stepsHistory() {
         return HistoryManagerStatic._stepsHistory;
     }
-    private getOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
+    private internalRestoreOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
         }
@@ -28,7 +28,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                 let result = restoreDiffChanges(restoredStep, lastHistoryStep.diff);
                 GameUnifier.stepCounter = lastHistoryStep.index;
                 HistoryManagerStatic._stepsHistory.pop();
-                return this.getOldGameState(steps - 1, result);
+                return this.internalRestoreOldGameState(steps - 1, result);
             } catch (e) {
                 logger.error("Error applying diff", e);
                 return restoredStep;
@@ -47,7 +47,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
-        let restoredStep = createExportableElement(this.getOldGameState(steps, originalStepData));
+        let restoredStep = createExportableElement(this.internalRestoreOldGameState(steps, originalStepData));
         if (restoredStep) {
             await GameUnifier.restoreGameStepState(restoredStep, navigate);
         } else {
