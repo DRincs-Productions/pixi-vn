@@ -1,4 +1,5 @@
 import CanvasManager from "./CanvasManager";
+import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 
 // * This import must be imported before the ImageSprite import.
 export {
@@ -114,4 +115,4 @@ export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";
 export { canvas };
 
-const canvas = new CanvasManager();
+const canvas: CanvasManagerInterface = new CanvasManager();
