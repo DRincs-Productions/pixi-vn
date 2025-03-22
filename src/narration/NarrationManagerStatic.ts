@@ -1,12 +1,10 @@
 import { GameStepState } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
-import { restoreDiffChanges } from "../utils/diff-utility";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
 import { getLabelById } from "./decorators/label-decorator";
-import HistoryStep from "./interfaces/HistoryStep";
 import OpenedLabel from "./interfaces/OpenedLabel";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { LabelIdType } from "./types/LabelIdType";
@@ -30,7 +28,6 @@ type CurrentStepTimesCounterMemoty = {
 
 export default class NarrationManagerStatic {
     private constructor() {}
-    static _stepsHistory: HistoryStep[] = [];
     /**
      * Number of steps function that are running.
      * If you run a step that have a goNext, this number is > 1.
@@ -209,15 +206,6 @@ export default class NarrationManagerStatic {
         }
         return null;
     }
-    /**
-     * lastHistoryStep is the last history step that occurred during the progression of the steps.
-     */
-    static get lastHistoryStep(): HistoryStep | null {
-        if (NarrationManagerStatic._stepsHistory.length > 0) {
-            return NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1];
-        }
-        return null;
-    }
     static _originalStepData: GameStepState | undefined = undefined;
     static get originalStepData(): GameStepState {
         if (!NarrationManagerStatic._originalStepData) {
@@ -317,34 +305,6 @@ export default class NarrationManagerStatic {
                 ...item,
                 currentStepIndex: item.currentStepIndex + 1,
             };
-        }
-    }
-
-    /* Run Methods */
-
-    /* Go Back & Refresh Methods */
-
-    static goBackInternal(steps: number, restoredStep: GameStepState): GameStepState {
-        if (steps <= 0) {
-            return restoredStep;
-        }
-        if (NarrationManagerStatic._stepsHistory.length == 0) {
-            return restoredStep;
-        }
-        let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
-        if (lastHistoryStep?.diff) {
-            try {
-                let result = restoreDiffChanges(restoredStep, lastHistoryStep.diff);
-                NarrationManagerStatic._stepCounter = lastHistoryStep.index;
-                NarrationManagerStatic._stepsHistory.pop();
-                return NarrationManagerStatic.goBackInternal(steps - 1, result);
-            } catch (e) {
-                logger.error("Error applying diff", e);
-                return restoredStep;
-            }
-        } else {
-            logger.error("You can't go back, there is no step to go back");
-            return restoredStep;
         }
     }
 }

@@ -18,6 +18,7 @@ export {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
+export * from "./history";
 export * from "./interfaces";
 export * from "./narration";
 export * from "./sound";
@@ -115,6 +116,9 @@ export namespace Game {
             },
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,
+            setStepCounter: (value) => {
+                narrationUtils.NarrationManagerStatic._stepCounter = value;
+            },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
             restoreOriginalOpenedLabels: (originalStepData) => {
                 narrationUtils.NarrationManagerStatic._openedLabels = originalStepData.openedLabels;

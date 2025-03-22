@@ -11,6 +11,12 @@ export default class GameUnifier {
          */
         getStepCounter: () => number;
         /**
+         * This function sets the current step counter.
+         *
+         * If your game engine does not have a history of steps, you can not set the step counter.
+         */
+        setStepCounter: (value: number) => void;
+        /**
          * This function returns the current state of the game step.
          *
          * If your game engine does not have a history of steps, you can return an empty object.
@@ -89,6 +95,7 @@ export default class GameUnifier {
         restoreOriginalOpenedLabels: (state: GameStepState) => void;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
+        GameUnifier._setStepCounter = options.setStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         options.ignoreAddChangeHistory && (GameUnifier._ignoreAddChangeHistory = options.ignoreAddChangeHistory);
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
@@ -106,11 +113,21 @@ export default class GameUnifier {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
+    private static _setStepCounter: (value: number) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
+    };
     /**
      * Returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
      */
     static get stepCounter() {
         return GameUnifier._getStepCounter();
+    }
+    /**
+     * Returns the current state of the game step.
+     */
+    static set stepCounter(value: number) {
+        GameUnifier._setStepCounter(value);
     }
     private static _getCurrentGameStepState: () => GameStepState = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
