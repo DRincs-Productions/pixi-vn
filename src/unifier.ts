@@ -86,14 +86,6 @@ export default class GameUnifier {
          */
         onLabelClosing?: (openedLabelsNumber: number) => void;
         /**
-         * This function restores the original opened labels.
-         *
-         * If your game engine does not have a narration system, you can return a resolved promise.
-         *
-         * @param state The state of the game step.
-         */
-        restoreOriginalOpenedLabels: (state: GameStepState) => void;
-        /**
          * Add a history step to the history.
          * @param originalStepData The original state of the game step.
          * @param historyInfo The history information.
@@ -118,7 +110,6 @@ export default class GameUnifier {
         GameUnifier._getFlag = options.getFlag;
         GameUnifier._setFlag = options.setFlag;
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
-        GameUnifier._restoreOriginalOpenedLabels = options.restoreOriginalOpenedLabels;
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._canRestoreOldGameState = options.canRestoreOldGameState;
     }
@@ -265,13 +256,6 @@ export default class GameUnifier {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
-    /**
-     * This function restores the original opened labels.
-     * @param state The state of the game step.
-     */
-    static get restoreOriginalOpenedLabels() {
-        return GameUnifier._restoreOriginalOpenedLabels;
-    }
     private static _addHistoryItem: (originalStepData: GameStepState, historyInfo?: HistoryInfo) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");

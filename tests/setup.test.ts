@@ -48,9 +48,6 @@ test("setup", async () => {
         // narration
         getStepCounter: () => narration.stepCounter,
         getOpenedLabels: () => narration.openedLabels.length,
-        restoreOriginalOpenedLabels: (originalStepData) => {
-            NarrationManagerStatic._openedLabels = originalStepData.openedLabels;
-        },
         // storage
         getVariable: (key) => storage.getVariable(key),
         setVariable: (key, value) => storage.setVariable(key, value),

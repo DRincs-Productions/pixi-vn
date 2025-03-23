@@ -120,9 +120,6 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
-            restoreOriginalOpenedLabels: (originalStepData) => {
-                narrationUtils.NarrationManagerStatic._openedLabels = originalStepData.openedLabels;
-            },
             // canvas
             onGoNextEnd: async () => {
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
