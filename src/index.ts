@@ -121,10 +121,8 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
-            goBack: historyUtils.history.goBack,
             addHistoryItem: historyUtils.history.addHistoryItem,
-            blocksGoBackPossibility: historyUtils.history.blocksGoBackPossibility,
-            canGoBack: historyUtils.history.canGoBack,
+            getCurrentStepsRunningNumber: () => historyUtils.history.stepsRunning,
             // canvas
             onGoNextEnd: async () => {
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {

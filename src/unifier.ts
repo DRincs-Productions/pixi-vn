@@ -95,29 +95,9 @@ export default class GameUnifier {
          */
         addHistoryItem(originalStepData: GameStepState, historyInfo?: HistoryInfo): void;
         /**
-         * This function is called to determine if the game can restore the old game state.
-         *
-         * If your game engine does not have a history of steps, you can return false.
-         *
-         * @returns True if the game can restore the old game state.
+         * This function returns the number of steps that are currently running.
          */
-        canGoBack: () => boolean;
-        /**
-         * This function restores the old game state.
-         *
-         * If your game engine does not have a history of steps, you can return a resolved promise.
-         *
-         * @param originalStepData The original state of the game step.
-         * @param navigate The function to navigate to the restored path.
-         * @param steps The number of steps to restore.
-         */
-        goBack(originalStepData: GameStepState, navigate: (path: string) => void, steps?: number): Promise<void>;
-        /**
-         * This function restores the original opened labels.
-         *
-         * If your game engine does not have a history of steps, you can return a resolved promise.
-         */
-        blocksGoBackPossibility(): void;
+        getCurrentStepsRunningNumber: () => number;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
@@ -133,9 +113,7 @@ export default class GameUnifier {
         GameUnifier._setFlag = options.setFlag;
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._addHistoryItem = options.addHistoryItem;
-        GameUnifier._canGoBack = options.canGoBack;
-        GameUnifier._goBack = options.goBack;
-        GameUnifier._blocksGoBackPossibility = options.blocksGoBackPossibility;
+        GameUnifier._getCurrentStepsRunningNumber = options.getCurrentStepsRunningNumber;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -288,38 +266,14 @@ export default class GameUnifier {
     static get addHistoryItem() {
         return GameUnifier._addHistoryItem;
     }
-    private static _canGoBack: () => boolean = () => {
+    private static _getCurrentStepsRunningNumber: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     /**
-     * This function is called to determine if the game can restore the old game state.
+     * Returns the number of steps that are currently running.
      */
-    static get canGoBack() {
-        return GameUnifier._canGoBack;
-    }
-    private static _goBack: (
-        originalStepData: GameStepState,
-        navigate: (path: string) => void,
-        steps?: number
-    ) => Promise<void> = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
-    /**
-     * This function restores the old game state.
-     * @param originalStepData The original state of the game step.
-     * @param navigate The function to navigate to the restored path.
-     * @param steps The number of steps to restore.
-     */
-    static get goBack() {
-        return GameUnifier._goBack;
-    }
-    private static _blocksGoBackPossibility: () => void = () => {};
-    /**
-     * This function restores the original opened labels.
-     */
-    static get blocksGoBackPossibility() {
-        return GameUnifier._blocksGoBackPossibility;
+    static get currentStepsRunningNumber() {
+        return GameUnifier._getCurrentStepsRunningNumber();
     }
 }

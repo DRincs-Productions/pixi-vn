@@ -2,6 +2,7 @@ import { HistoryStep } from "../narration";
 
 export default class HistoryManagerStatic {
     static _stepsHistory: HistoryStep[] = [];
+    static stepLimitSaved: number = 20;
     /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
      */

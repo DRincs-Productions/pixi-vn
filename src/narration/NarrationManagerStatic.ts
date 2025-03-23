@@ -40,7 +40,6 @@ export default class NarrationManagerStatic {
      */
     static goNextRequests: number = 0;
     static choiseMadeTemp: undefined | number = undefined;
-    static stepLimitSaved: number = 20;
     static lastHistoryStep: Omit<HistoryStep, "diff"> | undefined = undefined;
     /**
      * is a list of all labels that have been opened during the progression of the steps.

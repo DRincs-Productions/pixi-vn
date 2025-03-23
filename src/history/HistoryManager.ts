@@ -38,7 +38,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             return restoredStep;
         }
     }
-    async restoreOldGameState(originalStepData: GameStepState, navigate: (path: string) => void, steps: number = 1) {
+    async goBack(originalStepData: GameStepState, navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
             logger.warn("The parameter steps must be greater than 0");
             return;
@@ -126,18 +126,57 @@ export default class HistoryManager implements HistoryManagerInterface {
             HistoryManagerStatic._stepsHistory = [];
         }
     }
-    get canRestoreOldGameState(): boolean {
+    get canGoBack(): boolean {
         if (HistoryManagerStatic._stepsHistory.length <= 1) {
             return false;
         }
         return HistoryManagerStatic.lastHistoryStep?.diff ? true : false;
     }
-    blockRestoreOldGameState() {
+    blocksGoBackPossibility() {
+        if (GameUnifier.currentStepsRunningNumber !== 0) {
+            return;
+        }
         if (this.stepsHistory.length > 1) {
             this.stepsHistory[this.stepsHistory.length - 1] = {
                 ...this.stepsHistory[this.stepsHistory.length - 1],
                 diff: undefined,
             };
+        }
+    }
+
+    public clear() {
+        HistoryManagerStatic._stepsHistory = [];
+    }
+
+    get stepLimitSaved() {
+        return HistoryManagerStatic.stepLimitSaved;
+    }
+    set stepLimitSaved(limit: number) {
+        HistoryManagerStatic.stepLimitSaved = limit;
+    }
+
+    /* Export and Import Methods */
+
+    public export(): ExportedStep {
+        let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
+        let stepsHistory: HistoryStep[] = this.stepsHistory.map((step, index) => ({
+            diff: firstStepToCompres > index ? undefined : step.diff,
+            ...step,
+        }));
+        return {
+            stepsHistory: stepsHistory,
+        };
+    }
+    public async restore(data: object) {
+        this.clear();
+        try {
+            if (data.hasOwnProperty("stepsHistory")) {
+                HistoryManagerStatic._stepsHistory = (data as ExportedStep)["stepsHistory"];
+            } else {
+                logger.warn("Could not import stepsHistory data, so will be ignored");
+            }
+        } catch (e) {
+            logger.error("Error importing data", e);
         }
     }
 }
