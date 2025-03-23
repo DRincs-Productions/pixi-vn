@@ -5,6 +5,7 @@ import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
 import { getLabelById } from "./decorators/label-decorator";
+import HistoryStep from "./interfaces/HistoryStep";
 import OpenedLabel from "./interfaces/OpenedLabel";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { LabelIdType } from "./types/LabelIdType";
@@ -40,6 +41,7 @@ export default class NarrationManagerStatic {
     static goNextRequests: number = 0;
     static choiseMadeTemp: undefined | number = undefined;
     static stepLimitSaved: number = 20;
+    static lastHistoryStep: Omit<HistoryStep, "diff"> | undefined = undefined;
     /**
      * is a list of all labels that have been opened during the progression of the steps.
      * the key is the label id and the biggest step opened.

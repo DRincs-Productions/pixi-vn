@@ -106,6 +106,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
         };
         GameUnifier.addHistoryItem(originalStepData, historyInfo);
+        NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.originalStepData = currentStepData;
         NarrationManagerStatic.increaseStepCounter();
     }
@@ -502,17 +503,17 @@ export default class NarrationManager implements NarrationManagerInterface {
     /* Go Back & Refresh Methods */
 
     public async goBack(navigate: (path: string) => void, steps: number = 1): Promise<void> {
-        return await GameUnifier.restoreOldGameState(NarrationManagerStatic.originalStepData, navigate, steps);
+        return await GameUnifier.goBack(NarrationManagerStatic.originalStepData, navigate, steps);
     }
     get canGoBack(): boolean {
-        return GameUnifier.canRestoreOldGameState();
+        return GameUnifier.canGoBack();
     }
     set canGoBack(_: false) {
         if (NarrationManagerStatic.stepsRunning !== 0) {
             return;
         }
 
-        GameUnifier.blockRestoreOldGameState();
+        GameUnifier.blocksGoBackPossibility();
     }
     public onGameEnd: StepLabelType | undefined = undefined;
     public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined;
@@ -722,7 +723,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             originalStepData: NarrationManagerStatic._originalStepData,
         };
     }
-    public async restore(data: object) {
+    public async restore(data: object, lastHistoryStep: HistoryStep) {
         this.clear();
         try {
             if (data.hasOwnProperty("stepsHistory")) {
@@ -730,6 +731,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             } else {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
             }
+            NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
             if (data.hasOwnProperty("openedLabels")) {
                 NarrationManagerStatic._openedLabels = (data as ExportedStep)["openedLabels"];
             } else {

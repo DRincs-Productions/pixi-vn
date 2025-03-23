@@ -87,15 +87,37 @@ export default class GameUnifier {
         onLabelClosing?: (openedLabelsNumber: number) => void;
         /**
          * Add a history step to the history.
+         *
+         * If your game engine does not have a history of steps, you can return a resolved promise.
+         *
          * @param originalStepData The original state of the game step.
          * @param historyInfo The history information.
          */
         addHistoryItem(originalStepData: GameStepState, historyInfo?: HistoryInfo): void;
         /**
          * This function is called to determine if the game can restore the old game state.
+         *
+         * If your game engine does not have a history of steps, you can return false.
+         *
          * @returns True if the game can restore the old game state.
          */
-        canRestoreOldGameState: () => boolean;
+        canGoBack: () => boolean;
+        /**
+         * This function restores the old game state.
+         *
+         * If your game engine does not have a history of steps, you can return a resolved promise.
+         *
+         * @param originalStepData The original state of the game step.
+         * @param navigate The function to navigate to the restored path.
+         * @param steps The number of steps to restore.
+         */
+        goBack(originalStepData: GameStepState, navigate: (path: string) => void, steps?: number): Promise<void>;
+        /**
+         * This function restores the original opened labels.
+         *
+         * If your game engine does not have a history of steps, you can return a resolved promise.
+         */
+        blocksGoBackPossibility(): void;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
@@ -111,7 +133,9 @@ export default class GameUnifier {
         GameUnifier._setFlag = options.setFlag;
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._addHistoryItem = options.addHistoryItem;
-        GameUnifier._canRestoreOldGameState = options.canRestoreOldGameState;
+        GameUnifier._canGoBack = options.canGoBack;
+        GameUnifier._goBack = options.goBack;
+        GameUnifier._blocksGoBackPossibility = options.blocksGoBackPossibility;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
@@ -252,10 +276,6 @@ export default class GameUnifier {
     static get onLabelClosing() {
         return GameUnifier._onLabelClosing;
     }
-    private static _restoreOriginalOpenedLabels: (state: GameStepState) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
-        throw new Error("Method not implemented.");
-    };
     private static _addHistoryItem: (originalStepData: GameStepState, historyInfo?: HistoryInfo) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
@@ -268,14 +288,38 @@ export default class GameUnifier {
     static get addHistoryItem() {
         return GameUnifier._addHistoryItem;
     }
-    private static _canRestoreOldGameState: () => boolean = () => {
+    private static _canGoBack: () => boolean = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     /**
      * This function is called to determine if the game can restore the old game state.
      */
-    static get canRestoreOldGameState() {
-        return GameUnifier._canRestoreOldGameState;
+    static get canGoBack() {
+        return GameUnifier._canGoBack;
+    }
+    private static _goBack: (
+        originalStepData: GameStepState,
+        navigate: (path: string) => void,
+        steps?: number
+    ) => Promise<void> = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        throw new Error("Method not implemented.");
+    };
+    /**
+     * This function restores the old game state.
+     * @param originalStepData The original state of the game step.
+     * @param navigate The function to navigate to the restored path.
+     * @param steps The number of steps to restore.
+     */
+    static get goBack() {
+        return GameUnifier._goBack;
+    }
+    private static _blocksGoBackPossibility: () => void = () => {};
+    /**
+     * This function restores the original opened labels.
+     */
+    static get blocksGoBackPossibility() {
+        return GameUnifier._blocksGoBackPossibility;
     }
 }
