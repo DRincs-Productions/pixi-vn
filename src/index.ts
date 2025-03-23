@@ -39,6 +39,7 @@ import {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
+import * as historyUtils from "./history";
 import * as pixivninterface from "./interfaces";
 import * as narrationUtils from "./narration";
 import * as soundUtils from "./sound";
@@ -120,6 +121,10 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
+            goBack: historyUtils.history.goBack,
+            addHistoryItem: historyUtils.history.addHistoryItem,
+            blocksGoBackPossibility: historyUtils.history.blocksGoBackPossibility,
+            canGoBack: historyUtils.history.canGoBack,
             // canvas
             onGoNextEnd: async () => {
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
