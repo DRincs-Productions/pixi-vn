@@ -12,7 +12,7 @@ import GameUnifier from "../unifier";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
-import ExportedSounds, { ExportedSoundPlay } from "./interfaces/ExportedSounds";
+import SoundGameState, { ExportedSoundPlay } from "./interfaces/SoundGameState";
 import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 
@@ -228,7 +228,7 @@ export default class SoundManager extends SoundLibrary {
 
     /* Export and Import Methods */
 
-    public export(): ExportedSounds {
+    public export(): SoundGameState {
         let soundElements: { [key: string]: ExportedSoundPlay } = {};
         for (let alias in SoundManagerStatic.soundsPlaying) {
             let sound = SoundManagerStatic.soundsPlaying[alias];
@@ -257,7 +257,7 @@ export default class SoundManager extends SoundLibrary {
             filters: FilterToFilterMemory(this.filtersAll),
         };
     }
-    public removeOldSoundAndExport(): ExportedSounds {
+    public removeOldSoundAndExport(): SoundGameState {
         // let soundAliasesOrder = []
         // for (let alias of GameSoundManager.soundAliasesOrder) {
         //     if (sound.exists(alias)) {
@@ -275,28 +275,28 @@ export default class SoundManager extends SoundLibrary {
         this.clear();
         try {
             if (data.hasOwnProperty("soundAliasesOrder")) {
-                SoundManagerStatic.soundAliasesOrder = (data as ExportedSounds)["soundAliasesOrder"];
+                SoundManagerStatic.soundAliasesOrder = (data as SoundGameState)["soundAliasesOrder"];
             } else {
                 logger.error("The data does not have the properties soundAliasesOrder");
                 return;
             }
 
             if (data.hasOwnProperty("filters")) {
-                let f = (data as ExportedSounds)["filters"];
+                let f = (data as SoundGameState)["filters"];
                 if (f) {
                     this.filtersAll = FilterMemoryToFilter(f);
                 }
             }
 
             if (data.hasOwnProperty("playInStepIndex")) {
-                let playInStepIndex = (data as ExportedSounds)["playInStepIndex"];
+                let playInStepIndex = (data as SoundGameState)["playInStepIndex"];
                 if (playInStepIndex) {
                     SoundManagerStatic.soundsPlaying = playInStepIndex;
                 }
             }
 
             if (data.hasOwnProperty("sounds")) {
-                let sounds = (data as ExportedSounds)["sounds"];
+                let sounds = (data as SoundGameState)["sounds"];
                 for (let alias in sounds) {
                     let item = sounds[alias];
                     let autoPlay = false;
@@ -328,7 +328,7 @@ export default class SoundManager extends SoundLibrary {
             }
 
             if (data.hasOwnProperty("soundsPlaying")) {
-                let soundsPlaying = (data as ExportedSounds)["soundsPlaying"];
+                let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
                 for (let alias in soundsPlaying) {
                     let op = soundsPlaying[alias];
                     SoundManagerStatic.soundsPlaying[alias] = {

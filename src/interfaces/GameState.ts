@@ -1,6 +1,6 @@
 import CanvasGamState from "../canvas/interfaces/CanvasGamState";
 import NarrationGamState from "../narration/interfaces/NarrationGamState";
-import ExportedSounds from "../sound/interfaces/ExportedSounds";
+import SoundGameState from "../sound/interfaces/SoundGameState";
 import { ExportedStorage } from "../storage";
 
 export default interface GameState {
@@ -8,6 +8,6 @@ export default interface GameState {
     stepData: NarrationGamState;
     storageData: ExportedStorage;
     canvasData: CanvasGamState;
-    soundData: ExportedSounds;
+    soundData: SoundGameState;
     path: string;
 }
