@@ -7,7 +7,7 @@ import {
     InputInfo,
     Label,
     LabelAbstract,
-    NarrationGamState,
+    NarrationGameState,
     NarrativeHistory,
     OpenedLabel,
     StepLabelPropsType,
@@ -382,7 +382,7 @@ export default interface NarrationManagerInterface {
      * Export the history to an object.
      * @returns The history in an object.
      */
-    export(): NarrationGamState;
+    export(): NarrationGameState;
     /**
      * Restore the history from an object.
      * @param data The history in an object.
