@@ -372,20 +372,20 @@ export default interface NarrationManagerInterface {
     removeInputRequest(): void;
 
     /**
-     * Add a label to the history.
+     * Clear all narration data
      */
     clear(): void;
 
     /* Export and Import Methods */
 
     /**
-     * Export the history to an object.
-     * @returns The history in an object.
+     * Export the narration to an object.
+     * @returns The narration in an object.
      */
     export(): NarrationGameState;
     /**
-     * Restore the history from an object.
-     * @param data The history in an object.
+     * Restore the narration from an object.
+     * @param data The narration in an object.
      */
-    restore(data: object): Promise<void>;
+    restore(data: object, lastHistoryStep: HistoryStep): Promise<void>;
 }
