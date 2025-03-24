@@ -5,7 +5,7 @@ import OpenedLabel from "./OpenedLabel";
 /**
  * Interface exported step data
  */
-export default interface ExportedStep {
+export default interface NarrationGamState {
     stepsHistory: HistoryStep[];
     openedLabels: OpenedLabel[];
     /**

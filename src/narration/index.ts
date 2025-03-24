@@ -12,9 +12,9 @@ export {
 export { default as Label } from "./classes/Label";
 export { default as LabelAbstract } from "./classes/LabelAbstract";
 export { getLabelById, newLabel, saveLabel } from "./decorators/label-decorator";
-export type { default as ExportedStep } from "./interfaces/ExportedStep";
 export type { default as HistoryStep } from "./interfaces/HistoryStep";
 export type { default as LabelProps } from "./interfaces/LabelProps";
+export type { default as NarrationGamState } from "./interfaces/NarrationGamState";
 export type { default as NarrationManagerInterface } from "./interfaces/NarrationManagerInterface";
 export type { default as NarrativeHistory } from "./interfaces/NarrativeHistory";
 export type { default as OpenedLabel } from "./interfaces/OpenedLabel";

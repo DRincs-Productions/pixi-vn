@@ -4,10 +4,10 @@ import {
     ChoiceMenuOptionClose,
     ChoiceMenuOptionsType,
     Dialogue,
-    ExportedStep,
     InputInfo,
     Label,
     LabelAbstract,
+    NarrationGamState,
     NarrativeHistory,
     OpenedLabel,
     StepLabelPropsType,
@@ -382,7 +382,7 @@ export default interface NarrationManagerInterface {
      * Export the history to an object.
      * @returns The history in an object.
      */
-    export(): ExportedStep;
+    export(): NarrationGamState;
     /**
      * Restore the history from an object.
      * @param data The history in an object.

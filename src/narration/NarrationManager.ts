@@ -9,8 +9,8 @@ import Dialogue from "./classes/Dialogue";
 import Label from "./classes/Label";
 import LabelAbstract from "./classes/LabelAbstract";
 import { getLabelById } from "./decorators/label-decorator";
-import ExportedStep from "./interfaces/ExportedStep";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
+import NarrationGamState from "./interfaces/NarrationGamState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
@@ -688,7 +688,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Export and Import Methods */
 
-    public export(): ExportedStep {
+    public export(): NarrationGamState {
         let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
         let stepsHistory: HistoryStep<Dialogue<CharacterInterface>>[] = this.stepsHistory.map((step, index) => ({
             diff: firstStepToCompres > index ? undefined : step.diff,
@@ -705,25 +705,25 @@ export default class NarrationManager implements NarrationManagerInterface {
         this.clear();
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                NarrationManagerStatic._stepsHistory = (data as ExportedStep)["stepsHistory"];
+                NarrationManagerStatic._stepsHistory = (data as NarrationGamState)["stepsHistory"];
             } else {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
             }
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
             if (data.hasOwnProperty("openedLabels")) {
-                NarrationManagerStatic._openedLabels = (data as ExportedStep)["openedLabels"];
+                NarrationManagerStatic._openedLabels = (data as NarrationGamState)["openedLabels"];
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }
             if (data.hasOwnProperty("stepCounter")) {
-                NarrationManagerStatic._stepCounter = (data as ExportedStep)["stepCounter"];
+                NarrationManagerStatic._stepCounter = (data as NarrationGamState)["stepCounter"];
             } else if (data.hasOwnProperty("lastStepIndex")) {
-                NarrationManagerStatic._stepCounter = (data as ExportedStep)["lastStepIndex"] as number;
+                NarrationManagerStatic._stepCounter = (data as NarrationGamState)["lastStepIndex"] as number;
             } else {
                 logger.warn("Could not import stepCounter data, so will be ignored");
             }
             if (data.hasOwnProperty("originalStepData")) {
-                NarrationManagerStatic._originalStepData = (data as ExportedStep)["originalStepData"];
+                NarrationManagerStatic._originalStepData = (data as NarrationGamState)["originalStepData"];
             } else {
                 logger.warn("Could not import originalStepData data, so will be ignored");
             }
