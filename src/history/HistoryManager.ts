@@ -6,6 +6,7 @@ import { createExportableElement } from "../utils";
 import { restoreDiffChanges } from "../utils/diff-utility";
 import { logger } from "../utils/log-utility";
 import HistoryManagerStatic from "./HistoryManagerStatic";
+import HistoryGameState from "./interfaces/HistoryGameState";
 import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
 
 /**
@@ -157,7 +158,7 @@ export default class HistoryManager implements HistoryManagerInterface {
 
     /* Export and Import Methods */
 
-    public export(): ExportedStep {
+    public export(): HistoryGameState {
         let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
         let stepsHistory: HistoryStep[] = this.stepsHistory.map((step, index) => ({
             diff: firstStepToCompres > index ? undefined : step.diff,
@@ -171,7 +172,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         this.clear();
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                HistoryManagerStatic._stepsHistory = (data as ExportedStep)["stepsHistory"];
+                HistoryManagerStatic._stepsHistory = (data as HistoryGameState)["stepsHistory"];
             } else {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
             }

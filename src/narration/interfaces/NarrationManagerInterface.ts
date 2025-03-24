@@ -13,8 +13,8 @@ import {
     StepLabelPropsType,
     StepLabelResultType,
     StepLabelType,
-    StorageElementType,
-} from "../..";
+} from "..";
+import { StorageElementType } from "../../storage";
 import { LabelIdType } from "../types/LabelIdType";
 import HistoryStep from "./HistoryStep";
 
