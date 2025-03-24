@@ -6,7 +6,10 @@ import OpenedLabel from "./OpenedLabel";
  * Interface exported step data
  */
 export default interface NarrationGameState {
-    stepsHistory: HistoryStep[];
+    /**
+     * @deprecated moved to HistoryManagerStatic
+     */
+    stepsHistory?: HistoryStep[];
     openedLabels: OpenedLabel[];
     /**
      * @deprecated use stepCounter

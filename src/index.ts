@@ -177,7 +177,10 @@ export namespace Game {
      * @param navigate The function to navigate to a path
      */
     export async function restoreGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
-        await narrationUtils.narration.restore(data.stepData);
+        if (data.stepData.hasOwnProperty("stepsHistory")) {
+            data.historyData.stepsHistory = (data.stepData as narrationUtils.NarrationGameState)["stepsHistory"];
+        }
+        await narrationUtils.narration.restore(data.stepData, historyUtils.HistoryManagerStatic.lastHistoryStep);
         storageUtils.storage.restore(data.storageData);
         await canvasUtils.canvas.restore(data.canvasData);
         soundUtils.sound.restore(data.soundData);

@@ -680,7 +680,6 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
 
     public clear() {
-        NarrationManagerStatic._stepsHistory = [];
         NarrationManagerStatic._openedLabels = [];
         NarrationManagerStatic._stepCounter = 0;
         NarrationManagerStatic._originalStepData = undefined;
@@ -689,26 +688,15 @@ export default class NarrationManager implements NarrationManagerInterface {
     /* Export and Import Methods */
 
     public export(): NarrationGameState {
-        let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
-        let stepsHistory: HistoryStep<Dialogue<CharacterInterface>>[] = this.stepsHistory.map((step, index) => ({
-            diff: firstStepToCompres > index ? undefined : step.diff,
-            ...step,
-        }));
         return {
-            stepsHistory: stepsHistory,
             openedLabels: NarrationManagerStatic._openedLabels,
             stepCounter: this.stepCounter,
             originalStepData: NarrationManagerStatic._originalStepData,
         };
     }
-    public async restore(data: object, lastHistoryStep: HistoryStep) {
+    public async restore(data: object, lastHistoryStep: HistoryStep | null) {
         this.clear();
         try {
-            if (data.hasOwnProperty("stepsHistory")) {
-                NarrationManagerStatic._stepsHistory = (data as NarrationGameState)["stepsHistory"];
-            } else {
-                logger.warn("Could not import stepsHistory data, so will be ignored");
-            }
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
             if (data.hasOwnProperty("openedLabels")) {
                 NarrationManagerStatic._openedLabels = (data as NarrationGameState)["openedLabels"];
