@@ -1,6 +1,6 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
-import { CacheableStoreItem } from "./interfaces/ExportedStorage";
+import { CacheableStoreItem } from "./interfaces/StorageGameState";
 import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {

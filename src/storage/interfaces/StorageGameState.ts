@@ -1,4 +1,4 @@
-import { StorageElementType } from "../../storage/types/StorageElementType";
+import { StorageElementType } from "../types/StorageElementType";
 
 export interface CacheableStoreItem {
     key: string;
@@ -8,10 +8,10 @@ export interface CacheableStoreItem {
 /**
  * Interface exported storage data
  */
-type ExportedStorage =
+type StorageGameState =
     | CacheableStoreItem[]
     // deprecated
     | {
           [key: string]: StorageElementType;
       };
-export default ExportedStorage;
+export default StorageGameState;
