@@ -5,7 +5,7 @@ import { Ticker, TickerArgs, TickerBase, TickerHistory, TickersSequence } from "
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
-import CanvasGamState from "./CanvasGamState";
+import CanvasGameState from "./CanvasGameState";
 import CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 
 export default interface CanvasManagerInterface {
@@ -417,7 +417,7 @@ export default interface CanvasManagerInterface {
      * Export the canvas and the tickers to an object.
      * @returns The object.
      */
-    export(): CanvasGamState;
+    export(): CanvasGameState;
     /**
      * Restore the canvas and the tickers from an object.
      * @param data The object.

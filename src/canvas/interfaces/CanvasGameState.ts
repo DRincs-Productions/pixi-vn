@@ -4,7 +4,7 @@ import PauseTickerType from "../types/PauseTickerType";
 /**
  * Interface exported canvas
  */
-export default interface CanvasGamState {
+export default interface CanvasGameState {
     tickers: { [id: string]: TickerHistoryForExport<any> };
     tickersSteps: { [alias: string]: { [tickerId: string]: TickersSequence } };
     elements: { [alias: string]: CanvasBaseItemMemory };

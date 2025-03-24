@@ -1,4 +1,4 @@
-import { CanvasGamState } from "../canvas";
+import { CanvasGameState } from "../canvas";
 import { OpenedLabel } from "../narration";
 import { SoundGameState } from "../sound";
 import { ExportedStorage } from "../storage";
@@ -22,7 +22,7 @@ export default interface GameStepStateData {
     /**
      * The canvas that occurred during the progression of the steps.
      */
-    canvas: CanvasGamState;
+    canvas: CanvasGameState;
     /**
      * The opened labels that occurred during the progression of the steps.
      */

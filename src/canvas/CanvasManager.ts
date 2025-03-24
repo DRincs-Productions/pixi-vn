@@ -13,7 +13,7 @@ import Text, { setMemoryText } from "./components/Text";
 import VideoSprite, { setMemoryVideoSprite } from "./components/VideoSprite";
 import { importCanvasElement } from "./functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "./functions/canvas-memory-utility";
-import CanvasGamState from "./interfaces/CanvasGamState";
+import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
 import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
@@ -842,7 +842,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     /* Export and Import Methods */
 
-    public export(): CanvasGamState {
+    public export(): CanvasGameState {
         let currentElements: { [alias: string]: CanvasBaseItemMemory } = {};
         this.children.forEach((child) => {
             if (child.label) {
@@ -863,8 +863,8 @@ export default class CanvasManager implements CanvasManagerInterface {
         try {
             let tickersToTrasfer: { [oldId: string]: string } = {};
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
-                let currentElements = (data as CanvasGamState)["elements"];
-                let elementAliasesOrder = (data as CanvasGamState)["elementAliasesOrder"];
+                let currentElements = (data as CanvasGameState)["elements"];
+                let elementAliasesOrder = (data as CanvasGameState)["elementAliasesOrder"];
                 let promises = elementAliasesOrder
                     .filter((alias) => currentElements[alias])
                     .map((alias) => importCanvasElement(currentElements[alias]));
@@ -880,12 +880,12 @@ export default class CanvasManager implements CanvasManagerInterface {
                 return;
             }
             if (data.hasOwnProperty("stage") && data.hasOwnProperty("stage")) {
-                setMemoryContainer(this.gameLayer, (data as CanvasGamState)["stage"], { ignoreScale: true });
+                setMemoryContainer(this.gameLayer, (data as CanvasGameState)["stage"], { ignoreScale: true });
             } else {
                 logger.error("The data does not have the properties stage");
             }
             if (data.hasOwnProperty("tickers")) {
-                let tickers = (data as CanvasGamState)["tickers"];
+                let tickers = (data as CanvasGameState)["tickers"];
                 Object.entries(tickers).forEach(([oldId, t]) => {
                     let aliases: string[] = t.canvasElementAliases;
                     let ticker = getTickerInstanceById(t.id, t.args, t.duration, t.priority);
@@ -900,7 +900,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 });
             }
             if (data.hasOwnProperty("tickersSteps")) {
-                let tickersSteps = (data as CanvasGamState)["tickersSteps"];
+                let tickersSteps = (data as CanvasGameState)["tickersSteps"];
                 Object.entries(tickersSteps).forEach(([alias, steps]) => {
                     CanvasManagerStatic._currentTickersSequence[alias] = steps;
                     Object.keys(steps).forEach((key) => {
@@ -909,7 +909,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 });
             }
             if (data.hasOwnProperty("tickersOnPause")) {
-                let tickersOnPause = (data as CanvasGamState)["tickersOnPause"];
+                let tickersOnPause = (data as CanvasGameState)["tickersOnPause"];
                 Object.keys(tickersOnPause).forEach((alias) => {
                     let data = tickersOnPause[alias];
                     if ("tickerIdsExcluded" in data && data.tickerIdsExcluded) {
@@ -926,7 +926,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 CanvasManagerStatic._tickersOnPause = tickersOnPause;
             }
             if (data.hasOwnProperty("tickersToCompleteOnStepEnd")) {
-                let tickersToCompleteOnStepEnd = (data as CanvasGamState)["tickersToCompleteOnStepEnd"];
+                let tickersToCompleteOnStepEnd = (data as CanvasGameState)["tickersToCompleteOnStepEnd"];
                 let tikersIds = tickersToCompleteOnStepEnd.tikersIds.map((t) => ({
                     id: tickersToTrasfer[t.id] || t.id,
                 }));
