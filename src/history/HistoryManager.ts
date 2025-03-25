@@ -64,6 +64,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             ...(historyInfo as Omit<HistoryStep, "diff">),
             diff: data,
         });
+        HistoryManagerStatic.originalStepData = currentStepData;
     }
     get narrativeHistory(): NarrativeHistory[] {
         let list: NarrativeHistory[] = [];

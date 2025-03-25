@@ -102,7 +102,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         };
         GameUnifier.addHistoryItem(historyInfo);
         NarrationManagerStatic.lastHistoryStep = historyInfo;
-        NarrationManagerStatic.originalStepData = currentStepData;
         NarrationManagerStatic.increaseStepCounter();
     }
     closeCurrentLabel() {
