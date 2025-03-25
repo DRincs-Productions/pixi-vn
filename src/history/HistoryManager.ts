@@ -39,7 +39,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             return restoredStep;
         }
     }
-    async goBack(originalStepData: GameStepState, navigate: (path: string) => void, steps: number = 1) {
+    async goBack(navigate: (path: string) => void, steps: number = 1) {
         if (steps <= 0) {
             logger.warn("The parameter steps must be greater than 0");
             return;
@@ -48,7 +48,9 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
-        let restoredStep = createExportableElement(this.internalRestoreOldGameState(steps, originalStepData));
+        let restoredStep = createExportableElement(
+            this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
+        );
         if (restoredStep) {
             await GameUnifier.restoreGameStepState(restoredStep, navigate);
         } else {
@@ -133,7 +135,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         return HistoryManagerStatic.lastHistoryStep?.diff ? true : false;
     }
-    blocksGoBackPossibility() {
+    blockGoBack() {
         if (GameUnifier.currentStepsRunningNumber !== 0) {
             return;
         }

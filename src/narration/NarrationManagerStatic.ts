@@ -1,7 +1,5 @@
-import { GameStepState } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
-import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
 import { getLabelById } from "./decorators/label-decorator";
@@ -205,36 +203,6 @@ export default class NarrationManagerStatic {
             return item.currentStepIndex;
         }
         return null;
-    }
-    static _originalStepData: GameStepState | undefined = undefined;
-    static get originalStepData(): GameStepState {
-        if (!NarrationManagerStatic._originalStepData) {
-            return {
-                path: "",
-                storage: {},
-                canvas: {
-                    elementAliasesOrder: [],
-                    elements: {},
-                    stage: {},
-                    tickers: {},
-                    tickersSteps: {},
-                    tickersOnPause: {},
-                    tickersToCompleteOnStepEnd: { tikersIds: [], stepAlias: [] },
-                },
-                sound: {
-                    soundAliasesOrder: [],
-                    soundsPlaying: {},
-                    playInStepIndex: {},
-                    filters: undefined,
-                },
-                labelIndex: -1,
-                openedLabels: [],
-            };
-        }
-        return createExportableElement(NarrationManagerStatic._originalStepData);
-    }
-    static set originalStepData(value: GameStepState) {
-        NarrationManagerStatic._originalStepData = createExportableElement(value);
     }
 
     /* Edit History Methods */
