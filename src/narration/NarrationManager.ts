@@ -60,12 +60,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     ) {
         const { choiseMade, ignoreSameStep } = options;
         const currentStepData: GameStepState = GameUnifier.currentGameStepState;
-        const originalStepData = NarrationManagerStatic.originalStepData;
-        if (
-            !ignoreSameStep &&
-            originalStepData &&
-            GameUnifier.ignoreAddChangeHistory(originalStepData, currentStepData)
-        ) {
+        if (!ignoreSameStep && GameUnifier.ignoreAddChangeHistory(currentStepData)) {
             return;
         }
         let dialoge: Dialogue | undefined = undefined;
@@ -105,7 +100,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
         };
-        GameUnifier.addHistoryItem(originalStepData, historyInfo);
+        GameUnifier.addHistoryItem(historyInfo);
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.originalStepData = currentStepData;
         NarrationManagerStatic.increaseStepCounter();

@@ -24,11 +24,10 @@ export default class GameUnifier {
         getCurrentGameStepState: () => GameStepState;
         /**
          * This function is called to determine if the change history should be added to the game state.
-         * @param originalState The original state of the game step.
          * @param newState The new state of the game step.
          * @default () => false
          */
-        ignoreAddChangeHistory?: (originalState: GameStepState, newState: GameStepState) => boolean;
+        ignoreAddChangeHistory?: (newState: GameStepState) => boolean;
         /**
          * This function restores the game step state.
          *
@@ -90,10 +89,9 @@ export default class GameUnifier {
          *
          * If your game engine does not have a history of steps, you can return a resolved promise.
          *
-         * @param originalStepData The original state of the game step.
          * @param historyInfo The history information.
          */
-        addHistoryItem(originalStepData: GameStepState, historyInfo?: HistoryInfo): void;
+        addHistoryItem(historyInfo?: HistoryInfo): void;
         /**
          * This function returns the number of steps that are currently running.
          */
@@ -145,12 +143,11 @@ export default class GameUnifier {
     static get currentGameStepState() {
         return GameUnifier._getCurrentGameStepState();
     }
-    private static _ignoreAddChangeHistory: (originalState: GameStepState, newState: GameStepState) => boolean = () => {
+    private static _ignoreAddChangeHistory: (newState: GameStepState) => boolean = () => {
         return false;
     };
     /**
      * This function is called to determine if the change history should be added to the game state.
-     * @param originalState The original state of the game step.
      * @param newState The new state of the game step.
      */
     static get ignoreAddChangeHistory() {
@@ -254,13 +251,12 @@ export default class GameUnifier {
     static get onLabelClosing() {
         return GameUnifier._onLabelClosing;
     }
-    private static _addHistoryItem: (originalStepData: GameStepState, historyInfo?: HistoryInfo) => void = () => {
+    private static _addHistoryItem: (historyInfo?: HistoryInfo) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     /**
      * Add a history step to the history.
-     * @param originalStepData The original state of the game step.
      * @param historyInfo The history information.
      */
     static get addHistoryItem() {
