@@ -87,7 +87,7 @@ export namespace Game {
                 };
             },
             restoreGameStepState: async (state, navigate) => {
-                narrationUtils.NarrationManagerStatic._originalStepData = state;
+                historyUtils.HistoryManagerStatic._originalStepData = state;
                 narrationUtils.NarrationManagerStatic._openedLabels = state.openedLabels;
                 storageUtils.storage.restore(state.storage);
                 await canvasUtils.canvas.restore(state.canvas);
@@ -100,8 +100,8 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
-            addHistoryItem: historyUtils.history.addHistoryItem,
-            getCurrentStepsRunningNumber: () => historyUtils.history.stepsRunning,
+            addHistoryItem: historyUtils.history.add,
+            getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             // canvas
             onGoNextEnd: async () => {
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
