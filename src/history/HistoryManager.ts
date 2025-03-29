@@ -57,8 +57,13 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.error("Error going back");
         }
     }
-    add(originalStepData: GameStepState, historyInfo: HistoryInfo = {}) {
+    add(historyInfo: HistoryInfo = {}, opstions: { ignoreSameStep?: boolean } = {}) {
+        const originalStepData = HistoryManagerStatic.originalStepData;
+        const { ignoreSameStep } = opstions;
         const currentStepData: GameStepState = GameUnifier.currentGameStepState;
+        if (!ignoreSameStep && this.ignoreAddChangeHistory(originalStepData, currentStepData)) {
+            return;
+        }
         let data = diff(originalStepData, currentStepData);
         this.stepsHistory.push({
             ...(historyInfo as Omit<HistoryStep, "diff">),
@@ -146,6 +151,26 @@ export default class HistoryManager implements HistoryManagerInterface {
                 diff: undefined,
             };
         }
+    }
+
+    private ignoreAddChangeHistory(originalState: GameStepState, newState: GameStepState) {
+        if (originalState.openedLabels.length === newState.openedLabels.length) {
+            try {
+                let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
+                let historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
+                if (
+                    lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
+                    originalState.path === newState.path &&
+                    originalState.labelIndex === newState.labelIndex
+                ) {
+                    return true;
+                }
+            } catch (e) {
+                logger.error("Error comparing opened labels", e);
+                return true;
+            }
+        }
+        return false;
     }
 
     public clear() {

@@ -1,4 +1,4 @@
-import { CharacterInterface, GameStepState } from "@drincs/pixi-vn";
+import { CharacterInterface } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
@@ -59,10 +59,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {}
     ) {
         const { choiseMade, ignoreSameStep } = options;
-        const currentStepData: GameStepState = GameUnifier.currentGameStepState;
-        if (!ignoreSameStep && GameUnifier.ignoreAddChangeHistory(currentStepData)) {
-            return;
-        }
         let dialoge: Dialogue | undefined = undefined;
         let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
@@ -100,7 +96,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
         };
-        GameUnifier.addHistoryItem(historyInfo);
+        GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();
     }

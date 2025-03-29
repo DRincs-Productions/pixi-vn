@@ -26,7 +26,6 @@ export * from "./storage";
 export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 
-import { GameStepState } from "@drincs/pixi-vn";
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
@@ -47,7 +46,6 @@ import * as storageUtils from "./storage";
 import GameUnifier from "./unifier";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
-import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
 export namespace Game {
@@ -87,25 +85,6 @@ export namespace Game {
                     labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0,
                     openedLabels: narrationUtils.narration.openedLabels,
                 };
-            },
-            ignoreAddChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
-                if (originalState.openedLabels.length === newState.openedLabels.length) {
-                    try {
-                        let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
-                        let historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
-                        if (
-                            lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
-                            originalState.path === newState.path &&
-                            originalState.labelIndex === newState.labelIndex
-                        ) {
-                            return true;
-                        }
-                    } catch (e) {
-                        logger.error("Error comparing opened labels", e);
-                        return true;
-                    }
-                }
-                return false;
             },
             restoreGameStepState: async (state, navigate) => {
                 narrationUtils.NarrationManagerStatic._originalStepData = state;
