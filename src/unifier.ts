@@ -84,8 +84,17 @@ export default class GameUnifier {
          * If your game engine does not have a history of steps, you can return a resolved promise.
          *
          * @param historyInfo The history information.
+         * @param opstions Options to add the step.
          */
-        addHistoryItem(historyInfo?: HistoryInfo): void;
+        addHistoryItem(
+            historyInfo?: HistoryInfo,
+            opstions?: {
+                /**
+                 * If true, the step will not be added to the history if the current step is the same as the last step.
+                 */
+                ignoreSameStep?: boolean;
+            }
+        ): void;
         /**
          * This function returns the number of steps that are currently running.
          */
@@ -234,13 +243,22 @@ export default class GameUnifier {
     static get onLabelClosing() {
         return GameUnifier._onLabelClosing;
     }
-    private static _addHistoryItem: (historyInfo?: HistoryInfo) => void = () => {
+    private static _addHistoryItem: (
+        historyInfo?: HistoryInfo,
+        opstions?: {
+            /**
+             * If true, the step will not be added to the history if the current step is the same as the last step.
+             */
+            ignoreSameStep?: boolean;
+        }
+    ) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
         throw new Error("Method not implemented.");
     };
     /**
      * Add a history step to the history.
      * @param historyInfo The history information.
+     * @param opstions Options to add the step.
      */
     static get addHistoryItem() {
         return GameUnifier._addHistoryItem;

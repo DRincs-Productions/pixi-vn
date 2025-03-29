@@ -51,6 +51,20 @@ export default interface HistoryManagerInterface {
      */
     readonly canGoBack: boolean;
     /**
+     * Add a step to the history.
+     * @param historyInfo Info about the step to add.
+     * @param opstions Options to add the step.
+     */
+    add(
+        historyInfo?: HistoryInfo,
+        opstions?: {
+            /**
+             * If true, the step will not be added to the history if the current step is the same as the last step.
+             */
+            ignoreSameStep?: boolean;
+        }
+    ): void;
+    /**
      * Clear the history.
      */
     clear(): void;

@@ -57,11 +57,16 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.error("Error going back");
         }
     }
-    add(historyInfo: HistoryInfo = {}, opstions: { ignoreSameStep?: boolean } = {}) {
+    add(
+        historyInfo: HistoryInfo = {},
+        opstions: {
+            ignoreSameStep?: boolean;
+        } = {}
+    ) {
         const originalStepData = HistoryManagerStatic.originalStepData;
         const { ignoreSameStep } = opstions;
         const currentStepData: GameStepState = GameUnifier.currentGameStepState;
-        if (!ignoreSameStep && this.ignoreAddChangeHistory(originalStepData, currentStepData)) {
+        if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
         }
         let data = diff(originalStepData, currentStepData);
@@ -153,7 +158,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
     }
 
-    private ignoreAddChangeHistory(originalState: GameStepState, newState: GameStepState) {
+    private isSameStep(originalState: GameStepState, newState: GameStepState) {
         if (originalState.openedLabels.length === newState.openedLabels.length) {
             try {
                 let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
