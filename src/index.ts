@@ -146,6 +146,7 @@ export namespace Game {
             storageData: storageUtils.storage.export(),
             canvasData: canvasUtils.canvas.export(),
             soundData: soundUtils.sound.export(),
+            historyData: historyUtils.history.export(),
             path: getGamePath(),
         };
     }
