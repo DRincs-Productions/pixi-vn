@@ -1,5 +1,14 @@
 import { test } from "vitest";
-import { GameUnifier, narration, NarrationManagerStatic, sound, storage, StorageManagerStatic } from "../src";
+import {
+    GameUnifier,
+    history,
+    HistoryManagerStatic,
+    narration,
+    NarrationManagerStatic,
+    sound,
+    storage,
+    StorageManagerStatic,
+} from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
 test("setup", async () => {
@@ -17,7 +26,7 @@ test("setup", async () => {
             };
         },
         restoreGameStepState: async (state, navigate) => {
-            NarrationManagerStatic._originalStepData = state;
+            HistoryManagerStatic._originalStepData = state;
             NarrationManagerStatic._openedLabels = state.openedLabels;
             storage.restore(state.storage);
             // await canvas.restore(state.canvas);
@@ -26,7 +35,12 @@ test("setup", async () => {
         },
         // narration
         getStepCounter: () => narration.stepCounter,
+        setStepCounter: (value) => {
+            NarrationManagerStatic._stepCounter = value;
+        },
         getOpenedLabels: () => narration.openedLabels.length,
+        addHistoryItem: history.add,
+        getCurrentStepsRunningNumber: () => NarrationManagerStatic.stepsRunning,
         // storage
         getVariable: (key) => storage.getVariable(key),
         setVariable: (key, value) => storage.setVariable(key, value),

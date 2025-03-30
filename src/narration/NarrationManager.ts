@@ -96,6 +96,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
         };
+        NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic._openedLabels;
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();
@@ -109,7 +110,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabel not found");
             return;
         }
-        NarrationManagerStatic._openedLabels.pop();
+        NarrationManagerStatic._openedLabels.pop(); //
         GameUnifier.onLabelClosing(this.openedLabels.length);
     }
     closeAllLabels() {
@@ -343,14 +344,14 @@ export default class NarrationManager implements NarrationManagerInterface {
                 this.closeCurrentLabel();
                 return await this.goNext(props, options);
             } else if (this.openedLabels.length === 1) {
-                NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalStepData.openedLabels;
+                NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalOpenedLabels;
                 if (this.onGameEnd) {
                     return await this.onGameEnd(props, { labelId: "end" });
                 }
                 return;
             }
         } else if (this.openedLabels.length === 0) {
-            NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalStepData.openedLabels;
+            NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalOpenedLabels;
             if (this.onGameEnd) {
                 return await this.onGameEnd(props, { labelId: "end" });
             }
@@ -399,7 +400,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             if (this.currentLabel && this.currentLabel.onStepEnd) {
                 await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
             }
-            NarrationManagerStatic.pushNewLabel(tempLabel.id);
+            NarrationManagerStatic.pushNewLabel(tempLabel.id); //
         } catch (e) {
             logger.error("Error calling label", e);
             return;
@@ -444,7 +445,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             if (this.currentLabel && this.currentLabel.onStepEnd) {
                 await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
             }
-            NarrationManagerStatic.pushNewLabel(tempLabel.id);
+            NarrationManagerStatic.pushNewLabel(tempLabel.id); //
         } catch (e) {
             logger.error("Error jumping label", e);
             return;
@@ -688,6 +689,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
             if (data.hasOwnProperty("openedLabels")) {
                 NarrationManagerStatic._openedLabels = (data as NarrationGameState)["openedLabels"];
+                NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic._openedLabels;
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }

@@ -1,5 +1,6 @@
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
+import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
 import { getLabelById } from "./decorators/label-decorator";
@@ -182,6 +183,13 @@ export default class NarrationManagerStatic {
         NarrationManagerStatic._stepCounter++;
     }
     static _openedLabels: OpenedLabel[] = [];
+    private static _originalOpenedLabels: OpenedLabel[] = [];
+    static get originalOpenedLabels(): OpenedLabel[] {
+        return createExportableElement(NarrationManagerStatic._originalOpenedLabels);
+    }
+    static set originalOpenedLabels(value: OpenedLabel[]) {
+        NarrationManagerStatic._originalOpenedLabels = createExportableElement(value);
+    }
     static get _currentLabel(): Label | undefined {
         if (NarrationManagerStatic.currentLabelId) {
             return getLabelById(NarrationManagerStatic.currentLabelId);
