@@ -1,5 +1,5 @@
 import { HistoryInfo } from "@drincs/pixi-vn";
-import { Dialogue, HistoryStep } from "../../narration";
+import { Dialogue, HistoryStep, NarrativeHistory } from "../../narration";
 import HistoryGameState from "./HistoryGameState";
 
 export default interface HistoryManagerInterface {
@@ -11,7 +11,7 @@ export default interface HistoryManagerInterface {
      * Get the narrative history
      * @returns the history of the dialogues, choices and steps
      */
-    readonly narrativeHistory: HistoryInfo[];
+    readonly narrativeHistory: NarrativeHistory[];
     /**
      * The number of steps to keep in the history into the save file.
      *
