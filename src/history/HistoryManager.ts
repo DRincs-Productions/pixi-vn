@@ -180,6 +180,7 @@ export default class HistoryManager implements HistoryManagerInterface {
 
     public clear() {
         HistoryManagerStatic._stepsHistory = [];
+        HistoryManagerStatic._originalStepData = undefined;
     }
 
     get stepLimitSaved() {
@@ -199,6 +200,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }));
         return {
             stepsHistory: stepsHistory,
+            originalStepData: HistoryManagerStatic._originalStepData,
         };
     }
     public async restore(data: object) {
@@ -208,6 +210,11 @@ export default class HistoryManager implements HistoryManagerInterface {
                 HistoryManagerStatic._stepsHistory = (data as HistoryGameState)["stepsHistory"];
             } else {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
+            }
+            if (data.hasOwnProperty("originalStepData")) {
+                HistoryManagerStatic._originalStepData = (data as HistoryGameState)["originalStepData"];
+            } else {
+                logger.warn("Could not import originalStepData data, so will be ignored");
             }
         } catch (e) {
             logger.error("Error importing data", e);

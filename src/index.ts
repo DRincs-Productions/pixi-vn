@@ -133,6 +133,7 @@ export namespace Game {
         canvasUtils.canvas.clear();
         soundUtils.sound.clear();
         narrationUtils.narration.clear();
+        historyUtils.history.clear();
     }
 
     /**
@@ -157,8 +158,11 @@ export namespace Game {
      * @param navigate The function to navigate to a path
      */
     export async function restoreGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
-        if (data.stepData.hasOwnProperty("stepsHistory")) {
-            data.historyData.stepsHistory = (data.stepData as narrationUtils.NarrationGameState)["stepsHistory"];
+        if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
+            data.historyData.stepsHistory = data.stepData.stepsHistory;
+        }
+        if (data.stepData.hasOwnProperty("originalStepData") && data.stepData.originalStepData) {
+            data.historyData.originalStepData = data.stepData.originalStepData;
         }
         await narrationUtils.narration.restore(data.stepData, historyUtils.HistoryManagerStatic.lastHistoryStep);
         storageUtils.storage.restore(data.storageData);

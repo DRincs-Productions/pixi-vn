@@ -672,7 +672,6 @@ export default class NarrationManager implements NarrationManagerInterface {
     public clear() {
         NarrationManagerStatic._openedLabels = [];
         NarrationManagerStatic._stepCounter = 0;
-        NarrationManagerStatic._originalStepData = undefined;
     }
 
     /* Export and Import Methods */
@@ -681,7 +680,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         return {
             openedLabels: NarrationManagerStatic._openedLabels,
             stepCounter: this.stepCounter,
-            originalStepData: NarrationManagerStatic._originalStepData,
         };
     }
     public async restore(data: object, lastHistoryStep: HistoryStep | null) {
@@ -699,11 +697,6 @@ export default class NarrationManager implements NarrationManagerInterface {
                 NarrationManagerStatic._stepCounter = (data as NarrationGameState)["lastStepIndex"] as number;
             } else {
                 logger.warn("Could not import stepCounter data, so will be ignored");
-            }
-            if (data.hasOwnProperty("originalStepData")) {
-                NarrationManagerStatic._originalStepData = (data as NarrationGameState)["originalStepData"];
-            } else {
-                logger.warn("Could not import originalStepData data, so will be ignored");
             }
 
             if (this.currentLabel && this.currentLabel.onLoadingLabel) {

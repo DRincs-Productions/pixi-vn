@@ -16,5 +16,8 @@ export default interface NarrationGameState {
      */
     lastStepIndex?: number;
     stepCounter: number;
-    originalStepData: GameStepState | undefined;
+    /**
+     * @deprecated moved to HistoryManagerStatic
+     */
+    originalStepData?: GameStepState;
 }

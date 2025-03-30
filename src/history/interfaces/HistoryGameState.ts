@@ -1,3 +1,4 @@
+import { GameStepState } from "@drincs/pixi-vn";
 import { HistoryStep } from "../../narration";
 
 /**
@@ -5,4 +6,5 @@ import { HistoryStep } from "../../narration";
  */
 export default interface HistoryGameState {
     stepsHistory: HistoryStep[];
+    originalStepData: GameStepState | undefined;
 }
