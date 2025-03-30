@@ -100,7 +100,9 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
-            addHistoryItem: historyUtils.history.add,
+            addHistoryItem: (historyInfo, opstions) => {
+                return historyUtils.history.add(historyInfo, opstions);
+            },
             getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             // canvas
             onGoNextEnd: async () => {
