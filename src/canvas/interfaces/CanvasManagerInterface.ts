@@ -423,4 +423,13 @@ export default interface CanvasManagerInterface {
      * @param data The object.
      */
     restore(data: object): Promise<void>;
+
+    onEndOfTicker(
+        tickerId: string,
+        options: {
+            aliasToRemoveAfter: string[] | string;
+            tickerAliasToResume: string[] | string;
+            ignoreTickerSteps?: boolean;
+        }
+    ): void;
 }
