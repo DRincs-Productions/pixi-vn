@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { history, narration, newLabel, storage, SYSTEM_RESERVED_STORAGE_KEYS } from "../src";
+import { narration, newLabel, stepHistory, storage, SYSTEM_RESERVED_STORAGE_KEYS } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
 const pathLabel = newLabel("path", [
@@ -35,13 +35,13 @@ test("path test", async () => {
         oltherParams: {},
     });
     expect(getGamePath()).toBe("/test");
-    await history.goBack((path) => window.history.pushState({}, "test", path));
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
         oltherParams: {},
     });
     expect(getGamePath()).toBe("/test");
-    await history.goBack((path) => window.history.pushState({}, "test", path));
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
         oltherParams: {},
@@ -118,12 +118,12 @@ test("stepCounter & currentStepTimesCounter test", async () => {
         text: "This is a test label 3",
         oltherParams: {},
     });
-    await history.goBack((path) => window.history.pushState({}, "test", path));
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
         oltherParams: {},
     });
-    await history.goBack((path) => window.history.pushState({}, "test", path));
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
         oltherParams: {},

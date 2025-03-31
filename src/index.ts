@@ -101,7 +101,7 @@ export namespace Game {
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
             addHistoryItem: (historyInfo, opstions) => {
-                return historyUtils.history.add(historyInfo, opstions);
+                return historyUtils.stepHistory.add(historyInfo, opstions);
             },
             getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             // canvas
@@ -135,7 +135,7 @@ export namespace Game {
         canvasUtils.canvas.clear();
         soundUtils.sound.clear();
         narrationUtils.narration.clear();
-        historyUtils.history.clear();
+        historyUtils.stepHistory.clear();
     }
 
     /**
@@ -149,7 +149,7 @@ export namespace Game {
             storageData: storageUtils.storage.export(),
             canvasData: canvasUtils.canvas.export(),
             soundData: soundUtils.sound.export(),
-            historyData: historyUtils.history.export(),
+            historyData: historyUtils.stepHistory.export(),
             path: getGamePath(),
         };
     }
@@ -202,6 +202,7 @@ export default {
     narration: narrationUtils.narration,
     sound: soundUtils.sound,
     storage: storageUtils.storage,
+    history: historyUtils.stepHistory,
     Game,
     GameUnifier,
 };

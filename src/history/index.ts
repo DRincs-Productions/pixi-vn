@@ -3,6 +3,6 @@ import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
 
 export { default as HistoryManagerStatic } from "./HistoryManagerStatic";
 export type { default as HistoryManagerInterface } from "./interfaces/HistoryManagerInterface";
-export { history };
+export { stepHistory };
 
-const history: HistoryManagerInterface = new HistoryManager();
+const stepHistory: HistoryManagerInterface = new HistoryManager();

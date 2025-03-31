@@ -1,11 +1,11 @@
 import { test } from "vitest";
 import {
     GameUnifier,
-    history,
     HistoryManagerStatic,
     narration,
     NarrationManagerStatic,
     sound,
+    stepHistory,
     storage,
     StorageManagerStatic,
 } from "../src";
@@ -40,7 +40,7 @@ test("setup", async () => {
         },
         getOpenedLabels: () => narration.openedLabels.length,
         addHistoryItem: (historyInfo, opstions) => {
-            return history.add(historyInfo, opstions);
+            return stepHistory.add(historyInfo, opstions);
         },
         getCurrentStepsRunningNumber: () => NarrationManagerStatic.stepsRunning,
         // storage
