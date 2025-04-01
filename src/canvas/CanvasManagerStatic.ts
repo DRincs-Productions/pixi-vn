@@ -39,7 +39,7 @@ export default class CanvasManagerStatic {
     static canvasHeight: number = 300;
     static _isInitialized: boolean = false;
 
-    static async initialize(
+    static async init(
         element: HTMLElement,
         width: number,
         height: number,

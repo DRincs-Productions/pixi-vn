@@ -61,7 +61,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         return this.app.screen;
     }
 
-    public async initialize(
+    public async init(
         element: HTMLElement,
         widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number }) | number,
         heightOrDevtoolsOptions?: Devtools | number,
@@ -69,7 +69,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         devtoolsOptions?: Devtools
     ): Promise<void> {
         if (typeof widthOrOptions === "number" && typeof heightOrDevtoolsOptions === "number") {
-            return await CanvasManagerStatic.initialize(
+            return await CanvasManagerStatic.init(
                 element,
                 widthOrOptions,
                 heightOrDevtoolsOptions,
@@ -77,7 +77,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 devtoolsOptions
             );
         } else if (typeof widthOrOptions !== "number" && typeof heightOrDevtoolsOptions !== "number") {
-            return await CanvasManagerStatic.initialize(
+            return await CanvasManagerStatic.init(
                 element,
                 widthOrOptions.width,
                 widthOrOptions.height,
