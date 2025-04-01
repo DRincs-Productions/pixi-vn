@@ -18,6 +18,7 @@ export {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
+export * from "./history";
 export * from "./interfaces";
 export * from "./narration";
 export * from "./sound";
@@ -25,7 +26,6 @@ export * from "./storage";
 export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 
-import { GameStepState } from "@drincs/pixi-vn";
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
@@ -38,6 +38,7 @@ import {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
+import * as historyUtils from "./history";
 import * as pixivninterface from "./interfaces";
 import * as narrationUtils from "./narration";
 import * as soundUtils from "./sound";
@@ -45,7 +46,6 @@ import * as storageUtils from "./storage";
 import GameUnifier from "./unifier";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
-import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
 export namespace Game {
@@ -86,27 +86,8 @@ export namespace Game {
                     openedLabels: narrationUtils.narration.openedLabels,
                 };
             },
-            ignoreAddChangeHistory: (originalState: GameStepState, newState: GameStepState) => {
-                if (originalState.openedLabels.length === newState.openedLabels.length) {
-                    try {
-                        let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
-                        let historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
-                        if (
-                            lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
-                            originalState.path === newState.path &&
-                            originalState.labelIndex === newState.labelIndex
-                        ) {
-                            return true;
-                        }
-                    } catch (e) {
-                        logger.error("Error comparing opened labels", e);
-                        return true;
-                    }
-                }
-                return false;
-            },
             restoreGameStepState: async (state, navigate) => {
-                narrationUtils.NarrationManagerStatic._originalStepData = state;
+                historyUtils.HistoryManagerStatic._originalStepData = state;
                 narrationUtils.NarrationManagerStatic._openedLabels = state.openedLabels;
                 storageUtils.storage.restore(state.storage);
                 await canvasUtils.canvas.restore(state.canvas);
@@ -115,10 +96,14 @@ export namespace Game {
             },
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,
-            getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
-            restoreOriginalOpenedLabels: (originalStepData) => {
-                narrationUtils.NarrationManagerStatic._openedLabels = originalStepData.openedLabels;
+            setStepCounter: (value) => {
+                narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
+            getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
+            addHistoryItem: (historyInfo, opstions) => {
+                return historyUtils.stepHistory.add(historyInfo, opstions);
+            },
+            getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             // canvas
             onGoNextEnd: async () => {
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
@@ -150,6 +135,7 @@ export namespace Game {
         canvasUtils.canvas.clear();
         soundUtils.sound.clear();
         narrationUtils.narration.clear();
+        historyUtils.stepHistory.clear();
     }
 
     /**
@@ -163,6 +149,7 @@ export namespace Game {
             storageData: storageUtils.storage.export(),
             canvasData: canvasUtils.canvas.export(),
             soundData: soundUtils.sound.export(),
+            historyData: historyUtils.stepHistory.export(),
             path: getGamePath(),
         };
     }
@@ -173,7 +160,13 @@ export namespace Game {
      * @param navigate The function to navigate to a path
      */
     export async function restoreGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
-        await narrationUtils.narration.restore(data.stepData);
+        if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
+            data.historyData.stepsHistory = data.stepData.stepsHistory;
+        }
+        if (data.stepData.hasOwnProperty("originalStepData") && data.stepData.originalStepData) {
+            data.historyData.originalStepData = data.stepData.originalStepData;
+        }
+        await narrationUtils.narration.restore(data.stepData, historyUtils.HistoryManagerStatic.lastHistoryStep);
         storageUtils.storage.restore(data.storageData);
         await canvasUtils.canvas.restore(data.canvasData);
         soundUtils.sound.restore(data.soundData);
@@ -209,6 +202,7 @@ export default {
     narration: narrationUtils.narration,
     sound: soundUtils.sound,
     storage: storageUtils.storage,
+    history: historyUtils.stepHistory,
     Game,
     GameUnifier,
 };

@@ -1,9 +1,7 @@
-import { CharacterInterface, GameStepState } from "@drincs/pixi-vn";
-import diff from "microdiff";
+import { CharacterInterface } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
-import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
@@ -11,16 +9,14 @@ import Dialogue from "./classes/Dialogue";
 import Label from "./classes/Label";
 import LabelAbstract from "./classes/LabelAbstract";
 import { getLabelById } from "./decorators/label-decorator";
-import ExportedStep from "./interfaces/ExportedStep";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
+import NarrationGameState from "./interfaces/NarrationGameState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
-import NarrativeHistory from "./interfaces/NarrativeHistory";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { Close } from "./types/CloseType";
 import DialogueType from "./types/DialogueType";
-import HistoryChoiceMenuOption from "./types/HistoryChoiceMenuOption";
 import { InputInfo } from "./types/InputInfo";
 import { LabelIdType } from "./types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
@@ -29,9 +25,6 @@ import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/
  * This class is a class that manages the steps and labels of the game.
  */
 export default class NarrationManager implements NarrationManagerInterface {
-    get stepsHistory() {
-        return NarrationManagerStatic._stepsHistory;
-    }
     get currentStepTimesCounter(): number {
         return NarrationManagerStatic.getCurrentStepTimesCounter();
     }
@@ -66,57 +59,46 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {}
     ) {
         const { choiseMade, ignoreSameStep } = options;
-        const currentStepData: GameStepState = GameUnifier.currentGameStepState;
+        let dialoge: Dialogue | undefined = undefined;
+        let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
+        let inputValue: StorageElementType | undefined = undefined;
         if (
-            !ignoreSameStep &&
-            NarrationManagerStatic.originalStepData &&
-            GameUnifier.ignoreAddChangeHistory(NarrationManagerStatic.originalStepData, currentStepData)
+            GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
+            this.stepCounter
         ) {
-            return;
+            dialoge = this.dialogue;
         }
-        let data = diff(NarrationManagerStatic.originalStepData, currentStepData);
-        if (data) {
-            let dialoge: Dialogue | undefined = undefined;
-            let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
-            let inputValue: StorageElementType | undefined = undefined;
-            if (
-                GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
-                this.stepCounter
-            ) {
-                dialoge = this.dialogue;
-            }
-            if (
-                GameUnifier.getVariable<number>(
-                    SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY
-                ) === this.stepCounter
-            ) {
-                requiredChoices = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
-                    SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
-                );
-            }
-            if (
-                GameUnifier.getVariable<StorageElementType>(
-                    SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY
-                ) === this.stepCounter
-            ) {
-                inputValue = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
-                    SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY
-                );
-            }
-            this.stepsHistory.push({
-                diff: data,
-                currentLabel: NarrationManagerStatic.currentLabelId,
-                dialoge: dialoge,
-                choices: requiredChoices,
-                stepSha1: stepSha,
-                index: this.stepCounter,
-                labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
-                choiceIndexMade: choiseMade,
-                inputValue: inputValue,
-                alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
-            });
-            NarrationManagerStatic.originalStepData = currentStepData;
+        if (
+            GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) ===
+            this.stepCounter
+        ) {
+            requiredChoices = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
+            );
         }
+        if (
+            GameUnifier.getVariable<StorageElementType>(
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY
+            ) === this.stepCounter
+        ) {
+            inputValue = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY
+            );
+        }
+        let historyInfo: Omit<HistoryStep, "diff"> = {
+            currentLabel: NarrationManagerStatic.currentLabelId,
+            dialoge: dialoge,
+            choices: requiredChoices,
+            stepSha1: stepSha,
+            index: this.stepCounter,
+            labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
+            choiceIndexMade: choiseMade,
+            inputValue: inputValue,
+            alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
+        };
+        NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic._openedLabels;
+        GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
+        NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();
     }
     closeCurrentLabel() {
@@ -128,77 +110,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabel not found");
             return;
         }
-        NarrationManagerStatic._openedLabels.pop();
+        NarrationManagerStatic._openedLabels.pop(); //
         GameUnifier.onLabelClosing(this.openedLabels.length);
     }
     closeAllLabels() {
         while (NarrationManagerStatic._openedLabels.length > 0) {
             this.closeCurrentLabel();
             GameUnifier.onLabelClosing(this.openedLabels.length);
-        }
-    }
-    get narrativeHistory(): NarrativeHistory[] {
-        let list: NarrativeHistory[] = [];
-        this.stepsHistory.forEach((step) => {
-            let dialoge = step.dialoge;
-            let requiredChoices = step.choices;
-            let inputValue = step.inputValue;
-            if (
-                list.length > 0 &&
-                list[list.length - 1].choices &&
-                !list[list.length - 1].playerMadeChoice &&
-                step.currentLabel
-            ) {
-                let oldChoices = list[list.length - 1].choices;
-                if (oldChoices) {
-                    let choiceMade = false;
-                    if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
-                        oldChoices[step.choiceIndexMade].isResponse = true;
-                        choiceMade = true;
-                    }
-                    list[list.length - 1].playerMadeChoice = choiceMade;
-                    list[list.length - 1].choices = oldChoices;
-                }
-            }
-            if (inputValue && list.length > 0) {
-                list[list.length - 1].inputValue = inputValue;
-            }
-            if (dialoge || requiredChoices) {
-                let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice, index) => {
-                    let hidden: boolean = false;
-                    if (choice.oneTime && step.alreadyMadeChoices && step.alreadyMadeChoices.includes(index)) {
-                        hidden = true;
-                    }
-                    return {
-                        text: choice.text,
-                        type: choice.type,
-                        isResponse: false,
-                        hidden: hidden,
-                    };
-                });
-                // if all choices are hidden find onlyHaveNoChoice
-                if (choices && choices.every((choice) => choice.hidden)) {
-                    let onlyHaveNoChoice = choices.find((choice) => choice.hidden === false);
-                    if (onlyHaveNoChoice) {
-                        onlyHaveNoChoice.hidden = false;
-                    }
-                }
-                list.push({
-                    dialoge: dialoge,
-                    playerMadeChoice: false,
-                    choices: choices,
-                    stepIndex: step.index,
-                });
-            }
-        });
-        return list;
-    }
-    removeNarrativeHistory(itemsNumber?: number) {
-        if (itemsNumber) {
-            // remove the first items
-            this.stepsHistory.splice(0, itemsNumber);
-        } else {
-            NarrationManagerStatic._stepsHistory = [];
         }
     }
     public isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
@@ -426,14 +344,14 @@ export default class NarrationManager implements NarrationManagerInterface {
                 this.closeCurrentLabel();
                 return await this.goNext(props, options);
             } else if (this.openedLabels.length === 1) {
-                GameUnifier.restoreOriginalOpenedLabels(NarrationManagerStatic.originalStepData);
+                NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalOpenedLabels;
                 if (this.onGameEnd) {
                     return await this.onGameEnd(props, { labelId: "end" });
                 }
                 return;
             }
         } else if (this.openedLabels.length === 0) {
-            GameUnifier.restoreOriginalOpenedLabels(NarrationManagerStatic.originalStepData);
+            NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalOpenedLabels;
             if (this.onGameEnd) {
                 return await this.onGameEnd(props, { labelId: "end" });
             }
@@ -482,7 +400,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             if (this.currentLabel && this.currentLabel.onStepEnd) {
                 await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
             }
-            NarrationManagerStatic.pushNewLabel(tempLabel.id);
+            NarrationManagerStatic.pushNewLabel(tempLabel.id); //
         } catch (e) {
             logger.error("Error calling label", e);
             return;
@@ -527,7 +445,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             if (this.currentLabel && this.currentLabel.onStepEnd) {
                 await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
             }
-            NarrationManagerStatic.pushNewLabel(tempLabel.id);
+            NarrationManagerStatic.pushNewLabel(tempLabel.id); //
         } catch (e) {
             logger.error("Error jumping label", e);
             return;
@@ -564,54 +482,8 @@ export default class NarrationManager implements NarrationManagerInterface {
         return this.goNext(props, { choiseMade: choiseMade });
     }
 
-    /** Old Step Methods */
-
-    get stepLimitSaved() {
-        return NarrationManagerStatic.stepLimitSaved;
-    }
-    set stepLimitSaved(limit: number) {
-        NarrationManagerStatic.stepLimitSaved = limit;
-    }
-
     /* Go Back & Refresh Methods */
 
-    public async goBack(navigate: (path: string) => void, steps: number = 1): Promise<void> {
-        if (steps <= 0) {
-            logger.warn("The parameter steps must be greater than 0");
-            return;
-        }
-        if (this.stepsHistory.length <= 1) {
-            logger.warn("You can't go back, there is no step to go back");
-            return;
-        }
-        let restoredStep = createExportableElement(
-            NarrationManagerStatic.goBackInternal(steps, NarrationManagerStatic.originalStepData)
-        );
-        if (restoredStep) {
-            await GameUnifier.restoreGameStepState(restoredStep, navigate);
-        } else {
-            logger.error("Error going back");
-        }
-    }
-    get canGoBack(): boolean {
-        if (NarrationManagerStatic._stepsHistory.length <= 1) {
-            return false;
-        }
-        return NarrationManagerStatic.lastHistoryStep?.diff ? true : false;
-    }
-    public async blockGoBack() {
-        if (NarrationManagerStatic.stepsRunning !== 0) {
-            NarrationManagerStatic.cleanSteps;
-            return;
-        }
-
-        if (this.stepsHistory.length > 1) {
-            this.stepsHistory[this.stepsHistory.length - 1] = {
-                ...this.stepsHistory[this.stepsHistory.length - 1],
-                diff: undefined,
-            };
-        }
-    }
     public onGameEnd: StepLabelType | undefined = undefined;
     public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined;
 
@@ -799,51 +671,34 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
 
     public clear() {
-        NarrationManagerStatic._stepsHistory = [];
         NarrationManagerStatic._openedLabels = [];
         NarrationManagerStatic._stepCounter = 0;
-        NarrationManagerStatic._originalStepData = undefined;
     }
 
     /* Export and Import Methods */
 
-    public export(): ExportedStep {
-        let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
-        let stepsHistory: HistoryStep<Dialogue<CharacterInterface>>[] = this.stepsHistory.map((step, index) => ({
-            diff: firstStepToCompres > index ? undefined : step.diff,
-            ...step,
-        }));
+    public export(): NarrationGameState {
         return {
-            stepsHistory: stepsHistory,
             openedLabels: NarrationManagerStatic._openedLabels,
             stepCounter: this.stepCounter,
-            originalStepData: NarrationManagerStatic._originalStepData,
         };
     }
-    public async restore(data: object) {
+    public async restore(data: object, lastHistoryStep: HistoryStep | null) {
         this.clear();
         try {
-            if (data.hasOwnProperty("stepsHistory")) {
-                NarrationManagerStatic._stepsHistory = (data as ExportedStep)["stepsHistory"];
-            } else {
-                logger.warn("Could not import stepsHistory data, so will be ignored");
-            }
+            NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
             if (data.hasOwnProperty("openedLabels")) {
-                NarrationManagerStatic._openedLabels = (data as ExportedStep)["openedLabels"];
+                NarrationManagerStatic._openedLabels = (data as NarrationGameState)["openedLabels"];
+                NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic._openedLabels;
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }
             if (data.hasOwnProperty("stepCounter")) {
-                NarrationManagerStatic._stepCounter = (data as ExportedStep)["stepCounter"];
+                NarrationManagerStatic._stepCounter = (data as NarrationGameState)["stepCounter"];
             } else if (data.hasOwnProperty("lastStepIndex")) {
-                NarrationManagerStatic._stepCounter = (data as ExportedStep)["lastStepIndex"] as number;
+                NarrationManagerStatic._stepCounter = (data as NarrationGameState)["lastStepIndex"] as number;
             } else {
                 logger.warn("Could not import stepCounter data, so will be ignored");
-            }
-            if (data.hasOwnProperty("originalStepData")) {
-                NarrationManagerStatic._originalStepData = (data as ExportedStep)["originalStepData"];
-            } else {
-                logger.warn("Could not import originalStepData data, so will be ignored");
             }
 
             if (this.currentLabel && this.currentLabel.onLoadingLabel) {

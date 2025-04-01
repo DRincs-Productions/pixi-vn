@@ -1,5 +1,5 @@
 import Sound from "./classes/Sound";
-import { SoundPlay } from "./interfaces/ExportedSounds";
+import { SoundPlay } from "./interfaces/SoundGameState";
 
 export default class SoundManagerStatic {
     private constructor() {}

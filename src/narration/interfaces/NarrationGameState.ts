@@ -5,13 +5,19 @@ import OpenedLabel from "./OpenedLabel";
 /**
  * Interface exported step data
  */
-export default interface ExportedStep {
-    stepsHistory: HistoryStep[];
+export default interface NarrationGameState {
+    /**
+     * @deprecated moved to HistoryManagerStatic
+     */
+    stepsHistory?: HistoryStep[];
     openedLabels: OpenedLabel[];
     /**
      * @deprecated use stepCounter
      */
     lastStepIndex?: number;
     stepCounter: number;
-    originalStepData: GameStepState | undefined;
+    /**
+     * @deprecated moved to HistoryManagerStatic
+     */
+    originalStepData?: GameStepState;
 }

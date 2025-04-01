@@ -34,4 +34,7 @@ declare module "@drincs/pixi-vn" {
     interface GameStepState {
         [key: string]: any;
     }
+    interface HistoryInfo {
+        [key: string]: any;
+    }
 }

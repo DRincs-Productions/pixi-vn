@@ -2,7 +2,7 @@ import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
-import ExportedStorage, { CacheableStoreItem } from "./interfaces/ExportedStorage";
+import StorageGameState, { CacheableStoreItem } from "./interfaces/StorageGameState";
 import StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManagerStatic from "./StorageManagerStatic";
 import { StorageElementType } from "./types/StorageElementType";
@@ -79,14 +79,14 @@ export default class StorageManager implements StorageManagerInterface {
             this.storage.set(key, value);
         });
     }
-    public export(): ExportedStorage {
+    public export(): StorageGameState {
         let items: CacheableStoreItem[] = [];
         [...this.storage.keys()].forEach((key) => {
             items.push({ key, value: this.storage.get(key) });
         });
         return createExportableElement(items);
     }
-    public restore(data: ExportedStorage) {
+    public restore(data: StorageGameState) {
         this.clear();
         try {
             if (data) {

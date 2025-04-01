@@ -1,8 +1,6 @@
-import { GameStepState } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
-import { restoreDiffChanges } from "../utils/diff-utility";
-import { createExportableElement } from "../utils/export-utility";
+import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
 import { getLabelById } from "./decorators/label-decorator";
@@ -30,7 +28,6 @@ type CurrentStepTimesCounterMemoty = {
 
 export default class NarrationManagerStatic {
     private constructor() {}
-    static _stepsHistory: HistoryStep[] = [];
     /**
      * Number of steps function that are running.
      * If you run a step that have a goNext, this number is > 1.
@@ -41,9 +38,8 @@ export default class NarrationManagerStatic {
      * If it is > 0, after the stepsRunning is 0, the next step will be executed
      */
     static goNextRequests: number = 0;
-    static cleanSteps: boolean = false;
     static choiseMadeTemp: undefined | number = undefined;
-    static stepLimitSaved: number = 20;
+    static lastHistoryStep: Omit<HistoryStep, "diff"> | null = null;
     /**
      * is a list of all labels that have been opened during the progression of the steps.
      * the key is the label id and the biggest step opened.
@@ -187,6 +183,13 @@ export default class NarrationManagerStatic {
         NarrationManagerStatic._stepCounter++;
     }
     static _openedLabels: OpenedLabel[] = [];
+    private static _originalOpenedLabels: OpenedLabel[] = [];
+    static get originalOpenedLabels(): OpenedLabel[] {
+        return createExportableElement(NarrationManagerStatic._originalOpenedLabels);
+    }
+    static set originalOpenedLabels(value: OpenedLabel[]) {
+        NarrationManagerStatic._originalOpenedLabels = createExportableElement(value);
+    }
     static get _currentLabel(): Label | undefined {
         if (NarrationManagerStatic.currentLabelId) {
             return getLabelById(NarrationManagerStatic.currentLabelId);
@@ -208,45 +211,6 @@ export default class NarrationManagerStatic {
             return item.currentStepIndex;
         }
         return null;
-    }
-    /**
-     * lastHistoryStep is the last history step that occurred during the progression of the steps.
-     */
-    static get lastHistoryStep(): HistoryStep | null {
-        if (NarrationManagerStatic._stepsHistory.length > 0) {
-            return NarrationManagerStatic._stepsHistory[NarrationManagerStatic._stepsHistory.length - 1];
-        }
-        return null;
-    }
-    static _originalStepData: GameStepState | undefined = undefined;
-    static get originalStepData(): GameStepState {
-        if (!NarrationManagerStatic._originalStepData) {
-            return {
-                path: "",
-                storage: {},
-                canvas: {
-                    elementAliasesOrder: [],
-                    elements: {},
-                    stage: {},
-                    tickers: {},
-                    tickersSteps: {},
-                    tickersOnPause: {},
-                    tickersToCompleteOnStepEnd: { tikersIds: [], stepAlias: [] },
-                },
-                sound: {
-                    soundAliasesOrder: [],
-                    soundsPlaying: {},
-                    playInStepIndex: {},
-                    filters: undefined,
-                },
-                labelIndex: -1,
-                openedLabels: [],
-            };
-        }
-        return createExportableElement(NarrationManagerStatic._originalStepData);
-    }
-    static set originalStepData(value: GameStepState) {
-        NarrationManagerStatic._originalStepData = createExportableElement(value);
     }
 
     /* Edit History Methods */
@@ -317,34 +281,6 @@ export default class NarrationManagerStatic {
                 ...item,
                 currentStepIndex: item.currentStepIndex + 1,
             };
-        }
-    }
-
-    /* Run Methods */
-
-    /* Go Back & Refresh Methods */
-
-    static goBackInternal(steps: number, restoredStep: GameStepState): GameStepState {
-        if (steps <= 0) {
-            return restoredStep;
-        }
-        if (NarrationManagerStatic._stepsHistory.length == 0) {
-            return restoredStep;
-        }
-        let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
-        if (lastHistoryStep?.diff) {
-            try {
-                let result = restoreDiffChanges(restoredStep, lastHistoryStep.diff);
-                NarrationManagerStatic._stepCounter = lastHistoryStep.index;
-                NarrationManagerStatic._stepsHistory.pop();
-                return NarrationManagerStatic.goBackInternal(steps - 1, result);
-            } catch (e) {
-                logger.error("Error applying diff", e);
-                return restoredStep;
-            }
-        } else {
-            logger.error("You can't go back, there is no step to go back");
-            return restoredStep;
         }
     }
 }

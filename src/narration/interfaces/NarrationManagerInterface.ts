@@ -4,25 +4,20 @@ import {
     ChoiceMenuOptionClose,
     ChoiceMenuOptionsType,
     Dialogue,
-    ExportedStep,
     InputInfo,
     Label,
     LabelAbstract,
-    NarrativeHistory,
+    NarrationGameState,
     OpenedLabel,
     StepLabelPropsType,
     StepLabelResultType,
     StepLabelType,
-    StorageElementType,
-} from "../..";
+} from "..";
+import { StorageElementType } from "../../storage";
 import { LabelIdType } from "../types/LabelIdType";
 import HistoryStep from "./HistoryStep";
 
 export default interface NarrationManagerInterface {
-    /**
-     * stepHistory is a list of label events and steps that occurred during the progression of the steps.
-     */
-    readonly stepsHistory: HistoryStep<Dialogue>[];
     /**
      * Counter of execution times of the current step. Current execution is also included. Starts from 1.
      *
@@ -55,7 +50,7 @@ export default interface NarrationManagerInterface {
     /**
      * This counter corresponds to the total number of steps that have been executed so far.
      *
-     * **Not is the {@link NarrationManagerInterface.stepsHistory}.length - 1.**
+     * **Not is the {@link history.stepsHistory}.length - 1.**
      */
     readonly stepCounter: number;
     /**
@@ -78,16 +73,6 @@ export default interface NarrationManagerInterface {
      * Close all labels and add them to the history. **Attention: This method can cause an unhandled game ending.**
      */
     closeAllLabels(): void;
-    /**
-     * Get the narrative history
-     * @returns the history of the dialogues, choices and steps
-     */
-    readonly narrativeHistory: NarrativeHistory[];
-    /**
-     * Delete the narrative history.
-     * @param itemsNumber The number of items to delete. If undefined, all items will be deleted.
-     */
-    removeNarrativeHistory(itemsNumber?: number): void;
     /**
      * Check if the label is already completed.
      * @param label The label to check.
@@ -257,42 +242,8 @@ export default interface NarrationManagerInterface {
 
     /** Old Step Methods */
 
-    /**
-     * The number of steps to keep in the history into the save file.
-     *
-     * The other older steps will be compressed will be used in {@link NarrationManagerInterface.narrativeHistory} to show the older dialogues.
-     * In the compressed steps, the canvas and storage information will be removed.
-     *
-     * This also means that a player, after saving and loading a save, will only be able to go back to {@link NarrationManagerInterface.stepLimitSaved} steps.
-     *
-     * If you want to keep all steps in the history, you can set this value to Infinity.
-     */
-    stepLimitSaved: number;
-
     /* Go Back & Refresh Methods */
 
-    /**
-     * Go back to the last step and add it to the history.
-     * @param navigate The navigate function.
-     * @param steps The number of steps to go back. Must be greater than 0. @default 1
-     * @returns
-     * @example
-     * ```typescript
-     * export function goBack(navigate: (path: string) => void, afterBack?: () => void) {
-     *     narration.goBack(navigate)
-     *     afterBack && afterBack()
-     * }
-     * ```
-     */
-    goBack(navigate: (path: string) => void, steps?: number): Promise<void>;
-    /**
-     * Return true if it is possible to go back.
-     */
-    readonly canGoBack: boolean;
-    /**
-     * Block the go back function.
-     */
-    blockGoBack(): void;
     /**
      * Function to be executed at the end of the game. It should be set in the game initialization.
      * @example
@@ -372,20 +323,20 @@ export default interface NarrationManagerInterface {
     removeInputRequest(): void;
 
     /**
-     * Add a label to the history.
+     * Clear all narration data
      */
     clear(): void;
 
     /* Export and Import Methods */
 
     /**
-     * Export the history to an object.
-     * @returns The history in an object.
+     * Export the narration to an object.
+     * @returns The narration in an object.
      */
-    export(): ExportedStep;
+    export(): NarrationGameState;
     /**
-     * Restore the history from an object.
-     * @param data The history in an object.
+     * Restore the narration from an object.
+     * @param data The narration in an object.
      */
-    restore(data: object): Promise<void>;
+    restore(data: object, lastHistoryStep: HistoryStep | null): Promise<void>;
 }

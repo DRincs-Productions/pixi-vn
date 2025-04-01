@@ -1,13 +1,15 @@
-import ExportedCanvas from "../canvas/interfaces/ExportedCanvas";
-import ExportedStep from "../narration/interfaces/ExportedStep";
-import ExportedSounds from "../sound/interfaces/ExportedSounds";
-import { ExportedStorage } from "../storage";
+import CanvasGameState from "../canvas/interfaces/CanvasGameState";
+import HistoryGameState from "../history/interfaces/HistoryGameState";
+import NarrationGameState from "../narration/interfaces/NarrationGameState";
+import SoundGameState from "../sound/interfaces/SoundGameState";
+import { StorageGameState } from "../storage";
 
 export default interface GameState {
     pixivn_version: string;
-    stepData: ExportedStep;
-    storageData: ExportedStorage;
-    canvasData: ExportedCanvas;
-    soundData: ExportedSounds;
+    stepData: NarrationGameState;
+    storageData: StorageGameState;
+    canvasData: CanvasGameState;
+    soundData: SoundGameState;
+    historyData: HistoryGameState;
     path: string;
 }

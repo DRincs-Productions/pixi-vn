@@ -1,7 +1,7 @@
-import { ExportedCanvas } from "../canvas";
+import { CanvasGameState } from "../canvas";
 import { OpenedLabel } from "../narration";
-import { ExportedSounds } from "../sound";
-import { ExportedStorage } from "../storage";
+import { SoundGameState } from "../sound";
+import { StorageGameState } from "../storage";
 
 /**
  * It is a interface that contains the information of a step.
@@ -14,7 +14,7 @@ export default interface GameStepStateData {
     /**
      * The storage that occurred during the progression of the steps.
      */
-    storage: ExportedStorage;
+    storage: StorageGameState;
     /**
      * The index of the label that occurred during the progression of the steps.
      */
@@ -22,7 +22,7 @@ export default interface GameStepStateData {
     /**
      * The canvas that occurred during the progression of the steps.
      */
-    canvas: ExportedCanvas;
+    canvas: CanvasGameState;
     /**
      * The opened labels that occurred during the progression of the steps.
      */
@@ -30,5 +30,5 @@ export default interface GameStepStateData {
     /**
      * The sound data that occurred during the progression of the steps.
      */
-    sound: ExportedSounds;
+    sound: SoundGameState;
 }

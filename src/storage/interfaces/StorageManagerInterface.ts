@@ -1,6 +1,6 @@
 import StorageManagerStatic from "../../storage/StorageManagerStatic";
 import { StorageElementType } from "../types/StorageElementType";
-import ExportedStorage from "./ExportedStorage";
+import StorageGameState from "./StorageGameState";
 
 export default interface StorageManagerInterface {
     /**
@@ -83,10 +83,10 @@ export default interface StorageManagerInterface {
      * Export the storage to an object
      * @returns The object
      */
-    export(): ExportedStorage;
+    export(): StorageGameState;
     /**
      * Restore the storage from an object
      * @param data The object
      */
-    restore(data: ExportedStorage): void;
+    restore(data: StorageGameState): void;
 }
