@@ -3,7 +3,7 @@ import { StorageElementType } from "./storage";
 import { logger } from "./utils/log-utility";
 
 export default class GameUnifier {
-    static initialize(options: {
+    static init(options: {
         /**
          * This function returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
          *
@@ -116,11 +116,11 @@ export default class GameUnifier {
         GameUnifier._getCurrentStepsRunningNumber = options.getCurrentStepsRunningNumber;
     }
     private static _getStepCounter: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     private static _setStepCounter: (value: number) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -136,7 +136,7 @@ export default class GameUnifier {
         GameUnifier._setStepCounter(value);
     }
     private static _getCurrentGameStepState: () => GameStepState = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -147,7 +147,7 @@ export default class GameUnifier {
     }
     private static _restoreGameStepState: (state: GameStepState, navigate: (path: string) => void) => Promise<void> =
         () => {
-            logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+            logger.error("Method not implemented, you should initialize the Game: Game.init()");
             throw new Error("Method not implemented.");
         };
     /**
@@ -159,7 +159,7 @@ export default class GameUnifier {
         return GameUnifier._restoreGameStepState;
     }
     private static _getOpenedLabels: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -177,7 +177,7 @@ export default class GameUnifier {
         return GameUnifier._onGoNextEnd;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -189,7 +189,7 @@ export default class GameUnifier {
         return GameUnifier._getVariable;
     }
     private static _setVariable: (key: string, value: StorageElementType) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -201,7 +201,7 @@ export default class GameUnifier {
         return GameUnifier._setVariable;
     }
     private static _removeVariable: (key: string) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -212,7 +212,7 @@ export default class GameUnifier {
         return GameUnifier._removeVariable;
     }
     private static _getFlag: (name: string) => boolean = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -223,7 +223,7 @@ export default class GameUnifier {
         return GameUnifier._getFlag;
     }
     private static _setFlag: (name: string, value: boolean) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -252,7 +252,7 @@ export default class GameUnifier {
             ignoreSameStep?: boolean;
         }
     ) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**
@@ -264,7 +264,7 @@ export default class GameUnifier {
         return GameUnifier._addHistoryItem;
     }
     private static _getCurrentStepsRunningNumber: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.initialize()");
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
     };
     /**

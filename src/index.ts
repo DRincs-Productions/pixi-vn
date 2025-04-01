@@ -70,12 +70,12 @@ export namespace Game {
      * })
      * ```
      */
-    export async function initialize(
+    export async function init(
         element: HTMLElement,
         options: Partial<ApplicationOptions> & { width: number; height: number },
         devtoolsOptions?: Devtools
     ) {
-        GameUnifier.initialize({
+        GameUnifier.init({
             getCurrentGameStepState: () => {
                 return {
                     path: getGamePath(),
@@ -124,7 +124,7 @@ export namespace Game {
                 storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
         });
         asciiArtLog();
-        return await canvasUtils.canvas.initialize(element, options, devtoolsOptions);
+        return await canvasUtils.canvas.init(element, options, devtoolsOptions);
     }
 
     /**

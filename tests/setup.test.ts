@@ -12,7 +12,7 @@ import {
 import { getGamePath } from "../src/utils/path-utility";
 
 test("setup", async () => {
-    GameUnifier.initialize({
+    GameUnifier.init({
         getCurrentGameStepState: () => {
             return {
                 path: getGamePath(),

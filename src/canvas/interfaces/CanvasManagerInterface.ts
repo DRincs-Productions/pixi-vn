@@ -61,35 +61,16 @@ export default interface CanvasManagerInterface {
      * if (!body) {
      *     throw new Error('body element not found')
      * }
-     * await canvas.initialize(body, {
+     * await canvas.init(body, {
      *     width: 1920,
      *     height: 1080,
      *     backgroundColor: "#303030"
      * })
      * ```
      */
-    initialize(
+    init(
         element: HTMLElement,
         options: Partial<ApplicationOptions> & { width: number; height: number },
-        devtoolsOptions?: Devtools
-    ): Promise<void>;
-    /**
-     * @deprecated
-     *
-     * This type of initialization has been deprecated move the width and height to the options parameter.
-     *
-     * ```typescript
-     * await canvas.initialize(body, {
-     *     width: 1920,
-     *     height: 1080,
-     *     // ...
-     * })
-     */
-    initialize(
-        element: HTMLElement,
-        width: number,
-        height: number,
-        options?: Partial<ApplicationOptions>,
         devtoolsOptions?: Devtools
     ): Promise<void>;
     /**
