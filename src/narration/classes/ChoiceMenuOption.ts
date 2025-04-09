@@ -6,6 +6,7 @@ import { LabelIdType } from "../types/LabelIdType";
 import LabelRunModeType from "../types/LabelRunModeType";
 import newCloseLabel from "./CloseLabel";
 import Label from "./Label";
+import LabelAbstract from "./LabelAbstract";
 
 type ChoiceMenuOptionOptions = {
     /**
@@ -55,27 +56,27 @@ type ChoiceMenuOptionCloseOptions = {
  * new ChoiceMenuOption("Hello", HelloLabel, {})
  * ```
  */
-export default class ChoiceMenuOption<T extends StorageObjectType> {
+export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extends LabelAbstract<any, T> = Label<T>> {
     /**
      * Text to be displayed in the menu
      */
     text: string;
-    private _label: Label<T> | LabelIdType;
+    private _label: LabelAbstract<any, T> | LabelIdType;
     /**
      * Label to be opened when the option is selected
      */
-    get label(): Label<T> {
+    get label(): TLabel {
         let label = this._label;
         if (typeof label === "string") {
-            let res = getLabelById(label);
+            let res = getLabelById<LabelAbstract<any, T>>(label);
             if (res) {
                 label = res;
             } else {
                 logger.error(`Label ${label} not found, so it will be closed`);
-                label = newCloseLabel();
+                label = newCloseLabel<T>();
             }
         }
-        return label;
+        return label as TLabel;
     }
     /**
      * Type of the label to be opened
@@ -123,7 +124,12 @@ export default class ChoiceMenuOption<T extends StorageObjectType> {
      * @param props Properties to be passed to the label and olther parameters that you can use when get all the choice menu options. It be converted to a JSON string, so it cannot contain functions or classes.
      * @param options Options
      */
-    constructor(text: string, label: Label<T> | LabelIdType, props: T, options?: ChoiceMenuOptionOptions) {
+    constructor(
+        text: string,
+        label: Label<T> | LabelAbstract<any, T> | LabelIdType,
+        props: T,
+        options?: ChoiceMenuOptionOptions
+    ) {
         this.text = text;
         this._label = label;
         this.type = options?.type || "call";

@@ -142,7 +142,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (currentLabelStepIndex === null || !currentLabel) {
             return;
         }
-        let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
+        let stepSha = currentLabel.getStepSha(currentLabelStepIndex);
         if (!stepSha) {
             logger.warn("stepSha not found, setting to ERROR");
             stepSha = AdditionalShaSpetsEnum.ERROR;
@@ -282,7 +282,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                 }
                 let step = currentLabel.steps[currentLabelStepIndex];
-                let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
+                let stepSha = currentLabel.getStepSha(currentLabelStepIndex);
                 if (!stepSha) {
                     logger.warn("stepSha not found, setting to ERROR");
                     stepSha = AdditionalShaSpetsEnum.ERROR;

@@ -65,7 +65,7 @@ export default class NarrationManagerStatic {
             logger.error("currentLabelId or currentLabelStepIndex is null or currentLabel not found");
             return null;
         }
-        let stepSha1 = currentLabel.getStepSha1(currentLabelStepIndex) || "error";
+        let stepSha1 = currentLabel.getStepSha(currentLabelStepIndex) || "error";
         let obj =
             GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY

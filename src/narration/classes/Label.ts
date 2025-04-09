@@ -52,7 +52,7 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
         return this._steps;
     }
 
-    public getStepSha1(index: number): string {
+    public getStepSha(index: number): string {
         if (index < 0 || index >= this.steps.length) {
             logger.warn("stepSha not found, setting to ERROR");
             return AdditionalShaSpetsEnum.ERROR;
