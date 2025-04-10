@@ -208,7 +208,7 @@ export default {
 };
 
 /**
- * @deprecated Use the `Game.clearAllGameDatas` function instead
+ * @deprecated Use the `Game.clear` function instead
  */
 export function clearAllGameDatas() {
     return Game.clear();

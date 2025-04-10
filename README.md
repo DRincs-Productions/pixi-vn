@@ -33,6 +33,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
   * [Visual Novel](https://pixi-vn.web.app/start/make-visual-novel)
   * [Point and Click adventure game](https://pixi-vn.web.app/start/make-point-and-click)
   * [RPG game](https://pixi-vn.web.app/start/make-rpg)
+  * [Game engine](https://pixi-vn.web.app/start/make-game-engine)
 
 ## First steps
 
@@ -103,6 +104,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 ## Other topics
 
 * [FAQ](https://pixi-vn.web.app/other-topics/faq)
+* [Migration](https://pixi-vn.web.app/other-topics/migration)
 * [Intecept Events](https://pixi-vn.web.app/other-topics/intercept-events)
 * [Pixi’VN + Json](https://pixi-vn.web.app/other-topics/pixi-vn-json)
 
@@ -179,25 +181,24 @@ Now you must initialize the Pixi’VN window before using the engine.
 For example, you add the following code to the `main.ts` or `index.ts` (It depends on your project configuration):
 
 ```typescript
-import { canvas, narration, clearAllGameDatas } from '@drincs/pixi-vn'
-import App from './App'
-import './index.css'
+import { Game, narration } from "@drincs/pixi-vn";
+import "./index.css";
 
 // Canvas setup with PIXI
-const body = document.body
+const body = document.body;
 if (!body) {
-    throw new Error('body element not found')
+    throw new Error("body element not found");
 }
 
-canvas.initialize(body, {
+Game.init(body, {
     height: 1080,
     width: 1920,
-    backgroundColor: "#303030"
-})
+    backgroundColor: "#303030",
+});
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
 narration.onGameEnd = async (props) => {
-    clearAllGameDatas()
-    props.navigate("/")
-}
+    Game.clear();
+    props.navigate("/");
+};
 ```
