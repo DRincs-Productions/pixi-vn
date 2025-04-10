@@ -5,7 +5,6 @@ import {
     ChoiceMenuOptionsType,
     Dialogue,
     InputInfo,
-    Label,
     LabelAbstract,
     NarrationGameState,
     OpenedLabel,
@@ -60,7 +59,7 @@ export default interface NarrationManagerInterface {
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
      */
-    readonly currentLabel: Label | undefined;
+    readonly currentLabel: LabelAbstract<any> | undefined;
 
     /* Edit History Methods */
 
@@ -78,7 +77,7 @@ export default interface NarrationManagerInterface {
      * @param label The label to check.
      * @returns True if the label is already completed.
      */
-    isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean;
+    isLabelAlreadyCompleted(label: LabelIdType | LabelAbstract<any>): boolean;
     /**
      * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
@@ -172,7 +171,7 @@ export default interface NarrationManagerInterface {
      * ```
      */
     callLabel<T extends {} = {}>(
-        label: Label<T> | LabelIdType,
+        label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType>;
     /**
@@ -196,7 +195,10 @@ export default interface NarrationManagerInterface {
      * })
      * ```
      */
-    jumpLabel<T extends {}>(label: Label<T> | LabelIdType, props: StepLabelPropsType<T>): Promise<StepLabelResultType>;
+    jumpLabel<T extends {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
     /**
      * Select a choice from the choice menu. and close the choice menu.
      * @param item

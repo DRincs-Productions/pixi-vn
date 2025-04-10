@@ -6,7 +6,6 @@ import { logger } from "../utils/log-utility";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
 import Dialogue from "./classes/Dialogue";
-import Label from "./classes/Label";
 import LabelAbstract from "./classes/LabelAbstract";
 import { getLabelById } from "./decorators/label-decorator";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
@@ -40,7 +39,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     get openedLabels() {
         return NarrationManagerStatic._openedLabels;
     }
-    get currentLabel(): Label | undefined {
+    get currentLabel(): LabelAbstract<any> | undefined {
         return NarrationManagerStatic._currentLabel;
     }
 
@@ -119,7 +118,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.onLabelClosing(this.openedLabels.length);
         }
     }
-    public isLabelAlreadyCompleted<Label extends LabelAbstract<any>>(label: LabelIdType | Label): boolean {
+    public isLabelAlreadyCompleted(label: LabelIdType | LabelAbstract<any>): boolean {
         let labelId: LabelIdType;
         if (typeof label === "string") {
             labelId = label;
@@ -263,7 +262,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 logger.error("currentLabelStepIndex is null");
                 return;
             }
-            let currentLabel = NarrationManagerStatic._currentLabel as Label<T> | undefined;
+            let currentLabel = NarrationManagerStatic._currentLabel as LabelAbstract<any, T> | undefined;
             if (!currentLabel) {
                 logger.error("currentLabel not found");
                 return;
@@ -368,7 +367,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     public async callLabel<T extends {} = {}>(
-        label: Label<T> | LabelIdType,
+        label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
         options?: {
             /**
@@ -400,7 +399,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 };
                 return this.closeChoiceMenu(choice, props);
             }
-            let tempLabel = getLabelById<Label<T>>(labelId);
+            let tempLabel = getLabelById<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
@@ -416,7 +415,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
     }
     public async jumpLabel<T extends {}>(
-        label: Label<T> | LabelIdType,
+        label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
         options?: {
             /**
@@ -449,7 +448,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 };
                 return this.closeChoiceMenu<T>(choice, props);
             }
-            let tempLabel = getLabelById<Label<T>>(labelId);
+            let tempLabel = getLabelById<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
