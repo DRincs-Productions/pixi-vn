@@ -7,7 +7,7 @@ import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } fr
 import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
 import Dialogue from "./classes/Dialogue";
 import LabelAbstract from "./classes/LabelAbstract";
-import { getLabelById } from "./decorators/label-decorator";
+import RegisteredLabels from "./decorators/label-decorator";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
 import NarrationGameState from "./interfaces/NarrationGameState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
@@ -128,7 +128,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         let allOpenedLabels = NarrationManagerStatic.allOpenedLabels;
         let lastStep = allOpenedLabels[labelId]?.biggestStep || 0;
         if (lastStep) {
-            let currentLabel = getLabelById(labelId);
+            let currentLabel = RegisteredLabels.get(labelId);
             if (currentLabel) {
                 return currentLabel.stepCount <= lastStep;
             }
@@ -399,7 +399,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 };
                 return this.closeChoiceMenu(choice, props);
             }
-            let tempLabel = getLabelById<LabelAbstract<any, T>>(labelId);
+            let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
@@ -448,7 +448,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 };
                 return this.closeChoiceMenu<T>(choice, props);
             }
-            let tempLabel = getLabelById<LabelAbstract<any, T>>(labelId);
+            let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
@@ -604,7 +604,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     options.push(choice);
                     return;
                 }
-                let label = getLabelById(option.label);
+                let label = RegisteredLabels.get(option.label);
                 if (label) {
                     options.push(
                         new ChoiceMenuOption(option.text, label, option.props, {
@@ -741,7 +741,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 );
                 for (let i = 0; i < this.openedLabels.length; i++) {
                     let labelInfo = this.openedLabels[i];
-                    let label = getLabelById(labelInfo.label);
+                    let label = RegisteredLabels.get(labelInfo.label);
                     if (label && label.onLoadingLabel) {
                         await label.onLoadingLabel(labelInfo.currentStepIndex, label);
                     }

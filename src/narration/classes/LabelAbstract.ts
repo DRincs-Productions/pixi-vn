@@ -1,5 +1,5 @@
-import { LabelProps } from "../..";
-import { getLabelById } from "../decorators/label-decorator";
+import RegisteredLabels from "../decorators/label-decorator";
+import LabelProps from "../interfaces/LabelProps";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelType } from "../types/StepLabelType";
 
@@ -19,7 +19,7 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
 
     private _id: LabelIdType;
     /**
-     * Get the id of the label. This variable is used in the system to get the label by id, {@link getLabelById}
+     * Get the id of the label. This variable is used in the system to get the label by id, {@link RegisteredLabels.get}
      */
     public get id(): LabelIdType {
         return this._id;

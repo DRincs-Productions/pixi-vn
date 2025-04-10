@@ -1,50 +1,35 @@
-import { LabelProps, StepLabelType } from "../..";
 import { logger } from "../../utils/log-utility";
 import Label from "../classes/Label";
 import LabelAbstract from "../classes/LabelAbstract";
 import { LabelIdType } from "../types/LabelIdType";
 
-export const registeredLabels: { [key: LabelIdType]: LabelAbstract<any> | Label<any> } = {};
-
 /**
- * Creates a new label and registers it in the system.
- * **This function must be called at least once at system startup to register the label, otherwise the system cannot be used.**
- * @param id The id of the label, it must be unique
- * @param steps The steps of the label
- * @param props The properties of the label
- * @returns The created label
+ * A Map that contains all labels registered and available to be used.
+ * The key is the id of the label and the value is the label itself.
  */
-export function newLabel<T extends {} = {}>(
-    id: LabelIdType,
-    steps: StepLabelType<T>[] | (() => StepLabelType<T>[]),
-    props?: Omit<LabelProps<Label<T>>, "choiseIndex">
-): Label<T> {
-    if (registeredLabels[id]) {
-        logger.info(`Label ${id} already exists, it will be overwritten`);
+const registeredLabels = new Map<LabelIdType, LabelAbstract<any> | Label<any>>();
+
+namespace RegisteredLabels {
+    /**
+     * Gets a label by its id
+     * @param id The id of the label
+     * @returns The label or undefined if it does not exist
+     */
+    export function get<T = LabelAbstract<any>>(id: LabelIdType): T | undefined {
+        let label = registeredLabels.get(id);
+        if (!label) {
+            logger.error(`Label ${id} not found`);
+            return;
+        }
+        return label as T;
     }
-    let label = new Label<T>(id, steps, props);
-    registeredLabels[id] = label;
-    return label;
-}
 
-/**
- * Gets a label by its id
- * @param id The id of the label
- * @returns The label or undefined if it does not exist
- */
-export function getLabelById<T = Label<any>>(id: LabelIdType): T | undefined {
-    let label = registeredLabels[id];
-    if (!label) {
-        logger.error(`Label ${id} not found`);
-        return;
+    /**
+     * Saves a label in the system
+     * @param label The label to be saved
+     */
+    export function add(label: LabelAbstract<any, any>) {
+        registeredLabels.set(label.id, label);
     }
-    return label as T;
 }
-
-/**
- * Saves a label in the system
- * @param label The label to be saved
- */
-export function saveLabel<T extends LabelAbstract<any>>(label: T) {
-    registeredLabels[label.id] = label;
-}
+export default RegisteredLabels;

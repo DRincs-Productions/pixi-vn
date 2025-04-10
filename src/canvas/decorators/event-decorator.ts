@@ -7,7 +7,7 @@ import { EventIdType } from "../types/EventIdType";
 /**
  * Canvas Event Register
  */
-export const registeredEvents: { [name: EventIdType]: typeof CanvasEvent<CanvasEventNamesType> } = {};
+export const registeredEvents = new Map<EventIdType, typeof CanvasEvent<CanvasEventNamesType>>();
 /**
  * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
@@ -20,11 +20,11 @@ export default function eventDecorator(name?: EventIdType) {
         if (!name) {
             name = target.name;
         }
-        if (registeredEvents[name]) {
+        if (registeredEvents.get(name)) {
             logger.info(`Event ${name} already exists, it will be overwritten`);
         }
         target.prototype.id = name;
-        registeredEvents[name] = target;
+        registeredEvents.set(name, target);
     };
 }
 
@@ -35,7 +35,7 @@ export default function eventDecorator(name?: EventIdType) {
  */
 export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(eventId: EventIdType): T | undefined {
     try {
-        let eventType = registeredEvents[eventId];
+        let eventType = registeredEvents.get(eventId);
         if (!eventType) {
             logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
             return;
@@ -55,7 +55,7 @@ export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(ev
  */
 export function getEventInstanceById<T = CanvasEvent<CanvasBaseItem<any>>>(eventId: EventIdType): T | undefined {
     try {
-        let eventType = registeredEvents[eventId];
+        let eventType = registeredEvents.get(eventId);
         if (!eventType) {
             logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
             return;

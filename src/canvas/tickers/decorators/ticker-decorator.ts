@@ -7,7 +7,7 @@ import TickerArgs from "../interfaces/TickerArgs";
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.
  */
-export const registeredTickers: { [name: TickerIdType]: typeof TickerBase } = {};
+export const registeredTickers = new Map<TickerIdType, typeof TickerBase>();
 /**
  * Is a decorator that register a ticker in the game.
  * Is a required decorator for use the ticker in the game.
@@ -25,11 +25,11 @@ export function tickerDecoratorFn(target: typeof TickerBase<any>, name?: TickerI
     if (!name) {
         name = target.name;
     }
-    if (registeredTickers[name]) {
+    if (registeredTickers.get(name)) {
         logger.info(`Ticker ${name} already exists, it will be overwritten`);
     }
     target.prototype.id = name;
-    registeredTickers[name] = target;
+    registeredTickers.set(name, target);
 }
 
 /**
@@ -47,7 +47,7 @@ export function getTickerInstanceById<TArgs extends TickerArgs>(
     priority?: UPDATE_PRIORITY
 ): TickerBase<TArgs> | undefined {
     try {
-        let ticker = registeredTickers[tickerId];
+        let ticker = registeredTickers.get(tickerId);
         if (!ticker) {
             logger.error(`Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
             return;

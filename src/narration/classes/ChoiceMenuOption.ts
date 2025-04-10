@@ -1,6 +1,6 @@
 import { StorageObjectType } from "../../storage";
 import { logger } from "../../utils/log-utility";
-import { getLabelById } from "../decorators/label-decorator";
+import RegisteredLabels from "../decorators/label-decorator";
 import { Close, CloseType } from "../types/CloseType";
 import { LabelIdType } from "../types/LabelIdType";
 import LabelRunModeType from "../types/LabelRunModeType";
@@ -76,7 +76,7 @@ export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extend
     get label(): TLabel {
         let label = this._label;
         if (typeof label === "string") {
-            let res = getLabelById<LabelAbstract<any, T>>(label);
+            let res = RegisteredLabels.get<LabelAbstract<any, T>>(label);
             if (res) {
                 label = res;
             } else {
