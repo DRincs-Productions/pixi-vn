@@ -32,11 +32,6 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
     public abstract get stepCount(): number;
 
     /**
-     * Get the steps of the label.
-     */
-    public abstract get steps(): StepLabelType<TProps>[];
-
-    /**
      * Get the sha of the step
      * @param index Index of the step
      */
