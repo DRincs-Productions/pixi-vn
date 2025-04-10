@@ -3,7 +3,7 @@ import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
-import { getLabelById } from "./decorators/label-decorator";
+import RegisteredLabels from "./decorators/label-decorator";
 import HistoryStep from "./interfaces/HistoryStep";
 import OpenedLabel from "./interfaces/OpenedLabel";
 import ChoicesMadeType from "./types/ChoicesMadeType";
@@ -192,7 +192,7 @@ export default class NarrationManagerStatic {
     }
     static get _currentLabel(): Label | undefined {
         if (NarrationManagerStatic.currentLabelId) {
-            return getLabelById(NarrationManagerStatic.currentLabelId);
+            return RegisteredLabels.get(NarrationManagerStatic.currentLabelId);
         }
     }
     /**
@@ -257,7 +257,7 @@ export default class NarrationManagerStatic {
      * @param label The label to add to the history.
      */
     static pushNewLabel(label: LabelIdType) {
-        let currentLabel = getLabelById(label);
+        let currentLabel = RegisteredLabels.get(label);
         if (!currentLabel) {
             throw new Error(`[Pixi’VN] Label ${label} not found`);
         }

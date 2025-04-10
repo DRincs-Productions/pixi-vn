@@ -11,7 +11,8 @@ export {
 } from "./classes/Dialogue";
 export { default as Label } from "./classes/Label";
 export { default as LabelAbstract } from "./classes/LabelAbstract";
-export { getLabelById, newLabel, saveLabel } from "./decorators/label-decorator";
+export { default as RegisteredLabels } from "./decorators/label-decorator";
+export { default as newLabel } from "./decorators/newLabel";
 export type { default as HistoryStep } from "./interfaces/HistoryStep";
 export type { default as LabelProps } from "./interfaces/LabelProps";
 export type { default as NarrationGameState } from "./interfaces/NarrationGameState";
