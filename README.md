@@ -33,6 +33,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
   * [Visual Novel](https://pixi-vn.web.app/start/make-visual-novel)
   * [Point and Click adventure game](https://pixi-vn.web.app/start/make-point-and-click)
   * [RPG game](https://pixi-vn.web.app/start/make-rpg)
+  * [Game engine](https://pixi-vn.web.app/start/make-game-engine)
 
 ## First steps
 
@@ -103,6 +104,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 ## Other topics
 
 * [FAQ](https://pixi-vn.web.app/other-topics/faq)
+* [Migration](https://pixi-vn.web.app/other-topics/migration)
 * [Intecept Events](https://pixi-vn.web.app/other-topics/intercept-events)
 * [Pixi’VN + Json](https://pixi-vn.web.app/other-topics/pixi-vn-json)
 
