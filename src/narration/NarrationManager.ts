@@ -131,7 +131,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (lastStep) {
             let currentLabel = getLabelById(labelId);
             if (currentLabel) {
-                return currentLabel.steps.length <= lastStep;
+                return currentLabel.stepCount <= lastStep;
             }
         }
         return false;
@@ -142,7 +142,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (currentLabelStepIndex === null || !currentLabel) {
             return;
         }
-        let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
+        let stepSha = currentLabel.getStepSha(currentLabelStepIndex);
         if (!stepSha) {
             logger.warn("stepSha not found, setting to ERROR");
             stepSha = AdditionalShaSpetsEnum.ERROR;
@@ -188,7 +188,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabel not found");
             return;
         }
-        if (currentLabel.steps.length > currentLabelStepIndex) {
+        if (currentLabel.stepCount > currentLabelStepIndex) {
             this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
         }
     }
@@ -268,7 +268,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 logger.error("currentLabel not found");
                 return;
             }
-            if (currentLabel.steps.length > currentLabelStepIndex) {
+            if (currentLabel.stepCount > currentLabelStepIndex) {
                 let onStepRun = currentLabel.onStepStart;
                 if (onStepRun) {
                     try {
@@ -281,8 +281,12 @@ export default class NarrationManager implements NarrationManagerInterface {
                         return;
                     }
                 }
-                let step = currentLabel.steps[currentLabelStepIndex];
-                let stepSha = currentLabel.getStepSha1(currentLabelStepIndex);
+                let step = currentLabel.getStepById(currentLabelStepIndex);
+                if (!step) {
+                    logger.error("step not found");
+                    return;
+                }
+                let stepSha = currentLabel.getStepSha(currentLabelStepIndex);
                 if (!stepSha) {
                     logger.warn("stepSha not found, setting to ERROR");
                     stepSha = AdditionalShaSpetsEnum.ERROR;
@@ -365,21 +369,24 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public async callLabel<T extends {} = {}>(
         label: Label<T> | LabelIdType,
-        props: StepLabelPropsType<T>
+        props: StepLabelPropsType<T>,
+        options?: {
+            /**
+             * The index of the choise made by the player. (This params is used in the choice menu)
+             */
+            choiseMade?: number;
+        }
     ): Promise<StepLabelResultType> {
-        let choiseMade: number | undefined = undefined;
+        const { choiseMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
             labelId = label;
         } else {
             labelId = label.id;
-            if (typeof label.choiseIndex === "number") {
-                choiseMade = label.choiseIndex;
-            }
         }
         try {
             if (labelId === CLOSE_LABEL_ID) {
-                let closeCurrentLabel = newCloseLabel<T>(choiseMade);
+                let closeCurrentLabel = newCloseLabel<T>();
                 let choice: ChoiceMenuOptionClose<T> = {
                     label: closeCurrentLabel,
                     text: "",
@@ -389,6 +396,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     onlyHaveNoChoice: false,
                     autoSelect: false,
                     props: {},
+                    choiseIndex: choiseMade,
                 };
                 return this.closeChoiceMenu(choice, props);
             }
@@ -409,22 +417,25 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public async jumpLabel<T extends {}>(
         label: Label<T> | LabelIdType,
-        props: StepLabelPropsType<T>
+        props: StepLabelPropsType<T>,
+        options?: {
+            /**
+             * The index of the choise made by the player. (This params is used in the choice menu)
+             */
+            choiseMade?: number;
+        }
     ): Promise<StepLabelResultType> {
         this.closeCurrentLabel();
-        let choiseMade: number | undefined = undefined;
+        const { choiseMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
             labelId = label;
         } else {
             labelId = label.id;
-            if (typeof label.choiseIndex === "number") {
-                choiseMade = label.choiseIndex;
-            }
         }
         try {
             if (labelId === CLOSE_LABEL_ID) {
-                let closeCurrentLabel = newCloseLabel<T>(choiseMade);
+                let closeCurrentLabel = newCloseLabel<T>();
                 let choice: ChoiceMenuOptionClose<T> = {
                     label: closeCurrentLabel,
                     text: "",
@@ -434,6 +445,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     onlyHaveNoChoice: false,
                     autoSelect: false,
                     props: {},
+                    choiseIndex: choiseMade,
                 };
                 return this.closeChoiceMenu<T>(choice, props);
             }
@@ -458,23 +470,47 @@ export default class NarrationManager implements NarrationManagerInterface {
     ): Promise<StepLabelResultType> {
         this.choiceMenuOptions = undefined;
         if (item.type == "call") {
-            return await this.callLabel(item.label, { ...item.props, ...props });
+            return await this.callLabel(
+                item.label,
+                { ...item.props, ...props },
+                {
+                    choiseMade: item.choiseIndex,
+                }
+            );
         } else if (item.type == "jump") {
-            return await this.jumpLabel(item.label, { ...item.props, ...props });
+            return (
+                await this.jumpLabel(item.label, { ...item.props, ...props }),
+                {
+                    choiseMade: item.choiseIndex,
+                }
+            );
         } else if (item.type == "close") {
             return await this.closeChoiceMenu(item, { ...item.props, ...props });
         } else {
             throw new Error(`[Pixi’VN] Type ${item.type} not found`);
         }
     }
+    /**
+     * When the player is in a choice menu, can use this function to exit to the choice menu.
+     * @param choice
+     * @param props
+     * @returns StepLabelResultType or undefined.
+     * @example
+     * ```typescript
+     * narration.closeChoiceMenu(yourParams).then((result) => {
+     *     if (result) {
+     *         // your code
+     *     }
+     * })
+     * ```
+     */
     public async closeChoiceMenu<T extends {} = {}>(
         choice: ChoiceMenuOptionClose<T>,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
-        let label: Label<T> = choice.label;
         let choiseMade: number | undefined = undefined;
-        if (typeof label.choiseIndex === "number") {
-            choiseMade = label.choiseIndex;
+        if (typeof choice.choiseIndex === "number") {
+            choiseMade = choice.choiseIndex;
         }
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
@@ -557,12 +593,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             let onlyHaveNoChoice: ChoiceMenuOptionsType = [];
             d.forEach((option, index) => {
                 if (option.type === Close) {
-                    let itemLabel = newCloseLabel(index);
+                    let itemLabel = newCloseLabel();
                     let choice = new ChoiceMenuOptionClose(option.text, {
                         closeCurrentLabel: option.closeCurrentLabel,
                         oneTime: option.oneTime,
                         onlyHaveNoChoice: option.onlyHaveNoChoice,
                         autoSelect: option.autoSelect,
+                        choiseIndex: index,
                     });
                     choice.label = itemLabel;
                     options.push(choice);
@@ -570,16 +607,13 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
                 let label = getLabelById(option.label);
                 if (label) {
-                    let itemLabel = new Label(label.id, label.steps, {
-                        onStepStart: label.onStepStart,
-                        choiseIndex: index,
-                    });
                     options.push(
-                        new ChoiceMenuOption(option.text, itemLabel, option.props, {
+                        new ChoiceMenuOption(option.text, label, option.props, {
                             type: option.type,
                             oneTime: option.oneTime,
                             onlyHaveNoChoice: option.onlyHaveNoChoice,
                             autoSelect: option.autoSelect,
+                            choiseIndex: index,
                         })
                     );
                 }

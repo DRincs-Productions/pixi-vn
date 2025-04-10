@@ -31,6 +31,12 @@ import LabelAbstract from "./LabelAbstract";
  * ```
  */
 export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T> {
+    public get stepCount(): number {
+        return this.steps.length;
+    }
+    public getStepById(stepId: number): StepLabelType<T> | undefined {
+        return this.steps[stepId];
+    }
     /**
      * @param id is the id of the label
      * @param steps is the list of steps that the label will perform
@@ -52,7 +58,7 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
         return this._steps;
     }
 
-    public getStepSha1(index: number): string {
+    public getStepSha(index: number): string {
         if (index < 0 || index >= this.steps.length) {
             logger.warn("stepSha not found, setting to ERROR");
             return AdditionalShaSpetsEnum.ERROR;

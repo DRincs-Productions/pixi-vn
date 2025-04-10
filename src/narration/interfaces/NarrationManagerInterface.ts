@@ -221,24 +221,6 @@ export default interface NarrationManagerInterface {
         item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType>;
-    /**
-     * When the player is in a choice menu, can use this function to exit to the choice menu.
-     * @param choice
-     * @param props
-     * @returns StepLabelResultType or undefined.
-     * @example
-     * ```typescript
-     * narration.closeChoiceMenu(yourParams).then((result) => {
-     *     if (result) {
-     *         // your code
-     *     }
-     * })
-     * ```
-     */
-    closeChoiceMenu<T extends {} = {}>(
-        choice: ChoiceMenuOptionClose<T>,
-        props: StepLabelPropsType<T>
-    ): Promise<StepLabelResultType>;
 
     /** Old Step Methods */
 
