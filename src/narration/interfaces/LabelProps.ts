@@ -34,8 +34,4 @@ export default interface LabelProps<T, StepIdType = number> {
      * @returns
      */
     onStepEnd?: (stepId: StepIdType, label: T) => void | Promise<void>;
-    /**
-     * Is the index of the choice that the label will perform. This variable is used in the system.
-     */
-    choiseIndex?: number;
 }

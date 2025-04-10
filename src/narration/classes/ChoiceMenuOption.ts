@@ -27,6 +27,10 @@ type ChoiceMenuOptionOptions = {
      * @default false
      */
     autoSelect?: boolean;
+    /**
+     * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
+     */
+    choiseIndex?: number;
 };
 type ChoiceMenuOptionCloseOptions = {
     /**
@@ -47,6 +51,10 @@ type ChoiceMenuOptionCloseOptions = {
      * @default false
      */
     autoSelect?: boolean;
+    /**
+     * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
+     */
+    choiseIndex?: number;
 };
 
 /**
@@ -95,6 +103,10 @@ export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extend
      */
     autoSelect: boolean;
     /**
+     * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
+     */
+    choiseIndex?: number;
+    /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
@@ -136,6 +148,7 @@ export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extend
         this.oneTime = options?.oneTime || false;
         this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
         this.autoSelect = options?.autoSelect || false;
+        this.choiseIndex = options?.choiseIndex;
         if (props) {
             this.props = props;
         }
@@ -180,6 +193,10 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
      */
     autoSelect: boolean;
     /**
+     * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
+     */
+    choiseIndex?: number;
+    /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
@@ -213,6 +230,7 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
         this.oneTime = options?.oneTime || false;
         this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
         this.autoSelect = options?.autoSelect || false;
+        this.choiseIndex = options?.choiseIndex;
     }
 }
 

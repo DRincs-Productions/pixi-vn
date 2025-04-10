@@ -15,7 +15,6 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
         this._onStepStart = props?.onStepStart;
         this._onLoadingLabel = props?.onLoadingLabel;
         this._onStepEnd = props?.onStepEnd;
-        this._choiseIndex = props?.choiseIndex;
     }
 
     private _id: LabelIdType;
@@ -25,6 +24,12 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
     public get id(): LabelIdType {
         return this._id;
     }
+
+    /**
+     * Get the number of steps in the label. This variable is used in the system to get the number of steps in the label.
+     * @returns The number of steps in the label
+     */
+    public abstract get stepCount(): number;
 
     /**
      * Get the steps of the label.
@@ -64,10 +69,5 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
     private _onStepEnd: ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined;
     public get onStepEnd(): ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined {
         return this._onStepEnd;
-    }
-
-    private _choiseIndex: number | undefined;
-    public get choiseIndex(): number | undefined {
-        return this._choiseIndex;
     }
 }

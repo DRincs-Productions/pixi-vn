@@ -31,6 +31,12 @@ import LabelAbstract from "./LabelAbstract";
  * ```
  */
 export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T> {
+    public get stepCount(): number {
+        return this.steps.length;
+    }
+    public getStepById(stepId: number): StepLabelType<T> | undefined {
+        return this.steps[stepId];
+    }
     /**
      * @param id is the id of the label
      * @param steps is the list of steps that the label will perform
