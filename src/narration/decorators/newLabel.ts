@@ -16,7 +16,7 @@ import RegisteredLabels from "./label-decorator";
 export default function newLabel<T extends {} = {}>(
     id: LabelIdType,
     steps: StepLabelType<T>[] | (() => StepLabelType<T>[]),
-    props?: Omit<LabelProps<Label<T>>, "choiseIndex">
+    props?: LabelProps<Label<T>>
 ): Label<T> {
     if (RegisteredLabels.get(id)) {
         logger.info(`Label ${id} already exists, it will be overwritten`);
