@@ -721,7 +721,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
     clear();
     let tempdata = exportGameState();
     expect(tempdata).toEqual({
-        pixivn_version: "1.0.1",
+        pixivn_version: PIXIVN_VERSION,
         stepData: {
             openedLabels: [],
             stepCounter: 0,
