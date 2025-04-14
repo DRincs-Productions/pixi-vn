@@ -199,8 +199,8 @@ export default class HistoryManager implements HistoryManagerInterface {
             ...step,
         }));
         return {
-            stepsHistory: stepsHistory,
-            originalStepData: HistoryManagerStatic._originalStepData,
+            stepsHistory: createExportableElement(stepsHistory),
+            originalStepData: createExportableElement(HistoryManagerStatic._originalStepData),
         };
     }
     public async restore(data: object) {
