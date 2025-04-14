@@ -166,6 +166,7 @@ export namespace Game {
         if (data.stepData.hasOwnProperty("originalStepData") && data.stepData.originalStepData) {
             data.historyData.originalStepData = data.stepData.originalStepData;
         }
+        historyUtils.stepHistory.restore(data.historyData);
         await narrationUtils.narration.restore(data.stepData, historyUtils.HistoryManagerStatic.lastHistoryStep);
         storageUtils.storage.restore(data.storageData);
         await canvasUtils.canvas.restore(data.canvasData);
