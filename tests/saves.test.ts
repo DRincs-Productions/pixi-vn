@@ -72,7 +72,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
 
     let data = exportGameState();
     expect(data).toEqual({
-        pixivn_version: "1.0.1",
+        pixivn_version: PIXIVN_VERSION,
         stepData: {
             openedLabels: [
                 {
