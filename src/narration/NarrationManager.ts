@@ -2,6 +2,7 @@ import { CharacterInterface } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
+import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
@@ -712,7 +713,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     public export(): NarrationGameState {
         return {
-            openedLabels: NarrationManagerStatic._openedLabels,
+            openedLabels: createExportableElement(NarrationManagerStatic._openedLabels),
             stepCounter: this.stepCounter,
         };
     }

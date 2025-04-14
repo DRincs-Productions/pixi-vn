@@ -9,6 +9,7 @@ import {
     SoundMap,
 } from "@pixi/sound";
 import GameUnifier from "../unifier";
+import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
@@ -252,9 +253,9 @@ export default class SoundManager extends SoundLibrary {
             }
         }
         return {
-            soundsPlaying: soundElements,
-            soundAliasesOrder: SoundManagerStatic.soundAliasesOrder,
-            filters: FilterToFilterMemory(this.filtersAll),
+            soundsPlaying: createExportableElement(soundElements),
+            soundAliasesOrder: createExportableElement(SoundManagerStatic.soundAliasesOrder),
+            filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
     }
     public removeOldSoundAndExport(): SoundGameState {
