@@ -480,8 +480,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
             );
         } else if (item.type == "jump") {
-            return (
-                await this.jumpLabel(item.label, { ...item.props, ...props }),
+            return await this.jumpLabel(
+                item.label,
+                { ...item.props, ...props },
                 {
                     choiseMade: item.choiseIndex,
                 }
