@@ -6,6 +6,10 @@ export default class HistoryManagerStatic {
     static _stepsHistory: HistoryStep[] = [];
     static stepLimitSaved: number = 20;
     /**
+     * goBackRunning is a boolean that indicates if the go back is running.
+     */
+    static goBackRunning: boolean = false;
+    /**
      * lastHistoryStep is the last history step that occurred during the progression of the steps.
      */
     static get lastHistoryStep(): HistoryStep | null {
