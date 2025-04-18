@@ -48,13 +48,24 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
-        let restoredStep = createExportableElement(
-            this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
-        );
-        if (restoredStep) {
-            await GameUnifier.restoreGameStepState(restoredStep, navigate);
-        } else {
-            logger.error("Error going back");
+        if (HistoryManagerStatic.goBackRunning) {
+            logger.warn("Go back is already running");
+            return;
+        }
+        HistoryManagerStatic.goBackRunning = true;
+        try {
+            let restoredStep = createExportableElement(
+                this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
+            );
+            if (restoredStep) {
+                await GameUnifier.restoreGameStepState(restoredStep, navigate);
+            } else {
+                logger.error("Error going back");
+            }
+            HistoryManagerStatic.goBackRunning = false;
+        } catch (e) {
+            logger.error("Error going back", e);
+            HistoryManagerStatic.goBackRunning = false;
         }
     }
     add(
