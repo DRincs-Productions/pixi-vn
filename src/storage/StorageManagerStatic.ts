@@ -7,47 +7,56 @@ export default class StorageManagerStatic {
     static storage = new Map<string, any>();
     static startingStorage: CacheableStoreItem[] = [];
     private constructor() {}
+
     /**
      * @deprecated Use SYSTEM_RESERVED_STORAGE_KEYS instead
      */
     public static get keysSystem() {
         return SYSTEM_RESERVED_STORAGE_KEYS;
     }
-    static get tempStorage(): { [key: string]: StorageElementType } {
+
+    static get tempStorage(): Record<string, StorageElementType> {
         return StorageManagerStatic.storage.get(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_KEY) || {};
     }
-    static set tempStorage(value: { [key: string]: StorageElementType }) {
+
+    static set tempStorage(value: Record<string, StorageElementType>) {
         StorageManagerStatic.storage.set(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_KEY, value);
     }
-    static get tempStorageDeadlines(): { [key: string]: number } {
+
+    static get tempStorageDeadlines(): Record<string, number> {
         return StorageManagerStatic.storage.get(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_DEADLINES_KEY) || {};
     }
-    static set tempStorageDeadlines(value: { [key: string]: number }) {
+
+    static set tempStorageDeadlines(value: Record<string, number>) {
         StorageManagerStatic.storage.set(SYSTEM_RESERVED_STORAGE_KEYS.TEMP_STORAGE_DEADLINES_KEY, value);
     }
+
     static getTempVariable<T extends StorageElementType>(key: string): T | undefined {
-        if (StorageManagerStatic.tempStorage.hasOwnProperty(key)) {
-            return createExportableElement(StorageManagerStatic.tempStorage[key]) as T;
+        const tempStorage = StorageManagerStatic.tempStorage;
+        if (Object.prototype.hasOwnProperty.call(tempStorage, key)) {
+            return createExportableElement(tempStorage[key]) as T;
         }
         return undefined;
     }
+
     static clearOldTempVariables(openedLabelsNumber: number) {
-        let tempStorage = StorageManagerStatic.tempStorage;
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
         if (openedLabelsNumber === 0) {
-            tempStorage = {};
-            tempStorageDeadlines = {};
-        } else {
-            for (const key in tempStorageDeadlines) {
-                if (tempStorageDeadlines[key] < openedLabelsNumber) {
-                    delete tempStorage[key];
-                    delete tempStorageDeadlines[key];
-                }
-            }
+            StorageManagerStatic.tempStorage = {};
+            StorageManagerStatic.tempStorageDeadlines = {};
+            return;
         }
+        const tempStorage = { ...StorageManagerStatic.tempStorage };
+        const tempStorageDeadlines = { ...StorageManagerStatic.tempStorageDeadlines };
+        Object.entries(tempStorageDeadlines).forEach(([key, deadline]) => {
+            if (deadline < openedLabelsNumber) {
+                delete tempStorage[key];
+                delete tempStorageDeadlines[key];
+            }
+        });
         StorageManagerStatic.tempStorage = tempStorage;
         StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
+
     static setVariable(key: string, value: StorageElementType) {
         // TODO this if should be removed in some other version
         if (StorageManagerStatic.storage.has(key.toLowerCase())) {
@@ -55,12 +64,13 @@ export default class StorageManagerStatic {
         }
         if (value === undefined || value === null) {
             StorageManagerStatic.storage.delete(key);
-            return;
+        } else {
+            StorageManagerStatic.storage.set(key, value);
         }
-        StorageManagerStatic.storage.set(key, value);
     }
+
     static getVariable<T extends StorageElementType>(key: string): T | undefined {
-        let tempVariable = StorageManagerStatic.getTempVariable<T>(key);
+        const tempVariable = StorageManagerStatic.getTempVariable<T>(key);
         if (tempVariable !== undefined) {
             return tempVariable;
         }
@@ -70,6 +80,7 @@ export default class StorageManagerStatic {
         }
         return createExportableElement(StorageManagerStatic.storage.get(key));
     }
+
     static removeVariable(key: string) {
         // TODO this if should be removed in some other version
         if (!StorageManagerStatic.storage.has(key) && StorageManagerStatic.storage.has(key.toLowerCase())) {
@@ -77,6 +88,7 @@ export default class StorageManagerStatic {
         }
         StorageManagerStatic.storage.delete(key);
     }
+
     static setFlag(key: string, value: boolean) {
         let flags = StorageManagerStatic.getVariable<string[]>(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY) || [];
         if (value) {
@@ -91,8 +103,9 @@ export default class StorageManagerStatic {
         }
         StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY, flags);
     }
+
     static getFlag(key: string): boolean {
-        let flags = StorageManagerStatic.getVariable<string[]>(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY) || [];
+        const flags = StorageManagerStatic.getVariable<string[]>(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY) || [];
         return flags.includes(key);
     }
 }
