@@ -182,7 +182,13 @@ export default class NarrationManagerStatic {
     static increaseStepCounter() {
         NarrationManagerStatic._stepCounter++;
     }
-    static _openedLabels: OpenedLabel[] = [];
+    private static _openedLabels: OpenedLabel[] = [];
+    static get openedLabels(): OpenedLabel[] {
+        return createExportableElement(NarrationManagerStatic._openedLabels);
+    }
+    static set openedLabels(value: OpenedLabel[]) {
+        NarrationManagerStatic._openedLabels = createExportableElement(value);
+    }
     private static _originalOpenedLabels: OpenedLabel[] = [];
     static get originalOpenedLabels(): OpenedLabel[] {
         return createExportableElement(NarrationManagerStatic._originalOpenedLabels);

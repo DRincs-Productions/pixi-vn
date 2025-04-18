@@ -1,5 +1,12 @@
 import { expect, test } from "vitest";
-import { narration, newLabel, stepHistory, storage, SYSTEM_RESERVED_STORAGE_KEYS } from "../src";
+import {
+    narration,
+    NarrationManagerStatic,
+    newLabel,
+    stepHistory,
+    storage,
+    SYSTEM_RESERVED_STORAGE_KEYS,
+} from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
 const pathLabel = newLabel("path", [
@@ -19,6 +26,7 @@ const pathLabel = newLabel("path", [
 test("path test", async () => {
     narration.clear();
     storage.clear();
+    stepHistory.clear();
     await narration.callLabel(pathLabel, {});
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
@@ -138,6 +146,7 @@ test("stepCounter & currentStepTimesCounter test", async () => {
 test("addCurrentStepToHistory", async () => {
     narration.clear();
     storage.clear();
+    stepHistory.clear();
     await narration.callLabel(stepCounterLabel, {});
     await narration.goNext({});
     await narration.goNext({});
@@ -145,4 +154,65 @@ test("addCurrentStepToHistory", async () => {
     expect(narration.stepCounter).toBe(4);
     narration.addCurrentStepToHistory();
     expect(narration.stepCounter).toBe(5);
+});
+
+const currentLabelStepIndexLabel = newLabel("currentLabelStepIndex", [
+    async () => {
+        narration.dialogue = { character: "james", text: `You're my roommate's replacement, huh?` };
+    },
+    async () => {
+        narration.dialogue = {
+            character: "james",
+            text: `Don't worry, you don't have much to live up to. Just don't use heroin like the last guy, and you'll be fine!`,
+        };
+    },
+    async () => {
+        narration.dialogue = { character: "mc", text: `...` };
+    },
+    () => {
+        narration.dialogue = `He thrusts out his hand.`;
+    },
+    async () => {
+        narration.requestInput({ type: "string" }, "Peter");
+        narration.dialogue = `What is your name?`;
+    },
+    async () => {
+        narration.dialogue = { character: "james", text: `james.name!` };
+    },
+    async () => {
+        narration.dialogue = { character: "mc", text: `...mc.name.` };
+    },
+    async () => {
+        narration.dialogue = `I take his hand and shake.`;
+    },
+]);
+
+test("currentLabelStepIndex", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    await narration.callLabel(currentLabelStepIndexLabel, {});
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.goNext({});
+    expect(narration.stepCounter).toBe(2);
+    expect(NarrationManagerStatic.currentLabelStepIndex).toBe(1);
 });

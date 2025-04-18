@@ -38,7 +38,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return NarrationManagerStatic._stepCounter;
     }
     get openedLabels() {
-        return NarrationManagerStatic._openedLabels;
+        return NarrationManagerStatic.openedLabels;
     }
     get currentLabel(): LabelAbstract<any> | undefined {
         return NarrationManagerStatic._currentLabel;
@@ -96,7 +96,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
         };
-        NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic._openedLabels;
+        NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();
@@ -110,11 +110,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabel not found");
             return;
         }
-        NarrationManagerStatic._openedLabels.pop(); //
+        let openedLabels = NarrationManagerStatic.openedLabels;
+        openedLabels.pop();
+        NarrationManagerStatic.openedLabels = openedLabels;
         GameUnifier.onLabelClosing(this.openedLabels.length);
     }
     closeAllLabels() {
-        while (NarrationManagerStatic._openedLabels.length > 0) {
+        while (NarrationManagerStatic.openedLabels.length > 0) {
             this.closeCurrentLabel();
             GameUnifier.onLabelClosing(this.openedLabels.length);
         }
@@ -348,14 +350,14 @@ export default class NarrationManager implements NarrationManagerInterface {
                 this.closeCurrentLabel();
                 return await this.goNext(props, options);
             } else if (this.openedLabels.length === 1) {
-                NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalOpenedLabels;
+                NarrationManagerStatic.openedLabels = NarrationManagerStatic.originalOpenedLabels;
                 if (this.onGameEnd) {
                     return await this.onGameEnd(props, { labelId: "end" });
                 }
                 return;
             }
         } else if (this.openedLabels.length === 0) {
-            NarrationManagerStatic._openedLabels = NarrationManagerStatic.originalOpenedLabels;
+            NarrationManagerStatic.openedLabels = NarrationManagerStatic.originalOpenedLabels;
             if (this.onGameEnd) {
                 return await this.onGameEnd(props, { labelId: "end" });
             }
@@ -705,7 +707,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
 
     public clear() {
-        NarrationManagerStatic._openedLabels = [];
+        NarrationManagerStatic.openedLabels = [];
         NarrationManagerStatic._stepCounter = 0;
     }
 
@@ -713,7 +715,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     public export(): NarrationGameState {
         return {
-            openedLabels: createExportableElement(NarrationManagerStatic._openedLabels),
+            openedLabels: createExportableElement(NarrationManagerStatic.openedLabels),
             stepCounter: this.stepCounter,
         };
     }
@@ -722,8 +724,8 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
             if (data.hasOwnProperty("openedLabels")) {
-                NarrationManagerStatic._openedLabels = (data as NarrationGameState)["openedLabels"];
-                NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic._openedLabels;
+                NarrationManagerStatic.openedLabels = (data as NarrationGameState)["openedLabels"];
+                NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }
