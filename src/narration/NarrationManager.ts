@@ -180,19 +180,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return this.alreadyCurrentStepMadeChoicesObj?.find((choice) => choice.choiceIndex === index)?.madeTimes || 0;
     }
     addCurrentStepToHistory(): void {
-        let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
-        if (currentLabelStepIndex === null) {
-            logger.error("currentLabelStepIndex is null");
-            return;
-        }
-        let currentLabel = NarrationManagerStatic._currentLabel;
-        if (!currentLabel) {
-            logger.error("currentLabel not found");
-            return;
-        }
-        if (currentLabel.stepCount > currentLabelStepIndex) {
-            this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
-        }
+        this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
     }
 
     /* Run Methods */
@@ -350,7 +338,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 this.closeCurrentLabel();
                 return await this.goNext(props, options);
             } else if (this.openedLabels.length === 1) {
-                NarrationManagerStatic.openedLabels = NarrationManagerStatic.originalOpenedLabels;
+                NarrationManagerStatic.openedLabels = [];
                 if (this.onGameEnd) {
                     return await this.onGameEnd(props, { labelId: "end" });
                 }
@@ -427,7 +415,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             choiseMade?: number;
         }
     ): Promise<StepLabelResultType> {
-        this.closeCurrentLabel();
+        if (this.openedLabels.length > 0) this.closeCurrentLabel();
         const { choiseMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {

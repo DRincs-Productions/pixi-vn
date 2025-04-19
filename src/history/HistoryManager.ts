@@ -80,11 +80,20 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
         }
-        let data = diff(originalStepData, currentStepData);
-        this.stepsHistory.push({
-            ...(historyInfo as Omit<HistoryStep, "diff">),
-            diff: data,
-        });
+        this.stepsHistory.push({} as any);
+        let index = this.stepsHistory.length - 1;
+        const asyncFunction = async () => {
+            try {
+                let data = diff(originalStepData, currentStepData);
+                this.stepsHistory[index] = {
+                    ...(historyInfo as Omit<HistoryStep, "diff">),
+                    diff: data,
+                };
+            } catch (e) {
+                logger.error("Error adding history step", e);
+            }
+        };
+        asyncFunction();
         HistoryManagerStatic.originalStepData = currentStepData;
     }
     get narrativeHistory(): NarrativeHistory[] {
