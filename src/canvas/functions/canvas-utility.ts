@@ -1,16 +1,15 @@
 import { Assets, Texture } from "pixi.js";
 import { videoFormats } from "../../constants";
 
+// Precompile the regular expression for video formats
+const videoFormatRegex = new RegExp(`(${videoFormats.join("|")})$`);
+
 export function checkIfVideo(textureAlias: string): boolean {
-    if (Assets.cache.has(textureAlias)) {
-        let texture = Assets.get(textureAlias);
-        if (texture && texture instanceof Texture) {
-            textureAlias = texture.source.label;
-        }
+    const cachedTexture = Assets.cache.has(textureAlias) ? Assets.get(textureAlias) : null;
+
+    if (cachedTexture instanceof Texture) {
+        textureAlias = cachedTexture.source?.label || textureAlias;
     }
-    if (textureAlias.match(new RegExp(`(${videoFormats.join("|")})$`))) {
-        return true;
-    } else {
-        return false;
-    }
+
+    return videoFormatRegex.test(textureAlias);
 }
