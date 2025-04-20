@@ -69,28 +69,29 @@ function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Par
 /**
  * Get the memory object of the PixiJS texture
  * @param texture PixiJS Texture object
+ * @param alias Optional alias for the texture
  * @returns Memory object of the texture
  */
 function getTextureMemory(texture: Texture, alias?: string): TextureMemory {
-    let url = texture.source.label;
-    let textureMemory: TextureMemory = {
-        url: url,
-        alias: alias === url ? undefined : alias,
+    return {
+        url: texture.source.label,
+        alias: alias === texture.source.label ? undefined : alias,
     };
-    return textureMemory;
 }
 
+/**
+ * Get the memory object of a container
+ * @param element PixiJS container element
+ * @param options Optional export options
+ * @returns Memory object of the container
+ */
 export function getMemoryContainer<T extends PixiContainer>(
     element: T,
-    options?: {
-        childrenExport?: boolean;
-    }
+    options?: { childrenExport?: boolean }
 ): ContainerMemory {
-    const className = Object.prototype.hasOwnProperty.call(element, "pixivnId")
-        ? (element as any).pixivnId
-        : CANVAS_CONTAINER_ID;
-
+    const pixivnId = getPixivnId(element, CANVAS_CONTAINER_ID);
     const childrenExport = options?.childrenExport || false;
+
     const elements: CanvasBaseItemMemory[] = childrenExport
         ? element.children
               .sort((a, b) => element.getChildIndex(a) - element.getChildIndex(b))
@@ -98,17 +99,21 @@ export function getMemoryContainer<T extends PixiContainer>(
         : [];
 
     return {
-        pixivnId: className,
+        pixivnId,
         elements,
         ...extractCommonMemoryProperties(element),
     };
 }
 
+/**
+ * Get the memory object of a sprite
+ * @param element PixiJS sprite element
+ * @returns Memory object of the sprite
+ */
 export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): SpriteMemory {
     const baseMemory = getMemoryContainer(element);
-    const className = baseMemory.pixivnId ?? CANVAS_SPRITE_ID;
-
-    const onEvents = "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
+    const pixivnId = baseMemory.pixivnId ?? CANVAS_SPRITE_ID;
+    const onEvents = getOnEvents(element);
     const textureData =
         "textureAlias" in element
             ? getTextureMemory(element.texture, element.textureAlias as string)
@@ -116,7 +121,7 @@ export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): 
 
     return {
         ...baseMemory,
-        pixivnId: className,
+        pixivnId,
         textureData,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
@@ -124,15 +129,19 @@ export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): 
     };
 }
 
+/**
+ * Get the memory object of a text element
+ * @param element PixiJS text element
+ * @returns Memory object of the text
+ */
 export function getMemoryText<T extends PixiText>(element: T | PixiText): TextMemory {
     const baseMemory = getMemoryContainer(element);
-    const className = baseMemory.pixivnId ?? CANVAS_TEXT_ID;
-
-    const onEvents = "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
+    const pixivnId = baseMemory.pixivnId ?? CANVAS_TEXT_ID;
+    const onEvents = getOnEvents(element);
 
     return {
         ...baseMemory,
-        pixivnId: className,
+        pixivnId,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         text: element.text,
         resolution: element.resolution,
@@ -142,6 +151,31 @@ export function getMemoryText<T extends PixiText>(element: T | PixiText): TextMe
     };
 }
 
+/**
+ * Get the Pixivn ID of an element
+ * @param element PixiJS element
+ * @param defaultId Default ID to use if none is found
+ * @returns Pixivn ID
+ */
+function getPixivnId(element: any, defaultId: string): string {
+    return Object.prototype.hasOwnProperty.call(element, "pixivnId") ? element.pixivnId : defaultId;
+}
+
+/**
+ * Get the onEvents property of an element
+ * @param element PixiJS element
+ * @returns onEvents object
+ */
+function getOnEvents(element: any): Record<string, any> {
+    return "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
+}
+
+/**
+ * Handle fill gradient or fill pattern
+ * @param prop Fill property
+ * @param propName Property name
+ * @returns Processed fill property
+ */
 function getFillGradientFillPattern(
     prop: ColorSource | FillGradient | FillPattern | StrokeStyle,
     propName: keyof TextStyle
@@ -150,10 +184,15 @@ function getFillGradientFillPattern(
         return prop;
     }
     // TODO: FillGradient and FillPattern are not supported yet
-    logger.warn(`Text.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop);
+    logger.warn(`Unsupported property type for Text.style.${propName}: FillGradient or FillPattern.`, prop);
     return undefined;
 }
 
+/**
+ * Get the text style options
+ * @param style PixiJS text style
+ * @returns Text style options
+ */
 function getTextStyle(style: TextStyle): TextStyleOptions {
     return {
         align: style.align,
