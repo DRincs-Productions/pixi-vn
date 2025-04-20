@@ -1,13 +1,4 @@
-import {
-    Assets,
-    ColorSource,
-    FillGradient,
-    FillPattern,
-    StrokeStyle,
-    TextStyle,
-    TextStyleOptions,
-    Texture,
-} from "pixi.js";
+import { Assets, Texture } from "pixi.js";
 import { logger } from "../../utils/log-utility";
 
 /**
@@ -47,40 +38,4 @@ export async function getTexture(textureAlias?: string): Promise<Texture | void>
             logger.error("Error loading file", e);
             return;
         });
-}
-
-function getFillGradientFillPattern(
-    prop: ColorSource | FillGradient | FillPattern | StrokeStyle,
-    propName: keyof TextStyle
-) {
-    if (!(prop instanceof Object)) {
-        return prop;
-    }
-    // TODO: FillGradient and FillPattern are not supported yet
-    logger.warn(`Text.style.${propName} is a FillGradient or FillPattern, this is not supported yet.`, prop);
-    return undefined;
-}
-
-export function getTextStyle(style: TextStyle): TextStyleOptions {
-    return {
-        align: style.align,
-        breakWords: style.breakWords,
-        dropShadow: style.dropShadow,
-        fill: getFillGradientFillPattern(style.stroke, "fill"),
-        fontFamily: style.fontFamily,
-        fontSize: style.fontSize,
-        fontStyle: style.fontStyle,
-        fontVariant: style.fontVariant,
-        fontWeight: style.fontWeight,
-        leading: style.leading,
-        letterSpacing: style.letterSpacing,
-        lineHeight: style.lineHeight,
-        padding: style.padding,
-        stroke: getFillGradientFillPattern(style.stroke, "stroke"),
-        textBaseline: style.textBaseline,
-        trim: style.trim,
-        whiteSpace: style.whiteSpace,
-        wordWrap: style.wordWrap,
-        wordWrapWidth: style.wordWrapWidth,
-    };
 }
