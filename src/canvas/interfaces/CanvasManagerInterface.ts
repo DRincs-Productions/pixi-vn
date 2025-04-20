@@ -1,6 +1,6 @@
 import { Devtools } from "@pixi/devtools";
 import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import { Ticker, TickerArgs, TickerBase, TickerHistory, TickersSequence } from "../tickers";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
@@ -101,8 +101,8 @@ export default interface CanvasManagerInterface {
      * @returns
      */
     copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
-        oldAlias: T | CanvasBaseItem<T> | string,
-        newAlias: CanvasBaseItem<T> | string
+        oldAlias: T | CanvasBaseInterface<T> | string,
+        newAlias: CanvasBaseInterface<T> | string
     ): Promise<void>;
 
     /**
@@ -128,7 +128,7 @@ export default interface CanvasManagerInterface {
      */
     add(
         alias: string,
-        canvasComponent: CanvasBaseItem<any>,
+        canvasComponent: CanvasBaseInterface<any>,
         options?: {
             /**
              * If there is a canvas element with the same alias, the "style" of the old canvas element will be imported to the new canvas element.
@@ -145,7 +145,7 @@ export default interface CanvasManagerInterface {
     /**
      * @deprecated use canvas.add
      */
-    addCanvasElement(alias: string, canvasElement: CanvasBaseItem<any>): void;
+    addCanvasElement(alias: string, canvasElement: CanvasBaseInterface<any>): void;
     /**
      * Remove a canvas element from the canvas.
      * And remove all tickers that are not connected to any canvas element.
@@ -180,11 +180,11 @@ export default interface CanvasManagerInterface {
      * const sprite = canvas.find<Sprite>("bunny");
      * ```
      */
-    find<T extends CanvasBaseItem<any>>(alias: string): T | undefined;
+    find<T extends CanvasBaseInterface<any>>(alias: string): T | undefined;
     /**
      * @deprecated use canvas.find
      */
-    getCanvasElement<T extends CanvasBaseItem<any>>(alias: string): T | undefined;
+    getCanvasElement<T extends CanvasBaseInterface<any>>(alias: string): T | undefined;
     /**
      * Check if a DisplayObject is on the canvas.
      * @param pixiElement The DisplayObject to be checked.

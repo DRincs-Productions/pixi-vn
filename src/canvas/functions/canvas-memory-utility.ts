@@ -1,6 +1,6 @@
 import { Container as PixiContainer, Sprite as PixiSprite, Text as PixiText } from "pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
 import SpriteMemory from "../interfaces/memory/SpriteMemory";
@@ -41,7 +41,7 @@ export function getMemoryContainer<T extends PixiContainer>(
         element.children
             .sort((a, b) => element.getChildIndex(a) - element.getChildIndex(b))
             .forEach((child) => {
-                elements.push(exportCanvasElement(child as CanvasBaseItem<any>));
+                elements.push(exportCanvasElement(child as CanvasBaseInterface<any>));
             });
     }
     return {

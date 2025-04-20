@@ -4,7 +4,7 @@ import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import CanvasManagerStatic from "./CanvasManagerStatic";
-import CanvasBaseItem from "./classes/CanvasBaseItem";
+import { CanvasBaseInterface } from "./classes/CanvasBaseItem";
 import { setMemoryContainer } from "./components/Container";
 import ImageContainer, { setMemoryImageContainer } from "./components/ImageContainer";
 import ImageSprite, { setMemoryImageSprite } from "./components/ImageSprite";
@@ -99,8 +99,8 @@ export default class CanvasManager implements CanvasManagerInterface {
         return CanvasManagerStatic.gameLayer.children;
     }
     async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
-        oldAlias: T | CanvasBaseItem<T> | string,
-        newAlias: CanvasBaseItem<T> | string
+        oldAlias: T | CanvasBaseInterface<T> | string,
+        newAlias: CanvasBaseInterface<T> | string
     ) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias);
@@ -215,7 +215,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
     public add(
         alias: string,
-        canvasComponent: CanvasBaseItem<any>,
+        canvasComponent: CanvasBaseInterface<any>,
         options: {
             /**
              * If there is a canvas element with the same alias, the "style" of the old canvas element will be imported to the new canvas element.
@@ -262,7 +262,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     /**
      * @deprecated use canvas.add
      */
-    public addCanvasElement(alias: string, canvasElement: CanvasBaseItem<any>) {
+    public addCanvasElement(alias: string, canvasElement: CanvasBaseInterface<any>) {
         this.add(alias, canvasElement);
     }
     public remove(
@@ -296,7 +296,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     public removeCanvasElement(alias: string | string[]) {
         this.remove(alias);
     }
-    public find<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
+    public find<T extends CanvasBaseInterface<any>>(alias: string): T | undefined {
         if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
             return this.gameLayer as T;
         }
@@ -309,7 +309,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     /**
      * @deprecated use canvas.find
      */
-    public getCanvasElement<T extends CanvasBaseItem<any>>(alias: string): T | undefined {
+    public getCanvasElement<T extends CanvasBaseInterface<any>>(alias: string): T | undefined {
         return this.find<T>(alias);
     }
     public canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T) {

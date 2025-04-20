@@ -1,5 +1,5 @@
 import { logger } from "../../utils/log-utility";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { EventIdType } from "../types/EventIdType";
@@ -33,7 +33,9 @@ export default function eventDecorator(name?: EventIdType) {
  * @param eventId The id of the event.
  * @returns The event type.
  */
-export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(eventId: EventIdType): T | undefined {
+export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseInterface<any>>>(
+    eventId: EventIdType
+): T | undefined {
     try {
         let eventType = registeredEvents.get(eventId);
         if (!eventType) {
@@ -53,7 +55,7 @@ export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseItem<any>>>(ev
  * @param eventId The id of the event.
  * @returns The event instance.
  */
-export function getEventInstanceById<T = CanvasEvent<CanvasBaseItem<any>>>(eventId: EventIdType): T | undefined {
+export function getEventInstanceById<T = CanvasEvent<CanvasBaseInterface<any>>>(eventId: EventIdType): T | undefined {
     try {
         let eventType = registeredEvents.get(eventId);
         if (!eventType) {

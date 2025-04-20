@@ -1,7 +1,7 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import { canvas, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import ImageContainer from "../components/ImageContainer";
 import ImageSprite from "../components/ImageSprite";
 import VideoSprite from "../components/VideoSprite";
@@ -20,7 +20,7 @@ import { addImage } from "./image-utility";
 import { addVideo } from "./video-utility";
 
 type TComponent =
-    | CanvasBaseItem<any>
+    | CanvasBaseInterface<any>
     | string
     | string[]
     | {
@@ -31,7 +31,7 @@ type TComponent =
           value: string[];
           options: ImageContainerOptions;
       };
-function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<any> {
+function addComponent(alias: string, canvasElement: TComponent): CanvasBaseInterface<any> {
     if (typeof canvasElement === "string") {
         if (checkIfVideo(canvasElement)) {
             return addVideo(alias, canvasElement);
@@ -51,8 +51,8 @@ function addComponent(alias: string, canvasElement: TComponent): CanvasBaseItem<
             return addImageCointainer(alias, canvasElement.value, canvasElement.options as any);
         }
     }
-    canvas.add(alias, canvasElement as CanvasBaseItem<any>);
-    return canvasElement as CanvasBaseItem<any>;
+    canvas.add(alias, canvasElement as CanvasBaseInterface<any>);
+    return canvasElement as CanvasBaseInterface<any>;
 }
 
 /**

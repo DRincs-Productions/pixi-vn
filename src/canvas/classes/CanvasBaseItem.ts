@@ -3,6 +3,8 @@ import { canvas, CanvasBaseItemMemory } from "..";
 import canvasComponentDecorator from "../decorators/canvas-element-decorator";
 import { getCanvasElementInstanceById } from "../functions/canvas-import-utility";
 
+export interface CanvasBaseInterface<T2 extends CanvasBaseItemMemory> extends CanvasBaseItem<T2>, PixiContainer {}
+
 /**
  * This class is used to create a canvas element to add into a Pixi Application.
  * You can use {@link canvas.add()} to add this element into the application.
@@ -25,7 +27,7 @@ import { getCanvasElementInstanceById } from "../functions/canvas-import-utility
  * }
  * ```
  */
-export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> extends PixiContainer {
+export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
     /**
      * This method return the memory of the canvas element.
      */
