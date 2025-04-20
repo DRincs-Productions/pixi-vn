@@ -8,6 +8,7 @@ import {
     StrokeStyle,
     TextStyle,
     TextStyleOptions,
+    Texture,
 } from "pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
@@ -16,7 +17,7 @@ import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
 import SpriteMemory from "../interfaces/memory/SpriteMemory";
 import TextMemory from "../interfaces/memory/TextMemory";
-import { getTextureMemory } from "./canvas-utility";
+import TextureMemory from "../interfaces/TextureMemory";
 
 /**
  * Export a Canvas element to a memory object
@@ -63,6 +64,20 @@ function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Par
         interactiveChildren: element.interactiveChildren,
         hitArea: element.hitArea,
     };
+}
+
+/**
+ * Get the memory object of the PixiJS texture
+ * @param texture PixiJS Texture object
+ * @returns Memory object of the texture
+ */
+function getTextureMemory(texture: Texture, alias?: string): TextureMemory {
+    let url = texture.source.label;
+    let textureMemory: TextureMemory = {
+        url: url,
+        alias: alias === url ? undefined : alias,
+    };
+    return textureMemory;
 }
 
 export function getMemoryContainer<T extends PixiContainer>(
