@@ -35,32 +35,13 @@ export function exportCanvasElement<T extends PixiContainer>(canvasComponent: T)
     }
 }
 
-export function getMemoryContainer<T extends PixiContainer>(
-    element: T,
-    options?: {
-        childrenExport?: boolean;
-    }
-): ContainerMemory {
-    let className = CANVAS_CONTAINER_ID;
-    let childrenExport = options?.childrenExport || false;
-    if (element.hasOwnProperty("pixivnId")) {
-        className = (element as any).pixivnId;
-    }
-    let elements: CanvasBaseItemMemory[] = [];
-    if (childrenExport) {
-        element.children
-            .sort((a, b) => element.getChildIndex(a) - element.getChildIndex(b))
-            .forEach((child) => {
-                elements.push(exportCanvasElement(child as CanvasBaseInterface<any>));
-            });
-    }
+/**
+ * Extract common properties for memory objects
+ */
+function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Partial<ContainerMemory> {
     return {
-        pixivnId: className,
-        elements: elements,
-
         width: element.width,
         height: element.height,
-
         isRenderGroup: element.isRenderGroup,
         blendMode: element.blendMode,
         tint: element.tint,
@@ -76,7 +57,6 @@ export function getMemoryContainer<T extends PixiContainer>(
         x: element.x,
         y: element.y,
         boundsArea: element.boundsArea,
-
         cursor: element.cursor,
         eventMode: element.eventMode,
         interactive: element.interactive,
@@ -85,53 +65,73 @@ export function getMemoryContainer<T extends PixiContainer>(
     };
 }
 
-export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): SpriteMemory {
-    let temp = getMemoryContainer(element);
-    let className = temp.pixivnId ?? CANVAS_SPRITE_ID;
-    let onEvents = {};
-    if ("onEvents" in element) {
-        onEvents = element.onEvents as any;
+export function getMemoryContainer<T extends PixiContainer>(
+    element: T,
+    options?: {
+        childrenExport?: boolean;
     }
-    let textureData;
-    if ("textureAlias" in element) {
-        textureData = getTextureMemory(element.texture, element.textureAlias as string);
-    } else {
-        textureData = getTextureMemory(element.texture);
-    }
+): ContainerMemory {
+    const className = Object.prototype.hasOwnProperty.call(element, "pixivnId")
+        ? (element as any).pixivnId
+        : CANVAS_CONTAINER_ID;
+
+    const childrenExport = options?.childrenExport || false;
+    const elements: CanvasBaseItemMemory[] = childrenExport
+        ? element.children
+              .sort((a, b) => element.getChildIndex(a) - element.getChildIndex(b))
+              .map((child) => exportCanvasElement(child as CanvasBaseInterface<any>))
+        : [];
+
     return {
-        ...temp,
         pixivnId: className,
-        textureData: textureData,
+        elements,
+        ...extractCommonMemoryProperties(element),
+    };
+}
+
+export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): SpriteMemory {
+    const baseMemory = getMemoryContainer(element);
+    const className = baseMemory.pixivnId ?? CANVAS_SPRITE_ID;
+
+    const onEvents = "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
+    const textureData =
+        "textureAlias" in element
+            ? getTextureMemory(element.texture, element.textureAlias as string)
+            : getTextureMemory(element.texture);
+
+    return {
+        ...baseMemory,
+        pixivnId: className,
+        textureData,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
-        onEvents: onEvents,
+        onEvents,
     };
 }
 
 export function getMemoryText<T extends PixiText>(element: T | PixiText): TextMemory {
-    let temp = getMemoryContainer(element);
-    let className = temp.pixivnId ?? CANVAS_TEXT_ID;
-    let onEvents = {};
-    if ("onEvents" in element) {
-        onEvents = element.onEvents as any;
-    }
+    const baseMemory = getMemoryContainer(element);
+    const className = baseMemory.pixivnId ?? CANVAS_TEXT_ID;
+
+    const onEvents = "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
+
     return {
-        ...temp,
+        ...baseMemory,
         pixivnId: className,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         text: element.text,
         resolution: element.resolution,
         style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
-        onEvents: onEvents,
+        onEvents,
     };
 }
 
 function getFillGradientFillPattern(
     prop: ColorSource | FillGradient | FillPattern | StrokeStyle,
     propName: keyof TextStyle
-) {
-    if (!(prop instanceof Object)) {
+): ColorSource | undefined {
+    if (typeof prop !== "object" || prop === null) {
         return prop;
     }
     // TODO: FillGradient and FillPattern are not supported yet
