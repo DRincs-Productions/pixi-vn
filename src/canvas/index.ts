@@ -1,4 +1,5 @@
 import CanvasManager from "./CanvasManager";
+import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 
 // * This import must be imported before the ImageSprite import.
@@ -110,3 +111,8 @@ export type { RepeatType } from "./types/RepeatType";
 export { canvas };
 
 const canvas: CanvasManagerInterface = new CanvasManager();
+CanvasUtilitiesStatic.init({
+    getScreen: () => {
+        return canvas.screen;
+    },
+});

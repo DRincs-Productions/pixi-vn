@@ -1,5 +1,5 @@
 import { Container as PixiContainer } from "pixi.js";
-import { canvas } from "..";
+import CanvasUtilitiesStatic from "../CanvasUtilitiesStatic";
 
 export function calculatePositionByAlign(
     type: "width" | "height",
@@ -11,9 +11,13 @@ export function calculatePositionByAlign(
 ): number {
     pivot = pivot * (negativeScale ? -1 : 1);
     if (type === "width") {
-        return align * (canvas.screen.width - value) + pivot + anchor * value + (negativeScale ? value : 0);
+        return (
+            align * (CanvasUtilitiesStatic.screen.width - value) + pivot + anchor * value + (negativeScale ? value : 0)
+        );
     } else {
-        return align * (canvas.screen.height - value) + pivot + anchor * value + (negativeScale ? value : 0);
+        return (
+            align * (CanvasUtilitiesStatic.screen.height - value) + pivot + anchor * value + (negativeScale ? value : 0)
+        );
     }
 }
 
@@ -27,25 +31,31 @@ export function calculateAlignByPosition(
 ): number {
     pivot = pivot * (negativeScale ? -1 : 1);
     if (type === "width") {
-        return (position - pivot - anchor * value - (negativeScale ? value : 0)) / (canvas.screen.width - value);
+        return (
+            (position - pivot - anchor * value - (negativeScale ? value : 0)) /
+            (CanvasUtilitiesStatic.screen.width - value)
+        );
     } else {
-        return (position - pivot - anchor * value - (negativeScale ? value : 0)) / (canvas.screen.height - value);
+        return (
+            (position - pivot - anchor * value - (negativeScale ? value : 0)) /
+            (CanvasUtilitiesStatic.screen.height - value)
+        );
     }
 }
 
 export function calculatePositionByPercentagePosition(type: "width" | "height", percentage: number) {
     if (type === "width") {
-        return percentage * canvas.screen.width;
+        return percentage * CanvasUtilitiesStatic.screen.width;
     } else {
-        return percentage * canvas.screen.height;
+        return percentage * CanvasUtilitiesStatic.screen.height;
     }
 }
 
 export function calculatePercentagePositionByPosition(type: "width" | "height", position: number) {
     if (type === "width") {
-        return position / canvas.screen.width;
+        return position / CanvasUtilitiesStatic.screen.width;
     } else {
-        return position / canvas.screen.height;
+        return position / CanvasUtilitiesStatic.screen.height;
     }
 }
 

@@ -11,10 +11,10 @@ import {
     getSuperPoint,
     getSuperWidth,
 } from "../../functions/canvas-property-utility";
-import { checkIfTextureNotIsEmpty } from "../../functions/ticker-utility";
 import TickerBase from "../classes/TickerBase";
 import TickerValue from "../classes/TickerValue";
 import { tickerDecoratorFn } from "../decorators/ticker-decorator";
+import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 import { MoveTickerProps } from "../types/MoveTickerProps";
 
