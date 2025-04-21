@@ -39,7 +39,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             return restoredStep;
         }
     }
-    async goBack(navigate: (path: string) => void, steps: number = 1) {
+    async goBack(navigate: (path: string) => void | Promise<void>, steps: number = 1) {
         if (steps <= 0) {
             logger.warn("The parameter steps must be greater than 0");
             return;

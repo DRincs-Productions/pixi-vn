@@ -44,7 +44,10 @@ function exportGameState() {
     };
 }
 
-export async function restoreGameState(data: Omit<GameState, "canvasData">, navigate: (path: string) => void) {
+export async function restoreGameState(
+    data: Omit<GameState, "canvasData">,
+    navigate: (path: string) => void | Promise<void>
+) {
     if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
         data.historyData.stepsHistory = data.stepData.stepsHistory;
     }
@@ -55,7 +58,7 @@ export async function restoreGameState(data: Omit<GameState, "canvasData">, navi
     await narration.restore(data.stepData, HistoryManagerStatic.lastHistoryStep);
     storage.restore(data.storageData);
     sound.restore(data.soundData);
-    navigate(data.path);
+    await navigate(data.path);
 }
 
 test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {

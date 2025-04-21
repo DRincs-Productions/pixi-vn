@@ -30,7 +30,7 @@ export default class GameUnifier {
          * @param state The state to restore.
          * @param navigate The function to navigate to the restored path.
          */
-        restoreGameStepState: (state: GameStepState, navigate: (path: string) => void) => Promise<void>;
+        restoreGameStepState: (state: GameStepState, navigate: (path: string) => void | Promise<void>) => Promise<void>;
         /**
          * This function returns the number of opened labels.
          *
@@ -145,11 +145,13 @@ export default class GameUnifier {
     static get currentGameStepState() {
         return GameUnifier._getCurrentGameStepState();
     }
-    private static _restoreGameStepState: (state: GameStepState, navigate: (path: string) => void) => Promise<void> =
-        () => {
-            logger.error("Method not implemented, you should initialize the Game: Game.init()");
-            throw new Error("Method not implemented.");
-        };
+    private static _restoreGameStepState: (
+        state: GameStepState,
+        navigate: (path: string) => void | Promise<void>
+    ) => Promise<void> = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new Error("Method not implemented.");
+    };
     /**
      * Restores the game step state.
      * @param state The state to restore.

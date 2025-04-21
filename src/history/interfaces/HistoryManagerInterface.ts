@@ -35,13 +35,13 @@ export default interface HistoryManagerInterface {
      * @returns
      * @example
      * ```typescript
-     * export function goBack(navigate: (path: string) => void, afterBack?: () => void) {
+     * export function goBack(navigate: (path: string) => void | Promise<void>, afterBack?: () => void) {
      *     narration.goBack(navigate)
      *     afterBack && afterBack()
      * }
      * ```
      */
-    goBack(navigate: (path: string) => void, steps?: number): Promise<void>;
+    goBack(navigate: (path: string) => void | Promise<void>, steps?: number): Promise<void>;
     /**
      * Block the go back function.
      */
