@@ -3,7 +3,7 @@ import Label from "../classes/Label";
 import LabelProps from "../interfaces/LabelProps";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelType } from "../types/StepLabelType";
-import RegisteredLabels from "./label-decorator";
+import RegisteredLabels from "./RegisteredLabels";
 
 /**
  * Creates a new label and registers it in the system.

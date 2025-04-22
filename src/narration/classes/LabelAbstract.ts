@@ -1,4 +1,4 @@
-import RegisteredLabels from "../decorators/label-decorator";
+import RegisteredLabels from "../decorators/RegisteredLabels";
 import LabelProps from "../interfaces/LabelProps";
 import { LabelIdType } from "../types/LabelIdType";
 import { StepLabelType } from "../types/StepLabelType";

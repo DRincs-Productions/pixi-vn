@@ -3,7 +3,7 @@ import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
-import RegisteredLabels from "./decorators/label-decorator";
+import RegisteredLabels from "./decorators/RegisteredLabels";
 import HistoryStep from "./interfaces/HistoryStep";
 import OpenedLabel from "./interfaces/OpenedLabel";
 import ChoicesMadeType from "./types/ChoicesMadeType";

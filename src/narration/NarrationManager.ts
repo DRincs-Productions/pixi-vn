@@ -8,7 +8,7 @@ import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } fr
 import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
 import Dialogue from "./classes/Dialogue";
 import LabelAbstract from "./classes/LabelAbstract";
-import RegisteredLabels from "./decorators/label-decorator";
+import RegisteredLabels from "./decorators/RegisteredLabels";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
 import NarrationGameState from "./interfaces/NarrationGameState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";

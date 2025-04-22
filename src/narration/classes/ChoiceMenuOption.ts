@@ -1,6 +1,6 @@
 import { StorageObjectType } from "../../storage";
 import { logger } from "../../utils/log-utility";
-import RegisteredLabels from "../decorators/label-decorator";
+import RegisteredLabels from "../decorators/RegisteredLabels";
 import { Close, CloseType } from "../types/CloseType";
 import { LabelIdType } from "../types/LabelIdType";
 import LabelRunModeType from "../types/LabelRunModeType";
