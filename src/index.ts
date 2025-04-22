@@ -8,6 +8,7 @@ export type {
     Ticker as TickerValue,
     UPDATE_PRIORITY,
 } from "pixi.js";
+export type * from "pixi.js/lib/assets/types";
 export * from "./canvas";
 export * from "./character";
 export {
@@ -159,10 +160,7 @@ export namespace Game {
      * @param data The save data
      * @param navigate The function to navigate to a path
      */
-    export async function restoreGameState(
-        data: pixivninterface.GameState,
-        navigate: (path: string) => void | Promise<void>
-    ) {
+    export async function restoreGameState(data: pixivninterface.GameState, navigate: (path: string) => void) {
         if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
             data.historyData.stepsHistory = data.stepData.stepsHistory;
         }
@@ -174,7 +172,7 @@ export namespace Game {
         storageUtils.storage.restore(data.storageData);
         await canvasUtils.canvas.restore(data.canvasData);
         soundUtils.sound.restore(data.soundData);
-        await navigate(data.path);
+        navigate(data.path);
     }
 
     /**
@@ -235,14 +233,14 @@ export function getSaveJson() {
 /**
  * @deprecated Use the `Game.restoreGameState(data, navigate)` function instead
  */
-export async function loadSaveData(data: pixivninterface.GameState, navigate: (path: string) => void | Promise<void>) {
+export async function loadSaveData(data: pixivninterface.GameState, navigate: (path: string) => void) {
     return Game.restoreGameState(data, navigate);
 }
 
 /**
  * @deprecated Use the `Game.restoreGameState(JSON.parse(dataString) as GameState, navigate)` function instead
  */
-export async function loadSaveJson(dataString: string, navigate: (path: string) => void | Promise<void>) {
+export async function loadSaveJson(dataString: string, navigate: (path: string) => void) {
     return Game.restoreGameState(JSON.parse(dataString) as pixivninterface.GameState, navigate);
 }
 
