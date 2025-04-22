@@ -29,6 +29,9 @@ namespace RegisteredLabels {
      * @param label The label to be saved
      */
     export function add(label: LabelAbstract<any, any>) {
+        if (registeredLabels.has(label.id)) {
+            logger.info(`Label ${label.id} already exists, it will be overwritten`);
+        }
         registeredLabels.set(label.id, label);
     }
 }

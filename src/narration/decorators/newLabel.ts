@@ -1,4 +1,3 @@
-import { logger } from "../../utils/log-utility";
 import Label from "../classes/Label";
 import LabelProps from "../interfaces/LabelProps";
 import { LabelIdType } from "../types/LabelIdType";
@@ -18,9 +17,6 @@ export default function newLabel<T extends {} = {}>(
     steps: StepLabelType<T>[] | (() => StepLabelType<T>[]),
     props?: LabelProps<Label<T>>
 ): Label<T> {
-    if (RegisteredLabels.get(id)) {
-        logger.info(`Label ${id} already exists, it will be overwritten`);
-    }
     let label = new Label<T>(id, steps, props);
     RegisteredLabels.add(label);
     return label;
