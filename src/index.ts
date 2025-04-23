@@ -8,7 +8,15 @@ export type {
     Ticker as TickerValue,
     UPDATE_PRIORITY,
 } from "pixi.js";
-export type * from "pixi.js/lib/assets/types";
+export type {
+    AssetsBundle,
+    AssetsManifest,
+    AssetSrc,
+    LoadParserName,
+    ResolvedAsset,
+    ResolvedSrc,
+    UnresolvedAsset,
+} from "pixi.js/lib/assets/types";
 export * from "./canvas";
 export * from "./character";
 export {
