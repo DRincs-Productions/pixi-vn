@@ -19,6 +19,7 @@ export type {
 } from "pixi.js/lib/assets/types";
 export * from "./canvas";
 export * from "./character";
+export * from "./classes";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,

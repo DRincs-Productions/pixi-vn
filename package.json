@@ -27,6 +27,7 @@
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
     "@pixi/sound": "^6.0.1",
+    "lru-cache": "^11.1.0",
     "pixi.js": "^8.9.1"
   },
   "devDependencies": {
