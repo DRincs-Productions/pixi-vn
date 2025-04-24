@@ -1,6 +1,6 @@
 import { logger } from "../../utils/log-utility";
 import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
-import { getCanvasElementTypeById } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
@@ -26,7 +26,7 @@ export function getCanvasElementInstanceById<T extends CanvasBaseInterface<any>>
     canvasId: CanvasElementAliasType
 ): T | undefined {
     try {
-        let eventType = getCanvasElementTypeById(canvasId);
+        let eventType = RegisteredCanvasComponent.get(canvasId);
         if (!eventType) {
             return;
         }

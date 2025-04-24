@@ -1,3 +1,4 @@
+import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
@@ -7,7 +8,7 @@ import { EventIdType } from "../types/EventIdType";
 /**
  * Canvas Event Register
  */
-export const registeredEvents = new Map<EventIdType, typeof CanvasEvent<CanvasEventNamesType>>();
+export const registeredEvents = new CachedMap<EventIdType, typeof CanvasEvent<CanvasEventNamesType>>({ cacheSize: 5 });
 /**
  * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.

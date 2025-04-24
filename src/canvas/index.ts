@@ -43,13 +43,7 @@ export {
     default as CanvasText,
     default as Text,
 } from "./components/Text";
-export {
-    default as canvasComponentDecorator,
-    /**
-     * @deprecated Use canvasComponentDecorator
-     */
-    default as canvasElementDecorator,
-} from "./decorators/canvas-element-decorator";
+export { canvasComponentDecorator, default as RegisteredCanvasComponent } from "./decorators/canvas-element-decorator";
 export { default as eventDecorator } from "./decorators/event-decorator";
 export { shakeEffect } from "./functions/canvas-effect";
 export {

@@ -3,7 +3,7 @@ import { CANVAS_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
 import { getEventInstanceById } from "../decorators/event-decorator";
 import { importCanvasElement } from "../functions/canvas-import-utility";
 import { getMemoryContainer } from "../functions/canvas-memory-utility";
@@ -122,7 +122,7 @@ export default class Container<
         return super.on(event, fn, context);
     }
 }
-canvasComponentDecoratorFn(Container, CANVAS_CONTAINER_ID);
+RegisteredCanvasComponent.add(Container, CANVAS_CONTAINER_ID);
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,
