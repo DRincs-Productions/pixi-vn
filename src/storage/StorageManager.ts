@@ -78,6 +78,7 @@ export default class StorageManager implements StorageManagerInterface {
     }
     public clear() {
         this.storage.clear();
+        this.cache.clear();
         StorageManagerStatic.startingStorage.forEach(({ key, value }) => {
             this.storage.set(key, value);
         });
