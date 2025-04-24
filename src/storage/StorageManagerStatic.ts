@@ -1,10 +1,11 @@
+import { CachedMap } from "../classes";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { CacheableStoreItem } from "./interfaces/StorageGameState";
 import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {
-    static storage = new Map<string, any>();
+    static storage = new CachedMap<string, any>({ cacheSize: 20 });
     static startingStorage: CacheableStoreItem[] = [];
     private constructor() {}
 

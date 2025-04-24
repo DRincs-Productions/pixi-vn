@@ -1,10 +1,13 @@
+import { LRUCache } from "lru-cache";
 import StorageManagerStatic from "../../storage/StorageManagerStatic";
 import { StorageElementType } from "../types/StorageElementType";
 import StorageGameState from "./StorageGameState";
 
 export default interface StorageManagerInterface {
     /**
-     * The internal storage. Do not modify this directly.
+     * The internal storage. **Do not modify this directly.**
+     *
+     * ATTENTION: If you edit this directly, the {@link this.cache} will not be updated.
      *
      * You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
      * ```ts
@@ -19,6 +22,10 @@ export default interface StorageManagerInterface {
      * ```
      */
     readonly storage: Map<string, StorageElementType>;
+    /**
+     * The internal cache. **Do not modify this directly.**
+     */
+    readonly cache: LRUCache<string, any, unknown>;
     /**
      * System-reserved storage keys
      */

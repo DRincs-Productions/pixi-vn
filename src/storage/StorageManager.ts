@@ -9,7 +9,10 @@ import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManager implements StorageManagerInterface {
     get storage() {
-        return StorageManagerStatic.storage;
+        return StorageManagerStatic.storage.map;
+    }
+    get cache() {
+        return StorageManagerStatic.storage.cache;
     }
     /**
      * @deprecated Use SYSTEM_RESERVED_STORAGE_KEYS instead
