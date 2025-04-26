@@ -195,12 +195,4 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
      * This value was added to introduce Ink Sequences, cycles and other alternatives https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#sequences-cycles-and-other-alternatives
      */
     CURRENT_STEP_TIMES_COUNTER_KEY: "___current_step_times_counter___",
-    /**
-     * The key of the current step memory
-     */
-    TEMP_STORAGE_KEY: "___temp_storage___",
-    /**
-     * The key of the current step memory deadlines
-     */
-    TEMP_STORAGE_DEADLINES_KEY: "___temp_storage_deadlines___",
 };
