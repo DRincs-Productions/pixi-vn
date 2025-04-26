@@ -30,10 +30,13 @@ export default class StorageManagerStatic {
     }
 
     static setVariable(key: string, value: StorageElementType) {
+        const isInTempStorage = StorageManagerStatic.tempStorage.has(key);
         if (value === undefined || value === null) {
-            StorageManagerStatic.storage.delete(key);
+            StorageManagerStatic.storage.map.delete(key);
+            !isInTempStorage && StorageManagerStatic.storage.cache.delete(key);
         } else {
-            StorageManagerStatic.storage.set(key, value);
+            StorageManagerStatic.storage.map.set(key, value);
+            !isInTempStorage && StorageManagerStatic.storage.cache.set(key, value);
         }
     }
 

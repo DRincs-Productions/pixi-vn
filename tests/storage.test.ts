@@ -1,7 +1,30 @@
 import { Keyv } from "keyv";
 import { expect, test } from "vitest";
-import { storage } from "../src";
+import { narration, newLabel, storage } from "../src";
 import { CacheableStoreItem } from "../src/storage/interfaces/StorageGameState";
+
+const temTestLabel = newLabel<{
+    counter: number;
+}>("tempStorageCounter", [
+    ({ counter }) => {
+        storage.setTempVariable("counter", counter + 1);
+    },
+    () => {
+        let counter = storage.getVariable<number>("counter") || 0;
+        storage.setTempVariable("counter", counter + 1);
+    },
+    () => {
+        let counter = storage.getVariable<number>("counter") || 0;
+        storage.setTempVariable("counter", counter + 1);
+    },
+    async (props, { labelId }) => {
+        let counter = storage.getVariable<number>("counter") || 0;
+        return await narration.callLabel(labelId, {
+            counter,
+            ...props,
+        });
+    },
+]);
 
 test("setVariable & getVariable", async () => {
     storage.setVariable("test", "test1");
@@ -57,6 +80,46 @@ test("clear & startingStorage", async () => {
         items2.push({ key, value: storage.storage.get(key) });
     });
     expect(items2.length).toBe(6);
+});
+
+test("setTempVariable & getTempVariable", async () => {
+    storage.setVariable("counter", 0);
+    await narration.callLabel(temTestLabel, { counter: 5 });
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(7);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(8);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(9);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(10);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(11);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(12);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(13);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(14);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(15);
+    await narration.goNext({});
+    storage.setVariable("counter", 1);
+    expect(storage.getVariable("counter")).toBe(16);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(17);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(18);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(19);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(20);
+    await narration.goNext({});
+    expect(storage.getVariable("counter")).toBe(21);
+    narration.closeCurrentLabel();
+    expect(storage.getVariable("counter")).toBe(1);
+    narration.closeAllLabels();
+    expect(storage.getVariable("counter")).toBe(1);
 });
 
 test("import & exoprt", async () => {
