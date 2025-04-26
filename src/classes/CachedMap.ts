@@ -9,15 +9,15 @@ export default class CachedMap<K extends {}, V extends {}> implements Map<K, V> 
         });
         this.map = new Map();
     }
-    [Symbol.iterator](): MapIterator<[K, V]> {
-        return this.map[Symbol.iterator]();
+    get [Symbol.iterator]() {
+        return this.map[Symbol.iterator];
     }
-    get [Symbol.toStringTag](): string {
+    get [Symbol.toStringTag]() {
         return this.map[Symbol.toStringTag];
     }
     clear(): void {
         this.cache.clear();
-        this.map.clear();
+        return this.map.clear();
     }
     delete(key: K): boolean {
         const deleted = this.map.delete(key);
@@ -26,8 +26,8 @@ export default class CachedMap<K extends {}, V extends {}> implements Map<K, V> 
         }
         return deleted;
     }
-    forEach(callbackfn: (value: V, key: K, map: Map<K, V>) => void, thisArg?: any): void {
-        throw new Error("Method not implemented.");
+    get forEach() {
+        return this.map.forEach;
     }
     get(key: K): V | undefined {
         const cachedValue = this.cache.get(key);
@@ -36,24 +36,24 @@ export default class CachedMap<K extends {}, V extends {}> implements Map<K, V> 
         }
         return this.map.get(key);
     }
-    has(key: K): boolean {
-        return this.map.has(key);
+    get has() {
+        return this.map.has;
     }
     set(key: K, value: V): this {
         this.map.set(key, value);
         this.cache.set(key, value);
         return this;
     }
-    get size(): number {
+    get size() {
         return this.map.size;
     }
-    entries(): MapIterator<[K, V]> {
-        return this.map.entries();
+    get entries() {
+        return this.map.entries;
     }
-    keys(): MapIterator<K> {
-        return this.map.keys();
+    get keys() {
+        return this.map.keys;
     }
-    values(): MapIterator<V> {
-        return this.map.values();
+    get values() {
+        return this.map.values;
     }
 }
