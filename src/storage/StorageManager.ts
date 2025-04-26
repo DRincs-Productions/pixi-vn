@@ -37,29 +37,23 @@ export default class StorageManager implements StorageManagerInterface {
         return StorageManagerStatic.removeVariable(key);
     }
     public setTempVariable(key: string, value: StorageElementType) {
-        let tempStorage = StorageManagerStatic.tempStorage;
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
         if (value === undefined || value === null) {
             this.removeTempVariable(key);
             return;
         } else {
-            tempStorage[key] = value;
-            if (!tempStorageDeadlines.hasOwnProperty(key)) {
-                tempStorageDeadlines[key] = GameUnifier.openedLabels;
+            StorageManagerStatic.tempStorage.set(key, value);
+            StorageManagerStatic.storage.cache.set(key, value);
+            if (!StorageManagerStatic.tempStorageDeadlines.has(key)) {
+                StorageManagerStatic.tempStorageDeadlines.set(key, GameUnifier.openedLabels);
             }
         }
-        StorageManagerStatic.tempStorage = tempStorage;
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     public removeTempVariable(key: string) {
-        let tempStorage = StorageManagerStatic.tempStorage;
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
-        if (tempStorage.hasOwnProperty(key)) {
-            delete tempStorage[key];
-            delete tempStorageDeadlines[key];
+        if (StorageManagerStatic.tempStorage.has(key)) {
+            StorageManagerStatic.tempStorage.delete(key);
+            StorageManagerStatic.tempStorageDeadlines.delete(key);
+            StorageManagerStatic.storage.cache.delete(key);
         }
-        StorageManagerStatic.tempStorage = tempStorage;
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     setFlag(key: string, value: boolean) {
         return StorageManagerStatic.setFlag(key, value);
@@ -70,25 +64,51 @@ export default class StorageManager implements StorageManagerInterface {
     public clear() {
         this.storage.clear();
         this.cache.clear();
+        StorageManagerStatic.tempStorage.clear();
+        StorageManagerStatic.tempStorageDeadlines.clear();
         StorageManagerStatic.startingStorage.forEach(({ key, value }) => {
             this.storage.set(key, value);
         });
     }
     public export(): StorageGameState {
-        let items: CacheableStoreItem[] = [];
+        let base: CacheableStoreItem[] = [];
         [...this.storage.keys()].forEach((key) => {
-            items.push({ key, value: this.storage.get(key) });
+            base.push({ key, value: this.storage.get(key) });
         });
-        return createExportableElement(items);
+        let temp: CacheableStoreItem[] = [];
+        [...StorageManagerStatic.tempStorage.keys()].forEach((key) => {
+            temp.push({ key, value: StorageManagerStatic.tempStorage.get(key) });
+        });
+        let tempDeadlines: CacheableStoreItem<number>[] = [];
+        [...StorageManagerStatic.tempStorageDeadlines.keys()].forEach((key) => {
+            tempDeadlines.push({ key, value: StorageManagerStatic.tempStorageDeadlines.get(key)! });
+        });
+        return createExportableElement({
+            base,
+            temp,
+            tempDeadlines,
+        });
     }
     public restore(data: StorageGameState) {
         this.clear();
         try {
             if (data) {
                 // id data is array
+                // deprecated
                 if (Array.isArray(data)) {
                     data.forEach((item) => {
                         this.storage.set(item.key, item.value);
+                    });
+                }
+                if ("base" in data && "temp" in data && "tempDeadlines" in data) {
+                    (data.base as any)?.forEach((item: CacheableStoreItem) => {
+                        this.storage.set(item.key, item.value);
+                    });
+                    (data.temp as any)?.forEach((item: CacheableStoreItem) => {
+                        StorageManagerStatic.tempStorage.set(item.key, item.value);
+                    });
+                    (data.tempDeadlines as any)?.forEach((item: CacheableStoreItem<number>) => {
+                        StorageManagerStatic.tempStorageDeadlines.set(item.key, item.value);
                     });
                 }
                 // if data is object
