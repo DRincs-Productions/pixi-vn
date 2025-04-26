@@ -59,10 +59,6 @@ export default class StorageManagerStatic {
     }
 
     static setVariable(key: string, value: StorageElementType) {
-        // TODO this if should be removed in some other version
-        if (StorageManagerStatic.storage.has(key.toLowerCase())) {
-            StorageManagerStatic.storage.delete(key.toLowerCase());
-        }
         if (value === undefined || value === null) {
             StorageManagerStatic.storage.delete(key);
         } else {
@@ -75,18 +71,10 @@ export default class StorageManagerStatic {
         if (tempVariable !== undefined) {
             return tempVariable;
         }
-        // TODO this if should be removed in some other version
-        if (!StorageManagerStatic.storage.has(key) && StorageManagerStatic.storage.has(key.toLowerCase())) {
-            key = key.toLowerCase();
-        }
         return createExportableElement(StorageManagerStatic.storage.get(key));
     }
 
     static removeVariable(key: string) {
-        // TODO this if should be removed in some other version
-        if (!StorageManagerStatic.storage.has(key) && StorageManagerStatic.storage.has(key.toLowerCase())) {
-            key = key.toLowerCase();
-        }
         StorageManagerStatic.storage.delete(key);
     }
 

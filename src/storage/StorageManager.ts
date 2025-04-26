@@ -39,11 +39,6 @@ export default class StorageManager implements StorageManagerInterface {
     public setTempVariable(key: string, value: StorageElementType) {
         let tempStorage = StorageManagerStatic.tempStorage;
         let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
-        // TODO this if should be removed in some other version
-        let tempVariable = StorageManagerStatic.getTempVariable(key.toLowerCase());
-        if (tempVariable !== undefined) {
-            this.removeTempVariable(key.toLowerCase());
-        }
         if (value === undefined || value === null) {
             this.removeTempVariable(key);
             return;
@@ -59,10 +54,6 @@ export default class StorageManager implements StorageManagerInterface {
     public removeTempVariable(key: string) {
         let tempStorage = StorageManagerStatic.tempStorage;
         let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
-        // TODO this if should be removed in some other version
-        if (!tempStorage.hasOwnProperty(key) && tempStorage.hasOwnProperty(key.toLowerCase())) {
-            key = key.toLowerCase();
-        }
         if (tempStorage.hasOwnProperty(key)) {
             delete tempStorage[key];
             delete tempStorageDeadlines[key];
