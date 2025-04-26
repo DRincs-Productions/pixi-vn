@@ -6,10 +6,10 @@ import { CacheableStoreItem } from "../src/storage/interfaces/StorageGameState";
 test("setVariable & getVariable", async () => {
     storage.setVariable("test", "test1");
     expect(storage.getVariable("test")).toBe("test1");
-    expect(storage.getVariable("Test")).toBe("test1");
+    expect(storage.getVariable("Test")).toBe(undefined);
 
     storage.setVariable("Test", "test2");
-    expect(storage.getVariable("test")).toBe(undefined);
+    expect(storage.getVariable("test")).toBe("test1");
     expect(storage.getVariable("Test")).toBe("test2");
 
     storage.setVariable("test", "test3");
@@ -75,31 +75,35 @@ test("import & exoprt", async () => {
     expect(storage.getVariable("e")).toBe(null);
     expect(storage.getVariable("f")).toBe(undefined);
     let exported = storage.export();
-    expect(exported).toEqual([
-        {
-            key: "a",
-            value: 1,
-        },
-        {
-            key: "b",
-            value: "test",
-        },
-        {
-            key: "c",
-            value: true,
-        },
-        {
-            key: "d",
-            value: false,
-        },
-        {
-            key: "e",
-            value: null,
-        },
-        {
-            key: "f",
-        },
-    ]);
+    expect(exported).toEqual({
+        base: [
+            {
+                key: "a",
+                value: 1,
+            },
+            {
+                key: "b",
+                value: "test",
+            },
+            {
+                key: "c",
+                value: true,
+            },
+            {
+                key: "d",
+                value: false,
+            },
+            {
+                key: "e",
+                value: null,
+            },
+            {
+                key: "f",
+            },
+        ],
+        temp: [],
+        tempDeadlines: [],
+    });
 });
 
 test("Keyv", async () => {

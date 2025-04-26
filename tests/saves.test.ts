@@ -85,36 +85,32 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             ],
             stepCounter: 9,
         },
-        storageData: [
-            {
-                key: "___temp_storage___",
-                value: {},
-            },
-            {
-                key: "___temp_storage_deadlines___",
-                value: {},
-            },
-            {
-                key: "___opened_labels_counter___",
-                value: {
-                    stepCounter: {
-                        biggestStep: 3,
-                        openCount: 3,
+        storageData: {
+            base: [
+                {
+                    key: "___opened_labels_counter___",
+                    value: {
+                        stepCounter: {
+                            biggestStep: 3,
+                            openCount: 3,
+                        },
                     },
                 },
-            },
-            {
-                key: "___current_dialogue_memory___",
-                value: {
-                    text: "This is a test label 3",
-                    oltherParams: {},
+                {
+                    key: "___current_dialogue_memory___",
+                    value: {
+                        text: "This is a test label 3",
+                        oltherParams: {},
+                    },
                 },
-            },
-            {
-                key: "___last_dialogue_added_in_step_memory___",
-                value: 8,
-            },
-        ],
+                {
+                    key: "___last_dialogue_added_in_step_memory___",
+                    value: 8,
+                },
+            ],
+            temp: [],
+            tempDeadlines: [],
+        },
         soundData: {
             soundsPlaying: {},
             soundAliasesOrder: [],
@@ -131,10 +127,18 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             rhs: "/",
                         },
                         {
-                            kind: "E",
-                            path: ["storage"],
-                            lhs: {},
+                            kind: "N",
+                            path: ["storage", "base"],
                             rhs: [
+                                {
+                                    key: "___opened_labels_counter___",
+                                    value: {
+                                        stepCounter: {
+                                            biggestStep: 0,
+                                            openCount: 1,
+                                        },
+                                    },
+                                },
                                 {
                                     key: "___current_dialogue_memory___",
                                     value: {
@@ -146,16 +150,17 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                                     key: "___last_dialogue_added_in_step_memory___",
                                     value: 0,
                                 },
-                                {
-                                    key: "___opened_labels_counter___",
-                                    value: {
-                                        stepCounter: {
-                                            biggestStep: 0,
-                                            openCount: 1,
-                                        },
-                                    },
-                                },
                             ],
+                        },
+                        {
+                            kind: "N",
+                            path: ["storage", "temp"],
+                            rhs: [],
+                        },
+                        {
+                            kind: "N",
+                            path: ["storage", "tempDeadlines"],
+                            rhs: [],
                         },
                         {
                             kind: "E",
@@ -216,21 +221,21 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     diff: [
                         {
                             kind: "E",
-                            path: ["storage", 2, "value", "stepCounter", "biggestStep"],
+                            path: ["storage", "base", 2, "value"],
                             lhs: 0,
                             rhs: 1,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 1, "value"],
-                            lhs: 0,
-                            rhs: 1,
-                        },
-                        {
-                            kind: "E",
-                            path: ["storage", 0, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
                             lhs: "This is a test label",
                             rhs: "This is a test label 2",
+                        },
+                        {
+                            kind: "E",
+                            path: ["storage", "base", 0, "value", "stepCounter", "biggestStep"],
+                            lhs: 0,
+                            rhs: 1,
                         },
                         {
                             kind: "E",
@@ -263,21 +268,21 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     diff: [
                         {
                             kind: "E",
-                            path: ["storage", 2, "value", "stepCounter", "biggestStep"],
+                            path: ["storage", "base", 2, "value"],
                             lhs: 1,
                             rhs: 2,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 1, "value"],
-                            lhs: 1,
-                            rhs: 2,
-                        },
-                        {
-                            kind: "E",
-                            path: ["storage", 0, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
                             lhs: "This is a test label 2",
                             rhs: "This is a test label 3",
+                        },
+                        {
+                            kind: "E",
+                            path: ["storage", "base", 0, "value", "stepCounter", "biggestStep"],
+                            lhs: 1,
+                            rhs: 2,
                         },
                         {
                             kind: "E",
@@ -309,85 +314,28 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                 {
                     diff: [
                         {
-                            kind: "A",
-                            path: ["storage"],
-                            index: 4,
-                            item: {
-                                kind: "N",
-                                rhs: {
-                                    key: "___opened_labels_counter___",
-                                    value: {
-                                        stepCounter: {
-                                            biggestStep: 3,
-                                            openCount: 2,
-                                        },
-                                    },
-                                },
-                            },
-                        },
-                        {
-                            kind: "A",
-                            path: ["storage"],
-                            index: 3,
-                            item: {
-                                kind: "N",
-                                rhs: {
-                                    key: "___last_dialogue_added_in_step_memory___",
-                                    value: 3,
-                                },
-                            },
+                            kind: "E",
+                            path: ["storage", "base", 2, "value"],
+                            lhs: 2,
+                            rhs: 3,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 2, "key"],
-                            lhs: "___opened_labels_counter___",
-                            rhs: "___current_dialogue_memory___",
-                        },
-                        {
-                            kind: "D",
-                            path: ["storage", 2, "value", "stepCounter"],
-                            lhs: {
-                                biggestStep: 2,
-                                openCount: 1,
-                            },
-                        },
-                        {
-                            kind: "N",
-                            path: ["storage", 2, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
+                            lhs: "This is a test label 3",
                             rhs: "This is a test label",
                         },
                         {
-                            kind: "N",
-                            path: ["storage", 2, "value", "oltherParams"],
-                            rhs: {},
-                        },
-                        {
                             kind: "E",
-                            path: ["storage", 1, "key"],
-                            lhs: "___last_dialogue_added_in_step_memory___",
-                            rhs: "___temp_storage_deadlines___",
-                        },
-                        {
-                            kind: "E",
-                            path: ["storage", 1, "value"],
+                            path: ["storage", "base", 0, "value", "stepCounter", "biggestStep"],
                             lhs: 2,
-                            rhs: {},
+                            rhs: 3,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 0, "key"],
-                            lhs: "___current_dialogue_memory___",
-                            rhs: "___temp_storage___",
-                        },
-                        {
-                            kind: "D",
-                            path: ["storage", 0, "value", "text"],
-                            lhs: "This is a test label 3",
-                        },
-                        {
-                            kind: "D",
-                            path: ["storage", 0, "value", "oltherParams"],
-                            lhs: {},
+                            path: ["storage", "base", 0, "value", "stepCounter", "openCount"],
+                            lhs: 1,
+                            rhs: 2,
                         },
                         {
                             kind: "E",
@@ -420,59 +368,15 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     diff: [
                         {
                             kind: "E",
-                            path: ["storage", 4, "key"],
-                            lhs: "___opened_labels_counter___",
-                            rhs: "___last_dialogue_added_in_step_memory___",
-                        },
-                        {
-                            kind: "E",
-                            path: ["storage", 4, "value"],
-                            lhs: {
-                                stepCounter: {
-                                    biggestStep: 3,
-                                    openCount: 2,
-                                },
-                            },
+                            path: ["storage", "base", 2, "value"],
+                            lhs: 3,
                             rhs: 4,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 3, "key"],
-                            lhs: "___last_dialogue_added_in_step_memory___",
-                            rhs: "___current_dialogue_memory___",
-                        },
-                        {
-                            kind: "E",
-                            path: ["storage", 3, "value"],
-                            lhs: 3,
-                            rhs: {
-                                text: "This is a test label 2",
-                                oltherParams: {},
-                            },
-                        },
-                        {
-                            kind: "E",
-                            path: ["storage", 2, "key"],
-                            lhs: "___current_dialogue_memory___",
-                            rhs: "___opened_labels_counter___",
-                        },
-                        {
-                            kind: "D",
-                            path: ["storage", 2, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
                             lhs: "This is a test label",
-                        },
-                        {
-                            kind: "D",
-                            path: ["storage", 2, "value", "oltherParams"],
-                            lhs: {},
-                        },
-                        {
-                            kind: "N",
-                            path: ["storage", 2, "value", "stepCounter"],
-                            rhs: {
-                                biggestStep: 3,
-                                openCount: 2,
-                            },
+                            rhs: "This is a test label 2",
                         },
                         {
                             kind: "E",
@@ -505,13 +409,13 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     diff: [
                         {
                             kind: "E",
-                            path: ["storage", 4, "value"],
+                            path: ["storage", "base", 2, "value"],
                             lhs: 4,
                             rhs: 5,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 3, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
                             lhs: "This is a test label 2",
                             rhs: "This is a test label 3",
                         },
@@ -546,19 +450,19 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     diff: [
                         {
                             kind: "E",
-                            path: ["storage", 4, "value"],
+                            path: ["storage", "base", 2, "value"],
                             lhs: 5,
                             rhs: 6,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 3, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
                             lhs: "This is a test label 3",
                             rhs: "This is a test label",
                         },
                         {
                             kind: "E",
-                            path: ["storage", 2, "value", "stepCounter", "openCount"],
+                            path: ["storage", "base", 0, "value", "stepCounter", "openCount"],
                             lhs: 2,
                             rhs: 3,
                         },
@@ -593,13 +497,13 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     diff: [
                         {
                             kind: "E",
-                            path: ["storage", 4, "value"],
+                            path: ["storage", "base", 2, "value"],
                             lhs: 6,
                             rhs: 7,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 3, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
                             lhs: "This is a test label",
                             rhs: "This is a test label 2",
                         },
@@ -634,13 +538,13 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     diff: [
                         {
                             kind: "E",
-                            path: ["storage", 4, "value"],
+                            path: ["storage", "base", 2, "value"],
                             lhs: 7,
                             rhs: 8,
                         },
                         {
                             kind: "E",
-                            path: ["storage", 3, "value", "text"],
+                            path: ["storage", "base", 1, "value", "text"],
                             lhs: "This is a test label 2",
                             rhs: "This is a test label 3",
                         },
@@ -674,36 +578,32 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             ],
             originalStepData: {
                 path: "/",
-                storage: [
-                    {
-                        key: "___temp_storage___",
-                        value: {},
-                    },
-                    {
-                        key: "___temp_storage_deadlines___",
-                        value: {},
-                    },
-                    {
-                        key: "___opened_labels_counter___",
-                        value: {
-                            stepCounter: {
-                                biggestStep: 3,
-                                openCount: 3,
+                storage: {
+                    base: [
+                        {
+                            key: "___opened_labels_counter___",
+                            value: {
+                                stepCounter: {
+                                    biggestStep: 3,
+                                    openCount: 3,
+                                },
                             },
                         },
-                    },
-                    {
-                        key: "___current_dialogue_memory___",
-                        value: {
-                            text: "This is a test label 3",
-                            oltherParams: {},
+                        {
+                            key: "___current_dialogue_memory___",
+                            value: {
+                                text: "This is a test label 3",
+                                oltherParams: {},
+                            },
                         },
-                    },
-                    {
-                        key: "___last_dialogue_added_in_step_memory___",
-                        value: 8,
-                    },
-                ],
+                        {
+                            key: "___last_dialogue_added_in_step_memory___",
+                            value: 8,
+                        },
+                    ],
+                    temp: [],
+                    tempDeadlines: [],
+                },
                 sound: {
                     soundsPlaying: {},
                     soundAliasesOrder: [],
@@ -729,7 +629,11 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             openedLabels: [],
             stepCounter: 0,
         },
-        storageData: [],
+        storageData: {
+            base: [],
+            temp: [],
+            tempDeadlines: [],
+        },
         soundData: {
             soundsPlaying: {},
             soundAliasesOrder: [],
