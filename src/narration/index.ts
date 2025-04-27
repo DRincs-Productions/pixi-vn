@@ -29,6 +29,7 @@ export type { default as DialogueType } from "./types/DialogueType";
 export type { default as HistoryChoiceMenuOption } from "./types/HistoryChoiceMenuOption";
 export type { InputInfo } from "./types/InputInfo";
 export type { default as LabelRunModeType } from "./types/LabelRunModeType";
+export type { default as LabelSteps } from "./types/LabelSteps";
 export type { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
 export { narration };
 
