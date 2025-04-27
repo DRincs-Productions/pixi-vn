@@ -125,6 +125,34 @@ test("setTempVariable & getTempVariable", async () => {
     expect(storage.getVariable("counter")).toBe(1);
 });
 
+test("setFlag & getFlag", async () => {
+    storage.setFlag("test", true);
+    expect(storage.getFlag("test")).toBe(true);
+    expect(storage.getFlag("Test")).toBe(false);
+    storage.setFlag("Test", true);
+    expect(storage.getFlag("test")).toBe(true);
+    expect(storage.getFlag("Test")).toBe(true);
+    storage.setFlag("test", false);
+    expect(storage.getFlag("test")).toBe(false);
+    expect(storage.getFlag("Test")).toBe(true);
+    storage.setFlag("test", true);
+    expect(storage.getFlag("test")).toBe(true);
+    expect(storage.getFlag("Test")).toBe(true);
+    storage.setFlag("test", false);
+    expect(storage.getFlag("test")).toBe(false);
+    expect(storage.getFlag("Test")).toBe(true);
+    storage.setFlag("test", true);
+    expect(storage.getFlag("test")).toBe(true);
+    expect(storage.getFlag("Test")).toBe(true);
+    storage.setFlag("test", false);
+    expect(storage.getFlag("test")).toBe(false);
+    expect(storage.getFlag("Test")).toBe(true);
+    storage.setFlag("test", true);
+    expect(storage.getFlag("test")).toBe(true);
+    expect(storage.getFlag("Test")).toBe(true);
+    storage.setFlag("test", false);
+});
+
 test("import & exoprt", async () => {
     storage.restore({
         a: 1,
@@ -169,6 +197,7 @@ test("import & exoprt", async () => {
         ],
         temp: [],
         tempDeadlines: [],
+        flags: [],
     });
 });
 

@@ -110,6 +110,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             ],
             temp: [],
             tempDeadlines: [],
+            flags: [],
         },
         soundData: {
             soundsPlaying: {},
@@ -160,6 +161,11 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             kind: "N",
                             path: ["storage", "tempDeadlines"],
+                            rhs: [],
+                        },
+                        {
+                            kind: "N",
+                            path: ["storage", "flags"],
                             rhs: [],
                         },
                         {
@@ -603,6 +609,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     temp: [],
                     tempDeadlines: [],
+                    flags: [],
                 },
                 sound: {
                     soundsPlaying: {},
@@ -633,6 +640,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             base: [],
             temp: [],
             tempDeadlines: [],
+            flags: [],
         },
         soundData: {
             soundsPlaying: {},
