@@ -13,6 +13,15 @@ export default class StorageManager implements StorageManagerInterface {
     get cache() {
         return StorageManagerStatic.storage.cache;
     }
+    get flags() {
+        return StorageManagerStatic.flags;
+    }
+    get tempStorage() {
+        return StorageManagerStatic.tempStorage;
+    }
+    get tempStorageDeadlines() {
+        return StorageManagerStatic.tempStorageDeadlines;
+    }
     set startingStorage(value: { [key: string]: StorageElementType }) {
         let data: CacheableStoreItem[] = [];
         Object.entries(value).forEach(([key, value]) => {
@@ -57,6 +66,7 @@ export default class StorageManager implements StorageManagerInterface {
     public clear() {
         this.storage.clear();
         this.cache.clear();
+        StorageManagerStatic.flags = [];
         StorageManagerStatic.tempStorage.clear();
         StorageManagerStatic.tempStorageDeadlines.clear();
         StorageManagerStatic.startingStorage.forEach(({ key, value }) => {
@@ -80,6 +90,7 @@ export default class StorageManager implements StorageManagerInterface {
             base,
             temp,
             tempDeadlines,
+            flags: StorageManagerStatic.flags,
         });
     }
     public restore(data: StorageGameState) {
@@ -100,6 +111,11 @@ export default class StorageManager implements StorageManagerInterface {
                             let value = item.value as Record<string, number>;
                             Object.entries(value).forEach(([key, value]) => {
                                 StorageManagerStatic.tempStorageDeadlines.set(key, value);
+                            });
+                        } else if (item.key === "___flags___") {
+                            let value = item.value as string[];
+                            value.forEach((flag) => {
+                                StorageManagerStatic.flags.push(flag);
                             });
                         } else {
                             this.storage.set(item.key, item.value);
@@ -129,6 +145,10 @@ export default class StorageManager implements StorageManagerInterface {
                         } else if (key === "___temp_storage_deadlines___") {
                             Object.entries(value as Record<string, number>).forEach(([key, value]) => {
                                 StorageManagerStatic.tempStorageDeadlines.set(key, value);
+                            });
+                        } else if (key === "___flags___") {
+                            (value as string[]).forEach((flag) => {
+                                StorageManagerStatic.flags.push(flag);
                             });
                         } else {
                             this.storage.set(key, value);

@@ -1,5 +1,4 @@
 import { CachedMap } from "../classes";
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { CacheableStoreItem } from "./interfaces/StorageGameState";
 import { StorageElementType } from "./types/StorageElementType";
@@ -7,6 +6,7 @@ import { StorageElementType } from "./types/StorageElementType";
 export default class StorageManagerStatic {
     static storage = new CachedMap<string, any>({ cacheSize: 20 });
     static startingStorage: CacheableStoreItem[] = [];
+    static flags = Array<string>();
     static tempStorage = new Map<string, StorageElementType>();
     static tempStorageDeadlines = new Map<string, number>();
 
@@ -49,22 +49,19 @@ export default class StorageManagerStatic {
     }
 
     static setFlag(key: string, value: boolean) {
-        let flags = StorageManagerStatic.getVariable<string[]>(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY) || [];
         if (value) {
-            if (!flags.includes(key)) {
-                flags.push(key);
+            if (!this.flags.includes(key)) {
+                this.flags.push(key);
             }
         } else {
-            let index = flags.indexOf(key);
+            let index = this.flags.indexOf(key);
             if (index > -1) {
-                flags.splice(index, 1);
+                this.flags.splice(index, 1);
             }
         }
-        StorageManagerStatic.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY, flags);
     }
 
     static getFlag(key: string): boolean {
-        const flags = StorageManagerStatic.getVariable<string[]>(SYSTEM_RESERVED_STORAGE_KEYS.FLAGS_CATEGORY_KEY) || [];
-        return flags.includes(key);
+        return this.flags.includes(key);
     }
 }

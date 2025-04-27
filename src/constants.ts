@@ -174,10 +174,6 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
      */
     CHARACTER_CATEGORY_KEY: "___character___",
     /**
-     * The key of the flags memory
-     */
-    FLAGS_CATEGORY_KEY: "___flags___",
-    /**
      * This variable is used to add the next dialog text into the current dialog memory.
      * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
      */
