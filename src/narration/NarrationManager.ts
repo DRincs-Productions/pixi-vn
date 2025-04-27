@@ -511,8 +511,25 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Go Back & Refresh Methods */
 
-    public onGameEnd: StepLabelType | undefined = undefined;
-    public onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined = undefined;
+    get onGameEnd(): StepLabelType | undefined {
+        return GameUnifier.onEnd;
+    }
+    set onGameEnd(value: StepLabelType) {
+        GameUnifier.onEnd = value;
+    }
+    get onStepError(): ((error: any, props: StepLabelPropsType) => void) | undefined {
+        const onError = GameUnifier.onError;
+        return onError
+            ? (error: any, props: StepLabelPropsType) => {
+                  return onError("step", error, props);
+              }
+            : undefined;
+    }
+    set onStepError(value: (error: any, props: StepLabelPropsType) => void) {
+        GameUnifier.onError = (type: string, error: any, props: StepLabelPropsType) => {
+            return value(error, props);
+        };
+    }
 
     public get dialogue(): Dialogue | undefined {
         return GameUnifier.getVariable<DialogueType>(

@@ -1,5 +1,6 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import { StorageElementType } from "./storage";
+import { StepLabelPropsType, StepLabelType } from "./narration/types/StepLabelType";
+import { StorageElementType } from "./storage/types/StorageElementType";
 import { logger } from "./utils/log-utility";
 
 export default class GameUnifier {
@@ -275,4 +276,26 @@ export default class GameUnifier {
     static get currentStepsRunningNumber() {
         return GameUnifier._getCurrentStepsRunningNumber();
     }
+
+    /**
+     * Function to be executed at the end of the game. It should be set in the game initialization.
+     * @example
+     * ```typescript
+     * Game.onEnd = async (props) => {
+     *    props.navigate("/end")
+     * }
+     * ```
+     */
+    static onEnd: StepLabelType | undefined = undefined;
+    /**
+     * Function to be executed when an error occurs in the step.
+     * @example
+     * ```typescript
+     * Game.onError = (type, error, props) => {
+     *    props.notify("An error occurred")
+     *    // send a notification to GlitchTip, Sentry, etc...
+     * }
+     * ```
+     */
+    static onError: ((type: "step", error: any, props: StepLabelPropsType) => void) | undefined = undefined;
 }

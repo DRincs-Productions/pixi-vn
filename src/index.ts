@@ -192,6 +192,13 @@ export namespace Game {
     export function jsonToGameState(json: string): pixivninterface.GameState {
         return JSON.parse(json);
     }
+
+    export function onEnd(value: narrationUtils.StepLabelType) {
+        GameUnifier.onEnd = value;
+    }
+    export function onError(value: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void) {
+        GameUnifier.onError = value;
+    }
 }
 
 export default {
