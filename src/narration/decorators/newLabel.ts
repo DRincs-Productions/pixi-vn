@@ -1,7 +1,7 @@
 import Label from "../classes/Label";
 import LabelProps from "../interfaces/LabelProps";
 import { LabelIdType } from "../types/LabelIdType";
-import { StepLabelType } from "../types/StepLabelType";
+import LabelSteps from "../types/LabelSteps";
 import RegisteredLabels from "./RegisteredLabels";
 
 /**
@@ -14,7 +14,7 @@ import RegisteredLabels from "./RegisteredLabels";
  */
 export default function newLabel<T extends {} = {}>(
     id: LabelIdType,
-    steps: StepLabelType<T>[] | (() => StepLabelType<T>[]),
+    steps: LabelSteps<T> | (() => LabelSteps<T>),
     props?: LabelProps<Label<T>>
 ): Label<T> {
     let label = new Label<T>(id, steps, props);
