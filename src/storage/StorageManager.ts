@@ -1,4 +1,3 @@
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -9,13 +8,19 @@ import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManager implements StorageManagerInterface {
     get storage() {
-        return StorageManagerStatic.storage;
+        return StorageManagerStatic.storage.map;
     }
-    /**
-     * @deprecated Use SYSTEM_RESERVED_STORAGE_KEYS instead
-     */
-    get keysSystem() {
-        return SYSTEM_RESERVED_STORAGE_KEYS;
+    get cache() {
+        return StorageManagerStatic.storage.cache;
+    }
+    get flags() {
+        return StorageManagerStatic.flags;
+    }
+    get tempStorage() {
+        return StorageManagerStatic.tempStorage;
+    }
+    get tempStorageDeadlines() {
+        return StorageManagerStatic.tempStorageDeadlines;
     }
     set startingStorage(value: { [key: string]: StorageElementType }) {
         let data: CacheableStoreItem[] = [];
@@ -34,38 +39,23 @@ export default class StorageManager implements StorageManagerInterface {
         return StorageManagerStatic.removeVariable(key);
     }
     public setTempVariable(key: string, value: StorageElementType) {
-        let tempStorage = StorageManagerStatic.tempStorage;
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
-        // TODO this if should be removed in some other version
-        let tempVariable = StorageManagerStatic.getTempVariable(key.toLowerCase());
-        if (tempVariable !== undefined) {
-            this.removeTempVariable(key.toLowerCase());
-        }
         if (value === undefined || value === null) {
             this.removeTempVariable(key);
             return;
         } else {
-            tempStorage[key] = value;
-            if (!tempStorageDeadlines.hasOwnProperty(key)) {
-                tempStorageDeadlines[key] = GameUnifier.openedLabels;
+            StorageManagerStatic.tempStorage.set(key, value);
+            StorageManagerStatic.storage.cache.set(key, value);
+            if (!StorageManagerStatic.tempStorageDeadlines.has(key)) {
+                StorageManagerStatic.tempStorageDeadlines.set(key, GameUnifier.openedLabels);
             }
         }
-        StorageManagerStatic.tempStorage = tempStorage;
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     public removeTempVariable(key: string) {
-        let tempStorage = StorageManagerStatic.tempStorage;
-        let tempStorageDeadlines = StorageManagerStatic.tempStorageDeadlines;
-        // TODO this if should be removed in some other version
-        if (!tempStorage.hasOwnProperty(key) && tempStorage.hasOwnProperty(key.toLowerCase())) {
-            key = key.toLowerCase();
+        if (StorageManagerStatic.tempStorage.has(key)) {
+            StorageManagerStatic.tempStorage.delete(key);
+            StorageManagerStatic.tempStorageDeadlines.delete(key);
+            StorageManagerStatic.storage.cache.delete(key);
         }
-        if (tempStorage.hasOwnProperty(key)) {
-            delete tempStorage[key];
-            delete tempStorageDeadlines[key];
-        }
-        StorageManagerStatic.tempStorage = tempStorage;
-        StorageManagerStatic.tempStorageDeadlines = tempStorageDeadlines;
     }
     setFlag(key: string, value: boolean) {
         return StorageManagerStatic.setFlag(key, value);
@@ -75,32 +65,94 @@ export default class StorageManager implements StorageManagerInterface {
     }
     public clear() {
         this.storage.clear();
+        this.cache.clear();
+        StorageManagerStatic.flags = [];
+        StorageManagerStatic.tempStorage.clear();
+        StorageManagerStatic.tempStorageDeadlines.clear();
         StorageManagerStatic.startingStorage.forEach(({ key, value }) => {
             this.storage.set(key, value);
         });
     }
     public export(): StorageGameState {
-        let items: CacheableStoreItem[] = [];
+        let base: CacheableStoreItem[] = [];
         [...this.storage.keys()].forEach((key) => {
-            items.push({ key, value: this.storage.get(key) });
+            base.push({ key, value: this.storage.get(key) });
         });
-        return createExportableElement(items);
+        let temp: CacheableStoreItem[] = [];
+        [...StorageManagerStatic.tempStorage.keys()].forEach((key) => {
+            temp.push({ key, value: StorageManagerStatic.tempStorage.get(key) });
+        });
+        let tempDeadlines: CacheableStoreItem<number>[] = [];
+        [...StorageManagerStatic.tempStorageDeadlines.keys()].forEach((key) => {
+            tempDeadlines.push({ key, value: StorageManagerStatic.tempStorageDeadlines.get(key)! });
+        });
+        return createExportableElement({
+            base,
+            temp,
+            tempDeadlines,
+            flags: StorageManagerStatic.flags,
+        });
     }
     public restore(data: StorageGameState) {
         this.clear();
         try {
             if (data) {
                 // id data is array
+                // deprecated
+                // TODO this if should be removed in some other version
                 if (Array.isArray(data)) {
                     data.forEach((item) => {
+                        if (item.key === "___temp_storage___") {
+                            let value = item.value as Record<string, StorageElementType>;
+                            Object.entries(value).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorage.set(key, value);
+                            });
+                        } else if (item.key === "___temp_storage_deadlines___") {
+                            let value = item.value as Record<string, number>;
+                            Object.entries(value).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorageDeadlines.set(key, value);
+                            });
+                        } else if (item.key === "___flags___") {
+                            let value = item.value as string[];
+                            value.forEach((flag) => {
+                                StorageManagerStatic.flags.push(flag);
+                            });
+                        } else {
+                            this.storage.set(item.key, item.value);
+                        }
+                    });
+                }
+                if ("base" in data && "temp" in data && "tempDeadlines" in data) {
+                    (data.base as any)?.forEach((item: CacheableStoreItem) => {
                         this.storage.set(item.key, item.value);
+                    });
+                    (data.temp as any)?.forEach((item: CacheableStoreItem) => {
+                        StorageManagerStatic.tempStorage.set(item.key, item.value);
+                    });
+                    (data.tempDeadlines as any)?.forEach((item: CacheableStoreItem<number>) => {
+                        StorageManagerStatic.tempStorageDeadlines.set(item.key, item.value);
                     });
                 }
                 // if data is object
                 // deprecated
+                // TODO this if should be removed in some other version
                 else {
                     Object.entries(data).forEach(([key, value]) => {
-                        this.storage.set(key, value);
+                        if (key === "___temp_storage___") {
+                            Object.entries(value as Record<string, StorageElementType>).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorage.set(key, value);
+                            });
+                        } else if (key === "___temp_storage_deadlines___") {
+                            Object.entries(value as Record<string, number>).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorageDeadlines.set(key, value);
+                            });
+                        } else if (key === "___flags___") {
+                            (value as string[]).forEach((flag) => {
+                                StorageManagerStatic.flags.push(flag);
+                            });
+                        } else {
+                            this.storage.set(key, value);
+                        }
                     });
                 }
             } else {

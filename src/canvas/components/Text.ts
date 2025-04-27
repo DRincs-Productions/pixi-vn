@@ -3,7 +3,7 @@ import { CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
 import { getEventInstanceById, getEventTypeById } from "../decorators/event-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
 import TextMemory from "../interfaces/memory/TextMemory";
@@ -105,7 +105,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
         return super.on(event, fn, context);
     }
 }
-canvasComponentDecoratorFn(Text, CANVAS_TEXT_ID);
+RegisteredCanvasComponent.add(Text, CANVAS_TEXT_ID);
 
 export async function setMemoryText(element: Text, memory: TextMemory | {}) {
     await setMemoryContainer(element, memory);

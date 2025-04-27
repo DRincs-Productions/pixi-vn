@@ -12,7 +12,7 @@ import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { canvasComponentDecoratorFn } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
 import { getEventInstanceById, getEventTypeById } from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
@@ -144,7 +144,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         return mySprite;
     }
 }
-canvasComponentDecoratorFn(Sprite, CANVAS_SPRITE_ID);
+RegisteredCanvasComponent.add(Sprite, CANVAS_SPRITE_ID);
 
 export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     element: Sprite<any>,
