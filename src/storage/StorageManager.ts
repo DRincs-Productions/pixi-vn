@@ -97,7 +97,20 @@ export default class StorageManager implements StorageManagerInterface {
                 // deprecated
                 if (Array.isArray(data)) {
                     data.forEach((item) => {
-                        this.storage.set(item.key, item.value);
+                        // TODO this if should be removed in some other version
+                        if (item.key === "___temp_storage___") {
+                            let value = item.value as Record<string, StorageElementType>;
+                            Object.entries(value).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorage.set(key, value);
+                            });
+                        } else if (item.key === "___temp_storage_deadlines___") {
+                            let value = item.value as Record<string, number>;
+                            Object.entries(value).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorageDeadlines.set(key, value);
+                            });
+                        } else {
+                            this.storage.set(item.key, item.value);
+                        }
                     });
                 }
                 if ("base" in data && "temp" in data && "tempDeadlines" in data) {
@@ -115,7 +128,18 @@ export default class StorageManager implements StorageManagerInterface {
                 // deprecated
                 else {
                     Object.entries(data).forEach(([key, value]) => {
-                        this.storage.set(key, value);
+                        // TODO this if should be removed in some other version
+                        if (key === "___temp_storage___") {
+                            Object.entries(value as Record<string, StorageElementType>).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorage.set(key, value);
+                            });
+                        } else if (key === "___temp_storage_deadlines___") {
+                            Object.entries(value as Record<string, number>).forEach(([key, value]) => {
+                                StorageManagerStatic.tempStorageDeadlines.set(key, value);
+                            });
+                        } else {
+                            this.storage.set(key, value);
+                        }
                     });
                 }
             } else {
