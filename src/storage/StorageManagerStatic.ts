@@ -7,17 +7,10 @@ import { StorageElementType } from "./types/StorageElementType";
 export default class StorageManagerStatic {
     static storage = new CachedMap<string, any>({ cacheSize: 20 });
     static startingStorage: CacheableStoreItem[] = [];
-    private constructor() {}
-
-    /**
-     * @deprecated Use SYSTEM_RESERVED_STORAGE_KEYS instead
-     */
-    public static get keysSystem() {
-        return SYSTEM_RESERVED_STORAGE_KEYS;
-    }
-
     static tempStorage = new Map<string, StorageElementType>();
     static tempStorageDeadlines = new Map<string, number>();
+
+    private constructor() {}
 
     static clearOldTempVariables(openedLabelsNumber: number) {
         StorageManagerStatic.tempStorageDeadlines.forEach((deadline, key) => {

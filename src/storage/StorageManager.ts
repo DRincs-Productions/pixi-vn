@@ -1,4 +1,3 @@
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -13,12 +12,6 @@ export default class StorageManager implements StorageManagerInterface {
     }
     get cache() {
         return StorageManagerStatic.storage.cache;
-    }
-    /**
-     * @deprecated Use SYSTEM_RESERVED_STORAGE_KEYS instead
-     */
-    get keysSystem() {
-        return SYSTEM_RESERVED_STORAGE_KEYS;
     }
     set startingStorage(value: { [key: string]: StorageElementType }) {
         let data: CacheableStoreItem[] = [];
@@ -95,9 +88,9 @@ export default class StorageManager implements StorageManagerInterface {
             if (data) {
                 // id data is array
                 // deprecated
+                // TODO this if should be removed in some other version
                 if (Array.isArray(data)) {
                     data.forEach((item) => {
-                        // TODO this if should be removed in some other version
                         if (item.key === "___temp_storage___") {
                             let value = item.value as Record<string, StorageElementType>;
                             Object.entries(value).forEach(([key, value]) => {
@@ -126,9 +119,9 @@ export default class StorageManager implements StorageManagerInterface {
                 }
                 // if data is object
                 // deprecated
+                // TODO this if should be removed in some other version
                 else {
                     Object.entries(data).forEach(([key, value]) => {
-                        // TODO this if should be removed in some other version
                         if (key === "___temp_storage___") {
                             Object.entries(value as Record<string, StorageElementType>).forEach(([key, value]) => {
                                 StorageManagerStatic.tempStorage.set(key, value);

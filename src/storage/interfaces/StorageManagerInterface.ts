@@ -1,5 +1,4 @@
 import { LRUCache } from "lru-cache";
-import StorageManagerStatic from "../../storage/StorageManagerStatic";
 import { StorageElementType } from "../types/StorageElementType";
 import StorageGameState from "./StorageGameState";
 
@@ -26,10 +25,6 @@ export default interface StorageManagerInterface {
      * The internal cache. **Do not modify this directly.**
      */
     readonly cache: LRUCache<string, any, unknown>;
-    /**
-     * System-reserved storage keys
-     */
-    readonly keysSystem: typeof StorageManagerStatic.keysSystem;
     /**
      * Set the starting storage. The starting storage that will be used when the game starts.
      * By default, the starting storage is empty.

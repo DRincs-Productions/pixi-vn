@@ -14,6 +14,7 @@ type StorageGameState =
           temp: CacheableStoreItem[];
           tempDeadlines: CacheableStoreItem<number>[];
       }
+    // deprecated
     | CacheableStoreItem[]
     // deprecated
     | {
