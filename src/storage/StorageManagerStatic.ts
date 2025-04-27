@@ -21,7 +21,7 @@ export default class StorageManagerStatic {
 
     static clearOldTempVariables(openedLabelsNumber: number) {
         StorageManagerStatic.tempStorageDeadlines.forEach((deadline, key) => {
-            if (deadline < openedLabelsNumber) {
+            if (deadline > openedLabelsNumber) {
                 StorageManagerStatic.tempStorage.delete(key);
                 StorageManagerStatic.tempStorageDeadlines.delete(key);
                 StorageManagerStatic.storage.cache.delete(key);

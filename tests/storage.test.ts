@@ -116,8 +116,11 @@ test("setTempVariable & getTempVariable", async () => {
     expect(storage.getVariable("counter")).toBe(20);
     await narration.goNext({});
     expect(storage.getVariable("counter")).toBe(21);
+    storage.setVariable("test", "test");
+    storage.setTempVariable("test", "no");
     narration.closeCurrentLabel();
-    expect(storage.getVariable("counter")).toBe(1);
+    expect(storage.getVariable("counter")).toBe(21);
+    expect(storage.getVariable("test")).toBe("test");
     narration.closeAllLabels();
     expect(storage.getVariable("counter")).toBe(1);
 });
