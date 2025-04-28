@@ -1,3 +1,4 @@
+import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 import Label from "../classes/Label";
 import LabelAbstract from "../classes/LabelAbstract";
@@ -7,7 +8,7 @@ import { LabelIdType } from "../types/LabelIdType";
  * A Map that contains all labels registered and available to be used.
  * The key is the id of the label and the value is the label itself.
  */
-const registeredLabels = new Map<LabelIdType, LabelAbstract<any> | Label<any>>();
+const registeredLabels = new CachedMap<LabelIdType, LabelAbstract<any> | Label<any>>({ cacheSize: 10 });
 
 namespace RegisteredLabels {
     /**
@@ -33,6 +34,15 @@ namespace RegisteredLabels {
             logger.info(`Label ${label.id} already exists, it will be overwritten`);
         }
         registeredLabels.set(label.id, label);
+    }
+
+    /**
+     * Get a list of all labels registered.
+     * @returns An array of labels.
+     * @example
+     */
+    export function values(): LabelAbstract<any>[] {
+        return Array.from(registeredLabels.values());
     }
 }
 export default RegisteredLabels;
