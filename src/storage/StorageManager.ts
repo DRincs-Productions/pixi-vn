@@ -1,7 +1,7 @@
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
-import StorageGameState, { CacheableStoreItem } from "./interfaces/StorageGameState";
+import StorageGameState, { StorageGameStateItem } from "./interfaces/StorageGameState";
 import StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManagerStatic from "./StorageManagerStatic";
 import { StorageElementType } from "./types/StorageElementType";
@@ -23,7 +23,7 @@ export default class StorageManager implements StorageManagerInterface {
         return StorageManagerStatic.tempStorageDeadlines;
     }
     set startingStorage(value: { [key: string]: StorageElementType }) {
-        let data: CacheableStoreItem[] = [];
+        let data: StorageGameStateItem[] = [];
         Object.entries(value).forEach(([key, value]) => {
             data.push({ key, value: value });
         });
@@ -74,15 +74,15 @@ export default class StorageManager implements StorageManagerInterface {
         });
     }
     public export(): StorageGameState {
-        let base: CacheableStoreItem[] = [];
+        let base: StorageGameStateItem[] = [];
         [...this.storage.keys()].forEach((key) => {
             base.push({ key, value: this.storage.get(key) });
         });
-        let temp: CacheableStoreItem[] = [];
+        let temp: StorageGameStateItem[] = [];
         [...StorageManagerStatic.tempStorage.keys()].forEach((key) => {
             temp.push({ key, value: StorageManagerStatic.tempStorage.get(key) });
         });
-        let tempDeadlines: CacheableStoreItem<number>[] = [];
+        let tempDeadlines: StorageGameStateItem<number>[] = [];
         [...StorageManagerStatic.tempStorageDeadlines.keys()].forEach((key) => {
             tempDeadlines.push({ key, value: StorageManagerStatic.tempStorageDeadlines.get(key)! });
         });
@@ -123,13 +123,13 @@ export default class StorageManager implements StorageManagerInterface {
                     });
                 }
                 if ("base" in data && "temp" in data && "tempDeadlines" in data) {
-                    (data.base as any)?.forEach((item: CacheableStoreItem) => {
+                    (data.base as any)?.forEach((item: StorageGameStateItem) => {
                         this.storage.set(item.key, item.value);
                     });
-                    (data.temp as any)?.forEach((item: CacheableStoreItem) => {
+                    (data.temp as any)?.forEach((item: StorageGameStateItem) => {
                         StorageManagerStatic.tempStorage.set(item.key, item.value);
                     });
-                    (data.tempDeadlines as any)?.forEach((item: CacheableStoreItem<number>) => {
+                    (data.tempDeadlines as any)?.forEach((item: StorageGameStateItem<number>) => {
                         StorageManagerStatic.tempStorageDeadlines.set(item.key, item.value);
                     });
                 }

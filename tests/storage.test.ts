@@ -1,7 +1,7 @@
 import { Keyv } from "keyv";
 import { expect, test } from "vitest";
 import { narration, newLabel, storage } from "../src";
-import { CacheableStoreItem } from "../src/storage/interfaces/StorageGameState";
+import { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
 
 const temTestLabel = newLabel<{
     counter: number;
@@ -53,7 +53,7 @@ test("clear & startingStorage", async () => {
     storage.setVariable("variable7", undefined);
 
     storage.clear();
-    let items: CacheableStoreItem[] = [];
+    let items: StorageGameStateItem[] = [];
     [...storage.storage.keys()].forEach((key) => {
         items.push({ key, value: storage.storage.get(key) });
     });
@@ -75,7 +75,7 @@ test("clear & startingStorage", async () => {
     storage.setVariable("variable7", undefined);
 
     storage.clear();
-    let items2: CacheableStoreItem[] = [];
+    let items2: StorageGameStateItem[] = [];
     [...storage.storage.keys()].forEach((key) => {
         items2.push({ key, value: storage.storage.get(key) });
     });

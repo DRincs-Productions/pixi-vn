@@ -1,6 +1,6 @@
 import { StorageElementType } from "../types/StorageElementType";
 
-export interface CacheableStoreItem<T = StorageElementType> {
+export interface StorageGameStateItem<T = StorageElementType> {
     key: string;
     value: T;
 }
@@ -10,13 +10,13 @@ export interface CacheableStoreItem<T = StorageElementType> {
  */
 type StorageGameState =
     | {
-          base: CacheableStoreItem[];
-          temp: CacheableStoreItem[];
-          tempDeadlines: CacheableStoreItem<number>[];
+          base: StorageGameStateItem[];
+          temp: StorageGameStateItem[];
+          tempDeadlines: StorageGameStateItem<number>[];
           flags: string[];
       }
     // deprecated
-    | CacheableStoreItem[]
+    | StorageGameStateItem[]
     // deprecated
     | {
           [key: string]: StorageElementType;
