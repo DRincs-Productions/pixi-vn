@@ -1,7 +1,7 @@
 import { ObservablePoint, PointData, Texture } from "pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import {
     calculateAlignByPosition,
     calculatePercentagePositionByPosition,
@@ -367,7 +367,7 @@ export default class ImageContainer
         super.y = value;
     }
 }
-RegisteredCanvasComponent.add(ImageContainer, CANVAS_IMAGE_CONTAINER_ID);
+RegisteredCanvasComponents.add(ImageContainer, CANVAS_IMAGE_CONTAINER_ID);
 
 export async function setMemoryImageContainer(
     element: ImageContainer,

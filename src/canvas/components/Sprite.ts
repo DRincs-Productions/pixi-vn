@@ -12,8 +12,8 @@ import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
-import { getEventInstanceById, getEventTypeById } from "../decorators/event-decorator";
+import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import RegisteredEvents from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
@@ -103,7 +103,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
      */
     onEvent<T extends typeof CanvasEvent<typeof this>>(event: CanvasEventNamesType, eventClass: T) {
         let id = eventClass.prototype.id;
-        let instance = getEventInstanceById(id);
+        let instance = RegisteredEvents.getInstance(id);
         this._onEvents[event] = id;
         if (instance) {
             super.on(event, () => {
@@ -144,7 +144,7 @@ export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory 
         return mySprite;
     }
 }
-RegisteredCanvasComponent.add(Sprite, CANVAS_SPRITE_ID);
+RegisteredCanvasComponents.add(Sprite, CANVAS_SPRITE_ID);
 
 export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     element: Sprite<any>,
@@ -195,7 +195,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     if ("onEvents" in memory) {
         for (let event in memory.onEvents) {
             let id = memory.onEvents[event];
-            let instance = getEventTypeById(id);
+            let instance = RegisteredEvents.get(id);
             if (instance) {
                 element.onEvent(event as any, instance);
             }

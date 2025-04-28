@@ -13,8 +13,8 @@ export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export { default as Sprite } from "./components/Sprite";
 export { default as Text } from "./components/Text";
-export { canvasComponentDecorator, default as RegisteredCanvasComponent } from "./decorators/canvas-element-decorator";
-export { default as eventDecorator } from "./decorators/event-decorator";
+export { canvasComponentDecorator, default as RegisteredCanvasComponents } from "./decorators/canvas-element-decorator";
+export { eventDecorator, default as RegisteredEvents } from "./decorators/event-decorator";
 export { shakeEffect } from "./functions/canvas-effect";
 export {
     moveIn,

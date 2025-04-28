@@ -3,8 +3,8 @@ import { CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
-import { getEventInstanceById, getEventTypeById } from "../decorators/event-decorator";
+import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import { default as RegisteredEvents } from "../decorators/event-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
 import TextMemory from "../interfaces/memory/TextMemory";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
@@ -70,7 +70,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
      */
     onEvent<T extends typeof CanvasEvent<typeof this>>(event: CanvasEventNamesType, eventClass: T) {
         let id = eventClass.prototype.id;
-        let instance = getEventInstanceById(id);
+        let instance = RegisteredEvents.getInstance(id);
         this._onEvents[event] = id;
         if (instance) {
             super.on(event, () => {
@@ -105,7 +105,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
         return super.on(event, fn, context);
     }
 }
-RegisteredCanvasComponent.add(Text, CANVAS_TEXT_ID);
+RegisteredCanvasComponents.add(Text, CANVAS_TEXT_ID);
 
 export async function setMemoryText(element: Text, memory: TextMemory | {}) {
     await setMemoryContainer(element, memory);
@@ -123,7 +123,7 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
     if ("onEvents" in memory) {
         for (let event in memory.onEvents) {
             let id = memory.onEvents[event];
-            let instance = getEventTypeById(id);
+            let instance = RegisteredEvents.get(id);
             if (instance) {
                 element.onEvent(event as CanvasEventNamesType, instance);
             }

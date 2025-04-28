@@ -1,6 +1,6 @@
 import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
-import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { showWithDissolve } from "../functions/canvas-transition";
 import { addVideo } from "../functions/video-utility";
 import { VideoSpriteOptions } from "../interfaces/canvas-options";
@@ -166,7 +166,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         }
     }
 }
-RegisteredCanvasComponent.add(VideoSprite, CANVAS_VIDEO_ID);
+RegisteredCanvasComponents.add(VideoSprite, CANVAS_VIDEO_ID);
 
 export async function setMemoryVideoSprite(
     element: VideoSprite,

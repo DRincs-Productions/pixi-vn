@@ -11,11 +11,11 @@ const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof C
  */
 export function canvasComponentDecorator(name?: CanvasElementAliasType) {
     return function (target: typeof CanvasBaseItem<any>) {
-        RegisteredCanvasComponent.add(target, name);
+        RegisteredCanvasComponents.add(target, name);
     };
 }
 
-namespace RegisteredCanvasComponent {
+namespace RegisteredCanvasComponents {
     /**
      * Register a canvas component in the game.
      * @param target The class of the canvas component.
@@ -63,4 +63,4 @@ namespace RegisteredCanvasComponent {
         return Array.from(registeredCanvasComponent.values());
     }
 }
-export default RegisteredCanvasComponent;
+export default RegisteredCanvasComponents;

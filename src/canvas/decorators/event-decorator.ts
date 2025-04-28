@@ -8,7 +8,7 @@ import { EventIdType } from "../types/EventIdType";
 /**
  * Canvas Event Register
  */
-export const registeredEvents = new CachedMap<EventIdType, typeof CanvasEvent<CanvasEventNamesType>>({ cacheSize: 5 });
+const registeredEvents = new CachedMap<EventIdType, typeof CanvasEvent<CanvasEventNamesType>>({ cacheSize: 5 });
 /**
  * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
@@ -16,7 +16,7 @@ export const registeredEvents = new CachedMap<EventIdType, typeof CanvasEvent<Ca
  * @param name is th identifier of the event, by default is the name of the class
  * @returns
  */
-export default function eventDecorator(name?: EventIdType) {
+export function eventDecorator(name?: EventIdType) {
     return function (target: typeof CanvasEvent<any>) {
         if (!name) {
             name = target.name;
@@ -29,44 +29,70 @@ export default function eventDecorator(name?: EventIdType) {
     };
 }
 
-/**
- * Get an event by the id.
- * @param eventId The id of the event.
- * @returns The event type.
- */
-export function getEventTypeById<T = typeof CanvasEvent<CanvasBaseInterface<any>>>(
-    eventId: EventIdType
-): T | undefined {
-    try {
-        let eventType = registeredEvents.get(eventId);
-        if (!eventType) {
-            logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
-            return;
+namespace RegisteredEvents {
+    /**
+     * Register a event in the game.
+     * @param target The class of the event.
+     * @param name Name of the event, by default it will use the class name. If the name is already registered, it will show a warning
+     */
+    export function add(target: typeof CanvasEvent<CanvasEventNamesType>, name?: EventIdType) {
+        if (!name) {
+            name = target.name;
         }
-        new eventType();
-        return eventType as T;
-    } catch (e) {
-        logger.error(`Error while getting Event ${eventId}`, e);
-        return;
+        if (registeredEvents.get(name)) {
+            logger.info(`Event ${name} already exists, it will be overwritten`);
+        }
+        target.prototype.id = name;
+        registeredEvents.set(name, target);
     }
-}
 
-/**
- * Get an event instance by the id.
- * @param eventId The id of the event.
- * @returns The event instance.
- */
-export function getEventInstanceById<T = CanvasEvent<CanvasBaseInterface<any>>>(eventId: EventIdType): T | undefined {
-    try {
-        let eventType = registeredEvents.get(eventId);
-        if (!eventType) {
-            logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
+    /**
+     * Get a event by the id.
+     * @param canvasId The id of the event.
+     * @returns The event type.
+     */
+    export function get<T = typeof CanvasEvent<CanvasBaseInterface<any>>>(eventId: EventIdType): T | undefined {
+        try {
+            let eventType = registeredEvents.get(eventId);
+            if (!eventType) {
+                logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
+                return;
+            }
+            new eventType();
+            return eventType as T;
+        } catch (e) {
+            logger.error(`Error while getting Event ${eventId}`, e);
             return;
         }
-        let event = new eventType();
-        return event as T;
-    } catch (e) {
-        logger.error(`Error while getting Event ${eventId}`, e);
-        return;
+    }
+
+    /**
+     * Get a event instance by the id.
+     * @param eventId The id of the event.
+     * @returns The event instance.
+     */
+    export function getInstance<T = CanvasEvent<CanvasBaseInterface<any>>>(eventId: EventIdType): T | undefined {
+        try {
+            let eventType = registeredEvents.get(eventId);
+            if (!eventType) {
+                logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
+                return;
+            }
+            let event = new eventType();
+            return event as T;
+        } catch (e) {
+            logger.error(`Error while getting Event ${eventId}`, e);
+            return;
+        }
+    }
+
+    /**
+     * Get a list of all events registered.
+     * @returns An array of events.
+     * @example
+     */
+    export function values(): (typeof CanvasEvent<CanvasEventNamesType>)[] {
+        return Array.from(registeredEvents.values());
     }
 }
+export default RegisteredEvents;

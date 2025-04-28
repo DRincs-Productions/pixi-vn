@@ -1,7 +1,7 @@
 import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import {
     calculateAlignByPosition,
@@ -324,7 +324,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         super.y = value;
     }
 }
-RegisteredCanvasComponent.add(ImageSprite, CANVAS_IMAGE_ID);
+RegisteredCanvasComponents.add(ImageSprite, CANVAS_IMAGE_ID);
 
 export async function setMemoryImageSprite(
     element: ImageSprite,

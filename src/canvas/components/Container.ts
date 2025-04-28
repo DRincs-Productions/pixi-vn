@@ -3,8 +3,8 @@ import { CANVAS_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { default as RegisteredCanvasComponent } from "../decorators/canvas-element-decorator";
-import { getEventInstanceById } from "../decorators/event-decorator";
+import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import RegisteredEvents from "../decorators/event-decorator";
 import { importCanvasElement } from "../functions/canvas-import-utility";
 import { getMemoryContainer } from "../functions/canvas-memory-utility";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
@@ -91,7 +91,7 @@ export default class Container<
      */
     onEvent<T extends CanvasEventNamesType, T2 extends typeof CanvasEvent<typeof this>>(event: T, eventClass: T2) {
         let id = eventClass.prototype.id;
-        let instance = getEventInstanceById(id);
+        let instance = RegisteredEvents.getInstance(id);
         this._onEvents[event] = id;
         if (instance) {
             super.on(event, () => {
@@ -122,7 +122,7 @@ export default class Container<
         return super.on(event, fn, context);
     }
 }
-RegisteredCanvasComponent.add(Container, CANVAS_CONTAINER_ID);
+RegisteredCanvasComponents.add(Container, CANVAS_CONTAINER_ID);
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,
