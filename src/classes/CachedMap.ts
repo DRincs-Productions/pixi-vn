@@ -36,8 +36,8 @@ export default class CachedMap<K extends {}, V extends {}> implements Map<K, V> 
         }
         return this.map.get(key);
     }
-    get has() {
-        return this.map.has;
+    has(key: K): boolean {
+        return this.map.has(key);
     }
     set(key: K, value: V): this {
         this.map.set(key, value);
