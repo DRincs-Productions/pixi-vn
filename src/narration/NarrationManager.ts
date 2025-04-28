@@ -210,6 +210,26 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return this.getCanGoNext();
     }
+    private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
+        let onStepRun = label.onStepStart;
+        if (onStepRun) {
+            await onStepRun(stepId, label);
+        }
+        onStepRun = NarrationManagerStatic.onStepStart;
+        if (onStepRun) {
+            await onStepRun(stepId, label);
+        }
+    }
+    private async onStepEnd(label: LabelAbstract<any, any>, stepId: number) {
+        let onStepEnd = label.onStepEnd;
+        if (onStepEnd) {
+            await onStepEnd(stepId, label);
+        }
+        onStepEnd = NarrationManagerStatic.onStepEnd;
+        if (onStepEnd) {
+            await onStepEnd(stepId, label);
+        }
+    }
     public async goNext(
         props: StepLabelPropsType,
         options: { choiseMade?: number; runNow?: boolean } = {}
@@ -222,8 +242,11 @@ export default class NarrationManager implements NarrationManagerInterface {
             NarrationManagerStatic.goNextRequests++;
             return;
         }
-        if (this.currentLabel && this.currentLabel.onStepEnd) {
-            await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
+        try {
+            this.currentLabel &&
+                (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
+        } catch (e) {
+            logger.error("Error running onStepEnd", e);
         }
         if (NarrationManagerStatic.stepsRunning === 0) {
             await GameUnifier.onGoNextEnd();
@@ -259,17 +282,14 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return;
             }
             if (currentLabel.stepCount > currentLabelStepIndex) {
-                let onStepRun = currentLabel.onStepStart;
-                if (onStepRun) {
-                    try {
-                        await onStepRun(currentLabelStepIndex, currentLabel);
-                    } catch (e) {
-                        logger.error("Error running onStepStart", e);
-                        if (this.onStepError) {
-                            this.onStepError(e, props);
-                        }
-                        return;
+                try {
+                    await this.onStepRun(currentLabel, currentLabelStepIndex);
+                } catch (e) {
+                    logger.error("Error running onStepStart", e);
+                    if (this.onStepError) {
+                        this.onStepError(e, props);
                     }
+                    return;
                 }
                 let step = currentLabel.getStepById(currentLabelStepIndex);
                 if (!step) {
@@ -395,8 +415,11 @@ export default class NarrationManager implements NarrationManagerInterface {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
 
-            if (this.currentLabel && this.currentLabel.onStepEnd) {
-                await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
+            try {
+                this.currentLabel &&
+                    (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
+            } catch (e) {
+                logger.error("Error running onStepEnd", e);
             }
             NarrationManagerStatic.pushNewLabel(tempLabel.id); //
         } catch (e) {
@@ -444,8 +467,11 @@ export default class NarrationManager implements NarrationManagerInterface {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
 
-            if (this.currentLabel && this.currentLabel.onStepEnd) {
-                await this.currentLabel.onStepEnd(NarrationManagerStatic.currentLabelStepIndex || 0, this.currentLabel);
+            try {
+                this.currentLabel &&
+                    (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
+            } catch (e) {
+                logger.error("Error running onStepEnd", e);
             }
             NarrationManagerStatic.pushNewLabel(tempLabel.id); //
         } catch (e) {
@@ -725,6 +751,16 @@ export default class NarrationManager implements NarrationManagerInterface {
             stepCounter: this.stepCounter,
         };
     }
+
+    private async onLoadingLabel(currentLabelStepIndex: number): Promise<void> {
+        const promise = this.openedLabels.map((labelInfo) => {
+            let label = RegisteredLabels.get(labelInfo.label);
+            if (label && label.onLoadingLabel) {
+                return label.onLoadingLabel(currentLabelStepIndex, label);
+            }
+        });
+        await Promise.all(promise);
+    }
     public async restore(data: object, lastHistoryStep: HistoryStep | null) {
         this.clear();
         try {
@@ -743,18 +779,10 @@ export default class NarrationManager implements NarrationManagerInterface {
                 logger.warn("Could not import stepCounter data, so will be ignored");
             }
 
-            if (this.currentLabel && this.currentLabel.onLoadingLabel) {
-                await this.currentLabel.onLoadingLabel(
-                    NarrationManagerStatic.currentLabelStepIndex || 0,
-                    this.currentLabel
-                );
-                for (let i = 0; i < this.openedLabels.length; i++) {
-                    let labelInfo = this.openedLabels[i];
-                    let label = RegisteredLabels.get(labelInfo.label);
-                    if (label && label.onLoadingLabel) {
-                        await label.onLoadingLabel(labelInfo.currentStepIndex, label);
-                    }
-                }
+            try {
+                await this.onLoadingLabel(NarrationManagerStatic.currentLabelStepIndex || 0);
+            } catch (e) {
+                logger.error("Error running onLoadingLabel", e);
             }
         } catch (e) {
             logger.error("Error importing data", e);

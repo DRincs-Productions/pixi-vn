@@ -277,25 +277,6 @@ export default class GameUnifier {
         return GameUnifier._getCurrentStepsRunningNumber();
     }
 
-    /**
-     * Function to be executed at the end of the game. It should be set in the game initialization.
-     * @example
-     * ```typescript
-     * Game.onEnd = async (props) => {
-     *    props.navigate("/end")
-     * }
-     * ```
-     */
-    static onEnd: StepLabelType | undefined = undefined;
-    /**
-     * Function to be executed when an error occurs in the step.
-     * @example
-     * ```typescript
-     * Game.onError = (type, error, props) => {
-     *    props.notify("An error occurred")
-     *    // send a notification to GlitchTip, Sentry, etc...
-     * }
-     * ```
-     */
-    static onError: ((type: "step", error: any, props: StepLabelPropsType) => void) | undefined = undefined;
+    static onEnd?: StepLabelType;
+    static onError?: (type: "step", error: any, props: StepLabelPropsType) => void;
 }
