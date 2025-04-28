@@ -192,6 +192,75 @@ export namespace Game {
     export function jsonToGameState(json: string): pixivninterface.GameState {
         return JSON.parse(json);
     }
+
+    /**
+     * Function to be executed at the end of the game. It should be set in the game initialization.
+     * @example
+     * ```typescript
+     * Game.onEnd(async (props) => {
+     *    props.navigate("/end")
+     * })
+     * ```
+     */
+    export function onEnd(value: narrationUtils.StepLabelType) {
+        GameUnifier.onEnd = value;
+    }
+    /**
+     * Function to be executed when an error occurs in the step.
+     * @example
+     * ```typescript
+     * Game.onError((type, error, props) => {
+     *    props.notify("An error occurred")
+     *    // send a notification to GlitchTip, Sentry, etc...
+     * })
+     * ```
+     */
+    export function onError(value: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void) {
+        GameUnifier.onError = value;
+    }
+    /**
+     * Is a function that will be executed before any step is executed.
+     * @param stepId Step id
+     * @param label Label
+     * @returns
+     */
+    export function onStepStart(
+        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>
+    ) {
+        narrationUtils.NarrationManagerStatic.onStepStart = value;
+    }
+    /**
+     * Is a function that will be executed in {@link Game.onStepStart} if the id of the step is 0
+     * and when the user laods a save file.
+     * When you load a save file, will be executed all onLoadingLabel functions of the {@link narrationUtils.narration}.openedLabels.
+     * It is useful for example to make sure all images used have been cached
+     * @param stepId Step id
+     * @param label Label
+     * @returns
+     * @example
+     * ```typescript
+     * Game.onLoadingLabel(async (stepId, label) => {
+     *     await Assets.load('path/to/image1.png')
+     *     await Assets.load('path/to/image2.png')
+     * })
+     * ```
+     */
+    export function onLoadingLabel(
+        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>
+    ) {
+        narrationUtils.NarrationManagerStatic.onLoadingLabel = value;
+    }
+    /**
+     * Is a function that will be executed when the step ends.
+     * @param stepId Step id
+     * @param label Label
+     * @returns
+     */
+    export function onStepEnd(
+        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>
+    ) {
+        narrationUtils.NarrationManagerStatic.onStepEnd = value;
+    }
 }
 
 export default {

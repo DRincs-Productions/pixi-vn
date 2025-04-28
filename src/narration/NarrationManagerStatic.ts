@@ -1,3 +1,4 @@
+import { LabelAbstract } from ".";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
@@ -289,4 +290,24 @@ export default class NarrationManagerStatic {
             };
         }
     }
+
+    static _onStepStart?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
+    static set onStepStart(value: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>) {
+        NarrationManagerStatic._onStepStart = value;
+    }
+    public get onStepStart(): ((stepId: number, label: LabelAbstract<any>) => void | Promise<void>) | undefined {
+        return async (stepId: number, label: LabelAbstract<any>) => {
+            if (NarrationManagerStatic._onLoadingLabel && stepId === 0) {
+                await NarrationManagerStatic._onLoadingLabel(stepId, label);
+            }
+            if (NarrationManagerStatic._onStepStart) {
+                return await NarrationManagerStatic._onStepStart(stepId, label);
+            }
+        };
+    }
+    static _onLoadingLabel?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
+    static set onLoadingLabel(value: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>) {
+        NarrationManagerStatic._onLoadingLabel = value;
+    }
+    static onStepEnd?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
 }

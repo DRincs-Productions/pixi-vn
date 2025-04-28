@@ -229,24 +229,11 @@ export default interface NarrationManagerInterface {
     /* Go Back & Refresh Methods */
 
     /**
-     * Function to be executed at the end of the game. It should be set in the game initialization.
-     * @example
-     * ```typescript
-     * narration.onGameEnd = async (props) => {
-     *    props.navigate("/end")
-     * }
-     * ```
+     * @deprecated Use Game.onEnd
      */
     onGameEnd: StepLabelType | undefined;
     /**
-     * Function to be executed when an error occurs in the step.
-     * @example
-     * ```typescript
-     * narration.onStepError = (error, props) => {
-     *    props.notify("An error occurred")
-     *    // send a notification to GlitchTip, Sentry, etc...
-     * }
-     * ```
+     * @deprecated Use Game.onError
      */
     onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined;
 

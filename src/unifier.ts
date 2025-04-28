@@ -1,5 +1,6 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import { StorageElementType } from "./storage";
+import { StepLabelPropsType, StepLabelType } from "./narration/types/StepLabelType";
+import { StorageElementType } from "./storage/types/StorageElementType";
 import { logger } from "./utils/log-utility";
 
 export default class GameUnifier {
@@ -275,4 +276,7 @@ export default class GameUnifier {
     static get currentStepsRunningNumber() {
         return GameUnifier._getCurrentStepsRunningNumber();
     }
+
+    static onEnd?: StepLabelType;
+    static onError?: (type: "step", error: any, props: StepLabelPropsType) => void;
 }
