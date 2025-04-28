@@ -1,60 +1,88 @@
 import { CharacterInterface } from "@drincs/pixi-vn";
+import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 
-export const registeredCharacters = new Map<string, CharacterInterface>();
+const registeredCharacters = new CachedMap<string, CharacterInterface>({ cacheSize: 10 });
+
 /**
- * Is a function that saves the character. If the character already exists, it will be overwritten.
- * @param character is the character to save
- * @returns
- * @example
- * ```typescript
- * export const liam = new CharacterBaseModel('liam', { name: 'Liam'});
- * export const alice = new CharacterBaseModel('alice', { name: 'Alice'});
- * saveCharacter([liam, alice]);
- * ```
+ * @deprecated Use `RegisteredCharacters.add` instead.
  */
 export function saveCharacter<T extends CharacterInterface = CharacterInterface>(character: T | T[]) {
-    if (Array.isArray(character)) {
-        character.forEach((c) => saveCharacter(c));
-        return;
-    }
-    if (registeredCharacters.get(character.id)) {
-        logger.info(`Character id ${character.id} already exists, it will be overwritten`);
-    }
-    registeredCharacters.set(character.id, character);
+    return RegisteredCharacters.add(character);
 }
 
 /**
- * is a function that returns the character by the id
- * @param id is the id of the character
- * @returns the character
- * @example
- * ```typescript
- * const liam = getCharacterById('liam');
- * ```
+ * @deprecated Use `RegisteredCharacters.get` instead.
  */
 export function getCharacterById<T extends CharacterInterface>(id: string): T | undefined {
-    try {
-        let character = registeredCharacters.get(id);
-        if (!character) {
-            logger.error(`Character ${id} not found, did you forget to register it with the saveCharacter?`);
-            return;
-        }
-        return character as T;
-    } catch (e) {
-        logger.error(`Error while getting Character ${id}`, e);
-        return;
-    }
+    return RegisteredCharacters.get<T>(id);
 }
 
 /**
- * is a function that returns all characters
- * @returns all characters
- * @example
- * ```typescript
- * const allCharacters = getAllCharacters();
- * ```
+ * @deprecated Use `RegisteredCharacters.values` instead.
  */
 export function getAllCharacters<T extends CharacterInterface>(): T[] {
-    return Object.values(registeredCharacters) as T[];
+    return RegisteredCharacters.values<T>();
 }
+
+namespace RegisteredCharacters {
+    /**
+     * is a function that returns the character by the id
+     * @param id is the id of the character
+     * @returns the character
+     * @example
+     * ```typescript
+     * const liam = RegisteredCharacters.get('liam');
+     * ```
+     */
+    export function get<T = CharacterInterface>(id: string): T | undefined {
+        try {
+            let character = registeredCharacters.get(id);
+            if (!character) {
+                logger.error(
+                    `Character ${id} not found, did you forget to register it with the RegisteredCharacters.add?`
+                );
+                return;
+            }
+            return character as T;
+        } catch (e) {
+            logger.error(`Error while getting Character ${id}`, e);
+            return;
+        }
+    }
+
+    /**
+     * Is a function that saves the character. If the character already exists, it will be overwritten.
+     * @param character is the character to save
+     * @returns
+     * @example
+     * ```typescript
+     * export const liam = new CharacterBaseModel('liam', { name: 'Liam'});
+     * export const alice = new CharacterBaseModel('alice', { name: 'Alice'});
+     * RegisteredCharacters.add([liam, alice]);
+     * ```
+     */
+    export function add(character: CharacterInterface | CharacterInterface[]) {
+        if (Array.isArray(character)) {
+            character.forEach((c) => add(c));
+            return;
+        }
+        if (registeredCharacters.get(character.id)) {
+            logger.info(`Character id ${character.id} already exists, it will be overwritten`);
+        }
+        registeredCharacters.set(character.id, character);
+    }
+
+    /**
+     * is a function that returns all characters
+     * @returns all characters
+     * @example
+     * ```typescript
+     * const allCharacters = RegisteredCharacters.values();
+     * ```
+     */
+    export function values<T extends CharacterInterface>(): T[] {
+        return Array.from(registeredCharacters.values()) as T[];
+    }
+}
+export default RegisteredCharacters;

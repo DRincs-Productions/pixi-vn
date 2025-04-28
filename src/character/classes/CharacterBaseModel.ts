@@ -1,10 +1,10 @@
-import { saveCharacter } from "../decorators/character-decorator";
+import { default as RegisteredCharacters } from "../decorators/character-decorator";
 import CharacterBaseModelProps from "../interfaces/CharacterBaseModelProps";
 import CharacterStoredClass from "./CharacterStoredClass";
 
 /**
  * CharacterBaseModel is a class that is used to create a character model.
- * You must use the {@link saveCharacter} function to save the character in the game.
+ * You must use the {@link RegisteredCharacters.add} function to save the character in the game.
  * It is raccomended to create your own class Character, read more here: https://pixi-vn.web.app/start/character.html#custom-character
  * @example
  * ```typescript
@@ -22,7 +22,7 @@ import CharacterStoredClass from "./CharacterStoredClass";
  *     icon: "https://pixijs.com/assets/eggHead.png",
  *     color: "#9e2e12"
  * });
- * saveCharacter([liam, alice]);
+ * RegisteredCharacters.add([liam, alice]);
  * ```
  */
 export default class CharacterBaseModel extends CharacterStoredClass {
