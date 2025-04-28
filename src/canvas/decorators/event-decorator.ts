@@ -18,14 +18,7 @@ const registeredEvents = new CachedMap<EventIdType, typeof CanvasEvent<CanvasEve
  */
 export function eventDecorator(name?: EventIdType) {
     return function (target: typeof CanvasEvent<any>) {
-        if (!name) {
-            name = target.name;
-        }
-        if (registeredEvents.get(name)) {
-            logger.info(`Event ${name} already exists, it will be overwritten`);
-        }
-        target.prototype.id = name;
-        registeredEvents.set(name, target);
+        RegisteredEvents.add(target, name);
     };
 }
 
