@@ -211,7 +211,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return this.getCanGoNext();
     }
     private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
-        let res: (void | Promise<void>)[] = [];
+        let res: (void | Promise<void> | Promise<void[]>)[] = [];
         if (label.onStepStart) {
             res.push(label.onStepStart(stepId, label));
         }

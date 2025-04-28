@@ -291,18 +291,20 @@ export default class NarrationManagerStatic {
         }
     }
 
-    static _onStepStart?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
+    private static _onStepStart?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
     static set onStepStart(value: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>) {
         NarrationManagerStatic._onStepStart = value;
     }
-    public get onStepStart(): ((stepId: number, label: LabelAbstract<any>) => void | Promise<void>) | undefined {
+    static get onStepStart(): ((stepId: number, label: LabelAbstract<any>) => Promise<void[]>) | undefined {
         return async (stepId: number, label: LabelAbstract<any>) => {
+            let res: (Promise<void> | void)[] = [];
             if (NarrationManagerStatic.onLoadingLabel && stepId === 0) {
-                await NarrationManagerStatic.onLoadingLabel(stepId, label);
+                res.push(NarrationManagerStatic.onLoadingLabel(stepId, label));
             }
             if (NarrationManagerStatic._onStepStart) {
-                return await NarrationManagerStatic._onStepStart(stepId, label);
+                res.push(NarrationManagerStatic._onStepStart(stepId, label));
             }
+            return await Promise.all(res);
         };
     }
     static onLoadingLabel?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
