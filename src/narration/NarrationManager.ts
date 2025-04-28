@@ -388,7 +388,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     props: {},
                     choiseIndex: choiseMade,
                 };
-                return this.closeChoiceMenu(choice, props);
+                return this.closeChoiceMenu<T>(choice, props);
             }
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
