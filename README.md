@@ -181,7 +181,7 @@ Now you must initialize the Pixi’VN window before using the engine.
 For example, you add the following code to the `main.ts` or `index.ts` (It depends on your project configuration):
 
 ```typescript
-import { Game, narration } from "@drincs/pixi-vn";
+import { Game } from "@drincs/pixi-vn";
 import "./index.css";
 
 // Canvas setup with PIXI
@@ -197,7 +197,7 @@ Game.init(body, {
 });
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
-narration.onGameEnd = async (props) => {
+Game.onEnd = async (props) => {
     Game.clear();
     props.navigate("/");
 };
