@@ -211,24 +211,24 @@ export default class NarrationManager implements NarrationManagerInterface {
         return this.getCanGoNext();
     }
     private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
-        let onStepRun = label.onStepStart;
-        if (onStepRun) {
-            await onStepRun(stepId, label);
+        let res: (void | Promise<void>)[] = [];
+        if (label.onStepStart) {
+            res.push(label.onStepStart(stepId, label));
         }
-        onStepRun = NarrationManagerStatic.onStepStart;
-        if (onStepRun) {
-            await onStepRun(stepId, label);
+        if (NarrationManagerStatic.onStepStart) {
+            res.push(NarrationManagerStatic.onStepStart(stepId, label));
         }
+        return await Promise.all(res);
     }
     private async onStepEnd(label: LabelAbstract<any, any>, stepId: number) {
-        let onStepEnd = label.onStepEnd;
-        if (onStepEnd) {
-            await onStepEnd(stepId, label);
+        let res: (void | Promise<void>)[] = [];
+        if (label.onStepEnd) {
+            res.push(label.onStepEnd(stepId, label));
         }
-        onStepEnd = NarrationManagerStatic.onStepEnd;
-        if (onStepEnd) {
-            await onStepEnd(stepId, label);
+        if (NarrationManagerStatic.onStepEnd) {
+            res.push(NarrationManagerStatic.onStepEnd(stepId, label));
         }
+        return await Promise.all(res);
     }
     public async goNext(
         props: StepLabelPropsType,
@@ -752,14 +752,21 @@ export default class NarrationManager implements NarrationManagerInterface {
         };
     }
 
-    private async onLoadingLabel(currentLabelStepIndex: number): Promise<void> {
-        const promise = this.openedLabels.map((labelInfo) => {
+    private async onLoadingLabel(currentLabelStepIndex: number) {
+        const promise = this.openedLabels.map(async (labelInfo) => {
+            let res: (void | Promise<void>)[] = [];
             let label = RegisteredLabels.get(labelInfo.label);
-            if (label && label.onLoadingLabel) {
-                return label.onLoadingLabel(currentLabelStepIndex, label);
+            if (label) {
+                if (label.onLoadingLabel) {
+                    res.push(label.onLoadingLabel(currentLabelStepIndex, label));
+                }
+                if (NarrationManagerStatic.onLoadingLabel) {
+                    res.push(NarrationManagerStatic.onLoadingLabel(currentLabelStepIndex, label));
+                }
             }
+            return await Promise.all(res);
         });
-        await Promise.all(promise);
+        return await Promise.all(promise);
     }
     public async restore(data: object, lastHistoryStep: HistoryStep | null) {
         this.clear();
