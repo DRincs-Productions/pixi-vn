@@ -18,7 +18,7 @@ import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
 import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
 import TickerBase from "./tickers/classes/TickerBase";
-import { getTickerInstanceById } from "./tickers/decorators/ticker-decorator";
+import RegisteredTickers from "./tickers/decorators/ticker-decorator";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
 import PauseTickerType from "./types/PauseTickerType";
@@ -350,7 +350,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (typeof canvasElementAlias === "string") {
             canvasElementAlias = [canvasElementAlias];
         }
-        if (!getTickerInstanceById<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
+        if (!RegisteredTickers.getInstance<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
             logger.error(`Ticker ${tickerId} not found`);
             return;
         }
@@ -488,7 +488,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             CanvasManagerStatic.addTickerTimeoutInfo(alias, "steps", timeout.toString(), false);
             return;
         }
-        let ticker = getTickerInstanceById<TArgs>(
+        let ticker = RegisteredTickers.getInstance<TArgs>(
             (step as TickersStep<TArgs>).ticker,
             (step as TickersStep<TArgs>).args,
             step.duration,
@@ -794,7 +794,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 } else {
                     tickers[id].steps.forEach((step) => {
                         if (typeof step === "object" && "ticker" in step) {
-                            let ticker = getTickerInstanceById<any>(
+                            let ticker = RegisteredTickers.getInstance<any>(
                                 (step as TickersStep<any>).ticker,
                                 (step as TickersStep<any>).args,
                                 step.duration,
@@ -888,7 +888,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 let tickers = (data as CanvasGameState)["tickers"];
                 Object.entries(tickers).forEach(([oldId, t]) => {
                     let aliases: string[] = t.canvasElementAliases;
-                    let ticker = getTickerInstanceById(t.id, t.args, t.duration, t.priority);
+                    let ticker = RegisteredTickers.getInstance(t.id, t.args, t.duration, t.priority);
                     if (ticker) {
                         let id = this.addTicker(aliases, ticker);
                         if (id) {

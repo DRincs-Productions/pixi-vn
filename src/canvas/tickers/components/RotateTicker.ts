@@ -2,7 +2,7 @@ import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { RotateTickerProps, TickerBase, TickerValue } from "..";
 import { canvas } from "../..";
 import { logger } from "../../../utils/log-utility";
-import { tickerDecoratorFn } from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/ticker-decorator";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 
@@ -98,4 +98,4 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         return speed / 100;
     }
 }
-tickerDecoratorFn(RotateTicker);
+RegisteredTickers.add(RotateTicker);

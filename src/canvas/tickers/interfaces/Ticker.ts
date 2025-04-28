@@ -1,6 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import { TickerIdType } from "../../types/TickerIdType";
-import { getTickerInstanceById } from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/ticker-decorator";
 import TickerArgs from "./TickerArgs";
 
 export default interface Ticker<TArgs extends TickerArgs> {
@@ -17,7 +17,7 @@ export default interface Ticker<TArgs extends TickerArgs> {
      */
     priority?: UPDATE_PRIORITY;
     /**
-     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link getTickerInstanceById}
+     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link RegisteredTickers.getInstance}
      */
     id: TickerIdType;
 }

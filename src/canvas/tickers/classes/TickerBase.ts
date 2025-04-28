@@ -1,7 +1,7 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import { canvas } from "../..";
 import { TickerIdType } from "../../types/TickerIdType";
-import tickerDecorator, { getTickerInstanceById } from "../decorators/ticker-decorator";
+import RegisteredTickers, { tickerDecorator } from "../decorators/ticker-decorator";
 import Ticker from "../interfaces/Ticker";
 import TickerArgs from "../interfaces/TickerArgs";
 import TickerValue from "./TickerValue";
@@ -51,7 +51,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         this.id = this.constructor.prototype.id;
     }
     /**
-     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link getTickerInstanceById}
+     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link RegisteredTickers.getInstance}
      */
     id: TickerIdType = "ticker_id_not_set";
     args: TArgs;

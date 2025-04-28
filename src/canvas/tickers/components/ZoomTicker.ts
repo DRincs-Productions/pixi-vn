@@ -2,7 +2,7 @@ import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { TickerBase, TickerValue, ZoomTickerProps } from "..";
 import { canvas } from "../..";
 import { logger } from "../../../utils/log-utility";
-import { tickerDecoratorFn } from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/ticker-decorator";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 
@@ -149,4 +149,4 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         return { x: xLimit, y: yLimit };
     }
 }
-tickerDecoratorFn(ZoomTicker);
+RegisteredTickers.add(ZoomTicker);

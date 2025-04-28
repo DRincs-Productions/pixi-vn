@@ -1,4 +1,5 @@
 import { UPDATE_PRIORITY } from "pixi.js";
+import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
 import TickerBase from "../classes/TickerBase";
@@ -7,7 +8,7 @@ import TickerArgs from "../interfaces/TickerArgs";
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.
  */
-export const registeredTickers = new Map<TickerIdType, typeof TickerBase>();
+const registeredTickers = new CachedMap<TickerIdType, typeof TickerBase>({ cacheSize: 5 });
 /**
  * Is a decorator that register a ticker in the game.
  * Is a required decorator for use the ticker in the game.
@@ -15,46 +16,82 @@ export const registeredTickers = new Map<TickerIdType, typeof TickerBase>();
  * @param name is th identifier of the label, by default is the name of the class
  * @returns
  */
-export default function tickerDecorator(name?: TickerIdType) {
+export function tickerDecorator(name?: TickerIdType) {
     return function (target: typeof TickerBase<any>) {
-        tickerDecoratorFn(target, name);
+        RegisteredTickers.add(target, name);
     };
 }
 
-export function tickerDecoratorFn(target: typeof TickerBase<any>, name?: TickerIdType) {
-    if (!name) {
-        name = target.name;
+namespace RegisteredTickers {
+    /**
+     * Register a ticker in the game.
+     * @param target The class of the ticker.
+     * @param name Name of the ticker, by default it will use the class name. If the name is already registered, it will show a warning
+     */
+    export function add(target: typeof TickerBase<any>, name?: TickerIdType) {
+        if (!name) {
+            name = target.name;
+        }
+        if (registeredTickers.get(name)) {
+            logger.info(`Ticker ${name} already exists, it will be overwritten`);
+        }
+        target.prototype.id = name;
+        registeredTickers.set(name, target);
     }
-    if (registeredTickers.get(name)) {
-        logger.info(`Ticker ${name} already exists, it will be overwritten`);
-    }
-    target.prototype.id = name;
-    registeredTickers.set(name, target);
-}
 
-/**
- * Get a ticker instance by the id.
- * @param tickerId The id of the ticker.
- * @param args The arguments that you want to pass to the ticker.
- * @param duration The duration of the ticker. If is undefined, the ticker will be called every frame.
- * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
- * @returns The instance of the ticker
- */
-export function getTickerInstanceById<TArgs extends TickerArgs>(
-    tickerId: TickerIdType,
-    args: TArgs,
-    duration?: number,
-    priority?: UPDATE_PRIORITY
-): TickerBase<TArgs> | undefined {
-    try {
-        let ticker = registeredTickers.get(tickerId);
-        if (!ticker) {
-            logger.error(`Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
+    /**
+     * Get a ticker by the id.
+     * @param canvasId The id of the ticker.
+     * @returns The ticker type.
+     */
+    export function get<T = typeof TickerBase<any>>(tickerId: TickerIdType): T | undefined {
+        try {
+            let tickerType = registeredTickers.get(tickerId);
+            if (!tickerType) {
+                logger.error(`Event ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
+                return;
+            }
+            return tickerType as T;
+        } catch (e) {
+            logger.error(`Error while getting Event ${tickerId}`, e);
             return;
         }
-        return new ticker(args, duration, priority);
-    } catch (e) {
-        logger.error(`Error while getting Ticker ${tickerId}`, e);
-        return;
+    }
+
+    /**
+     * Get a ticker instance by the id.
+     * @param tickerId The id of the ticker.
+     * @param args The arguments that you want to pass to the ticker.
+     * @param duration The duration of the ticker. If is undefined, the ticker will be called every frame.
+     * @param priority The priority of the ticker. If is undefined, the priority will be UPDATE_PRIORITY.NORMAL.
+     * @returns The instance of the ticker
+     */
+    export function getInstance<TArgs extends TickerArgs>(
+        tickerId: TickerIdType,
+        args: TArgs,
+        duration?: number,
+        priority?: UPDATE_PRIORITY
+    ): TickerBase<TArgs> | undefined {
+        try {
+            let ticker = registeredTickers.get(tickerId);
+            if (!ticker) {
+                logger.error(`Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
+                return;
+            }
+            return new ticker(args, duration, priority);
+        } catch (e) {
+            logger.error(`Error while getting Ticker ${tickerId}`, e);
+            return;
+        }
+    }
+
+    /**
+     * Get a list of all tickers registered.
+     * @returns An array of tickers.
+     * @example
+     */
+    export function values(): (typeof TickerBase<any>)[] {
+        return Array.from(registeredTickers.values());
     }
 }
+export default RegisteredTickers;

@@ -13,7 +13,7 @@ import {
 } from "../../functions/canvas-property-utility";
 import TickerBase from "../classes/TickerBase";
 import TickerValue from "../classes/TickerValue";
-import { tickerDecoratorFn } from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/ticker-decorator";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 import { MoveTickerProps } from "../types/MoveTickerProps";
@@ -172,4 +172,4 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
         return speed * (66 / 400);
     }
 }
-tickerDecoratorFn(MoveTicker);
+RegisteredTickers.add(MoveTicker);
