@@ -57,7 +57,6 @@ namespace RegisteredCanvasComponents {
     /**
      * Get a list of all canvas components registered.
      * @returns An array of canvas components.
-     * @example
      */
     export function values(): (typeof CanvasBaseItem<any>)[] {
         return Array.from(registeredCanvasComponent.values());

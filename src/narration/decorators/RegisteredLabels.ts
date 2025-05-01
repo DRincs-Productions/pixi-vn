@@ -43,7 +43,6 @@ namespace RegisteredLabels {
     /**
      * Get a list of all labels registered.
      * @returns An array of labels.
-     * @example
      */
     export function values(): LabelAbstract<any>[] {
         return Array.from(registeredLabels.values());

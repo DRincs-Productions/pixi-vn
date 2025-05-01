@@ -88,7 +88,6 @@ namespace RegisteredTickers {
     /**
      * Get a list of all tickers registered.
      * @returns An array of tickers.
-     * @example
      */
     export function values(): (typeof TickerBase<any>)[] {
         return Array.from(registeredTickers.values());

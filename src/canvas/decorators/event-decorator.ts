@@ -82,7 +82,6 @@ namespace RegisteredEvents {
     /**
      * Get a list of all events registered.
      * @returns An array of events.
-     * @example
      */
     export function values(): (typeof CanvasEvent<CanvasEventNamesType>)[] {
         return Array.from(registeredEvents.values());
