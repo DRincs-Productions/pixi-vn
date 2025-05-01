@@ -42,9 +42,13 @@ export default interface HistoryStep {
      */
     labelStepIndex: number | null;
     /**
-     * Dialogue to be shown in the game
+     * @deprecated
      */
     dialoge?: StoredDialogue;
+    /**
+     * Dialogue to be shown in the game
+     */
+    dialogue?: StoredDialogue;
     /**
      * List of choices asked of the player
      */

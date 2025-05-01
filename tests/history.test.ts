@@ -116,7 +116,7 @@ test("choise test", async () => {
     let narrativeHistory = stepHistory.narrativeHistory;
     expect(narrativeHistory).toEqual([
         {
-            dialoge: {
+            dialogue: {
                 text: "Wait!",
                 character: "steph",
             },
@@ -125,7 +125,7 @@ test("choise test", async () => {
             stepIndex: 0,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "Wait! I've got a gift for you!",
                 character: "steph",
             },
@@ -134,7 +134,7 @@ test("choise test", async () => {
             stepIndex: 1,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "...?",
                 character: "mc",
             },
@@ -143,7 +143,7 @@ test("choise test", async () => {
             stepIndex: 2,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "It's food.",
                 character: "sly",
             },
@@ -152,7 +152,7 @@ test("choise test", async () => {
             stepIndex: 3,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "sly.name!",
                 character: "steph",
             },
@@ -161,7 +161,7 @@ test("choise test", async () => {
             stepIndex: 4,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "sly.name! SPOILERS!!!!",
                 character: "steph",
             },
@@ -170,7 +170,7 @@ test("choise test", async () => {
             stepIndex: 5,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "steph_fullname goes through the opposite door,",
             },
             playerMadeChoice: false,
@@ -178,7 +178,7 @@ test("choise test", async () => {
             stepIndex: 6,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "steph_fullname goes through the opposite door, and returns with a HUGE tinfoil-covered platter.",
             },
             playerMadeChoice: false,
@@ -186,7 +186,7 @@ test("choise test", async () => {
             stepIndex: 7,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "Looks like you baked way too much again.",
                 character: "james",
             },
@@ -195,7 +195,7 @@ test("choise test", async () => {
             stepIndex: 8,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "He doesn't have to know that!!!",
                 character: "steph",
             },
@@ -204,7 +204,7 @@ test("choise test", async () => {
             stepIndex: 9,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "...thanks... um...",
                 character: "mc",
             },
@@ -213,7 +213,7 @@ test("choise test", async () => {
             stepIndex: 10,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "Oh! You gotta take in your luggage!",
                 character: "steph",
             },
@@ -222,7 +222,7 @@ test("choise test", async () => {
             stepIndex: 11,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "You want continue to the next part?",
             },
             playerMadeChoice: true,
@@ -243,7 +243,7 @@ test("choise test", async () => {
             stepIndex: 12,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "She enters my room before I'VE even had a chance to.",
             },
             playerMadeChoice: false,

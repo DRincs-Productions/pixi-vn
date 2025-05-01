@@ -212,7 +212,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label",
                     },
                     stepSha1: "96be3ba3f3367043b673c02aeded9511deb03ace",
@@ -258,7 +258,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label 2",
                     },
                     stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
@@ -304,7 +304,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label 3",
                     },
                     stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
@@ -356,7 +356,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label",
                     },
                     stepSha1: "f8a7a1ac6f734312857b47f23fa95abb31466c99",
@@ -396,7 +396,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label 2",
                     },
                     stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
@@ -436,7 +436,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label 3",
                     },
                     stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
@@ -482,7 +482,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label",
                     },
                     stepSha1: "f8a7a1ac6f734312857b47f23fa95abb31466c99",
@@ -522,7 +522,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label 2",
                     },
                     stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
@@ -562,7 +562,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         },
                     ],
                     currentLabel: "stepCounter",
-                    dialoge: {
+                    dialogue: {
                         text: "This is a test label 3",
                     },
                     stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",

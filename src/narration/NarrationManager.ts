@@ -58,14 +58,16 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {}
     ) {
         const { choiseMade, ignoreSameStep } = options;
-        let dialoge: StoredDialogue | undefined = undefined;
+        let dialogue: StoredDialogue | undefined = undefined;
         let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
             this.stepCounter
         ) {
-            dialoge = GameUnifier.getVariable<StoredDialogue>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY);
+            dialogue = GameUnifier.getVariable<StoredDialogue>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
+            );
         }
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) ===
@@ -86,7 +88,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         let historyInfo: Omit<HistoryStep, "diff"> = {
             currentLabel: NarrationManagerStatic.currentLabelId,
-            dialoge: dialoge,
+            dialogue: dialogue,
             choices: requiredChoices,
             stepSha1: stepSha,
             index: this.stepCounter,
@@ -570,7 +572,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return {
             ...dialogue,
-            character: dialogue.character ? GameUnifier.getCharacter(dialogue.character) : undefined,
+            character: dialogue.character
+                ? GameUnifier.getCharacter(dialogue.character) || dialogue.character
+                : undefined,
         };
     }
     public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {

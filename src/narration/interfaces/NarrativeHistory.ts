@@ -5,7 +5,7 @@ export default interface NarrativeHistory {
     /**
      * Dialogue to be shown in the game
      */
-    dialoge?: DialogueInterface;
+    dialogue?: DialogueInterface;
     /**
      * List of choices asked of the player
      */
