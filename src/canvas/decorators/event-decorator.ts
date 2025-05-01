@@ -33,7 +33,7 @@ namespace RegisteredEvents {
             name = target.name;
         }
         if (registeredEvents.get(name)) {
-            logger.info(`Event ${name} already exists, it will be overwritten`);
+            logger.info(`Event "${name}" already exists, it will be overwritten`);
         }
         target.prototype.id = name;
         registeredEvents.set(name, target);
@@ -48,13 +48,13 @@ namespace RegisteredEvents {
         try {
             let eventType = registeredEvents.get(eventId);
             if (!eventType) {
-                logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
+                logger.error(`Event "${eventId}" not found, did you forget to register it with the eventDecorator?`);
                 return;
             }
             new eventType();
             return eventType as T;
         } catch (e) {
-            logger.error(`Error while getting Event ${eventId}`, e);
+            logger.error(`Error while getting Event "${eventId}"`, e);
             return;
         }
     }
@@ -68,13 +68,13 @@ namespace RegisteredEvents {
         try {
             let eventType = registeredEvents.get(eventId);
             if (!eventType) {
-                logger.error(`Event ${eventId} not found, did you forget to register it with the eventDecorator?`);
+                logger.error(`Event "${eventId}" not found, did you forget to register it with the eventDecorator?`);
                 return;
             }
             let event = new eventType();
             return event as T;
         } catch (e) {
-            logger.error(`Error while getting Event ${eventId}`, e);
+            logger.error(`Error while getting Event "${eventId}"`, e);
             return;
         }
     }
@@ -86,6 +86,15 @@ namespace RegisteredEvents {
      */
     export function values(): (typeof CanvasEvent<CanvasEventNamesType>)[] {
         return Array.from(registeredEvents.values());
+    }
+
+    /**
+     * Check if a event is registered.
+     * @param id The id of the event.
+     * @returns True if the event is registered, false otherwise
+     */
+    export function has(id: string): boolean {
+        return registeredEvents.has(id);
     }
 }
 export default RegisteredEvents;

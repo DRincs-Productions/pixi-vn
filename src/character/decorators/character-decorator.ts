@@ -2,7 +2,7 @@ import { CharacterInterface } from "@drincs/pixi-vn";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 
-const registeredCharacters = new CachedMap<string, CharacterInterface>({ cacheSize: 10 });
+export const registeredCharacters = new CachedMap<string, CharacterInterface>({ cacheSize: 10 });
 
 /**
  * @deprecated Use `RegisteredCharacters.add` instead.
@@ -39,14 +39,14 @@ namespace RegisteredCharacters {
         try {
             let character = registeredCharacters.get(id);
             if (!character) {
-                logger.error(
-                    `Character ${id} not found, did you forget to register it with the RegisteredCharacters.add?`
+                logger.warn(
+                    `Character "${id}" not found, did you forget to register it with the RegisteredCharacters.add?`
                 );
                 return;
             }
             return character as T;
         } catch (e) {
-            logger.error(`Error while getting Character ${id}`, e);
+            logger.error(`Error while getting Character "${id}"`, e);
             return;
         }
     }
@@ -68,7 +68,7 @@ namespace RegisteredCharacters {
             return;
         }
         if (registeredCharacters.get(character.id)) {
-            logger.info(`Character id ${character.id} already exists, it will be overwritten`);
+            logger.info(`Character id "${character.id}" already exists, it will be overwritten`);
         }
         registeredCharacters.set(character.id, character);
     }
@@ -83,6 +83,15 @@ namespace RegisteredCharacters {
      */
     export function values<T extends CharacterInterface>(): T[] {
         return Array.from(registeredCharacters.values()) as T[];
+    }
+
+    /**
+     * Check if a character is registered.
+     * @param id is the id of the character
+     * @returns true if the character exists, false otherwise
+     */
+    export function has(id: string): boolean {
+        return registeredCharacters.has(id);
     }
 }
 export default RegisteredCharacters;
