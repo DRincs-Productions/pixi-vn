@@ -4,6 +4,7 @@ import {
     HistoryManagerStatic,
     narration,
     NarrationManagerStatic,
+    RegisteredCharacters,
     sound,
     stepHistory,
     storage,
@@ -43,6 +44,9 @@ test("setup", async () => {
             return stepHistory.add(historyInfo, opstions);
         },
         getCurrentStepsRunningNumber: () => NarrationManagerStatic.stepsRunning,
+        getCharacter: (id: string) => {
+            return RegisteredCharacters.get(id);
+        },
         // storage
         getVariable: (key) => storage.getVariable(key),
         setVariable: (key, value) => storage.setVariable(key, value),

@@ -1,4 +1,5 @@
 import { DialogueInterface } from "@drincs/pixi-vn";
+import { registeredCharacters } from "../character/decorators/character-decorator";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
@@ -557,7 +558,16 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
 
     public get dialogue(): DialogueInterface | undefined {
-        return GameUnifier.getVariable<StoredDialogue>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY);
+        const dialogue = GameUnifier.getVariable<StoredDialogue>(
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
+        );
+        if (!dialogue) {
+            return undefined;
+        }
+        return {
+            ...dialogue,
+            character: dialogue.character ? registeredCharacters.get(dialogue.character) : undefined,
+        };
     }
     public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {
         if (!dialogue) {

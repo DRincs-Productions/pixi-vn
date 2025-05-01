@@ -1,4 +1,4 @@
-import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
+import { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { StepLabelPropsType, StepLabelType } from "./narration/types/StepLabelType";
 import { StorageElementType } from "./storage/types/StorageElementType";
 import { logger } from "./utils/log-utility";
@@ -100,6 +100,12 @@ export default class GameUnifier {
          * This function returns the number of steps that are currently running.
          */
         getCurrentStepsRunningNumber: () => number;
+        /**
+         * This function returns the character by its id.
+         * @param id The id of the character.
+         * @returns The character or undefined if it does not exist.
+         */
+        getCharacter: (id: string) => CharacterInterface | undefined;
     }) {
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
@@ -115,6 +121,7 @@ export default class GameUnifier {
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._getCurrentStepsRunningNumber = options.getCurrentStepsRunningNumber;
+        GameUnifier._getCharacter = options.getCharacter;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
@@ -275,6 +282,18 @@ export default class GameUnifier {
      */
     static get currentStepsRunningNumber() {
         return GameUnifier._getCurrentStepsRunningNumber();
+    }
+    private static _getCharacter: (id: string) => CharacterInterface | undefined = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new Error("Method not implemented.");
+    };
+    /**
+     * This function returns the character by its id.
+     * @param id The id of the character.
+     * @returns The character or undefined if it does not exist.
+     */
+    static get getCharacter() {
+        return GameUnifier._getCharacter;
     }
 
     static onEnd?: StepLabelType;
