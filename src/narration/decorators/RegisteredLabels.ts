@@ -19,7 +19,7 @@ namespace RegisteredLabels {
     export function get<T = LabelAbstract<any>>(id: LabelIdType): T | undefined {
         let label = registeredLabels.get(id);
         if (!label) {
-            logger.error(`Label ${id} not found`);
+            logger.error(`Label "${id}" not found`);
             return;
         }
         return label as T;
@@ -35,7 +35,7 @@ namespace RegisteredLabels {
             return;
         }
         if (registeredLabels.has(label.id)) {
-            logger.info(`Label ${label.id} already exists, it will be overwritten`);
+            logger.info(`Label "${label.id}" already exists, it will be overwritten`);
         }
         registeredLabels.set(label.id, label);
     }
@@ -47,6 +47,15 @@ namespace RegisteredLabels {
      */
     export function values(): LabelAbstract<any>[] {
         return Array.from(registeredLabels.values());
+    }
+
+    /**
+     * Check if a label is registered
+     * @param id The id of the label
+     * @returns True if the label is registered, false otherwise
+     */
+    export function has(id: string): boolean {
+        return registeredLabels.has(id);
     }
 }
 export default RegisteredLabels;
