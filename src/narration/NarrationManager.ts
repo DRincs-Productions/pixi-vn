@@ -1,5 +1,4 @@
-import { DialogueInterface } from "@drincs/pixi-vn";
-import { registeredCharacters } from "../character/decorators/character-decorator";
+import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
@@ -557,7 +556,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         };
     }
 
-    public get dialogue(): DialogueInterface | undefined {
+    public get dialogue():
+        | (Partial<DialogueInterface> & {
+              text: string | string[];
+              character?: CharacterInterface | string;
+          })
+        | undefined {
         const dialogue = GameUnifier.getVariable<StoredDialogue>(
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
         );
@@ -566,7 +570,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return {
             ...dialogue,
-            character: dialogue.character ? registeredCharacters.get(dialogue.character) : undefined,
+            character: dialogue.character ? GameUnifier.getCharacter(dialogue.character) : undefined,
         };
     }
     public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {
@@ -589,12 +593,22 @@ export default class NarrationManager implements NarrationManagerInterface {
             }
             this.dialogGlue = false;
         }
-
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, {
-            ...dialogue,
-            character: typeof dialogue.character === "string" ? dialogue.character : dialogue.character?.id,
-        });
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, this.stepCounter);
+        try {
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
+                createExportableElement({
+                    ...dialogue,
+                    character: typeof dialogue.character === "string" ? dialogue.character : dialogue.character?.id,
+                })
+            );
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
+                this.stepCounter
+            );
+        } catch (e) {
+            logger.error("DialogueInterface cannot contain functions or classes");
+            throw e;
+        }
     }
     public get choiceMenuOptions(): ChoiceMenuOptionsType<any> | undefined {
         let d = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
