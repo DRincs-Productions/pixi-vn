@@ -25,6 +25,16 @@ declare module "@drincs/pixi-vn" {
          */
         readonly color?: string;
     }
+    interface DialogueInterface {
+        /**
+         * The text of the dialogue.
+         */
+        text: string | string[];
+        /**
+         * The id of the character that is speaking.
+         */
+        character?: CharacterInterface | string;
+    }
     interface StepLabelProps {
         [key: string]: any;
     }

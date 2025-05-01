@@ -1,12 +1,12 @@
 import { HistoryInfo } from "@drincs/pixi-vn";
-import { Dialogue, HistoryStep, NarrativeHistory } from "../../narration";
+import { HistoryStep, NarrativeHistory } from "../../narration";
 import HistoryGameState from "./HistoryGameState";
 
 export default interface HistoryManagerInterface {
     /**
      * stepHistory is a list of label events and steps that occurred during the progression of the steps.
      */
-    readonly stepsHistory: HistoryStep<Dialogue>[];
+    readonly stepsHistory: HistoryStep[];
     /**
      * Get the narrative history
      * @returns the history of the dialogues, choices and steps

@@ -1,4 +1,4 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
+import { DialogueInterface } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
@@ -6,9 +6,9 @@ import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
 import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
-import Dialogue from "./classes/Dialogue";
 import LabelAbstract from "./classes/LabelAbstract";
 import RegisteredLabels from "./decorators/RegisteredLabels";
+import { StoredDialogue } from "./interfaces/DialogueInterface";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
 import NarrationGameState from "./interfaces/NarrationGameState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
@@ -16,7 +16,6 @@ import NarrationManagerStatic from "./NarrationManagerStatic";
 import { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { Close } from "./types/CloseType";
-import DialogueType from "./types/DialogueType";
 import { InputInfo } from "./types/InputInfo";
 import { LabelIdType } from "./types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
@@ -59,14 +58,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {}
     ) {
         const { choiseMade, ignoreSameStep } = options;
-        let dialoge: Dialogue | undefined = undefined;
+        let dialoge: StoredDialogue | undefined = undefined;
         let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
             this.stepCounter
         ) {
-            dialoge = this.dialogue;
+            dialoge = GameUnifier.getVariable<StoredDialogue>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY);
         }
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) ===
@@ -557,57 +556,23 @@ export default class NarrationManager implements NarrationManagerInterface {
         };
     }
 
-    public get dialogue(): Dialogue | undefined {
-        return GameUnifier.getVariable<DialogueType>(
-            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
-        ) as Dialogue;
+    public get dialogue(): DialogueInterface | undefined {
+        return GameUnifier.getVariable<StoredDialogue>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY);
     }
-    public set dialogue(
-        props:
-            | {
-                  character: string | CharacterInterface;
-                  text: string | string[];
-              }
-            | string
-            | string[]
-            | Dialogue
-            | undefined
-    ) {
-        if (!props) {
+    public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {
+        if (!dialogue) {
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, undefined);
             return;
         }
-        let text = "";
-        let character: string | undefined = undefined;
-        let dialogue: Dialogue;
-        if (typeof props === "string") {
-            text = props;
-            dialogue = new Dialogue(text, character);
-        } else if (Array.isArray(props)) {
-            text = props.join();
-            dialogue = new Dialogue(text, character);
-        } else if (!(props instanceof Dialogue)) {
-            if (Array.isArray(props.text)) {
-                text = props.text.join();
-            } else {
-                text = props.text;
-            }
-            if (props.character) {
-                if (typeof props.character === "string") {
-                    character = props.character;
-                } else {
-                    character = props.character.id;
-                }
-            }
-            dialogue = new Dialogue(text, character);
-        } else {
-            dialogue = props;
+
+        if (typeof dialogue === "string" || Array.isArray(dialogue)) {
+            dialogue = { text: dialogue };
         }
 
         if (this.dialogGlue) {
-            let glueDialogue = GameUnifier.getVariable<DialogueType>(
+            let glueDialogue = GameUnifier.getVariable<StoredDialogue>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
-            ) as Dialogue;
+            );
             if (glueDialogue) {
                 dialogue.text = `${glueDialogue.text}${dialogue.text}`;
                 dialogue.character = dialogue.character || glueDialogue.character;
@@ -615,7 +580,10 @@ export default class NarrationManager implements NarrationManagerInterface {
             this.dialogGlue = false;
         }
 
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType);
+        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, {
+            ...dialogue,
+            character: typeof dialogue.character === "string" ? dialogue.character : dialogue.character?.id,
+        });
         GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, this.stepCounter);
     }
     public get choiceMenuOptions(): ChoiceMenuOptionsType<any> | undefined {

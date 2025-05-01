@@ -2,17 +2,11 @@ import { NarrationManagerInterface } from "..";
 import NarrationManager from "./NarrationManager";
 
 export { default as ChoiceMenuOption, ChoiceMenuOptionClose } from "./classes/ChoiceMenuOption";
-export {
-    default as Dialogue,
-    /**
-     *  @deprecated use "import { Dialogue } from '@drincs/pixi-vn';"
-     */
-    default as DialogueBaseModel,
-} from "./classes/Dialogue";
 export { default as Label } from "./classes/Label";
 export { default as LabelAbstract } from "./classes/LabelAbstract";
 export { default as newLabel } from "./decorators/newLabel";
 export { default as RegisteredLabels } from "./decorators/RegisteredLabels";
+export { default as DialogueInterface } from "./interfaces/DialogueInterface";
 export type { default as HistoryStep } from "./interfaces/HistoryStep";
 export type { default as LabelProps } from "./interfaces/LabelProps";
 export type { default as NarrationGameState } from "./interfaces/NarrationGameState";
@@ -25,7 +19,6 @@ export { default as NarrationManagerStatic } from "./NarrationManagerStatic";
 export type { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 export { Close } from "./types/CloseType";
 export type { CloseType } from "./types/CloseType";
-export type { default as DialogueType } from "./types/DialogueType";
 export type { default as HistoryChoiceMenuOption } from "./types/HistoryChoiceMenuOption";
 export type { InputInfo } from "./types/InputInfo";
 export type { default as LabelRunModeType } from "./types/LabelRunModeType";

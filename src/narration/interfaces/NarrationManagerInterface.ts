@@ -1,9 +1,8 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
 import {
     ChoiceMenuOption,
     ChoiceMenuOptionClose,
     ChoiceMenuOptionsType,
-    Dialogue,
+    DialogueInterface,
     InputInfo,
     LabelAbstract,
     NarrationGameState,
@@ -240,21 +239,11 @@ export default interface NarrationManagerInterface {
     /**
      * Dialogue to be shown in the game
      */
-    get dialogue(): Dialogue | undefined;
+    get dialogue(): DialogueInterface | undefined;
     /**
      * Dialogue to be shown in the game
      */
-    set dialogue(
-        props:
-            | {
-                  character: string | CharacterInterface;
-                  text: string | string[];
-              }
-            | string
-            | string[]
-            | Dialogue
-            | undefined
-    );
+    set dialogue(props: DialogueInterface | string | string[] | undefined);
     /**
      * The options to be shown in the game
      * @example
