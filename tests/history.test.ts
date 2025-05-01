@@ -119,7 +119,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "Wait!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -129,7 +128,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "Wait! I've got a gift for you!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -139,7 +137,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "...?",
                 character: "mc",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -149,7 +146,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "It's food.",
                 character: "sly",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -159,7 +155,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "sly.name!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -169,7 +164,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "sly.name! SPOILERS!!!!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -178,7 +172,6 @@ test("choise test", async () => {
         {
             dialoge: {
                 text: "steph_fullname goes through the opposite door,",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -187,7 +180,6 @@ test("choise test", async () => {
         {
             dialoge: {
                 text: "steph_fullname goes through the opposite door, and returns with a HUGE tinfoil-covered platter.",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -197,7 +189,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "Looks like you baked way too much again.",
                 character: "james",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -207,7 +198,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "He doesn't have to know that!!!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -217,7 +207,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "...thanks... um...",
                 character: "mc",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -227,7 +216,6 @@ test("choise test", async () => {
             dialoge: {
                 text: "Oh! You gotta take in your luggage!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -236,7 +224,6 @@ test("choise test", async () => {
         {
             dialoge: {
                 text: "You want continue to the next part?",
-                oltherParams: {},
             },
             playerMadeChoice: true,
             choices: [
@@ -258,7 +245,6 @@ test("choise test", async () => {
         {
             dialoge: {
                 text: "She enters my room before I'VE even had a chance to.",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,

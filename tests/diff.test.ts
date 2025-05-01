@@ -12,7 +12,6 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
                 value: {
                     text: "I just wanted to see what the new guy was like.",
                     character: "sly",
-                    oltherParams: {},
                 },
             },
             {
@@ -1782,7 +1781,6 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
                 value: {
                     text: "I know you're both watching, come on out already!",
                     character: "james",
-                    oltherParams: {},
                 },
             },
             {
@@ -2122,7 +2120,6 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges 2", async () => {
                 value: {
                     text: "I just wanted to see what the new guy was like. Hey, you, Peter- be nice to our little brother,",
                     character: "sly",
-                    oltherParams: {},
                 },
             },
             {
@@ -3186,7 +3183,6 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges 2", async () => {
                 value: {
                     text: "I just wanted to see what the new guy was like.",
                     character: "sly",
-                    oltherParams: {},
                 },
             },
             {

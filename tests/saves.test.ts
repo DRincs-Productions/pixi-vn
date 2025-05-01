@@ -100,7 +100,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     key: "___current_dialogue_memory___",
                     value: {
                         text: "This is a test label 3",
-                        oltherParams: {},
                     },
                 },
                 {
@@ -144,7 +143,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                                     key: "___current_dialogue_memory___",
                                     value: {
                                         text: "This is a test label",
-                                        oltherParams: {},
                                     },
                                 },
                                 {
@@ -216,7 +214,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label",
-                        oltherParams: {},
                     },
                     stepSha1: "96be3ba3f3367043b673c02aeded9511deb03ace",
                     index: 0,
@@ -263,7 +260,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label 2",
-                        oltherParams: {},
                     },
                     stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
                     index: 1,
@@ -310,7 +306,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label 3",
-                        oltherParams: {},
                     },
                     stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
                     index: 2,
@@ -363,7 +358,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label",
-                        oltherParams: {},
                     },
                     stepSha1: "f8a7a1ac6f734312857b47f23fa95abb31466c99",
                     index: 3,
@@ -404,7 +398,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label 2",
-                        oltherParams: {},
                     },
                     stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
                     index: 4,
@@ -445,7 +438,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label 3",
-                        oltherParams: {},
                     },
                     stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
                     index: 5,
@@ -492,7 +484,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label",
-                        oltherParams: {},
                     },
                     stepSha1: "f8a7a1ac6f734312857b47f23fa95abb31466c99",
                     index: 6,
@@ -533,7 +524,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label 2",
-                        oltherParams: {},
                     },
                     stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
                     index: 7,
@@ -574,7 +564,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     currentLabel: "stepCounter",
                     dialoge: {
                         text: "This is a test label 3",
-                        oltherParams: {},
                     },
                     stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
                     index: 8,
@@ -599,7 +588,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             key: "___current_dialogue_memory___",
                             value: {
                                 text: "This is a test label 3",
-                                oltherParams: {},
                             },
                         },
                         {
