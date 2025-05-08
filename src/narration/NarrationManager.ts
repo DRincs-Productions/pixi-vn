@@ -53,11 +53,11 @@ export default class NarrationManager implements NarrationManagerInterface {
     private addStepHistory(
         stepSha: string,
         options: {
-            choiseMade?: number;
+            choiceMade?: number;
             ignoreSameStep?: boolean;
         } = {}
     ) {
-        const { choiseMade, ignoreSameStep } = options;
+        const { choiceMade, ignoreSameStep } = options;
         let dialogue: StoredDialogue | undefined = undefined;
         let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
@@ -93,7 +93,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             stepSha1: stepSha,
             index: this.stepCounter,
             labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
-            choiceIndexMade: choiseMade,
+            choiceIndexMade: choiceMade,
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
         };
@@ -233,7 +233,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public async goNext(
         props: StepLabelPropsType,
-        options: { choiseMade?: number; runNow?: boolean } = {}
+        options: { choiceMade?: number; runNow?: boolean } = {}
     ): Promise<StepLabelResultType> {
         const { runNow = false } = options;
         if (!runNow && !this.getCanGoNext({ showWarn: true })) {
@@ -265,12 +265,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType<T>,
         options: {
             /**
-             * The index of the choise made by the player. (This params is used in the choice menu)
+             * The index of the choice made by the player. (This params is used in the choice menu)
              */
-            choiseMade?: number;
+            choiceMade?: number;
         } = {}
     ): Promise<StepLabelResultType> {
-        const { choiseMade } = options;
+        const { choiceMade } = options;
         if (NarrationManagerStatic.currentLabelId) {
             let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
             if (currentLabelStepIndex === null) {
@@ -313,7 +313,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
 
                     let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
-                    if (choiseMade !== undefined && lastHistoryStep) {
+                    if (choiceMade !== undefined && lastHistoryStep) {
                         let stepSha = lastHistoryStep.stepSha1;
                         if (!stepSha) {
                             logger.warn("stepSha not found, setting to ERROR");
@@ -323,9 +323,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                             lastHistoryStep.currentLabel || "error",
                             typeof lastHistoryStep.labelStepIndex === "number" ? lastHistoryStep.labelStepIndex : -1,
                             lastHistoryStep.stepSha1 || AdditionalShaSpetsEnum.ERROR,
-                            choiseMade
+                            choiceMade
                         );
-                        NarrationManagerStatic.choiseMadeTemp = choiseMade;
+                        NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
 
                     NarrationManagerStatic.stepsRunning--;
@@ -333,9 +333,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha, {
                             ...options,
-                            choiseMade: NarrationManagerStatic.choiseMadeTemp,
+                            choiceMade: NarrationManagerStatic.choiceMadeTemp,
                         });
-                        NarrationManagerStatic.choiseMadeTemp = undefined;
+                        NarrationManagerStatic.choiceMadeTemp = undefined;
 
                         if (NarrationManagerStatic.goNextRequests > 0) {
                             NarrationManagerStatic.goNextRequests--;
@@ -383,12 +383,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType<T>,
         options?: {
             /**
-             * The index of the choise made by the player. (This params is used in the choice menu)
+             * The index of the choice made by the player. (This params is used in the choice menu)
              */
-            choiseMade?: number;
+            choiceMade?: number;
         }
     ): Promise<StepLabelResultType> {
-        const { choiseMade } = options || {};
+        const { choiceMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
             labelId = label;
@@ -407,7 +407,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     onlyHaveNoChoice: false,
                     autoSelect: false,
                     props: {},
-                    choiseIndex: choiseMade,
+                    choiseIndex: choiceMade,
                 };
                 return this.closeChoiceMenu<T>(choice, props);
             }
@@ -427,20 +427,20 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("Error calling label", e);
             return;
         }
-        return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
+        return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
     }
     public async jumpLabel<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
         options?: {
             /**
-             * The index of the choise made by the player. (This params is used in the choice menu)
+             * The index of the choice made by the player. (This params is used in the choice menu)
              */
-            choiseMade?: number;
+            choiceMade?: number;
         }
     ): Promise<StepLabelResultType> {
         if (this.openedLabels.length > 0) this.closeCurrentLabel();
-        const { choiseMade } = options || {};
+        const { choiceMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
             labelId = label;
@@ -459,7 +459,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     onlyHaveNoChoice: false,
                     autoSelect: false,
                     props: {},
-                    choiseIndex: choiseMade,
+                    choiseIndex: choiceMade,
                 };
                 return this.closeChoiceMenu<T>(choice, props);
             }
@@ -479,7 +479,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("Error jumping label", e);
             return;
         }
-        return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
+        return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
     }
     public async selectChoice<T extends {}>(
         item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
@@ -491,7 +491,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 item.label,
                 { ...item.props, ...props },
                 {
-                    choiseMade: item.choiseIndex,
+                    choiceMade: item.choiseIndex,
                 }
             );
         } else if (item.type == "jump") {
@@ -499,7 +499,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 item.label,
                 { ...item.props, ...props },
                 {
-                    choiseMade: item.choiseIndex,
+                    choiceMade: item.choiseIndex,
                 }
             );
         } else if (item.type == "close") {
@@ -526,14 +526,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         choice: ChoiceMenuOptionClose<T>,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
-        let choiseMade: number | undefined = undefined;
+        let choiceMade: number | undefined = undefined;
         if (typeof choice.choiseIndex === "number") {
-            choiseMade = choice.choiseIndex;
+            choiceMade = choice.choiseIndex;
         }
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
         }
-        return this.goNext(props, { choiseMade: choiseMade });
+        return this.goNext(props, { choiceMade });
     }
 
     /* Go Back & Refresh Methods */

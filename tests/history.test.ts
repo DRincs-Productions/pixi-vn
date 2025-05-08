@@ -1,7 +1,7 @@
 import { expect, test } from "vitest";
 import { ChoiceMenuOption, ChoiceMenuOptionClose, narration, newLabel, stepHistory, storage } from "../src";
 
-const startLabel = newLabel("choiseshistory", [
+const startLabel = newLabel("choiceshistory", [
     async () => {
         narration.dialogue = { character: "steph", text: `Wait!` };
     },
@@ -50,7 +50,7 @@ const startLabel = newLabel("choiseshistory", [
     },
 ]);
 
-const secondPart = newLabel("choiseshistory2", [
+const secondPart = newLabel("choiceshistory2", [
     async () => {
         narration.dialogue = `She enters my room before I'VE even had a chance to.`;
     },
@@ -93,7 +93,7 @@ const secondPart = newLabel("choiseshistory2", [
     },
 ]);
 
-test("choise test", async () => {
+test("choice test", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
