@@ -1,4 +1,5 @@
-import ChoiceMenuOption, { ChoiceMenuOptionClose } from "../classes/ChoiceMenuOption";
+import ChoiceMenuOption from "../classes/ChoiceMenuOption";
+import ChoiceMenuOptionClose from "../classes/ChoiceMenuOptionClose";
 
 /**
  * Munu is a type that contains a list of Label that a player can choose from.

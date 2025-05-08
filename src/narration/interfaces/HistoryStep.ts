@@ -1,8 +1,7 @@
 import { GameStepState } from "@drincs/pixi-vn";
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
-import { StorageElementType } from "../..";
-import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
+import { StorageElementType, StoredChoiceInterface } from "../..";
 import { LabelIdType } from "../types/LabelIdType";
 import { StoredDialogue } from "./DialogueInterface";
 
@@ -52,7 +51,7 @@ export default interface HistoryStep {
     /**
      * List of choices asked of the player
      */
-    choices?: IStoratedChoiceMenuOption[];
+    choices?: StoredChoiceInterface[];
     /**
      * List of choices already made by the player
      */

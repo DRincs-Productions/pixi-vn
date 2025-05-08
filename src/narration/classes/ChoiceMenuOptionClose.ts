@@ -1,17 +1,13 @@
 import { StorageObjectType } from "../../storage";
-import { logger } from "../../utils/log-utility";
-import RegisteredLabels from "../decorators/RegisteredLabels";
-import { LabelIdType } from "../types/LabelIdType";
-import LabelRunModeType from "../types/LabelRunModeType";
+import { Close, CloseType } from "../types/CloseType";
 import newCloseLabel from "./CloseLabel";
 import Label from "./Label";
-import LabelAbstract from "./LabelAbstract";
 
-type ChoiceMenuOptionOptions = {
+type ChoiceMenuOptionCloseOptions = {
     /**
-     * Type of the label to be opened. @default "call"
+     * If true, the current label will be closed. @default false
      */
-    type?: LabelRunModeType;
+    closeCurrentLabel?: boolean;
     /**
      * If this is true, the choice can only be made once. @default false
      */
@@ -33,38 +29,30 @@ type ChoiceMenuOptionOptions = {
 };
 
 /**
- * ChoiceMenuOption is a class that contains a Label and a text that will be displayed in the menu.
+ * ChoiceMenuOptionClose is a class that contains a text that will be displayed in the menu.
+ * It is used to close the menu.
  * @example
  * ```typescript
- * new ChoiceMenuOption("Hello", HelloLabel, {})
+ * new ChoiceMenuOptionClose("Return")
  * ```
  */
-export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extends LabelAbstract<any, T> = Label<T>> {
+export default class ChoiceMenuOptionClose<T extends {} = {}> {
+    /**
+     * Label to be opened when the option is selected
+     */
+    label: Label<T> = newCloseLabel();
     /**
      * Text to be displayed in the menu
      */
     text: string;
-    private _label: LabelAbstract<any, T> | LabelIdType;
     /**
-     * Label to be opened when the option is selected
+     * If true, the current label will be closed
      */
-    get label(): TLabel {
-        let label = this._label;
-        if (typeof label === "string") {
-            let res = RegisteredLabels.get<LabelAbstract<any, T>>(label);
-            if (res) {
-                label = res;
-            } else {
-                logger.error(`Label ${label} not found, so it will be closed`);
-                label = newCloseLabel<T>();
-            }
-        }
-        return label as TLabel;
-    }
+    closeCurrentLabel: boolean;
     /**
      * Type of the label to be opened
      */
-    type: LabelRunModeType;
+    type: CloseType = Close;
     /**
      * If this is true, the choice can only be made once.
      */
@@ -107,25 +95,14 @@ export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extend
     props: StorageObjectType = {};
     /**
      * @param text Text to be displayed in the menu
-     * @param label Label to be opened when the option is selected or the id of the label
-     * @param props Properties to be passed to the label and olther parameters that you can use when get all the choice menu options. It be converted to a JSON string, so it cannot contain functions or classes.
-     * @param options Options
+     * @param closeCurrentLabel If true, the current label will be closed. @default false
      */
-    constructor(
-        text: string,
-        label: Label<T> | LabelAbstract<any, T> | LabelIdType,
-        props: T,
-        options?: ChoiceMenuOptionOptions
-    ) {
+    constructor(text: string, options?: ChoiceMenuOptionCloseOptions) {
         this.text = text;
-        this._label = label;
-        this.type = options?.type || "call";
+        this.closeCurrentLabel = options?.closeCurrentLabel || false;
         this.oneTime = options?.oneTime || false;
         this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
         this.autoSelect = options?.autoSelect || false;
         this.choiseIndex = options?.choiceIndex;
-        if (props) {
-            this.props = props;
-        }
     }
 }
