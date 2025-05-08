@@ -30,7 +30,7 @@ type ChoiceMenuOptionOptions = {
     /**
      * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
      */
-    choiseIndex?: number;
+    choiceIndex?: number;
 };
 type ChoiceMenuOptionCloseOptions = {
     /**
@@ -54,7 +54,7 @@ type ChoiceMenuOptionCloseOptions = {
     /**
      * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
      */
-    choiseIndex?: number;
+    choiceIndex?: number;
 };
 
 /**
@@ -148,7 +148,7 @@ export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extend
         this.oneTime = options?.oneTime || false;
         this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
         this.autoSelect = options?.autoSelect || false;
-        this.choiseIndex = options?.choiseIndex;
+        this.choiseIndex = options?.choiceIndex;
         if (props) {
             this.props = props;
         }
@@ -230,7 +230,7 @@ export class ChoiceMenuOptionClose<T extends {} = {}> {
         this.oneTime = options?.oneTime || false;
         this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
         this.autoSelect = options?.autoSelect || false;
-        this.choiseIndex = options?.choiseIndex;
+        this.choiseIndex = options?.choiceIndex;
     }
 }
 

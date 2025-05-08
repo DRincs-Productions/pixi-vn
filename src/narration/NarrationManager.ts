@@ -629,7 +629,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                         oneTime: option.oneTime,
                         onlyHaveNoChoice: option.onlyHaveNoChoice,
                         autoSelect: option.autoSelect,
-                        choiseIndex: index,
+                        choiceIndex: index,
                     });
                     choice.label = itemLabel;
                     options.push(choice);
@@ -643,7 +643,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                             oneTime: option.oneTime,
                             onlyHaveNoChoice: option.onlyHaveNoChoice,
                             autoSelect: option.autoSelect,
-                            choiseIndex: index,
+                            choiceIndex: index,
                         })
                     );
                 }
