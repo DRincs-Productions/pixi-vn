@@ -35,7 +35,10 @@ type ChoiceMenuOptionOptions = {
  * new ChoiceMenuOption("Hello", HelloLabel, {})
  * ```
  */
-export default class ChoiceMenuOption<T extends StorageObjectType, TLabel extends LabelAbstract<any, T> = Label<T>> {
+export default class ChoiceMenuOption<
+    T extends StorageObjectType,
+    TLabel extends LabelAbstract<any, T> = LabelAbstract<any, T>
+> {
     /**
      * Text to be displayed in the menu
      */

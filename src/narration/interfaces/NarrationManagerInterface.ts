@@ -220,7 +220,7 @@ export default interface NarrationManagerInterface {
      * ```
      */
     selectChoice<T extends {}>(
-        item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
+        item: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType>;
 

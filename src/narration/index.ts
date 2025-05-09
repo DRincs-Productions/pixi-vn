@@ -22,7 +22,6 @@ export type {
     StoredIndexedChoiceInterface,
 } from "./interfaces/StoredChoiceInterface";
 export { default as NarrationManagerStatic } from "./NarrationManagerStatic";
-export type { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 export { Close } from "./types/CloseType";
 export type { CloseType } from "./types/CloseType";
 export type { default as HistoryChoiceMenuOption } from "./types/HistoryChoiceMenuOption";

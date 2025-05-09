@@ -450,7 +450,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
     }
     public async selectChoice<T extends {}>(
-        item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
+        item: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
         this.choiceMenuOptions = undefined;
@@ -475,7 +475,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             case "close":
                 return await this.closeChoiceMenu(item, { ...item.props, ...props });
             default:
-                logger.error(`[Pixi’VN] Type ${type} not found`);
+                logger.error(`Type ${type} not found`);
                 throw new Error(`[Pixi’VN] Type ${type} not found`);
         }
     }
@@ -494,9 +494,13 @@ export default class NarrationManager implements NarrationManagerInterface {
      * ```
      */
     public async closeChoiceMenu<T extends {} = {}>(
-        choice: ChoiceMenuOptionClose<T>,
+        choice: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
+        if (choice.type !== "close") {
+            logger.error("For closeChoiceMenu, the type must be close");
+            throw new Error("[Pixi’VN] For closeChoiceMenu, the type must be close");
+        }
         let choiceMade: number | undefined = undefined;
         if (typeof choice.choiseIndex === "number") {
             choiceMade = choice.choiseIndex;
