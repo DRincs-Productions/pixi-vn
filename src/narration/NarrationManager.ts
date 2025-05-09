@@ -472,7 +472,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             } catch (e) {
                 logger.error("Error running onStepEnd", e);
             }
-            NarrationManagerStatic.pushNewLabel(tempLabel.id); //
+            NarrationManagerStatic.pushNewLabel(tempLabel.id);
         } catch (e) {
             logger.error("Error jumping label", e);
             return;
