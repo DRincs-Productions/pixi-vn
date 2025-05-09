@@ -82,7 +82,7 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
     > = {};
     /**
      * @param text Text to be displayed in the menu
-     * @param closeCurrentLabel If true, the current label will be closed. @default false
+     * @param options Options
      */
     constructor(text: string, options?: ChoiceMenuOptionCloseOptions) {
         const {
