@@ -633,6 +633,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         let value: StoredChoiceInterface[] = options.map((option) => {
             if (option instanceof ChoiceMenuOptionClose) {
                 let temp: StoredChoiceInterface = {
+                    ...option.devProps,
                     text: option.text,
                     type: Close,
                     closeCurrentLabel: option.closeCurrentLabel,
@@ -644,6 +645,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return temp;
             } else if (option instanceof ChoiceMenuOption) {
                 let temp: StoredChoiceInterface = {
+                    ...option.devProps,
                     type: option.type,
                     text: option.text,
                     label: option.label.id,
