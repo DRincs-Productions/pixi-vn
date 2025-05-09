@@ -143,10 +143,6 @@ export default interface CanvasManagerInterface {
         }
     ): void;
     /**
-     * @deprecated use canvas.add
-     */
-    addCanvasElement(alias: string, canvasElement: CanvasBaseInterface<any>): void;
-    /**
      * Remove a canvas element from the canvas.
      * And remove all tickers that are not connected to any canvas element.
      * @param alias The alias of the canvas element to be removed.
@@ -168,10 +164,6 @@ export default interface CanvasManagerInterface {
         }
     ): void;
     /**
-     * @deprecated use canvas.remove
-     */
-    removeCanvasElement(alias: string | string[]): void;
-    /**
      * Get a canvas element by the alias.
      * @param alias The alias of the canvas element.
      * @returns The canvas element.
@@ -181,10 +173,6 @@ export default interface CanvasManagerInterface {
      * ```
      */
     find<T extends CanvasBaseInterface<any>>(alias: string): T | undefined;
-    /**
-     * @deprecated use canvas.find
-     */
-    getCanvasElement<T extends CanvasBaseInterface<any>>(alias: string): T | undefined;
     /**
      * Check if a DisplayObject is on the canvas.
      * @param pixiElement The DisplayObject to be checked.
@@ -245,14 +233,6 @@ export default interface CanvasManagerInterface {
         ticker: TickerBase<TArgs>
     ): string | undefined;
     /**
-     * @deprecated use canvas.addTickersSequence
-     */
-    addTickersSteps(
-        alias: string,
-        steps: (Ticker<any> | RepeatType | PauseType)[],
-        currentStepNumber?: number
-    ): string | undefined;
-    /**
      * Run a sequence of tickers.
      * @param alias The alias of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
@@ -297,19 +277,11 @@ export default interface CanvasManagerInterface {
      */
     removeTicker(tickerId: string | string[]): void;
     /**
-     * @deprecated use canvas.pauseTicker
-     */
-    putOnPauseTicker(alias: string, options?: PauseTickerType): void;
-    /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param options The options of the pause ticker.
      */
     pauseTicker(alias: string, options?: PauseTickerType): void;
-    /**
-     * @deprecated use canvas.resumeTicker
-     */
-    resumeTickerPaused(alias: string | string[]): void;
     /**
      * Resume a ticker.
      * @param alias The alias of the canvas element that will use the ticker.
