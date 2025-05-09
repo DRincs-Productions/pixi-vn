@@ -1,11 +1,11 @@
-import { Dialogue, HistoryChoiceMenuOption } from "..";
+import { DialogueInterface, HistoryChoiceMenuOption } from "..";
 import { StorageElementType } from "../../storage";
 
 export default interface NarrativeHistory {
     /**
      * Dialogue to be shown in the game
      */
-    dialoge?: Dialogue;
+    dialogue?: DialogueInterface;
     /**
      * List of choices asked of the player
      */

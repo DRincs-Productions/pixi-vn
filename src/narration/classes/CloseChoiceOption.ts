@@ -1,54 +1,32 @@
 import { ChoiceInterface } from "@drincs/pixi-vn";
 import { StorageObjectType } from "../../storage";
-import { logger } from "../../utils/log-utility";
-import RegisteredLabels from "../decorators/RegisteredLabels";
-import { ChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
-import { LabelIdType } from "../types/LabelIdType";
-import LabelRunModeType from "../types/LabelRunModeType";
-import newCloseLabel from "./CloseLabel";
-import Label from "./Label";
-import LabelAbstract from "./LabelAbstract";
+import { CloseChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
+import { Close, CloseType } from "../types/CloseType";
 
-interface ChoiceMenuOptionOptions
+interface ChoiceMenuOptionCloseOptions
     extends Omit<ChoiceInterface, "text" | "label" | "type" | "props" | "closeCurrentLabel"> {
     /**
-     * Type of the label to be opened. @default "call"
+     * If true, the current label will be closed. @default false
      */
-    type?: LabelRunModeType;
+    closeCurrentLabel?: boolean;
 }
 
 /**
- * @deprecated Use `newChoiceOption` instead
+ * @deprecated Use `newCloseChoiceOption` instead
  */
-export default class ChoiceMenuOption<
-    T extends StorageObjectType,
-    TLabel extends LabelAbstract<any, T> = LabelAbstract<any, T>
-> {
+export default class ChoiceMenuOptionClose {
     /**
      * Text to be displayed in the menu
      */
     text: string;
-    private _label: LabelAbstract<any, T> | LabelIdType;
     /**
-     * Label to be opened when the option is selected
+     * If true, the current label will be closed
      */
-    get label(): TLabel {
-        let label = this._label;
-        if (typeof label === "string") {
-            let res = RegisteredLabels.get<LabelAbstract<any, T>>(label);
-            if (res) {
-                label = res;
-            } else {
-                logger.error(`Label ${label} not found, so it will be closed`);
-                label = newCloseLabel<T>();
-            }
-        }
-        return label as TLabel;
-    }
+    closeCurrentLabel: boolean;
     /**
      * Type of the label to be opened
      */
-    type: LabelRunModeType;
+    type: CloseType = Close;
     /**
      * If this is true, the choice can only be made once.
      */
@@ -94,53 +72,36 @@ export default class ChoiceMenuOption<
     > = {};
     /**
      * @param text Text to be displayed in the menu
-     * @param label Label to be opened when the option is selected or the id of the label
-     * @param props Properties to be passed to the label and olther parameters that you can use when get all the choice menu options. It be converted to a JSON string, so it cannot contain functions or classes.
      * @param options Options
      */
-    constructor(
-        text: string,
-        label: Label<T> | LabelAbstract<any, T> | LabelIdType,
-        props: T,
-        options?: ChoiceMenuOptionOptions
-    ) {
+    constructor(text: string, options?: ChoiceMenuOptionCloseOptions) {
         const {
-            type = "call",
+            closeCurrentLabel = false,
             oneTime = false,
             onlyHaveNoChoice = false,
             autoSelect = false,
             ...devProps
         } = options || {};
         this.text = text;
-        this._label = label;
-        this.type = type;
+        this.closeCurrentLabel = closeCurrentLabel;
         this.oneTime = oneTime;
         this.onlyHaveNoChoice = onlyHaveNoChoice;
         this.autoSelect = autoSelect;
         this.devProps = devProps;
-        this.props = props;
     }
 }
 
 /**
- * Function to create a new choice menu option.
+ * Function to create a new choice menu option that will close the menu.
  * @example
  * ```typescript
- * newChoiceOption("Hello", HelloLabel, {})
+ * newCloseChoiceOption("Return")
  * ```
  */
-export function newChoiceOption<T extends StorageObjectType>(
-    text: string,
-    label: Label<T> | LabelAbstract<any, T> | LabelIdType,
-    props: T,
-    options?: ChoiceMenuOptionOptions
-): ChoiceOptionInterface {
-    const labelId = typeof label === "string" ? label : label.id;
+export function newCloseChoiceOption(text: string, options?: ChoiceMenuOptionCloseOptions): CloseChoiceOptionInterface {
     return {
         ...options,
-        label: labelId,
-        props: props,
+        type: Close,
         text,
-        type: options?.type || "call",
     };
 }

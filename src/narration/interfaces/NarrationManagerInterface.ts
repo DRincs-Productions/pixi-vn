@@ -1,9 +1,7 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
 import {
     ChoiceMenuOption,
     ChoiceMenuOptionClose,
-    ChoiceMenuOptionsType,
-    Dialogue,
+    DialogueInterface,
     InputInfo,
     LabelAbstract,
     NarrationGameState,
@@ -11,6 +9,8 @@ import {
     StepLabelPropsType,
     StepLabelResultType,
     StepLabelType,
+    StoredChoiceInterface,
+    StoredIndexedChoiceInterface,
 } from "..";
 import { StorageElementType } from "../../storage";
 import { LabelIdType } from "../types/LabelIdType";
@@ -140,9 +140,9 @@ export default interface NarrationManagerInterface {
         props: StepLabelPropsType,
         options?: {
             /**
-             * The index of the choise made by the player. (This params is used in the choice menu)
+             * The index of the choice made by the player. (This params is used in the choice menu)
              */
-            choiseMade?: number;
+            choiceMade?: number;
             /**
              * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
              */
@@ -220,7 +220,7 @@ export default interface NarrationManagerInterface {
      * ```
      */
     selectChoice<T extends {}>(
-        item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
+        item: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType>;
 
@@ -240,35 +240,39 @@ export default interface NarrationManagerInterface {
     /**
      * Dialogue to be shown in the game
      */
-    get dialogue(): Dialogue | undefined;
+    get dialogue(): DialogueInterface | undefined;
     /**
      * Dialogue to be shown in the game
      */
-    set dialogue(
-        props:
-            | {
-                  character: string | CharacterInterface;
-                  text: string | string[];
-              }
-            | string
-            | string[]
-            | Dialogue
-            | undefined
-    );
+    set dialogue(props: DialogueInterface | string | string[] | undefined);
     /**
      * The options to be shown in the game
      * @example
      * ```typescript
      * narration.choiceMenuOptions = [
-     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
-     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
-     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
-     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
-     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     *     newChoiceOption("Events Test", EventsTestLabel, {}),
+     *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     newChoiceOption("Ticker Test", TickerTestLabel, {}),
+     *     newChoiceOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     newChoiceOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
      * ]
      * ```
      */
-    choiceMenuOptions: ChoiceMenuOptionsType<any> | undefined;
+    get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined;
+    /**
+     * The options to be shown in the game
+     * @example
+     * ```typescript
+     * narration.choiceMenuOptions = [
+     *     newChoiceOption("Events Test", EventsTestLabel, {}),
+     *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     newChoiceOption("Ticker Test", TickerTestLabel, {}),
+     *     newChoiceOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     newChoiceOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     * ]
+     * ```
+     */
+    set choiceMenuOptions(data: (ChoiceMenuOption<any> | ChoiceMenuOptionClose | StoredChoiceInterface)[] | undefined);
     /**
      * If true, the next dialogue text will be added to the current dialogue text.
      */

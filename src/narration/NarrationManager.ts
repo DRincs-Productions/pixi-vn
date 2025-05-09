@@ -1,22 +1,21 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
+import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
-import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
-import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
-import Dialogue from "./classes/Dialogue";
+import ChoiceMenuOption from "./classes/ChoiceMenuOption";
+import ChoiceMenuOptionClose from "./classes/CloseChoiceOption";
 import LabelAbstract from "./classes/LabelAbstract";
 import RegisteredLabels from "./decorators/RegisteredLabels";
+import { StoredDialogue } from "./interfaces/DialogueInterface";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
 import NarrationGameState from "./interfaces/NarrationGameState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
+import StoredChoiceInterface, { StoredIndexedChoiceInterface } from "./interfaces/StoredChoiceInterface";
 import NarrationManagerStatic from "./NarrationManagerStatic";
-import { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { Close } from "./types/CloseType";
-import DialogueType from "./types/DialogueType";
 import { InputInfo } from "./types/InputInfo";
 import { LabelIdType } from "./types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
@@ -54,45 +53,45 @@ export default class NarrationManager implements NarrationManagerInterface {
     private addStepHistory(
         stepSha: string,
         options: {
-            choiseMade?: number;
+            choiceMade?: number;
             ignoreSameStep?: boolean;
         } = {}
     ) {
-        const { choiseMade, ignoreSameStep } = options;
-        let dialoge: Dialogue | undefined = undefined;
-        let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
+        const { choiceMade, ignoreSameStep } = options;
+        let dialogue: StoredDialogue | undefined = undefined;
+        let choices: StoredChoiceInterface[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
             this.stepCounter
         ) {
-            dialoge = this.dialogue;
+            dialogue = GameUnifier.getVariable<StoredDialogue>(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
+            );
         }
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) ===
             this.stepCounter
         ) {
-            requiredChoices = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
+            choices = GameUnifier.getVariable<any>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
-            );
+            ) as StoredChoiceInterface[];
         }
         if (
             GameUnifier.getVariable<StorageElementType>(
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY
             ) === this.stepCounter
         ) {
-            inputValue = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY
-            );
+            inputValue = GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
         }
         let historyInfo: Omit<HistoryStep, "diff"> = {
             currentLabel: NarrationManagerStatic.currentLabelId,
-            dialoge: dialoge,
-            choices: requiredChoices,
+            dialogue: dialogue,
+            choices: choices,
             stepSha1: stepSha,
             index: this.stepCounter,
             labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
-            choiceIndexMade: choiseMade,
+            choiceIndexMade: choiceMade,
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
         };
@@ -232,7 +231,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public async goNext(
         props: StepLabelPropsType,
-        options: { choiseMade?: number; runNow?: boolean } = {}
+        options: { choiceMade?: number; runNow?: boolean } = {}
     ): Promise<StepLabelResultType> {
         const { runNow = false } = options;
         if (!runNow && !this.getCanGoNext({ showWarn: true })) {
@@ -264,12 +263,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType<T>,
         options: {
             /**
-             * The index of the choise made by the player. (This params is used in the choice menu)
+             * The index of the choice made by the player. (This params is used in the choice menu)
              */
-            choiseMade?: number;
+            choiceMade?: number;
         } = {}
     ): Promise<StepLabelResultType> {
-        const { choiseMade } = options;
+        const { choiceMade } = options;
         if (NarrationManagerStatic.currentLabelId) {
             let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
             if (currentLabelStepIndex === null) {
@@ -312,7 +311,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
 
                     let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
-                    if (choiseMade !== undefined && lastHistoryStep) {
+                    if (choiceMade !== undefined && lastHistoryStep) {
                         let stepSha = lastHistoryStep.stepSha1;
                         if (!stepSha) {
                             logger.warn("stepSha not found, setting to ERROR");
@@ -322,9 +321,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                             lastHistoryStep.currentLabel || "error",
                             typeof lastHistoryStep.labelStepIndex === "number" ? lastHistoryStep.labelStepIndex : -1,
                             lastHistoryStep.stepSha1 || AdditionalShaSpetsEnum.ERROR,
-                            choiseMade
+                            choiceMade
                         );
-                        NarrationManagerStatic.choiseMadeTemp = choiseMade;
+                        NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
 
                     NarrationManagerStatic.stepsRunning--;
@@ -332,9 +331,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha, {
                             ...options,
-                            choiseMade: NarrationManagerStatic.choiseMadeTemp,
+                            choiceMade: NarrationManagerStatic.choiceMadeTemp,
                         });
-                        NarrationManagerStatic.choiseMadeTemp = undefined;
+                        NarrationManagerStatic.choiceMadeTemp = undefined;
 
                         if (NarrationManagerStatic.goNextRequests > 0) {
                             NarrationManagerStatic.goNextRequests--;
@@ -382,12 +381,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType<T>,
         options?: {
             /**
-             * The index of the choise made by the player. (This params is used in the choice menu)
+             * The index of the choice made by the player. (This params is used in the choice menu)
              */
-            choiseMade?: number;
+            choiceMade?: number;
         }
     ): Promise<StepLabelResultType> {
-        const { choiseMade } = options || {};
+        const { choiceMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
             labelId = label;
@@ -395,21 +394,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         try {
-            if (labelId === CLOSE_LABEL_ID) {
-                let closeCurrentLabel = newCloseLabel<T>();
-                let choice: ChoiceMenuOptionClose<T> = {
-                    label: closeCurrentLabel,
-                    text: "",
-                    closeCurrentLabel: false,
-                    type: "close",
-                    oneTime: false,
-                    onlyHaveNoChoice: false,
-                    autoSelect: false,
-                    props: {},
-                    choiseIndex: choiseMade,
-                };
-                return this.closeChoiceMenu<T>(choice, props);
-            }
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
@@ -426,20 +410,20 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("Error calling label", e);
             return;
         }
-        return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
+        return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
     }
     public async jumpLabel<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
         options?: {
             /**
-             * The index of the choise made by the player. (This params is used in the choice menu)
+             * The index of the choice made by the player. (This params is used in the choice menu)
              */
-            choiseMade?: number;
+            choiceMade?: number;
         }
     ): Promise<StepLabelResultType> {
         if (this.openedLabels.length > 0) this.closeCurrentLabel();
-        const { choiseMade } = options || {};
+        const { choiceMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
             labelId = label;
@@ -447,21 +431,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         try {
-            if (labelId === CLOSE_LABEL_ID) {
-                let closeCurrentLabel = newCloseLabel<T>();
-                let choice: ChoiceMenuOptionClose<T> = {
-                    label: closeCurrentLabel,
-                    text: "",
-                    closeCurrentLabel: false,
-                    type: "close",
-                    oneTime: false,
-                    onlyHaveNoChoice: false,
-                    autoSelect: false,
-                    props: {},
-                    choiseIndex: choiseMade,
-                };
-                return this.closeChoiceMenu<T>(choice, props);
-            }
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
@@ -473,38 +442,41 @@ export default class NarrationManager implements NarrationManagerInterface {
             } catch (e) {
                 logger.error("Error running onStepEnd", e);
             }
-            NarrationManagerStatic.pushNewLabel(tempLabel.id); //
+            NarrationManagerStatic.pushNewLabel(tempLabel.id);
         } catch (e) {
             logger.error("Error jumping label", e);
             return;
         }
-        return await this.runCurrentStep<T>(props, { choiseMade: choiseMade });
+        return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
     }
     public async selectChoice<T extends {}>(
-        item: ChoiceMenuOptionClose | ChoiceMenuOption<T>,
+        item: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
         this.choiceMenuOptions = undefined;
-        if (item.type == "call") {
-            return await this.callLabel(
-                item.label,
-                { ...item.props, ...props },
-                {
-                    choiseMade: item.choiseIndex,
-                }
-            );
-        } else if (item.type == "jump") {
-            return await this.jumpLabel(
-                item.label,
-                { ...item.props, ...props },
-                {
-                    choiseMade: item.choiseIndex,
-                }
-            );
-        } else if (item.type == "close") {
-            return await this.closeChoiceMenu(item, { ...item.props, ...props });
-        } else {
-            throw new Error(`[Pixi’VN] Type ${item.type} not found`);
+        const type = item.type;
+        switch (type) {
+            case "call":
+                return await this.callLabel(
+                    item.label,
+                    { ...item.props, ...props },
+                    {
+                        choiceMade: item.choiceIndex,
+                    }
+                );
+            case "jump":
+                return await this.jumpLabel(
+                    item.label,
+                    { ...item.props, ...props },
+                    {
+                        choiceMade: item.choiceIndex,
+                    }
+                );
+            case "close":
+                return await this.closeChoiceMenu(item, { ...item.props, ...props });
+            default:
+                logger.error(`Type ${type} not found`);
+                throw new Error(`[Pixi’VN] Type ${type} not found`);
         }
     }
     /**
@@ -522,17 +494,21 @@ export default class NarrationManager implements NarrationManagerInterface {
      * ```
      */
     public async closeChoiceMenu<T extends {} = {}>(
-        choice: ChoiceMenuOptionClose<T>,
+        choice: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
-        let choiseMade: number | undefined = undefined;
-        if (typeof choice.choiseIndex === "number") {
-            choiseMade = choice.choiseIndex;
+        if (choice.type !== "close") {
+            logger.error("For closeChoiceMenu, the type must be close");
+            throw new Error("[Pixi’VN] For closeChoiceMenu, the type must be close");
+        }
+        let choiceMade: number | undefined = undefined;
+        if (typeof choice.choiceIndex === "number") {
+            choiceMade = choice.choiceIndex;
         }
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
         }
-        return this.goNext(props, { choiseMade: choiseMade });
+        return this.goNext(props, { choiceMade });
     }
 
     /* Go Back & Refresh Methods */
@@ -557,100 +533,73 @@ export default class NarrationManager implements NarrationManagerInterface {
         };
     }
 
-    public get dialogue(): Dialogue | undefined {
-        return GameUnifier.getVariable<DialogueType>(
+    public get dialogue():
+        | (Partial<DialogueInterface> & {
+              text: string | string[];
+              character?: CharacterInterface | string;
+          })
+        | undefined {
+        const dialogue = GameUnifier.getVariable<StoredDialogue>(
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
-        ) as Dialogue;
+        );
+        if (!dialogue) {
+            return undefined;
+        }
+        return {
+            ...dialogue,
+            character: dialogue.character
+                ? GameUnifier.getCharacter(dialogue.character) || dialogue.character
+                : undefined,
+        };
     }
-    public set dialogue(
-        props:
-            | {
-                  character: string | CharacterInterface;
-                  text: string | string[];
-              }
-            | string
-            | string[]
-            | Dialogue
-            | undefined
-    ) {
-        if (!props) {
+    public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {
+        if (!dialogue) {
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, undefined);
             return;
         }
-        let text = "";
-        let character: string | undefined = undefined;
-        let dialogue: Dialogue;
-        if (typeof props === "string") {
-            text = props;
-            dialogue = new Dialogue(text, character);
-        } else if (Array.isArray(props)) {
-            text = props.join();
-            dialogue = new Dialogue(text, character);
-        } else if (!(props instanceof Dialogue)) {
-            if (Array.isArray(props.text)) {
-                text = props.text.join();
-            } else {
-                text = props.text;
-            }
-            if (props.character) {
-                if (typeof props.character === "string") {
-                    character = props.character;
-                } else {
-                    character = props.character.id;
-                }
-            }
-            dialogue = new Dialogue(text, character);
-        } else {
-            dialogue = props;
+
+        if (typeof dialogue === "string" || Array.isArray(dialogue)) {
+            dialogue = { text: dialogue };
         }
 
         if (this.dialogGlue) {
-            let glueDialogue = GameUnifier.getVariable<DialogueType>(
+            let glueDialogue = GameUnifier.getVariable<StoredDialogue>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
-            ) as Dialogue;
+            );
             if (glueDialogue) {
                 dialogue.text = `${glueDialogue.text}${dialogue.text}`;
                 dialogue.character = dialogue.character || glueDialogue.character;
             }
             this.dialogGlue = false;
         }
-
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, dialogue as DialogueType);
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY, this.stepCounter);
+        try {
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
+                createExportableElement({
+                    ...dialogue,
+                    character: typeof dialogue.character === "string" ? dialogue.character : dialogue.character?.id,
+                })
+            );
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
+                this.stepCounter
+            );
+        } catch (e) {
+            logger.error("DialogueInterface cannot contain functions or classes");
+            throw e;
+        }
     }
-    public get choiceMenuOptions(): ChoiceMenuOptionsType<any> | undefined {
-        let d = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
+    public get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined {
+        let d = GameUnifier.getVariable<any>(
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
-        );
+        ) as StoredChoiceInterface[];
         if (d) {
-            let options: ChoiceMenuOptionsType = [];
-            let onlyHaveNoChoice: ChoiceMenuOptionsType = [];
-            d.forEach((option, index) => {
-                if (option.type === Close) {
-                    let itemLabel = newCloseLabel();
-                    let choice = new ChoiceMenuOptionClose(option.text, {
-                        closeCurrentLabel: option.closeCurrentLabel,
-                        oneTime: option.oneTime,
-                        onlyHaveNoChoice: option.onlyHaveNoChoice,
-                        autoSelect: option.autoSelect,
-                        choiseIndex: index,
-                    });
-                    choice.label = itemLabel;
-                    options.push(choice);
-                    return;
-                }
-                let label = RegisteredLabels.get(option.label);
-                if (label) {
-                    options.push(
-                        new ChoiceMenuOption(option.text, label, option.props, {
-                            type: option.type,
-                            oneTime: option.oneTime,
-                            onlyHaveNoChoice: option.onlyHaveNoChoice,
-                            autoSelect: option.autoSelect,
-                            choiseIndex: index,
-                        })
-                    );
-                }
+            let onlyHaveNoChoice: StoredIndexedChoiceInterface[] = [];
+            let options: StoredIndexedChoiceInterface[] = d.map((option, index) => {
+                return {
+                    ...option,
+                    choiceIndex: index,
+                };
             });
             let alreadyChoices = this.alreadyCurrentStepMadeChoices;
             options = options.filter((option, index) => {
@@ -674,32 +623,54 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return undefined;
     }
-    public set choiceMenuOptions(options: ChoiceMenuOptionsType<any> | undefined) {
-        if (!options) {
+    public set choiceMenuOptions(
+        options: (ChoiceMenuOption<any> | ChoiceMenuOptionClose | StoredChoiceInterface)[] | undefined
+    ) {
+        if (!options || options.length === 0) {
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined);
             return;
         }
-        let value: IStoratedChoiceMenuOption[] = options.map((option) => {
+        let value: StoredChoiceInterface[] = options.map((option) => {
             if (option instanceof ChoiceMenuOptionClose) {
-                return {
+                let temp: StoredChoiceInterface = {
+                    ...option.devProps,
                     text: option.text,
                     type: Close,
                     closeCurrentLabel: option.closeCurrentLabel,
                     oneTime: option.oneTime,
                     onlyHaveNoChoice: option.onlyHaveNoChoice,
                     autoSelect: option.autoSelect,
+                    props: option.props,
                 };
+                return temp;
+            } else if (option instanceof ChoiceMenuOption) {
+                let temp: StoredChoiceInterface = {
+                    ...option.devProps,
+                    type: option.type,
+                    text: option.text,
+                    label: option.label.id,
+                    autoSelect: option.autoSelect,
+                    oneTime: option.oneTime,
+                    onlyHaveNoChoice: option.onlyHaveNoChoice,
+                    props: option.props,
+                };
+                return temp;
             }
-            return {
-                ...option,
-                label: option.label.id,
-            };
+            return option;
         });
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, value);
-        GameUnifier.setVariable(
-            SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
-            this.stepCounter
-        );
+        try {
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
+                createExportableElement(value) as any
+            );
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
+                this.stepCounter
+            );
+        } catch (e) {
+            logger.error("ChoiceInterface cannot contain functions or classes");
+            throw e;
+        }
     }
     public get dialogGlue(): boolean {
         return GameUnifier.getFlag(SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY);

@@ -1,7 +1,9 @@
 import { expect, test } from "vitest";
-import { ChoiceMenuOption, ChoiceMenuOptionClose, narration, newLabel, stepHistory, storage } from "../src";
+import { narration, newLabel, stepHistory, storage } from "../src";
+import { newChoiceOption } from "../src/narration/classes/ChoiceMenuOption";
+import { newCloseChoiceOption } from "../src/narration/classes/CloseChoiceOption";
 
-const startLabel = newLabel("choiseshistory", [
+const startLabel = newLabel("choiceshistory", [
     async () => {
         narration.dialogue = { character: "steph", text: `Wait!` };
     },
@@ -44,13 +46,13 @@ const startLabel = newLabel("choiseshistory", [
     async () => {
         narration.dialogue = `You want continue to the next part?`;
         narration.choiceMenuOptions = [
-            new ChoiceMenuOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
-            new ChoiceMenuOptionClose("No, I want to stop here"),
+            newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
+            newCloseChoiceOption("No, I want to stop here"),
         ];
     },
 ]);
 
-const secondPart = newLabel("choiseshistory2", [
+const secondPart = newLabel("choiceshistory2", [
     async () => {
         narration.dialogue = `She enters my room before I'VE even had a chance to.`;
     },
@@ -93,7 +95,7 @@ const secondPart = newLabel("choiseshistory2", [
     },
 ]);
 
-test("choise test", async () => {
+test("choice test", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
@@ -116,127 +118,117 @@ test("choise test", async () => {
     let narrativeHistory = stepHistory.narrativeHistory;
     expect(narrativeHistory).toEqual([
         {
-            dialoge: {
+            dialogue: {
                 text: "Wait!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 0,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "Wait! I've got a gift for you!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 1,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "...?",
                 character: "mc",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 2,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "It's food.",
                 character: "sly",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 3,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "sly.name!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 4,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "sly.name! SPOILERS!!!!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 5,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "steph_fullname goes through the opposite door,",
-                oltherParams: {},
+                character: undefined,
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 6,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "steph_fullname goes through the opposite door, and returns with a HUGE tinfoil-covered platter.",
-                oltherParams: {},
+                character: undefined,
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 7,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "Looks like you baked way too much again.",
                 character: "james",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 8,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "He doesn't have to know that!!!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 9,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "...thanks... um...",
                 character: "mc",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 10,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "Oh! You gotta take in your luggage!",
                 character: "steph",
-                oltherParams: {},
             },
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 11,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "You want continue to the next part?",
-                oltherParams: {},
+                character: undefined,
             },
             playerMadeChoice: true,
             choices: [
@@ -256,9 +248,9 @@ test("choise test", async () => {
             stepIndex: 12,
         },
         {
-            dialoge: {
+            dialogue: {
                 text: "She enters my room before I'VE even had a chance to.",
-                oltherParams: {},
+                character: undefined,
             },
             playerMadeChoice: false,
             choices: undefined,

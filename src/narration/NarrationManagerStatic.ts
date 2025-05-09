@@ -39,7 +39,7 @@ export default class NarrationManagerStatic {
      * If it is > 0, after the stepsRunning is 0, the next step will be executed
      */
     static goNextRequests: number = 0;
-    static choiseMadeTemp: undefined | number = undefined;
+    static choiceMadeTemp: undefined | number = undefined;
     static lastHistoryStep: Omit<HistoryStep, "diff"> | null = null;
     /**
      * is a list of all labels that have been opened during the progression of the steps.
@@ -226,7 +226,6 @@ export default class NarrationManagerStatic {
      * Add a label to the history.
      * @param label The label to add to the history.
      * @param stepIndex The step index of the label.
-     * @param choiseMade The index of the choise made by the player. (This params is used in the choice menu)
      */
     static addLabelHistory(label: LabelIdType, stepIndex: number) {
         let allOpenedLabels = NarrationManagerStatic.allOpenedLabels;
@@ -237,20 +236,20 @@ export default class NarrationManagerStatic {
             NarrationManagerStatic.allOpenedLabels = allOpenedLabels;
         }
     }
-    static addChoicesMade(label: LabelIdType, stepIndex: number, stepSha: string, choiseMade: number) {
+    static addChoicesMade(label: LabelIdType, stepIndex: number, stepSha: string, choiceMade: number) {
         let allChoicesMade = NarrationManagerStatic.allChoicesMade;
         let alredyMade = allChoicesMade.findIndex(
             (item) =>
                 item.labelId === label &&
                 item.stepIndex === stepIndex &&
-                item.choiceIndex === choiseMade &&
+                item.choiceIndex === choiceMade &&
                 item.stepSha1 === stepSha
         );
         if (alredyMade < 0) {
             allChoicesMade.push({
                 labelId: label,
                 stepIndex: stepIndex,
-                choiceIndex: choiseMade,
+                choiceIndex: choiceMade,
                 stepSha1: stepSha,
                 madeTimes: 1,
             });

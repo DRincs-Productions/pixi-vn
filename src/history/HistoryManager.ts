@@ -70,12 +70,12 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
     add(
         historyInfo: HistoryInfo = {},
-        opstions: {
+        options: {
             ignoreSameStep?: boolean;
         } = {}
     ) {
         const originalStepData = HistoryManagerStatic.originalStepData;
-        const { ignoreSameStep } = opstions;
+        const { ignoreSameStep } = options;
         const currentStepData: GameStepState = GameUnifier.currentGameStepState;
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
@@ -99,7 +99,7 @@ export default class HistoryManager implements HistoryManagerInterface {
     get narrativeHistory(): NarrativeHistory[] {
         let list: NarrativeHistory[] = [];
         this.stepsHistory.forEach((step) => {
-            let dialoge = step.dialoge;
+            let dialogue = step.dialogue || step.dialoge;
             let requiredChoices = step.choices;
             let inputValue = step.inputValue;
             if (
@@ -122,7 +122,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             if (inputValue && list.length > 0) {
                 list[list.length - 1].inputValue = inputValue;
             }
-            if (dialoge || requiredChoices) {
+            if (dialogue || requiredChoices) {
                 let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice, index) => {
                     let hidden: boolean = false;
                     if (choice.oneTime && step.alreadyMadeChoices && step.alreadyMadeChoices.includes(index)) {
@@ -143,7 +143,14 @@ export default class HistoryManager implements HistoryManagerInterface {
                     }
                 }
                 list.push({
-                    dialoge: dialoge,
+                    dialogue: dialogue
+                        ? {
+                              ...dialogue,
+                              character: dialogue.character
+                                  ? GameUnifier.getCharacter(dialogue.character) || dialogue.character
+                                  : undefined,
+                          }
+                        : undefined,
                     playerMadeChoice: false,
                     choices: choices,
                     stepIndex: step.index,

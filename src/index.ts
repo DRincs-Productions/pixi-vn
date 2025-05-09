@@ -40,6 +40,7 @@ import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
 import * as characterUtils from "./character";
+import { registeredCharacters } from "./character/decorators/character-decorator";
 import {
     CANVAS_APP_GAME_LAYER_ALIAS,
     filters,
@@ -114,6 +115,9 @@ export namespace Game {
                 return historyUtils.stepHistory.add(historyInfo, opstions);
             },
             getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
+            getCharacter: (id: string) => {
+                return registeredCharacters.get(id);
+            },
             // canvas
             onGoNextEnd: async () => {
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {

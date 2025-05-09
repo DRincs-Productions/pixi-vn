@@ -1,10 +1,9 @@
 import { GameStepState } from "@drincs/pixi-vn";
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
-import { StorageElementType } from "../..";
-import { IStoratedChoiceMenuOption } from "../classes/ChoiceMenuOption";
-import Dialogue from "../classes/Dialogue";
+import { StorageElementType, StoredChoiceInterface } from "../..";
 import { LabelIdType } from "../types/LabelIdType";
+import { StoredDialogue } from "./DialogueInterface";
 
 /**
  * AdditionalShaSpetsEnum is a enum that contains the additional sha1 values that can be inserted in the step sha1.
@@ -20,7 +19,7 @@ export enum AdditionalShaSpetsEnum {
     DEVELOPER = "dev",
 }
 
-export default interface HistoryStep<T extends Dialogue = Dialogue> {
+export default interface HistoryStep {
     /**
      * The difference between the previous step and the current step.
      */
@@ -42,13 +41,17 @@ export default interface HistoryStep<T extends Dialogue = Dialogue> {
      */
     labelStepIndex: number | null;
     /**
+     * @deprecated
+     */
+    dialoge?: StoredDialogue;
+    /**
      * Dialogue to be shown in the game
      */
-    dialoge?: T;
+    dialogue?: StoredDialogue;
     /**
      * List of choices asked of the player
      */
-    choices?: IStoratedChoiceMenuOption[];
+    choices?: StoredChoiceInterface[];
     /**
      * List of choices already made by the player
      */

@@ -33,7 +33,7 @@ namespace RegisteredTickers {
             name = target.name;
         }
         if (registeredTickers.get(name)) {
-            logger.info(`Ticker ${name} already exists, it will be overwritten`);
+            logger.info(`Ticker "${name}" already exists, it will be overwritten`);
         }
         target.prototype.id = name;
         registeredTickers.set(name, target);
@@ -48,12 +48,12 @@ namespace RegisteredTickers {
         try {
             let tickerType = registeredTickers.get(tickerId);
             if (!tickerType) {
-                logger.error(`Event ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
+                logger.error(`Event "${tickerId}" not found, did you forget to register it with the tickerDecorator?`);
                 return;
             }
             return tickerType as T;
         } catch (e) {
-            logger.error(`Error while getting Event ${tickerId}`, e);
+            logger.error(`Error while getting Event "${tickerId}"`, e);
             return;
         }
     }
@@ -75,12 +75,12 @@ namespace RegisteredTickers {
         try {
             let ticker = registeredTickers.get(tickerId);
             if (!ticker) {
-                logger.error(`Ticker ${tickerId} not found, did you forget to register it with the tickerDecorator?`);
+                logger.error(`Ticker "${tickerId}" not found, did you forget to register it with the tickerDecorator?`);
                 return;
             }
             return new ticker(args, duration, priority);
         } catch (e) {
-            logger.error(`Error while getting Ticker ${tickerId}`, e);
+            logger.error(`Error while getting Ticker "${tickerId}"`, e);
             return;
         }
     }
@@ -88,10 +88,18 @@ namespace RegisteredTickers {
     /**
      * Get a list of all tickers registered.
      * @returns An array of tickers.
-     * @example
      */
     export function values(): (typeof TickerBase<any>)[] {
         return Array.from(registeredTickers.values());
+    }
+
+    /**
+     * Check if a ticker is registered.
+     * @param id The id of the ticker.
+     * @returns True if the ticker is registered, false otherwise.
+     */
+    export function has(id: string): boolean {
+        return registeredTickers.has(id);
     }
 }
 export default RegisteredTickers;

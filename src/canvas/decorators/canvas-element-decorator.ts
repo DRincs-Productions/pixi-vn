@@ -26,7 +26,7 @@ namespace RegisteredCanvasComponents {
             name = target.name;
         }
         if (registeredCanvasComponent.get(name)) {
-            logger.warn(`CanvasElement ${name} already registered`);
+            logger.warn(`CanvasElement "${name}" already registered`);
         }
         target.prototype.pixivnId = name;
         registeredCanvasComponent.set(name, target);
@@ -42,14 +42,14 @@ namespace RegisteredCanvasComponents {
             let eventType = registeredCanvasComponent.get(canvasId);
             if (!eventType) {
                 logger.error(
-                    `CanvasElement ${canvasId} not found, did you forget to register it with the canvasComponentDecorator?`
+                    `CanvasElement "${canvasId}" not found, did you forget to register it with the canvasComponentDecorator?`
                 );
                 return;
             }
             new eventType();
             return eventType as T;
         } catch (e) {
-            logger.error(`Error while getting CanvasElement ${canvasId}`, e);
+            logger.error(`Error while getting CanvasElement "${canvasId}"`, e);
             return;
         }
     }
@@ -57,10 +57,18 @@ namespace RegisteredCanvasComponents {
     /**
      * Get a list of all canvas components registered.
      * @returns An array of canvas components.
-     * @example
      */
     export function values(): (typeof CanvasBaseItem<any>)[] {
         return Array.from(registeredCanvasComponent.values());
+    }
+
+    /**
+     * Check if a canvas component is registered.
+     * @param id The id of the canvas component.
+     * @returns True if the canvas component is registered, false otherwise.
+     */
+    export function has(id: string): boolean {
+        return registeredCanvasComponent.has(id);
     }
 }
 export default RegisteredCanvasComponents;
