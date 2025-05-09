@@ -82,9 +82,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY
             ) === this.stepCounter
         ) {
-            inputValue = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY
-            );
+            inputValue = GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
         }
         let historyInfo: Omit<HistoryStep, "diff"> = {
             currentLabel: NarrationManagerStatic.currentLabelId,
