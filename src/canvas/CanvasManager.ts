@@ -39,11 +39,17 @@ export default class CanvasManager implements CanvasManagerInterface {
     get isInitialized() {
         return CanvasManagerStatic._isInitialized;
     }
+    /**
+     * @deprecated Use `canvas.getHtmlLayers` instead.
+     */
     get htmlLayout(): HTMLElement | undefined {
-        return CanvasManagerStatic.htmlLayout;
+        return CanvasManagerStatic.htmlLayers[0];
     }
+    /**
+     * @deprecated Use `canvas.addHtmlLayer` instead.
+     */
     set htmlLayout(value: HTMLElement) {
-        CanvasManagerStatic.htmlLayout = value;
+        this.addHtmlLayer("ui", value);
     }
     get canvasWidth() {
         return CanvasManagerStatic.canvasWidth;
@@ -89,8 +95,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
+    /**
+     * @deprecated Use `canvas.addHtmlLayer` instead.
+     */
     public initializeHTMLLayout(element: HTMLElement) {
-        return CanvasManagerStatic.initializeHTMLLayout(element);
+        this.addHtmlLayer("ui", element);
     }
 
     /* Edit Canvas Elements Methods */
@@ -259,12 +268,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             this.gameLayer.addChild(canvasComponent);
         }
     }
-    /**
-     * @deprecated use canvas.add
-     */
-    public addCanvasElement(alias: string, canvasElement: CanvasBaseInterface<any>) {
-        this.add(alias, canvasElement);
-    }
     public remove(
         alias: string | string[],
         options: {
@@ -290,12 +293,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             });
         });
     }
-    /**
-     * @deprecated use canvas.remove
-     */
-    public removeCanvasElement(alias: string | string[]) {
-        this.remove(alias);
-    }
     public find<T extends CanvasBaseInterface<any>>(alias: string): T | undefined {
         if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
             return this.gameLayer as T;
@@ -305,12 +302,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             return canvasComponent as T;
         }
         return undefined;
-    }
-    /**
-     * @deprecated use canvas.find
-     */
-    public getCanvasElement<T extends CanvasBaseInterface<any>>(alias: string): T | undefined {
-        return this.find<T>(alias);
     }
     public canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T) {
         return this.gameLayer.children.includes(pixiElement);
@@ -419,12 +410,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         tickerData.onEndOfTicker = () => {
             ticker.onEndOfTicker(tickerData.canvasElementAliases, id, tickerData.args);
         };
-    }
-    /**
-     * @deprecated use canvas.addTickersSequence
-     */
-    addTickersSteps(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
-        return this.addTickersSequence(alias, steps, currentStepNumber);
     }
     addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
@@ -698,12 +683,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         });
     }
 
-    /**
-     * @deprecated use canvas.pauseTicker
-     */
-    putOnPauseTicker(alias: string, options: PauseTickerType = {}) {
-        this.pauseTicker(alias, options);
-    }
     pauseTicker(alias: string, options: PauseTickerType = {}) {
         let oldOptions = CanvasManagerStatic._tickersOnPause[alias];
         if (!oldOptions) {
@@ -730,12 +709,6 @@ export default class CanvasManager implements CanvasManagerInterface {
                 CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = options.tickerIdsIncluded;
             }
         }
-    }
-    /**
-     * @deprecated use canvas.resumeTicker
-     */
-    resumeTickerPaused(alias: string | string[]) {
-        this.resumeTicker(alias);
     }
     resumeTicker(alias: string | string[]) {
         if (typeof alias === "string") {
@@ -827,6 +800,16 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     removeLayer(label: string) {
         CanvasManagerStatic.app.stage.getChildrenByLabel(label);
+    }
+
+    addHtmlLayer(id: string, element: HTMLElement, style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">) {
+        return CanvasManagerStatic.addHtmlLayer(id, element, style);
+    }
+    removeHtmlLayer(id: string) {
+        return CanvasManagerStatic.removeHtmlLayer(id);
+    }
+    getHtmlLayer(id: string): HTMLElement | undefined {
+        return CanvasManagerStatic.getHtmlLayer(id);
     }
 
     /* Other Methods */

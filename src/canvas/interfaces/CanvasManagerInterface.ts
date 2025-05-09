@@ -24,15 +24,11 @@ export default interface CanvasManagerInterface {
      */
     readonly isInitialized: boolean;
     /**
-     * This is the div that have same size of the canvas.
-     * This is useful to put interface elements.
-     * You can use React or other framework to put elements in this div.
+     * @deprecated Use `canvas.getHtmlLayers` instead.
      */
     get htmlLayout(): HTMLElement | undefined;
     /**
-     * This is the div that have same size of the canvas.
-     * This is useful to put interface elements.
-     * You can use React or other framework to put elements in this div.
+     * @deprecated Use `canvas.addHtmlLayer` instead.
      */
     set htmlLayout(value: HTMLElement);
     /**
@@ -74,20 +70,7 @@ export default interface CanvasManagerInterface {
         devtoolsOptions?: Devtools
     ): Promise<void>;
     /**
-     * Initialize the interface div and add it into a html element.
-     * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
-     * @example
-     * ```tsx
-     * const root = document.getElementById('root')
-     * if (!root) {
-     *     throw new Error('root element not found')
-     * }
-     * canvas.initializeHTMLLayout(root)
-     * const reactRoot = createRoot(canvas.htmlLayout)
-     * reactRoot.render(
-     *     <App />
-     * )
-     * ```
+     * @deprecated Use `canvas.addHtmlLayer` instead.
      */
     initializeHTMLLayout(element: HTMLElement): void;
     /**
@@ -143,10 +126,6 @@ export default interface CanvasManagerInterface {
         }
     ): void;
     /**
-     * @deprecated use canvas.add
-     */
-    addCanvasElement(alias: string, canvasElement: CanvasBaseInterface<any>): void;
-    /**
      * Remove a canvas element from the canvas.
      * And remove all tickers that are not connected to any canvas element.
      * @param alias The alias of the canvas element to be removed.
@@ -168,10 +147,6 @@ export default interface CanvasManagerInterface {
         }
     ): void;
     /**
-     * @deprecated use canvas.remove
-     */
-    removeCanvasElement(alias: string | string[]): void;
-    /**
      * Get a canvas element by the alias.
      * @param alias The alias of the canvas element.
      * @returns The canvas element.
@@ -181,10 +156,6 @@ export default interface CanvasManagerInterface {
      * ```
      */
     find<T extends CanvasBaseInterface<any>>(alias: string): T | undefined;
-    /**
-     * @deprecated use canvas.find
-     */
-    getCanvasElement<T extends CanvasBaseInterface<any>>(alias: string): T | undefined;
     /**
      * Check if a DisplayObject is on the canvas.
      * @param pixiElement The DisplayObject to be checked.
@@ -245,14 +216,6 @@ export default interface CanvasManagerInterface {
         ticker: TickerBase<TArgs>
     ): string | undefined;
     /**
-     * @deprecated use canvas.addTickersSequence
-     */
-    addTickersSteps(
-        alias: string,
-        steps: (Ticker<any> | RepeatType | PauseType)[],
-        currentStepNumber?: number
-    ): string | undefined;
-    /**
      * Run a sequence of tickers.
      * @param alias The alias of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
@@ -297,19 +260,11 @@ export default interface CanvasManagerInterface {
      */
     removeTicker(tickerId: string | string[]): void;
     /**
-     * @deprecated use canvas.pauseTicker
-     */
-    putOnPauseTicker(alias: string, options?: PauseTickerType): void;
-    /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param options The options of the pause ticker.
      */
     pauseTicker(alias: string, options?: PauseTickerType): void;
-    /**
-     * @deprecated use canvas.resumeTicker
-     */
-    resumeTickerPaused(alias: string | string[]): void;
     /**
      * Resume a ticker.
      * @param alias The alias of the canvas element that will use the ticker.
@@ -378,6 +333,42 @@ export default interface CanvasManagerInterface {
      * ```
      */
     removeLayer(label: string): void;
+    /**
+     * Add a HTML layer to the canvas.
+     * @param id The id of the layer.
+     * @param element The html element to be added.
+     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none" }.
+     * @example
+     * ```tsx
+     * const root = document.getElementById('root')
+     * if (!root) {
+     *     throw new Error('root element not found')
+     * }
+     * const htmlLayer = canvas.addHtmlLayer("ui", root, {
+     *    position: "absolute",
+     *    pointerEvents: "none"
+     * })
+     * const reactRoot = createRoot(htmlLayer)
+     * reactRoot.render(
+     *     <App />
+     * )
+     * ```
+     */
+    addHtmlLayer(
+        id: string,
+        element: HTMLElement,
+        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">
+    ): HTMLDivElement;
+    /**
+     * Get a HTML layer from the canvas.
+     * @param id The id of the layer to be removed.
+     */
+    removeHtmlLayer(id: string): void;
+    /**
+     * Get a HTML layer from the canvas.
+     * @param id The id of the layer.
+     */
+    getHtmlLayer(id: string): HTMLElement | undefined;
 
     /* Other Methods */
 
