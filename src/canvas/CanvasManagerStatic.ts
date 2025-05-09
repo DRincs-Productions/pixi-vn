@@ -7,6 +7,17 @@ import { logger } from "../utils/log-utility";
 import { TickerHistory, TickersSequence, TickerTimeoutHistory } from "./tickers";
 import PauseTickerType from "./types/PauseTickerType";
 
+function throttle(func: (...args: any[]) => Promise<void>, limit: number) {
+    let lastCall = 0;
+    return async (...args: any[]) => {
+        const now = Date.now();
+        if (now - lastCall >= limit) {
+            lastCall = now;
+            return await func(...args);
+        }
+    };
+}
+
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
  */
@@ -34,7 +45,7 @@ export default class CanvasManagerStatic {
      * This is useful to put interface elements.
      * You can use React or other framework to put elements in this div.
      */
-    static htmlLayout?: HTMLElement;
+    static htmlLayers: HTMLElement[] = [];
     static canvasWidth: number = 300;
     static canvasHeight: number = 300;
     static _isInitialized: boolean = false;
@@ -93,13 +104,32 @@ export default class CanvasManagerStatic {
             logger.error("GameWindowManager is not initialized");
         }
     }
-    static initializeHTMLLayout(element: HTMLElement) {
+    static addHtmlLayer(
+        id: string,
+        element: HTMLElement,
+        style: Pick<CSSStyleDeclaration, "position" | "pointerEvents"> = {
+            position: "absolute",
+            pointerEvents: "none",
+        }
+    ) {
         let div = document.createElement("div");
-        div.style.position = "absolute";
-        div.style.pointerEvents = "none";
-        element.appendChild(div);
-        CanvasManagerStatic.htmlLayout = div;
+        div.setAttribute("id", id);
+        div.style.position = style.position;
+        div.style.pointerEvents = style.pointerEvents;
+        let res = element.appendChild(div);
+        CanvasManagerStatic.htmlLayers.push(div);
         CanvasManagerStatic.resize();
+        return res;
+    }
+    static removeHtmlLayer(id: string) {
+        let div = CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
+        if (div) {
+            div.remove();
+            CanvasManagerStatic.htmlLayers = CanvasManagerStatic.htmlLayers.filter((layer) => layer.id !== id);
+        }
+    }
+    static getHtmlLayer(id: string): HTMLElement | undefined {
+        return CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
     }
 
     /* Resize Metods */
@@ -141,26 +171,30 @@ export default class CanvasManagerStatic {
     /**
      * This method is called when the screen is resized.
      */
-    private static resize(): void {
-        // now we use css trickery to set the sizes and margins
-        if (CanvasManagerStatic._isInitialized) {
-            let style = CanvasManagerStatic.app.canvas.style;
-            style.width = `${CanvasManagerStatic.screenWidth}px`;
-            style.height = `${CanvasManagerStatic.screenHeight}px`;
-            (style as any).marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
-            (style as any).marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
-            (style as any).marginTop = `${CanvasManagerStatic.verticalMargin}px`;
-            (style as any).marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
-        }
+    private static async resize(): Promise<void> {
+        const resize = throttle(async () => {
+            // now we use css trickery to set the sizes and margins
+            if (CanvasManagerStatic._isInitialized) {
+                let style = CanvasManagerStatic.app.canvas.style;
+                style.width = `${CanvasManagerStatic.screenWidth}px`;
+                style.height = `${CanvasManagerStatic.screenHeight}px`;
+                (style as any).marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
+                (style as any).marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
+                (style as any).marginTop = `${CanvasManagerStatic.verticalMargin}px`;
+                (style as any).marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
+            }
 
-        if (CanvasManagerStatic.htmlLayout) {
-            CanvasManagerStatic.htmlLayout.style.width = `${CanvasManagerStatic.screenWidth}px`;
-            CanvasManagerStatic.htmlLayout.style.height = `${CanvasManagerStatic.screenHeight}px`;
-            CanvasManagerStatic.htmlLayout.style.marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
-            CanvasManagerStatic.htmlLayout.style.marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
-            CanvasManagerStatic.htmlLayout.style.marginTop = `${CanvasManagerStatic.verticalMargin}px`;
-            CanvasManagerStatic.htmlLayout.style.marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
-        }
+            const promises = CanvasManagerStatic.htmlLayers.map((layer) => {
+                layer.style.width = `${CanvasManagerStatic.screenWidth}px`;
+                layer.style.height = `${CanvasManagerStatic.screenHeight}px`;
+                layer.style.marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
+                layer.style.marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
+                layer.style.marginTop = `${CanvasManagerStatic.verticalMargin}px`;
+                layer.style.marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
+            });
+            await Promise.all(promises);
+        }, 10);
+        await resize();
     }
 
     /* Edit Canvas Elements Methods */

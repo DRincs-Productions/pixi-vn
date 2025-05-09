@@ -24,15 +24,11 @@ export default interface CanvasManagerInterface {
      */
     readonly isInitialized: boolean;
     /**
-     * This is the div that have same size of the canvas.
-     * This is useful to put interface elements.
-     * You can use React or other framework to put elements in this div.
+     * @deprecated Use `canvas.getHtmlLayers` instead.
      */
     get htmlLayout(): HTMLElement | undefined;
     /**
-     * This is the div that have same size of the canvas.
-     * This is useful to put interface elements.
-     * You can use React or other framework to put elements in this div.
+     * @deprecated Use `canvas.addHtmlLayer` instead.
      */
     set htmlLayout(value: HTMLElement);
     /**
@@ -74,20 +70,7 @@ export default interface CanvasManagerInterface {
         devtoolsOptions?: Devtools
     ): Promise<void>;
     /**
-     * Initialize the interface div and add it into a html element.
-     * @param element it is the html element where I will put the interface div. Example: document.getElementById('root')
-     * @example
-     * ```tsx
-     * const root = document.getElementById('root')
-     * if (!root) {
-     *     throw new Error('root element not found')
-     * }
-     * canvas.initializeHTMLLayout(root)
-     * const reactRoot = createRoot(canvas.htmlLayout)
-     * reactRoot.render(
-     *     <App />
-     * )
-     * ```
+     * @deprecated Use `canvas.addHtmlLayer` instead.
      */
     initializeHTMLLayout(element: HTMLElement): void;
     /**
@@ -350,6 +333,42 @@ export default interface CanvasManagerInterface {
      * ```
      */
     removeLayer(label: string): void;
+    /**
+     * Add a HTML layer to the canvas.
+     * @param id The id of the layer.
+     * @param element The html element to be added.
+     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none" }.
+     * @example
+     * ```tsx
+     * const root = document.getElementById('root')
+     * if (!root) {
+     *     throw new Error('root element not found')
+     * }
+     * const htmlLayer = canvas.addHtmlLayer("ui", root, {
+     *    position: "absolute",
+     *    pointerEvents: "none"
+     * })
+     * const reactRoot = createRoot(htmlLayer)
+     * reactRoot.render(
+     *     <App />
+     * )
+     * ```
+     */
+    addHtmlLayer(
+        id: string,
+        element: HTMLElement,
+        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">
+    ): HTMLDivElement;
+    /**
+     * Get a HTML layer from the canvas.
+     * @param id The id of the layer to be removed.
+     */
+    removeHtmlLayer(id: string): void;
+    /**
+     * Get a HTML layer from the canvas.
+     * @param id The id of the layer.
+     */
+    getHtmlLayer(id: string): HTMLElement | undefined;
 
     /* Other Methods */
 

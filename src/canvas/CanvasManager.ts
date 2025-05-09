@@ -39,11 +39,17 @@ export default class CanvasManager implements CanvasManagerInterface {
     get isInitialized() {
         return CanvasManagerStatic._isInitialized;
     }
+    /**
+     * @deprecated Use `canvas.getHtmlLayers` instead.
+     */
     get htmlLayout(): HTMLElement | undefined {
-        return CanvasManagerStatic.htmlLayout;
+        return CanvasManagerStatic.htmlLayers[0];
     }
+    /**
+     * @deprecated Use `canvas.addHtmlLayer` instead.
+     */
     set htmlLayout(value: HTMLElement) {
-        CanvasManagerStatic.htmlLayout = value;
+        this.addHtmlLayer("ui", value);
     }
     get canvasWidth() {
         return CanvasManagerStatic.canvasWidth;
@@ -89,8 +95,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
+    /**
+     * @deprecated Use `canvas.addHtmlLayer` instead.
+     */
     public initializeHTMLLayout(element: HTMLElement) {
-        return CanvasManagerStatic.initializeHTMLLayout(element);
+        this.addHtmlLayer("ui", element);
     }
 
     /* Edit Canvas Elements Methods */
@@ -791,6 +800,16 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     removeLayer(label: string) {
         CanvasManagerStatic.app.stage.getChildrenByLabel(label);
+    }
+
+    addHtmlLayer(id: string, element: HTMLElement, style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">) {
+        return CanvasManagerStatic.addHtmlLayer(id, element, style);
+    }
+    removeHtmlLayer(id: string) {
+        return CanvasManagerStatic.removeHtmlLayer(id);
+    }
+    getHtmlLayer(id: string): HTMLElement | undefined {
+        return CanvasManagerStatic.getHtmlLayer(id);
     }
 
     /* Other Methods */
