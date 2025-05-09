@@ -59,7 +59,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     ) {
         const { choiceMade, ignoreSameStep } = options;
         let dialogue: StoredDialogue | undefined = undefined;
-        let requiredChoices: IStoratedChoiceMenuOption[] | undefined = undefined;
+        let choices: StoredChoiceInterface[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
@@ -73,9 +73,9 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) ===
             this.stepCounter
         ) {
-            requiredChoices = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
+            choices = GameUnifier.getVariable<any>(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
-            );
+            ) as StoredChoiceInterface[];
         }
         if (
             GameUnifier.getVariable<StorageElementType>(
@@ -87,7 +87,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         let historyInfo: Omit<HistoryStep, "diff"> = {
             currentLabel: NarrationManagerStatic.currentLabelId,
             dialogue: dialogue,
-            choices: requiredChoices,
+            choices: choices,
             stepSha1: stepSha,
             index: this.stepCounter,
             labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
