@@ -1,28 +1,16 @@
+import { ChoiceInterface } from "@drincs/pixi-vn";
 import { StorageObjectType } from "../../storage";
 import { Close, CloseType } from "../types/CloseType";
 import newCloseLabel from "./CloseLabel";
 import Label from "./Label";
 
-type ChoiceMenuOptionCloseOptions = {
+interface ChoiceMenuOptionCloseOptions
+    extends Omit<ChoiceInterface, "text" | "label" | "type" | "props" | "closeCurrentLabel"> {
     /**
      * If true, the current label will be closed. @default false
      */
     closeCurrentLabel?: boolean;
-    /**
-     * If this is true, the choice can only be made once. @default false
-     */
-    oneTime?: boolean;
-    /**
-     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
-     * @default false
-     */
-    onlyHaveNoChoice?: boolean;
-    /**
-     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
-     * @default false
-     */
-    autoSelect?: boolean;
-};
+}
 
 /**
  * ChoiceMenuOptionClose is a class that contains a text that will be displayed in the menu.
@@ -86,6 +74,13 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
      */
     props: StorageObjectType = {};
     /**
+     * More props added by the developer
+     */
+    devProps: Omit<
+        ChoiceInterface,
+        "text" | "label" | "type" | "oneTime" | "onlyHaveNoChoice" | "autoSelect" | "closeCurrentLabel" | "props"
+    > = {};
+    /**
      * @param text Text to be displayed in the menu
      * @param closeCurrentLabel If true, the current label will be closed. @default false
      */
@@ -95,12 +90,13 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
             oneTime = false,
             onlyHaveNoChoice = false,
             autoSelect = false,
-            ...devprops
+            ...devProps
         } = options || {};
         this.text = text;
         this.closeCurrentLabel = closeCurrentLabel;
         this.oneTime = oneTime;
         this.onlyHaveNoChoice = onlyHaveNoChoice;
         this.autoSelect = autoSelect;
+        this.devProps = devProps;
     }
 }

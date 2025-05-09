@@ -1,3 +1,4 @@
+import { ChoiceInterface } from "@drincs/pixi-vn";
 import { StorageObjectType } from "../../storage";
 import { logger } from "../../utils/log-utility";
 import RegisteredLabels from "../decorators/RegisteredLabels";
@@ -7,26 +8,13 @@ import newCloseLabel from "./CloseLabel";
 import Label from "./Label";
 import LabelAbstract from "./LabelAbstract";
 
-type ChoiceMenuOptionOptions = {
+interface ChoiceMenuOptionOptions
+    extends Omit<ChoiceInterface, "text" | "label" | "type" | "props" | "closeCurrentLabel"> {
     /**
      * Type of the label to be opened. @default "call"
      */
     type?: LabelRunModeType;
-    /**
-     * If this is true, the choice can only be made once. @default false
-     */
-    oneTime?: boolean;
-    /**
-     * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
-     * @default false
-     */
-    onlyHaveNoChoice?: boolean;
-    /**
-     * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
-     * @default false
-     */
-    autoSelect?: boolean;
-};
+}
 
 /**
  * ChoiceMenuOption is a class that contains a Label and a text that will be displayed in the menu.
@@ -101,6 +89,13 @@ export default class ChoiceMenuOption<
      */
     props: StorageObjectType = {};
     /**
+     * More props added by the developer
+     */
+    devProps: Omit<
+        ChoiceInterface,
+        "text" | "label" | "type" | "oneTime" | "onlyHaveNoChoice" | "autoSelect" | "closeCurrentLabel" | "props"
+    > = {};
+    /**
      * @param text Text to be displayed in the menu
      * @param label Label to be opened when the option is selected or the id of the label
      * @param props Properties to be passed to the label and olther parameters that you can use when get all the choice menu options. It be converted to a JSON string, so it cannot contain functions or classes.
@@ -117,7 +112,7 @@ export default class ChoiceMenuOption<
             oneTime = false,
             onlyHaveNoChoice = false,
             autoSelect = false,
-            ...devprops
+            ...devProps
         } = options || {};
         this.text = text;
         this._label = label;
@@ -125,8 +120,7 @@ export default class ChoiceMenuOption<
         this.oneTime = oneTime;
         this.onlyHaveNoChoice = onlyHaveNoChoice;
         this.autoSelect = autoSelect;
-        if (props) {
-            this.props = props;
-        }
+        this.devProps = devProps;
+        this.props = props;
     }
 }
