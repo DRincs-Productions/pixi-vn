@@ -90,10 +90,17 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
      * @param closeCurrentLabel If true, the current label will be closed. @default false
      */
     constructor(text: string, options?: ChoiceMenuOptionCloseOptions) {
+        const {
+            closeCurrentLabel = false,
+            oneTime = false,
+            onlyHaveNoChoice = false,
+            autoSelect = false,
+            ...devprops
+        } = options || {};
         this.text = text;
-        this.closeCurrentLabel = options?.closeCurrentLabel || false;
-        this.oneTime = options?.oneTime || false;
-        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
-        this.autoSelect = options?.autoSelect || false;
+        this.closeCurrentLabel = closeCurrentLabel;
+        this.oneTime = oneTime;
+        this.onlyHaveNoChoice = onlyHaveNoChoice;
+        this.autoSelect = autoSelect;
     }
 }

@@ -112,12 +112,19 @@ export default class ChoiceMenuOption<
         props: T,
         options?: ChoiceMenuOptionOptions
     ) {
+        const {
+            type = "call",
+            oneTime = false,
+            onlyHaveNoChoice = false,
+            autoSelect = false,
+            ...devprops
+        } = options || {};
         this.text = text;
         this._label = label;
-        this.type = options?.type || "call";
-        this.oneTime = options?.oneTime || false;
-        this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
-        this.autoSelect = options?.autoSelect || false;
+        this.type = type;
+        this.oneTime = oneTime;
+        this.onlyHaveNoChoice = onlyHaveNoChoice;
+        this.autoSelect = autoSelect;
         if (props) {
             this.props = props;
         }
