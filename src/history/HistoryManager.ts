@@ -70,12 +70,12 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
     add(
         historyInfo: HistoryInfo = {},
-        opstions: {
+        options: {
             ignoreSameStep?: boolean;
         } = {}
     ) {
         const originalStepData = HistoryManagerStatic.originalStepData;
-        const { ignoreSameStep } = opstions;
+        const { ignoreSameStep } = options;
         const currentStepData: GameStepState = GameUnifier.currentGameStepState;
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;

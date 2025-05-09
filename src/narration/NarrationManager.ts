@@ -461,7 +461,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     item.label,
                     { ...item.props, ...props },
                     {
-                        choiceMade: item.choiseIndex,
+                        choiceMade: item.choiceIndex,
                     }
                 );
             case "jump":
@@ -469,7 +469,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     item.label,
                     { ...item.props, ...props },
                     {
-                        choiceMade: item.choiseIndex,
+                        choiceMade: item.choiceIndex,
                     }
                 );
             case "close":
@@ -502,8 +502,8 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw new Error("[Pixi’VN] For closeChoiceMenu, the type must be close");
         }
         let choiceMade: number | undefined = undefined;
-        if (typeof choice.choiseIndex === "number") {
-            choiceMade = choice.choiseIndex;
+        if (typeof choice.choiceIndex === "number") {
+            choiceMade = choice.choiceIndex;
         }
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
@@ -639,12 +639,18 @@ export default class NarrationManager implements NarrationManagerInterface {
                     oneTime: option.oneTime,
                     onlyHaveNoChoice: option.onlyHaveNoChoice,
                     autoSelect: option.autoSelect,
+                    props: option.props,
                 };
                 return temp;
             } else if (option instanceof ChoiceMenuOption) {
                 let temp: StoredChoiceInterface = {
-                    ...option,
+                    type: option.type,
+                    text: option.text,
                     label: option.label.id,
+                    autoSelect: option.autoSelect,
+                    oneTime: option.oneTime,
+                    onlyHaveNoChoice: option.onlyHaveNoChoice,
+                    props: option.props,
                 };
                 return temp;
             }

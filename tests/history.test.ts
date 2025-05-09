@@ -172,6 +172,7 @@ test("choice test", async () => {
         {
             dialogue: {
                 text: "steph_fullname goes through the opposite door,",
+                character: undefined,
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -180,6 +181,7 @@ test("choice test", async () => {
         {
             dialogue: {
                 text: "steph_fullname goes through the opposite door, and returns with a HUGE tinfoil-covered platter.",
+                character: undefined,
             },
             playerMadeChoice: false,
             choices: undefined,
@@ -224,6 +226,7 @@ test("choice test", async () => {
         {
             dialogue: {
                 text: "You want continue to the next part?",
+                character: undefined,
             },
             playerMadeChoice: true,
             choices: [
@@ -245,6 +248,7 @@ test("choice test", async () => {
         {
             dialogue: {
                 text: "She enters my room before I'VE even had a chance to.",
+                character: undefined,
             },
             playerMadeChoice: false,
             choices: undefined,

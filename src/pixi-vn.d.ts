@@ -65,10 +65,6 @@ declare module "@drincs/pixi-vn" {
          */
         closeCurrentLabel?: boolean;
         /**
-         * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
-         */
-        choiseIndex?: number;
-        /**
          * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
          */
         props?: StorageObjectType;
