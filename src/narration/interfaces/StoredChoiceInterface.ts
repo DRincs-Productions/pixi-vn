@@ -65,6 +65,6 @@ interface ChoiceMenuOptionClose {
     props: Props;
 }
 
-type IStoratedChoiceMenuOption = ChoiceMenuOption | ChoiceMenuOptionClose;
+type StoredChoiceInterface = ChoiceMenuOption | ChoiceMenuOptionClose;
 
-export default IStoratedChoiceMenuOption;
+export default StoredChoiceInterface;
