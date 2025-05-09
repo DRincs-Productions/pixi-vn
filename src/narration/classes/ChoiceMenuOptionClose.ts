@@ -22,10 +22,6 @@ type ChoiceMenuOptionCloseOptions = {
      * @default false
      */
     autoSelect?: boolean;
-    /**
-     * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
-     */
-    choiceIndex?: number;
 };
 
 /**
@@ -66,10 +62,6 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
      */
     autoSelect: boolean;
     /**
-     * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
-     */
-    choiseIndex?: number;
-    /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      * @example
      * ```tsx
@@ -103,6 +95,5 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
         this.oneTime = options?.oneTime || false;
         this.onlyHaveNoChoice = options?.onlyHaveNoChoice || false;
         this.autoSelect = options?.autoSelect || false;
-        this.choiseIndex = options?.choiceIndex;
     }
 }
