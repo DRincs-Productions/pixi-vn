@@ -2,6 +2,7 @@ import { ChoiceInterface } from "@drincs/pixi-vn";
 import { StorageObjectType } from "../../storage";
 import { logger } from "../../utils/log-utility";
 import RegisteredLabels from "../decorators/RegisteredLabels";
+import { ChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
 import { LabelIdType } from "../types/LabelIdType";
 import LabelRunModeType from "../types/LabelRunModeType";
 import newCloseLabel from "./CloseLabel";
@@ -17,11 +18,7 @@ interface ChoiceMenuOptionOptions
 }
 
 /**
- * ChoiceMenuOption is a class that contains a Label and a text that will be displayed in the menu.
- * @example
- * ```typescript
- * new ChoiceMenuOption("Hello", HelloLabel, {})
- * ```
+ * @deprecated Use `newChoiceOption` instead
  */
 export default class ChoiceMenuOption<
     T extends StorageObjectType,
@@ -69,7 +66,7 @@ export default class ChoiceMenuOption<
      * @example
      * ```tsx
      * narration.choiceMenuOptions = [
-     *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
+     *     newChoiceOption("Hello", helloLabel, { disabled: true }),
      * ]
      * return <List>
      *     {narration.choiceMenuOptions?.map((item, index) => {
@@ -123,4 +120,27 @@ export default class ChoiceMenuOption<
         this.devProps = devProps;
         this.props = props;
     }
+}
+
+/**
+ * Function to create a new choice menu option.
+ * @example
+ * ```typescript
+ * newChoiceOption("Hello", HelloLabel, {})
+ * ```
+ */
+export function newChoiceOption<T extends StorageObjectType>(
+    text: string,
+    label: Label<T> | LabelAbstract<any, T> | LabelIdType,
+    props: T,
+    options?: ChoiceMenuOptionOptions
+): ChoiceOptionInterface {
+    const labelId = typeof label === "string" ? label : label.id;
+    return {
+        ...options,
+        label: labelId,
+        props: props,
+        text,
+        type: options?.type || "call",
+    };
 }

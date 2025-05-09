@@ -3,7 +3,7 @@ import { CloseType } from "../types/CloseType";
 import { LabelIdType } from "../types/LabelIdType";
 import LabelRunModeType from "../types/LabelRunModeType";
 
-interface ChoiceMenuOption extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
+export interface ChoiceOptionInterface extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
     /**
      * Label Id to be opened when the option is selected
      */
@@ -14,7 +14,7 @@ interface ChoiceMenuOption extends Omit<ChoiceInterface, "label" | "type" | "clo
     type: LabelRunModeType;
 }
 
-interface ChoiceMenuOptionClose extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
+export interface CloseChoiceOptionInterface extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
     /**
      * Type of the label to be opened
      */
@@ -22,10 +22,10 @@ interface ChoiceMenuOptionClose extends Omit<ChoiceInterface, "label" | "type" |
     /**
      * If true, the current label will be closed
      */
-    closeCurrentLabel: boolean;
+    closeCurrentLabel?: boolean;
 }
 
-type StoredChoiceInterface = ChoiceMenuOption | ChoiceMenuOptionClose;
+type StoredChoiceInterface = ChoiceOptionInterface | CloseChoiceOptionInterface;
 export type StoredIndexedChoiceInterface = StoredChoiceInterface & {
     /**
      * Is the index of the choice in the menu. It is used to identify the choice when it is selected.

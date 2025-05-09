@@ -1,8 +1,7 @@
 import { ChoiceInterface } from "@drincs/pixi-vn";
 import { StorageObjectType } from "../../storage";
+import { CloseChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
 import { Close, CloseType } from "../types/CloseType";
-import newCloseLabel from "./CloseLabel";
-import Label from "./Label";
 
 interface ChoiceMenuOptionCloseOptions
     extends Omit<ChoiceInterface, "text" | "label" | "type" | "props" | "closeCurrentLabel"> {
@@ -13,18 +12,9 @@ interface ChoiceMenuOptionCloseOptions
 }
 
 /**
- * ChoiceMenuOptionClose is a class that contains a text that will be displayed in the menu.
- * It is used to close the menu.
- * @example
- * ```typescript
- * new ChoiceMenuOptionClose("Return")
- * ```
+ * @deprecated Use `newCloseChoiceOption` instead
  */
-export default class ChoiceMenuOptionClose<T extends {} = {}> {
-    /**
-     * Label to be opened when the option is selected
-     */
-    label: Label<T> = newCloseLabel();
+export default class ChoiceMenuOptionClose {
     /**
      * Text to be displayed in the menu
      */
@@ -54,7 +44,7 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
      * @example
      * ```tsx
      * narration.choiceMenuOptions = [
-     *     new ChoiceMenuOption("Hello", helloLabel, { disabled: true }),
+     *     newChoiceOption("Hello", helloLabel, { disabled: true }),
      * ]
      * return <List>
      *     {narration.choiceMenuOptions?.map((item, index) => {
@@ -99,4 +89,19 @@ export default class ChoiceMenuOptionClose<T extends {} = {}> {
         this.autoSelect = autoSelect;
         this.devProps = devProps;
     }
+}
+
+/**
+ * Function to create a new choice menu option that will close the menu.
+ * @example
+ * ```typescript
+ * newCloseChoiceOption("Return")
+ * ```
+ */
+export function newCloseChoiceOption(text: string, options?: ChoiceMenuOptionCloseOptions): CloseChoiceOptionInterface {
+    return {
+        ...options,
+        type: Close,
+        text,
+    };
 }

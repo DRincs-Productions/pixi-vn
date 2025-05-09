@@ -250,11 +250,11 @@ export default interface NarrationManagerInterface {
      * @example
      * ```typescript
      * narration.choiceMenuOptions = [
-     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
-     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
-     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
-     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
-     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     *     newChoiceOption("Events Test", EventsTestLabel, {}),
+     *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     newChoiceOption("Ticker Test", TickerTestLabel, {}),
+     *     newChoiceOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     newChoiceOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
      * ]
      * ```
      */
@@ -264,11 +264,11 @@ export default interface NarrationManagerInterface {
      * @example
      * ```typescript
      * narration.choiceMenuOptions = [
-     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
-     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
-     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
-     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
-     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     *     newChoiceOption("Events Test", EventsTestLabel, {}),
+     *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     newChoiceOption("Ticker Test", TickerTestLabel, {}),
+     *     newChoiceOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     newChoiceOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
      * ]
      * ```
      */

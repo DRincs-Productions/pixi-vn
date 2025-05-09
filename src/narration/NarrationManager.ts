@@ -5,7 +5,7 @@ import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import ChoiceMenuOption from "./classes/ChoiceMenuOption";
-import ChoiceMenuOptionClose from "./classes/ChoiceMenuOptionClose";
+import ChoiceMenuOptionClose from "./classes/CloseChoiceOption";
 import LabelAbstract from "./classes/LabelAbstract";
 import RegisteredLabels from "./decorators/RegisteredLabels";
 import { StoredDialogue } from "./interfaces/DialogueInterface";

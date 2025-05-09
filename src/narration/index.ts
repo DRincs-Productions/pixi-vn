@@ -1,8 +1,8 @@
 import { NarrationManagerInterface } from "..";
 import NarrationManager from "./NarrationManager";
 
-export { default as ChoiceMenuOption } from "./classes/ChoiceMenuOption";
-export { default as ChoiceMenuOptionClose } from "./classes/ChoiceMenuOptionClose";
+export { default as ChoiceMenuOption, newChoiceOption } from "./classes/ChoiceMenuOption";
+export { default as ChoiceMenuOptionClose, newCloseChoiceOption } from "./classes/CloseChoiceOption";
 export { default as Label } from "./classes/Label";
 export { default as LabelAbstract } from "./classes/LabelAbstract";
 export { default as newLabel } from "./decorators/newLabel";
@@ -18,6 +18,8 @@ export type { default as OpenedLabel } from "./interfaces/OpenedLabel";
 export type { default as StepLabelProps } from "./interfaces/StepLabelProps";
 export type { default as StepLabelResult } from "./interfaces/StepLabelResult";
 export type {
+    ChoiceOptionInterface,
+    CloseChoiceOptionInterface,
     default as StoredChoiceInterface,
     StoredIndexedChoiceInterface,
 } from "./interfaces/StoredChoiceInterface";

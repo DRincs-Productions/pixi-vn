@@ -1,5 +1,7 @@
 import { expect, test } from "vitest";
-import { ChoiceMenuOption, ChoiceMenuOptionClose, narration, newLabel, stepHistory, storage } from "../src";
+import { narration, newLabel, stepHistory, storage } from "../src";
+import { newChoiceOption } from "../src/narration/classes/ChoiceMenuOption";
+import { newCloseChoiceOption } from "../src/narration/classes/CloseChoiceOption";
 
 const startLabel = newLabel("choiceshistory", [
     async () => {
@@ -44,8 +46,8 @@ const startLabel = newLabel("choiceshistory", [
     async () => {
         narration.dialogue = `You want continue to the next part?`;
         narration.choiceMenuOptions = [
-            new ChoiceMenuOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
-            new ChoiceMenuOptionClose("No, I want to stop here"),
+            newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
+            newCloseChoiceOption("No, I want to stop here"),
         ];
     },
 ]);

@@ -1,5 +1,7 @@
 import { expect, test } from "vitest";
-import { ChoiceMenuOption, ChoiceMenuOptionClose, narration, newLabel, stepHistory, storage } from "../src";
+import { narration, newLabel, stepHistory, storage } from "../src";
+import { newChoiceOption } from "../src/narration/classes/ChoiceMenuOption";
+import { newCloseChoiceOption } from "../src/narration/classes/CloseChoiceOption";
 
 const ChoiseLabel = newLabel("choice", [
     () => {
@@ -8,7 +10,7 @@ const ChoiseLabel = newLabel("choice", [
     () => {
         narration.dialogue = "What do you choose?";
         narration.choiceMenuOptions = [
-            new ChoiceMenuOption(
+            newChoiceOption(
                 "A",
                 ALabel,
                 {},
@@ -16,7 +18,7 @@ const ChoiseLabel = newLabel("choice", [
                     type: "call",
                 }
             ),
-            new ChoiceMenuOption(
+            newChoiceOption(
                 "B",
                 BLabel,
                 {},
@@ -24,7 +26,7 @@ const ChoiseLabel = newLabel("choice", [
                     type: "jump",
                 }
             ),
-            new ChoiceMenuOptionClose("Close"),
+            newCloseChoiceOption("Close"),
         ];
     },
     () => {
