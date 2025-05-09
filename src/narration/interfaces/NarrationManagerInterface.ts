@@ -1,7 +1,6 @@
 import {
     ChoiceMenuOption,
     ChoiceMenuOptionClose,
-    ChoiceMenuOptionsType,
     DialogueInterface,
     InputInfo,
     LabelAbstract,
@@ -10,6 +9,8 @@ import {
     StepLabelPropsType,
     StepLabelResultType,
     StepLabelType,
+    StoredChoiceInterface,
+    StoredIndexedChoiceInterface,
 } from "..";
 import { StorageElementType } from "../../storage";
 import { LabelIdType } from "../types/LabelIdType";
@@ -257,7 +258,21 @@ export default interface NarrationManagerInterface {
      * ]
      * ```
      */
-    choiceMenuOptions: ChoiceMenuOptionsType<any> | undefined;
+    get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined;
+    /**
+     * The options to be shown in the game
+     * @example
+     * ```typescript
+     * narration.choiceMenuOptions = [
+     *     new ChoiceMenuOption("Events Test", EventsTestLabel, {}),
+     *     new ChoiceMenuOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
+     *     new ChoiceMenuOption("Ticker Test", TickerTestLabel, {}),
+     *     new ChoiceMenuOption("Tinting Test", TintingTestLabel, {}, "jump"),
+     *     new ChoiceMenuOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
+     * ]
+     * ```
+     */
+    set choiceMenuOptions(data: (ChoiceMenuOption<any> | ChoiceMenuOptionClose | StoredChoiceInterface)[] | undefined);
     /**
      * If true, the next dialogue text will be added to the current dialogue text.
      */

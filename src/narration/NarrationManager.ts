@@ -4,16 +4,16 @@ import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
-import ChoiceMenuOption, { ChoiceMenuOptionClose, IStoratedChoiceMenuOption } from "./classes/ChoiceMenuOption";
-import newCloseLabel, { CLOSE_LABEL_ID } from "./classes/CloseLabel";
+import ChoiceMenuOption from "./classes/ChoiceMenuOption";
+import ChoiceMenuOptionClose from "./classes/ChoiceMenuOptionClose";
 import LabelAbstract from "./classes/LabelAbstract";
 import RegisteredLabels from "./decorators/RegisteredLabels";
 import { StoredDialogue } from "./interfaces/DialogueInterface";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
 import NarrationGameState from "./interfaces/NarrationGameState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
+import StoredChoiceInterface, { StoredIndexedChoiceInterface } from "./interfaces/StoredChoiceInterface";
 import NarrationManagerStatic from "./NarrationManagerStatic";
-import { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { Close } from "./types/CloseType";
 import { InputInfo } from "./types/InputInfo";
@@ -394,21 +394,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         try {
-            if (labelId === CLOSE_LABEL_ID) {
-                let closeCurrentLabel = newCloseLabel<T>();
-                let choice: ChoiceMenuOptionClose<T> = {
-                    label: closeCurrentLabel,
-                    text: "",
-                    closeCurrentLabel: false,
-                    type: "close",
-                    oneTime: false,
-                    onlyHaveNoChoice: false,
-                    autoSelect: false,
-                    props: {},
-                    choiseIndex: choiceMade,
-                };
-                return this.closeChoiceMenu<T>(choice, props);
-            }
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
@@ -446,21 +431,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         try {
-            if (labelId === CLOSE_LABEL_ID) {
-                let closeCurrentLabel = newCloseLabel<T>();
-                let choice: ChoiceMenuOptionClose<T> = {
-                    label: closeCurrentLabel,
-                    text: "",
-                    closeCurrentLabel: false,
-                    type: "close",
-                    oneTime: false,
-                    onlyHaveNoChoice: false,
-                    autoSelect: false,
-                    props: {},
-                    choiseIndex: choiceMade,
-                };
-                return this.closeChoiceMenu<T>(choice, props);
-            }
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
@@ -615,39 +585,17 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         }
     }
-    public get choiceMenuOptions(): ChoiceMenuOptionsType<any> | undefined {
-        let d = GameUnifier.getVariable<IStoratedChoiceMenuOption[]>(
+    public get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined {
+        let d = GameUnifier.getVariable<any>(
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
-        );
+        ) as StoredChoiceInterface[];
         if (d) {
-            let options: ChoiceMenuOptionsType = [];
-            let onlyHaveNoChoice: ChoiceMenuOptionsType = [];
-            d.forEach((option, index) => {
-                if (option.type === Close) {
-                    let itemLabel = newCloseLabel();
-                    let choice = new ChoiceMenuOptionClose(option.text, {
-                        closeCurrentLabel: option.closeCurrentLabel,
-                        oneTime: option.oneTime,
-                        onlyHaveNoChoice: option.onlyHaveNoChoice,
-                        autoSelect: option.autoSelect,
-                        choiceIndex: index,
-                    });
-                    choice.label = itemLabel;
-                    options.push(choice);
-                    return;
-                }
-                let label = RegisteredLabels.get(option.label);
-                if (label) {
-                    options.push(
-                        new ChoiceMenuOption(option.text, label, option.props, {
-                            type: option.type,
-                            oneTime: option.oneTime,
-                            onlyHaveNoChoice: option.onlyHaveNoChoice,
-                            autoSelect: option.autoSelect,
-                            choiceIndex: index,
-                        })
-                    );
-                }
+            let onlyHaveNoChoice: StoredIndexedChoiceInterface[] = [];
+            let options: StoredIndexedChoiceInterface[] = d.map((option, index) => {
+                return {
+                    ...option,
+                    choiceIndex: index,
+                };
             });
             let alreadyChoices = this.alreadyCurrentStepMadeChoices;
             options = options.filter((option, index) => {
@@ -671,14 +619,16 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return undefined;
     }
-    public set choiceMenuOptions(options: ChoiceMenuOptionsType<any> | undefined) {
-        if (!options) {
+    public set choiceMenuOptions(
+        options: (ChoiceMenuOption<any> | ChoiceMenuOptionClose | StoredChoiceInterface)[] | undefined
+    ) {
+        if (!options || options.length === 0) {
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined);
             return;
         }
-        let value: IStoratedChoiceMenuOption[] = options.map((option) => {
+        let value: StoredChoiceInterface[] = options.map((option) => {
             if (option instanceof ChoiceMenuOptionClose) {
-                return {
+                let temp: StoredChoiceInterface = {
                     text: option.text,
                     type: Close,
                     closeCurrentLabel: option.closeCurrentLabel,
@@ -686,17 +636,29 @@ export default class NarrationManager implements NarrationManagerInterface {
                     onlyHaveNoChoice: option.onlyHaveNoChoice,
                     autoSelect: option.autoSelect,
                 };
+                return temp;
+            } else if (option instanceof ChoiceMenuOption) {
+                let temp: StoredChoiceInterface = {
+                    ...option,
+                    label: option.label.id,
+                };
+                return temp;
             }
-            return {
-                ...option,
-                label: option.label.id,
-            };
+            return option;
         });
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, value);
-        GameUnifier.setVariable(
-            SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
-            this.stepCounter
-        );
+        try {
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
+                createExportableElement(value) as any
+            );
+            GameUnifier.setVariable(
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
+                this.stepCounter
+            );
+        } catch (e) {
+            logger.error("ChoiceInterface cannot contain functions or classes");
+            throw e;
+        }
     }
     public get dialogGlue(): boolean {
         return GameUnifier.getFlag(SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY);

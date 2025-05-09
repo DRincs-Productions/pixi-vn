@@ -35,7 +35,7 @@ export default interface ChoiceInterface {
     /**
      * Is the index of the choice in the menu. It is used to identify the choice when it is selected.
      */
-    choiseIndex?: number;
+    choiceIndex?: number;
     /**
      * Properties to be passed to the label and olther parameters that you can use when get all the choice menu options.
      */

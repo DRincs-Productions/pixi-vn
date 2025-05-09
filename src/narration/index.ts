@@ -17,7 +17,10 @@ export type { default as NarrativeHistory } from "./interfaces/NarrativeHistory"
 export type { default as OpenedLabel } from "./interfaces/OpenedLabel";
 export type { default as StepLabelProps } from "./interfaces/StepLabelProps";
 export type { default as StepLabelResult } from "./interfaces/StepLabelResult";
-export type { default as StoredChoiceInterface } from "./interfaces/StoredChoiceInterface";
+export type {
+    default as StoredChoiceInterface,
+    StoredIndexedChoiceInterface,
+} from "./interfaces/StoredChoiceInterface";
 export { default as NarrationManagerStatic } from "./NarrationManagerStatic";
 export type { ChoiceMenuOptionsType } from "./types/ChoiceMenuOptionsType";
 export { Close } from "./types/CloseType";
