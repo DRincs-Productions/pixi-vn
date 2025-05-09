@@ -484,26 +484,29 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
         this.choiceMenuOptions = undefined;
-        if (item.type == "call") {
-            return await this.callLabel(
-                item.label,
-                { ...item.props, ...props },
-                {
-                    choiceMade: item.choiseIndex,
-                }
-            );
-        } else if (item.type == "jump") {
-            return await this.jumpLabel(
-                item.label,
-                { ...item.props, ...props },
-                {
-                    choiceMade: item.choiseIndex,
-                }
-            );
-        } else if (item.type == "close") {
-            return await this.closeChoiceMenu(item, { ...item.props, ...props });
-        } else {
-            throw new Error(`[Pixi’VN] Type ${item.type} not found`);
+        const type = item.type;
+        switch (type) {
+            case "call":
+                return await this.callLabel(
+                    item.label,
+                    { ...item.props, ...props },
+                    {
+                        choiceMade: item.choiseIndex,
+                    }
+                );
+            case "jump":
+                return await this.jumpLabel(
+                    item.label,
+                    { ...item.props, ...props },
+                    {
+                        choiceMade: item.choiseIndex,
+                    }
+                );
+            case "close":
+                return await this.closeChoiceMenu(item, { ...item.props, ...props });
+            default:
+                logger.error(`[Pixi’VN] Type ${type} not found`);
+                throw new Error(`[Pixi’VN] Type ${type} not found`);
         }
     }
     /**
