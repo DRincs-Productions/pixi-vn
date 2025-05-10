@@ -9,16 +9,9 @@ export default interface HistoryManagerInterface {
     readonly stepsHistory: HistoryStep[];
     /**
      * Get the narrative history.
-     * If you want use a asynchronous method, use {@link HistoryManagerInterface.getNarrativeHistory}.
      * @returns the history of the dialogues, choices and steps
      */
     readonly narrativeHistory: NarrativeHistory[];
-    /**
-     * Get the current label history.
-     * The difference between this method and {@link HistoryManagerInterface.narrativeHistory} is that this method is asynchronous.
-     * @returns the history of the current label
-     */
-    getNarrativeHistory(): Promise<NarrativeHistory[]>;
     /**
      * The number of steps to keep in the history into the save file.
      *
