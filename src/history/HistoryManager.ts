@@ -1,6 +1,7 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { diff } from "deep-diff";
 import { HistoryChoiceMenuOption, HistoryStep, NarrativeHistory } from "../narration";
+import { StorageElementType } from "../storage/types/StorageElementType";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { restoreDiffChanges } from "../utils/diff-utility";
@@ -96,68 +97,90 @@ export default class HistoryManager implements HistoryManagerInterface {
         asyncFunction();
         HistoryManagerStatic.originalStepData = currentStepData;
     }
-    get narrativeHistory(): NarrativeHistory[] {
-        let list: NarrativeHistory[] = [];
-        this.stepsHistory.forEach((step) => {
-            let dialogue = step.dialogue || step.dialoge;
-            let requiredChoices = step.choices;
-            let inputValue = step.inputValue;
-            if (
-                list.length > 0 &&
-                list[list.length - 1].choices &&
-                !list[list.length - 1].playerMadeChoice &&
-                step.currentLabel
-            ) {
-                let oldChoices = list[list.length - 1].choices;
-                if (oldChoices) {
-                    let choiceMade = false;
-                    if (step.choiceIndexMade !== undefined && oldChoices.length > step.choiceIndexMade) {
-                        oldChoices[step.choiceIndexMade].isResponse = true;
-                        choiceMade = true;
-                    }
-                    list[list.length - 1].playerMadeChoice = choiceMade;
-                    list[list.length - 1].choices = oldChoices;
+    historyStepMapper(
+        item: { step: HistoryStep; choiceIndexMade?: number; inputValue?: StorageElementType },
+        previousItem: { choiceIndexMade?: number; inputValue?: StorageElementType } | undefined
+    ): NarrativeHistory | undefined {
+        const { step, choiceIndexMade, inputValue } = item;
+        let dialogue = step.dialogue || step.dialoge;
+        let requiredChoices = step.choices;
+        if (previousItem && step.currentLabel) {
+            if (step.choiceIndexMade !== undefined) {
+                previousItem.choiceIndexMade = step.choiceIndexMade;
+            }
+        }
+        if (step.inputValue && previousItem) {
+            previousItem.inputValue = step.inputValue;
+        }
+        if (dialogue || requiredChoices) {
+            let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice, index) => {
+                let hidden: boolean = false;
+                if (choice.oneTime && step.alreadyMadeChoices && step.alreadyMadeChoices.includes(index)) {
+                    hidden = true;
                 }
-            }
-            if (inputValue && list.length > 0) {
-                list[list.length - 1].inputValue = inputValue;
-            }
-            if (dialogue || requiredChoices) {
-                let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice, index) => {
-                    let hidden: boolean = false;
-                    if (choice.oneTime && step.alreadyMadeChoices && step.alreadyMadeChoices.includes(index)) {
-                        hidden = true;
-                    }
-                    return {
-                        text: choice.text,
-                        type: choice.type,
-                        isResponse: false,
-                        hidden: hidden,
-                    };
-                });
+                return {
+                    text: choice.text,
+                    type: choice.type,
+                    isResponse: false,
+                    hidden: hidden,
+                };
+            });
+            if (choices) {
                 // if all choices are hidden find onlyHaveNoChoice
-                if (choices && choices.every((choice) => choice.hidden)) {
+                if (choices.every((choice) => choice.hidden)) {
                     let onlyHaveNoChoice = choices.find((choice) => choice.hidden === false);
                     if (onlyHaveNoChoice) {
                         onlyHaveNoChoice.hidden = false;
                     }
                 }
-                list.push({
-                    dialogue: dialogue
-                        ? {
-                              ...dialogue,
-                              character: dialogue.character
-                                  ? GameUnifier.getCharacter(dialogue.character) || dialogue.character
-                                  : undefined,
-                          }
-                        : undefined,
-                    playerMadeChoice: false,
-                    choices: choices,
-                    stepIndex: step.index,
-                });
+                if (choiceIndexMade !== undefined) {
+                    choices[choiceIndexMade].isResponse = true;
+                }
             }
-        });
-        return list;
+            return {
+                dialogue: dialogue
+                    ? {
+                          ...dialogue,
+                          character: dialogue.character
+                              ? GameUnifier.getCharacter(dialogue.character) || dialogue.character
+                              : undefined,
+                      }
+                    : undefined,
+                playerMadeChoice: typeof choiceIndexMade === "number",
+                choices: choices,
+                stepIndex: step.index,
+                inputValue: inputValue,
+            };
+        }
+    }
+    get narrativeHistory(): NarrativeHistory[] {
+        let previousItem = {
+            choiceIndexMade: undefined,
+            inputValue: undefined,
+            playerMadeChoice: undefined,
+        };
+        return this.stepsHistory
+            .reverse()
+            .map((step) => {
+                let moreInfo = {
+                    ...previousItem,
+                };
+                previousItem = {
+                    choiceIndexMade: undefined,
+                    inputValue: undefined,
+                    playerMadeChoice: undefined,
+                };
+                return this.historyStepMapper(
+                    {
+                        step: step,
+                        choiceIndexMade: moreInfo.choiceIndexMade,
+                        inputValue: moreInfo.inputValue,
+                    },
+                    previousItem
+                );
+            })
+            .reverse()
+            .filter((step) => step !== undefined) as NarrativeHistory[];
     }
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
