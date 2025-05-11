@@ -6,14 +6,17 @@ declare module "@drincs/pixi-vn" {
         id: string;
         /**
          * The name of the character.
+         * If you set undefined, it will return the default name.
          */
         name: string;
         /**
          * The surname of the character.
+         * If you set undefined, it will return the default surname.
          */
         surname?: string;
         /**
          * The age of the character.
+         * If you set undefined, it will return the default age.
          */
         age?: number;
         /**
