@@ -153,19 +153,6 @@ export default class HistoryManager implements HistoryManagerInterface {
             };
         }
     }
-    private mapStepToNarrativeHistory(
-        step: HistoryStep,
-        previousItem: { choiceIndexMade?: number; inputValue?: StorageElementType }
-    ): NarrativeHistory | undefined {
-        return this.historyStepMapper(
-            {
-                step,
-                choiceIndexMade: previousItem.choiceIndexMade,
-                inputValue: previousItem.inputValue,
-            },
-            previousItem
-        );
-    }
     get narrativeHistory(): NarrativeHistory[] {
         const result: NarrativeHistory[] = [];
         let previousItem: {
@@ -175,6 +162,45 @@ export default class HistoryManager implements HistoryManagerInterface {
 
         // Iterate over the stepsHistory array in reverse order
         for (let i = this.stepsHistory.length - 1; i >= 0; i--) {
+            const step = this.stepsHistory[i];
+            let moreInfo = {
+                ...previousItem,
+            };
+            previousItem = {
+                choiceIndexMade: undefined,
+                inputValue: undefined,
+            };
+            let res = this.historyStepMapper(
+                {
+                    step: step,
+                    choiceIndexMade: moreInfo.choiceIndexMade,
+                    inputValue: moreInfo.inputValue,
+                },
+                previousItem
+            );
+            if (res) {
+                result.push(res);
+            }
+        }
+
+        return result.reverse();
+    }
+    get latestCurrentLabelHistory(): NarrativeHistory[] {
+        const result: NarrativeHistory[] = [];
+        let previousItem: {
+            choiceIndexMade?: number;
+            inputValue?: StorageElementType;
+        } = {};
+        const lastItem = this.stepsHistory[this.stepsHistory.length - 1];
+        const lastLabel = lastItem.currentLabel;
+        const prevIndex = lastItem.index;
+
+        // Iterate over the stepsHistory array in reverse order
+        for (
+            let i = this.stepsHistory.length - 1;
+            i >= 0 && this.stepsHistory[i].currentLabel === lastLabel && this.stepsHistory[i].index <= prevIndex;
+            i--
+        ) {
             const step = this.stepsHistory[i];
             let moreInfo = {
                 ...previousItem,
