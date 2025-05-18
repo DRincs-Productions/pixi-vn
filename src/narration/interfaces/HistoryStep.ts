@@ -67,5 +67,5 @@ export default interface HistoryStep {
     /**
      * If true, the next dialogue text will be added to the current dialogue text.
      */
-    dialogGlue: boolean;
+    dialogGlue?: boolean;
 }

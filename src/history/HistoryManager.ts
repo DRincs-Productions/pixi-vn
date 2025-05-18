@@ -98,11 +98,14 @@ export default class HistoryManager implements HistoryManagerInterface {
         HistoryManagerStatic.originalStepData = currentStepData;
     }
     historyStepMapper(
-        item: { step: HistoryStep; choiceIndexMade?: number; inputValue?: StorageElementType },
+        item: { step: HistoryStep; choiceIndexMade?: number; inputValue?: StorageElementType; dialodueGlue?: boolean },
         previousItem: { choiceIndexMade?: number; inputValue?: StorageElementType } | undefined
     ): NarrativeHistory | undefined {
-        const { step, choiceIndexMade, inputValue } = item;
+        const { step, choiceIndexMade, inputValue, dialodueGlue } = item;
         let dialogue = step.dialogue || step.dialoge;
+        if (dialodueGlue) {
+            dialogue = undefined;
+        }
         let requiredChoices = step.choices;
         if (previousItem && step.currentLabel) {
             if (step.choiceIndexMade !== undefined) {
@@ -177,6 +180,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                     step: step,
                     choiceIndexMade: moreInfo.choiceIndexMade,
                     inputValue: moreInfo.inputValue,
+                    dialodueGlue: step.dialogGlue,
                 },
                 previousItem
             );
@@ -217,6 +221,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                     step: step,
                     choiceIndexMade: moreInfo.choiceIndexMade,
                     inputValue: moreInfo.inputValue,
+                    dialodueGlue: step.dialogGlue,
                 },
                 previousItem
             );
