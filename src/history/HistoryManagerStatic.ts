@@ -4,6 +4,9 @@ import { createExportableElement } from "../utils";
 
 export default class HistoryManagerStatic {
     static _stepsHistory: HistoryStep[] = [];
+    static get stepsHistory(): HistoryStep[] {
+        return createExportableElement(HistoryManagerStatic._stepsHistory);
+    }
     static stepLimitSaved: number = 20;
     /**
      * goBackRunning is a boolean that indicates if the go back is running.

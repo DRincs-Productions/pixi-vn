@@ -64,4 +64,8 @@ export default interface HistoryStep {
      * The choice made by the player
      */
     choiceIndexMade?: number;
+    /**
+     * If true, the next dialogue text will be added to the current dialogue text.
+     */
+    dialogGlue: boolean;
 }
