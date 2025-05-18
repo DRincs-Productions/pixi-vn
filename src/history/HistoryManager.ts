@@ -15,7 +15,7 @@ import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
  */
 export default class HistoryManager implements HistoryManagerInterface {
     get stepsHistory() {
-        return HistoryManagerStatic._stepsHistory;
+        return HistoryManagerStatic.stepsHistory;
     }
     private internalRestoreOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
@@ -45,7 +45,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("The parameter steps must be greater than 0");
             return;
         }
-        if (this.stepsHistory.length <= 1) {
+        if (HistoryManagerStatic._stepsHistory.length <= 1) {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
@@ -81,12 +81,12 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
         }
-        this.stepsHistory.push({} as any);
-        let index = this.stepsHistory.length - 1;
+        HistoryManagerStatic._stepsHistory.push({} as any);
+        let index = HistoryManagerStatic._stepsHistory.length - 1;
         const asyncFunction = async () => {
             try {
                 let data = diff(originalStepData, currentStepData);
-                this.stepsHistory[index] = {
+                HistoryManagerStatic._stepsHistory[index] = {
                     ...(historyInfo as Omit<HistoryStep, "diff">),
                     diff: data,
                 };
@@ -98,11 +98,14 @@ export default class HistoryManager implements HistoryManagerInterface {
         HistoryManagerStatic.originalStepData = currentStepData;
     }
     historyStepMapper(
-        item: { step: HistoryStep; choiceIndexMade?: number; inputValue?: StorageElementType },
+        item: { step: HistoryStep; choiceIndexMade?: number; inputValue?: StorageElementType; dialodueGlue?: boolean },
         previousItem: { choiceIndexMade?: number; inputValue?: StorageElementType } | undefined
     ): NarrativeHistory | undefined {
-        const { step, choiceIndexMade, inputValue } = item;
+        const { step, choiceIndexMade, inputValue, dialodueGlue } = item;
         let dialogue = step.dialogue || step.dialoge;
+        if (dialodueGlue) {
+            dialogue = undefined;
+        }
         let requiredChoices = step.choices;
         if (previousItem && step.currentLabel) {
             if (step.choiceIndexMade !== undefined) {
@@ -160,9 +163,11 @@ export default class HistoryManager implements HistoryManagerInterface {
             inputValue?: StorageElementType;
         } = {};
 
+        const stepsHistory = HistoryManagerStatic.stepsHistory;
+
         // Iterate over the stepsHistory array in reverse order
-        for (let i = this.stepsHistory.length - 1; i >= 0; i--) {
-            const step = this.stepsHistory[i];
+        for (let i = stepsHistory.length - 1; i >= 0; i--) {
+            const step = stepsHistory[i];
             let moreInfo = {
                 ...previousItem,
             };
@@ -175,6 +180,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                     step: step,
                     choiceIndexMade: moreInfo.choiceIndexMade,
                     inputValue: moreInfo.inputValue,
+                    dialodueGlue: step.dialogGlue,
                 },
                 previousItem
             );
@@ -191,17 +197,18 @@ export default class HistoryManager implements HistoryManagerInterface {
             choiceIndexMade?: number;
             inputValue?: StorageElementType;
         } = {};
-        const lastItem = this.stepsHistory[this.stepsHistory.length - 1];
+        const stepsHistory = HistoryManagerStatic.stepsHistory;
+        const lastItem = stepsHistory[stepsHistory.length - 1];
         const lastLabel = lastItem.currentLabel;
         const prevIndex = lastItem.index;
 
         // Iterate over the stepsHistory array in reverse order
         for (
-            let i = this.stepsHistory.length - 1;
-            i >= 0 && this.stepsHistory[i].currentLabel === lastLabel && this.stepsHistory[i].index <= prevIndex;
+            let i = stepsHistory.length - 1;
+            i >= 0 && stepsHistory[i].currentLabel === lastLabel && stepsHistory[i].index <= prevIndex;
             i--
         ) {
-            const step = this.stepsHistory[i];
+            const step = stepsHistory[i];
             let moreInfo = {
                 ...previousItem,
             };
@@ -214,6 +221,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                     step: step,
                     choiceIndexMade: moreInfo.choiceIndexMade,
                     inputValue: moreInfo.inputValue,
+                    dialodueGlue: step.dialogGlue,
                 },
                 previousItem
             );
@@ -227,7 +235,7 @@ export default class HistoryManager implements HistoryManagerInterface {
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
             // remove the first items
-            this.stepsHistory.splice(0, itemsNumber);
+            HistoryManagerStatic._stepsHistory.splice(0, itemsNumber);
         } else {
             HistoryManagerStatic._stepsHistory = [];
         }
@@ -242,9 +250,9 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (GameUnifier.currentStepsRunningNumber !== 0) {
             return;
         }
-        if (this.stepsHistory.length > 1) {
-            this.stepsHistory[this.stepsHistory.length - 1] = {
-                ...this.stepsHistory[this.stepsHistory.length - 1],
+        if (HistoryManagerStatic._stepsHistory.length > 1) {
+            HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1] = {
+                ...HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1],
                 diff: undefined,
             };
         }
@@ -285,8 +293,8 @@ export default class HistoryManager implements HistoryManagerInterface {
     /* Export and Import Methods */
 
     public export(): HistoryGameState {
-        let firstStepToCompres = this.stepsHistory.length - this.stepLimitSaved;
-        let stepsHistory: HistoryStep[] = this.stepsHistory.map((step, index) => ({
+        let firstStepToCompres = HistoryManagerStatic._stepsHistory.length - this.stepLimitSaved;
+        let stepsHistory: HistoryStep[] = HistoryManagerStatic._stepsHistory.map((step, index) => ({
             diff: firstStepToCompres > index ? undefined : step.diff,
             ...step,
         }));

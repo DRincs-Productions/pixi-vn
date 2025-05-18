@@ -98,9 +98,9 @@ const secondPart = newLabel("choiceshistory2", [
     },
     async () => {
         narration.dialogue = `I realize too late`;
+        narration.dialogGlue = true;
     },
     async () => {
-        narration.dialogGlue = true;
         narration.dialogue = ` this topic is no better:`;
     },
 ]);
@@ -466,13 +466,6 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "I realize too late",
-            },
-            playerMadeChoice: false,
-            stepIndex: 23,
-        },
-        {
-            dialogue: {
                 text: "I realize too late this topic is no better:",
             },
             playerMadeChoice: false,
@@ -709,13 +702,6 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 22,
-        },
-        {
-            dialogue: {
-                text: "I realize too late",
-            },
-            playerMadeChoice: false,
-            stepIndex: 23,
         },
         {
             dialogue: {
