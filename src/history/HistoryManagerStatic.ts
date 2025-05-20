@@ -5,7 +5,7 @@ import { createExportableElement } from "../utils";
 
 export default class HistoryManagerStatic {
     static _diffHistory = new CachedMap<number, HistoryStep["diff"]>({ cacheSize: 5 });
-    static _stepsHistory = new CachedMap<number, Omit<HistoryStep, "diff">>({ cacheSize: 10 });
+    static _stepsInfo = new CachedMap<number, Omit<HistoryStep, "diff">>({ cacheSize: 10 });
     static stepLimitSaved: number = 20;
     /**
      * goBackRunning is a boolean that indicates if the go back is running.

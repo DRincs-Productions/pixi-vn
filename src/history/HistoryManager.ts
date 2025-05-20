@@ -15,19 +15,19 @@ import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
  */
 export default class HistoryManager implements HistoryManagerInterface {
     get size(): Number {
-        return HistoryManagerStatic._stepsHistory.size;
+        return HistoryManagerStatic._stepsInfo.size;
     }
     get lastKey(): number | null {
         if (this.size === 0) {
             return null;
         }
-        return Math.max(...Array.from(HistoryManagerStatic._stepsHistory.keys()));
+        return Math.max(...Array.from(HistoryManagerStatic._stepsInfo.keys()));
     }
     get(stepIndex: number): Omit<HistoryStep, "diff"> | undefined {
-        return HistoryManagerStatic._stepsHistory.get(stepIndex);
+        return HistoryManagerStatic._stepsInfo.get(stepIndex);
     }
     delete(stepIndex: number) {
-        HistoryManagerStatic._stepsHistory.delete(stepIndex);
+        HistoryManagerStatic._stepsInfo.delete(stepIndex);
         HistoryManagerStatic._diffHistory.delete(stepIndex);
     }
     private internalRestoreOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
@@ -95,15 +95,11 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
         }
-        HistoryManagerStatic._stepsHistory.push({} as any);
-        let index = HistoryManagerStatic._stepsHistory.length - 1;
         const asyncFunction = async () => {
             try {
                 let data = diff(originalStepData, currentStepData);
-                HistoryManagerStatic._stepsHistory[index] = {
-                    ...(historyInfo as Omit<HistoryStep, "diff">),
-                    diff: data,
-                };
+                HistoryManagerStatic._stepsInfo.set(currentStepData.index, historyInfo);
+                HistoryManagerStatic._diffHistory.set(currentStepData.index, data);
             } catch (e) {
                 logger.error("Error adding history step", e);
             }
@@ -255,13 +251,13 @@ export default class HistoryManager implements HistoryManagerInterface {
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
             // remove the first items
-            HistoryManagerStatic._stepsHistory.splice(0, itemsNumber);
+            HistoryManagerStatic._stepsInfo.splice(0, itemsNumber);
         } else {
-            HistoryManagerStatic._stepsHistory = [];
+            HistoryManagerStatic._stepsInfo = [];
         }
     }
     get canGoBack(): boolean {
-        if (HistoryManagerStatic._stepsHistory.length <= 1) {
+        if (HistoryManagerStatic._stepsInfo.length <= 1) {
             return false;
         }
         return HistoryManagerStatic.lastHistoryStep?.diff ? true : false;
@@ -270,9 +266,9 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (GameUnifier.currentStepsRunningNumber !== 0) {
             return;
         }
-        if (HistoryManagerStatic._stepsHistory.length > 1) {
-            HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1] = {
-                ...HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1],
+        if (HistoryManagerStatic._stepsInfo.length > 1) {
+            HistoryManagerStatic._stepsInfo[HistoryManagerStatic._stepsInfo.length - 1] = {
+                ...HistoryManagerStatic._stepsInfo[HistoryManagerStatic._stepsInfo.length - 1],
                 diff: undefined,
             };
         }
@@ -299,7 +295,7 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
 
     public clear() {
-        HistoryManagerStatic._stepsHistory = [];
+        HistoryManagerStatic._stepsInfo = [];
         HistoryManagerStatic._originalStepData = undefined;
     }
 
@@ -313,8 +309,8 @@ export default class HistoryManager implements HistoryManagerInterface {
     /* Export and Import Methods */
 
     public export(): HistoryGameState {
-        let firstStepToCompres = HistoryManagerStatic._stepsHistory.length - this.stepLimitSaved;
-        let stepsHistory: HistoryStep[] = HistoryManagerStatic._stepsHistory.map((step, index) => ({
+        let firstStepToCompres = HistoryManagerStatic._stepsInfo.length - this.stepLimitSaved;
+        let stepsHistory: HistoryStep[] = HistoryManagerStatic._stepsInfo.map((step, index) => ({
             diff: firstStepToCompres > index ? undefined : step.diff,
             ...step,
         }));
@@ -327,7 +323,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         this.clear();
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                HistoryManagerStatic._stepsHistory = (data as HistoryGameState)["stepsHistory"];
+                HistoryManagerStatic._stepsInfo = (data as HistoryGameState)["stepsHistory"];
             } else {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
             }
