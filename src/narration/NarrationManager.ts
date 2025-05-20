@@ -569,7 +569,18 @@ export default class NarrationManager implements NarrationManagerInterface {
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
             );
             if (glueDialogue) {
-                dialogue.text = `${glueDialogue.text}${dialogue.text}`;
+                let newText = [];
+                if (Array.isArray(glueDialogue.text)) {
+                    newText = [...glueDialogue.text];
+                } else {
+                    newText = [glueDialogue.text];
+                }
+                if (Array.isArray(dialogue.text)) {
+                    newText = [...newText, ...dialogue.text];
+                } else {
+                    newText = [...newText, dialogue.text];
+                }
+                dialogue.text = newText;
                 dialogue.character = dialogue.character || glueDialogue.character;
             }
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED, this.stepCounter);
