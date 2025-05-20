@@ -219,6 +219,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 0,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -265,6 +266,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 1,
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -311,6 +313,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 2,
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -363,6 +366,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 3,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -403,6 +407,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 4,
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -443,6 +448,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 5,
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -489,6 +495,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 6,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -529,6 +536,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 7,
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
                 {
                     diff: [
@@ -569,6 +577,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     index: 8,
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
+                    isGlued: false,
                 },
             ],
             originalStepData: {
