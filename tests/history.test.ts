@@ -126,15 +126,7 @@ test("choice test", async () => {
     expect(stepHistory.latestCurrentLabelHistory).toEqual([
         {
             dialogue: {
-                character: "steph",
-                text: "Wait!",
-            },
-            playerMadeChoice: false,
-            stepIndex: 0,
-        },
-        {
-            dialogue: {
-                text: "Wait! I've got a gift for you!",
+                text: ["Wait!", " I've got a gift for you!"],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -158,15 +150,7 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                character: "steph",
-                text: "sly.name!",
-            },
-            playerMadeChoice: false,
-            stepIndex: 4,
-        },
-        {
-            dialogue: {
-                text: "sly.name! SPOILERS!!!!",
+                text: ["sly.name!", " SPOILERS!!!!"],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -174,14 +158,10 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "steph_fullname goes through the opposite door,",
-            },
-            playerMadeChoice: false,
-            stepIndex: 6,
-        },
-        {
-            dialogue: {
-                text: "steph_fullname goes through the opposite door, and returns with a HUGE tinfoil-covered platter.",
+                text: [
+                    "steph_fullname goes through the opposite door,",
+                    " and returns with a HUGE tinfoil-covered platter.",
+                ],
             },
             playerMadeChoice: false,
             stepIndex: 7,
@@ -245,15 +225,7 @@ test("choice test", async () => {
     expect(stepHistory.narrativeHistory).toEqual([
         {
             dialogue: {
-                text: "Wait!",
-                character: "steph",
-            },
-            playerMadeChoice: false,
-            stepIndex: 0,
-        },
-        {
-            dialogue: {
-                text: "Wait! I've got a gift for you!",
+                text: ["Wait!", " I've got a gift for you!"],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -277,15 +249,7 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "sly.name!",
-                character: "steph",
-            },
-            playerMadeChoice: false,
-            stepIndex: 4,
-        },
-        {
-            dialogue: {
-                text: "sly.name! SPOILERS!!!!",
+                text: ["sly.name!", " SPOILERS!!!!"],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -293,14 +257,10 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "steph_fullname goes through the opposite door,",
-            },
-            playerMadeChoice: false,
-            stepIndex: 6,
-        },
-        {
-            dialogue: {
-                text: "steph_fullname goes through the opposite door, and returns with a HUGE tinfoil-covered platter.",
+                text: [
+                    "steph_fullname goes through the opposite door,",
+                    " and returns with a HUGE tinfoil-covered platter.",
+                ],
             },
             playerMadeChoice: false,
             stepIndex: 7,
@@ -366,7 +326,6 @@ test("choice test", async () => {
             stepIndex: 13,
         },
     ]);
-    // const aa = stepHistory.latestCurrentLabelHistory;
     expect(stepHistory.latestCurrentLabelHistory).toEqual([
         {
             dialogue: {
@@ -390,14 +349,12 @@ test("choice test", async () => {
     expect(stepHistory.latestCurrentLabelHistory).toEqual([
         {
             dialogue: {
-                text: "She enters my room before I'VE even had a chance to.",
-            },
-            playerMadeChoice: false,
-            stepIndex: 13,
-        },
-        {
-            dialogue: {
-                text: "She enters my room before I'VE even had a chance to.  \n\n...I could've just come back and gotten the platter later...",
+                text: [
+                    "She enters my room before I'VE even had a chance to.",
+                    `  
+
+...I could've just come back and gotten the platter later...`,
+                ],
             },
             playerMadeChoice: false,
             stepIndex: 14,
@@ -411,15 +368,10 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                character: "steph",
-                text: "They got you a new mattress, right?",
-            },
-            playerMadeChoice: false,
-            stepIndex: 16,
-        },
-        {
-            dialogue: {
-                text: "They got you a new mattress, right? That last guy was a druggie, did james.name tell you that?",
+                text: [
+                    "They got you a new mattress, right?",
+                    " That last guy was a druggie, did james.name tell you that?",
+                ],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -435,15 +387,10 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                character: "steph",
-                text: "sly.name! If word gets out about that...",
-            },
-            playerMadeChoice: false,
-            stepIndex: 19,
-        },
-        {
-            dialogue: {
-                text: "sly.name! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.",
+                text: [
+                    "sly.name! If word gets out about that...",
+                    " well, actually, it wouldn't matter, *he's* the one who shot himself up.",
+                ],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -466,7 +413,7 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "I realize too late this topic is no better:",
+                text: ["I realize too late", " this topic is no better:"],
             },
             playerMadeChoice: false,
             stepIndex: 24,
@@ -490,14 +437,12 @@ test("choice test", async () => {
     expect(stepHistory.latestCurrentLabelHistory).toEqual([
         {
             dialogue: {
-                text: "She enters my room before I'VE even had a chance to.",
-            },
-            playerMadeChoice: false,
-            stepIndex: 25,
-        },
-        {
-            dialogue: {
-                text: "She enters my room before I'VE even had a chance to.  \n\n...I could've just come back and gotten the platter later...",
+                text: [
+                    "She enters my room before I'VE even had a chance to.",
+                    `  
+
+...I could've just come back and gotten the platter later...`,
+                ],
             },
             playerMadeChoice: false,
             stepIndex: 26,
@@ -510,19 +455,10 @@ test("choice test", async () => {
             stepIndex: 27,
         },
     ]);
-    const aa = stepHistory.narrativeHistory;
     expect(stepHistory.narrativeHistory).toEqual([
         {
             dialogue: {
-                character: "steph",
-                text: "Wait!",
-            },
-            playerMadeChoice: false,
-            stepIndex: 0,
-        },
-        {
-            dialogue: {
-                text: "Wait! I've got a gift for you!",
+                text: ["Wait!", " I've got a gift for you!"],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -546,15 +482,7 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                character: "steph",
-                text: "sly.name!",
-            },
-            playerMadeChoice: false,
-            stepIndex: 4,
-        },
-        {
-            dialogue: {
-                text: "sly.name! SPOILERS!!!!",
+                text: ["sly.name!", " SPOILERS!!!!"],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -562,14 +490,10 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "steph_fullname goes through the opposite door,",
-            },
-            playerMadeChoice: false,
-            stepIndex: 6,
-        },
-        {
-            dialogue: {
-                text: "steph_fullname goes through the opposite door, and returns with a HUGE tinfoil-covered platter.",
+                text: [
+                    "steph_fullname goes through the opposite door,",
+                    " and returns with a HUGE tinfoil-covered platter.",
+                ],
             },
             playerMadeChoice: false,
             stepIndex: 7,
@@ -629,14 +553,12 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "She enters my room before I'VE even had a chance to.",
-            },
-            playerMadeChoice: false,
-            stepIndex: 13,
-        },
-        {
-            dialogue: {
-                text: "She enters my room before I'VE even had a chance to.  \n\n...I could've just come back and gotten the platter later...",
+                text: [
+                    "She enters my room before I'VE even had a chance to.",
+                    `  
+
+...I could've just come back and gotten the platter later...`,
+                ],
             },
             playerMadeChoice: false,
             stepIndex: 14,
@@ -650,15 +572,10 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                character: "steph",
-                text: "They got you a new mattress, right?",
-            },
-            playerMadeChoice: false,
-            stepIndex: 16,
-        },
-        {
-            dialogue: {
-                text: "They got you a new mattress, right? That last guy was a druggie, did james.name tell you that?",
+                text: [
+                    "They got you a new mattress, right?",
+                    " That last guy was a druggie, did james.name tell you that?",
+                ],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -674,15 +591,10 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                character: "steph",
-                text: "sly.name! If word gets out about that...",
-            },
-            playerMadeChoice: false,
-            stepIndex: 19,
-        },
-        {
-            dialogue: {
-                text: "sly.name! If word gets out about that... well, actually, it wouldn't matter, *he's* the one who shot himself up.",
+                text: [
+                    "sly.name! If word gets out about that...",
+                    " well, actually, it wouldn't matter, *he's* the one who shot himself up.",
+                ],
                 character: "steph",
             },
             playerMadeChoice: false,
@@ -705,21 +617,19 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: "I realize too late this topic is no better:",
+                text: ["I realize too late", " this topic is no better:"],
             },
             playerMadeChoice: false,
             stepIndex: 24,
         },
         {
             dialogue: {
-                text: "She enters my room before I'VE even had a chance to.",
-            },
-            playerMadeChoice: false,
-            stepIndex: 25,
-        },
-        {
-            dialogue: {
-                text: "She enters my room before I'VE even had a chance to.  \n\n...I could've just come back and gotten the platter later...",
+                text: [
+                    "She enters my room before I'VE even had a chance to.",
+                    `  
+
+...I could've just come back and gotten the platter later...`,
+                ],
             },
             playerMadeChoice: false,
             stepIndex: 26,

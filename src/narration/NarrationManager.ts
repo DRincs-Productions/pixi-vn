@@ -61,6 +61,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         let dialogue: StoredDialogue | undefined = undefined;
         let choices: StoredChoiceInterface[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
+        let isGlued = GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED) === this.stepCounter;
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
             this.stepCounter
@@ -94,7 +95,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             choiceIndexMade: choiceMade,
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
-            dialogGlue: this.dialogGlue ? true : undefined,
+            isGlued: isGlued,
         };
         NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
@@ -568,9 +569,21 @@ export default class NarrationManager implements NarrationManagerInterface {
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
             );
             if (glueDialogue) {
-                dialogue.text = `${glueDialogue.text}${dialogue.text}`;
+                let newText = [];
+                if (Array.isArray(glueDialogue.text)) {
+                    newText = [...glueDialogue.text];
+                } else {
+                    newText = [glueDialogue.text];
+                }
+                if (Array.isArray(dialogue.text)) {
+                    newText = [...newText, ...dialogue.text];
+                } else {
+                    newText = [...newText, dialogue.text];
+                }
+                dialogue.text = newText;
                 dialogue.character = dialogue.character || glueDialogue.character;
             }
+            GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED, this.stepCounter);
             this.dialogGlue = false;
         }
         try {

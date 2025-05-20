@@ -191,4 +191,8 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
      * This value was added to introduce Ink Sequences, cycles and other alternatives https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#sequences-cycles-and-other-alternatives
      */
     CURRENT_STEP_TIMES_COUNTER_KEY: "___current_step_times_counter___",
+    /**
+     * The key of the last dialogue step glued in the step memory
+     */
+    LAST_STEP_GLUED: "___last_step_glued___",
 };
