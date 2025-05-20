@@ -65,7 +65,7 @@ export default interface HistoryStep {
      */
     choiceIndexMade?: number;
     /**
-     * If true, the next dialogue text will be added to the current dialogue text.
+     * If true, the current dialogue will be glued to the previous one.
      */
-    dialogGlue?: boolean;
+    isGlued?: boolean;
 }

@@ -97,13 +97,23 @@ export default class HistoryManager implements HistoryManagerInterface {
         asyncFunction();
         HistoryManagerStatic.originalStepData = currentStepData;
     }
-    historyStepMapper(
-        item: { step: HistoryStep; choiceIndexMade?: number; inputValue?: StorageElementType; dialodueGlue?: boolean },
-        previousItem: { choiceIndexMade?: number; inputValue?: StorageElementType } | undefined
+    itemMapper(
+        item: {
+            step: HistoryStep;
+            choiceIndexMade?: number;
+            inputValue?: StorageElementType;
+            removeDialogue?: boolean;
+        },
+        previousItem:
+            | { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean }
+            | undefined
     ): NarrativeHistory | undefined {
-        const { step, choiceIndexMade, inputValue, dialodueGlue } = item;
+        const { step, choiceIndexMade, inputValue, removeDialogue } = item;
         let dialogue = step.dialogue || step.dialoge;
-        if (dialodueGlue) {
+        if (previousItem && step.isGlued) {
+            previousItem.removeDialogue = true;
+        }
+        if (removeDialogue) {
             dialogue = undefined;
         }
         let requiredChoices = step.choices;
@@ -161,6 +171,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         let previousItem: {
             choiceIndexMade?: number;
             inputValue?: StorageElementType;
+            removeDialogue?: boolean;
         } = {};
 
         const stepsHistory = HistoryManagerStatic.stepsHistory;
@@ -171,16 +182,13 @@ export default class HistoryManager implements HistoryManagerInterface {
             let moreInfo = {
                 ...previousItem,
             };
-            previousItem = {
-                choiceIndexMade: undefined,
-                inputValue: undefined,
-            };
-            let res = this.historyStepMapper(
+            previousItem = {};
+            let res = this.itemMapper(
                 {
                     step: step,
                     choiceIndexMade: moreInfo.choiceIndexMade,
                     inputValue: moreInfo.inputValue,
-                    dialodueGlue: step.dialogGlue,
+                    removeDialogue: moreInfo.removeDialogue,
                 },
                 previousItem
             );
@@ -196,6 +204,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         let previousItem: {
             choiceIndexMade?: number;
             inputValue?: StorageElementType;
+            removeDialogue?: boolean;
         } = {};
         const stepsHistory = HistoryManagerStatic.stepsHistory;
         const lastItem = stepsHistory[stepsHistory.length - 1];
@@ -212,16 +221,13 @@ export default class HistoryManager implements HistoryManagerInterface {
             let moreInfo = {
                 ...previousItem,
             };
-            previousItem = {
-                choiceIndexMade: undefined,
-                inputValue: undefined,
-            };
-            let res = this.historyStepMapper(
+            previousItem = {};
+            let res = this.itemMapper(
                 {
                     step: step,
                     choiceIndexMade: moreInfo.choiceIndexMade,
                     inputValue: moreInfo.inputValue,
-                    dialodueGlue: step.dialogGlue,
+                    removeDialogue: moreInfo.removeDialogue,
                 },
                 previousItem
             );

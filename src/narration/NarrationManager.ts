@@ -61,6 +61,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         let dialogue: StoredDialogue | undefined = undefined;
         let choices: StoredChoiceInterface[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
+        let isGlued =
+            GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY) ===
+            this.stepCounter;
         if (
             GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
             this.stepCounter
@@ -94,7 +97,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             choiceIndexMade: choiceMade,
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
-            dialogGlue: this.dialogGlue ? true : undefined,
+            isGlued: isGlued,
         };
         NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
@@ -571,6 +574,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 dialogue.text = `${glueDialogue.text}${dialogue.text}`;
                 dialogue.character = dialogue.character || glueDialogue.character;
             }
+            GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED, this.stepCounter);
             this.dialogGlue = false;
         }
         try {
