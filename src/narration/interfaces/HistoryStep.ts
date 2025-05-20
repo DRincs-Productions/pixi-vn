@@ -23,7 +23,7 @@ export default interface HistoryStep {
     /**
      * The difference between the previous step and the current step.
      */
-    diff?: deepDiff.Diff<GameStepState, GameStepState>[] | Difference[];
+    diff: deepDiff.Diff<GameStepState, GameStepState>[] | Difference[];
     /**
      * The label id of the current step.
      */
@@ -33,7 +33,7 @@ export default interface HistoryStep {
      */
     stepSha1: string;
     /**
-     * The index of the step in the history.
+     * Equivalent to the narration.stepCounter
      */
     index: number;
     /**

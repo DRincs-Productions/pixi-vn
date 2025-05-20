@@ -1,26 +1,16 @@
 import { GameStepState } from "@drincs/pixi-vn";
+import { CachedMap } from "../classes";
 import { HistoryStep } from "../narration";
 import { createExportableElement } from "../utils";
 
 export default class HistoryManagerStatic {
-    static _stepsHistory: HistoryStep[] = [];
-    static get stepsHistory(): HistoryStep[] {
-        return createExportableElement(HistoryManagerStatic._stepsHistory);
-    }
+    static _diffHistory = new CachedMap<number, HistoryStep["diff"]>({ cacheSize: 5 });
+    static _stepsHistory = new CachedMap<number, Omit<HistoryStep, "diff">>({ cacheSize: 10 });
     static stepLimitSaved: number = 20;
     /**
      * goBackRunning is a boolean that indicates if the go back is running.
      */
     static goBackRunning: boolean = false;
-    /**
-     * lastHistoryStep is the last history step that occurred during the progression of the steps.
-     */
-    static get lastHistoryStep(): HistoryStep | null {
-        if (HistoryManagerStatic._stepsHistory.length > 0) {
-            return HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1];
-        }
-        return null;
-    }
     static _originalStepData: GameStepState | undefined = undefined;
     static get originalStepData(): GameStepState {
         if (!HistoryManagerStatic._originalStepData) {

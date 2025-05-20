@@ -14,22 +14,36 @@ import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
  * This class is a class that manages the steps and labels of the game.
  */
 export default class HistoryManager implements HistoryManagerInterface {
-    get stepsHistory() {
-        return HistoryManagerStatic.stepsHistory;
+    get size(): Number {
+        return HistoryManagerStatic._stepsHistory.size;
+    }
+    get lastKey(): number | null {
+        if (this.size === 0) {
+            return null;
+        }
+        return Math.max(...Array.from(HistoryManagerStatic._stepsHistory.keys()));
+    }
+    get(stepIndex: number): Omit<HistoryStep, "diff"> | undefined {
+        return HistoryManagerStatic._stepsHistory.get(stepIndex);
+    }
+    delete(stepIndex: number) {
+        HistoryManagerStatic._stepsHistory.delete(stepIndex);
+        HistoryManagerStatic._diffHistory.delete(stepIndex);
     }
     private internalRestoreOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
         }
-        if (HistoryManagerStatic._stepsHistory.length == 0) {
+        if (this.size == 0) {
             return restoredStep;
         }
-        let lastHistoryStep = HistoryManagerStatic.lastHistoryStep;
-        if (lastHistoryStep?.diff) {
+        const lastKey = this.lastKey;
+        const diff = lastKey !== null ? HistoryManagerStatic._diffHistory.get(lastKey) : undefined;
+        if (lastKey !== null && diff) {
             try {
-                let result = restoreDiffChanges(restoredStep, lastHistoryStep.diff);
-                GameUnifier.stepCounter = lastHistoryStep.index;
-                HistoryManagerStatic._stepsHistory.pop();
+                let result = restoreDiffChanges(restoredStep, diff);
+                GameUnifier.stepCounter = lastKey;
+                this.delete(lastKey);
                 return this.internalRestoreOldGameState(steps - 1, result);
             } catch (e) {
                 logger.error("Error applying diff", e);
@@ -45,7 +59,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("The parameter steps must be greater than 0");
             return;
         }
-        if (HistoryManagerStatic._stepsHistory.length <= 1) {
+        if (HistoryManagerStatic._diffHistory.size <= 1) {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }

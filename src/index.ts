@@ -173,7 +173,9 @@ export namespace Game {
             data.historyData.originalStepData = data.stepData.originalStepData;
         }
         historyUtils.stepHistory.restore(data.historyData);
-        await narrationUtils.narration.restore(data.stepData, historyUtils.HistoryManagerStatic.lastHistoryStep);
+        const lastHistoryKey = historyUtils.stepHistory.lastKey;
+        const historyItem = historyUtils.stepHistory.get(lastHistoryKey);
+        await narrationUtils.narration.restore(data.stepData, historyItem);
         storageUtils.storage.restore(data.storageData);
         await canvasUtils.canvas.restore(data.canvasData);
         soundUtils.sound.restore(data.soundData);

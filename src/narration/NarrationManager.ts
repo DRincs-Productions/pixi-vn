@@ -753,7 +753,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         });
         return await Promise.all(promise);
     }
-    public async restore(data: object, lastHistoryStep: HistoryStep | null) {
+    public async restore(data: object, lastHistoryStep: Omit<HistoryStep, "diff"> | null) {
         this.clear();
         try {
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;

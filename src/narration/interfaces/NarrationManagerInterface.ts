@@ -313,5 +313,5 @@ export default interface NarrationManagerInterface {
      * Restore the narration from an object.
      * @param data The narration in an object.
      */
-    restore(data: object, lastHistoryStep: HistoryStep | null): Promise<void>;
+    restore(data: object, lastHistoryStep: Omit<HistoryStep, "diff"> | null): Promise<void>;
 }
