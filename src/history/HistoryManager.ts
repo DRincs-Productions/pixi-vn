@@ -1,6 +1,6 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { diff } from "deep-diff";
-import { HistoryChoiceMenuOption, HistoryStep, NarrativeHistory } from "../narration";
+import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory } from "../narration";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
@@ -14,22 +14,57 @@ import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
  * This class is a class that manages the steps and labels of the game.
  */
 export default class HistoryManager implements HistoryManagerInterface {
-    get stepsHistory() {
-        return HistoryManagerStatic.stepsHistory;
+    get stepsInfoMap() {
+        return HistoryManagerStatic._stepsInfoHistory;
+    }
+    get diffMap() {
+        return HistoryManagerStatic._diffHistory;
+    }
+    get narrationMap() {
+        return HistoryManagerStatic._narrationHistory;
+    }
+    get size(): number {
+        return HistoryManagerStatic._stepsInfoHistory.size;
+    }
+    get lastKey(): number | null {
+        if (this.size === 0) {
+            return null;
+        }
+        return Math.max(...Array.from(this.keys()));
+    }
+    keys() {
+        return HistoryManagerStatic._stepsInfoHistory.keys();
+    }
+    get(stepIndex: number): NarrationHistory | undefined {
+        const item = HistoryManagerStatic._narrationHistory.get(stepIndex);
+        if (item && Object.keys(item).length === 1 && item.stepIndex !== undefined) {
+            return undefined;
+        }
+        return item;
+    }
+    delete(stepIndex: number) {
+        HistoryManagerStatic._stepsInfoHistory.delete(stepIndex);
+        HistoryManagerStatic._diffHistory.delete(stepIndex);
+        HistoryManagerStatic._narrationHistory.delete(stepIndex);
     }
     private internalRestoreOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
         }
-        if (HistoryManagerStatic._stepsHistory.length == 0) {
+        if (this.size == 0) {
             return restoredStep;
         }
-        let lastHistoryStep = HistoryManagerStatic.lastHistoryStep;
-        if (lastHistoryStep?.diff) {
+        const lastKey = this.lastKey;
+        if (typeof lastKey !== "number") {
+            logger.error("You can't go back, there is no step to go back");
+            return restoredStep;
+        }
+        const diff = HistoryManagerStatic._diffHistory.get(lastKey);
+        if (diff) {
             try {
-                let result = restoreDiffChanges(restoredStep, lastHistoryStep.diff);
-                GameUnifier.stepCounter = lastHistoryStep.index;
-                HistoryManagerStatic._stepsHistory.pop();
+                let result = restoreDiffChanges(restoredStep, diff);
+                GameUnifier.stepCounter = lastKey;
+                this.delete(lastKey);
                 return this.internalRestoreOldGameState(steps - 1, result);
             } catch (e) {
                 logger.error("Error applying diff", e);
@@ -45,7 +80,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("The parameter steps must be greater than 0");
             return;
         }
-        if (HistoryManagerStatic._stepsHistory.length <= 1) {
+        if (HistoryManagerStatic._diffHistory.size < 1) {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
@@ -70,7 +105,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
     }
     add(
-        historyInfo: HistoryInfo = {},
+        historyInfo: HistoryInfo,
         options: {
             ignoreSameStep?: boolean;
         } = {}
@@ -81,15 +116,41 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
         }
-        HistoryManagerStatic._stepsHistory.push({} as any);
-        let index = HistoryManagerStatic._stepsHistory.length - 1;
+        const lastKey = this.lastKey;
         const asyncFunction = async () => {
             try {
+                let lastStepHistory: Omit<HistoryStep, "diff"> | undefined = undefined;
+                let lastNarrativeHistory: NarrationHistory | undefined = undefined;
+                if (typeof lastKey === "number") {
+                    lastStepHistory = HistoryManagerStatic._stepsInfoHistory.get(lastKey);
+                    lastNarrativeHistory = HistoryManagerStatic._narrationHistory.get(lastKey);
+                }
+
                 let data = diff(originalStepData, currentStepData);
-                HistoryManagerStatic._stepsHistory[index] = {
-                    ...(historyInfo as Omit<HistoryStep, "diff">),
-                    diff: data,
-                };
+                HistoryManagerStatic._stepsInfoHistory.set(historyInfo.index, historyInfo);
+                if (data) {
+                    HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
+                } else {
+                    logger.warn("It was not possible to create the difference between the two steps");
+                }
+                let previousItem = {};
+                const narrativeHistory = this.itemMapper(
+                    {
+                        step: historyInfo,
+                    },
+                    previousItem
+                );
+                HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
+                if (lastStepHistory && lastNarrativeHistory && typeof lastKey === "number") {
+                    const previousNarrativeHistory = this.itemMapper(
+                        {
+                            ...previousItem,
+                            step: lastStepHistory,
+                        },
+                        {}
+                    );
+                    HistoryManagerStatic._narrationHistory.set(lastKey, previousNarrativeHistory);
+                }
             } catch (e) {
                 logger.error("Error adding history step", e);
             }
@@ -99,7 +160,7 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
     itemMapper(
         item: {
-            step: HistoryStep;
+            step: Omit<HistoryStep, "diff">;
             choiceIndexMade?: number;
             inputValue?: StorageElementType;
             removeDialogue?: boolean;
@@ -107,7 +168,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         previousItem:
             | { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean }
             | undefined
-    ): NarrativeHistory | undefined {
+    ): NarrationHistory {
         const { step, choiceIndexMade, inputValue, removeDialogue } = item;
         let dialogue = step.dialogue || step.dialoge;
         if (previousItem && step.isGlued) {
@@ -125,7 +186,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (step.inputValue && previousItem) {
             previousItem.inputValue = step.inputValue;
         }
-        if (dialogue || requiredChoices) {
+        if (dialogue || requiredChoices || inputValue) {
             let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice, index) => {
                 let hidden: boolean = false;
                 if (choice.oneTime && step.alreadyMadeChoices && step.alreadyMadeChoices.includes(index)) {
@@ -165,103 +226,78 @@ export default class HistoryManager implements HistoryManagerInterface {
                 inputValue: inputValue,
             };
         }
+        return {
+            stepIndex: step.index,
+        };
     }
-    get narrativeHistory(): NarrativeHistory[] {
-        const result: NarrativeHistory[] = [];
-        let previousItem: {
-            choiceIndexMade?: number;
-            inputValue?: StorageElementType;
-            removeDialogue?: boolean;
-        } = {};
-
-        const stepsHistory = HistoryManagerStatic.stepsHistory;
-
-        // Iterate over the stepsHistory array in reverse order
-        for (let i = stepsHistory.length - 1; i >= 0; i--) {
-            const step = stepsHistory[i];
-            let moreInfo = {
-                ...previousItem,
-            };
-            previousItem = {};
-            let res = this.itemMapper(
-                {
-                    step: step,
-                    choiceIndexMade: moreInfo.choiceIndexMade,
-                    inputValue: moreInfo.inputValue,
-                    removeDialogue: moreInfo.removeDialogue,
-                },
-                previousItem
-            );
-            if (res) {
-                result.push(res);
+    get narrativeHistory(): NarrationHistory[] {
+        const result: NarrationHistory[] = [];
+        const keys = Array.from(this.keys()).sort((a, b) => a - b);
+        keys.forEach((key) => {
+            const item = this.get(key);
+            if (item) {
+                result.push(item);
             }
-        }
-
-        return result.reverse();
+        });
+        return result;
     }
-    get latestCurrentLabelHistory(): NarrativeHistory[] {
-        const result: NarrativeHistory[] = [];
-        let previousItem: {
-            choiceIndexMade?: number;
-            inputValue?: StorageElementType;
-            removeDialogue?: boolean;
-        } = {};
-        const stepsHistory = HistoryManagerStatic.stepsHistory;
-        const lastItem = stepsHistory[stepsHistory.length - 1];
+    get latestCurrentLabelHistory(): NarrationHistory[] {
+        const result: NarrationHistory[] = [];
+        const keys = Array.from(this.keys()).sort((a, b) => b - a);
+        const lastKey = keys.shift();
+        if (typeof lastKey !== "number") {
+            return result;
+        }
+        const lastItem = HistoryManagerStatic._stepsInfoHistory.get(lastKey);
+        if (!lastItem) {
+            return result;
+        }
         const lastLabel = lastItem.currentLabel;
-        const prevIndex = lastItem.index;
+        let prevIndex = lastItem.index;
 
-        // Iterate over the stepsHistory array in reverse order
-        for (
-            let i = stepsHistory.length - 1;
-            i >= 0 && stepsHistory[i].currentLabel === lastLabel && stepsHistory[i].index <= prevIndex;
-            i--
-        ) {
-            const step = stepsHistory[i];
-            let moreInfo = {
-                ...previousItem,
-            };
-            previousItem = {};
-            let res = this.itemMapper(
-                {
-                    step: step,
-                    choiceIndexMade: moreInfo.choiceIndexMade,
-                    inputValue: moreInfo.inputValue,
-                    removeDialogue: moreInfo.removeDialogue,
-                },
-                previousItem
-            );
-            if (res) {
-                result.push(res);
+        keys.every((key) => {
+            const item = this.get(key);
+            if (item) {
+                const info = HistoryManagerStatic._stepsInfoHistory.get(key);
+                if (!info || !(info.currentLabel === lastLabel && info.index <= prevIndex)) {
+                    return false;
+                }
+                result.push(item);
             }
-        }
+            prevIndex = key;
+            return true;
+        });
 
         return result.reverse();
     }
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
-            // remove the first items
-            HistoryManagerStatic._stepsHistory.splice(0, itemsNumber);
+            let keys = Array.from(this.keys()).sort((a, b) => a - b);
+            // get the first itemsNumber keys
+            keys = keys.slice(0, itemsNumber);
+            keys.forEach((key) => {
+                HistoryManagerStatic._narrationHistory.delete(key);
+                HistoryManagerStatic._stepsInfoHistory.delete(key);
+                HistoryManagerStatic._diffHistory.delete(key);
+            });
         } else {
-            HistoryManagerStatic._stepsHistory = [];
+            HistoryManagerStatic._stepsInfoHistory.clear();
+            HistoryManagerStatic._diffHistory.clear();
+            HistoryManagerStatic._narrationHistory.clear();
         }
     }
     get canGoBack(): boolean {
-        if (HistoryManagerStatic._stepsHistory.length <= 1) {
+        const lastKey = this.lastKey;
+        if (typeof lastKey !== "number") {
             return false;
         }
-        return HistoryManagerStatic.lastHistoryStep?.diff ? true : false;
+        return HistoryManagerStatic._diffHistory.has(lastKey);
     }
     blockGoBack() {
         if (GameUnifier.currentStepsRunningNumber !== 0) {
             return;
         }
-        if (HistoryManagerStatic._stepsHistory.length > 1) {
-            HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1] = {
-                ...HistoryManagerStatic._stepsHistory[HistoryManagerStatic._stepsHistory.length - 1],
-                diff: undefined,
-            };
-        }
+        HistoryManagerStatic._diffHistory.clear();
     }
 
     private isSameStep(originalState: GameStepState, newState: GameStepState) {
@@ -285,7 +321,9 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
 
     public clear() {
-        HistoryManagerStatic._stepsHistory = [];
+        HistoryManagerStatic._stepsInfoHistory.clear();
+        HistoryManagerStatic._diffHistory.clear();
+        HistoryManagerStatic._narrationHistory.clear();
         HistoryManagerStatic._originalStepData = undefined;
     }
 
@@ -299,21 +337,71 @@ export default class HistoryManager implements HistoryManagerInterface {
     /* Export and Import Methods */
 
     public export(): HistoryGameState {
-        let firstStepToCompres = HistoryManagerStatic._stepsHistory.length - this.stepLimitSaved;
-        let stepsHistory: HistoryStep[] = HistoryManagerStatic._stepsHistory.map((step, index) => ({
-            diff: firstStepToCompres > index ? undefined : step.diff,
-            ...step,
-        }));
+        let keys = Array.from(this.keys()).sort((a, b) => a - b);
+        // take only last the this.stepLimitSaved steps
+        if (keys.length > this.stepLimitSaved) {
+            keys = keys.slice(keys.length - this.stepLimitSaved);
+        }
+        let stepsHistory: HistoryStep[] = [];
+        keys.forEach((key) => {
+            const step = HistoryManagerStatic._stepsInfoHistory.get(key);
+            if (step) {
+                let diff = HistoryManagerStatic._diffHistory.get(key);
+                stepsHistory.push({
+                    ...step,
+                    diff: diff,
+                });
+            }
+        });
         return {
             stepsHistory: createExportableElement(stepsHistory),
             originalStepData: createExportableElement(HistoryManagerStatic._originalStepData),
         };
     }
+    restoreNarrativeHistory() {
+        const keys = Array.from(this.keys()).sort((a, b) => a - b);
+        let previousItem: {
+            choiceIndexMade?: number;
+            inputValue?: StorageElementType;
+            removeDialogue?: boolean;
+        } = {};
+
+        // Iterate over the stepsHistory array in reverse order
+        keys.forEach((key) => {
+            const step = HistoryManagerStatic._stepsInfoHistory.get(key);
+            if (step) {
+                let moreInfo = {
+                    ...previousItem,
+                };
+                previousItem = {};
+                let res = this.itemMapper(
+                    {
+                        step: step,
+                        choiceIndexMade: moreInfo.choiceIndexMade,
+                        inputValue: moreInfo.inputValue,
+                        removeDialogue: moreInfo.removeDialogue,
+                    },
+                    previousItem
+                );
+                if (res) {
+                    HistoryManagerStatic._narrationHistory.set(key, res);
+                }
+            }
+        });
+    }
     public async restore(data: object) {
         this.clear();
         try {
             if (data.hasOwnProperty("stepsHistory")) {
-                HistoryManagerStatic._stepsHistory = (data as HistoryGameState)["stepsHistory"];
+                const stepsHistory = (data as HistoryGameState)["stepsHistory"];
+                stepsHistory.forEach((step: HistoryStep) => {
+                    if (step.diff) {
+                        HistoryManagerStatic._diffHistory.set(step.index, step.diff);
+                    }
+                    let info = { ...step, diff: undefined };
+                    HistoryManagerStatic._stepsInfoHistory.set(step.index, info);
+                });
+                this.restoreNarrativeHistory();
             } else {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
             }

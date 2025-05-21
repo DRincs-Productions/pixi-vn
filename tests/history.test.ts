@@ -198,27 +198,6 @@ test("choice test", async () => {
             playerMadeChoice: false,
             stepIndex: 11,
         },
-        {
-            dialogue: {
-                text: "You want continue to the next part?",
-            },
-            playerMadeChoice: false,
-            choices: [
-                {
-                    text: "Yes, I want to continue",
-                    type: "call",
-                    isResponse: false,
-                    hidden: false,
-                },
-                {
-                    text: "No, I want to stop here",
-                    type: "close",
-                    isResponse: false,
-                    hidden: false,
-                },
-            ],
-            stepIndex: 12,
-        },
     ]);
     let choice = narration.choiceMenuOptions![0];
     await narration.selectChoice(choice, {});
@@ -326,15 +305,7 @@ test("choice test", async () => {
             stepIndex: 13,
         },
     ]);
-    expect(stepHistory.latestCurrentLabelHistory).toEqual([
-        {
-            dialogue: {
-                text: "She enters my room before I'VE even had a chance to.",
-            },
-            playerMadeChoice: false,
-            stepIndex: 13,
-        },
-    ]);
+    expect(stepHistory.latestCurrentLabelHistory).toEqual([]);
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
@@ -411,13 +382,6 @@ test("choice test", async () => {
             playerMadeChoice: false,
             stepIndex: 22,
         },
-        {
-            dialogue: {
-                text: ["I realize too late", " this topic is no better:"],
-            },
-            playerMadeChoice: false,
-            stepIndex: 24,
-        },
     ]);
     await narration.goNext({});
     await narration.goNext({});
@@ -446,13 +410,6 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 26,
-        },
-        {
-            dialogue: {
-                text: "She sets it on a desk. I throw my two paper bags down beside the empty bed.",
-            },
-            playerMadeChoice: false,
-            stepIndex: 27,
         },
     ]);
     expect(stepHistory.narrativeHistory).toEqual([

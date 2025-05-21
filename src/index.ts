@@ -92,6 +92,7 @@ export namespace Game {
             restoreGameStepState: async (state, navigate) => {
                 historyUtils.HistoryManagerStatic._originalStepData = state;
                 narrationUtils.NarrationManagerStatic.openedLabels = state.openedLabels;
+                // TODO: narrationUtils.NarrationManagerStatic._stepCounter = state.labelIndex;
                 storageUtils.storage.restore(state.storage);
                 await canvasUtils.canvas.restore(state.canvas);
                 soundUtils.sound.restore(state.sound);
@@ -103,8 +104,8 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
-            addHistoryItem: (historyInfo, opstions) => {
-                return historyUtils.stepHistory.add(historyInfo, opstions);
+            addHistoryItem: (historyInfo, options) => {
+                return historyUtils.stepHistory.add(historyInfo, options);
             },
             getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             getCharacter: (id: string) => {
@@ -173,7 +174,11 @@ export namespace Game {
             data.historyData.originalStepData = data.stepData.originalStepData;
         }
         historyUtils.stepHistory.restore(data.historyData);
-        await narrationUtils.narration.restore(data.stepData, historyUtils.HistoryManagerStatic.lastHistoryStep);
+        const lastHistoryKey = historyUtils.stepHistory.lastKey;
+        if (typeof lastHistoryKey === "number") {
+            const historyItem = historyUtils.stepHistory.stepsInfoMap.get(lastHistoryKey) || null;
+            await narrationUtils.narration.restore(data.stepData, historyItem);
+        }
         storageUtils.storage.restore(data.storageData);
         await canvasUtils.canvas.restore(data.canvasData);
         soundUtils.sound.restore(data.soundData);

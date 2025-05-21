@@ -50,8 +50,8 @@ export default class CachedMap<K extends {}, V extends {}> implements Map<K, V> 
     get entries() {
         return this.map.entries;
     }
-    get keys() {
-        return this.map.keys;
+    keys() {
+        return this.map.keys();
     }
     get values() {
         return this.map.values;

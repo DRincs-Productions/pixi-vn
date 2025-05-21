@@ -33,7 +33,7 @@ export default interface HistoryStep {
      */
     stepSha1: string;
     /**
-     * The index of the step in the history.
+     * Equivalent to the narration.stepCounter
      */
     index: number;
     /**
