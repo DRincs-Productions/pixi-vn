@@ -8,7 +8,7 @@ type HistoryChoiceMenuOption = {
     /**
      * Text to be displayed in the menu
      */
-    text: string;
+    text: string | string[];
     /**
      * Method used to open the label, or close the menu.
      */

@@ -42,7 +42,7 @@ declare module "@drincs/pixi-vn" {
         /**
          * Text to be displayed in the menu
          */
-        text: string;
+        text: string | string[];
         /**
          * Label Id to be opened when the option is selected
          */
