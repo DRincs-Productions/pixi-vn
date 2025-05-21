@@ -27,11 +27,14 @@ test("path test", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
+    expect(stepHistory.canGoBack).toBe(false);
     await narration.callLabel(pathLabel, {});
+    expect(stepHistory.canGoBack).toBe(false);
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
     });
     await narration.goNext({});
+    expect(stepHistory.canGoBack).toBe(true);
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
     });

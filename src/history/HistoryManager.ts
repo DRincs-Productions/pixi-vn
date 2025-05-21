@@ -126,12 +126,14 @@ export default class HistoryManager implements HistoryManagerInterface {
                     lastNarrativeHistory = HistoryManagerStatic._narrationHistory.get(lastKey);
                 }
 
-                let data = diff(originalStepData, currentStepData);
                 HistoryManagerStatic._stepsInfoHistory.set(historyInfo.index, historyInfo);
-                if (data) {
-                    HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
-                } else {
-                    logger.warn("It was not possible to create the difference between the two steps");
+                if (historyInfo.index !== 0) {
+                    let data = diff(originalStepData, currentStepData);
+                    if (data) {
+                        HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
+                    } else {
+                        logger.warn("It was not possible to create the difference between the two steps");
+                    }
                 }
                 let previousItem = {};
                 const narrativeHistory = this.itemMapper(
