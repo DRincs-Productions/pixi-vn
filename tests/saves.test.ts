@@ -1,14 +1,5 @@
 import { expect, test } from "vitest";
-import {
-    GameState,
-    HistoryManagerStatic,
-    narration,
-    newLabel,
-    PIXIVN_VERSION,
-    sound,
-    stepHistory,
-    storage,
-} from "../src";
+import { GameState, narration, newLabel, PIXIVN_VERSION, sound, stepHistory, storage } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
 const testLabel = newLabel("stepCounter", [
@@ -55,10 +46,14 @@ export async function restoreGameState(
         data.historyData.originalStepData = data.stepData.originalStepData;
     }
     stepHistory.restore(data.historyData);
-    await narration.restore(data.stepData, HistoryManagerStatic.lastHistoryStep);
+    const lastHistoryKey = stepHistory.lastKey;
+    if (typeof lastHistoryKey === "number") {
+        const historyItem = stepHistory.stepsInfoMap.get(lastHistoryKey) || null;
+        await narration.restore(data.stepData, historyItem);
+    }
     storage.restore(data.storageData);
     sound.restore(data.soundData);
-    await navigate(data.path);
+    navigate(data.path);
 }
 
 test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
