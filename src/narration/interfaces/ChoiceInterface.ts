@@ -7,7 +7,7 @@ export default interface ChoiceInterface {
     /**
      * Text to be displayed in the menu
      */
-    text: string;
+    text: string | string[];
     /**
      * Label Id to be opened when the option is selected
      */
