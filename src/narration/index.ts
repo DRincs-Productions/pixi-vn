@@ -12,8 +12,8 @@ export type { default as DialogueInterface } from "./interfaces/DialogueInterfac
 export type { default as HistoryStep } from "./interfaces/HistoryStep";
 export type { default as LabelProps } from "./interfaces/LabelProps";
 export type { default as NarrationGameState } from "./interfaces/NarrationGameState";
+export type { default as NarrationHistory } from "./interfaces/NarrationHistory";
 export type { default as NarrationManagerInterface } from "./interfaces/NarrationManagerInterface";
-export type { default as NarrativeHistory } from "./interfaces/NarrativeHistory";
 export type { default as OpenedLabel } from "./interfaces/OpenedLabel";
 export type { default as StepLabelProps } from "./interfaces/StepLabelProps";
 export type { default as StepLabelResult } from "./interfaces/StepLabelResult";

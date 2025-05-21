@@ -103,8 +103,8 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic._stepCounter = value;
             },
             getOpenedLabels: () => narrationUtils.narration.openedLabels.length,
-            addHistoryItem: (historyInfo, opstions) => {
-                return historyUtils.stepHistory.add(historyInfo, opstions);
+            addHistoryItem: (historyInfo, options) => {
+                return historyUtils.stepHistory.add(historyInfo, options);
             },
             getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             getCharacter: (id: string) => {
@@ -174,8 +174,10 @@ export namespace Game {
         }
         historyUtils.stepHistory.restore(data.historyData);
         const lastHistoryKey = historyUtils.stepHistory.lastKey;
-        const historyItem = historyUtils.stepHistory.get(lastHistoryKey);
-        await narrationUtils.narration.restore(data.stepData, historyItem);
+        if (typeof lastHistoryKey === "number") {
+            const historyItem = historyUtils.stepHistory.stepsInfoMap.get(lastHistoryKey) || null;
+            await narrationUtils.narration.restore(data.stepData, historyItem);
+        }
         storageUtils.storage.restore(data.storageData);
         await canvasUtils.canvas.restore(data.canvasData);
         soundUtils.sound.restore(data.soundData);

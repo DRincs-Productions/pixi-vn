@@ -40,8 +40,8 @@ test("setup", async () => {
             NarrationManagerStatic._stepCounter = value;
         },
         getOpenedLabels: () => narration.openedLabels.length,
-        addHistoryItem: (historyInfo, opstions) => {
-            return stepHistory.add(historyInfo, opstions);
+        addHistoryItem: (historyInfo, options) => {
+            return stepHistory.add(historyInfo, options);
         },
         getCurrentStepsRunningNumber: () => NarrationManagerStatic.stepsRunning,
         getCharacter: (id: string) => {
