@@ -29,6 +29,7 @@ test("setup", async () => {
         restoreGameStepState: async (state, navigate) => {
             HistoryManagerStatic._originalStepData = state;
             NarrationManagerStatic.openedLabels = state.openedLabels;
+            // TODO: narrationUtils.NarrationManagerStatic._stepCounter = state.labelIndex;
             storage.restore(state.storage);
             // await canvas.restore(state.canvas);
             sound.restore(state.sound);

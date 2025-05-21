@@ -12,7 +12,7 @@ export default interface HistoryManagerInterface {
      */
     readonly narrativeHistory: NarrationHistory[];
     /**
-     * Get the history of the last steps belonging to the current label.
+     * Get the history of the last steps belonging to the current label excluding the current step.
      *
      * For example, if the current label A called label B in step 3, and label B was closed and we went on to step 6 of A. the result will include points 4 5 6 of label A
      * @returns the history of the dialogues, choices and steps

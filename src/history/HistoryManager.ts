@@ -80,7 +80,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("The parameter steps must be greater than 0");
             return;
         }
-        if (HistoryManagerStatic._diffHistory.size <= 1) {
+        if (HistoryManagerStatic._diffHistory.size < 1) {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
@@ -127,9 +127,9 @@ export default class HistoryManager implements HistoryManagerInterface {
                 }
 
                 let data = diff(originalStepData, currentStepData);
-                HistoryManagerStatic._stepsInfoHistory.set(currentStepData.index, historyInfo);
+                HistoryManagerStatic._stepsInfoHistory.set(historyInfo.index, historyInfo);
                 if (data) {
-                    HistoryManagerStatic._diffHistory.set(currentStepData.index, data);
+                    HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
                 } else {
                     logger.warn("It was not possible to create the difference between the two steps");
                 }
@@ -140,7 +140,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                     },
                     previousItem
                 );
-                HistoryManagerStatic._narrationHistory.set(currentStepData.index, narrativeHistory);
+                HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
                 if (lastStepHistory && lastNarrativeHistory && typeof lastKey === "number") {
                     const previousNarrativeHistory = this.itemMapper(
                         {
@@ -243,8 +243,8 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
     get latestCurrentLabelHistory(): NarrationHistory[] {
         const result: NarrationHistory[] = [];
-        const keys = Array.from(this.keys()).sort((a, b) => a - b);
-        const lastKey = keys.pop();
+        const keys = Array.from(this.keys()).sort((a, b) => b - a);
+        const lastKey = keys.shift();
         if (typeof lastKey !== "number") {
             return result;
         }
@@ -268,7 +268,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             return true;
         });
 
-        return result;
+        return result.reverse();
     }
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {
