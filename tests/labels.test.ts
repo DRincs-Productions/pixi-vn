@@ -175,7 +175,13 @@ test("currentLabelStepIndex", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
+    expect(narration.stepCounter).toBe(0);
     await narration.callLabel(currentLabelStepIndexLabel, {});
+    expect(narration.stepCounter).toBe(1);
+    await narration.goNext({});
+    expect(narration.stepCounter).toBe(2);
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    expect(narration.stepCounter).toBe(1);
     await narration.goNext({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     await narration.goNext({});
@@ -194,8 +200,7 @@ test("currentLabelStepIndex", async () => {
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     await narration.goNext({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
-    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    expect(narration.stepCounter).toBe(1);
     await narration.goNext({});
     expect(narration.stepCounter).toBe(2);
     expect(NarrationManagerStatic.currentLabelStepIndex).toBe(1);
