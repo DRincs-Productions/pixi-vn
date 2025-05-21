@@ -21,9 +21,12 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (this.size === 0) {
             return null;
         }
-        return Math.max(...Array.from(HistoryManagerStatic._stepsInfo.keys()));
+        return Math.max(...Array.from(this.keys()));
     }
-    get(stepIndex: number): Omit<HistoryStep, "diff"> | undefined {
+    keys() {
+        return HistoryManagerStatic._stepsInfo.keys();
+    }
+    get(stepIndex: number): NarrativeHistory | undefined {
         return HistoryManagerStatic._stepsInfo.get(stepIndex);
     }
     delete(stepIndex: number) {
@@ -38,8 +41,12 @@ export default class HistoryManager implements HistoryManagerInterface {
             return restoredStep;
         }
         const lastKey = this.lastKey;
-        const diff = lastKey !== null ? HistoryManagerStatic._diffHistory.get(lastKey) : undefined;
-        if (lastKey !== null && diff) {
+        if (typeof lastKey !== "number") {
+            logger.error("You can't go back, there is no step to go back");
+            return restoredStep;
+        }
+        const diff = HistoryManagerStatic._diffHistory.get(lastKey);
+        if (diff) {
             try {
                 let result = restoreDiffChanges(restoredStep, diff);
                 GameUnifier.stepCounter = lastKey;
@@ -84,7 +91,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
     }
     add(
-        historyInfo: HistoryInfo = {},
+        historyInfo: HistoryInfo,
         options: {
             ignoreSameStep?: boolean;
         } = {}
@@ -99,7 +106,11 @@ export default class HistoryManager implements HistoryManagerInterface {
             try {
                 let data = diff(originalStepData, currentStepData);
                 HistoryManagerStatic._stepsInfo.set(currentStepData.index, historyInfo);
-                HistoryManagerStatic._diffHistory.set(currentStepData.index, data);
+                if (data) {
+                    HistoryManagerStatic._diffHistory.set(currentStepData.index, data);
+                } else {
+                    logger.warn("It was not possible to create the difference between the two steps");
+                }
             } catch (e) {
                 logger.error("Error adding history step", e);
             }
@@ -257,21 +268,17 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
     }
     get canGoBack(): boolean {
-        if (HistoryManagerStatic._stepsInfo.length <= 1) {
+        const lastKey = this.lastKey;
+        if (typeof lastKey !== "number") {
             return false;
         }
-        return HistoryManagerStatic.lastHistoryStep?.diff ? true : false;
+        return HistoryManagerStatic._diffHistory.has(lastKey);
     }
     blockGoBack() {
         if (GameUnifier.currentStepsRunningNumber !== 0) {
             return;
         }
-        if (HistoryManagerStatic._stepsInfo.length > 1) {
-            HistoryManagerStatic._stepsInfo[HistoryManagerStatic._stepsInfo.length - 1] = {
-                ...HistoryManagerStatic._stepsInfo[HistoryManagerStatic._stepsInfo.length - 1],
-                diff: undefined,
-            };
-        }
+        HistoryManagerStatic._diffHistory.clear();
     }
 
     private isSameStep(originalState: GameStepState, newState: GameStepState) {
@@ -295,7 +302,8 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
 
     public clear() {
-        HistoryManagerStatic._stepsInfo = [];
+        HistoryManagerStatic._stepsInfo.clear();
+        HistoryManagerStatic._diffHistory.clear();
         HistoryManagerStatic._originalStepData = undefined;
     }
 
