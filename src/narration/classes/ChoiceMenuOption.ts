@@ -27,7 +27,7 @@ export default class ChoiceMenuOption<
     /**
      * Text to be displayed in the menu
      */
-    text: string;
+    text: ChoiceInterface["text"];
     private _label: LabelAbstract<any, T> | LabelIdType;
     /**
      * Label to be opened when the option is selected
@@ -99,7 +99,7 @@ export default class ChoiceMenuOption<
      * @param options Options
      */
     constructor(
-        text: string,
+        text: ChoiceInterface["text"],
         label: Label<T> | LabelAbstract<any, T> | LabelIdType,
         props: T,
         options?: ChoiceMenuOptionOptions
@@ -130,7 +130,7 @@ export default class ChoiceMenuOption<
  * ```
  */
 export function newChoiceOption<T extends StorageObjectType>(
-    text: string,
+    text: ChoiceInterface["text"],
     label: Label<T> | LabelAbstract<any, T> | LabelIdType,
     props: T,
     options?: ChoiceMenuOptionOptions

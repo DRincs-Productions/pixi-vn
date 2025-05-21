@@ -18,7 +18,7 @@ export default class ChoiceMenuOptionClose {
     /**
      * Text to be displayed in the menu
      */
-    text: string;
+    text: ChoiceInterface["text"];
     /**
      * If true, the current label will be closed
      */
@@ -74,7 +74,7 @@ export default class ChoiceMenuOptionClose {
      * @param text Text to be displayed in the menu
      * @param options Options
      */
-    constructor(text: string, options?: ChoiceMenuOptionCloseOptions) {
+    constructor(text: ChoiceInterface["text"], options?: ChoiceMenuOptionCloseOptions) {
         const {
             closeCurrentLabel = false,
             oneTime = false,
@@ -98,7 +98,10 @@ export default class ChoiceMenuOptionClose {
  * newCloseChoiceOption("Return")
  * ```
  */
-export function newCloseChoiceOption(text: string, options?: ChoiceMenuOptionCloseOptions): CloseChoiceOptionInterface {
+export function newCloseChoiceOption(
+    text: ChoiceInterface["text"],
+    options?: ChoiceMenuOptionCloseOptions
+): CloseChoiceOptionInterface {
     return {
         ...options,
         type: Close,
