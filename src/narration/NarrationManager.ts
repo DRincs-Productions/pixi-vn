@@ -85,6 +85,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         ) {
             inputValue = GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
         }
+        const openedLabels = NarrationManagerStatic.openedLabels;
         let historyInfo: Omit<HistoryStep, "diff"> = {
             currentLabel: NarrationManagerStatic.currentLabelId,
             dialogue: dialogue,
@@ -96,8 +97,9 @@ export default class NarrationManager implements NarrationManagerInterface {
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
             isGlued: isGlued,
+            openedLabelsNumber: openedLabels.length,
         };
-        NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
+        NarrationManagerStatic.originalOpenedLabels = openedLabels;
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();

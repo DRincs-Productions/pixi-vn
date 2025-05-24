@@ -256,12 +256,22 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         const lastLabel = lastItem.currentLabel;
         let prevIndex = lastItem.index;
+        let labelStepIndex = lastItem.labelStepIndex || -1;
+        let openedLabelsNumber = lastItem.openedLabelsNumber || -1;
 
         keys.every((key) => {
             const item = this.get(key);
             if (item) {
                 const info = HistoryManagerStatic._stepsInfoHistory.get(key);
-                if (!info || !(info.currentLabel === lastLabel && info.index <= prevIndex)) {
+                if (
+                    !info ||
+                    !(
+                        info.currentLabel === lastLabel &&
+                        info.index <= prevIndex &&
+                        (info.labelStepIndex || -1) <= labelStepIndex &&
+                        (info.openedLabelsNumber || -1) === openedLabelsNumber
+                    )
+                ) {
                     return false;
                 }
                 result.push(item);

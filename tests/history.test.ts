@@ -46,7 +46,7 @@ const startLabel = newLabel("choiceshistory", [
     async () => {
         narration.dialogue = `You want continue to the next part?`;
         narration.choiceMenuOptions = [
-            newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "call" }),
+            newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
             newCloseChoiceOption("No, I want to stop here"),
         ];
     },
@@ -284,7 +284,7 @@ test("choice test", async () => {
             choices: [
                 {
                     text: "Yes, I want to continue",
-                    type: "call",
+                    type: "jump",
                     isResponse: true,
                     hidden: false,
                 },
@@ -409,7 +409,59 @@ test("choice test", async () => {
                 ],
             },
             playerMadeChoice: false,
-            stepIndex: 26,
+            stepIndex: 14,
+        },
+        {
+            dialogue: {
+                text: "She sets it on a desk. I throw my two paper bags down beside the empty bed.",
+            },
+            playerMadeChoice: false,
+            stepIndex: 15,
+        },
+        {
+            dialogue: {
+                text: [
+                    "They got you a new mattress, right?",
+                    " That last guy was a druggie, did james.name tell you that?",
+                ],
+                character: "steph",
+            },
+            playerMadeChoice: false,
+            stepIndex: 17,
+        },
+        {
+            dialogue: {
+                character: "sly",
+                text: "*We're* the reason he got expelled!",
+            },
+            playerMadeChoice: false,
+            stepIndex: 18,
+        },
+        {
+            dialogue: {
+                text: [
+                    "sly.name! If word gets out about that...",
+                    " well, actually, it wouldn't matter, *he's* the one who shot himself up.",
+                ],
+                character: "steph",
+            },
+            playerMadeChoice: false,
+            stepIndex: 20,
+        },
+        {
+            dialogue: {
+                text: "I'm fumbling for a new subject.",
+            },
+            playerMadeChoice: false,
+            stepIndex: 21,
+        },
+        {
+            dialogue: {
+                character: "mc",
+                text: "So, you're all family?",
+            },
+            playerMadeChoice: false,
+            stepIndex: 22,
         },
     ]);
     expect(stepHistory.narrativeHistory).toEqual([
@@ -495,7 +547,7 @@ test("choice test", async () => {
             choices: [
                 {
                     text: "Yes, I want to continue",
-                    type: "call",
+                    type: "jump",
                     isResponse: true,
                     hidden: false,
                 },
@@ -578,25 +630,6 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 24,
-        },
-        {
-            dialogue: {
-                text: [
-                    "She enters my room before I'VE even had a chance to.",
-                    `  
-
-...I could've just come back and gotten the platter later...`,
-                ],
-            },
-            playerMadeChoice: false,
-            stepIndex: 26,
-        },
-        {
-            dialogue: {
-                text: "She sets it on a desk. I throw my two paper bags down beside the empty bed.",
-            },
-            playerMadeChoice: false,
-            stepIndex: 27,
         },
     ]);
 });

@@ -126,5 +126,9 @@ declare module "@drincs/pixi-vn" {
          * If true, the current dialogue will be glued to the previous one.
          */
         isGlued?: boolean;
+        /**
+         * Number of labels opened in the current step.
+         */
+        openedLabelsNumber?: number;
     }
 }
