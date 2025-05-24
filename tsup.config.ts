@@ -6,6 +6,7 @@ export default defineConfig({
     format: ["cjs", "esm"], // Build for commonJS and ESmodules
     dts: true, // Generate declaration file (.d.ts)
     treeshake: true,
+    splitting: false,
     // sourcemap: true, // Generate sourcemap, it was removed because otherwise it would explode
     clean: true,
     minify: true,
