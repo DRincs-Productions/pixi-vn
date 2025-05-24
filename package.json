@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -12,6 +12,12 @@
   "scripts": {
     "build": "tsup",
     "test": "vitest"
+  },
+  "exports": {
+    ".": {
+      "import": "./dist/index.mjs",
+      "require": "./dist/index.cjs"
+    }
   },
   "repository": {
     "type": "git",
