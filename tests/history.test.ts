@@ -123,7 +123,7 @@ test("choice test", async () => {
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
-    expect(stepHistory.latestCurrentLabelHistory).toEqual([
+    expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
                 text: ["Wait!", " I've got a gift for you!"],
@@ -305,7 +305,7 @@ test("choice test", async () => {
             stepIndex: 13,
         },
     ]);
-    expect(stepHistory.latestCurrentLabelHistory).toEqual([]);
+    expect(stepHistory.currentLabelHistory).toEqual([]);
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
@@ -317,7 +317,7 @@ test("choice test", async () => {
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
-    expect(stepHistory.latestCurrentLabelHistory).toEqual([
+    expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
                 text: [
@@ -398,7 +398,7 @@ test("choice test", async () => {
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
-    expect(stepHistory.latestCurrentLabelHistory).toEqual([
+    expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
                 text: [

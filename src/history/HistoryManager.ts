@@ -243,7 +243,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         });
         return result;
     }
-    get latestCurrentLabelHistory(): NarrationHistory[] {
+    get currentLabelHistory(): NarrationHistory[] {
         const result: NarrationHistory[] = [];
         const keys = Array.from(this.keys()).sort((a, b) => b - a);
         const lastKey = keys.shift();

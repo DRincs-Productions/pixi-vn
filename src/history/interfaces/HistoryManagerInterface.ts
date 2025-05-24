@@ -17,7 +17,7 @@ export default interface HistoryManagerInterface {
      * For example, if the current label A called label B in step 3, and label B was closed and we went on to step 6 of A. the result will include points 4 5 6 of label A
      * @returns the history of the dialogues, choices and steps
      */
-    readonly latestCurrentLabelHistory: NarrationHistory[];
+    readonly currentLabelHistory: NarrationHistory[];
     /**
      * The number of steps to keep in the history into the save file.
      *
