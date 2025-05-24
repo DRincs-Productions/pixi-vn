@@ -246,7 +246,10 @@ export default class HistoryManager implements HistoryManagerInterface {
     get currentLabelHistory(): NarrationHistory[] {
         const result: NarrationHistory[] = [];
         const keys = Array.from(this.keys()).sort((a, b) => b - a);
-        const lastKey = keys.shift();
+        if (keys.length === 0) {
+            return result;
+        }
+        const lastKey = keys[0];
         if (typeof lastKey !== "number") {
             return result;
         }
