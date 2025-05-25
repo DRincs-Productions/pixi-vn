@@ -271,9 +271,9 @@ export default class HistoryManager implements HistoryManagerInterface {
                     !(
                         info.currentLabel === lastLabel &&
                         info.index <= prevIndex &&
-                        (info.labelStepIndex || -1) <= labelStepIndex &&
-                        (info.openedLabelsNumber || -1) === openedLabelsNumber
-                    )
+                        (info.labelStepIndex || -1) <= labelStepIndex
+                    ) ||
+                    (info.openedLabelsNumber || -1) < openedLabelsNumber
                 ) {
                     return true;
                 }
