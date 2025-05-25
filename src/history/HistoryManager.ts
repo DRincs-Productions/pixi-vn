@@ -275,9 +275,13 @@ export default class HistoryManager implements HistoryManagerInterface {
                         (info.openedLabelsNumber || -1) === openedLabelsNumber
                     )
                 ) {
-                    return false;
+                    return true;
                 }
                 result.push(item);
+                if (info.labelStepIndex === 0) {
+                    // if labelStepIndex is 0, it means that this is the first step of the label
+                    return false; // stop the iteration
+                }
             }
             prevIndex = key;
             return true;
