@@ -123,6 +123,7 @@ test("choice test", async () => {
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
+    const aaa = stepHistory.currentLabelHistory;
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {

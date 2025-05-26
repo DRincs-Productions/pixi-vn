@@ -97,7 +97,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
             isGlued: isGlued,
-            openedLabelsNumber: openedLabels.length,
+            openedLabels: openedLabels,
         };
         NarrationManagerStatic.originalOpenedLabels = openedLabels;
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });

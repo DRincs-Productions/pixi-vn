@@ -123,7 +123,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 0,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -171,7 +176,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 1,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -219,7 +229,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 2,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -273,7 +288,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 0,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -315,7 +335,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 1,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -357,7 +382,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 2,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -405,7 +435,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 0,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -447,7 +482,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 1,
+                        },
+                    ],
                 },
                 {
                     diff: [
@@ -489,7 +529,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
                     isGlued: false,
-                    openedLabelsNumber: 1,
+                    openedLabels: [
+                        {
+                            label: "stepCounter",
+                            currentStepIndex: 2,
+                        },
+                    ],
                 },
             ],
             originalStepData: {

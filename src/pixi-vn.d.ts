@@ -129,6 +129,6 @@ declare module "@drincs/pixi-vn" {
         /**
          * Number of labels opened in the current step.
          */
-        openedLabelsNumber?: number;
+        openedLabels?: OpenedLabel[];
     }
 }

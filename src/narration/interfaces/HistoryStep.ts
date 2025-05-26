@@ -1,7 +1,7 @@
 import { GameStepState } from "@drincs/pixi-vn";
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
-import { StorageElementType, StoredChoiceInterface } from "../..";
+import { OpenedLabel, StorageElementType, StoredChoiceInterface } from "../..";
 import { LabelIdType } from "../types/LabelIdType";
 import { StoredDialogue } from "./DialogueInterface";
 
@@ -69,7 +69,7 @@ export default interface HistoryStep {
      */
     isGlued?: boolean;
     /**
-     * Number of labels opened in the current step.
+     * Opened Labels in the current step.
      */
-    openedLabelsNumber?: number;
+    openedLabels?: OpenedLabel[];
 }

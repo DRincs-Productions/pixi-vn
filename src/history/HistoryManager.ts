@@ -257,35 +257,34 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (!lastItem) {
             return result;
         }
-        const lastLabel = lastItem.currentLabel;
-        let prevIndex = lastItem.index;
-        let labelStepIndex = lastItem.labelStepIndex || -1;
-        let openedLabelsNumber = lastItem.openedLabelsNumber || -1;
+        const openedLabels = lastItem.openedLabels;
+        if (!openedLabels || !Array.isArray(openedLabels) || openedLabels.length === 0) {
+            return result;
+        }
+        let currentStepIndex = openedLabels[0].currentStepIndex;
+        const label = openedLabels[0].label;
 
-        keys.every((key) => {
+        keys.every((key, index) => {
             const item = this.get(key);
             if (item) {
+                if (index === 0) {
+                    result.push(item);
+                    return true;
+                }
                 const info = HistoryManagerStatic._stepsInfoHistory.get(key);
                 if (!info) {
                     return true;
                 }
-                if (
-                    !(
-                        info.currentLabel === lastLabel &&
-                        info.index <= prevIndex &&
-                        (info.labelStepIndex || -1) <= labelStepIndex
-                    ) ||
-                    (info.openedLabelsNumber || -1) < openedLabelsNumber
-                ) {
-                    return true;
+                const openedLabelsTemp = info.openedLabels;
+                if (!openedLabelsTemp || !Array.isArray(openedLabelsTemp) || openedLabelsTemp.length === 0) {
+                    return false;
                 }
+                if (openedLabelsTemp[0].label !== label || openedLabelsTemp[0].currentStepIndex >= currentStepIndex) {
+                    return false;
+                }
+                currentStepIndex = openedLabelsTemp[0].currentStepIndex;
                 result.push(item);
-                if (info.labelStepIndex === 0) {
-                    // if labelStepIndex is 0, it means that this is the first step of the label
-                    return false; // stop the iteration
-                }
             }
-            prevIndex = key;
             return true;
         });
 
