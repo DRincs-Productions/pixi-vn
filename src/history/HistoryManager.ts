@@ -266,8 +266,10 @@ export default class HistoryManager implements HistoryManagerInterface {
             const item = this.get(key);
             if (item) {
                 const info = HistoryManagerStatic._stepsInfoHistory.get(key);
+                if (!info) {
+                    return true;
+                }
                 if (
-                    !info ||
                     !(
                         info.currentLabel === lastLabel &&
                         info.index <= prevIndex &&
