@@ -342,6 +342,7 @@ test("choice test", async () => {
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
+    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
@@ -393,18 +394,16 @@ test("choice test", async () => {
         },
         {
             dialogue: {
-                text: [
-                    "sly.name! If word gets out about that...",
-                    " well, actually, it wouldn't matter, *he's* the one who shot himself up.",
-                ],
+                text: "sly.name! If word gets out about that...",
                 character: "steph",
             },
             playerMadeChoice: false,
             choices: undefined,
-            stepIndex: 20,
+            stepIndex: 19,
             inputValue: undefined,
         },
     ]);
+    await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});

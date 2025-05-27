@@ -95,6 +95,17 @@ export default class HistoryManager implements HistoryManagerInterface {
             );
             if (restoredStep) {
                 await GameUnifier.restoreGameStepState(restoredStep, navigate);
+                const stepCounter = GameUnifier.stepCounter - 1;
+                const item = HistoryManagerStatic._narrationHistory.get(stepCounter);
+                if (item && Object.keys(item).length === 1 && item.stepIndex !== undefined) {
+                    const historyInfo = HistoryManagerStatic._stepsInfoHistory.get(stepCounter);
+                    if (historyInfo) {
+                        const narrativeHistory = this.itemMapper({
+                            step: historyInfo,
+                        });
+                        HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
+                    }
+                }
             } else {
                 logger.error("Error going back");
             }
@@ -167,9 +178,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             inputValue?: StorageElementType;
             removeDialogue?: boolean;
         },
-        previousItem:
-            | { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean }
-            | undefined
+        previousItem?: { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean }
     ): NarrationHistory {
         const { step, choiceIndexMade, inputValue, removeDialogue } = item;
         let dialogue = step.dialogue || step.dialoge;
