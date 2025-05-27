@@ -123,7 +123,6 @@ test("choice test", async () => {
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
-    const aaa = stepHistory.currentLabelHistory;
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
@@ -343,6 +342,69 @@ test("choice test", async () => {
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
+    expect(stepHistory.currentLabelHistory).toEqual([
+        {
+            dialogue: {
+                text: [
+                    "She enters my room before I'VE even had a chance to.",
+                    `  
+
+...I could've just come back and gotten the platter later...`,
+                ],
+                character: undefined,
+            },
+            playerMadeChoice: false,
+            choices: undefined,
+            stepIndex: 14,
+            inputValue: undefined,
+        },
+        {
+            dialogue: {
+                text: "She sets it on a desk. I throw my two paper bags down beside the empty bed.",
+                character: undefined,
+            },
+            playerMadeChoice: false,
+            choices: undefined,
+            stepIndex: 15,
+            inputValue: undefined,
+        },
+        {
+            dialogue: {
+                text: [
+                    "They got you a new mattress, right?",
+                    " That last guy was a druggie, did james.name tell you that?",
+                ],
+                character: "steph",
+            },
+            playerMadeChoice: false,
+            choices: undefined,
+            stepIndex: 17,
+            inputValue: undefined,
+        },
+        {
+            dialogue: {
+                character: "sly",
+                text: "*We're* the reason he got expelled!",
+            },
+            playerMadeChoice: false,
+            choices: undefined,
+            stepIndex: 18,
+            inputValue: undefined,
+        },
+        {
+            dialogue: {
+                text: [
+                    "sly.name! If word gets out about that...",
+                    " well, actually, it wouldn't matter, *he's* the one who shot himself up.",
+                ],
+                character: "steph",
+            },
+            playerMadeChoice: false,
+            choices: undefined,
+            stepIndex: 20,
+            inputValue: undefined,
+        },
+    ]);
     await narration.goNext({});
     await narration.goNext({});
     await narration.goNext({});
