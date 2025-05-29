@@ -47,13 +47,13 @@ export default class CachedMap<K extends {}, V extends {}> implements Map<K, V> 
     get size() {
         return this.map.size;
     }
-    get entries() {
-        return this.map.entries;
+    entries() {
+        return this.map.entries();
     }
     keys() {
         return this.map.keys();
     }
-    get values() {
-        return this.map.values;
+    values() {
+        return this.map.values();
     }
 }
