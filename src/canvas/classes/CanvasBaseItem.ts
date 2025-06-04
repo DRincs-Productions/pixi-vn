@@ -1,9 +1,6 @@
-import { Container as PixiContainer } from "pixi.js";
 import { canvas, CanvasBaseItemMemory } from "..";
 import canvasComponentDecorator from "../decorators/canvas-element-decorator";
 import { getCanvasElementInstanceById } from "../functions/canvas-import-utility";
-
-export interface CanvasBaseInterface<T2 extends CanvasBaseItemMemory> extends CanvasBaseItem<T2>, PixiContainer {}
 
 /**
  * This class is used to create a canvas element to add into a Pixi Application.
