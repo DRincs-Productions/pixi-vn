@@ -76,34 +76,58 @@ export function getSuperPoint(point: { x: number; y: number }, angle: number): {
         let angleRad = (angle * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
-        return {
-            x: point.x * cos - point.y * sin,
-            y: point.x * sin + point.y * cos,
-        };
+        let x = point.x * cos - point.y * sin;
+        let y = point.x * sin + point.y * cos;
+        // Ensure the sign of x matches point.x, and the sign of y matches point.y
+        if (point.x !== 0 && Math.sign(x) !== Math.sign(point.x)) {
+            x = -x;
+        }
+        if (point.y !== 0 && Math.sign(y) !== Math.sign(point.y)) {
+            y = -y;
+        }
+        return { x, y };
     } else if (angle > 90 && angle < 180) {
         let angleRad = ((angle - 90) * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
-        return {
-            x: -point.y * sin - point.x * cos,
-            y: point.y * cos - point.x * sin,
-        };
+        let x = -point.y * sin - point.x * cos;
+        let y = point.y * cos - point.x * sin;
+        // Ensure the sign of x matches point.x, and the sign of y matches point.y
+        if (point.x !== 0 && Math.sign(x) !== Math.sign(point.x)) {
+            x = -x;
+        }
+        if (point.y !== 0 && Math.sign(y) !== Math.sign(point.y)) {
+            y = -y;
+        }
+        return { x, y };
     } else if (angle > 180 && angle < 270) {
         let angleRad = ((angle - 180) * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
-        return {
-            x: -point.x * cos + point.y * sin,
-            y: -point.x * sin - point.y * cos,
-        };
+        let x = -point.x * cos + point.y * sin;
+        let y = -point.x * sin - point.y * cos;
+        // Ensure the sign of x matches point.x, and the sign of y matches point.y
+        if (point.x !== 0 && Math.sign(x) !== Math.sign(point.x)) {
+            x = -x;
+        }
+        if (point.y !== 0 && Math.sign(y) !== Math.sign(point.y)) {
+            y = -y;
+        }
+        return { x, y };
     } else if (angle > 270 && angle < 360) {
         let angleRad = ((angle - 270) * Math.PI) / 180;
         let cos = Math.cos(angleRad);
         let sin = Math.sin(angleRad);
-        return {
-            x: point.y * sin - point.x * cos,
-            y: -point.y * cos - point.x * sin,
-        };
+        let x = point.y * sin - point.x * cos;
+        let y = -point.y * cos - point.x * sin;
+        // Ensure the sign of x matches point.x, and the sign of y matches point.y
+        if (point.x !== 0 && Math.sign(x) !== Math.sign(point.x)) {
+            x = -x;
+        }
+        if (point.y !== 0 && Math.sign(y) !== Math.sign(point.y)) {
+            y = -y;
+        }
+        return { x, y };
     }
     return { x: 0, y: 0 };
 }
