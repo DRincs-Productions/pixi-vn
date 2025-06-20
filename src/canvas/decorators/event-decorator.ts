@@ -1,7 +1,7 @@
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
-import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
+import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { EventIdType } from "../types/EventIdType";
 

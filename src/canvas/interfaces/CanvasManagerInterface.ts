@@ -1,10 +1,10 @@
 import { Devtools } from "@pixi/devtools";
 import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
-import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import { Ticker, TickerArgs, TickerBase, TickerHistory, TickersSequence } from "../tickers";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
+import { CanvasBaseInterface } from "./CanvasBaseInterface";
 import CanvasGameState from "./CanvasGameState";
 import CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 

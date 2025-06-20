@@ -1,7 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
-import { canvas, ImageContainerOptions, ImageSpriteOptions } from "..";
+import { canvas, CanvasBaseInterface, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
-import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import ImageContainer from "../components/ImageContainer";
 import ImageSprite from "../components/ImageSprite";
 import VideoSprite from "../components/VideoSprite";
