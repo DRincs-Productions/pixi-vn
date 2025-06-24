@@ -46,7 +46,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     extends PixiSprite
     implements CanvasBaseItem<Memory | SpriteMemory>
 {
-    constructor(options?: SpriteOptions | Texture) {
+    constructor(options?: SpriteOptions | Omit<Texture, "on">) {
         super(options);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID;
     }
