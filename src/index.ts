@@ -1,19 +1,5 @@
-export {
-    Assets,
-    Container as PixiJSContainer,
-    Sprite as PixiJSSprite,
-    Text as PixiJSText,
-    Rectangle,
-    Texture,
-    UPDATE_PRIORITY,
-} from "pixi.js";
-export type {
-    ContainerOptions,
-    SpriteOptions as PixiJSSpriteOptions,
-    TextOptions as PixiJSTextOptions,
-    TextureSourceLike,
-    Ticker as TickerValue,
-} from "pixi.js";
+export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "pixi.js";
+export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "pixi.js";
 export type {
     AssetsBundle,
     AssetsManifest,
