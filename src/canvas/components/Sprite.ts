@@ -4,7 +4,7 @@ import {
     ContainerEvents,
     EventEmitter,
     Sprite as PixiSprite,
-    SpriteOptions,
+    SpriteOptions as PixiSpriteOptions,
     Texture,
     TextureSourceLike,
 } from "pixi.js";
@@ -16,6 +16,7 @@ import { default as RegisteredCanvasComponents } from "../decorators/canvas-elem
 import RegisteredEvents from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
+import { SpriteOptions } from "../interfaces/canvas-options";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
@@ -41,7 +42,7 @@ import { setMemoryContainer } from "./Container";
  * canvas.add("bunny", sprite);
  * ```
  */
-export default class Sprite<Memory extends SpriteOptions & CanvasBaseItemMemory = SpriteMemory>
+export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMemory = SpriteMemory>
     extends PixiSprite
     implements CanvasBaseItem<Memory | SpriteMemory>
 {

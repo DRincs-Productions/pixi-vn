@@ -7,7 +7,13 @@ export {
     Texture,
     UPDATE_PRIORITY,
 } from "pixi.js";
-export type { ContainerOptions, SpriteOptions, TextOptions, TextureSourceLike, Ticker as TickerValue } from "pixi.js";
+export type {
+    ContainerOptions,
+    SpriteOptions as PixiJSSpriteOptions,
+    TextOptions as PixiJSTextOptions,
+    TextureSourceLike,
+    Ticker as TickerValue,
+} from "pixi.js";
 export type {
     AssetsBundle,
     AssetsManifest,
