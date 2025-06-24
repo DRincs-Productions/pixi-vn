@@ -49,7 +49,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     implements AdditionalPositionsExtension
 {
     pixivnId: string = CANVAS_IMAGE_ID;
-    constructor(options?: ImageSpriteOptions | Texture | undefined, textureAlias?: string) {
+    constructor(options?: ImageSpriteOptions | Omit<Texture, "on"> | undefined, textureAlias?: string) {
         options = analizePositionsExtensionProps(options as any);
         let align = undefined;
         let percentagePosition = undefined;
