@@ -26,8 +26,6 @@ Pixi’VN does not provide built-in components to create the game UI. Instead, y
 * [Vue](https://pixi-vn.web.app/start/interface-vue)
 * [PixiJS](https://pixi-vn.web.app/start/interface-pixijs)
 
-<img src="https://pixi-vn.web.app/_next/static/media/arch.4edd7c4c.png" alt="Pixi'VN Architecture" style="max-height: 400px; background-color: #303030; border-radius: 8px;">
-
 ## Wiki
 
 * [Why Pixi’VN?](https://pixi-vn.web.app/start/why)
