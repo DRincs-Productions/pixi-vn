@@ -20,7 +20,7 @@ You have the option to use various types of narrative languages ​​(in additi
 * [*ink*](https://pixi-vn.web.app/ink/ink)
 * [Ren'Py](https://pixi-vn.web.app/renpy/renpy)
 
-<img src="https://pixi-vn.web.app/_next/static/media/arch.4edd7c4c.png" alt="Pixi'VN Architecture" style="width: 100%; max-height: 600px; background-color: #303030; border-radius: 8px;">
+<img src="https://pixi-vn.web.app/_next/static/media/arch.4edd7c4c.png" alt="Pixi'VN Architecture" style="max-height: 400px; background-color: #303030; border-radius: 8px;">
 
 Pixi’VN does not provide built-in components to create the game UI. Instead, you should use external JavaScript frameworks to build your UI. This allows you to leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
 
