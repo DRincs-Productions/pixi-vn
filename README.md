@@ -2,33 +2,38 @@
 
 ![pixi-vn-cover](https://github.com/user-attachments/assets/28c41fe1-c539-4ebb-b7d4-8cb9f79e089e)
 
-Pixi’VN is a very versatile and powerful visual novel/2D game engine. It is based on JavaScript/TypeScript and uses the [Pixi.js](https://pixijs.com/) library for rendering.
+Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
 
-Its great versatility is due to the fact that Pixi’VN is a npm package, that provides various core features to manage story steps, dialogues, character, canvas, variable storage, saving and loading, and much more. This means that it can be used both to create visual novels and to create other types of 2D games (such as Point and Click Adventure Games, RPGs, etc...), with your favorite JavaScript framework (React, Vue, Angular, etc...).
+It provides the following features:
 
-Pixi’VN provides the ability to use [Templates](#project-initialization) to get started quickly. Less experienced developers can use these templates to create a visual novel without much knowledge of JavaScript/TypeScript.
+* narrative management
+* provides a 2D canvas
+* providing functionality to play sounds and music
+* storage to set and get game variables.
+* saves the current state of the entire game at each "story step" giving the possibility to go back
+* functionality to save and load the current state of the game.
 
-With the [PixiVNJson](https://pixi-vn.web.app/other-topics/pixi-vn-json) implementation you have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
+For a quick start, various [project templates](#project-initialization) are available. Less experienced developers can use these templates without much knowledge of JavaScript/TypeScript.
+
+You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
 
 * [*ink*](https://pixi-vn.web.app/ink/ink)
 * [Ren'Py](https://pixi-vn.web.app/renpy/renpy)
 
-Pixi’VN offers the possibility of adding an HTML Element with the same dimensions as the [PixiJS Canvas](https://pixi-vn.web.app/start/canvas) to add an **UI** with JavaScript frameworks.
+<img src="https://pixi-vn.web.app/_next/static/media/arch.4edd7c4c.png" alt="Pixi'VN Architecture" style="width: 100%; max-width: 800px;">
 
-By "UI" is meant the elements that are above the canvas, such as buttons, forms, etc.
+Pixi’VN does not provide built-in components to create the game UI. Instead, you should use external JavaScript frameworks to build your UI. This allows you to leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
 
-![Frame_Aufbau](https://firebasestorage.googleapis.com/v0/b/pixi-vn.appspot.com/o/public%2FPixiVN_interface.png?alt=media)
-
-This allows the use of systems such as React, Vue, Angular, etc. to create much more complex **UI screens** with excellent performance.
-
-* [Angular](https://pixi-vn.web.app/start/interface-angular)
-* [React Interface](https://pixi-vn.web.app/start/interface-react)
+* [React](https://pixi-vn.web.app/start/interface-react)
 * [Vue](https://pixi-vn.web.app/start/interface-vue)
+* [PixiJS](https://pixi-vn.web.app/start/interface-pixijs)
 
 ## Wiki
 
 * [Why Pixi’VN?](https://pixi-vn.web.app/start/why)
-* [Get Started](https://pixi-vn.web.app/start/getting-started)
+  * [Ren'Py vs Pixi’VN](https://pixi-vn.web.app/start/versus-renpy)
+* [Quick Start](https://pixi-vn.web.app/start/getting-started)
+  * [Templates](https://pixi-vn.web.app/start/templates)
 * Make your first:
   * [Visual Novel](https://pixi-vn.web.app/start/make-visual-novel)
   * [Point and Click adventure game](https://pixi-vn.web.app/start/make-point-and-click)
@@ -59,15 +64,14 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
       * [Game flow with labels](https://pixi-vn.web.app/start/labels-flow)
       * [Label features](https://pixi-vn.web.app/start/labels-advanced)
     * [Choice Menus](https://pixi-vn.web.app/start/choices)
-    * [Input](https://pixi-vn.web.app/start/input)
+    * [Input prompt](https://pixi-vn.web.app/start/input)
     * [History](https://pixi-vn.web.app/start/history)
     * [Translating](https://pixi-vn.web.app/start/translate)
-    * [Markup language (to add text style)](https://pixi-vn.web.app/start/markup)
-      * [Markdown](https://pixi-vn.web.app/start/markup-markdown)
-      * [Typewriter effect](https://pixi-vn.web.app/start/markup-typewriter)
     * [Other features](https://pixi-vn.web.app/start/other-narrative-features)
-* [PixiJS Canvas](https://pixi-vn.web.app/start/canvas):
-  * [Initialize the canvas](https://pixi-vn.web.app/start/canvas-initialize)
+  * [Markup language (to add text style)](https://pixi-vn.web.app/start/markup)
+    * [Markdown](https://pixi-vn.web.app/start/markup-markdown)
+    * [Tailwind CSS](https://pixi-vn.web.app/it/start/markup-tailwindcss)
+* [Game canvas](https://pixi-vn.web.app/start/canvas):
   * [Canvas alias](https://pixi-vn.web.app/start/canvas-alias)
   * [Canvas Components](https://pixi-vn.web.app/start/canvas-components)
     * [ImageSprite](https://pixi-vn.web.app/start/canvas-images)
@@ -76,6 +80,7 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
     * [Filters](https://pixi-vn.web.app/start/canvas-filters)
     * [Lights](https://pixi-vn.web.app/start/canvas-lights)
     * [Spine 2D](https://pixi-vn.web.app/start/canvas-spine2d)
+    * [Three.js](https://pixi-vn.web.app/it/start/canvas-threejs)
   * [Canvas functions](https://pixi-vn.web.app/start/canvas-functions)
   * [Position properties](https://pixi-vn.web.app/start/canvas-position)
   * [Transitions](https://pixi-vn.web.app/start/canvas-transition)
@@ -89,11 +94,12 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
 * [Game storage](https://pixi-vn.web.app/start/storage):
   * [Flags Management](https://pixi-vn.web.app/start/flags)
   * [Stored Classes](https://pixi-vn.web.app/start/stored-classes)
-* [UI with JavaScript Framework](https://pixi-vn.web.app/start/interface)
+* [User Interface (UI)](https://pixi-vn.web.app/start/interface)
   * JavaScript Frameworks
-    * [Angular UI](https://pixi-vn.web.app/start/interface-angular)
-    * [React UI](https://pixi-vn.web.app/start/interface-react)
-    * [Vue UI](https://pixi-vn.web.app/start/interface-vue)
+    * [React](https://pixi-vn.web.app/start/interface-react)
+    * [Vue](https://pixi-vn.web.app/start/interface-vue)
+    * [PixiJS](https://pixi-vn.web.app/start/interface-pixijs)
+  * [UI screen examples](https://pixi-vn.web.app/start/interface-examples)
   * [Navigate/switch between UI screens](https://pixi-vn.web.app/start/interface-navigate)
   * [Connect the UI with the storage](https://pixi-vn.web.app/start/interface-connect-storage)
 * [Save and Load](https://pixi-vn.web.app/start/save)
@@ -101,28 +107,21 @@ This allows the use of systems such as React, Vue, Angular, etc. to create much 
   * [Website distribution](https://pixi-vn.web.app/start/distribution-website)
   * [Desktop & mobile devices](https://pixi-vn.web.app/start/distribution-desktop-mobile)
 
-## Other topics
-
-* [FAQ](https://pixi-vn.web.app/other-topics/faq)
-* [Migration](https://pixi-vn.web.app/other-topics/migration)
-* [Intecept Events](https://pixi-vn.web.app/other-topics/intercept-events)
-* [Pixi’VN + Json](https://pixi-vn.web.app/other-topics/pixi-vn-json)
-
 ## Prerequisites
 
 Before starting, you must have the following tools installed:
 
 * [Node.js](https://nodejs.org/) version 18 or higher.
-* Text Editor with TypeScript support.
+* Text editor with TypeScript support, such as:
   * [Visual Studio Code](https://code.visualstudio.com/)
   * [Cursor](https://www.cursor.com/)
   * [VSCodium](https://vscodium.com/)
 * (Recommended) [Git](https://git-scm.com/)
-  * Have a [GitHub account](https://github.com/)
+  * A [GitHub account](https://github.com/)
 
 ## Project Initialization
 
-If you want to start a new project, you can use the following command to initialize a new project with the Pixi’VN template:
+If you want to start from a new project, you can use the following command to initialize a new project with the Pixi’VN templates:
 
 ```bash
 # npm
@@ -141,24 +140,15 @@ bun create pixi-vn
 deno init --npm pixi-vn
 ```
 
-The supported template presets are:
+You can see the list of available templates and interactive demos [here](https://pixi-vn.web.app/start/templates).
 
-**Visual Novel - React**:
+After the project is initialized, open the project directory with your text editor (VSCode is recommended) and start developing your project.
 
-* **[Visual Novel - React - Typescript - Web page](https://github.com/DRincs-Productions/pixi-vn-react-template)**
-* **[Visual Novel - React - Typescript - Web page + Desktop + Mobile](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/tauri)**
-* **[Visual Novel - React - Ink + Typescript - Web page](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/ink)**
-* **[Visual Novel - React - Ink + Typescript - Web page + Desktop + Mobile](https://github.com/DRincs-Productions/pixi-vn-react-template/tree/ink-tauri)**
+All templates include a `README.md` file with more information about the project.
 
-( More templates will be added in the future, see this [issue](https://github.com/DRincs-Productions/pixi-vn/issues/162) for more information )
+## Installation
 
-After the project is initialized, you can open the project directory with your text editor (VSCode is recommended) and start developing your visual novel.
-
-Into all templates there is a `README.md` file with more information about the project.
-
-## Package Installation
-
-For installing the Pixi’VN package, you can use the following command:
+To install the Pixi’VN package in an existing JavaScript project, use one of the following commands:
 
 ```bash
 # npm
@@ -172,28 +162,38 @@ pnpm add @drincs/pixi-vn
 
 # bun
 bun add @drincs/pixi-vn
+
+# deno
+deno install npm:@drincs/pixi-vn
 ```
 
-## Usage
+## Initialize
 
-Now you must initialize the Pixi’VN window before using the engine.
+Before using the Pixi’VN engine, you must initialize the game. You can do this by calling the `Game.init` method.
 
-For example, you add the following code to the `main.ts` or `index.ts` (It depends on your project configuration):
+This function has the following parameters:
 
-```typescript
+* `element`: The HTML element to append the canvas to.
+* `options`: Equivalent to the options you can use when initializing a [PixiJS Application](https://pixijs.com/8.x/guides/basics/getting-started#creating-an-application). The following options are mandatory:
+  * `width`: The width of the canvas.
+  * `height`: The height of the canvas.
+* `devtoolsOptions`: Equivalent to the options you can use when initializing the [PixiJS Devtools](https://pixi-vn.web.app/it/start/canvas#use-pixijs-devtools-with-pixivn).
+
+```ts title="src/main.tsx"
 import { Game } from "@drincs/pixi-vn";
-import "./index.css";
 
 // Canvas setup with PIXI
-const body = document.body;
+const body = document.body
 if (!body) {
-    throw new Error("body element not found");
+    throw new Error('body element not found')
 }
 
 Game.init(body, {
     height: 1080,
     width: 1920,
     backgroundColor: "#303030",
+}).then(() => {
+    // ...
 });
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
@@ -201,4 +201,23 @@ Game.onEnd(async (props) => {
     Game.clear();
     props.navigate("/");
 });
+
+Game.onError((type, error, { notify }) => {
+    notify("allert_error_occurred");
+});
+```
+
+```html title="index.html"
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Game</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
 ```
