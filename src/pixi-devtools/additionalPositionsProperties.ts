@@ -15,8 +15,8 @@ const additionalPositionsProperties: PropertiesExtension = {
         switch (prop) {
             case "xAlign":
             case "yAlign":
-            case "xPercentagePosition":
-            case "yPercentagePosition":
+            case "percentageX":
+            case "percentageY":
             case "positionType":
                 return true;
             default:
@@ -36,11 +36,11 @@ const additionalPositionsProperties: PropertiesExtension = {
                 case "yAlign":
                     container.yAlign = value / 100;
                     break;
-                case "xPercentagePosition":
-                    container.xPercentagePosition = value / 100;
+                case "percentageX":
+                    container.percentageX = value / 100;
                     break;
-                case "yPercentagePosition":
-                    container.yPercentagePosition = value / 100;
+                case "percentageY":
+                    container.percentageY = value / 100;
                     break;
             }
         }
@@ -85,8 +85,8 @@ const additionalPositionsProperties: PropertiesExtension = {
                 },
             },
             {
-                value: container.xPercentagePosition * 100,
-                prop: "xPercentagePosition",
+                value: container.percentageX * 100,
+                prop: "percentageX",
                 entry: {
                     section: "Transform",
                     type: "range",
@@ -99,8 +99,8 @@ const additionalPositionsProperties: PropertiesExtension = {
                 },
             },
             {
-                value: container.yPercentagePosition * 100,
-                prop: "yPercentagePosition",
+                value: container.percentageY * 100,
+                prop: "percentageY",
                 entry: {
                     section: "Transform",
                     type: "range",

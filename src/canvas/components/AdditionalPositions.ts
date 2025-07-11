@@ -50,7 +50,7 @@ export interface AdditionalPositionsExtensionProps {
      *
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
-    xPercentagePosition?: number;
+    percentageX?: number;
     /**
      * is a way to set the position of the element in the canvas calculated in percentage.
      * For example, if you set the {@link PixiContainer.pivot} to 0.5, and:
@@ -59,6 +59,14 @@ export interface AdditionalPositionsExtensionProps {
      * - If you set percentagePosition to 1, the center of the element will be in the right end and bottom end of the canvas.
      *
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
+     */
+    percentageY?: number;
+    /**
+     * @deprecated Use {@link align} instead.
+     */
+    xPercentagePosition?: number;
+    /**
+     * @deprecated Use {@link align} instead.
      */
     yPercentagePosition?: number;
 }
@@ -133,6 +141,15 @@ export default class AdditionalPositionsExtension {
      *
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
+    set percentageX(_value: number) {
+        throw new Error("Method not implemented.");
+    }
+    get percentageX(): number {
+        throw new Error("Method not implemented.");
+    }
+    /**
+     * @deprecated Use {@link align} instead.
+     */
     set xPercentagePosition(_value: number) {
         throw new Error("Method not implemented.");
     }
@@ -147,6 +164,15 @@ export default class AdditionalPositionsExtension {
      * - If you set percentagePosition to 1, the center of the element will be in the right end and bottom end of the canvas.
      *
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
+     */
+    set percentageY(_value: number) {
+        throw new Error("Method not implemented.");
+    }
+    get percentageY(): number {
+        throw new Error("Method not implemented.");
+    }
+    /**
+     * @deprecated Use {@link align} instead.
      */
     set yPercentagePosition(_value: number) {
         throw new Error("Method not implemented.");
@@ -187,22 +213,28 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
         }
     }
     if (typeof props.percentagePosition !== "number") {
-        if (props.xPercentagePosition != undefined) {
+        if (props.xPercentagePosition != undefined && props.percentageX === undefined) {
+            props.percentageX = props.xPercentagePosition;
+        }
+        if (props.yPercentagePosition != undefined && props.percentageY === undefined) {
+            props.percentageY = props.yPercentagePosition;
+        }
+        if (props.percentageX != undefined) {
             if (props.percentagePosition === undefined) {
-                props.percentagePosition = { x: props.xPercentagePosition };
-                delete props.xPercentagePosition;
+                props.percentagePosition = { x: props.percentageX };
+                delete props.percentageX;
             } else {
-                props.percentagePosition.x = props.xPercentagePosition;
-                delete props.xPercentagePosition;
+                props.percentagePosition.x = props.percentageX;
+                delete props.percentageX;
             }
         }
-        if (props.yPercentagePosition != undefined) {
+        if (props.percentageY != undefined) {
             if (props.percentagePosition === undefined) {
-                props.percentagePosition = { y: props.yPercentagePosition };
-                delete props.yPercentagePosition;
+                props.percentagePosition = { y: props.percentageY };
+                delete props.percentageY;
             } else {
-                props.percentagePosition.y = props.yPercentagePosition;
-                delete props.yPercentagePosition;
+                props.percentagePosition.y = props.percentageY;
+                delete props.percentageY;
             }
         }
     }

@@ -223,23 +223,35 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             y: calculatePercentagePositionByPosition("height", this.y),
         };
     }
-    get xPercentagePosition() {
+    get percentageX() {
         return calculatePercentagePositionByPosition("width", this.x);
     }
-    set xPercentagePosition(_value: number) {
+    set percentageX(_value: number) {
         this._align = undefined;
         this._percentagePosition === undefined && (this._percentagePosition = {});
         this._percentagePosition.x = _value;
         this.reloadPosition();
     }
-    get yPercentagePosition() {
+    get percentageY() {
         return calculatePercentagePositionByPosition("height", this.y);
     }
-    set yPercentagePosition(_value: number) {
+    set percentageY(_value: number) {
         this._align = undefined;
         this._percentagePosition === undefined && (this._percentagePosition = {});
         this._percentagePosition.y = _value;
         this.reloadPosition();
+    }
+    set xPercentagePosition(_value: number) {
+        this.percentageX = _value;
+    }
+    get xPercentagePosition() {
+        return this.percentageX;
+    }
+    set yPercentagePosition(_value: number) {
+        this.percentageY = _value;
+    }
+    get yPercentagePosition() {
+        return this.percentageY;
     }
     get positionType(): "pixel" | "percentage" | "align" {
         if (this._align) {

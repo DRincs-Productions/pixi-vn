@@ -264,7 +264,7 @@ export default class ImageContainer
             y: calculatePercentagePositionByPosition("height", this.y),
         };
     }
-    set xPercentagePosition(_value: number) {
+    set percentageX(_value: number) {
         if (this._align) {
             this._align = undefined;
         }
@@ -272,10 +272,22 @@ export default class ImageContainer
         this._percentagePosition.x = _value;
         this.reloadPosition();
     }
-    get xPercentagePosition() {
+    get percentageX() {
         return calculatePercentagePositionByPosition("width", this.x);
     }
+    set xPercentagePosition(_value: number) {
+        this.percentageX = _value;
+    }
+    get xPercentagePosition() {
+        return this.percentageX;
+    }
     set yPercentagePosition(_value: number) {
+        this.percentageY = _value;
+    }
+    get yPercentagePosition() {
+        return this.percentageY;
+    }
+    set percentageY(_value: number) {
         if (this._align) {
             this._align = undefined;
         }
@@ -283,7 +295,7 @@ export default class ImageContainer
         this._percentagePosition.y = _value;
         this.reloadPosition();
     }
-    get yPercentagePosition() {
+    get percentageY() {
         return calculatePercentagePositionByPosition("height", this.y);
     }
     get positionType(): "pixel" | "percentage" | "align" {
