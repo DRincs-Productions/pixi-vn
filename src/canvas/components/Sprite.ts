@@ -120,12 +120,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         return this;
     }
     /**
-     * on() does not keep in memory the event class, use onEvent() instead
-     * @deprecated
-     * @private
-     * @param event
-     * @param fn
-     * @param context
+     * Add a listener for a given event.
+     * Unlike {@link onEvent}, this method does **not track the event association in the current game state**, so it will not be included in saves.
      */
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,

@@ -10,8 +10,8 @@ import ContainerChild from "../types/ContainerChild";
 
 export interface SpriteOptions extends Omit<PixiSpriteOptions, "on"> {
     /**
-     * on() does not keep in memory the event class, use onEvent() instead
-     * @deprecated
+     * Add a listener for a given event.
+     * Unlike {@link onEvent}, this method does **not track the event association in the current game state**, so it will not be included in saves.
      */
     on?: <T extends EventEmitter.EventNames<string | symbol>>(
         event: T,
@@ -21,8 +21,8 @@ export interface SpriteOptions extends Omit<PixiSpriteOptions, "on"> {
 }
 export interface TextOptions extends Omit<PixiTextOptions, "on"> {
     /**
-     * on() does not keep in memory the event class, use onEvent() instead
-     * @deprecated
+     * Add a listener for a given event.
+     * Unlike {@link onEvent}, this method does **not track the event association in the current game state**, so it will not be included in saves.
      */
     on?: <T extends EventEmitter.EventNames<string | symbol>>(
         event: T,
