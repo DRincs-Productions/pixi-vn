@@ -12,7 +12,7 @@ import {
 } from "pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
+import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
 import SpriteMemory from "../interfaces/memory/SpriteMemory";

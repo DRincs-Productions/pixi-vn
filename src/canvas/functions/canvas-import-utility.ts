@@ -1,6 +1,6 @@
 import { logger } from "../../utils/log-utility";
-import { CanvasBaseInterface } from "../classes/CanvasBaseItem";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
