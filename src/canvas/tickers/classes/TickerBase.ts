@@ -1,5 +1,6 @@
 import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
-import { canvas, Ticker } from "../..";
+import { canvas, CanvasManagerStatic, Ticker } from "../..";
+import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
 import RegisteredTickers, { tickerDecorator } from "../decorators/ticker-decorator";
 import TickerArgs from "../interfaces/TickerArgs";
@@ -47,9 +48,9 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         this.args = args;
         this.duration = duration;
         this.priority = priority;
-        this.fnValue = () => {
-            const { args, alias, tickerId } = this;
-            return this.fn(this.ticker, args, alias, tickerId);
+        this.fnValue = (id: string) => {
+            const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
+            return this.fn(this.ticker, args, canvasElementAliases, tickerId);
         };
         this.id = this.constructor.prototype.id;
     }
@@ -61,6 +62,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     duration?: number;
     priority?: UPDATE_PRIORITY;
     protected ticker = new PixiTicker();
+    protected tickerId?: string;
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
@@ -96,8 +98,13 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         });
     }
     complete() {
-        const { args, alias, tickerId } = this;
-        this.onComplete(alias, tickerId, alias);
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("[Pixi’VN] TickerBase.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
+        this.onComplete(canvasElementAliases, tickerId, args);
     }
     stop() {
         this.ticker.remove(this.fnValue, null);
