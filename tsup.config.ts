@@ -13,7 +13,7 @@ export default defineConfig({
     minify: true,
     bundle: true,
     skipNodeModulesBundle: false, // Skip bundling of node_modules
-    noExternal: ["pixi.js", "@pixi/sound", "@pixi/devtools"],
+    noExternal: ["pixi.js", "@pixi/sound", "@pixi/devtools", "motion"],
     outExtension({ format }) {
         return {
             js: format === "esm" ? ".mjs" : ".cjs",
