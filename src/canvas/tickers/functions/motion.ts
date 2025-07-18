@@ -2,12 +2,12 @@ import { animate as animateMotion, AnimationOptions, ObjectTarget } from "motion
 import { ContainerChild, Ticker } from "pixi.js";
 
 export default function animate<T extends ContainerChild>(
-    object: T | T[] | string | string[],
+    components: T | T[] | string | string[],
     keyframes: ObjectTarget<T>,
     options: AnimationOptions = {}
 ) {
     const ticker = new Ticker();
-    animateMotion(object, keyframes, {
+    animateMotion(components, keyframes, {
         driver: (update) => {
             ticker.autoStart = true;
 
