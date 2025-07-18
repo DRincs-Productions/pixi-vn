@@ -5,7 +5,7 @@ import TickerArgs from "./TickerArgs";
 /**
  * TickerHistory is a class that contains the name of a class and the arguments that were used to create it.
  */
-export default interface TickerHistory<TArgs extends TickerArgs> {
+export default interface TickerInfo<TArgs extends TickerArgs> {
     fn: TickerCallback<any>;
     id: TickerIdType;
     args: TArgs;
@@ -22,7 +22,6 @@ export default interface TickerHistory<TArgs extends TickerArgs> {
         canvasElementAlias: string;
         id: string;
     };
-    onComplete: () => void;
 }
 
 export interface TickerHistoryForExport<TArgs extends TickerArgs> {

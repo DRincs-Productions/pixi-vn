@@ -352,11 +352,9 @@ export default class CanvasManager implements CanvasManagerInterface {
             canvasElementAliases: canvasElementAlias,
             priority: ticker.priority,
             duration: ticker.duration,
-            onComplete: () => {},
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
         this.pushTicker(id, tickerHistory, ticker);
-        this.pushEndOfTicker(id, tickerHistory, ticker);
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
@@ -401,15 +399,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         };
         this.app.ticker.add(tickerData.fn, undefined, tickerData.priority);
-    }
-    private pushEndOfTicker<TArgs extends TickerArgs>(
-        id: string,
-        tickerData: TickerHistory<TArgs>,
-        ticker: TickerBase<TArgs>
-    ) {
-        tickerData.onComplete = () => {
-            ticker.onComplete(tickerData.canvasElementAliases, id, tickerData.args);
-        };
     }
     addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
@@ -495,7 +484,6 @@ export default class CanvasManager implements CanvasManagerInterface {
                 canvasElementAlias: alias,
                 id: key,
             },
-            onComplete: () => {},
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
         this.pushTicker(id, tickerHistory, ticker);
@@ -762,9 +750,9 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     forceCompletionOfTicker(id: string, alias?: string) {
         if (!alias) {
-            let ticker = CanvasManagerStatic._currentTickers[id];
-            if (ticker) {
-                ticker.onComplete();
+            let tickerInfo = CanvasManagerStatic._currentTickers[id];
+            if (tickerInfo) {
+                tickerInfo.onComplete();
             }
         } else {
             let tickers = CanvasManagerStatic._currentTickersSequence[alias];

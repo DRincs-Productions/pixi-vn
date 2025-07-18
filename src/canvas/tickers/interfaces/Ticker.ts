@@ -20,4 +20,12 @@ export default interface Ticker<TArgs extends TickerArgs> {
      * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link RegisteredTickers.getInstance}
      */
     id: TickerIdType;
+    /**
+     * Completes the animation and applies the final state.
+     */
+    complete: () => void;
+    /**
+     * Stops the animation at its current state, and prevents it from resuming when the animation is played again.
+     */
+    stop: () => void;
 }
