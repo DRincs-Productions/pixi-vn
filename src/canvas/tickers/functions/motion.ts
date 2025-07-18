@@ -14,7 +14,10 @@ export default function animate<T extends ContainerChild>(
             const passTimestamp = ({ lastTime }: Ticker) => update(lastTime);
 
             return {
-                start: (keepAlive = true) => ticker.add(passTimestamp, keepAlive),
+                start: (_keepAlive = true) => {
+                    ticker.add(passTimestamp);
+                    ticker.start();
+                },
                 stop: () => ticker.remove(passTimestamp),
                 /**
                  * If we're processing this frame we can use the
