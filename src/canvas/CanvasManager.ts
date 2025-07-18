@@ -17,7 +17,6 @@ import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
 import { Ticker, TickerArgs, TickerInfo } from "./tickers";
-import TickerBase from "./tickers/classes/TickerBase";
 import RegisteredTickers from "./tickers/decorators/ticker-decorator";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
@@ -336,7 +335,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     public get currentTickersSteps() {
         return CanvasManagerStatic._currentTickersSequence;
     }
-    addTicker<TArgs extends TickerArgs>(canvasElementAlias: string | string[], ticker: TickerBase<TArgs>) {
+    addTicker<TArgs extends TickerArgs>(canvasElementAlias: string | string[], ticker: Ticker<TArgs>) {
         let tickerId: TickerIdType = ticker.id;
         if (typeof canvasElementAlias === "string") {
             canvasElementAlias = [canvasElementAlias];
@@ -394,7 +393,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 let tickerId = (step as Ticker<any>).id;
                 return {
                     ticker: tickerId,
-                    args: createExportableElement((step as TickerBase<any>).args),
+                    args: createExportableElement((step as Ticker<any>).args),
                     duration: step.duration,
                 };
             }),
@@ -542,10 +541,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         }
     }
-    public unlinkComponentFromTicker(
-        alias: string | string[],
-        ticker?: typeof TickerBase<any> | TickerBase<any> | string
-    ) {
+    public unlinkComponentFromTicker(alias: string | string[], ticker?: { new (): Ticker<any> } | string) {
         if (typeof alias === "string") {
             alias = [alias];
         }
@@ -572,8 +568,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         let tickerId: TickerIdType;
         if (typeof ticker === "string") {
             tickerId = ticker;
-        } else if (ticker instanceof TickerBase) {
-            tickerId = ticker.id;
         } else {
             tickerId = ticker.prototype.id;
         }
@@ -747,7 +741,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                                 (step as TickersStep<any>).priority
                             );
                             if (ticker) {
-                                ticker.onComplete([alias], id, (step as TickersStep<any>).args);
+                                ticker.complete();
                             }
                         }
                     });

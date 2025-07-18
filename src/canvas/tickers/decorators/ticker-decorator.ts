@@ -8,7 +8,10 @@ import TickerArgs from "../interfaces/TickerArgs";
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.
  */
-const registeredTickers = new CachedMap<TickerIdType, { new (): Ticker<any> }>({ cacheSize: 5 });
+const registeredTickers = new CachedMap<
+    TickerIdType,
+    { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }
+>({ cacheSize: 5 });
 /**
  * Is a decorator that register a ticker in the game.
  * Is a required decorator for use the ticker in the game.
@@ -17,7 +20,7 @@ const registeredTickers = new CachedMap<TickerIdType, { new (): Ticker<any> }>({
  * @returns
  */
 export function tickerDecorator(name?: TickerIdType) {
-    return function (target: { new (): Ticker<any> }) {
+    return function (target: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }) {
         RegisteredTickers.add(target, name);
     };
 }
@@ -28,7 +31,10 @@ namespace RegisteredTickers {
      * @param target The class of the ticker.
      * @param name Name of the ticker, by default it will use the class name. If the name is already registered, it will show a warning
      */
-    export function add(target: { new (): Ticker<any> }, name?: TickerIdType) {
+    export function add(
+        target: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> },
+        name?: TickerIdType
+    ) {
         if (!name) {
             name = target.name;
         }
@@ -89,7 +95,7 @@ namespace RegisteredTickers {
      * Get a list of all tickers registered.
      * @returns An array of tickers.
      */
-    export function values(): { new (): Ticker<any> }[] {
+    export function values(): { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }[] {
         return Array.from(registeredTickers.values());
     }
 

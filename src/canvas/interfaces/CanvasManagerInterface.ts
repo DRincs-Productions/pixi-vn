@@ -1,6 +1,6 @@
 import { Devtools } from "@pixi/devtools";
 import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
-import { Ticker, TickerArgs, TickerBase, TickerInfo, TickersSequence } from "../tickers";
+import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -213,7 +213,7 @@ export default interface CanvasManagerInterface {
      */
     addTicker<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
-        ticker: TickerBase<TArgs>
+        ticker: Ticker<TArgs>
     ): string | undefined;
     /**
      * Run a sequence of tickers.
@@ -246,10 +246,7 @@ export default interface CanvasManagerInterface {
      * canvas.unlinkComponentFromTicker("alien", RotateTicker)
      * ```
      */
-    unlinkComponentFromTicker(
-        alias: string | string[],
-        ticker?: typeof TickerBase<any> | TickerBase<any> | string
-    ): void;
+    unlinkComponentFromTicker(alias: string | string[], ticker?: { new (): Ticker<any> } | string): void;
     /**
      * Remove all tickers from the canvas.
      */
