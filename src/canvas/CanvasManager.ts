@@ -341,7 +341,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (typeof canvasElementAlias === "string") {
             canvasElementAlias = [canvasElementAlias];
         }
-        if (!RegisteredTickers.getInstance<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
+        if (!RegisteredTickers.has(tickerId)) {
             logger.error(`Ticker ${tickerId} not found`);
             return;
         }
