@@ -1,8 +1,7 @@
-import { UPDATE_PRIORITY } from "pixi.js";
-import { canvas } from "../..";
+import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
+import { canvas, Ticker } from "../..";
 import { TickerIdType } from "../../types/TickerIdType";
 import RegisteredTickers, { tickerDecorator } from "../decorators/ticker-decorator";
-import Ticker from "../interfaces/Ticker";
 import TickerArgs from "../interfaces/TickerArgs";
 import TickerValue from "./TickerValue";
 
@@ -48,6 +47,10 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         this.args = args;
         this.duration = duration;
         this.priority = priority;
+        this.fnValue = () => {
+            const { args, alias, tickerId } = this;
+            return this.fn(this.ticker, args, alias, tickerId);
+        };
         this.id = this.constructor.prototype.id;
     }
     /**
@@ -57,6 +60,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     args: TArgs;
     duration?: number;
     priority?: UPDATE_PRIORITY;
+    protected ticker = new PixiTicker();
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
@@ -68,6 +72,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void {
         throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden");
     }
+    protected fnValue: () => void;
     /**
      * This method is called when the ticker is added to the canvas.
      * @param alias The alias of the canvas elements that are connected to this ticker
@@ -89,5 +94,16 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
         });
+    }
+    complete() {
+        const { args, alias, tickerId } = this;
+        this.onComplete(alias, tickerId, alias);
+    }
+    stop() {
+        this.ticker.remove(this.fnValue, null);
+    }
+    start() {
+        this.ticker.add(this.fnValue, null, this.priority);
+        this.ticker.start();
     }
 }
