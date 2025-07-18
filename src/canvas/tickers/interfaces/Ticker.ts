@@ -28,4 +28,8 @@ export default interface Ticker<TArgs extends TickerArgs> {
      * Stops the animation at its current state, and prevents it from resuming when the animation is played again.
      */
     stop: () => void;
+    /**
+     * Starts the ticker. This will start the ticker and begin the animation.
+     */
+    start: () => void;
 }
