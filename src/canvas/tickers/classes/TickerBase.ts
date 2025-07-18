@@ -48,10 +48,6 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         this.args = args;
         this.duration = duration;
         this.priority = priority;
-        this.fnValue = (id: string) => {
-            const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
-            return this.fn(this.ticker, args, canvasElementAliases, tickerId);
-        };
         this.id = this.constructor.prototype.id;
     }
     /**
@@ -74,7 +70,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void {
         throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden");
     }
-    protected fnValue: () => void;
+    protected fnValue?: () => void;
     /**
      * This method is called when the ticker is added to the canvas.
      * @param alias The alias of the canvas elements that are connected to this ticker
@@ -107,10 +103,20 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         this.onComplete(canvasElementAliases, tickerId, args);
     }
     stop() {
-        this.ticker.remove(this.fnValue, null);
+        const fnValue = this.fnValue;
+        if (!fnValue) {
+            logger.warn("[Pixi’VN] TickerBase.stop() called without fnValue set. This may cause issues.");
+            return;
+        }
+        this.ticker.remove(fnValue, null);
     }
-    start() {
-        this.ticker.add(this.fnValue, null, this.priority);
+    start(id: string) {
+        const fnValue = () => {
+            const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
+            return this.fn(this.ticker, args, canvasElementAliases, tickerId);
+        };
+        this.fnValue = fnValue;
+        this.ticker.add(fnValue, null, this.priority);
         this.ticker.start();
     }
 }

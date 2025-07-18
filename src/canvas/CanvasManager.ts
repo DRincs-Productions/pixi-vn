@@ -354,7 +354,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
         CanvasManagerStatic._currentTickers[id] = tickerHistory;
-        tickerHistory.ticker.start();
+        tickerHistory.ticker.start(id);
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
@@ -460,7 +460,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
         CanvasManagerStatic._currentTickers[id] = tickerHistory;
-        tickerHistory.ticker.start();
+        tickerHistory.ticker.start(id);
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()];
