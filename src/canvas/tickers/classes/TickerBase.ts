@@ -101,6 +101,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         }
         const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
         this.onComplete(canvasElementAliases, tickerId, args);
+        this.stop();
     }
     stop() {
         const fnValue = this.fnValue;
