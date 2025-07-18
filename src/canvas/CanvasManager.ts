@@ -1,5 +1,5 @@
 import { Devtools } from "@pixi/devtools";
-import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
+import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -541,7 +541,10 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         }
     }
-    public unlinkComponentFromTicker(alias: string | string[], ticker?: { new (): Ticker<any> } | string) {
+    public unlinkComponentFromTicker(
+        alias: string | string[],
+        ticker?: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> } | string
+    ) {
         if (typeof alias === "string") {
             alias = [alias];
         }
