@@ -8,7 +8,7 @@ export { default as RegisteredTickers, tickerDecorator } from "./decorators/tick
 export type { default as animate } from "./functions/motion";
 export type { default as Ticker } from "./interfaces/Ticker";
 export type { default as TickerArgs } from "./interfaces/TickerArgs";
-export type { default as TickerHistory, TickerHistoryForExport } from "./interfaces/TickerHistory";
+export type { TickerHistory, default as TickerInfo } from "./interfaces/TickerInfo";
 export type {
     TickerProgrationExponential,
     TickerProgrationLinear,

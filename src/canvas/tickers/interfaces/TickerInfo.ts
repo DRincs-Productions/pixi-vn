@@ -24,7 +24,7 @@ export default interface TickerInfo<TArgs extends TickerArgs> {
     };
 }
 
-export interface TickerHistoryForExport<TArgs extends TickerArgs> {
+export interface TickerHistory<TArgs extends TickerArgs> {
     id: TickerIdType;
     args: TArgs;
     /**

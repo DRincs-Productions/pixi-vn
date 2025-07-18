@@ -1,6 +1,6 @@
 import { Devtools } from "@pixi/devtools";
 import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
-import { Ticker, TickerArgs, TickerBase, TickerHistory, TickersSequence } from "../tickers";
+import { Ticker, TickerArgs, TickerBase, TickerInfo, TickersSequence } from "../tickers";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -190,7 +190,7 @@ export default interface CanvasManagerInterface {
     /**
      * Currently tickers that are running.
      */
-    readonly currentTickers: { [id: string]: TickerHistory<any> };
+    readonly currentTickers: { [id: string]: TickerInfo<any> };
     /**
      * The steps of the tickers
      */

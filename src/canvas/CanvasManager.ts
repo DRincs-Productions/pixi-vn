@@ -16,7 +16,7 @@ import { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
 import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
-import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
+import { Ticker, TickerArgs, TickerInfo, TickerValue } from "./tickers";
 import TickerBase from "./tickers/classes/TickerBase";
 import RegisteredTickers from "./tickers/decorators/ticker-decorator";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
@@ -345,7 +345,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             logger.error(`Ticker ${tickerId} not found`);
             return;
         }
-        let tickerHistory: TickerHistory<TArgs> = {
+        let tickerHistory: TickerInfo<TArgs> = {
             fn: () => {},
             id: tickerId,
             args: createExportableElement(ticker.args),
@@ -373,11 +373,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
         return id;
     }
-    private pushTicker<TArgs extends TickerArgs>(
-        id: string,
-        tickerData: TickerHistory<TArgs>,
-        ticker: TickerBase<TArgs>
-    ) {
+    private pushTicker<TArgs extends TickerArgs>(id: string, tickerData: TickerInfo<TArgs>, ticker: TickerBase<TArgs>) {
         CanvasManagerStatic._currentTickers[id] = tickerData;
         tickerData.fn = (t: TickerValue) => {
             let data = CanvasManagerStatic._currentTickers[id];
@@ -473,7 +469,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             return;
         }
         let tickerName: TickerIdType = ticker.id;
-        let tickerHistory: TickerHistory<TArgs> = {
+        let tickerHistory: TickerInfo<TArgs> = {
             fn: () => {},
             id: tickerName,
             args: createExportableElement(ticker.args),
