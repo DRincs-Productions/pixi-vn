@@ -71,10 +71,10 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                         element.alpha -= speed * ticker.deltaTime;
                     }
                     if (type === "show" && element.alpha >= limit) {
-                        this.onEndOfTicker(alias, tickerId, args);
+                        this.onComplete(alias, tickerId, args);
                         return;
                     } else if (type === "hide" && element.alpha <= limit) {
-                        this.onEndOfTicker(alias, tickerId, args);
+                        this.onComplete(alias, tickerId, args);
                         return;
                     }
                     if (
@@ -82,14 +82,14 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the FadeAlphaTicker must be greater than 0.");
-                        this.onEndOfTicker(alias, tickerId, args, { editAlpha: false });
+                        this.onComplete(alias, tickerId, args, { editAlpha: false });
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onEndOfTicker(
+    override onComplete(
         alias: string | string[],
         tickerId: string,
         args: FadeAlphaTickerProps,
@@ -107,7 +107,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 }
             }
         });
-        super.onEndOfTicker(alias, tickerId, args);
+        super.onComplete(alias, tickerId, args);
     }
     private getLimit(args: FadeAlphaTickerProps): number {
         const { type = "hide", limit = type === "hide" ? 0 : 1 } = args;

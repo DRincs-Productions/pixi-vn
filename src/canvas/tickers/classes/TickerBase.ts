@@ -74,7 +74,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
      * @param tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      * @param options The options that you passed when you added the ticker
      */
-    public onEndOfTicker(_alias: string | string[], tickerId: string, args: TArgs) {
+    public onComplete(_alias: string | string[], tickerId: string, args: TArgs) {
         let aliasToRemoveAfter: string | string[] =
             ("aliasToRemoveAfter" in args && (args.aliasToRemoveAfter as any)) || [];
         if (typeof aliasToRemoveAfter === "string") {
@@ -85,7 +85,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         if (typeof tickerAliasToResume === "string") {
             tickerAliasToResume = [tickerAliasToResume];
         }
-        canvas.onEndOfTicker(tickerId, {
+        canvas.onTickerComplete(tickerId, {
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
         });

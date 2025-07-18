@@ -56,10 +56,10 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                     if (limit !== undefined) {
                         if (clockwise && element.angle >= limit) {
                             element.angle = limit;
-                            this.onEndOfTicker(alias, tickerId, args);
+                            this.onComplete(alias, tickerId, args);
                         } else if (!clockwise && element.angle <= limit) {
                             element.angle = limit;
-                            this.onEndOfTicker(alias, tickerId, args);
+                            this.onComplete(alias, tickerId, args);
                         }
                     }
                     if (
@@ -67,14 +67,14 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the RotateTicker must be greater than 0.");
-                        this.onEndOfTicker(alias, tickerId, args, { editRotation: false });
+                        this.onComplete(alias, tickerId, args, { editRotation: false });
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onEndOfTicker(
+    override onComplete(
         alias: string | string[],
         tickerId: string,
         args: RotateTickerProps,
@@ -92,7 +92,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                 }
             }
         });
-        super.onEndOfTicker(alias, tickerId, args);
+        super.onComplete(alias, tickerId, args);
     }
     private speedConvert(speed: number): number {
         return speed / 100;

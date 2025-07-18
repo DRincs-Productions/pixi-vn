@@ -74,7 +74,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             element.scale.y = limit.y;
                         }
                         if (element.scale.x >= limit.x && element.scale.y >= limit.y) {
-                            this.onEndOfTicker(alias, tickerId, args);
+                            this.onComplete(alias, tickerId, args);
                             return;
                         }
                     } else if (type === "unzoom") {
@@ -85,7 +85,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             element.scale.y = limit.y;
                         }
                         if (element.scale.x <= limit.x && element.scale.y <= limit.y) {
-                            this.onEndOfTicker(alias, tickerId, args);
+                            this.onComplete(alias, tickerId, args);
                             return;
                         }
                     }
@@ -96,7 +96,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the ZoomTicker must be greater than 0.");
-                        this.onEndOfTicker(alias, tickerId, args, { editScale: false });
+                        this.onComplete(alias, tickerId, args, { editScale: false });
                         return;
                     }
                 }
@@ -106,7 +106,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     private speedConvert(speed: number): number {
         return speed / 600;
     }
-    override onEndOfTicker(
+    override onComplete(
         alias: string | string[],
         tickerId: string,
         args: ZoomTickerProps,
@@ -131,7 +131,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 }
             }
         });
-        super.onEndOfTicker(alias, tickerId, args);
+        super.onComplete(alias, tickerId, args);
     }
     private getLimit(args: ZoomTickerProps): { x: number; y: number } {
         const { type = "zoom", limit } = args;

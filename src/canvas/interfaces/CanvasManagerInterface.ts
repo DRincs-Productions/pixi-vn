@@ -395,8 +395,18 @@ export default interface CanvasManagerInterface {
      * @param data The object.
      */
     restore(data: object): Promise<void>;
-
+    /**
+     * @deprecated Use {@link onTickerComplete}
+     */
     onEndOfTicker(
+        tickerId: string,
+        options: {
+            aliasToRemoveAfter: string[] | string;
+            tickerAliasToResume: string[] | string;
+            ignoreTickerSteps?: boolean;
+        }
+    ): void;
+    onTickerComplete(
         tickerId: string,
         options: {
             aliasToRemoveAfter: string[] | string;

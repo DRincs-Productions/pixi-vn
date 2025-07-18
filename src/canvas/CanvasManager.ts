@@ -352,7 +352,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             canvasElementAliases: canvasElementAlias,
             priority: ticker.priority,
             duration: ticker.duration,
-            onEndOfTicker: () => {},
+            onComplete: () => {},
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
         this.pushTicker(id, tickerHistory, ticker);
@@ -362,7 +362,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()];
                 if (tickerTimeoutInfo) {
-                    this.onEndOfTicker(id, {
+                    this.onTickerComplete(id, {
                         aliasToRemoveAfter:
                             aliasToRemoveAfter in ticker.args ? (ticker.args.aliasToRemoveAfter as any) || [] : [],
                         tickerAliasToResume:
@@ -407,8 +407,8 @@ export default class CanvasManager implements CanvasManagerInterface {
         tickerData: TickerHistory<TArgs>,
         ticker: TickerBase<TArgs>
     ) {
-        tickerData.onEndOfTicker = () => {
-            ticker.onEndOfTicker(tickerData.canvasElementAliases, id, tickerData.args);
+        tickerData.onComplete = () => {
+            ticker.onComplete(tickerData.canvasElementAliases, id, tickerData.args);
         };
     }
     addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
@@ -495,7 +495,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 canvasElementAlias: alias,
                 id: key,
             },
-            onEndOfTicker: () => {},
+            onComplete: () => {},
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
         this.pushTicker(id, tickerHistory, ticker);
@@ -503,7 +503,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             let timeout = setTimeout(() => {
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()];
                 if (tickerTimeoutInfo) {
-                    this.onEndOfTicker(id, {
+                    this.onTickerComplete(id, {
                         aliasToRemoveAfter:
                             aliasToRemoveAfter in ticker.args ? (ticker.args.aliasToRemoveAfter as any) || [] : [],
                         tickerAliasToResume:
@@ -548,6 +548,16 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
     public onEndOfTicker(
+        tickerId: string,
+        options: {
+            aliasToRemoveAfter: string[] | string;
+            tickerAliasToResume: string[] | string;
+            ignoreTickerSteps?: boolean;
+        }
+    ) {
+        return this.onTickerComplete(tickerId, options);
+    }
+    public onTickerComplete(
         tickerId: string,
         options: {
             aliasToRemoveAfter: string[] | string;
@@ -636,7 +646,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
             ticker.canvasElementAliases = ticker.canvasElementAliases.filter((e) => this.find(e));
             if (ticker.canvasElementAliases.length === 0) {
-                this.onEndOfTicker(id, {
+                this.onTickerComplete(id, {
                     aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter : [],
                     tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume : [],
                     ignoreTickerSteps: true,
@@ -754,7 +764,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (!alias) {
             let ticker = CanvasManagerStatic._currentTickers[id];
             if (ticker) {
-                ticker.onEndOfTicker();
+                ticker.onComplete();
             }
         } else {
             let tickers = CanvasManagerStatic._currentTickersSequence[alias];
@@ -774,7 +784,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                                 (step as TickersStep<any>).priority
                             );
                             if (ticker) {
-                                ticker.onEndOfTicker([alias], id, (step as TickersStep<any>).args);
+                                ticker.onComplete([alias], id, (step as TickersStep<any>).args);
                             }
                         }
                     });

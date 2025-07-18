@@ -22,7 +22,7 @@ export default interface TickerHistory<TArgs extends TickerArgs> {
         canvasElementAlias: string;
         id: string;
     };
-    onEndOfTicker: () => void;
+    onComplete: () => void;
 }
 
 export interface TickerHistoryForExport<TArgs extends TickerArgs> {

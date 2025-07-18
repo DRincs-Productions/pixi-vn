@@ -128,7 +128,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        this.onEndOfTicker(alias, tickerId, args);
+                        this.onComplete(alias, tickerId, args);
                         return;
                     } else if (
                         xSpeed < 0.00001 &&
@@ -136,14 +136,14 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the MoveTicker must be greater than 0.");
-                        this.onEndOfTicker(alias, tickerId, args, { editPosition: false });
+                        this.onComplete(alias, tickerId, args, { editPosition: false });
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onEndOfTicker(
+    override onComplete(
         alias: string | string[],
         tickerId: string,
         args: MoveTickerProps,
@@ -166,7 +166,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 }
             }
         });
-        super.onEndOfTicker(alias, tickerId, args);
+        super.onComplete(alias, tickerId, args);
     }
     private speedConvert(speed: number): number {
         return speed * (66 / 400);
