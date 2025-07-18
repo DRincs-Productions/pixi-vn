@@ -68,7 +68,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
     fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void {
-        throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden");
+        throw new Error("The method TickerBase.fn() must be overridden");
     }
     protected fnValue?: () => void;
     /**
@@ -96,7 +96,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     complete() {
         const id = this.tickerId;
         if (!id) {
-            logger.warn("[Pixi’VN] TickerBase.complete() called without tickerId set. This may cause issues.");
+            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
             return;
         }
         const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
@@ -105,7 +105,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     stop() {
         const fnValue = this.fnValue;
         if (!fnValue) {
-            logger.warn("[Pixi’VN] TickerBase.stop() called without fnValue set. This may cause issues.");
+            logger.warn("TickerBase.stop() called without fnValue set. This may cause issues.");
             return;
         }
         this.ticker.remove(fnValue, null);
