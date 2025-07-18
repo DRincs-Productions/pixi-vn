@@ -2,13 +2,13 @@ import { animate as animateMotion, AnimationOptions, ObjectTarget } from "motion
 import { ContainerChild, Ticker } from "pixi.js";
 
 export default function animate<T extends ContainerChild>(
-    object: T | T[],
+    object: T | T[] | string | string[],
     keyframes: ObjectTarget<T>,
     options: AnimationOptions = {}
 ) {
-    return animateMotion(object, keyframes, {
+    const ticker = new Ticker();
+    animateMotion(object, keyframes, {
         driver: (update) => {
-            const ticker = new Ticker();
             ticker.autoStart = true;
 
             const passTimestamp = ({ lastTime }: Ticker) => update(lastTime);
@@ -25,4 +25,5 @@ export default function animate<T extends ContainerChild>(
         },
         ...options,
     });
+    return ticker;
 }
