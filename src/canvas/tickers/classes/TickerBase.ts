@@ -99,8 +99,8 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
             logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
             return;
         }
-        const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
-        this.onComplete(canvasElementAliases, tickerId, args);
+        const { args, canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
+        this.onComplete(canvasElementAliases, id, args);
         this.stop();
     }
     stop() {
@@ -113,8 +113,8 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     }
     start(id: string) {
         const fnValue = () => {
-            const { args, canvasElementAliases, tickerId } = CanvasManagerStatic._currentTickers[id];
-            return this.fn(this.ticker, args, canvasElementAliases, tickerId);
+            const { args, canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
+            return this.fn(this.ticker, args, canvasElementAliases, id);
         };
         this.fnValue = fnValue;
         this.ticker.add(fnValue, null, this.priority);
