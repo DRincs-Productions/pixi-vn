@@ -4,7 +4,7 @@ import { Application, ApplicationOptions, Container as PixiContainer } from "pix
 import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
 import additionalPositionsProperties from "../pixi-devtools/additionalPositionsProperties";
 import { logger } from "../utils/log-utility";
-import { TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
+import { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
 import PauseTickerType from "./types/PauseTickerType";
 
 function throttle(func: (...args: any[]) => Promise<void>, limit: number) {
@@ -214,9 +214,22 @@ export default class CanvasManagerStatic {
 
     /** Edit Tickers Methods */
 
-    static get currentTickersWithoutCreatedBySteps() {
+    static get currentTickersWithoutCreatedBySteps(): {
+        [k: string]: TickerHistory<any>;
+    } {
         return Object.fromEntries(
-            Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketSteps)
+            Object.entries(CanvasManagerStatic._currentTickers)
+                .filter(([_, ticker]) => !ticker.createdByTicketSteps)
+                .map(([id, ticker]) => [
+                    id,
+                    {
+                        id: ticker.id,
+                        args: ticker.args,
+                        canvasElementAliases: ticker.canvasElementAliases,
+                        priority: ticker.priority,
+                        duration: ticker.duration,
+                    },
+                ])
         );
     }
     static _currentTickers: { [id: string]: TickerInfo<any> } = {};

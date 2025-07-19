@@ -128,7 +128,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        this.onComplete(alias, tickerId, args);
+                        this.complete();
                         return;
                     } else if (
                         xSpeed < 0.00001 &&
@@ -136,19 +136,14 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the MoveTicker must be greater than 0.");
-                        this.onComplete(alias, tickerId, args, { editPosition: false });
+                        this.complete();
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onComplete(
-        alias: string | string[],
-        tickerId: string,
-        args: MoveTickerProps,
-        options: { editPosition: boolean } = { editPosition: true }
-    ): void {
+    override onComplete(alias: string | string[], tickerId: string, args: MoveTickerProps): void {
         if (typeof alias === "string") {
             alias = [alias];
         }
@@ -156,13 +151,11 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             let element = canvas.find(alias);
             if (element) {
                 let destination = args.destination;
-                if (options.editPosition) {
-                    if (element instanceof ImageSprite || element instanceof ImageContainer) {
-                        element.positionInfo = destination;
-                    } else {
-                        element.x = destination.x;
-                        element.y = destination.y;
-                    }
+                if (element instanceof ImageSprite || element instanceof ImageContainer) {
+                    element.positionInfo = destination;
+                } else {
+                    element.x = destination.x;
+                    element.y = destination.y;
                 }
             }
         });

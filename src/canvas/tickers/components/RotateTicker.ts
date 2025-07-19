@@ -56,10 +56,10 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                     if (limit !== undefined) {
                         if (clockwise && element.angle >= limit) {
                             element.angle = limit;
-                            this.onComplete(alias, tickerId, args);
+                            this.complete();
                         } else if (!clockwise && element.angle <= limit) {
                             element.angle = limit;
-                            this.onComplete(alias, tickerId, args);
+                            this.complete();
                         }
                     }
                     if (
@@ -67,19 +67,14 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the RotateTicker must be greater than 0.");
-                        this.onComplete(alias, tickerId, args, { editRotation: false });
+                        this.complete();
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onComplete(
-        alias: string | string[],
-        tickerId: string,
-        args: RotateTickerProps,
-        options: { editRotation?: boolean } = { editRotation: true }
-    ): void {
+    override onComplete(alias: string | string[], tickerId: string, args: RotateTickerProps): void {
         const { limit } = args;
         if (typeof alias === "string") {
             alias = [alias];
@@ -87,7 +82,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias);
             if (element) {
-                if (options.editRotation && limit !== undefined) {
+                if (limit !== undefined) {
                     element.angle = limit;
                 }
             }

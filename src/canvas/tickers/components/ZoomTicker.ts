@@ -74,7 +74,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             element.scale.y = limit.y;
                         }
                         if (element.scale.x >= limit.x && element.scale.y >= limit.y) {
-                            this.onComplete(alias, tickerId, args);
+                            this.complete();
                             return;
                         }
                     } else if (type === "unzoom") {
@@ -85,7 +85,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             element.scale.y = limit.y;
                         }
                         if (element.scale.x <= limit.x && element.scale.y <= limit.y) {
-                            this.onComplete(alias, tickerId, args);
+                            this.complete();
                             return;
                         }
                     }
@@ -96,7 +96,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the ZoomTicker must be greater than 0.");
-                        this.onComplete(alias, tickerId, args, { editScale: false });
+                        this.complete();
                         return;
                     }
                 }
@@ -106,12 +106,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     private speedConvert(speed: number): number {
         return speed / 600;
     }
-    override onComplete(
-        alias: string | string[],
-        tickerId: string,
-        args: ZoomTickerProps,
-        options: { editScale?: boolean } = { editScale: true }
-    ): void {
+    override onComplete(alias: string | string[], tickerId: string, args: ZoomTickerProps): void {
         const { isZoomInOut } = args;
         if (typeof alias === "string") {
             alias = [alias];
@@ -119,11 +114,9 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias);
             if (element) {
-                if (options.editScale) {
-                    let limit = this.getLimit(args);
-                    element.scale.x = limit.x;
-                    element.scale.y = limit.y;
-                }
+                let limit = this.getLimit(args);
+                element.scale.x = limit.x;
+                element.scale.y = limit.y;
                 if (isZoomInOut) {
                     let { pivot, position } = isZoomInOut;
                     element.pivot = pivot.x;

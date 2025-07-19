@@ -71,10 +71,10 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                         element.alpha -= speed * ticker.deltaTime;
                     }
                     if (type === "show" && element.alpha >= limit) {
-                        this.onComplete(alias, tickerId, args);
+                        this.complete();
                         return;
                     } else if (type === "hide" && element.alpha <= limit) {
-                        this.onComplete(alias, tickerId, args);
+                        this.complete();
                         return;
                     }
                     if (
@@ -82,29 +82,22 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the FadeAlphaTicker must be greater than 0.");
-                        this.onComplete(alias, tickerId, args, { editAlpha: false });
+                        this.complete();
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onComplete(
-        alias: string | string[],
-        tickerId: string,
-        args: FadeAlphaTickerProps,
-        options: { editAlpha?: boolean } = { editAlpha: true }
-    ): void {
+    override onComplete(alias: string | string[], tickerId: string, args: FadeAlphaTickerProps): void {
         if (typeof alias === "string") {
             alias = [alias];
         }
         alias.forEach((alias) => {
             let element = canvas.find(alias);
             if (element) {
-                if (options.editAlpha) {
-                    let limit = this.getLimit(args);
-                    element.alpha = limit;
-                }
+                let limit = this.getLimit(args);
+                element.alpha = limit;
             }
         });
     }
