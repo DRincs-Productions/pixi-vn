@@ -1,5 +1,5 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import { diff } from "deep-diff";
+import diff from "microdiff";
 import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory } from "../narration";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import GameUnifier from "../unifier";
@@ -109,6 +109,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             } else {
                 logger.error("Error going back");
             }
+            HistoryManagerStatic.originalStepData = restoredStep;
             HistoryManagerStatic.goBackRunning = false;
         } catch (e) {
             logger.error("Error going back", e);
