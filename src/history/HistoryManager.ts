@@ -109,6 +109,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             } else {
                 logger.error("Error going back");
             }
+            HistoryManagerStatic.originalStepData = restoredStep;
             HistoryManagerStatic.goBackRunning = false;
         } catch (e) {
             logger.error("Error going back", e);
