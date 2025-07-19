@@ -111,6 +111,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         this.ticker.remove(fnValue, null);
     }
     start(id: string) {
+        this.tickerId = id;
         const fnValue = () => {
             const { args, canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
             return this.fn(this.ticker, args, canvasElementAliases, id);
