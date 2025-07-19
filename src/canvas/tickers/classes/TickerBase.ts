@@ -77,7 +77,15 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
      * @param tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      * @param options The options that you passed when you added the ticker
      */
-    public onComplete(_alias: string | string[], tickerId: string, args: TArgs) {
+    public onComplete(_alias: string | string[], _tickerId: string, _args: TArgs) {}
+    complete() {
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        const { args, canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
+        this.onComplete(canvasElementAliases, id, args);
         let aliasToRemoveAfter: string | string[] =
             ("aliasToRemoveAfter" in args && (args.aliasToRemoveAfter as any)) || [];
         if (typeof aliasToRemoveAfter === "string") {
@@ -88,19 +96,10 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         if (typeof tickerAliasToResume === "string") {
             tickerAliasToResume = [tickerAliasToResume];
         }
-        canvas.onTickerComplete(tickerId, {
+        canvas.onTickerComplete(id, {
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
         });
-    }
-    complete() {
-        const id = this.tickerId;
-        if (!id) {
-            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
-            return;
-        }
-        const { args, canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
-        this.onComplete(canvasElementAliases, id, args);
         this.stop();
     }
     stop() {

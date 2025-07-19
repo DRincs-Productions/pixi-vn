@@ -131,7 +131,6 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 }
             }
         });
-        super.onComplete(alias, tickerId, args);
     }
     private getLimit(args: ZoomTickerProps): { x: number; y: number } {
         const { type = "zoom", limit } = args;

@@ -166,7 +166,6 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                 }
             }
         });
-        super.onComplete(alias, tickerId, args);
     }
     private speedConvert(speed: number): number {
         return speed * (66 / 400);

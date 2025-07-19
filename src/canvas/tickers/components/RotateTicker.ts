@@ -92,7 +92,6 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
                 }
             }
         });
-        super.onComplete(alias, tickerId, args);
     }
     private speedConvert(speed: number): number {
         return speed / 100;

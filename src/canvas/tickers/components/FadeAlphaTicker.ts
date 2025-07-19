@@ -107,7 +107,6 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                 }
             }
         });
-        super.onComplete(alias, tickerId, args);
     }
     private getLimit(args: FadeAlphaTickerProps): number {
         const { type = "hide", limit = type === "hide" ? 0 : 1 } = args;
