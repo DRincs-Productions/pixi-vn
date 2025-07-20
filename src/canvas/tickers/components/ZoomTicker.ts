@@ -26,7 +26,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     constructor(args: ZoomTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
     }
-    override fn(ticker: TickerValue, args: ZoomTickerProps, alias: string[], tickerId: string): void {
+    override fn(ticker: TickerValue, args: ZoomTickerProps, alias: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             args.speed = DEFAULT_SPEED;
         }
@@ -106,7 +106,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     private speedConvert(speed: number): number {
         return speed / 600;
     }
-    override onComplete(alias: string | string[], tickerId: string, args: ZoomTickerProps): void {
+    override onComplete(alias: string | string[], _tickerId: string, args: ZoomTickerProps): void {
         const { isZoomInOut } = args;
         if (typeof alias === "string") {
             alias = [alias];

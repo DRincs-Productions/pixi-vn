@@ -29,7 +29,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     constructor(args: FadeAlphaTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
     }
-    override fn(ticker: TickerValue, args: FadeAlphaTickerProps, aliases: string[], tickerId: string): void {
+    override fn(ticker: TickerValue, args: FadeAlphaTickerProps, aliases: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             if (args.duration === undefined) {
                 args.speed = DEFAULT_SPEED;
@@ -89,7 +89,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onComplete(alias: string | string[], tickerId: string, args: FadeAlphaTickerProps): void {
+    override onComplete(alias: string | string[], _tickerId: string, args: FadeAlphaTickerProps): void {
         if (typeof alias === "string") {
             alias = [alias];
         }

@@ -27,7 +27,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
     constructor(args: RotateTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
     }
-    override fn(ticker: TickerValue, args: RotateTickerProps, aliases: string[], tickerId: string): void {
+    override fn(ticker: TickerValue, args: RotateTickerProps, aliases: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             args.speed = DEFAULT_SPEED;
         }
@@ -74,7 +74,7 @@ export default class RotateTicker extends TickerBase<RotateTickerProps> {
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onComplete(alias: string | string[], tickerId: string, args: RotateTickerProps): void {
+    override onComplete(alias: string | string[], _tickerId: string, args: RotateTickerProps): void {
         const { limit } = args;
         if (typeof alias === "string") {
             alias = [alias];

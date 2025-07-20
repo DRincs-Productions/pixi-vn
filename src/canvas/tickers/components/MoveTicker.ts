@@ -69,7 +69,7 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
  * ```
  */
 export default class MoveTicker extends TickerBase<MoveTickerProps> {
-    override fn(ticker: TickerValue, args: MoveTickerProps, aliases: string[], tickerId: string): void {
+    override fn(ticker: TickerValue, args: MoveTickerProps, aliases: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             args.speed = DEFAULT_SPEED;
         }
@@ -143,7 +143,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onComplete(alias: string | string[], tickerId: string, args: MoveTickerProps): void {
+    override onComplete(alias: string | string[], _tickerId: string, args: MoveTickerProps): void {
         if (typeof alias === "string") {
             alias = [alias];
         }
