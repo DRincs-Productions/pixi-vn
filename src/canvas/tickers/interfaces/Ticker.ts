@@ -33,4 +33,12 @@ export default interface Ticker<TArgs extends TickerArgs> {
      * @param id The id of the ticker.
      */
     start: (id: string) => void;
+    /**
+     * Pauses the animation.
+     */
+    pause: () => void;
+    /**
+     * Plays the animation.
+     */
+    play: () => void;
 }

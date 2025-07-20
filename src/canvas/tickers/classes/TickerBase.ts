@@ -127,4 +127,10 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
         this.ticker.add(fnValue, null, this.priority);
         this.ticker.start();
     }
+    pause() {
+        this.ticker.stop();
+    }
+    play() {
+        this.ticker.start();
+    }
 }
