@@ -113,7 +113,14 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     start(id: string) {
         this.tickerId = id;
         const fnValue = () => {
-            const { args, canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
+            let { args, canvasElementAliases, createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
+            if (createdByTicketSteps) {
+                if (canvas.isTickerPaused(createdByTicketSteps.canvasElementAlias, createdByTicketSteps.id)) {
+                    return;
+                }
+            } else {
+                canvasElementAliases = canvasElementAliases.filter((alias) => !canvas.isTickerPaused(alias, id));
+            }
             return this.fn(this.ticker, args, canvasElementAliases, id);
         };
         this.fnValue = fnValue;
