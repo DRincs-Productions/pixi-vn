@@ -219,15 +219,15 @@ export default class CanvasManagerStatic {
     } {
         return Object.fromEntries(
             Object.entries(CanvasManagerStatic._currentTickers)
-                .filter(([_, ticker]) => !ticker.createdByTicketSteps)
-                .map(([id, ticker]) => [
+                .filter(([_, info]) => !info.createdByTicketSteps)
+                .map(([id, info]) => [
                     id,
                     {
-                        id: ticker.id,
-                        args: ticker.args,
-                        canvasElementAliases: ticker.canvasElementAliases,
-                        priority: ticker.priority,
-                        duration: ticker.duration,
+                        id: info.id,
+                        args: info.ticker.args,
+                        canvasElementAliases: info.canvasElementAliases,
+                        priority: info.ticker.priority,
+                        duration: info.ticker.duration,
                     },
                 ])
         );

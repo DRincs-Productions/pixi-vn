@@ -84,15 +84,15 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
             logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
             return;
         }
-        const { args, canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
-        this.onComplete(canvasElementAliases, id, args);
+        const { canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
+        this.onComplete(canvasElementAliases, id, this.args);
         let aliasToRemoveAfter: string | string[] =
-            ("aliasToRemoveAfter" in args && (args.aliasToRemoveAfter as any)) || [];
+            ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter];
         }
         let tickerAliasToResume: string | string[] =
-            ("tickerAliasToResume" in args && (args.tickerAliasToResume as any)) || [];
+            ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
         if (typeof tickerAliasToResume === "string") {
             tickerAliasToResume = [tickerAliasToResume];
         }
@@ -113,7 +113,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     start(id: string) {
         this.tickerId = id;
         const fnValue = () => {
-            let { args, canvasElementAliases, createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
+            let { canvasElementAliases, createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
             if (createdByTicketSteps) {
                 if (canvas.isTickerPaused(createdByTicketSteps.canvasElementAlias, createdByTicketSteps.id)) {
                     return;
@@ -121,7 +121,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
             } else {
                 canvasElementAliases = canvasElementAliases.filter((alias) => !canvas.isTickerPaused(alias, id));
             }
-            return this.fn(this.ticker, args, canvasElementAliases, id);
+            return this.fn(this.ticker, this.args, canvasElementAliases, id);
         };
         this.fnValue = fnValue;
         this.ticker.add(fnValue, null, this.priority);
