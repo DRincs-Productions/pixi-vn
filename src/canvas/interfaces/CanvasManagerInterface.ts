@@ -24,14 +24,6 @@ export default interface CanvasManagerInterface {
      */
     readonly isInitialized: boolean;
     /**
-     * @deprecated Use `canvas.getHtmlLayers` instead.
-     */
-    get htmlLayout(): HTMLElement | undefined;
-    /**
-     * @deprecated Use `canvas.addHtmlLayer` instead.
-     */
-    set htmlLayout(value: HTMLElement);
-    /**
      * The width of the canvas.
      */
     canvasWidth: number;
@@ -69,10 +61,6 @@ export default interface CanvasManagerInterface {
         options: Partial<ApplicationOptions> & { width: number; height: number },
         devtoolsOptions?: Devtools
     ): Promise<void>;
-    /**
-     * @deprecated Use `canvas.addHtmlLayer` instead.
-     */
-    initializeHTMLLayout(element: HTMLElement): void;
     /**
      * The children of the canvas.
      */
