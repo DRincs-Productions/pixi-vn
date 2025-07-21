@@ -6,7 +6,6 @@ import {
     OpenedLabel,
     StepLabelPropsType,
     StepLabelResultType,
-    StepLabelType,
     StoredChoiceInterface,
     StoredIndexedChoiceInterface,
 } from "..";
@@ -225,15 +224,6 @@ export default interface NarrationManagerInterface {
     /** Old Step Methods */
 
     /* Go Back & Refresh Methods */
-
-    /**
-     * @deprecated Use Game.onEnd
-     */
-    onGameEnd: StepLabelType | undefined;
-    /**
-     * @deprecated Use Game.onError
-     */
-    onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined;
 
     /**
      * Dialogue to be shown in the game

@@ -15,7 +15,7 @@ import NarrationManagerStatic from "./NarrationManagerStatic";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { InputInfo } from "./types/InputInfo";
 import { LabelIdType } from "./types/LabelIdType";
-import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
+import { StepLabelPropsType, StepLabelResultType } from "./types/StepLabelType";
 
 /**
  * This class is a class that manages the steps and labels of the game.
@@ -359,15 +359,15 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return await this.goNext(props, options);
             } else if (this.openedLabels.length === 1) {
                 NarrationManagerStatic.openedLabels = [];
-                if (this.onGameEnd) {
-                    return await this.onGameEnd(props, { labelId: "end" });
+                if (GameUnifier.onEnd) {
+                    return await GameUnifier.onEnd(props, { labelId: "end" });
                 }
                 return;
             }
         } else if (this.openedLabels.length === 0) {
             NarrationManagerStatic.openedLabels = NarrationManagerStatic.originalOpenedLabels;
-            if (this.onGameEnd) {
-                return await this.onGameEnd(props, { labelId: "end" });
+            if (GameUnifier.onEnd) {
+                return await GameUnifier.onEnd(props, { labelId: "end" });
             }
             logger.error(
                 "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game"
@@ -514,12 +514,6 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Go Back & Refresh Methods */
 
-    get onGameEnd(): StepLabelType | undefined {
-        return GameUnifier.onEnd;
-    }
-    set onGameEnd(value: StepLabelType) {
-        GameUnifier.onEnd = value;
-    }
     get onStepError(): ((error: any, props: StepLabelPropsType) => void) | undefined {
         const onError = GameUnifier.onError;
         return onError
