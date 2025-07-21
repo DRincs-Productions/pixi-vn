@@ -1,6 +1,4 @@
 import {
-    ChoiceMenuOption,
-    ChoiceMenuOptionClose,
     DialogueInterface,
     InputInfo,
     LabelAbstract,
@@ -272,7 +270,7 @@ export default interface NarrationManagerInterface {
      * ]
      * ```
      */
-    set choiceMenuOptions(data: (ChoiceMenuOption<any> | ChoiceMenuOptionClose | StoredChoiceInterface)[] | undefined);
+    set choiceMenuOptions(data: StoredChoiceInterface[] | undefined);
     /**
      * If true, the next dialogue text will be added to the current dialogue text.
      */

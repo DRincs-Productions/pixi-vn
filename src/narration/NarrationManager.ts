@@ -4,8 +4,6 @@ import { StorageElementType } from "../storage";
 import GameUnifier from "../unifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
-import ChoiceMenuOption from "./classes/ChoiceMenuOption";
-import ChoiceMenuOptionClose from "./classes/CloseChoiceOption";
 import LabelAbstract from "./classes/LabelAbstract";
 import RegisteredLabels from "./decorators/RegisteredLabels";
 import { StoredDialogue } from "./interfaces/DialogueInterface";
@@ -15,7 +13,6 @@ import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
 import StoredChoiceInterface, { StoredIndexedChoiceInterface } from "./interfaces/StoredChoiceInterface";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import ChoicesMadeType from "./types/ChoicesMadeType";
-import { Close } from "./types/CloseType";
 import { InputInfo } from "./types/InputInfo";
 import { LabelIdType } from "./types/LabelIdType";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "./types/StepLabelType";
@@ -639,45 +636,15 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return undefined;
     }
-    public set choiceMenuOptions(
-        options: (ChoiceMenuOption<any> | ChoiceMenuOptionClose | StoredChoiceInterface)[] | undefined
-    ) {
+    public set choiceMenuOptions(options: StoredChoiceInterface[] | undefined) {
         if (!options || options.length === 0) {
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined);
             return;
         }
-        let value: StoredChoiceInterface[] = options.map((option) => {
-            if (option instanceof ChoiceMenuOptionClose) {
-                let temp: StoredChoiceInterface = {
-                    ...option.devProps,
-                    text: option.text,
-                    type: Close,
-                    closeCurrentLabel: option.closeCurrentLabel,
-                    oneTime: option.oneTime,
-                    onlyHaveNoChoice: option.onlyHaveNoChoice,
-                    autoSelect: option.autoSelect,
-                    props: option.props,
-                };
-                return temp;
-            } else if (option instanceof ChoiceMenuOption) {
-                let temp: StoredChoiceInterface = {
-                    ...option.devProps,
-                    type: option.type,
-                    text: option.text,
-                    label: option.label.id,
-                    autoSelect: option.autoSelect,
-                    oneTime: option.oneTime,
-                    onlyHaveNoChoice: option.onlyHaveNoChoice,
-                    props: option.props,
-                };
-                return temp;
-            }
-            return option;
-        });
         try {
             GameUnifier.setVariable(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
-                createExportableElement(value) as any
+                createExportableElement(options) as any
             );
             GameUnifier.setVariable(
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,

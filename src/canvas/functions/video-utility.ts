@@ -1,7 +1,6 @@
-import { Assets, Texture } from "pixi.js";
+import { Assets } from "pixi.js";
 import { canvas, VideoSpriteOptions } from "..";
 import VideoSprite from "../components/VideoSprite";
-import { getTexture } from "./texture-utility";
 
 /**
  * Add a video in the canvas.
@@ -31,30 +30,6 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
     let video = new VideoSprite(options, videoUrl);
     canvas.add(alias, video);
     return video;
-}
-
-/**
- * @deprecated
- */
-export async function loadVideo(canvasVideos: VideoSprite[] | VideoSprite): Promise<VideoSprite[]> {
-    if (!Array.isArray(canvasVideos)) {
-        return [canvasVideos];
-    }
-    let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasVideos.length);
-    for (let i = 0; i < canvasVideos.length; i++) {
-        promises[i] = getTexture(canvasVideos[i].textureAlias);
-    }
-    // wait for all promises
-    return Promise.all(promises).then((textures) => {
-        return textures.map((texture, index) => {
-            if (texture) {
-                canvasVideos[index].texture = texture;
-                return canvasVideos[index];
-            }
-            canvasVideos[index].load();
-            return canvasVideos[index];
-        });
-    });
 }
 
 /**
