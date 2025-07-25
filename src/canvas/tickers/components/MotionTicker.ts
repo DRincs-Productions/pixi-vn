@@ -1,0 +1,156 @@
+import { AnimationOptions, AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
+import { UPDATE_PRIORITY } from "pixi.js";
+import { animate, canvas, CanvasBaseInterface, Ticker } from "../..";
+import { logger } from "../../../utils/log-utility";
+import { TickerIdType } from "../../types/TickerIdType";
+import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
+import { CommonTickerProps } from "../types/CommonTickerProps";
+
+type TArgs = {
+    keyframes: ObjectTarget<CanvasBaseInterface<any>>;
+    options: AnimationOptions & CommonTickerProps;
+};
+
+export default class MotionTicker implements Ticker<TArgs> {
+    /**
+     * @param args The arguments that you want to pass to the ticker.
+     * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
+     * @param priority The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     */
+    constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
+        this.args = args;
+        this.duration = duration;
+        this.priority = priority;
+    }
+    id: TickerIdType = "motion";
+    args: TArgs;
+    duration?: number;
+    priority?: UPDATE_PRIORITY;
+    animation?: AnimationPlaybackControlsWithThen;
+    protected tickerId?: string;
+    canvasElementAliases: string[] = [];
+    protected getItemByAlias(alias: string): CanvasBaseInterface<any> | undefined {
+        if (!this.canvasElementAliases.includes(alias)) {
+            return;
+        }
+        if (canvas.isTickerPaused(alias, this.tickerId)) {
+            return;
+        }
+        let element = canvas.find(alias);
+        if (!element) {
+            return;
+        }
+        if (this.args.options.startOnlyIfHaveTexture) {
+            if (!checkIfTextureNotIsEmpty(element)) {
+                return;
+            }
+        }
+        return element;
+    }
+    complete() {
+        if (!this.animation) {
+            logger.warn("MotionTicker.complete() called without animation set. This may cause issues.");
+            return;
+        }
+        this.animation.complete();
+    }
+    stop() {
+        if (!this.animation) {
+            logger.warn("MotionTicker.stop() called without animation set. This may cause issues.");
+            return;
+        }
+        this.animation.stop();
+    }
+    start(id: string) {
+        this.tickerId = id;
+        let proxies = this.canvasElementAliases.map((alias) => {
+            return new Proxy(
+                { alias: alias },
+                {
+                    set: ({ alias }, p, newValue) => {
+                        let target = this.getItemByAlias(alias);
+                        if (!target) {
+                            return false;
+                        }
+                        (target as any)[p] = newValue;
+                        return true;
+                    },
+                    get: ({ alias }, p) => {
+                        let target = this.getItemByAlias(alias);
+                        if (!target) {
+                            return;
+                        }
+                        return (target as any)[p];
+                    },
+                    setPrototypeOf: ({ alias }) => {
+                        let target = this.getItemByAlias(alias);
+                        if (!target) {
+                            return false;
+                        }
+                        Object.setPrototypeOf(target, Object.getPrototypeOf(target));
+                        return true;
+                    },
+                    getPrototypeOf: ({ alias }) => {
+                        let target = this.getItemByAlias(alias);
+                        if (!target) {
+                            return undefined;
+                        }
+                        return Object.getPrototypeOf(target);
+                    },
+                    has: ({ alias }, p) => {
+                        let target = this.getItemByAlias(alias);
+                        if (!target) {
+                            return false;
+                        }
+                        return p in target;
+                    },
+                    ownKeys: ({ alias }) => {
+                        let target = this.getItemByAlias(alias);
+                        if (!target) {
+                            return [];
+                        }
+                        return Object.keys(target);
+                    },
+                }
+            );
+        }) as any as CanvasBaseInterface<any>[];
+        this.animation = animate(proxies, this.args.keyframes, {
+            ...this.args.options,
+            onComplete: () => {
+                const id = this.tickerId;
+                if (!id) {
+                    logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
+                    return;
+                }
+                let aliasToRemoveAfter: string | string[] =
+                    ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
+                if (typeof aliasToRemoveAfter === "string") {
+                    aliasToRemoveAfter = [aliasToRemoveAfter];
+                }
+                let tickerAliasToResume: string | string[] =
+                    ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
+                if (typeof tickerAliasToResume === "string") {
+                    tickerAliasToResume = [tickerAliasToResume];
+                }
+                canvas.onTickerComplete(id, {
+                    aliasToRemoveAfter: aliasToRemoveAfter,
+                    tickerAliasToResume: tickerAliasToResume,
+                });
+            },
+        });
+    }
+    pause() {
+        if (!this.animation) {
+            logger.warn("MotionTicker.pause() called without animation set. This may cause issues.");
+            return;
+        }
+        this.animation.pause();
+    }
+    play() {
+        if (!this.animation) {
+            logger.warn("MotionTicker.play() called without animation set. This may cause issues.");
+            return;
+        }
+        this.animation.play();
+    }
+}

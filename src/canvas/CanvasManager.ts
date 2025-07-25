@@ -1,6 +1,6 @@
 import { Devtools } from "@pixi/devtools";
 import { AnimationOptions, ObjectTarget } from "motion";
-import { ApplicationOptions, Container as PixiContainer, Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
+import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -17,10 +17,12 @@ import { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
 import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
-import { animate, Ticker, TickerArgs, TickerInfo } from "./tickers";
+import { Ticker, TickerArgs, TickerInfo } from "./tickers";
+import MotionTicker from "./tickers/components/MotionTicker";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
+import { CommonTickerProps } from "./tickers/types/CommonTickerProps";
 import PauseTickerType from "./types/PauseTickerType";
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
@@ -750,9 +752,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     animate<T extends CanvasBaseInterface<any>>(
         components: T | T[] | string | string[],
         keyframes: ObjectTarget<T>,
-        options: AnimationOptions & {
-            ticker?: PixiTicker;
-        } = {}
+        options: AnimationOptions & CommonTickerProps
     ) {
         let aliases: string[] = [];
         if (typeof components === "string") {
@@ -762,58 +762,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         } else {
             aliases = [components.label];
         }
-        let proxies = aliases.map((alias) => {
-            return new Proxy(
-                { alias: alias },
-                {
-                    set: ({ alias }, p, newValue) => {
-                        let target = this.find<T>(alias);
-                        if (!target) {
-                            return false;
-                        }
-                        (target as any)[p] = newValue;
-                        return true;
-                    },
-                    get: ({ alias }, p) => {
-                        let target = this.find<T>(alias);
-                        if (!target) {
-                            return undefined;
-                        }
-                        return (target as any)[p];
-                    },
-                    setPrototypeOf: ({ alias }) => {
-                        let target = this.find<T>(alias);
-                        if (!target) {
-                            return false;
-                        }
-                        Object.setPrototypeOf(target, Object.getPrototypeOf(target));
-                        return true;
-                    },
-                    getPrototypeOf: ({ alias }) => {
-                        let target = this.find<T>(alias);
-                        if (!target) {
-                            return undefined;
-                        }
-                        return Object.getPrototypeOf(target);
-                    },
-                    has: ({ alias }, p) => {
-                        let target = this.find<T>(alias);
-                        if (!target) {
-                            return false;
-                        }
-                        return p in target;
-                    },
-                    ownKeys: ({ alias }) => {
-                        let target = this.find<T>(alias);
-                        if (!target) {
-                            return [];
-                        }
-                        return Object.keys(target);
-                    },
-                }
-            ) as any as T;
+        const ticker = new MotionTicker({
+            keyframes: keyframes,
+            options: options,
         });
-        return animate(proxies, keyframes, options);
+        return this.addTicker(aliases, ticker);
     }
 
     /* Layers Methods */
