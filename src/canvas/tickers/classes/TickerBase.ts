@@ -39,7 +39,7 @@ import TickerValue from "./TickerValue";
  * }
  * ```
  */
-export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArgs> {
+export default abstract class TickerBase<TArgs extends TickerArgs> implements Ticker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
      * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
@@ -69,9 +69,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
      * @param _alias The alias of the canvas elements that are connected to this ticker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
-    fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void {
-        throw new Error("The method TickerBase.fn() must be overridden");
-    }
+    abstract fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void;
     protected fnValue?: () => void;
     /**
      * This method is called when the ticker is added to the canvas.
