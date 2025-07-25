@@ -69,7 +69,7 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
  * ```
  */
 export default class MoveTicker extends TickerBase<MoveTickerProps> {
-    override fn(ticker: TickerValue, args: MoveTickerProps, aliases: string[], _tickerId: string): void {
+    fn(ticker: TickerValue, args: MoveTickerProps, aliases: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             args.speed = DEFAULT_SPEED;
         }

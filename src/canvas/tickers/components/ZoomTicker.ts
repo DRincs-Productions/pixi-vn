@@ -26,7 +26,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     constructor(args: ZoomTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
     }
-    override fn(ticker: TickerValue, args: ZoomTickerProps, alias: string[], _tickerId: string): void {
+    fn(ticker: TickerValue, args: ZoomTickerProps, alias: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             args.speed = DEFAULT_SPEED;
         }
