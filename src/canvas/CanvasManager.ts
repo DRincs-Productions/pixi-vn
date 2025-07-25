@@ -754,6 +754,18 @@ export default class CanvasManager implements CanvasManagerInterface {
         keyframes: ObjectTarget<T>,
         options: AnimationOptions & CommonTickerProps
     ) {
+        try {
+            createExportableElement(keyframes);
+        } catch (e) {
+            logger.error("animate keyframes cannot contain functions or classes");
+            throw e;
+        }
+        try {
+            createExportableElement(options);
+        } catch (e) {
+            logger.error("animate options cannot contain functions or classes");
+            throw e;
+        }
         let aliases: string[] = [];
         if (typeof components === "string") {
             aliases = [components];
