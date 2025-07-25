@@ -1,5 +1,6 @@
 import { Devtools } from "@pixi/devtools";
-import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
+import { AnimationOptions, ObjectTarget } from "motion";
+import { ApplicationOptions, Container as PixiContainer, Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -16,7 +17,7 @@ import { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
 import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
-import { Ticker, TickerArgs, TickerInfo } from "./tickers";
+import { animate, Ticker, TickerArgs, TickerInfo } from "./tickers";
 import RegisteredTickers from "./tickers/decorators/ticker-decorator";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
@@ -742,6 +743,46 @@ export default class CanvasManager implements CanvasManagerInterface {
                 }
             }
         }
+    }
+
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | T[] | string | string[],
+        keyframes: ObjectTarget<T>,
+        options: AnimationOptions & {
+            ticker?: PixiTicker;
+        } = {}
+    ) {
+        let aliases: string[] = [];
+        if (typeof components === "string") {
+            aliases = [components];
+        } else if (Array.isArray(components)) {
+            aliases = components.map((c) => (typeof c === "string" ? c : c.label));
+        } else {
+            aliases = [components.label];
+        }
+        let proxies = aliases.map((alias) => {
+            return new Proxy(
+                { alias: alias },
+                {
+                    set: ({ alias }, p, newValue) => {
+                        let target = this.find<T>(alias);
+                        if (!target) {
+                            return false;
+                        }
+                        (target as any)[p] = newValue;
+                        return true;
+                    },
+                    get: ({ alias }, p) => {
+                        let target = this.find<T>(alias);
+                        if (!target) {
+                            return undefined;
+                        }
+                        return (target as any)[p];
+                    },
+                }
+            ) as any as T;
+        });
+        return animate(proxies, keyframes, options);
     }
 
     /* Layers Methods */
