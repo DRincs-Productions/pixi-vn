@@ -755,13 +755,13 @@ export default class CanvasManager implements CanvasManagerInterface {
         options: AnimationOptions & CommonTickerProps
     ) {
         try {
-            createExportableElement(keyframes);
+            keyframes = createExportableElement(keyframes);
         } catch (e) {
             logger.error("animate keyframes cannot contain functions or classes");
             throw e;
         }
         try {
-            createExportableElement(options);
+            options = createExportableElement(options);
         } catch (e) {
             logger.error("animate options cannot contain functions or classes");
             throw e;
