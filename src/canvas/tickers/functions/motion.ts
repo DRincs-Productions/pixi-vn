@@ -1,17 +1,17 @@
 import { animate as animateMotion, AnimationOptions, ObjectTarget } from "motion";
-import { ContainerChild, Ticker } from "pixi.js";
+import { ContainerChild, Ticker as PixiTicker } from "pixi.js";
 
 export default function animate<T extends ContainerChild>(
     components: T | T[] | string | string[],
     keyframes: ObjectTarget<T>,
     options: AnimationOptions & {
-        ticker?: Ticker;
+        ticker?: PixiTicker;
     } = {}
 ) {
-    const { ticker = new Ticker() } = options;
+    const { ticker = new PixiTicker() } = options;
     return animateMotion(components, keyframes, {
         driver: (update) => {
-            const passTimestamp = ({ lastTime }: Ticker) => update(lastTime);
+            const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
 
             return {
                 start: (_keepAlive = true) => {
