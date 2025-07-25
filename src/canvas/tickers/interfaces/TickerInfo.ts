@@ -7,7 +7,6 @@ import TickerArgs from "./TickerArgs";
  * TickerHistory is a class that contains the name of a class and the arguments that were used to create it.
  */
 export default interface TickerInfo<TArgs extends TickerArgs> {
-    id: TickerIdType;
     /**
      * If this ticker was created by steps
      */

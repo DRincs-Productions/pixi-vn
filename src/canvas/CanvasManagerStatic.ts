@@ -223,7 +223,7 @@ export default class CanvasManagerStatic {
                 .map(([id, info]) => [
                     id,
                     {
-                        id: info.id,
+                        id: info.ticker.id,
                         args: info.ticker.args,
                         canvasElementAliases: info.ticker.canvasElementAliases,
                         priority: info.ticker.priority,

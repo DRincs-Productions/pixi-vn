@@ -347,7 +347,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             return;
         }
         let tickerHistory: TickerInfo<TArgs> = {
-            id: tickerId,
             ticker: ticker,
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
@@ -446,7 +445,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         ticker.canvasElementAliases = [alias];
         let tickerName: TickerIdType = ticker.id;
         let tickerHistory: TickerInfo<TArgs> = {
-            id: tickerName,
             createdByTicketSteps: {
                 canvasElementAlias: alias,
                 id: key,
@@ -578,7 +576,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         });
         Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
-            if (info.id === tickerId) {
+            if (info.ticker.id === tickerId) {
                 CanvasManagerStatic._currentTickers[id].ticker.canvasElementAliases =
                     info.ticker.canvasElementAliases.filter((e) => !alias.includes(e));
             }
