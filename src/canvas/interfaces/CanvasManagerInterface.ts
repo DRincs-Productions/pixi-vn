@@ -1,6 +1,6 @@
 import { Devtools } from "@pixi/devtools";
 import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
-import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
+import { animate, Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -296,6 +296,7 @@ export default interface CanvasManagerInterface {
      * @param alias The alias of the sequence of tickers.
      */
     forceCompletionOfTicker(id: string, alias?: string): void;
+    animate: typeof animate;
 
     /* Layers Methods */
 

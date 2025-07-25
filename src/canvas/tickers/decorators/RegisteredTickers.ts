@@ -32,7 +32,9 @@ namespace RegisteredTickers {
      * @param name Name of the ticker, by default it will use the class name. If the name is already registered, it will show a warning
      */
     export function add(
-        target: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> },
+        target: {
+            new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any>;
+        },
         name?: TickerIdType
     ) {
         if (!name) {
@@ -95,7 +97,9 @@ namespace RegisteredTickers {
      * Get a list of all tickers registered.
      * @returns An array of tickers.
      */
-    export function values(): { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }[] {
+    export function values(): {
+        new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any>;
+    }[] {
         return Array.from(registeredTickers.values());
     }
 

@@ -1,8 +1,17 @@
 import { animate as animateMotion, AnimationOptions, ObjectTarget } from "motion";
 import { ContainerChild, Ticker as PixiTicker } from "pixi.js";
 
+/**
+ * Animate a PixiJS component or components using motion's animate function.
+ * This function integrates with the PixiJS ticker to ensure smooth animations.
+ * @param components - The PixiJS component(s) to animate.
+ * @param keyframes - The keyframes to animate the component(s) with.
+ * @param options - Additional options for the animation, including duration, easing, and ticker.
+ * @returns An animation playback control object that can be used to start, stop, or control the animation.
+ * @template T - The type of PixiJS component(s) being animated.
+ */
 export default function animate<T extends ContainerChild>(
-    components: T | T[] | string | string[],
+    components: T | T[],
     keyframes: ObjectTarget<T>,
     options: AnimationOptions & {
         ticker?: PixiTicker;

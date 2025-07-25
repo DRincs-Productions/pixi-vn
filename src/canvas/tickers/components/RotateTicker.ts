@@ -2,7 +2,7 @@ import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { RotateTickerProps, TickerBase, TickerValue } from "..";
 import { canvas } from "../..";
 import { logger } from "../../../utils/log-utility";
-import RegisteredTickers from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/RegisteredTickers";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 

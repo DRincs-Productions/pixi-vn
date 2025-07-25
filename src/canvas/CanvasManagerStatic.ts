@@ -225,7 +225,7 @@ export default class CanvasManagerStatic {
                     {
                         id: info.id,
                         args: info.ticker.args,
-                        canvasElementAliases: info.canvasElementAliases,
+                        canvasElementAliases: info.ticker.canvasElementAliases,
                         priority: info.ticker.priority,
                         duration: info.ticker.duration,
                     },

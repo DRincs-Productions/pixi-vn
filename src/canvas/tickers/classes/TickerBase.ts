@@ -2,7 +2,7 @@ import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
 import { canvas, CanvasManagerStatic, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
-import RegisteredTickers, { tickerDecorator } from "../decorators/ticker-decorator";
+import RegisteredTickers, { tickerDecorator } from "../decorators/RegisteredTickers";
 import TickerArgs from "../interfaces/TickerArgs";
 import TickerValue from "./TickerValue";
 
@@ -12,6 +12,7 @@ import TickerValue from "./TickerValue";
  * This class should be extended and the fn method should be overridden.
  * You must use the {@link tickerDecorator} to register the ticker in the game.
  * In Ren'Py is a transform.
+ * @template TArgs The type of the arguments that you want to pass to the ticker.
  * @example
  * ```typescript
  * \@tickerDecorator() // this is equivalent to tickerDecorator("RotateTicker")
@@ -59,6 +60,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     priority?: UPDATE_PRIORITY;
     protected ticker = new PixiTicker();
     protected tickerId?: string;
+    canvasElementAliases: string[] = [];
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
@@ -84,8 +86,7 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
             logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
             return;
         }
-        const { canvasElementAliases } = CanvasManagerStatic._currentTickers[id];
-        this.onComplete(canvasElementAliases, id, this.args);
+        this.onComplete(this.canvasElementAliases, id, this.args);
         let aliasToRemoveAfter: string | string[] =
             ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
         if (typeof aliasToRemoveAfter === "string") {
@@ -113,7 +114,8 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     start(id: string) {
         this.tickerId = id;
         const fnValue = () => {
-            let { canvasElementAliases, createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
+            const { createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
+            let canvasElementAliases = this.canvasElementAliases;
             if (createdByTicketSteps) {
                 if (canvas.isTickerPaused(createdByTicketSteps.canvasElementAlias, createdByTicketSteps.id)) {
                     return;

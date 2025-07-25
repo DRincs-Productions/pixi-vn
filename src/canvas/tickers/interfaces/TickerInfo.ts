@@ -9,10 +9,6 @@ import TickerArgs from "./TickerArgs";
 export default interface TickerInfo<TArgs extends TickerArgs> {
     id: TickerIdType;
     /**
-     * The aliases of the canvas elements that are connected to this ticker
-     */
-    canvasElementAliases: string[];
-    /**
      * If this ticker was created by steps
      */
     createdByTicketSteps?: {

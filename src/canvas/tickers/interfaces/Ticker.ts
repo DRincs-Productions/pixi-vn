@@ -1,6 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import { TickerIdType } from "../../types/TickerIdType";
-import RegisteredTickers from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/RegisteredTickers";
 import TickerArgs from "./TickerArgs";
 
 export default interface Ticker<TArgs extends TickerArgs> {
@@ -20,6 +20,10 @@ export default interface Ticker<TArgs extends TickerArgs> {
      * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link RegisteredTickers.getInstance}
      */
     id: TickerIdType;
+    /**
+     * The aliases of the canvas elements that are connected to this ticker
+     */
+    canvasElementAliases: string[];
     /**
      * Completes the animation and applies the final state.
      */

@@ -4,7 +4,7 @@ export { default as FadeAlphaTicker } from "./components/FadeAlphaTicker";
 export { default as MoveTicker } from "./components/MoveTicker";
 export { default as RotateTicker } from "./components/RotateTicker";
 export { default as ZoomTicker } from "./components/ZoomTicker";
-export { default as RegisteredTickers, tickerDecorator } from "./decorators/ticker-decorator";
+export { default as RegisteredTickers, tickerDecorator } from "./decorators/RegisteredTickers";
 export { default as animate } from "./functions/motion";
 export type { default as Ticker } from "./interfaces/Ticker";
 export type { default as TickerArgs } from "./interfaces/TickerArgs";

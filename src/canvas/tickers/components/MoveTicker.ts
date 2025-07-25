@@ -13,7 +13,7 @@ import {
 } from "../../functions/canvas-property-utility";
 import TickerBase from "../classes/TickerBase";
 import TickerValue from "../classes/TickerValue";
-import RegisteredTickers from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/RegisteredTickers";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 import { MoveTickerProps } from "../types/MoveTickerProps";
