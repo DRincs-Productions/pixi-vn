@@ -1,5 +1,5 @@
 import { Devtools } from "@pixi/devtools";
-import { AnimationOptions, ObjectTarget } from "motion";
+import { ObjectTarget } from "motion";
 import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
@@ -22,7 +22,7 @@ import MotionTicker from "./tickers/components/MotionTicker";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
-import { CommonTickerProps } from "./tickers/types/CommonTickerProps";
+import AnimationOptions from "./types/AnimationOptions";
 import PauseTickerType from "./types/PauseTickerType";
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
@@ -751,7 +751,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     animate<T extends CanvasBaseInterface<any>>(
         components: T | T[] | string | string[],
         keyframes: ObjectTarget<T>,
-        options: AnimationOptions & CommonTickerProps
+        options: AnimationOptions
     ) {
         try {
             keyframes = createExportableElement(keyframes);

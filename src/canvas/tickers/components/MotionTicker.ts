@@ -1,14 +1,13 @@
-import { AnimationOptions, AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
+import { AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
 import { UPDATE_PRIORITY } from "pixi.js";
-import { animate, canvas, CanvasBaseInterface, Ticker } from "../..";
+import { animate, AnimationOptions, canvas, CanvasBaseInterface, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
-import { CommonTickerProps } from "../types/CommonTickerProps";
 
 interface TArgs {
     keyframes: ObjectTarget<CanvasBaseInterface<any>>;
-    options: AnimationOptions & CommonTickerProps;
+    options: AnimationOptions;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/discussions/3330)
      */

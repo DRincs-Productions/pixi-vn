@@ -1,3 +1,4 @@
+export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "pixi.js";
 export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "pixi.js";
 export type {
