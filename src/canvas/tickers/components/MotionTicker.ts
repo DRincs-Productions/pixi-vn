@@ -116,6 +116,7 @@ export default class MotionTicker implements Ticker<TArgs> {
         }) as any as CanvasBaseInterface<any>[];
         this.animation = animate(proxies, this.args.keyframes, {
             ...this.args.options,
+            repeat: this.args.options.repeat === null ? Infinity : this.args.options.repeat,
             onComplete: () => {
                 const id = this.tickerId;
                 if (!id) {
