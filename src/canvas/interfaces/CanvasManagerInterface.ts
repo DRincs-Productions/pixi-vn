@@ -310,7 +310,7 @@ export default interface CanvasManagerInterface {
      * @template T - The type of Pixi’VN component(s) being animated.
      */
     animate<T extends CanvasBaseInterface<any>>(
-        components: T | T[] | string | string[],
+        components: T | string | (string | T)[],
         keyframes: ObjectTarget<T>,
         options: AnimationOptions
     ): string | undefined;
