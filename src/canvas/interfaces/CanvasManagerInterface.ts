@@ -1,6 +1,7 @@
 import { Devtools } from "@pixi/devtools";
+import { AnimationOptions, ObjectTarget } from "motion";
 import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
-import { animate, Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
+import { CommonTickerProps, Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -220,7 +221,7 @@ export default interface CanvasManagerInterface {
      * @param alias The alias of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
      * @param currentStepNumber The current step number. It is used to continue the sequence of tickers.
-     * @returns The id of the sequence of tickers.
+     * @returns The id of tickers.
      * @example
      * ```typescript
      * canvas.addTickersSequence("alien", [
@@ -296,7 +297,23 @@ export default interface CanvasManagerInterface {
      * @param alias The alias of the sequence of tickers.
      */
     forceCompletionOfTicker(id: string, alias?: string): void;
-    animate: typeof animate;
+    /**
+     * Animate a Pixi’VN component or components using [motion's animate](https://motion.dev/docs/animate) function.
+     * This function integrates with the PixiJS ticker to ensure smooth animations.
+     *
+     * Pixi’VN will keep track of the animation state of this function.
+     * So Pixi’VN will save the animation state in saves.
+     * @param components - The PixiJS component(s) to animate.
+     * @param keyframes - The keyframes to animate the component(s) with.
+     * @param options - Additional options for the animation, including duration, easing, and ticker.
+     * @returns The id of tickers.
+     * @template T - The type of Pixi’VN component(s) being animated.
+     */
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | T[] | string | string[],
+        keyframes: ObjectTarget<T>,
+        options: AnimationOptions & CommonTickerProps
+    ): string | undefined;
 
     /* Layers Methods */
 
