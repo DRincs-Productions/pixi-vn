@@ -9,7 +9,13 @@ import { CommonTickerProps } from "../types/CommonTickerProps";
 interface TArgs {
     keyframes: ObjectTarget<CanvasBaseInterface<any>>;
     options: AnimationOptions & CommonTickerProps;
+    /**
+     * This is a hack to fix this [issue](https://github.com/motiondivision/motion/discussions/3330)
+     */
     startState?: object;
+    /**
+     * This is a hack to fix this [issue](https://github.com/motiondivision/motion/discussions/3330)
+     */
     time?: number;
 }
 
@@ -32,6 +38,10 @@ export default class MotionTicker implements Ticker<TArgs> {
     duration?: number;
     priority?: UPDATE_PRIORITY;
     animation?: AnimationPlaybackControlsWithThen;
+    /**
+     * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
+     */
+    private stopped = false;
     protected tickerId?: string;
     canvasElementAliases: string[] = [];
     protected getItemByAlias(alias: string): CanvasBaseInterface<any> | undefined {
@@ -64,6 +74,7 @@ export default class MotionTicker implements Ticker<TArgs> {
             logger.warn("MotionTicker.stop() called without animation set. This may cause issues.");
             return;
         }
+        this.stopped = true;
         this.animation.stop();
     }
     start(id: string) {
@@ -73,6 +84,9 @@ export default class MotionTicker implements Ticker<TArgs> {
                 { alias: alias },
                 {
                     set: ({ alias }, p, newValue) => {
+                        if (this.stopped) {
+                            return true;
+                        }
                         let target = this.getItemByAlias(alias);
                         if (!target) {
                             return true;
