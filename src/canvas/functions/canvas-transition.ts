@@ -408,8 +408,7 @@ export async function moveIn(
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     tickerAliasToResume.push(alias);
-    let pos = calculateDestination(destination, component);
-    let idShow = canvas.animate(alias, pos, {
+    let idShow = canvas.animate(alias, calculateDestination(destination, component), {
         ...options,
         tickerAliasToResume,
         aliasToRemoveAfter,
@@ -434,8 +433,8 @@ export async function moveIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
+export function moveOut(alias: string, props: MoveInOutProps = {}): string[] | undefined {
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -462,17 +461,11 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
             break;
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new MoveTicker(
-        {
-            ...props,
-            destination,
-            startOnlyIfHaveTexture: true,
-            aliasToRemoveAfter,
-        },
-        undefined,
-        priority
-    );
-    let id = canvas.addTicker(alias, effect);
+    let id = canvas.animate(alias, destination, {
+        ...options,
+        startOnlyIfHaveTexture: true,
+        aliasToRemoveAfter,
+    });
     if (id) {
         canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
@@ -717,15 +710,10 @@ export async function pushIn(
     }
     // remove the old component
     if (oldComponentAlias) {
-        let ids = pushOut(
-            oldComponentAlias,
-            {
-                ...props,
-                direction:
-                    direction == "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
-            },
-            priority
-        );
+        let ids = pushOut(oldComponentAlias, {
+            ...props,
+            direction: direction == "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
+        });
         if (ids) {
             res.push(...ids);
         }
@@ -766,10 +754,6 @@ export async function pushIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function pushOut(
-    alias: string,
-    props: PushInOutProps = { direction: "right" },
-    priority?: UPDATE_PRIORITY
-): string[] | undefined {
-    return moveOut(alias, props, priority);
+export function pushOut(alias: string, props: PushInOutProps = { direction: "right" }): string[] | undefined {
+    return moveOut(alias, props);
 }

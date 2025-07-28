@@ -110,21 +110,6 @@ export default class MotionTicker implements Ticker<TArgs> {
                         };
                         return (target as any)[p];
                     },
-                    setPrototypeOf: ({ alias }) => {
-                        let target = this.getItemByAlias(alias);
-                        if (!target) {
-                            return true;
-                        }
-                        Object.setPrototypeOf(target, Object.getPrototypeOf(target));
-                        return true;
-                    },
-                    getPrototypeOf: ({ alias }) => {
-                        let target = this.getItemByAlias(alias);
-                        if (!target) {
-                            return undefined;
-                        }
-                        return Object.getPrototypeOf(target);
-                    },
                     has: ({ alias }, p) => {
                         let target = this.getItemByAlias(alias);
                         if (!target) {
@@ -151,13 +136,11 @@ export default class MotionTicker implements Ticker<TArgs> {
                     logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
                     return;
                 }
-                let aliasToRemoveAfter: string | string[] =
-                    ("aliasToRemoveAfter" in this._args && (this._args.aliasToRemoveAfter as any)) || [];
+                let aliasToRemoveAfter = this._args.options.aliasToRemoveAfter || [];
                 if (typeof aliasToRemoveAfter === "string") {
                     aliasToRemoveAfter = [aliasToRemoveAfter];
                 }
-                let tickerAliasToResume: string | string[] =
-                    ("tickerAliasToResume" in this._args && (this._args.tickerAliasToResume as any)) || [];
+                let tickerAliasToResume = this._args.options.tickerAliasToResume || [];
                 if (typeof tickerAliasToResume === "string") {
                     tickerAliasToResume = [tickerAliasToResume];
                 }
