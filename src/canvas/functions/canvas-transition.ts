@@ -1,4 +1,4 @@
-import { UPDATE_PRIORITY } from "pixi.js";
+import { Sprite as PixiSprite, UPDATE_PRIORITY } from "pixi.js";
 import { canvas, CanvasBaseInterface, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";
@@ -12,11 +12,62 @@ import {
     ZoomInOutProps,
 } from "../interfaces/transition-props";
 import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../tickers";
-import { getPointBySuperPoint } from "./canvas-property-utility";
+import {
+    calculatePositionByAlign,
+    calculatePositionByPercentagePosition,
+    getPointBySuperPoint,
+    getSuperHeight,
+    getSuperPoint,
+    getSuperWidth,
+} from "./canvas-property-utility";
 import { checkIfVideo } from "./canvas-utility";
 import { addImageCointainer } from "./image-container-utility";
 import { addImage } from "./image-utility";
 import { addVideo } from "./video-utility";
+
+function calculateDestination(
+    destination: {
+        type?: "pixel" | "percentage" | "align";
+        y: number;
+        x: number;
+    },
+    component: CanvasBaseInterface<any>
+) {
+    if (destination.type === "align") {
+        let anchorx = undefined;
+        let anchory = undefined;
+        if (component instanceof PixiSprite) {
+            anchorx = component.anchor.x;
+            anchory = component.anchor.y;
+        }
+        let superPivot = getSuperPoint(component.pivot, component.angle);
+        let superScale = getSuperPoint(component.scale, component.angle);
+        destination.x = calculatePositionByAlign(
+            "width",
+            destination.x,
+            getSuperWidth(component),
+            superPivot.x,
+            superScale.x < 0,
+            anchorx
+        );
+        destination.y = calculatePositionByAlign(
+            "height",
+            destination.y,
+            getSuperHeight(component),
+            superPivot.y,
+            superScale.y < 0,
+            anchory
+        );
+    }
+    if (destination.type === "percentage") {
+        destination.x = calculatePositionByPercentagePosition("width", destination.x);
+        destination.y = calculatePositionByPercentagePosition("height", destination.y);
+    }
+    return {
+        x: Math.round(destination.x),
+        y: Math.round(destination.y),
+    };
+}
 
 type TComponent =
     | CanvasBaseInterface<any>
@@ -274,7 +325,6 @@ export function removeWithFade(
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
- * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function moveIn(
@@ -286,8 +336,7 @@ export async function moveIn(
          * @default false
          */
         removeOldComponentWithMoveOut?: boolean;
-    } = {},
-    priority?: UPDATE_PRIORITY
+    } = {}
 ): Promise<string[] | undefined> {
     let {
         direction = "right",
@@ -295,6 +344,7 @@ export async function moveIn(
         tickerAliasToResume = [],
         aliasToRemoveAfter = [],
         removeOldComponentWithMoveOut,
+        ...options
     } = props;
     let res: string[] = [];
     if (!component) {
@@ -327,7 +377,7 @@ export async function moveIn(
     let ids: string[] | undefined = undefined;
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            ids = moveOut(oldComponentAlias, props, priority);
+            ids = moveOut(oldComponentAlias, props);
             if (ids) {
                 res.push(...ids);
                 tickerAliasToResume.push(oldComponentAlias);
@@ -358,18 +408,13 @@ export async function moveIn(
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     tickerAliasToResume.push(alias);
-    let effect = new MoveTicker(
-        {
-            ...props,
-            tickerAliasToResume,
-            aliasToRemoveAfter,
-            destination,
-            startOnlyIfHaveTexture: true,
-        },
-        undefined,
-        priority
-    );
-    let idShow = canvas.addTicker(alias, effect);
+    let pos = calculateDestination(destination, component);
+    let idShow = canvas.animate(alias, pos, {
+        ...options,
+        tickerAliasToResume,
+        aliasToRemoveAfter,
+        startOnlyIfHaveTexture: true,
+    });
     if (idShow) {
         canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
