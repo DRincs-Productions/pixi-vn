@@ -9,6 +9,8 @@ import { CommonTickerProps } from "../types/CommonTickerProps";
 type TArgs = {
     keyframes: ObjectTarget<CanvasBaseInterface<any>>;
     options: AnimationOptions & CommonTickerProps;
+    startState?: Partial<CanvasBaseInterface<any>>;
+    time?: number;
 };
 
 export default class MotionTicker implements Ticker<TArgs> {
@@ -18,12 +20,15 @@ export default class MotionTicker implements Ticker<TArgs> {
      * @param priority The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
      */
     constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
-        this.args = args;
+        this._args = args;
         this.duration = duration;
         this.priority = priority;
     }
     id: TickerIdType = "motion";
-    args: TArgs;
+    private _args: TArgs;
+    get args(): TArgs {
+        return { ...this._args, time: this.animation?.time };
+    }
     duration?: number;
     priority?: UPDATE_PRIORITY;
     animation?: AnimationPlaybackControlsWithThen;
@@ -76,10 +81,20 @@ export default class MotionTicker implements Ticker<TArgs> {
                         return true;
                     },
                     get: ({ alias }, p) => {
+                        if (!this.args.startState) {
+                            this.args.startState = {};
+                        }
+                        if (p in this.args.startState) {
+                            return (this.args.startState as any)[p];
+                        }
                         let target = this.getItemByAlias(alias);
                         if (!target) {
                             return;
                         }
+                        this.args.startState = {
+                            ...this.args.startState,
+                            [p]: (target as any)[p],
+                        };
                         return (target as any)[p];
                     },
                     setPrototypeOf: ({ alias }) => {
@@ -139,6 +154,9 @@ export default class MotionTicker implements Ticker<TArgs> {
                 });
             },
         });
+        if (this._args.time) {
+            this.animation.time = this._args.time;
+        }
     }
     pause() {
         if (!this.animation) {
