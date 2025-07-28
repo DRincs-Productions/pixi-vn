@@ -6,12 +6,12 @@ import { TickerIdType } from "../../types/TickerIdType";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { CommonTickerProps } from "../types/CommonTickerProps";
 
-type TArgs = {
+interface TArgs {
     keyframes: ObjectTarget<CanvasBaseInterface<any>>;
     options: AnimationOptions & CommonTickerProps;
-    startState?: Partial<CanvasBaseInterface<any>>;
+    startState?: object;
     time?: number;
-};
+}
 
 export default class MotionTicker implements Ticker<TArgs> {
     /**
@@ -45,7 +45,7 @@ export default class MotionTicker implements Ticker<TArgs> {
         if (!element) {
             return;
         }
-        if (this.args.options.startOnlyIfHaveTexture) {
+        if (this._args.options.startOnlyIfHaveTexture) {
             if (!checkIfTextureNotIsEmpty(element)) {
                 return;
             }
@@ -81,18 +81,18 @@ export default class MotionTicker implements Ticker<TArgs> {
                         return true;
                     },
                     get: ({ alias }, p) => {
-                        if (!this.args.startState) {
-                            this.args.startState = {};
+                        if (!this._args.startState) {
+                            this._args.startState = {};
                         }
-                        if (p in this.args.startState) {
-                            return (this.args.startState as any)[p];
+                        if (p in this._args.startState) {
+                            return (this._args.startState as any)[p];
                         }
                         let target = this.getItemByAlias(alias);
                         if (!target) {
                             return;
                         }
-                        this.args.startState = {
-                            ...this.args.startState,
+                        this._args.startState = {
+                            ...this._args.startState,
                             [p]: (target as any)[p],
                         };
                         return (target as any)[p];
@@ -129,9 +129,9 @@ export default class MotionTicker implements Ticker<TArgs> {
                 }
             );
         }) as any as CanvasBaseInterface<any>[];
-        this.animation = animate(proxies, this.args.keyframes, {
-            ...this.args.options,
-            repeat: this.args.options.repeat === null ? Infinity : this.args.options.repeat,
+        this.animation = animate(proxies, this._args.keyframes, {
+            ...this._args.options,
+            repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
             onComplete: () => {
                 const id = this.tickerId;
                 if (!id) {
@@ -139,12 +139,12 @@ export default class MotionTicker implements Ticker<TArgs> {
                     return;
                 }
                 let aliasToRemoveAfter: string | string[] =
-                    ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
+                    ("aliasToRemoveAfter" in this._args && (this._args.aliasToRemoveAfter as any)) || [];
                 if (typeof aliasToRemoveAfter === "string") {
                     aliasToRemoveAfter = [aliasToRemoveAfter];
                 }
                 let tickerAliasToResume: string | string[] =
-                    ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
+                    ("tickerAliasToResume" in this._args && (this._args.tickerAliasToResume as any)) || [];
                 if (typeof tickerAliasToResume === "string") {
                     tickerAliasToResume = [tickerAliasToResume];
                 }
