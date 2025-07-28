@@ -310,7 +310,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
     public removeAll() {
         this.gameLayer.removeChildren();
-        this.removeAllTickers();
     }
     public editAlias(
         oldAlias: string,
@@ -818,6 +817,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
 
     clear() {
+        this.removeAllTickers();
         this.removeAll();
     }
 
@@ -841,20 +841,21 @@ export default class CanvasManager implements CanvasManagerInterface {
         };
     }
     public async restore(data: object) {
+        this.clear();
         try {
             let tickersToTrasfer: { [oldId: string]: string } = {};
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
-                let currentElements = (data as CanvasGameState)["elements"];
                 let elementAliasesOrder = (data as CanvasGameState)["elementAliasesOrder"];
-                let promises = elementAliasesOrder
-                    .filter((alias) => currentElements[alias])
-                    .map((alias) => importCanvasElement(currentElements[alias]));
-                let list = await Promise.all(promises);
-                this.clear();
-                list.forEach((element, i) => {
-                    let alias = elementAliasesOrder[i];
-                    this.add(alias, element);
-                    CanvasManagerStatic.childrenAliasesOrder.push(alias);
+                let elements: {
+                    [alias: string]: CanvasBaseInterface<any>;
+                } = {};
+                const promises = Object.entries((data as CanvasGameState)["elements"]).map(async ([alias, element]) => {
+                    elements[alias] = await importCanvasElement(element);
+                });
+                await Promise.all(promises);
+                elementAliasesOrder.forEach((alias) => {
+                    let element = elements[alias];
+                    element && this.add(alias, element);
                 });
             } else {
                 logger.error("The data does not have the properties elementAliasesOrder and elements");
