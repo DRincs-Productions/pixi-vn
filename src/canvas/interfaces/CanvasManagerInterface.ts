@@ -165,7 +165,6 @@ export default interface CanvasManagerInterface {
     canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T): boolean;
     /**
      * Remove all canvas elements from the canvas.
-     * And remove all tickers that are not connected to any canvas element.
      */
     removeAll(): void;
     /**
