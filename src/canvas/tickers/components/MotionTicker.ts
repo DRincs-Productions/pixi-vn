@@ -75,7 +75,7 @@ export default class MotionTicker implements Ticker<TArgs> {
                     set: ({ alias }, p, newValue) => {
                         let target = this.getItemByAlias(alias);
                         if (!target) {
-                            return false;
+                            return true;
                         }
                         (target as any)[p] = newValue;
                         return true;
@@ -100,7 +100,7 @@ export default class MotionTicker implements Ticker<TArgs> {
                     setPrototypeOf: ({ alias }) => {
                         let target = this.getItemByAlias(alias);
                         if (!target) {
-                            return false;
+                            return true;
                         }
                         Object.setPrototypeOf(target, Object.getPrototypeOf(target));
                         return true;
