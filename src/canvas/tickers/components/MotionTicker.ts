@@ -1,5 +1,5 @@
 import { AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
-import { UPDATE_PRIORITY } from "pixi.js";
+import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
 import { animate, AnimationOptions, canvas, CanvasBaseInterface, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
@@ -36,6 +36,7 @@ export default class MotionTicker implements Ticker<TArgs> {
     }
     duration?: number;
     priority?: UPDATE_PRIORITY;
+    protected ticker = new PixiTicker();
     animation?: AnimationPlaybackControlsWithThen;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
@@ -149,6 +150,7 @@ export default class MotionTicker implements Ticker<TArgs> {
                     tickerAliasToResume: tickerAliasToResume,
                 });
             },
+            ticker: this.ticker,
         });
         if (this._args.time) {
             this.animation.time = this._args.time;
