@@ -1,6 +1,13 @@
 import { Devtools } from "@pixi/devtools";
 import { ObjectTarget } from "motion";
-import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
+import {
+    Application,
+    ApplicationOptions,
+    ContainerChild,
+    Container as PixiContainer,
+    Rectangle,
+    UPDATE_PRIORITY,
+} from "pixi.js";
 import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
 import AnimationOptions from "../types/AnimationOptions";
 import PauseTickerType from "../types/PauseTickerType";
@@ -306,13 +313,15 @@ export default interface CanvasManagerInterface {
      * @param components - The PixiJS component(s) to animate.
      * @param keyframes - The keyframes to animate the component(s) with.
      * @param options - Additional options for the animation, including duration, easing, and ticker.
+     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
      * @returns The id of tickers.
      * @template T - The type of Pixi’VN component(s) being animated.
      */
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: ObjectTarget<T>,
-        options: AnimationOptions
+        options: AnimationOptions,
+        priority?: UPDATE_PRIORITY
     ): string | undefined;
 
     /* Layers Methods */

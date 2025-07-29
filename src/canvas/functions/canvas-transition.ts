@@ -325,6 +325,7 @@ export function removeWithFade(
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
  * If you don't provide the component, then the alias is used as the url.
  * @param props The properties of the effect
+ * @param priority The priority of the effect
  * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
  */
 export async function moveIn(
@@ -336,7 +337,8 @@ export async function moveIn(
          * @default false
          */
         removeOldComponentWithMoveOut?: boolean;
-    } = {}
+    } = {},
+    priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
     let {
         direction = "right",
@@ -408,12 +410,17 @@ export async function moveIn(
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     tickerAliasToResume.push(alias);
-    let idShow = canvas.animate(alias, calculateDestination(destination, component), {
-        ...options,
-        tickerAliasToResume,
-        aliasToRemoveAfter,
-        startOnlyIfHaveTexture: true,
-    });
+    let idShow = canvas.animate(
+        alias,
+        calculateDestination(destination, component),
+        {
+            ...options,
+            tickerAliasToResume,
+            aliasToRemoveAfter,
+            startOnlyIfHaveTexture: true,
+        },
+        priority
+    );
     if (idShow) {
         canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
@@ -433,7 +440,7 @@ export async function moveIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function moveOut(alias: string, props: MoveInOutProps = {}): string[] | undefined {
+export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
     let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
@@ -445,7 +452,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}): string[] | u
         logger.warn(`The canvas component "${alias}" is not found.`);
         return;
     }
-    let destination = { x: component.x, y: component.y };
+    let destination = { x: Math.round(component.x), y: Math.round(component.y) };
     switch (direction) {
         case "up":
             destination.y = -component.height;
@@ -461,11 +468,16 @@ export function moveOut(alias: string, props: MoveInOutProps = {}): string[] | u
             break;
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let id = canvas.animate(alias, destination, {
-        ...options,
-        startOnlyIfHaveTexture: true,
-        aliasToRemoveAfter,
-    });
+    let id = canvas.animate(
+        alias,
+        destination,
+        {
+            ...options,
+            startOnlyIfHaveTexture: true,
+            aliasToRemoveAfter,
+        },
+        priority
+    );
     if (id) {
         canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
@@ -754,6 +766,10 @@ export async function pushIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function pushOut(alias: string, props: PushInOutProps = { direction: "right" }): string[] | undefined {
-    return moveOut(alias, props);
+export function pushOut(
+    alias: string,
+    props: PushInOutProps = { direction: "right" },
+    priority?: UPDATE_PRIORITY
+): string[] | undefined {
+    return moveOut(alias, props, priority);
 }

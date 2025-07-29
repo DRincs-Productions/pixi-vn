@@ -751,7 +751,8 @@ export default class CanvasManager implements CanvasManagerInterface {
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: ObjectTarget<T>,
-        options: AnimationOptions
+        options: AnimationOptions,
+        priority?: UPDATE_PRIORITY
     ) {
         try {
             keyframes = createExportableElement(keyframes);
@@ -773,10 +774,14 @@ export default class CanvasManager implements CanvasManagerInterface {
         } else {
             aliases = [components.label];
         }
-        const ticker = new MotionTicker({
-            keyframes: keyframes,
-            options: options,
-        });
+        const ticker = new MotionTicker(
+            {
+                keyframes: keyframes,
+                options: options,
+            },
+            undefined,
+            priority
+        );
         return this.addTicker(aliases, ticker);
     }
 
