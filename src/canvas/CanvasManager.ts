@@ -723,11 +723,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
-    forceCompletionOfTicker(id: string, alias?: string) {
+    async forceCompletionOfTicker(id: string, alias?: string) {
         if (!alias) {
             let info = CanvasManagerStatic._currentTickers[id];
             if (info) {
-                info.ticker.complete();
+                await info.ticker.complete();
             }
         } else {
             let tickers = CanvasManagerStatic._currentTickersSequence[alias];
@@ -738,7 +738,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                         tickers[id]
                     );
                 } else {
-                    tickers[id].steps.forEach((step) => {
+                    const promises = tickers[id].steps.map((step) => {
                         if (typeof step === "object" && "ticker" in step) {
                             let ticker = RegisteredTickers.getInstance<any>(
                                 (step as TickersStep<any>).ticker,
@@ -748,10 +748,11 @@ export default class CanvasManager implements CanvasManagerInterface {
                             );
                             if (ticker) {
                                 ticker.canvasElementAliases = [alias];
-                                ticker.complete();
+                                return ticker.complete();
                             }
                         }
                     });
+                    await Promise.all(promises);
                 }
             }
         }

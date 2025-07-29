@@ -303,7 +303,7 @@ export default interface CanvasManagerInterface {
      * @param id The id of the ticker. If the alias provided, the id is the id of the sequence of tickers.
      * @param alias The alias of the sequence of tickers.
      */
-    forceCompletionOfTicker(id: string, alias?: string): void;
+    forceCompletionOfTicker(id: string, alias?: string): Promise<void>;
     /**
      * Animate a Pixi’VN component or components using [motion's animate](https://motion.dev/docs/animate) function.
      * This function integrates with the PixiJS ticker to ensure smooth animations.

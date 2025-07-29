@@ -62,12 +62,17 @@ export default class MotionTicker implements Ticker<TArgs> {
         }
         return element;
     }
-    complete() {
+    /**
+     * This is a hack to await for the animation to complete.
+     */
+    private timeout = 100;
+    async complete() {
         if (!this.animation) {
             logger.warn("MotionTicker.complete() called without animation set. This may cause issues.");
             return;
         }
         this.animation.complete();
+        await new Promise((resolve) => setTimeout(resolve, this.timeout));
     }
     stop() {
         if (!this.animation) {
@@ -146,11 +151,13 @@ export default class MotionTicker implements Ticker<TArgs> {
                 if (typeof tickerAliasToResume === "string") {
                     tickerAliasToResume = [tickerAliasToResume];
                 }
-                canvas.onTickerComplete(id, {
-                    aliasToRemoveAfter: aliasToRemoveAfter,
-                    tickerAliasToResume: tickerAliasToResume,
-                    stopTicker: false,
-                });
+                setTimeout(() => {
+                    canvas.onTickerComplete(id, {
+                        aliasToRemoveAfter: aliasToRemoveAfter,
+                        tickerAliasToResume: tickerAliasToResume,
+                        stopTicker: false,
+                    });
+                }, this.timeout / 2);
             },
             ticker: this.ticker,
         });

@@ -27,7 +27,7 @@ export default interface Ticker<TArgs extends TickerArgs> {
     /**
      * Completes the animation and applies the final state.
      */
-    complete: () => void;
+    complete: () => Promise<void> | void;
     /**
      * Stops the animation at its current state, and prevents it from resuming when the animation is played again.
      */
