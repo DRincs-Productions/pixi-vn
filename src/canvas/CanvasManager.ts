@@ -519,14 +519,18 @@ export default class CanvasManager implements CanvasManagerInterface {
             aliasToRemoveAfter: string[] | string;
             tickerAliasToResume: string[] | string;
             ignoreTickerSteps?: boolean;
+            stopTicker?: boolean;
         }
     ) {
+        const { stopTicker = true } = options;
         let info = CanvasManagerStatic._currentTickers[tickerId];
         let ignoreTickerSteps = options.ignoreTickerSteps || false;
         this.remove(options.aliasToRemoveAfter);
         this.resumeTicker(options.tickerAliasToResume);
         if (info) {
-            this.removeTicker(tickerId);
+            this.removeTicker(tickerId, {
+                stopTicker: stopTicker,
+            });
             if (!ignoreTickerSteps && info.ticker.duration == undefined && info.createdByTicketSteps) {
                 this.nextTickerStep(info.createdByTicketSteps.canvasElementAlias, info.createdByTicketSteps.id);
             }
@@ -630,7 +634,12 @@ export default class CanvasManager implements CanvasManagerInterface {
         CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
         CanvasManagerStatic._tickersOnPause = {};
     }
-    removeTicker(tickerId: string | string[]) {
+    removeTicker(
+        tickerId: string | string[],
+        options: {
+            stopTicker?: boolean;
+        } = { stopTicker: true }
+    ) {
         if (typeof tickerId === "string") {
             tickerId = [tickerId];
         }
@@ -641,7 +650,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                     let aliasToRemoveAfter: string | string[] = info.ticker.args.aliasToRemoveAfter;
                     this.remove(aliasToRemoveAfter);
                 }
-                info.ticker.stop();
+                options.stopTicker && info.ticker.stop();
                 delete CanvasManagerStatic._currentTickers[tickerId];
             }
         });

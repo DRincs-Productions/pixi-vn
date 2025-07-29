@@ -132,6 +132,7 @@ export default class MotionTicker implements Ticker<TArgs> {
             ...this._args.options,
             repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
             onComplete: () => {
+                // TODO: viene eseguita 2 volte
                 const id = this.tickerId;
                 if (!id) {
                     logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
@@ -148,6 +149,7 @@ export default class MotionTicker implements Ticker<TArgs> {
                 canvas.onTickerComplete(id, {
                     aliasToRemoveAfter: aliasToRemoveAfter,
                     tickerAliasToResume: tickerAliasToResume,
+                    stopTicker: false,
                 });
             },
             ticker: this.ticker,
