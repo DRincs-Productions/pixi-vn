@@ -42,6 +42,10 @@ export default class MotionTicker implements Ticker<TArgs> {
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
      */
     private stopped = false;
+    /**
+     * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3337)
+     */
+    private ignoreOnComplete = true;
     protected tickerId?: string;
     canvasElementAliases: string[] = [];
     protected getItemByAlias(alias: string): CanvasBaseInterface<any> | undefined {
@@ -65,7 +69,7 @@ export default class MotionTicker implements Ticker<TArgs> {
     /**
      * This is a hack to await for the animation to complete.
      */
-    private timeout = 100;
+    private timeout = 50;
     async complete() {
         if (!this.animation) {
             logger.warn("MotionTicker.complete() called without animation set. This may cause issues.");
@@ -95,6 +99,11 @@ export default class MotionTicker implements Ticker<TArgs> {
                         let target = this.getItemByAlias(alias);
                         if (!target) {
                             return true;
+                        }
+                        if (this.ignoreOnComplete) {
+                            setTimeout(() => {
+                                this.ignoreOnComplete = false;
+                            }, 10);
                         }
                         (target as any)[p] = newValue;
                         return true;
@@ -137,6 +146,9 @@ export default class MotionTicker implements Ticker<TArgs> {
             ...this._args.options,
             repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
             onComplete: () => {
+                if (this.ignoreOnComplete) {
+                    return;
+                }
                 // TODO: viene eseguita 2 volte
                 const id = this.tickerId;
                 if (!id) {
