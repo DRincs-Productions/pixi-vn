@@ -337,7 +337,16 @@ export default class CanvasManager implements CanvasManagerInterface {
     public get currentTickersSteps() {
         return CanvasManagerStatic._currentTickersSequence;
     }
-    addTicker<TArgs extends TickerArgs>(canvasElementAlias: string | string[], ticker: Ticker<TArgs>) {
+    addTicker<TArgs extends TickerArgs>(
+        canvasElementAlias: string | string[],
+        ticker: Ticker<TArgs>,
+        options?: {
+            /**
+             * The id of the ticker.
+             */
+            id?: string;
+        }
+    ) {
         let tickerId: TickerIdType = ticker.id;
         if (typeof canvasElementAlias === "string") {
             canvasElementAlias = [canvasElementAlias];
@@ -350,7 +359,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         let tickerHistory: TickerInfo<TArgs> = {
             ticker: ticker,
         };
-        let id = CanvasManagerStatic.generateTickerId(tickerHistory);
+        const { id = CanvasManagerStatic.generateTickerId(tickerHistory) } = options || {};
         CanvasManagerStatic._currentTickers[id] = tickerHistory;
         tickerHistory.ticker.start(id);
         if (ticker.duration) {
@@ -858,7 +867,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     public async restore(data: object) {
         this.clear();
         try {
-            let tickersToTrasfer: { [oldId: string]: string } = {};
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
                 let elementAliasesOrder = (data as CanvasGameState)["elementAliasesOrder"];
                 let elements: {
@@ -888,10 +896,9 @@ export default class CanvasManager implements CanvasManagerInterface {
                     let ticker = RegisteredTickers.getInstance(t.id, t.args, t.duration, t.priority);
                     if (ticker) {
                         ticker.canvasElementAliases = aliases;
-                        let id = this.addTicker(aliases, ticker);
-                        if (id) {
-                            tickersToTrasfer[oldId] = id;
-                        }
+                        this.addTicker(aliases, ticker, {
+                            id: oldId,
+                        });
                     } else {
                         logger.error(`Ticker ${t.id} not found`);
                     }
@@ -911,23 +918,17 @@ export default class CanvasManager implements CanvasManagerInterface {
                 Object.keys(tickersOnPause).forEach((alias) => {
                     let data = tickersOnPause[alias];
                     if ("tickerIdsExcluded" in data && data.tickerIdsExcluded) {
-                        tickersOnPause[alias].tickerIdsExcluded = data.tickerIdsExcluded.map(
-                            (id: string) => tickersToTrasfer[id] || id
-                        );
+                        tickersOnPause[alias].tickerIdsExcluded = data.tickerIdsExcluded;
                     }
                     if ("tickerIdsIncluded" in data && data.tickerIdsIncluded) {
-                        tickersOnPause[alias].tickerIdsIncluded = data.tickerIdsIncluded.map(
-                            (id: string) => tickersToTrasfer[id] || id
-                        );
+                        tickersOnPause[alias].tickerIdsIncluded = data.tickerIdsIncluded;
                     }
                 });
                 CanvasManagerStatic._tickersOnPause = tickersOnPause;
             }
             if (data.hasOwnProperty("tickersToCompleteOnStepEnd")) {
                 let tickersToCompleteOnStepEnd = (data as CanvasGameState)["tickersToCompleteOnStepEnd"];
-                let tikersIds = tickersToCompleteOnStepEnd.tikersIds.map((t) => ({
-                    id: tickersToTrasfer[t.id] || t.id,
-                }));
+                let tikersIds = tickersToCompleteOnStepEnd.tikersIds;
                 let stepAlias = tickersToCompleteOnStepEnd.stepAlias.map((t) => ({ id: t.id, alias: t.alias }));
                 CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds, stepAlias };
             }
