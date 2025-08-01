@@ -7,7 +7,7 @@ import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import MotionComponentExtension from "../interfaces/MotionComponentExtension";
 
 interface TArgs {
-    keyframes: ObjectTarget<CanvasBaseInterface<any>> & MotionComponentExtension;
+    keyframes: Omit<ObjectTarget<CanvasBaseInterface<any>>, "pivot" | "scale"> & MotionComponentExtension;
     options: AnimationOptions;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/discussions/3330)
@@ -107,11 +107,21 @@ export default class MotionTicker implements Ticker<TArgs> {
                             }, 10);
                         }
                         switch (p) {
+                            case "pivot":
+                                if (typeof newValue === "number") {
+                                    target.pivot.set(newValue);
+                                }
+                                break;
                             case "pivotX":
                                 target.pivot.x = newValue;
                                 break;
                             case "pivotY":
                                 target.pivot.y = newValue;
+                                break;
+                            case "scale":
+                                if (typeof newValue === "number") {
+                                    target.scale.set(newValue);
+                                }
                                 break;
                             case "scaleX":
                                 target.scale.x = newValue;
@@ -138,11 +148,17 @@ export default class MotionTicker implements Ticker<TArgs> {
                         }
                         let res = undefined;
                         switch (p) {
+                            case "pivot":
+                                res = { x: target.pivot.x, y: target.pivot.y };
+                                break;
                             case "pivotX":
                                 res = target.pivot.x;
                                 break;
                             case "pivotY":
                                 res = target.pivot.y;
+                                break;
+                            case "scale":
+                                res = { x: target.scale.x, y: target.scale.y };
                                 break;
                             case "scaleX":
                                 res = target.scale.x;
@@ -166,10 +182,14 @@ export default class MotionTicker implements Ticker<TArgs> {
                             return false;
                         }
                         switch (p) {
+                            case "pivot":
+                                return "pivot" in target;
                             case "pivotX":
                                 return "pivot" in target && "x" in target.pivot;
                             case "pivotY":
                                 return "pivot" in target && "y" in target.pivot;
+                            case "scale":
+                                return "scale" in target;
                             case "scaleX":
                                 return "scale" in target && "x" in target.scale;
                             case "scaleY":

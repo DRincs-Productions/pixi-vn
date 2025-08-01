@@ -17,7 +17,7 @@ import MotionComponentExtension from "../interfaces/MotionComponentExtension";
  */
 export default function animate<T extends ContainerChild>(
     components: T | T[],
-    keyframes: ObjectTarget<T> & MotionComponentExtension,
+    keyframes: Omit<ObjectTarget<T>, "pivot" | "scale"> & MotionComponentExtension,
     options: AnimationOptions & {
         ticker?: PixiTicker;
     } = {}
