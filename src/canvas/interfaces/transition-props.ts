@@ -1,4 +1,4 @@
-import { FadeAlphaTickerProps, MoveTickerProps } from "../tickers";
+import { MoveTickerProps } from "../tickers";
 import AnimationOptions from "../types/AnimationOptions";
 
 interface BaseTransitionProps {
@@ -10,12 +10,8 @@ interface BaseTransitionProps {
     mustBeCompletedBeforeNextStep?: boolean;
 }
 
-export interface ShowWithDissolveTransitionProps
-    extends BaseTransitionProps,
-        Omit<FadeAlphaTickerProps, "type" | "startOnlyIfHaveTexture"> {}
-export interface ShowWithFadeTransitionProps
-    extends BaseTransitionProps,
-        Omit<FadeAlphaTickerProps, "type" | "startOnlyIfHaveTexture"> {}
+export interface ShowWithDissolveTransitionProps extends BaseTransitionProps, AnimationOptions {}
+export interface ShowWithFadeTransitionProps extends BaseTransitionProps, AnimationOptions {}
 export interface MoveInOutProps extends BaseTransitionProps, AnimationOptions {
     /**
      * The direction of the movement.

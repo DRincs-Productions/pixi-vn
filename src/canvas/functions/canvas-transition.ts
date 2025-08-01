@@ -124,7 +124,7 @@ export async function showWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [] } = props;
+    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -154,17 +154,19 @@ export async function showWithDissolve(
         }
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new FadeAlphaTicker(
+    let idShow = canvas.animate(
+        alias,
         {
-            ...props,
-            type: "show",
+            alpha: 1,
+        },
+        {
+            ...options,
             tickerAliasToResume,
+            aliasToRemoveAfter,
             startOnlyIfHaveTexture: true,
         },
-        undefined,
         priority
     );
-    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
@@ -379,7 +381,7 @@ export async function moveIn(
     let ids: string[] | undefined = undefined;
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            ids = moveOut(oldComponentAlias, props);
+            ids = moveOut(oldComponentAlias, props, priority);
             if (ids) {
                 res.push(...ids);
                 tickerAliasToResume.push(oldComponentAlias);
