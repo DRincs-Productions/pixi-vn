@@ -1,5 +1,5 @@
 import { animate as animateMotion, AnimationOptions, ObjectTarget } from "motion";
-import { ContainerChild, Ticker as PixiTicker } from "pixi.js";
+import { Ticker as PixiTicker } from "pixi.js";
 import { canvas } from "../..";
 import MotionComponentExtension from "../interfaces/MotionComponentExtension";
 
@@ -15,7 +15,7 @@ import MotionComponentExtension from "../interfaces/MotionComponentExtension";
  * @returns An animation playback control object that can be used to start, stop, or control the animation.
  * @template T - The type of PixiJS component(s) being animated.
  */
-export default function animate<T extends ContainerChild>(
+export default function animate<T extends {}>(
     components: T | T[],
     keyframes: ObjectTarget<T> & MotionComponentExtension,
     options: AnimationOptions & {
