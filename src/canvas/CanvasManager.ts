@@ -770,7 +770,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
-        keyframes: Omit<ObjectTarget<T>, "pivot" | "scale"> & MotionComponentExtension,
+        keyframes: ObjectTarget<T> & MotionComponentExtension,
         options: AnimationOptions,
         priority?: UPDATE_PRIORITY
     ) {

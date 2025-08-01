@@ -11,7 +11,7 @@ import {
     ShowWithFadeTransitionProps,
     ZoomInOutProps,
 } from "../interfaces/transition-props";
-import { FadeAlphaTicker, MoveTicker, ZoomTicker } from "../tickers";
+import { FadeAlphaTicker, MoveTicker } from "../tickers";
 import {
     calculatePositionByAlign,
     calculatePositionByPercentagePosition,
@@ -632,7 +632,7 @@ export async function zoomIn(
  * @returns The ids of the tickers that are used in the effect.
  */
 export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -643,42 +643,50 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         logger.warn(`The canvas component "${alias}" is not found.`);
         return;
     }
+    let destination = { x: component.x, y: component.y };
+    let pivot: { x: number; y: number } = {
+        x: component.pivot.x,
+        y: component.pivot.y,
+    };
     if (direction == "up") {
-        component.pivot.y = canvas.canvasHeight - component.y;
-        component.pivot.x = canvas.canvasWidth / 2 - component.x;
-        component.y = canvas.canvasHeight;
-        component.x = canvas.canvasWidth / 2;
+        destination.y = canvas.canvasHeight;
+        destination.x = canvas.canvasWidth / 2;
+        pivot.y = canvas.canvasHeight - destination.y;
+        pivot.x = canvas.canvasWidth / 2 - destination.x;
     } else if (direction == "down") {
-        component.pivot.y = 0 - component.y;
-        component.pivot.x = canvas.canvasWidth / 2 - component.x;
-        component.y = 0;
-        component.x = canvas.canvasWidth / 2;
-    } else if (direction == "left") {
-        component.pivot.x = canvas.canvasWidth - component.x;
-        component.pivot.y = canvas.canvasHeight / 2 - component.y;
-        component.x = canvas.canvasWidth;
-        component.y = canvas.canvasHeight / 2;
+        destination.y = 0;
+        destination.x = canvas.canvasWidth / 2;
+        pivot.y = 0 - destination.y;
+        pivot.x = canvas.canvasWidth / 2 - destination.x;
     } else if (direction == "right") {
-        component.pivot.x = 0 - component.x;
-        component.pivot.y = canvas.canvasHeight / 2 - component.y;
-        component.x = 0;
-        component.y = canvas.canvasHeight / 2;
+        destination.x = canvas.canvasWidth;
+        destination.y = canvas.canvasHeight / 2;
+        pivot.x = canvas.canvasWidth - destination.x;
+        pivot.y = canvas.canvasHeight / 2 - destination.y;
+    } else if (direction == "left") {
+        destination.x = 0;
+        destination.y = canvas.canvasHeight / 2;
+        pivot.x = 0 - destination.x;
+        pivot.y = canvas.canvasHeight / 2 - destination.y;
     }
-    component.pivot = getPointBySuperPoint(component.pivot, component.angle);
-    component.scale.set(1);
+    pivot = getPointBySuperPoint(pivot, component.angle);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new ZoomTicker(
+    let id = canvas.animate(
+        alias,
         {
-            ...props,
+            ...destination,
+            pivotX: pivot.x,
+            pivotY: pivot.y,
+            scaleX: 0,
+            scaleY: 0,
+        },
+        {
+            ...options,
             startOnlyIfHaveTexture: true,
-            type: "unzoom",
-            limit: 0,
             aliasToRemoveAfter,
         },
-        undefined,
         priority
     );
-    let id = canvas.addTicker(alias, effect);
     if (id) {
         canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
