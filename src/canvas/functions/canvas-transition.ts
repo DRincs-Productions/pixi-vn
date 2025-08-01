@@ -513,6 +513,7 @@ export async function zoomIn(
         mustBeCompletedBeforeNextStep = true,
         tickerAliasToResume = [],
         aliasToRemoveAfter = [],
+        ...options
     } = props;
     let res: string[] = [];
     if (!component) {
@@ -526,8 +527,7 @@ export async function zoomIn(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    let oldCanvas = canvas.find(alias);
-    if (oldCanvas) {
+    if (canvas.find(alias)) {
         oldComponentAlias = alias + "_temp_zoom";
         canvas.editAlias(alias, oldComponentAlias);
     }
@@ -535,6 +535,40 @@ export async function zoomIn(
     component = addComponent(alias, component);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
+    // edit the properties of the new component
+    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
+    if (component instanceof ImageSprite || component instanceof ImageContainer) {
+        destination = component.positionInfo;
+    } else {
+        destination = { x: component.x, y: component.y, type: "pixel" };
+    }
+    const pivot: { x: number; y: number } = {
+        x: component.pivot.x,
+        y: component.pivot.y,
+    };
+    const scale: { x: number; y: number } = {
+        x: component.scale.x,
+        y: component.scale.y,
+    };
+    // remove the old component
+    let ids: string[] | undefined = undefined;
+    if (oldComponentAlias) {
+        if (props.removeOldComponentWithZoomOut) {
+            ids = zoomOut(oldComponentAlias, props, priority);
+            if (ids) {
+                res.push(...ids);
+                tickerAliasToResume.push(oldComponentAlias);
+            }
+        } else {
+            aliasToRemoveAfter.push(oldComponentAlias);
+        }
+    }
+    // load the image if the image is not loaded
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load();
+    }
+    // special
+    oldComponentAlias && canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids });
     // edit the properties of the new component
     if (direction == "up") {
         component.pivot.y = canvas.canvasHeight - component.y;
@@ -559,46 +593,29 @@ export async function zoomIn(
     }
     component.pivot = getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
-    let isZoomInOut = oldCanvas
-        ? { pivot: { x: oldCanvas.pivot.x, y: oldCanvas.pivot.y }, position: { x: oldCanvas.x, y: oldCanvas.y } }
-        : undefined;
-    // remove the old component
-    if (oldComponentAlias) {
-        if (props.removeOldComponentWithZoomOut) {
-            let ids = zoomOut(oldComponentAlias, props, priority);
-            if (ids) {
-                res.push(...ids);
-                tickerAliasToResume.push(oldComponentAlias);
-            }
-        } else {
-            aliasToRemoveAfter.push(oldComponentAlias);
-        }
-        canvas.pauseTicker(oldComponentAlias);
-    }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     tickerAliasToResume.push(alias);
-    let effect = new ZoomTicker(
+    let idShow = canvas.animate(
+        alias,
         {
-            ...props,
+            ...calculateDestination(destination, component),
+            pivotX: pivot.x,
+            pivotY: pivot.y,
+            scaleX: scale.x,
+            scaleY: scale.y,
+        },
+        {
+            ...options,
             tickerAliasToResume,
             aliasToRemoveAfter,
             startOnlyIfHaveTexture: true,
-            type: "zoom",
-            limit: 1,
-            isZoomInOut,
         },
-        undefined,
         priority
     );
-    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
         canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
-    }
-    // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load();
     }
     // return the ids of the tickers
     if (res.length > 0) {

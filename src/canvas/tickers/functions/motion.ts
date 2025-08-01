@@ -1,6 +1,7 @@
 import { animate as animateMotion, AnimationOptions, ObjectTarget } from "motion";
 import { ContainerChild, Ticker as PixiTicker } from "pixi.js";
 import { canvas } from "../..";
+import MotionComponentExtension from "../interfaces/MotionComponentExtension";
 
 /**
  * Animate a PixiJS component or components using [motion's animate](https://motion.dev/docs/animate) function.
@@ -16,7 +17,7 @@ import { canvas } from "../..";
  */
 export default function animate<T extends ContainerChild>(
     components: T | T[],
-    keyframes: ObjectTarget<T>,
+    keyframes: ObjectTarget<T> & MotionComponentExtension,
     options: AnimationOptions & {
         ticker?: PixiTicker;
     } = {}

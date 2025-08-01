@@ -4,9 +4,10 @@ import { animate, AnimationOptions, canvas, CanvasBaseInterface, Ticker } from "
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
+import MotionComponentExtension from "../interfaces/MotionComponentExtension";
 
 interface TArgs {
-    keyframes: ObjectTarget<CanvasBaseInterface<any>>;
+    keyframes: ObjectTarget<CanvasBaseInterface<any>> & MotionComponentExtension;
     options: AnimationOptions;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/discussions/3330)
@@ -105,7 +106,23 @@ export default class MotionTicker implements Ticker<TArgs> {
                                 this.ignoreOnComplete = false;
                             }, 10);
                         }
-                        (target as any)[p] = newValue;
+                        switch (p) {
+                            case "pivotX":
+                                target.pivot.x = newValue;
+                                break;
+                            case "pivotY":
+                                target.pivot.y = newValue;
+                                break;
+                            case "scaleX":
+                                target.scale.x = newValue;
+                                break;
+                            case "scaleY":
+                                target.scale.y = newValue;
+                                break;
+                            default:
+                                (target as any)[p] = newValue;
+                                break;
+                        }
                         return true;
                     },
                     get: ({ alias }, p) => {
@@ -119,18 +136,47 @@ export default class MotionTicker implements Ticker<TArgs> {
                         if (!target) {
                             return;
                         }
+                        let res = undefined;
+                        switch (p) {
+                            case "pivotX":
+                                res = target.pivot.x;
+                                break;
+                            case "pivotY":
+                                res = target.pivot.y;
+                                break;
+                            case "scaleX":
+                                res = target.scale.x;
+                                break;
+                            case "scaleY":
+                                res = target.scale.y;
+                                break;
+                            default:
+                                res = (target as any)[p];
+                                break;
+                        }
                         this._args.startState = {
                             ...this._args.startState,
-                            [p]: (target as any)[p],
+                            [p]: res,
                         };
-                        return (target as any)[p];
+                        return res;
                     },
                     has: ({ alias }, p) => {
                         let target = this.getItemByAlias(alias);
                         if (!target) {
                             return false;
                         }
-                        return p in target;
+                        switch (p) {
+                            case "pivotX":
+                                return "pivot" in target && "x" in target.pivot;
+                            case "pivotY":
+                                return "pivot" in target && "y" in target.pivot;
+                            case "scaleX":
+                                return "scale" in target && "x" in target.scale;
+                            case "scaleY":
+                                return "scale" in target && "y" in target.scale;
+                            default:
+                                return p in target;
+                        }
                     },
                     ownKeys: ({ alias }) => {
                         let target = this.getItemByAlias(alias);

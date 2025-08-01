@@ -1,4 +1,4 @@
-import { FadeAlphaTickerProps, MoveTickerProps, ZoomTickerProps } from "../tickers";
+import { FadeAlphaTickerProps, MoveTickerProps } from "../tickers";
 import AnimationOptions from "../types/AnimationOptions";
 
 interface BaseTransitionProps {
@@ -23,9 +23,7 @@ export interface MoveInOutProps extends BaseTransitionProps, AnimationOptions {
      */
     direction?: "up" | "down" | "left" | "right";
 }
-export interface ZoomInOutProps
-    extends BaseTransitionProps,
-        Omit<ZoomTickerProps, "startOnlyIfHaveTexture" | "type" | "limit" | "isZoomInOut"> {
+export interface ZoomInOutProps extends BaseTransitionProps, AnimationOptions {
     /**
      * The direction of the zoom effect.
      * @default "right"

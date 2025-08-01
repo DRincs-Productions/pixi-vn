@@ -20,6 +20,7 @@ import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
 import { Ticker, TickerArgs, TickerInfo } from "./tickers";
 import MotionTicker from "./tickers/components/MotionTicker";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
+import MotionComponentExtension from "./tickers/interfaces/MotionComponentExtension";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
 import AnimationOptions from "./types/AnimationOptions";
@@ -769,7 +770,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
-        keyframes: ObjectTarget<T>,
+        keyframes: ObjectTarget<T> & MotionComponentExtension,
         options: AnimationOptions,
         priority?: UPDATE_PRIORITY
     ) {
