@@ -64,8 +64,8 @@ function calculateDestination(
         destination.y = calculatePositionByPercentagePosition("height", destination.y);
     }
     return {
-        x: Math.round(destination.x),
-        y: Math.round(destination.y),
+        x: destination.x,
+        y: destination.y,
     };
 }
 
@@ -452,7 +452,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
         logger.warn(`The canvas component "${alias}" is not found.`);
         return;
     }
-    let destination = { x: Math.round(component.x), y: Math.round(component.y) };
+    let destination = { x: component.x, y: component.y };
     switch (direction) {
         case "up":
             destination.y = -component.height;
