@@ -648,12 +648,12 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         x: component.pivot.x,
         y: component.pivot.y,
     };
-    if (direction == "up") {
+    if (direction == "down") {
         destination.y = canvas.canvasHeight;
         destination.x = canvas.canvasWidth / 2;
         pivot.y = canvas.canvasHeight - destination.y;
         pivot.x = canvas.canvasWidth / 2 - destination.x;
-    } else if (direction == "down") {
+    } else if (direction == "up") {
         destination.y = 0;
         destination.x = canvas.canvasWidth / 2;
         pivot.y = 0 - destination.y;
