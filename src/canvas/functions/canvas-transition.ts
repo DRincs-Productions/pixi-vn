@@ -109,7 +109,6 @@ function addComponent(alias: string, canvasElement: TComponent): CanvasBaseInter
  * Show a image in the canvas with a disolve effect.
  * Disolve effect is a effect that the image is shown with a fade in.
  * If exist a image with the same alias, then the image is replaced and the first image is removed after the effect is done.
- * This transition is done with a {@link FadeAlphaTicker} effect.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
  * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
@@ -183,7 +182,6 @@ export async function showWithDissolve(
 /**
  * Remove a image from the canvas with a disolve effect.
  * Disolve effect is a effect that the image is removed with a fade out.
- * This transition is done with a {@link FadeAlphaTicker} effect.
  * This function is equivalent to {@link removeWithFade}.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
@@ -299,7 +297,6 @@ export async function showWithFade(
 /**
  * Remove a image from the canvas with a fade effect.
  * Fade effect is a effect that the image is removed with a fade out.
- * This transition is done with a {@link FadeAlphaTicker} effect.
  * This function is equivalent to {@link removeWithDissolve}.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param props The properties of the effect
