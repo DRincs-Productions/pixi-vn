@@ -122,7 +122,7 @@ export async function showWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [], ...options } = props;
+    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -160,7 +160,6 @@ export async function showWithDissolve(
         {
             ...options,
             tickerAliasToResume,
-            aliasToRemoveAfter,
         },
         priority
     );
@@ -233,16 +232,13 @@ export async function showWithFade(
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [], ...options } = props;
+    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
     }
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
-    }
-    if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume];
     }
     // check if the alias is already exist
     if (!canvas.find(alias)) {
@@ -277,7 +273,6 @@ export async function showWithFade(
         },
         {
             ...options,
-            tickerAliasToResume,
             aliasToRemoveAfter,
         },
         priority
@@ -705,22 +700,13 @@ export async function pushIn(
     props: PushInOutProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let {
-        direction = "right",
-        mustBeCompletedBeforeNextStep = true,
-        tickerAliasToResume = [],
-        aliasToRemoveAfter = [],
-        ...options
-    } = props;
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
     }
     if (typeof tickerAliasToResume === "string") {
         tickerAliasToResume = [tickerAliasToResume];
-    }
-    if (typeof aliasToRemoveAfter === "string") {
-        aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
@@ -771,7 +757,6 @@ export async function pushIn(
         {
             ...options,
             tickerAliasToResume,
-            aliasToRemoveAfter,
         },
         priority
     );
