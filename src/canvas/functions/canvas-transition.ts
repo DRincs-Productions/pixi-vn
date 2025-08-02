@@ -11,7 +11,7 @@ import {
     ShowWithFadeTransitionProps,
     ZoomInOutProps,
 } from "../interfaces/transition-props";
-import { FadeAlphaTicker, MoveTicker } from "../tickers";
+import { MoveTicker } from "../tickers";
 import {
     calculatePositionByAlign,
     calculatePositionByPercentagePosition,
@@ -234,13 +234,16 @@ export async function showWithFade(
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
+    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], aliasToRemoveAfter = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
     }
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
+    }
+    if (typeof tickerAliasToResume === "string") {
+        tickerAliasToResume = [tickerAliasToResume];
     }
     // check if the alias is already exist
     if (!canvas.find(alias)) {
@@ -268,16 +271,18 @@ export async function showWithFade(
         res.push(...idHide);
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new FadeAlphaTicker(
+    let idShow = canvas.animate(
+        alias,
         {
-            ...props,
-            type: "show",
+            alpha: 1,
+        },
+        {
+            ...options,
+            tickerAliasToResume,
             aliasToRemoveAfter,
         },
-        undefined,
         priority
     );
-    let idShow = canvas.addTicker(alias, effect);
     if (idShow) {
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
