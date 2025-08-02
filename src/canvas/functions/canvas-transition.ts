@@ -163,7 +163,6 @@ export async function showWithDissolve(
             ...options,
             tickerAliasToResume,
             aliasToRemoveAfter,
-            startOnlyIfHaveTexture: true,
         },
         priority
     );
@@ -192,30 +191,27 @@ export async function showWithDissolve(
  * @returns The ids of the tickers that are used in the effect.
  */
 export function removeWithDissolve(
-    alias: string | string[],
+    alias: string,
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): string[] | undefined {
-    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [] } = props;
-    if (typeof alias === "string") {
-        alias = [alias];
-    }
+    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
-    aliasToRemoveAfter.push(...alias);
+    aliasToRemoveAfter.push(alias);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    let effect = new FadeAlphaTicker(
+    let id = canvas.animate(
+        alias,
         {
-            ...props,
-            type: "hide",
-            aliasToRemoveAfter,
-            startOnlyIfHaveTexture: true,
+            alpha: 0,
         },
-        undefined,
+        {
+            ...options,
+            aliasToRemoveAfter,
+        },
         priority
     );
-    let id = canvas.addTicker(alias, effect);
     if (id) {
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
@@ -278,7 +274,6 @@ export async function showWithFade(
         {
             ...props,
             type: "show",
-            startOnlyIfHaveTexture: true,
             aliasToRemoveAfter,
         },
         undefined,
@@ -312,7 +307,7 @@ export async function showWithFade(
  * @returns The ids of the tickers that are used in the effect.
  */
 export function removeWithFade(
-    alias: string | string[],
+    alias: string,
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): string[] | undefined {
@@ -419,7 +414,6 @@ export async function moveIn(
             ...options,
             tickerAliasToResume,
             aliasToRemoveAfter,
-            startOnlyIfHaveTexture: true,
         },
         priority
     );
@@ -475,7 +469,6 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
         destination,
         {
             ...options,
-            startOnlyIfHaveTexture: true,
             aliasToRemoveAfter,
         },
         priority
@@ -610,7 +603,6 @@ export async function zoomIn(
             ...options,
             tickerAliasToResume,
             aliasToRemoveAfter,
-            startOnlyIfHaveTexture: true,
         },
         priority
     );
@@ -684,7 +676,6 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         },
         {
             ...options,
-            startOnlyIfHaveTexture: true,
             aliasToRemoveAfter,
         },
         priority
@@ -763,7 +754,6 @@ export async function pushIn(
         {
             ...props,
             tickerAliasToResume,
-            startOnlyIfHaveTexture: true,
             destination,
         },
         undefined,

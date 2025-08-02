@@ -3,7 +3,6 @@ import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
 import { animate, AnimationOptions, canvas, CanvasBaseInterface, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
-import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import MotionComponentExtension from "../interfaces/MotionComponentExtension";
 
 interface TArgs {
@@ -59,11 +58,6 @@ export default class MotionTicker implements Ticker<TArgs> {
         let element = canvas.find(alias);
         if (!element) {
             return;
-        }
-        if (this._args.options.startOnlyIfHaveTexture) {
-            if (!checkIfTextureNotIsEmpty(element)) {
-                return;
-            }
         }
         return element;
     }
