@@ -768,7 +768,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
-        keyframes: KeyframesType<T>,
+        keyframes: KeyframesType<T> = {},
         options: AnimationOptions,
         priority?: UPDATE_PRIORITY
     ) {

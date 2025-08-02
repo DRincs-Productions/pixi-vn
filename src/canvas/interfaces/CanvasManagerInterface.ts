@@ -319,7 +319,7 @@ export default interface CanvasManagerInterface {
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: KeyframesType<T>,
-        options: AnimationOptions,
+        options?: AnimationOptions,
         priority?: UPDATE_PRIORITY
     ): string | undefined;
 
