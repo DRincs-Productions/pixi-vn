@@ -1,5 +1,4 @@
 import { Devtools } from "@pixi/devtools";
-import { ObjectTarget } from "motion";
 import {
     Application,
     ApplicationOptions,
@@ -9,8 +8,7 @@ import {
     UPDATE_PRIORITY,
 } from "pixi.js";
 import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import MotionComponentExtension from "../tickers/interfaces/MotionComponentExtension";
-import AnimationOptions from "../types/AnimationOptions";
+import AnimationOptions, { KeyframesType } from "../types/AnimationOptions";
 import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
@@ -320,7 +318,7 @@ export default interface CanvasManagerInterface {
      */
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
-        keyframes: ObjectTarget<T> & MotionComponentExtension,
+        keyframes: KeyframesType<T>,
         options: AnimationOptions,
         priority?: UPDATE_PRIORITY
     ): string | undefined;

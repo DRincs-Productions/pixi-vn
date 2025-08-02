@@ -59,7 +59,7 @@ export type {
     ZoomInOutProps,
 } from "./interfaces/transition-props";
 export * from "./tickers";
-export type { default as AnimationOptions } from "./types/AnimationOptions";
+export type { default as AnimationOptions, KeyframesType } from "./types/AnimationOptions";
 export type { default as CanvasEventNamesType } from "./types/CanvasEventNamesType";
 export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
