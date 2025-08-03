@@ -24,8 +24,12 @@ export default class StorageManager implements StorageManagerInterface {
     }
     set startingStorage(value: { [key: string]: StorageElementType }) {
         let data: StorageGameStateItem[] = [];
+        const isTheStart = GameUnifier.stepCounter === 0;
         Object.entries(value).forEach(([key, value]) => {
             data.push({ key, value: value });
+            if (isTheStart) {
+                StorageManagerStatic.storage.set(key, value);
+            }
         });
         StorageManagerStatic.startingStorage = data;
     }
