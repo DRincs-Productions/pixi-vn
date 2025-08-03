@@ -271,6 +271,7 @@ export default interface CanvasManagerInterface {
             | {
                   /**
                    * The alias of the canvas element that will use the ticker.
+                   * Will pause all tickers that are connected to this canvas element.
                    */
                   canvasAlias: string;
                   /**
@@ -294,6 +295,7 @@ export default interface CanvasManagerInterface {
             | {
                   /**
                    * The alias of the canvas element that will use the ticker.
+                   * Will resume all tickers that are connected to this canvas element.
                    */
                   canvasAlias: string;
               }
