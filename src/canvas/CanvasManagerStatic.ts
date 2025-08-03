@@ -240,6 +240,9 @@ export default class CanvasManagerStatic {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
     } = { tikersIds: [], stepAlias: [] };
+    /**
+     * @deprecated
+     */
     static _tickersOnPause: { [aliasOrId: string]: PauseTickerType } = {};
     static generateTickerId(tickerData: TickerInfo<any> | TickersSequence): string {
         try {

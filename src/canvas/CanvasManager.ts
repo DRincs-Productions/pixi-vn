@@ -709,6 +709,11 @@ export default class CanvasManager implements CanvasManagerInterface {
     ) {
         if ("canvasAlias" in filters) {
             const { canvasAlias } = filters;
+            Object.values(CanvasManagerStatic._currentTickers).forEach((info) => {
+                if (info.ticker.canvasElementAliases.includes(canvasAlias)) {
+                    info.ticker.play();
+                }
+            });
             // TODO: to remove in the future
             delete CanvasManagerStatic._tickersOnPause[canvasAlias];
         } else if ("id" in filters) {
@@ -925,6 +930,11 @@ export default class CanvasManager implements CanvasManagerInterface {
                         this.addTicker(aliases, ticker, {
                             id: oldId,
                         });
+                        // TODO: it should be paused even before starting
+                        // TODO: All tickets should be started at the same time and not wait for the previous one to initialize.
+                        if (t.paused) {
+                            ticker.pause();
+                        }
                     } else {
                         logger.error(`Ticker ${t.id} not found`);
                     }

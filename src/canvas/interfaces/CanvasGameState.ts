@@ -10,6 +10,9 @@ export default interface CanvasGameState {
     elements: { [alias: string]: CanvasBaseItemMemory };
     stage: Partial<ContainerMemory>;
     elementAliasesOrder: string[];
+    /**
+     * @deprecated
+     */
     tickersOnPause: { [alias: string]: PauseTickerType };
     tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
