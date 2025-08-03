@@ -133,4 +133,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
     play() {
         this.ticker.start();
     }
+    get paused(): boolean {
+        return !this.ticker.started;
+    }
 }

@@ -26,4 +26,5 @@ export interface TickerHistory<TArgs extends TickerArgs> {
     canvasElementAliases: string[];
     priority?: UPDATE_PRIORITY;
     duration?: number;
+    paused?: boolean;
 }

@@ -9,7 +9,6 @@ import {
 } from "pixi.js";
 import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
 import AnimationOptions, { KeyframesType } from "../types/AnimationOptions";
-import PauseTickerType from "../types/PauseTickerType";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { CanvasBaseInterface } from "./CanvasBaseInterface";
@@ -265,15 +264,46 @@ export default interface CanvasManagerInterface {
     removeTicker(tickerId: string | string[]): void;
     /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
-     * @param alias The alias of the canvas element that will use the ticker.
-     * @param options The options of the pause ticker.
+     * @param filters The filters to pause the ticker.
      */
-    pauseTicker(alias: string, options?: PauseTickerType): void;
+    pauseTicker(
+        filters:
+            | {
+                  /**
+                   * The alias of the canvas element that will use the ticker.
+                   */
+                  canvasAlias: string;
+                  /**
+                   * Ticker ids excluded from the pause. If not provided, all tickers will be paused.
+                   */
+                  tickerIdsExcluded?: string[];
+              }
+            | {
+                  /**
+                   * The id of the ticker to be paused. If provided, only this ticker will be paused.
+                   */
+                  id: string | string[];
+              }
+    ): void;
     /**
      * Resume a ticker.
-     * @param alias The alias of the canvas element that will use the ticker.
+     * @param filters The filters to resume the ticker.
      */
-    resumeTicker(alias: string | string[]): void;
+    resumeTicker(
+        filters:
+            | {
+                  /**
+                   * The alias of the canvas element that will use the ticker.
+                   */
+                  canvasAlias: string;
+              }
+            | {
+                  /**
+                   * The id of the ticker to be resumed. If provided, only this ticker will be resumed.
+                   */
+                  id: string | string[];
+              }
+    ): void;
     /**
      * Check if a ticker is paused.
      * @param alias The alias of the canvas element that will use the ticker.
@@ -424,16 +454,16 @@ export default interface CanvasManagerInterface {
     onEndOfTicker(
         tickerId: string,
         options: {
-            aliasToRemoveAfter: string[] | string;
-            tickerAliasToResume: string[] | string;
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
             ignoreTickerSteps?: boolean;
         }
     ): void;
     onTickerComplete(
         tickerId: string,
         options: {
-            aliasToRemoveAfter: string[] | string;
-            tickerAliasToResume: string[] | string;
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
             ignoreTickerSteps?: boolean;
             stopTicker?: boolean;
         }

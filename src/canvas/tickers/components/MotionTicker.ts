@@ -52,9 +52,6 @@ export default class MotionTicker implements Ticker<TArgs> {
         if (!this.canvasElementAliases.includes(alias)) {
             return;
         }
-        if (canvas.isTickerPaused(alias, this.tickerId)) {
-            return;
-        }
         let element = canvas.find(alias);
         if (!element) {
             return;
@@ -203,13 +200,11 @@ export default class MotionTicker implements Ticker<TArgs> {
                 if (typeof tickerAliasToResume === "string") {
                     tickerAliasToResume = [tickerAliasToResume];
                 }
-                setTimeout(() => {
-                    canvas.onTickerComplete(id, {
-                        aliasToRemoveAfter: aliasToRemoveAfter,
-                        tickerAliasToResume: tickerAliasToResume,
-                        stopTicker: false,
-                    });
-                }, this.timeout / 2);
+                canvas.onTickerComplete(id, {
+                    aliasToRemoveAfter: aliasToRemoveAfter,
+                    tickerAliasToResume: tickerAliasToResume,
+                    stopTicker: false,
+                });
             },
             ticker: this.ticker,
         });
@@ -230,5 +225,12 @@ export default class MotionTicker implements Ticker<TArgs> {
             return;
         }
         this.animation.play();
+    }
+    get paused(): boolean {
+        if (!this.animation) {
+            logger.warn("MotionTicker.paused() called without animation set. This may cause issues.");
+            return true;
+        }
+        return this.animation.state === "paused";
     }
 }

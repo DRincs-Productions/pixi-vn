@@ -112,6 +112,6 @@ export async function shakeEffect(
     let id = canvas.addTickersSequence(alias, moveTickers);
     if (id) {
         canvas.completeTickerOnStepEnd({ id: id, alias: alias });
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
+        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [id] });
     }
 }

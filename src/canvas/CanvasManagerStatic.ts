@@ -228,6 +228,7 @@ export default class CanvasManagerStatic {
                         canvasElementAliases: info.ticker.canvasElementAliases,
                         priority: info.ticker.priority,
                         duration: info.ticker.duration,
+                        paused: info.ticker.paused,
                     },
                 ])
         );

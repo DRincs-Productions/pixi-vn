@@ -22,7 +22,6 @@ import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
 import AnimationOptions, { KeyframesType } from "./types/AnimationOptions";
-import PauseTickerType from "./types/PauseTickerType";
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
 import { TickerIdType } from "./types/TickerIdType";
@@ -514,8 +513,8 @@ export default class CanvasManager implements CanvasManagerInterface {
     public onEndOfTicker(
         tickerId: string,
         options: {
-            aliasToRemoveAfter: string[] | string;
-            tickerAliasToResume: string[] | string;
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
             ignoreTickerSteps?: boolean;
         }
     ) {
@@ -524,17 +523,17 @@ export default class CanvasManager implements CanvasManagerInterface {
     public onTickerComplete(
         tickerId: string,
         options: {
-            aliasToRemoveAfter: string[] | string;
-            tickerAliasToResume: string[] | string;
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
             ignoreTickerSteps?: boolean;
             stopTicker?: boolean;
         }
     ) {
-        const { stopTicker = true } = options;
+        const { stopTicker = true, aliasToRemoveAfter, tickerAliasToResume } = options;
         let info = CanvasManagerStatic._currentTickers[tickerId];
         let ignoreTickerSteps = options.ignoreTickerSteps || false;
-        this.remove(options.aliasToRemoveAfter);
-        this.resumeTicker(options.tickerAliasToResume);
+        this.remove(aliasToRemoveAfter);
+        tickerAliasToResume.forEach((alias) => this.resumeTicker({ canvasAlias: alias }));
         if (info) {
             this.removeTicker(tickerId, {
                 stopTicker: stopTicker,
@@ -664,40 +663,68 @@ export default class CanvasManager implements CanvasManagerInterface {
         });
     }
 
-    pauseTicker(alias: string, options: PauseTickerType = {}) {
-        let oldOptions = CanvasManagerStatic._tickersOnPause[alias];
-        if (!oldOptions) {
-            CanvasManagerStatic._tickersOnPause[alias] = options;
-            return;
-        }
-        if (options.tickerIdsExcluded) {
-            if (oldOptions.tickerIdsExcluded) {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = [
-                    ...oldOptions.tickerIdsExcluded,
-                    ...options.tickerIdsExcluded,
-                ];
-            } else {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = options.tickerIdsExcluded;
+    pauseTicker(
+        filters:
+            | {
+                  canvasAlias: string;
+                  tickerIdsExcluded?: string[];
+              }
+            | {
+                  id: string | string[];
+              }
+    ) {
+        if ("canvasAlias" in filters) {
+            const { canvasAlias, tickerIdsExcluded = [] } = filters;
+            Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
+                if (
+                    info.ticker.canvasElementAliases.includes(canvasAlias) &&
+                    !tickerIdsExcluded.includes(info.ticker.id)
+                ) {
+                    info.ticker.pause();
+                }
+            });
+        } else if ("id" in filters) {
+            let { id } = filters;
+            if (typeof id === "string") {
+                id = [id];
             }
-        }
-        if (options.tickerIdsIncluded) {
-            if (oldOptions.tickerIdsIncluded) {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = [
-                    ...oldOptions.tickerIdsIncluded,
-                    ...options.tickerIdsIncluded,
-                ];
-            } else {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = options.tickerIdsIncluded;
-            }
+            id.forEach((id) => {
+                let info = CanvasManagerStatic._currentTickers[id];
+                if (info) {
+                    info.ticker.pause();
+                } else {
+                    logger.error(`Ticker with id ${id} not found`);
+                }
+            });
         }
     }
-    resumeTicker(alias: string | string[]) {
-        if (typeof alias === "string") {
-            alias = [alias];
+    resumeTicker(
+        filters:
+            | {
+                  canvasAlias: string;
+              }
+            | {
+                  id: string | string[];
+              }
+    ) {
+        if ("canvasAlias" in filters) {
+            const { canvasAlias } = filters;
+            // TODO: to remove in the future
+            delete CanvasManagerStatic._tickersOnPause[canvasAlias];
+        } else if ("id" in filters) {
+            let { id } = filters;
+            if (typeof id === "string") {
+                id = [id];
+            }
+            id.forEach((id) => {
+                let info = CanvasManagerStatic._currentTickers[id];
+                if (info) {
+                    info.ticker.play();
+                } else {
+                    logger.error(`Ticker with id ${id} not found`);
+                }
+            });
         }
-        alias.forEach((alias) => {
-            delete CanvasManagerStatic._tickersOnPause[alias];
-        });
     }
     isTickerPaused(alias: string, tickerId?: string): boolean {
         let tickersOnPauseData = CanvasManagerStatic._tickersOnPause[alias];

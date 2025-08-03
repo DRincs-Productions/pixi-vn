@@ -147,7 +147,7 @@ export async function showWithDissolve(
         let ids = removeWithDissolve(oldComponentAlias, props, priority);
         if (ids) {
             res.push(...ids);
-            canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids });
+            canvas.pauseTicker({ id: ids });
             tickerAliasToResume.push(oldComponentAlias);
         }
     }
@@ -281,7 +281,7 @@ export async function showWithFade(
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
         // pause the ticker
-        canvas.pauseTicker(alias, { tickerIdsIncluded: [idShow] });
+        canvas.pauseTicker({ id: idShow });
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
@@ -386,7 +386,7 @@ export async function moveIn(
         await component.load();
     }
     // special
-    oldComponentAlias && canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids });
+    ids && canvas.pauseTicker({ id: ids });
     switch (direction) {
         case "up":
             component.y = canvas.canvasHeight + component.height;
@@ -414,7 +414,7 @@ export async function moveIn(
         priority
     );
     if (idShow) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
+        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
     }
@@ -470,7 +470,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
         priority
     );
     if (id) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
+        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [id] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
     }
@@ -559,7 +559,7 @@ export async function zoomIn(
         await component.load();
     }
     // special
-    oldComponentAlias && canvas.pauseTicker(oldComponentAlias, { tickerIdsIncluded: ids });
+    ids && canvas.pauseTicker({ id: ids });
     // edit the properties of the new component
     if (direction == "up") {
         component.pivot.y = canvas.canvasHeight - component.y;
@@ -603,7 +603,7 @@ export async function zoomIn(
         priority
     );
     if (idShow) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
+        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
     }
@@ -677,7 +677,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         priority
     );
     if (id) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [id] });
+        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [id] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
     }
@@ -761,7 +761,7 @@ export async function pushIn(
         priority
     );
     if (idShow) {
-        canvas.pauseTicker(alias, { tickerIdsExcluded: [idShow] });
+        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
     }

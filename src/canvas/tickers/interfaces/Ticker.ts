@@ -45,4 +45,9 @@ export default interface Ticker<TArgs extends TickerArgs> {
      * Plays the animation.
      */
     play: () => void;
+    /**
+     * Checks if the ticker is paused.
+     * @returns true if the ticker is paused, false otherwise.
+     */
+    readonly paused: boolean;
 }
