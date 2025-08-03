@@ -456,6 +456,7 @@ export default interface CanvasManagerInterface {
         options: {
             aliasToRemoveAfter: string[];
             tickerAliasToResume: string[];
+            tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
         }
     ): void;
@@ -464,6 +465,7 @@ export default interface CanvasManagerInterface {
         options: {
             aliasToRemoveAfter: string[];
             tickerAliasToResume: string[];
+            tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
             stopTicker?: boolean;
         }

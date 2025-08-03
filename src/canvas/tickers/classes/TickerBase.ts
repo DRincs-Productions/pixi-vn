@@ -95,9 +95,15 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
         if (typeof tickerAliasToResume === "string") {
             tickerAliasToResume = [tickerAliasToResume];
         }
+        let tickerIdToResume: string | string[] =
+            ("tickerIdToResume" in this.args && (this.args.tickerIdToResume as any)) || [];
+        if (typeof tickerIdToResume === "string") {
+            tickerIdToResume = [tickerIdToResume];
+        }
         canvas.onTickerComplete(id, {
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
+            tickerIdToResume: tickerIdToResume,
         });
         this.stop();
     }

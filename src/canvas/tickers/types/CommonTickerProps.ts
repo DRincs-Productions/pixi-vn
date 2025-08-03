@@ -14,4 +14,9 @@ export type CommonTickerProps = {
      * @default []
      */
     tickerAliasToResume?: string[] | string;
+    /**
+     * The id of the ticker to resume after the effect is done
+     * @default []
+     */
+    tickerIdToResume?: string[] | string;
 };

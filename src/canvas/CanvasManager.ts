@@ -370,6 +370,8 @@ export default class CanvasManager implements CanvasManagerInterface {
                             aliasToRemoveAfter in ticker.args ? (ticker.args.aliasToRemoveAfter as any) || [] : [],
                         tickerAliasToResume:
                             "tickerAliasToResume" in ticker.args ? (ticker.args.tickerAliasToResume as any) || [] : [],
+                        tickerIdToResume:
+                            "tickerIdToResume" in ticker.args ? (ticker.args.tickerIdToResume as any) || [] : [],
                         ignoreTickerSteps: true,
                     });
                 }
@@ -471,6 +473,8 @@ export default class CanvasManager implements CanvasManagerInterface {
                             aliasToRemoveAfter in ticker.args ? (ticker.args.aliasToRemoveAfter as any) || [] : [],
                         tickerAliasToResume:
                             "tickerAliasToResume" in ticker.args ? (ticker.args.tickerAliasToResume as any) || [] : [],
+                        tickerIdToResume:
+                            "tickerIdToResume" in ticker.args ? (ticker.args.tickerIdToResume as any) || [] : [],
                         ignoreTickerSteps: true,
                     });
                     tickerTimeoutInfo.aliases.forEach((alias) => {
@@ -515,6 +519,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         options: {
             aliasToRemoveAfter: string[];
             tickerAliasToResume: string[];
+            tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
         }
     ) {
@@ -525,15 +530,17 @@ export default class CanvasManager implements CanvasManagerInterface {
         options: {
             aliasToRemoveAfter: string[];
             tickerAliasToResume: string[];
+            tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
             stopTicker?: boolean;
         }
     ) {
-        const { stopTicker = true, aliasToRemoveAfter, tickerAliasToResume } = options;
+        const { stopTicker = true, aliasToRemoveAfter, tickerAliasToResume, tickerIdToResume } = options;
         let info = CanvasManagerStatic._currentTickers[tickerId];
         let ignoreTickerSteps = options.ignoreTickerSteps || false;
         this.remove(aliasToRemoveAfter);
         tickerAliasToResume.forEach((alias) => this.resumeTicker({ canvasAlias: alias }));
+        this.resumeTicker({ id: tickerIdToResume });
         if (info) {
             this.removeTicker(tickerId, {
                 stopTicker: stopTicker,
@@ -614,6 +621,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                         aliasToRemoveAfter in info.ticker.args ? info.ticker.args.aliasToRemoveAfter : [],
                     tickerAliasToResume:
                         "tickerAliasToResume" in info.ticker.args ? info.ticker.args.tickerAliasToResume : [],
+                    tickerIdToResume: "tickerIdToResume" in info.ticker.args ? info.ticker.args.tickerIdToResume : [],
                     ignoreTickerSteps: true,
                 });
             }

@@ -200,9 +200,14 @@ export default class MotionTicker implements Ticker<TArgs> {
                 if (typeof tickerAliasToResume === "string") {
                     tickerAliasToResume = [tickerAliasToResume];
                 }
+                let tickerIdToResume = this._args.options.tickerIdToResume || [];
+                if (typeof tickerIdToResume === "string") {
+                    tickerIdToResume = [tickerIdToResume];
+                }
                 canvas.onTickerComplete(id, {
                     aliasToRemoveAfter: aliasToRemoveAfter,
                     tickerAliasToResume: tickerAliasToResume,
+                    tickerIdToResume: tickerIdToResume,
                     stopTicker: false,
                 });
             },
