@@ -349,16 +349,23 @@ export async function setMemoryImageSprite(
     memory = analizePositionsExtensionProps(memory)!;
     return await setMemorySprite(element, memory, {
         half: async () => {
-            "align" in memory && memory.align !== undefined && (element.align = memory.align);
-            "percentagePosition" in memory &&
-                memory.percentagePosition !== undefined &&
-                (element.percentagePosition = memory.percentagePosition);
             if (!ignoreTexture) {
                 "imageLink" in memory && memory.imageLink !== undefined && (element.textureAlias = memory.imageLink);
             }
             if ("loadIsStarted" in memory && memory.loadIsStarted) {
                 await element.load();
             }
+            if ("anchor" in memory && memory.anchor !== undefined) {
+                if (typeof memory.anchor === "number") {
+                    element.anchor.set(memory.anchor, memory.anchor);
+                } else {
+                    element.anchor.set(memory.anchor.x, memory.anchor.y);
+                }
+            }
+            "align" in memory && memory.align !== undefined && (element.align = memory.align);
+            "percentagePosition" in memory &&
+                memory.percentagePosition !== undefined &&
+                (element.percentagePosition = memory.percentagePosition);
         },
         ignoreTexture: options?.ignoreTexture,
     });

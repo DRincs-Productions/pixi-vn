@@ -180,12 +180,13 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     let half = options?.half;
     if (half) {
         await half();
-    }
-    if ("anchor" in memory && memory.anchor !== undefined) {
-        if (typeof memory.anchor === "number") {
-            element.anchor.set(memory.anchor, memory.anchor);
-        } else {
-            element.anchor.set(memory.anchor.x, memory.anchor.y);
+    } else {
+        if ("anchor" in memory && memory.anchor !== undefined) {
+            if (typeof memory.anchor === "number") {
+                element.anchor.set(memory.anchor, memory.anchor);
+            } else {
+                element.anchor.set(memory.anchor.x, memory.anchor.y);
+            }
         }
     }
     "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
