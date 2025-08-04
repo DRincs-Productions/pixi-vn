@@ -172,15 +172,28 @@ export default class CanvasManager implements CanvasManagerInterface {
                 this.removeTicker(id);
             }
             if (info.ticker.canvasElementAliases.includes(oldAlias)) {
-                if (mode === "move") {
-                    info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.map((t) =>
-                        t === oldAlias ? newAlias : t
-                    );
-                } else if (mode === "duplicate") {
-                    if (info.ticker.canvasElementAliases.find((t) => t === oldAlias)) {
-                        info.ticker.canvasElementAliases.push(newAlias);
+                let ticker = RegisteredTickers.getInstance(
+                    info.ticker.id,
+                    createExportableElement(info.ticker.args),
+                    info.ticker.duration,
+                    info.ticker.priority
+                );
+                if (ticker) {
+                    ticker.canvasElementAliases = [newAlias];
+                    this.addTicker(newAlias, ticker);
+                    if (info.ticker.paused) {
+                        ticker.pause();
                     }
+                } else {
+                    logger.error(`Ticker ${info.ticker.id} not found`);
                 }
+
+                if (mode === "move") {
+                    info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter(
+                        (alias) => alias !== oldAlias
+                    );
+                }
+
                 if (info.ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
                     let aliasToRemoveAfter: string | string[] = info.ticker.args.aliasToRemoveAfter;
                     if (typeof aliasToRemoveAfter === "string") {

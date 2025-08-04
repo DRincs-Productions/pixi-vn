@@ -88,6 +88,9 @@ export default class MotionTicker implements Ticker<TArgs> {
                         if (this.stopped) {
                             return true;
                         }
+                        if (this._args.startState && (this._args.startState as any)[p] === newValue) {
+                            return true;
+                        }
                         let target = this.getItemByAlias(alias);
                         if (!target) {
                             return true;

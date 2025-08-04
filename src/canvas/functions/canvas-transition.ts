@@ -122,13 +122,13 @@ export async function showWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], ...options } = props;
+    let { mustBeCompletedBeforeNextStep = true, tickerIdToResume = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
     }
-    if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume];
+    if (typeof tickerIdToResume === "string") {
+        tickerIdToResume = [tickerIdToResume];
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
@@ -148,7 +148,7 @@ export async function showWithDissolve(
         if (ids) {
             res.push(...ids);
             canvas.pauseTicker({ id: ids });
-            tickerAliasToResume.push(oldComponentAlias);
+            tickerIdToResume.push(...ids);
         }
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
@@ -159,7 +159,7 @@ export async function showWithDissolve(
         },
         {
             ...options,
-            tickerAliasToResume,
+            tickerIdToResume,
         },
         priority
     );
@@ -253,18 +253,6 @@ export async function showWithFade(
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
     component.alpha = 0;
-    // remove the old component
-    let idHide = removeWithDissolve(
-        oldComponentAlias,
-        {
-            ...props,
-            tickerAliasToResume: alias,
-        },
-        priority
-    );
-    if (idHide) {
-        res.push(...idHide);
-    }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let idShow = canvas.animate(
         alias,
@@ -278,6 +266,19 @@ export async function showWithFade(
         priority
     );
     if (idShow) {
+        // remove the old component
+        let idHide = removeWithDissolve(
+            oldComponentAlias,
+            {
+                ...props,
+                tickerIdToResume: idShow,
+            },
+            priority
+        );
+        if (idHide) {
+            res.push(...idHide);
+        }
+
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
         // pause the ticker
