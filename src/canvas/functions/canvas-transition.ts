@@ -503,7 +503,7 @@ export async function zoomIn(
     let {
         direction = "right",
         mustBeCompletedBeforeNextStep = true,
-        tickerAliasToResume = [],
+        tickerIdToResume = [],
         aliasToRemoveAfter = [],
         ...options
     } = props;
@@ -511,8 +511,8 @@ export async function zoomIn(
     if (!component) {
         component = alias;
     }
-    if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume];
+    if (typeof tickerIdToResume === "string") {
+        tickerIdToResume = [tickerIdToResume];
     }
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
@@ -549,7 +549,7 @@ export async function zoomIn(
             ids = zoomOut(oldComponentAlias, props, priority);
             if (ids) {
                 res.push(...ids);
-                tickerAliasToResume.push(oldComponentAlias);
+                tickerIdToResume.push(...ids);
             }
         } else {
             aliasToRemoveAfter.push(oldComponentAlias);
@@ -586,7 +586,8 @@ export async function zoomIn(
     component.pivot = getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    tickerAliasToResume.push(alias);
+    ids = canvas.pauseTicker({ canvasAlias: alias });
+    tickerIdToResume.push(...ids);
     let idShow = canvas.animate(
         alias,
         {
@@ -598,13 +599,12 @@ export async function zoomIn(
         },
         {
             ...options,
-            tickerAliasToResume,
+            tickerIdToResume,
             aliasToRemoveAfter,
         },
         priority
     );
     if (idShow) {
-        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
     }
