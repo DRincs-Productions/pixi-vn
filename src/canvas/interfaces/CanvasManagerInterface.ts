@@ -265,6 +265,7 @@ export default interface CanvasManagerInterface {
     /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param filters The filters to pause the ticker.
+     * @returns The ids of the paused tickers.
      */
     pauseTicker(
         filters:
@@ -285,7 +286,7 @@ export default interface CanvasManagerInterface {
                    */
                   id: string | string[];
               }
-    ): void;
+    ): string[];
     /**
      * Resume a ticker.
      * @param filters The filters to resume the ticker.

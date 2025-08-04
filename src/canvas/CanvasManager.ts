@@ -694,14 +694,17 @@ export default class CanvasManager implements CanvasManagerInterface {
                   id: string | string[];
               }
     ) {
+        let ids: string[] = [];
         if ("canvasAlias" in filters) {
             const { canvasAlias, tickerIdsExcluded = [] } = filters;
             Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
                 if (
                     info.ticker.canvasElementAliases.includes(canvasAlias) &&
-                    !tickerIdsExcluded.includes(info.ticker.id)
+                    !tickerIdsExcluded.includes(info.ticker.id) &&
+                    info.ticker.paused === false
                 ) {
                     info.ticker.pause();
+                    ids.push(id);
                 }
             });
         } else if ("id" in filters) {
@@ -711,13 +714,15 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
             id.forEach((id) => {
                 let info = CanvasManagerStatic._currentTickers[id];
-                if (info) {
+                if (info && info.ticker.paused === false) {
                     info.ticker.pause();
+                    ids.push(id);
                 } else {
                     logger.error(`Ticker with id ${id} not found`);
                 }
             });
         }
+        return ids;
     }
     resumeTicker(
         filters:
