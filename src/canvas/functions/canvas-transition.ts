@@ -144,10 +144,9 @@ export async function showWithDissolve(
     component.alpha = 0;
     // remove the old component
     if (oldComponentAlias) {
-        let ids = removeWithDissolve(oldComponentAlias, props, priority);
+        let ids = removeWithDissolve(oldComponentAlias, { ...props, autoplay: false }, priority);
         if (ids) {
             res.push(...ids);
-            canvas.pauseTicker({ id: ids });
             tickerIdToResume.push(...ids);
         }
     }
@@ -370,14 +369,12 @@ export async function moveIn(
         destination = { x: component.x, y: component.y, type: "pixel" };
     }
     // remove the old component
-    let ids: string[] | undefined = undefined;
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            ids = moveOut(oldComponentAlias, props, priority);
+            let ids = moveOut(oldComponentAlias, { ...props, autoplay: false }, priority);
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
-                canvas.pauseTicker({ id: ids });
             }
         } else {
             aliasToRemoveAfter.push(oldComponentAlias);
@@ -402,7 +399,7 @@ export async function moveIn(
             component.x = -component.width;
             break;
     }
-    ids = canvas.pauseTicker({ canvasAlias: alias });
+    let ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let idShow = canvas.animate(
@@ -543,10 +540,9 @@ export async function zoomIn(
         y: component.scale.y,
     };
     // remove the old component
-    let ids: string[] | undefined = undefined;
     if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            ids = zoomOut(oldComponentAlias, props, priority);
+            let ids = zoomOut(oldComponentAlias, { ...props, autoplay: false }, priority);
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
@@ -559,8 +555,6 @@ export async function zoomIn(
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
         await component.load();
     }
-    // special
-    ids && canvas.pauseTicker({ id: ids });
     // edit the properties of the new component
     if (direction == "up") {
         component.pivot.y = canvas.canvasHeight - component.y;
@@ -586,7 +580,7 @@ export async function zoomIn(
     component.pivot = getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    ids = canvas.pauseTicker({ canvasAlias: alias });
+    let ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     let idShow = canvas.animate(
         alias,
