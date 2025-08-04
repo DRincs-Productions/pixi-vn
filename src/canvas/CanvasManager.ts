@@ -945,19 +945,21 @@ export default class CanvasManager implements CanvasManagerInterface {
                 let tickers = (data as CanvasGameState)["tickers"];
                 Object.entries(tickers).forEach(([oldId, t]) => {
                     let aliases: string[] = t.canvasElementAliases;
-                    let ticker = RegisteredTickers.getInstance(t.id, t.args, t.duration, t.priority);
-                    if (ticker) {
-                        ticker.canvasElementAliases = aliases;
-                        this.addTicker(aliases, ticker, {
-                            id: oldId,
-                        });
-                        // TODO: it should be paused even before starting
-                        // TODO: All tickets should be started at the same time and not wait for the previous one to initialize.
-                        if (t.paused) {
-                            ticker.pause();
+                    if (aliases.length !== 0) {
+                        let ticker = RegisteredTickers.getInstance(t.id, t.args, t.duration, t.priority);
+                        if (ticker) {
+                            ticker.canvasElementAliases = aliases;
+                            this.addTicker(aliases, ticker, {
+                                id: oldId,
+                            });
+                            // TODO: it should be paused even before starting
+                            // TODO: All tickets should be started at the same time and not wait for the previous one to initialize.
+                            if (t.paused) {
+                                ticker.pause();
+                            }
+                        } else {
+                            logger.error(`Ticker ${t.id} not found`);
                         }
-                    } else {
-                        logger.error(`Ticker ${t.id} not found`);
                     }
                 });
             }
