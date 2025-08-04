@@ -714,9 +714,11 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
             id.forEach((id) => {
                 let info = CanvasManagerStatic._currentTickers[id];
-                if (info && info.ticker.paused === false) {
-                    info.ticker.pause();
-                    ids.push(id);
+                if (info) {
+                    if (info.ticker.paused === false) {
+                        info.ticker.pause();
+                        ids.push(id);
+                    }
                 } else {
                     logger.error(`Ticker with id ${id} not found`);
                 }
