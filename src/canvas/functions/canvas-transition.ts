@@ -461,6 +461,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
             break;
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    canvas.pauseTicker({ canvasAlias: alias });
     let id = canvas.animate(
         alias,
         destination,
@@ -471,7 +472,6 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
         priority
     );
     if (id) {
-        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [id] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
     }
@@ -662,6 +662,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
     }
     pivot = getPointBySuperPoint(pivot, component.angle);
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    canvas.pauseTicker({ canvasAlias: alias });
     let id = canvas.animate(
         alias,
         {
@@ -678,7 +679,6 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         priority
     );
     if (id) {
-        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [id] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
     }
@@ -701,13 +701,13 @@ export async function pushIn(
     props: PushInOutProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerAliasToResume = [], ...options } = props;
+    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerIdToResume = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
     }
-    if (typeof tickerAliasToResume === "string") {
-        tickerAliasToResume = [tickerAliasToResume];
+    if (typeof tickerIdToResume === "string") {
+        tickerIdToResume = [tickerIdToResume];
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
@@ -740,29 +740,29 @@ export async function pushIn(
             component.x = -component.width;
             break;
     }
+    let ids = canvas.pauseTicker({ canvasAlias: alias });
+    tickerIdToResume.push(...ids);
     // remove the old component
     if (oldComponentAlias) {
         let ids = pushOut(oldComponentAlias, {
             ...props,
-            direction: direction == "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
+            direction: direction, //== "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
         });
         if (ids) {
             res.push(...ids);
         }
     }
     // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
-    tickerAliasToResume.push(alias);
     let idShow = canvas.animate(
         alias,
         calculateDestination(destination, component),
         {
             ...options,
-            tickerAliasToResume,
+            tickerIdToResume,
         },
         priority
     );
     if (idShow) {
-        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [idShow] });
         mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
     }
