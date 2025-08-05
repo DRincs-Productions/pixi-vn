@@ -19,11 +19,11 @@ interface TArgs {
 export default class MotionTicker extends MotionTickerBase<TArgs> {
     start(id: string): void {
         this.tickerId = id;
-        let proxies = this.canvasElementAliases.map(this.createItem);
+        let proxies = this.canvasElementAliases.map((alias) => this.createItem(alias));
         this.animation = animate(proxies, this._args.keyframes, {
             ...this._args.options,
-            repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
-            onComplete: this.onComplete,
+            repeat: this._args.options?.repeat === null ? Infinity : this._args.options?.repeat,
+            onComplete: () => this.onComplete(),
             ticker: this.ticker,
         });
         if (this._args.time) {

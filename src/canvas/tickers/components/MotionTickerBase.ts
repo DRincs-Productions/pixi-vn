@@ -82,15 +82,15 @@ export default abstract class MotionTickerBase<
             logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
             return;
         }
-        let aliasToRemoveAfter = this._args.options.aliasToRemoveAfter || [];
+        let aliasToRemoveAfter = this._args.options?.aliasToRemoveAfter || [];
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter];
         }
-        let tickerAliasToResume = this._args.options.tickerAliasToResume || [];
+        let tickerAliasToResume = this._args.options?.tickerAliasToResume || [];
         if (typeof tickerAliasToResume === "string") {
             tickerAliasToResume = [tickerAliasToResume];
         }
-        let tickerIdToResume = this._args.options.tickerIdToResume || [];
+        let tickerIdToResume = this._args.options?.tickerIdToResume || [];
         if (typeof tickerIdToResume === "string") {
             tickerIdToResume = [tickerIdToResume];
         }
