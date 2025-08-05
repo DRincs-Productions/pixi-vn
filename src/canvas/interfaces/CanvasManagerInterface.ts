@@ -8,7 +8,12 @@ import {
     UPDATE_PRIORITY,
 } from "pixi.js";
 import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import AnimationOptions, { KeyframesType } from "../types/AnimationOptions";
+import AnimationOptions, {
+    KeyframesType,
+    ObjectSegment,
+    ObjectSegmentWithTransition,
+    SequenceOptions,
+} from "../types/AnimationOptions";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { CanvasBaseInterface } from "./CanvasBaseInterface";
@@ -353,6 +358,12 @@ export default interface CanvasManagerInterface {
         components: T | string | (string | T)[],
         keyframes: KeyframesType<T>,
         options?: AnimationOptions,
+        priority?: UPDATE_PRIORITY
+    ): string | undefined;
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string | (string | T)[],
+        sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+        options?: SequenceOptions,
         priority?: UPDATE_PRIORITY
     ): string | undefined;
 

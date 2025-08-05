@@ -21,7 +21,12 @@ import MotionTicker from "./tickers/components/MotionTicker";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
-import AnimationOptions, { KeyframesType } from "./types/AnimationOptions";
+import AnimationOptions, {
+    KeyframesType,
+    ObjectSegment,
+    ObjectSegmentWithTransition,
+    SequenceOptions,
+} from "./types/AnimationOptions";
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
 import { TickerIdType } from "./types/TickerIdType";
@@ -828,10 +833,22 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
-        keyframes: KeyframesType<T> = {},
-        options: AnimationOptions,
+        keyframes: KeyframesType<T>,
+        options?: AnimationOptions,
         priority?: UPDATE_PRIORITY
-    ) {
+    ): string | undefined;
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string | (string | T)[],
+        sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+        options?: SequenceOptions,
+        priority?: UPDATE_PRIORITY
+    ): string | undefined;
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string | (string | T)[],
+        keyframes: unknown,
+        options?: unknown,
+        priority?: unknown
+    ): string | undefined {
         try {
             keyframes = createExportableElement(keyframes);
         } catch (e) {
