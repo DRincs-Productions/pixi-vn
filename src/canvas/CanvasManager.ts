@@ -17,6 +17,7 @@ import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
 import { Ticker, TickerArgs, TickerInfo } from "./tickers";
+import MotionSequenceTicker from "./tickers/components/MotionSequenceTicker";
 import MotionTicker from "./tickers/components/MotionTicker";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
@@ -847,7 +848,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         components: T | string | (string | T)[],
         keyframes: unknown,
         options?: unknown,
-        priority?: unknown
+        priority?: UPDATE_PRIORITY
     ): string | undefined {
         try {
             keyframes = createExportableElement(keyframes);
@@ -869,15 +870,27 @@ export default class CanvasManager implements CanvasManagerInterface {
         } else {
             aliases = [components.label];
         }
-        const ticker = new MotionTicker(
-            {
-                keyframes: keyframes,
-                options: options,
-            },
-            undefined,
-            priority
-        );
-        return this.addTicker(aliases, ticker);
+        let ticker: MotionSequenceTicker | MotionTicker;
+        if (Array.isArray(keyframes)) {
+            ticker = new MotionSequenceTicker(
+                {
+                    sequence: keyframes as (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+                    options: options as SequenceOptions,
+                },
+                undefined,
+                priority
+            );
+        } else {
+            ticker = new MotionTicker(
+                {
+                    keyframes: keyframes as KeyframesType<T>,
+                    options: options as AnimationOptions,
+                },
+                undefined,
+                priority
+            );
+        }
+        return this.addTicker<any>(aliases, ticker);
     }
 
     /* Layers Methods */
