@@ -80,145 +80,147 @@ export default class MotionTicker implements Ticker<TArgs> {
     }
     start(id: string) {
         this.tickerId = id;
-        let proxies = this.canvasElementAliases.map((alias) => {
-            return new Proxy(
-                { alias: alias },
-                {
-                    set: ({ alias }, p, newValue) => {
-                        if (this.stopped) {
-                            return true;
-                        }
-                        if (this._args.startState && (this._args.startState as any)[p] === newValue) {
-                            return true;
-                        }
-                        let target = this.getItemByAlias(alias);
-                        if (!target) {
-                            return true;
-                        }
-                        if (this.ignoreOnComplete) {
-                            setTimeout(() => {
-                                this.ignoreOnComplete = false;
-                            }, 10);
-                        }
-                        switch (p) {
-                            case "pivotX":
-                                target.pivot.x = newValue;
-                                break;
-                            case "pivotY":
-                                target.pivot.y = newValue;
-                                break;
-                            case "scaleX":
-                                target.scale.x = newValue;
-                                break;
-                            case "scaleY":
-                                target.scale.y = newValue;
-                                break;
-                            default:
-                                (target as any)[p] = newValue;
-                                break;
-                        }
-                        return true;
-                    },
-                    get: ({ alias }, p) => {
-                        if (!this._args.startState) {
-                            this._args.startState = {};
-                        }
-                        if (p in this._args.startState) {
-                            return (this._args.startState as any)[p];
-                        }
-                        let target = this.getItemByAlias(alias);
-                        if (!target) {
-                            return;
-                        }
-                        let res = undefined;
-                        switch (p) {
-                            case "pivotX":
-                                res = target.pivot.x;
-                                break;
-                            case "pivotY":
-                                res = target.pivot.y;
-                                break;
-                            case "scaleX":
-                                res = target.scale.x;
-                                break;
-                            case "scaleY":
-                                res = target.scale.y;
-                                break;
-                            default:
-                                res = (target as any)[p];
-                                break;
-                        }
-                        this._args.startState = {
-                            ...this._args.startState,
-                            [p]: res,
-                        };
-                        return res;
-                    },
-                    has: ({ alias }, p) => {
-                        let target = this.getItemByAlias(alias);
-                        if (!target) {
-                            return false;
-                        }
-                        switch (p) {
-                            case "pivotX":
-                                return "pivot" in target && "x" in target.pivot;
-                            case "pivotY":
-                                return "pivot" in target && "y" in target.pivot;
-                            case "scaleX":
-                                return "scale" in target && "x" in target.scale;
-                            case "scaleY":
-                                return "scale" in target && "y" in target.scale;
-                            default:
-                                return p in target;
-                        }
-                    },
-                    ownKeys: ({ alias }) => {
-                        let target = this.getItemByAlias(alias);
-                        if (!target) {
-                            return [];
-                        }
-                        return Object.keys(target);
-                    },
-                }
-            );
-        }) as any as CanvasBaseInterface<any>[];
+        let proxies = this.canvasElementAliases.map(this.createItem) as any as CanvasBaseInterface<any>[];
         this.animation = animate(proxies, this._args.keyframes, {
             ...this._args.options,
             repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
-            onComplete: () => {
-                if (this.ignoreOnComplete) {
-                    return;
-                }
-                // TODO: viene eseguita 2 volte
-                const id = this.tickerId;
-                if (!id) {
-                    logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
-                    return;
-                }
-                let aliasToRemoveAfter = this._args.options.aliasToRemoveAfter || [];
-                if (typeof aliasToRemoveAfter === "string") {
-                    aliasToRemoveAfter = [aliasToRemoveAfter];
-                }
-                let tickerAliasToResume = this._args.options.tickerAliasToResume || [];
-                if (typeof tickerAliasToResume === "string") {
-                    tickerAliasToResume = [tickerAliasToResume];
-                }
-                let tickerIdToResume = this._args.options.tickerIdToResume || [];
-                if (typeof tickerIdToResume === "string") {
-                    tickerIdToResume = [tickerIdToResume];
-                }
-                canvas.onTickerComplete(id, {
-                    aliasToRemoveAfter: aliasToRemoveAfter,
-                    tickerAliasToResume: tickerAliasToResume,
-                    tickerIdToResume: tickerIdToResume,
-                    stopTicker: false,
-                });
-            },
+            onComplete: this.onComplete,
             ticker: this.ticker,
         });
         if (this._args.time) {
             this.animation.time = this._args.time;
         }
+    }
+    protected onComplete = () => {
+        if (this.ignoreOnComplete) {
+            return;
+        }
+        // TODO: viene eseguita 2 volte
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        let aliasToRemoveAfter = this._args.options.aliasToRemoveAfter || [];
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        let tickerAliasToResume = this._args.options.tickerAliasToResume || [];
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume];
+        }
+        let tickerIdToResume = this._args.options.tickerIdToResume || [];
+        if (typeof tickerIdToResume === "string") {
+            tickerIdToResume = [tickerIdToResume];
+        }
+        canvas.onTickerComplete(id, {
+            aliasToRemoveAfter: aliasToRemoveAfter,
+            tickerAliasToResume: tickerAliasToResume,
+            tickerIdToResume: tickerIdToResume,
+            stopTicker: false,
+        });
+    };
+    protected createItem(alias: string) {
+        return new Proxy(
+            { alias: alias },
+            {
+                set: ({ alias }, p, newValue) => {
+                    if (this.stopped) {
+                        return true;
+                    }
+                    if (this._args.startState && (this._args.startState as any)[p] === newValue) {
+                        return true;
+                    }
+                    let target = this.getItemByAlias(alias);
+                    if (!target) {
+                        return true;
+                    }
+                    if (this.ignoreOnComplete) {
+                        setTimeout(() => {
+                            this.ignoreOnComplete = false;
+                        }, 10);
+                    }
+                    switch (p) {
+                        case "pivotX":
+                            target.pivot.x = newValue;
+                            break;
+                        case "pivotY":
+                            target.pivot.y = newValue;
+                            break;
+                        case "scaleX":
+                            target.scale.x = newValue;
+                            break;
+                        case "scaleY":
+                            target.scale.y = newValue;
+                            break;
+                        default:
+                            (target as any)[p] = newValue;
+                            break;
+                    }
+                    return true;
+                },
+                get: ({ alias }, p) => {
+                    if (!this._args.startState) {
+                        this._args.startState = {};
+                    }
+                    if (p in this._args.startState) {
+                        return (this._args.startState as any)[p];
+                    }
+                    let target = this.getItemByAlias(alias);
+                    if (!target) {
+                        return;
+                    }
+                    let res = undefined;
+                    switch (p) {
+                        case "pivotX":
+                            res = target.pivot.x;
+                            break;
+                        case "pivotY":
+                            res = target.pivot.y;
+                            break;
+                        case "scaleX":
+                            res = target.scale.x;
+                            break;
+                        case "scaleY":
+                            res = target.scale.y;
+                            break;
+                        default:
+                            res = (target as any)[p];
+                            break;
+                    }
+                    this._args.startState = {
+                        ...this._args.startState,
+                        [p]: res,
+                    };
+                    return res;
+                },
+                has: ({ alias }, p) => {
+                    let target = this.getItemByAlias(alias);
+                    if (!target) {
+                        return false;
+                    }
+                    switch (p) {
+                        case "pivotX":
+                            return "pivot" in target && "x" in target.pivot;
+                        case "pivotY":
+                            return "pivot" in target && "y" in target.pivot;
+                        case "scaleX":
+                            return "scale" in target && "x" in target.scale;
+                        case "scaleY":
+                            return "scale" in target && "y" in target.scale;
+                        default:
+                            return p in target;
+                    }
+                },
+                ownKeys: ({ alias }) => {
+                    let target = this.getItemByAlias(alias);
+                    if (!target) {
+                        return [];
+                    }
+                    return Object.keys(target);
+                },
+            }
+        );
     }
     pause() {
         if (!this.animation) {
