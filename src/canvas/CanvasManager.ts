@@ -838,7 +838,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         priority?: UPDATE_PRIORITY
     ): string | undefined;
     animate<T extends CanvasBaseInterface<any>>(
-        components: T | string | (string | T)[],
+        components: T | string,
         sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
         options?: SequenceOptions,
         priority?: UPDATE_PRIORITY
