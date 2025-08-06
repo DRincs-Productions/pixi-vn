@@ -1,5 +1,6 @@
 import { ObjectTarget } from "motion";
 import { animate, AnimationOptions, CanvasBaseInterface } from "../..";
+import { TickerIdType } from "../../types/TickerIdType";
 import MotionComponentExtension from "../interfaces/MotionComponentExtension";
 import MotionTickerBase from "./MotionTickerBase";
 
@@ -17,6 +18,7 @@ interface TArgs {
 }
 
 export default class MotionTicker extends MotionTickerBase<TArgs> {
+    id: TickerIdType = "motion";
     start(id: string): void {
         this.tickerId = id;
         let proxies = this.canvasElementAliases.map((alias) => this.createItem(alias));

@@ -22,7 +22,7 @@ export default abstract class MotionTickerBase<
         this.duration = duration;
         this.priority = priority;
     }
-    id: TickerIdType = "motion";
+    abstract id: TickerIdType;
     protected _args: TArgs;
     get args(): TArgs {
         return { ...this._args, time: this.animation?.time };
