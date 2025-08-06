@@ -7,7 +7,7 @@ interface BaseTransitionProps {
      * For example, if the transition is a dissolve transition, the "alpha" of the texture will be 1 before the next step.
      * @default true
      */
-    mustBeCompletedBeforeNextStep?: boolean;
+    forceCompleteBeforeNext?: boolean;
 }
 
 export interface ShowWithDissolveTransitionProps extends BaseTransitionProps, AnimationOptions {}

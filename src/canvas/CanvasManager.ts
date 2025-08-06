@@ -864,8 +864,8 @@ export default class CanvasManager implements CanvasManagerInterface {
             );
         }
         const id = this.addTicker<any>(aliases, ticker);
-        const { mustBeCompletedBeforeNextStep } = options || {};
-        if (id && mustBeCompletedBeforeNextStep) {
+        const { forceCompleteBeforeNext } = options || {};
+        if (id && forceCompleteBeforeNext) {
             this.completeTickerOnStepEnd({
                 id: id,
             });

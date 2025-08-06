@@ -122,7 +122,7 @@ export async function showWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, tickerIdToResume = [], ...options } = props;
+    let { forceCompleteBeforeNext = true, tickerIdToResume = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -159,7 +159,7 @@ export async function showWithDissolve(
         {
             ...options,
             tickerIdToResume,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );
@@ -188,7 +188,7 @@ export function removeWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): string[] | undefined {
-    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
+    let { forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -202,7 +202,7 @@ export function removeWithDissolve(
         {
             ...options,
             aliasToRemoveAfter,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );
@@ -229,7 +229,7 @@ export async function showWithFade(
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
+    let { forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -259,7 +259,7 @@ export async function showWithFade(
         {
             ...options,
             aliasToRemoveAfter,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );
@@ -333,7 +333,7 @@ export async function moveIn(
 ): Promise<string[] | undefined> {
     let {
         direction = "right",
-        mustBeCompletedBeforeNextStep = true,
+        forceCompleteBeforeNext = true,
         tickerIdToResume = [],
         aliasToRemoveAfter = [],
         removeOldComponentWithMoveOut,
@@ -407,7 +407,7 @@ export async function moveIn(
             ...options,
             tickerIdToResume,
             aliasToRemoveAfter,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );
@@ -427,7 +427,7 @@ export async function moveIn(
  * @returns The ids of the tickers that are used in the effect.
  */
 export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
+    let { direction = "right", forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -461,7 +461,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
         {
             ...options,
             aliasToRemoveAfter,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );
@@ -495,7 +495,7 @@ export async function zoomIn(
 ): Promise<string[] | undefined> {
     let {
         direction = "right",
-        mustBeCompletedBeforeNextStep = true,
+        forceCompleteBeforeNext = true,
         tickerIdToResume = [],
         aliasToRemoveAfter = [],
         ...options
@@ -592,7 +592,7 @@ export async function zoomIn(
             ...options,
             tickerIdToResume,
             aliasToRemoveAfter,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );
@@ -612,7 +612,7 @@ export async function zoomIn(
  * @returns The ids of the tickers that are used in the effect.
  */
 export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, aliasToRemoveAfter = [], ...options } = props;
+    let { direction = "right", forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -664,7 +664,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         {
             ...options,
             aliasToRemoveAfter,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );
@@ -690,7 +690,7 @@ export async function pushIn(
     props: PushInOutProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
-    let { direction = "right", mustBeCompletedBeforeNextStep = true, tickerIdToResume = [], ...options } = props;
+    let { direction = "right", forceCompleteBeforeNext = true, tickerIdToResume = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -748,7 +748,7 @@ export async function pushIn(
         {
             ...options,
             tickerIdToResume,
-            mustBeCompletedBeforeNextStep,
+            forceCompleteBeforeNext,
         },
         priority
     );

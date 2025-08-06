@@ -20,8 +20,8 @@ export type CommonTickerProps = {
      */
     tickerIdToResume?: string[] | string;
     /**
-     * If true, the effect must be completed before the next step is executed
+     * If set to `true`, the game will force the animation to complete before moving to the next step.
      * @default false
      */
-    mustBeCompletedBeforeNextStep?: boolean;
+    forceCompleteBeforeNext?: boolean;
 };
