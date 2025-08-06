@@ -360,6 +360,19 @@ export default interface CanvasManagerInterface {
         options?: AnimationOptions,
         priority?: UPDATE_PRIORITY
     ): string | undefined;
+    /**
+     * Animate a Pixi’VN component or components using [motion's animate](https://motion.dev/docs/animate) function.
+     * This function integrates with the PixiJS ticker to ensure smooth animations.
+     *
+     * Pixi’VN will keep track of the animation state of this function.
+     * So Pixi’VN will save the animation state in saves.
+     * @param components - The PixiJS component(s) to animate.
+     * @param sequence - The sequence of keyframes to animate the component(s) with.
+     * @param options - Additional options for the animation, including duration, easing, and ticker.
+     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     * @returns The id of tickers.
+     * @template T - The type of Pixi’VN component(s) being animated.
+     */
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string,
         sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
