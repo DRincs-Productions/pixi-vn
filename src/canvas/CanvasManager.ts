@@ -161,86 +161,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             await setMemoryContainer(newAlias, oldAlias);
         }
     }
-    transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
-        if (CanvasManagerStatic._currentTickersSequence[oldAlias]) {
-            if (mode === "move") {
-                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
-                    CanvasManagerStatic._currentTickersSequence[oldAlias]
-                );
-            } else if (mode === "duplicate") {
-                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
-                    CanvasManagerStatic._currentTickersSequence[oldAlias]
-                );
-            }
-        }
-        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
-            if (info.createdByTicketSteps?.canvasElementAlias === oldAlias) {
-                this.removeTicker(id);
-            }
-            if (info.ticker.canvasElementAliases.includes(oldAlias)) {
-                let ticker = RegisteredTickers.getInstance(
-                    info.ticker.id,
-                    createExportableElement(info.ticker.args),
-                    info.ticker.duration,
-                    info.ticker.priority
-                );
-                if (ticker) {
-                    ticker.canvasElementAliases = [newAlias];
-                    this.addTicker(newAlias, ticker);
-                    if (info.ticker.paused) {
-                        ticker.pause();
-                    }
-                } else {
-                    logger.error(`Ticker ${info.ticker.id} not found`);
-                }
-
-                if (mode === "move") {
-                    info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter(
-                        (alias) => alias !== oldAlias
-                    );
-                }
-
-                if (info.ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
-                    let aliasToRemoveAfter: string | string[] = info.ticker.args.aliasToRemoveAfter;
-                    if (typeof aliasToRemoveAfter === "string") {
-                        aliasToRemoveAfter = [aliasToRemoveAfter];
-                    }
-                    if (Array.isArray(aliasToRemoveAfter)) {
-                        if (mode === "move") {
-                            info.ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) =>
-                                t === oldAlias ? newAlias : t
-                            );
-                        } else if (mode === "duplicate") {
-                            if (aliasToRemoveAfter.find((t) => t === oldAlias)) {
-                                info.ticker.args.aliasToRemoveAfter = [...aliasToRemoveAfter, newAlias];
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        Object.values(CanvasManagerStatic._currentTickersTimeouts).forEach((tickerTimeout) => {
-            if (tickerTimeout.aliases.includes(oldAlias)) {
-                if (mode === "move") {
-                    tickerTimeout.aliases = tickerTimeout.aliases.map((t) => (t === oldAlias ? newAlias : t));
-                } else if (mode === "duplicate") {
-                    if (tickerTimeout.aliases.find((t) => t === oldAlias)) {
-                        tickerTimeout.aliases.push(newAlias);
-                    }
-                }
-            }
-        });
-        if (CanvasManagerStatic._currentTickersSequence[newAlias]) {
-            Object.keys(CanvasManagerStatic._currentTickersSequence[newAlias]).forEach((key) => {
-                this.runTickersSequence(newAlias, key);
-            });
-        }
-        if (mode === "duplicate" && CanvasManagerStatic._currentTickersSequence[oldAlias]) {
-            Object.keys(CanvasManagerStatic._currentTickersSequence[oldAlias]).forEach((key) => {
-                this.runTickersSequence(oldAlias, key);
-            });
-        }
-    }
     public add(
         alias: string,
         canvasComponent: CanvasBaseInterface<any>,
@@ -752,6 +672,86 @@ export default class CanvasManager implements CanvasManagerInterface {
             return true;
         }
         return false;
+    }
+    transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
+        if (CanvasManagerStatic._currentTickersSequence[oldAlias]) {
+            if (mode === "move") {
+                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
+                    CanvasManagerStatic._currentTickersSequence[oldAlias]
+                );
+            } else if (mode === "duplicate") {
+                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
+                    CanvasManagerStatic._currentTickersSequence[oldAlias]
+                );
+            }
+        }
+        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
+            if (info.createdByTicketSteps?.canvasElementAlias === oldAlias) {
+                this.removeTicker(id);
+            }
+            if (info.ticker.canvasElementAliases.includes(oldAlias)) {
+                let ticker = RegisteredTickers.getInstance(
+                    info.ticker.id,
+                    createExportableElement(info.ticker.args),
+                    info.ticker.duration,
+                    info.ticker.priority
+                );
+                if (ticker) {
+                    ticker.canvasElementAliases = [newAlias];
+                    this.addTicker(newAlias, ticker);
+                    if (info.ticker.paused) {
+                        ticker.pause();
+                    }
+                } else {
+                    logger.error(`Ticker ${info.ticker.id} not found`);
+                }
+
+                if (mode === "move") {
+                    info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter(
+                        (alias) => alias !== oldAlias
+                    );
+                }
+
+                if (info.ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
+                    let aliasToRemoveAfter: string | string[] = info.ticker.args.aliasToRemoveAfter;
+                    if (typeof aliasToRemoveAfter === "string") {
+                        aliasToRemoveAfter = [aliasToRemoveAfter];
+                    }
+                    if (Array.isArray(aliasToRemoveAfter)) {
+                        if (mode === "move") {
+                            info.ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) =>
+                                t === oldAlias ? newAlias : t
+                            );
+                        } else if (mode === "duplicate") {
+                            if (aliasToRemoveAfter.find((t) => t === oldAlias)) {
+                                info.ticker.args.aliasToRemoveAfter = [...aliasToRemoveAfter, newAlias];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        Object.values(CanvasManagerStatic._currentTickersTimeouts).forEach((tickerTimeout) => {
+            if (tickerTimeout.aliases.includes(oldAlias)) {
+                if (mode === "move") {
+                    tickerTimeout.aliases = tickerTimeout.aliases.map((t) => (t === oldAlias ? newAlias : t));
+                } else if (mode === "duplicate") {
+                    if (tickerTimeout.aliases.find((t) => t === oldAlias)) {
+                        tickerTimeout.aliases.push(newAlias);
+                    }
+                }
+            }
+        });
+        if (CanvasManagerStatic._currentTickersSequence[newAlias]) {
+            Object.keys(CanvasManagerStatic._currentTickersSequence[newAlias]).forEach((key) => {
+                this.runTickersSequence(newAlias, key);
+            });
+        }
+        if (mode === "duplicate" && CanvasManagerStatic._currentTickersSequence[oldAlias]) {
+            Object.keys(CanvasManagerStatic._currentTickersSequence[oldAlias]).forEach((key) => {
+                this.runTickersSequence(oldAlias, key);
+            });
+        }
     }
     completeTickerOnStepEnd(step: {
         /**
