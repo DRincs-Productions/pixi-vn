@@ -78,7 +78,8 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
      * @param options The options that you passed when you added the ticker
      */
     public onComplete(_alias: string | string[], _tickerId: string, _args: TArgs) {}
-    complete() {
+    complete(options?: { ignoreTickerSteps?: boolean }) {
+        const { ignoreTickerSteps } = options || {};
         const id = this.tickerId;
         if (!id) {
             logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
@@ -104,6 +105,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
             tickerIdToResume: tickerIdToResume,
+            ignoreTickerSteps: ignoreTickerSteps,
         });
         this.stop();
     }
