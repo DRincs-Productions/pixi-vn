@@ -11,6 +11,7 @@ const DEFAULT_SPEED = 10;
 /**
  * A ticker that zooms the canvas element of the canvas.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
+ * @deprecated Use {@link canvas.animate}
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')

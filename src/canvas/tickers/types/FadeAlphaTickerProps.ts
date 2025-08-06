@@ -1,6 +1,9 @@
 import TickerProgrationType from "../interfaces/TickerProgrationType";
 import { CommonTickerProps } from "./CommonTickerProps";
 
+/**
+ * @deprecated
+ */
 export type FadeAlphaTickerProps = {
     /**
      * @deprecated use speed instead

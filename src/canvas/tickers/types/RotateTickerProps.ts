@@ -1,6 +1,9 @@
 import TickerProgrationType from "../interfaces/TickerProgrationType";
 import { CommonTickerProps } from "./CommonTickerProps";
 
+/**
+ * @deprecated
+ */
 export type RotateTickerProps = {
     /**
      * The speed of the rotation (360 degree per 10 second)

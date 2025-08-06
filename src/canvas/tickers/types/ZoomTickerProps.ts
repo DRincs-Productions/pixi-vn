@@ -1,6 +1,9 @@
 import TickerProgrationType from "../interfaces/TickerProgrationType";
 import { CommonTickerProps } from "./CommonTickerProps";
 
+/**
+ * @deprecated
+ */
 export type ZoomTickerProps = {
     /**
      * The speed of the zoom effect (100% zoom per 10 second)

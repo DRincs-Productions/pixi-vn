@@ -12,6 +12,7 @@ const DEFAULT_SPEED = 5;
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
+ * @deprecated Use {@link canvas.animate}
  * @example
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")

@@ -11,6 +11,7 @@ const DEFAULT_SPEED = 1;
 /**
  * A ticker that rotates the canvas element of the canvas. For centre rotation, set the anchor of the canvas element to 0.5.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
+ * @deprecated Use {@link canvas.animate}
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
