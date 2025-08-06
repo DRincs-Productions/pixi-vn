@@ -107,7 +107,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     private speedConvert(speed: number): number {
         return speed / 600;
     }
-    override onComplete(alias: string | string[], _tickerId: string, args: ZoomTickerProps): void {
+    onComplete(alias: string | string[], _tickerId: string, args: ZoomTickerProps): void {
         const { isZoomInOut } = args;
         if (typeof alias === "string") {
             alias = [alias];
@@ -140,6 +140,38 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
             }
         }
         return { x: xLimit, y: yLimit };
+    }
+
+    override complete(options?: { ignoreTickerSteps?: boolean }): void {
+        const { ignoreTickerSteps } = options || {};
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        this.onComplete(this.canvasElementAliases, id, this.args);
+        let aliasToRemoveAfter: string | string[] =
+            ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        let tickerAliasToResume: string | string[] =
+            ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume];
+        }
+        let tickerIdToResume: string | string[] =
+            ("tickerIdToResume" in this.args && (this.args.tickerIdToResume as any)) || [];
+        if (typeof tickerIdToResume === "string") {
+            tickerIdToResume = [tickerIdToResume];
+        }
+        canvas.onTickerComplete(id, {
+            aliasToRemoveAfter: aliasToRemoveAfter,
+            tickerAliasToResume: tickerAliasToResume,
+            tickerIdToResume: tickerIdToResume,
+            ignoreTickerSteps: ignoreTickerSteps,
+        });
+        super.complete(options);
     }
 }
 RegisteredTickers.add(ZoomTicker);

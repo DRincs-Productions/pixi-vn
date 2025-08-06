@@ -71,42 +71,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
      */
     abstract fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void;
     protected fnValue?: () => void;
-    /**
-     * This method is called when the ticker is added to the canvas.
-     * @param alias The alias of the canvas elements that are connected to this ticker
-     * @param tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
-     * @param options The options that you passed when you added the ticker
-     */
-    public onComplete(_alias: string | string[], _tickerId: string, _args: TArgs) {}
-    complete(options?: { ignoreTickerSteps?: boolean }) {
-        const { ignoreTickerSteps } = options || {};
-        const id = this.tickerId;
-        if (!id) {
-            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
-            return;
-        }
-        this.onComplete(this.canvasElementAliases, id, this.args);
-        let aliasToRemoveAfter: string | string[] =
-            ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
-        if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter];
-        }
-        let tickerAliasToResume: string | string[] =
-            ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
-        if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume];
-        }
-        let tickerIdToResume: string | string[] =
-            ("tickerIdToResume" in this.args && (this.args.tickerIdToResume as any)) || [];
-        if (typeof tickerIdToResume === "string") {
-            tickerIdToResume = [tickerIdToResume];
-        }
-        canvas.onTickerComplete(id, {
-            aliasToRemoveAfter: aliasToRemoveAfter,
-            tickerAliasToResume: tickerAliasToResume,
-            tickerIdToResume: tickerIdToResume,
-            ignoreTickerSteps: ignoreTickerSteps,
-        });
+    complete(_options?: { ignoreTickerSteps?: boolean }) {
         this.stop();
     }
     stop() {

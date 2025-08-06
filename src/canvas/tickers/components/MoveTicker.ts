@@ -144,7 +144,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onComplete(alias: string | string[], _tickerId: string, args: MoveTickerProps): void {
+    onComplete(alias: string | string[], _tickerId: string, args: MoveTickerProps): void {
         if (typeof alias === "string") {
             alias = [alias];
         }
@@ -163,6 +163,38 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
     }
     private speedConvert(speed: number): number {
         return speed * (66 / 400);
+    }
+
+    override complete(options?: { ignoreTickerSteps?: boolean }): void {
+        const { ignoreTickerSteps } = options || {};
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        this.onComplete(this.canvasElementAliases, id, this.args);
+        let aliasToRemoveAfter: string | string[] =
+            ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        let tickerAliasToResume: string | string[] =
+            ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume];
+        }
+        let tickerIdToResume: string | string[] =
+            ("tickerIdToResume" in this.args && (this.args.tickerIdToResume as any)) || [];
+        if (typeof tickerIdToResume === "string") {
+            tickerIdToResume = [tickerIdToResume];
+        }
+        canvas.onTickerComplete(id, {
+            aliasToRemoveAfter: aliasToRemoveAfter,
+            tickerAliasToResume: tickerAliasToResume,
+            tickerIdToResume: tickerIdToResume,
+            ignoreTickerSteps: ignoreTickerSteps,
+        });
+        super.complete(options);
     }
 }
 RegisteredTickers.add(MoveTicker);
