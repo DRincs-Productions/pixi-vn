@@ -19,4 +19,9 @@ export type CommonTickerProps = {
      * @default []
      */
     tickerIdToResume?: string[] | string;
+    /**
+     * If true, the effect must be completed before the next step is executed
+     * @default false
+     */
+    mustBeCompletedBeforeNextStep?: boolean;
 };

@@ -819,8 +819,8 @@ export default class CanvasManager implements CanvasManagerInterface {
     ): string | undefined;
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
-        keyframes: unknown,
-        options?: unknown,
+        keyframes: KeyframesType<T> | (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+        options?: AnimationOptions | SequenceOptions,
         priority?: UPDATE_PRIORITY
     ): string | undefined {
         try {
@@ -863,7 +863,14 @@ export default class CanvasManager implements CanvasManagerInterface {
                 priority
             );
         }
-        return this.addTicker<any>(aliases, ticker);
+        const id = this.addTicker<any>(aliases, ticker);
+        const { mustBeCompletedBeforeNextStep } = options || {};
+        if (id && mustBeCompletedBeforeNextStep) {
+            this.completeTickerOnStepEnd({
+                id: id,
+            });
+        }
+        return id;
     }
 
     /* Layers Methods */

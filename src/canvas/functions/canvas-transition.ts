@@ -150,7 +150,7 @@ export async function showWithDissolve(
             tickerIdToResume.push(...ids);
         }
     }
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     let idShow = canvas.animate(
         alias,
         {
@@ -159,13 +159,11 @@ export async function showWithDissolve(
         {
             ...options,
             tickerIdToResume,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
-    if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
-        res.push(idShow);
-    }
+    idShow && res.push(idShow);
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
         await component.load();
@@ -195,7 +193,7 @@ export function removeWithDissolve(
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     aliasToRemoveAfter.push(alias);
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     let id = canvas.animate(
         alias,
         {
@@ -204,11 +202,11 @@ export function removeWithDissolve(
         {
             ...options,
             aliasToRemoveAfter,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
     if (id) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
     }
 }
@@ -252,7 +250,7 @@ export async function showWithFade(
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
     component.alpha = 0;
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     let idShow = canvas.animate(
         alias,
         {
@@ -261,6 +259,7 @@ export async function showWithFade(
         {
             ...options,
             aliasToRemoveAfter,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
@@ -278,7 +277,6 @@ export async function showWithFade(
             res.push(...idHide);
         }
 
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
         res.push(idShow);
         // pause the ticker
         canvas.pauseTicker({ id: idShow });
@@ -401,7 +399,7 @@ export async function moveIn(
     }
     let ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     let idShow = canvas.animate(
         alias,
         calculateDestination(destination, component),
@@ -409,13 +407,11 @@ export async function moveIn(
             ...options,
             tickerIdToResume,
             aliasToRemoveAfter,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
-    if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
-        res.push(idShow);
-    }
+    idShow && res.push(idShow);
     // return the ids of the tickers
     if (res.length > 0) {
         return res;
@@ -457,7 +453,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
             destination.x = canvas.canvasWidth + component.width;
             break;
     }
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     canvas.pauseTicker({ canvasAlias: alias });
     let id = canvas.animate(
         alias,
@@ -465,11 +461,11 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
         {
             ...options,
             aliasToRemoveAfter,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
     if (id) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
     }
 }
@@ -582,7 +578,7 @@ export async function zoomIn(
     // pause the ticker
     let ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     let idShow = canvas.animate(
         alias,
         {
@@ -596,13 +592,11 @@ export async function zoomIn(
             ...options,
             tickerIdToResume,
             aliasToRemoveAfter,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
-    if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
-        res.push(idShow);
-    }
+    idShow && res.push(idShow);
     // return the ids of the tickers
     if (res.length > 0) {
         return res;
@@ -656,7 +650,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         pivot.y = canvas.canvasHeight / 2 - destination.y;
     }
     pivot = getPointBySuperPoint(pivot, component.angle);
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     canvas.pauseTicker({ canvasAlias: alias });
     let id = canvas.animate(
         alias,
@@ -670,11 +664,11 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         {
             ...options,
             aliasToRemoveAfter,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
     if (id) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: id });
         return [id];
     }
 }
@@ -747,20 +741,18 @@ export async function pushIn(
             res.push(...ids);
         }
     }
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // create the ticker and play it
     let idShow = canvas.animate(
         alias,
         calculateDestination(destination, component),
         {
             ...options,
             tickerIdToResume,
+            mustBeCompletedBeforeNextStep,
         },
         priority
     );
-    if (idShow) {
-        mustBeCompletedBeforeNextStep && canvas.completeTickerOnStepEnd({ id: idShow });
-        res.push(idShow);
-    }
+    idShow && res.push(idShow);
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
         await component.load();
