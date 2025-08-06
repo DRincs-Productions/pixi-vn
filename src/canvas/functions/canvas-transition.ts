@@ -579,9 +579,10 @@ export async function zoomIn(
     }
     component.pivot = getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
-    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
+    // pause the ticker
     let ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
+    // create the ticker, play it and add it to mustBeCompletedBeforeNextStep
     let idShow = canvas.animate(
         alias,
         {
