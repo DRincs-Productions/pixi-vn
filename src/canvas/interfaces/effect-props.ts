@@ -1,19 +1,7 @@
-import { TickerProgrationType } from "../tickers";
+import AnimationOptions from "../types/AnimationOptions";
+import { BaseTransitionProps } from "./transition-props";
 
-export interface ShakeEffectProps {
-    /**
-     * The speed of the shake effect. @default 20
-     */
-    speed?: number;
-    /**
-     * The progression of the speed
-     */
-    speedProgression?: TickerProgrationType;
-    /**
-     * If true, the effect only starts if the canvas element have a texture
-     * @default false
-     */
-    startOnlyIfHaveTexture?: boolean;
+export interface ShakeEffectProps extends BaseTransitionProps, AnimationOptions {
     /**
      * The number of shocks. **Must be at least 3**.
      * @default 10
@@ -23,12 +11,12 @@ export interface ShakeEffectProps {
      * The type of the shake effect
      * @default "horizontal"
      */
-    type?: "horizontal" | "vertical";
+    shakeType?: "horizontal" | "vertical";
     /**
      * The maximum size of the shock.
      * For horizontal type, it is the maximum size of the x axis.
      * For vertical type, it is the maximum size of the y axis.
      * @default 10
      */
-    maximumShockSize?: number;
+    maxShockSize?: number;
 }

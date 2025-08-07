@@ -1,7 +1,6 @@
-import { MoveTickerProps } from "../tickers";
 import AnimationOptions from "../types/AnimationOptions";
 
-interface BaseTransitionProps {
+export interface BaseTransitionProps {
     /**
      * If true, the transition will be completed before the next step.
      * For example, if the transition is a dissolve transition, the "alpha" of the texture will be 1 before the next step.
@@ -26,9 +25,7 @@ export interface ZoomInOutProps extends BaseTransitionProps, AnimationOptions {
      */
     direction?: "up" | "down" | "left" | "right";
 }
-export interface PushInOutProps
-    extends BaseTransitionProps,
-        Omit<MoveTickerProps, "startOnlyIfHaveTexture" | "destination" | "isPushInOut"> {
+export interface PushInOutProps extends BaseTransitionProps, AnimationOptions {
     /**
      * The direction of the push effect.
      * @default "right"

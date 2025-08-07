@@ -1,7 +1,6 @@
 import { UPDATE_PRIORITY } from "pixi.js";
 import { canvas, ShakeEffectProps } from "..";
 import { logger } from "../../utils/log-utility";
-import { MoveTicker } from "../tickers";
 
 /**
  * Shake the canvas element.
@@ -15,19 +14,15 @@ export async function shakeEffect(
     alias: string,
     props: ShakeEffectProps = {},
     priority?: UPDATE_PRIORITY
-): Promise<void> {
+): Promise<string[] | undefined> {
     let elemet = canvas.find(alias);
     if (!elemet) {
         logger.error(`The element with the alias ${alias} does not exist. So the shake effect can't be applied.`);
         return;
     }
     let position = { x: elemet.position.x, y: elemet.position.y };
-    let speed = props.speed || 20;
-    let speedProgression = props.speedProgression || undefined;
-    let startOnlyIfHaveTexture = props.startOnlyIfHaveTexture || false;
-    let type = props.type || "horizontal";
-    let maximumShockSize = props.maximumShockSize || 10;
-    let shocksNumber = (props.shocksNumber || 10) - 1;
+    const { shakeType = "horizontal", maxShockSize = 10, shocksNumber: shocksNumberTemp = 10, ...options } = props;
+    let shocksNumber = shocksNumberTemp - 1;
     if (shocksNumber < 2) {
         logger.error("The number of shocks must be at least 3.");
         return;
@@ -35,83 +30,50 @@ export async function shakeEffect(
     let upshocksNumber = Math.floor(shocksNumber / 2);
     let downshocksNumber = Math.ceil(shocksNumber / 2);
 
-    let moveTickers: MoveTicker[] = [];
+    let array: number[] = [];
     for (let i = 0; i < upshocksNumber; i++) {
-        let destination = { x: position.x, y: position.y };
-        let shockSize = (maximumShockSize * (i + 1)) / upshocksNumber;
-        if (type === "horizontal") {
+        let shockSize = (maxShockSize * (i + 1)) / upshocksNumber;
+        if (shakeType === "horizontal") {
             if (i % 2 !== 0) {
-                destination.x = position.x + shockSize;
+                array.push(position.x + shockSize);
             } else {
-                destination.x = position.x - shockSize;
+                array.push(position.x - shockSize);
             }
         } else {
             if (i % 2 !== 0) {
-                destination.y = position.y + shockSize;
+                array.push(position.y + shockSize);
             } else {
-                destination.y = position.y - shockSize;
+                array.push(position.y - shockSize);
             }
         }
-        moveTickers.push(
-            new MoveTicker(
-                {
-                    destination,
-                    speed,
-                    speedProgression,
-                    startOnlyIfHaveTexture,
-                },
-                undefined,
-                priority
-            )
-        );
     }
     let lastItemIsLeft = upshocksNumber % 2 === 0;
     for (let i = downshocksNumber; i > 0; i--) {
-        let destination = { x: position.x, y: position.y };
-        let shockSize = (maximumShockSize * (i + 1)) / (downshocksNumber - 1);
-        if (type === "horizontal") {
+        let shockSize = (maxShockSize * (i + 1)) / (downshocksNumber - 1);
+        if (shakeType === "horizontal") {
             if ((i % 2 === 0 && !lastItemIsLeft) || (i % 2 !== 0 && lastItemIsLeft)) {
-                destination.x = position.x - shockSize;
+                array.push(position.x - shockSize);
             } else {
-                destination.x = position.x + shockSize;
+                array.push(position.x + shockSize);
             }
         } else {
             if ((i % 2 === 0 && !lastItemIsLeft) || (i % 2 !== 0 && lastItemIsLeft)) {
-                destination.y = position.y - shockSize;
+                array.push(position.y - shockSize);
             } else {
-                destination.y = position.y + shockSize;
+                array.push(position.y + shockSize);
             }
         }
-        moveTickers.push(
-            new MoveTicker(
-                {
-                    destination,
-                    speed,
-                    speedProgression,
-                    startOnlyIfHaveTexture,
-                },
-                undefined,
-                priority
-            )
-        );
     }
 
-    moveTickers.push(
-        new MoveTicker(
-            {
-                destination: position,
-                speed,
-                speedProgression,
-                startOnlyIfHaveTexture,
-                tickerAliasToResume: alias,
-            },
-            undefined,
-            priority
-        )
-    );
-    let id = canvas.addTickersSequence(alias, moveTickers);
+    let id: string | undefined;
+    if (shakeType === "horizontal") {
+        array.push(position.x);
+        id = canvas.animate(alias, { x: array }, options, priority);
+    } else {
+        array.push(position.y);
+        id = canvas.animate(alias, { y: array }, options, priority);
+    }
     if (id) {
-        canvas.completeTickerOnStepEnd({ id: id, alias: alias });
-        canvas.pauseTicker({ canvasAlias: alias, tickerIdsExcluded: [id] });
+        return [id];
     }
 }
