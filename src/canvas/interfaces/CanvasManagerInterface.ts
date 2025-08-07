@@ -211,6 +211,13 @@ export default interface CanvasManagerInterface {
         };
     };
     /**
+     * Find a ticker by its id and args.
+     * @param tickerId The id of the ticker.
+     * @param args The args of the ticker.
+     * @returns The ticker if found, undefined otherwise.
+     */
+    findTicker<TArgs extends TickerArgs>(tickerId: string, args?: TArgs): Ticker<TArgs> | undefined;
+    /**
      * Run a ticker. You can run multiple addTicker with the same alias and different tickerClasses.
      * If you run a ticker with the same alias and tickerClass, the old ticker will be removed.
      * If already exists a sequence of tickers with the same alias, it will be removed.

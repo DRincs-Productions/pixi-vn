@@ -274,6 +274,21 @@ export default class CanvasManager implements CanvasManagerInterface {
     public get currentTickersSteps() {
         return CanvasManagerStatic._currentTickersSequence;
     }
+    findTicker<TArgs extends TickerArgs>(tickerId: string, args?: TArgs): Ticker<TArgs> | undefined {
+        let ticker = CanvasManagerStatic._currentTickers[tickerId];
+        if (ticker) {
+            if (args) {
+                return RegisteredTickers.getInstance<TArgs>(
+                    tickerId,
+                    args,
+                    ticker.ticker.duration,
+                    ticker.ticker.priority
+                );
+            }
+            return ticker.ticker as Ticker<TArgs>;
+        }
+        return undefined;
+    }
     addTicker<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
         ticker: Ticker<TArgs>,
