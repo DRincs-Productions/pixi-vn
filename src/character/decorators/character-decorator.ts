@@ -4,27 +4,6 @@ import { logger } from "../../utils/log-utility";
 
 export const registeredCharacters = new CachedMap<string, CharacterInterface>({ cacheSize: 10 });
 
-/**
- * @deprecated Use `RegisteredCharacters.add` instead.
- */
-export function saveCharacter<T extends CharacterInterface = CharacterInterface>(character: T | T[]) {
-    return RegisteredCharacters.add(character);
-}
-
-/**
- * @deprecated Use `RegisteredCharacters.get` instead.
- */
-export function getCharacterById<T extends CharacterInterface>(id: string): T | undefined {
-    return RegisteredCharacters.get<T>(id);
-}
-
-/**
- * @deprecated Use `RegisteredCharacters.values` instead.
- */
-export function getAllCharacters<T extends CharacterInterface>(): T[] {
-    return RegisteredCharacters.values<T>();
-}
-
 namespace RegisteredCharacters {
     /**
      * is a function that returns the character by the id

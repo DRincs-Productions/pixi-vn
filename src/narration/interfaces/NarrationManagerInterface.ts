@@ -1,6 +1,4 @@
 import {
-    ChoiceMenuOption,
-    ChoiceMenuOptionClose,
     DialogueInterface,
     InputInfo,
     LabelAbstract,
@@ -8,7 +6,6 @@ import {
     OpenedLabel,
     StepLabelPropsType,
     StepLabelResultType,
-    StepLabelType,
     StoredChoiceInterface,
     StoredIndexedChoiceInterface,
 } from "..";
@@ -229,15 +226,6 @@ export default interface NarrationManagerInterface {
     /* Go Back & Refresh Methods */
 
     /**
-     * @deprecated Use Game.onEnd
-     */
-    onGameEnd: StepLabelType | undefined;
-    /**
-     * @deprecated Use Game.onError
-     */
-    onStepError: ((error: any, props: StepLabelPropsType) => void) | undefined;
-
-    /**
      * Dialogue to be shown in the game
      */
     get dialogue(): DialogueInterface | undefined;
@@ -272,7 +260,7 @@ export default interface NarrationManagerInterface {
      * ]
      * ```
      */
-    set choiceMenuOptions(data: (ChoiceMenuOption<any> | ChoiceMenuOptionClose | StoredChoiceInterface)[] | undefined);
+    set choiceMenuOptions(data: StoredChoiceInterface[] | undefined);
     /**
      * If true, the next dialogue text will be added to the current dialogue text.
      */

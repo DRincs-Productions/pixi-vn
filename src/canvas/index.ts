@@ -29,9 +29,9 @@ export {
     zoomOut,
 } from "./functions/canvas-transition";
 export { addImageCointainer, showImageContainer } from "./functions/image-container-utility";
-export { addImage, loadImage, showImage } from "./functions/image-utility";
+export { addImage, showImage } from "./functions/image-utility";
 export { getTexture } from "./functions/texture-utility";
-export { addVideo, loadVideo, showVideo } from "./functions/video-utility";
+export { addVideo, showVideo } from "./functions/video-utility";
 export type {
     ImageContainerOptions,
     ImageSpriteOptions,

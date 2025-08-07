@@ -45,18 +45,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     get isInitialized() {
         return CanvasManagerStatic._isInitialized;
     }
-    /**
-     * @deprecated Use `canvas.getHtmlLayers` instead.
-     */
-    get htmlLayout(): HTMLElement | undefined {
-        return CanvasManagerStatic.htmlLayers[0];
-    }
-    /**
-     * @deprecated Use `canvas.addHtmlLayer` instead.
-     */
-    set htmlLayout(value: HTMLElement) {
-        this.addHtmlLayer("ui", value);
-    }
     get canvasWidth() {
         return CanvasManagerStatic.canvasWidth;
     }
@@ -99,13 +87,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         } else {
             throw new Error("Invalid parameters");
         }
-    }
-
-    /**
-     * @deprecated Use `canvas.addHtmlLayer` instead.
-     */
-    public initializeHTMLLayout(element: HTMLElement) {
-        this.addHtmlLayer("ui", element);
     }
 
     /* Edit Canvas Elements Methods */

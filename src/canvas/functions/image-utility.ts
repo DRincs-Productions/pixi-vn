@@ -1,7 +1,6 @@
-import { Assets, Texture } from "pixi.js";
+import { Assets } from "pixi.js";
 import { canvas, ImageSpriteOptions } from "..";
 import ImageSprite from "../components/ImageSprite";
-import { getTexture } from "./texture-utility";
 
 /**
  * Add a image in the canvas.
@@ -31,30 +30,6 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
     let image = new ImageSprite(options, imageUrl);
     canvas.add(alias, image);
     return image;
-}
-
-/**
- * @deprecated
- */
-export async function loadImage(canvasImages: ImageSprite[] | ImageSprite): Promise<ImageSprite[]> {
-    if (!Array.isArray(canvasImages)) {
-        return [canvasImages];
-    }
-    let promises: Promise<void | Texture>[] = Array<Promise<void | Texture>>(canvasImages.length);
-    for (let i = 0; i < canvasImages.length; i++) {
-        promises[i] = getTexture(canvasImages[i].textureAlias);
-    }
-    // wait for all promises
-    return Promise.all(promises).then((textures) => {
-        return textures.map((texture, index) => {
-            if (texture) {
-                canvasImages[index].texture = texture;
-                return canvasImages[index];
-            }
-            canvasImages[index].load();
-            return canvasImages[index];
-        });
-    });
 }
 
 /**
