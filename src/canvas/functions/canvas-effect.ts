@@ -6,13 +6,13 @@ import { logger } from "../../utils/log-utility";
  * Shake the canvas element.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
  * @param alias
- * @param props
+ * @param options
  * @param priority
  * @returns
  */
 export async function shakeEffect(
     alias: string,
-    props: ShakeEffectProps = {},
+    options: ShakeEffectProps = {},
     priority?: UPDATE_PRIORITY
 ): Promise<string[] | undefined> {
     let elemet = canvas.find(alias);
@@ -21,7 +21,7 @@ export async function shakeEffect(
         return;
     }
     let position = { x: elemet.position.x, y: elemet.position.y };
-    const { shakeType = "horizontal", maxShockSize = 10, shocksNumber: shocksNumberTemp = 10, ...options } = props;
+    const { shakeType = "horizontal", maxShockSize = 10, shocksNumber: shocksNumberTemp = 10, ...rest } = options;
     let shocksNumber = shocksNumberTemp - 1;
     if (shocksNumber < 2) {
         logger.error("The number of shocks must be at least 3.");
@@ -68,10 +68,10 @@ export async function shakeEffect(
     let id: string | undefined;
     if (shakeType === "horizontal") {
         array.push(position.x);
-        id = canvas.animate(alias, { x: array }, options, priority);
+        id = canvas.animate(alias, { x: array }, rest, priority);
     } else {
         array.push(position.y);
-        id = canvas.animate(alias, { y: array }, options, priority);
+        id = canvas.animate(alias, { y: array }, rest, priority);
     }
     if (id) {
         return [id];
