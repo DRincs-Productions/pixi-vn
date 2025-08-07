@@ -2,7 +2,7 @@ import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { TickerBase, TickerValue, ZoomTickerProps } from "..";
 import { canvas } from "../..";
 import { logger } from "../../../utils/log-utility";
-import RegisteredTickers from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/RegisteredTickers";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 
@@ -11,6 +11,7 @@ const DEFAULT_SPEED = 10;
 /**
  * A ticker that zooms the canvas element of the canvas.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
+ * @deprecated Use {@link canvas.animate}
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -26,7 +27,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     constructor(args: ZoomTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
     }
-    override fn(ticker: TickerValue, args: ZoomTickerProps, alias: string[], tickerId: string): void {
+    fn(ticker: TickerValue, args: ZoomTickerProps, alias: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             args.speed = DEFAULT_SPEED;
         }
@@ -74,7 +75,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             element.scale.y = limit.y;
                         }
                         if (element.scale.x >= limit.x && element.scale.y >= limit.y) {
-                            this.onEndOfTicker(alias, tickerId, args);
+                            this.complete();
                             return;
                         }
                     } else if (type === "unzoom") {
@@ -85,7 +86,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                             element.scale.y = limit.y;
                         }
                         if (element.scale.x <= limit.x && element.scale.y <= limit.y) {
-                            this.onEndOfTicker(alias, tickerId, args);
+                            this.complete();
                             return;
                         }
                     }
@@ -96,7 +97,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the ZoomTicker must be greater than 0.");
-                        this.onEndOfTicker(alias, tickerId, args, { editScale: false });
+                        this.complete();
                         return;
                     }
                 }
@@ -106,12 +107,7 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
     private speedConvert(speed: number): number {
         return speed / 600;
     }
-    override onEndOfTicker(
-        alias: string | string[],
-        tickerId: string,
-        args: ZoomTickerProps,
-        options: { editScale?: boolean } = { editScale: true }
-    ): void {
+    onComplete(alias: string | string[], _tickerId: string, args: ZoomTickerProps): void {
         const { isZoomInOut } = args;
         if (typeof alias === "string") {
             alias = [alias];
@@ -119,11 +115,9 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
         alias.forEach((alias) => {
             let element = canvas.find(alias);
             if (element) {
-                if (options.editScale) {
-                    let limit = this.getLimit(args);
-                    element.scale.x = limit.x;
-                    element.scale.y = limit.y;
-                }
+                let limit = this.getLimit(args);
+                element.scale.x = limit.x;
+                element.scale.y = limit.y;
                 if (isZoomInOut) {
                     let { pivot, position } = isZoomInOut;
                     element.pivot = pivot.x;
@@ -131,7 +125,6 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
                 }
             }
         });
-        super.onEndOfTicker(alias, tickerId, args);
     }
     private getLimit(args: ZoomTickerProps): { x: number; y: number } {
         const { type = "zoom", limit } = args;
@@ -147,6 +140,38 @@ export default class ZoomTicker extends TickerBase<ZoomTickerProps> {
             }
         }
         return { x: xLimit, y: yLimit };
+    }
+
+    override complete(options?: { ignoreTickerSteps?: boolean }): void {
+        const { ignoreTickerSteps } = options || {};
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        this.onComplete(this.canvasElementAliases, id, this.args);
+        let aliasToRemoveAfter: string | string[] =
+            ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        let tickerAliasToResume: string | string[] =
+            ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume];
+        }
+        let tickerIdToResume: string | string[] =
+            ("tickerIdToResume" in this.args && (this.args.tickerIdToResume as any)) || [];
+        if (typeof tickerIdToResume === "string") {
+            tickerIdToResume = [tickerIdToResume];
+        }
+        canvas.onTickerComplete(id, {
+            aliasToRemoveAfter: aliasToRemoveAfter,
+            tickerAliasToResume: tickerAliasToResume,
+            tickerIdToResume: tickerIdToResume,
+            ignoreTickerSteps: ignoreTickerSteps,
+        });
+        super.complete(options);
     }
 }
 RegisteredTickers.add(ZoomTicker);

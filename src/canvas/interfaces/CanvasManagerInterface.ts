@@ -1,7 +1,19 @@
 import { Devtools } from "@pixi/devtools";
-import { Application, ApplicationOptions, ContainerChild, Container as PixiContainer, Rectangle } from "pixi.js";
-import { Ticker, TickerArgs, TickerBase, TickerHistory, TickersSequence } from "../tickers";
-import PauseTickerType from "../types/PauseTickerType";
+import {
+    Application,
+    ApplicationOptions,
+    ContainerChild,
+    Container as PixiContainer,
+    Rectangle,
+    UPDATE_PRIORITY,
+} from "pixi.js";
+import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
+import AnimationOptions, {
+    KeyframesType,
+    ObjectSegment,
+    ObjectSegmentWithTransition,
+    SequenceOptions,
+} from "../types/AnimationOptions";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { CanvasBaseInterface } from "./CanvasBaseInterface";
@@ -164,7 +176,6 @@ export default interface CanvasManagerInterface {
     canvasElementIsOnCanvas<T extends PixiContainer>(pixiElement: T): boolean;
     /**
      * Remove all canvas elements from the canvas.
-     * And remove all tickers that are not connected to any canvas element.
      */
     removeAll(): void;
     /**
@@ -190,7 +201,7 @@ export default interface CanvasManagerInterface {
     /**
      * Currently tickers that are running.
      */
-    readonly currentTickers: { [id: string]: TickerHistory<any> };
+    readonly currentTickers: { [id: string]: TickerInfo<any> };
     /**
      * The steps of the tickers
      */
@@ -199,6 +210,13 @@ export default interface CanvasManagerInterface {
             [tickerId: string]: TickersSequence;
         };
     };
+    /**
+     * Find a ticker by its id.
+     * @param tickerId The id of the ticker.
+     * @param args The args of the ticker.
+     * @returns The ticker if found, undefined otherwise.
+     */
+    findTicker<TArgs extends TickerArgs>(tickerId: string, args?: TArgs): Ticker<TArgs> | undefined;
     /**
      * Run a ticker. You can run multiple addTicker with the same alias and different tickerClasses.
      * If you run a ticker with the same alias and tickerClass, the old ticker will be removed.
@@ -213,14 +231,14 @@ export default interface CanvasManagerInterface {
      */
     addTicker<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
-        ticker: TickerBase<TArgs>
+        ticker: Ticker<TArgs>
     ): string | undefined;
     /**
      * Run a sequence of tickers.
      * @param alias The alias of canvas element that will use the tickers.
      * @param steps The steps of the tickers.
      * @param currentStepNumber The current step number. It is used to continue the sequence of tickers.
-     * @returns The id of the sequence of tickers.
+     * @returns The id of tickers.
      * @example
      * ```typescript
      * canvas.addTickersSequence("alien", [
@@ -245,11 +263,9 @@ export default interface CanvasManagerInterface {
      * ```typescript
      * canvas.unlinkComponentFromTicker("alien", RotateTicker)
      * ```
+     * @deprecated
      */
-    unlinkComponentFromTicker(
-        alias: string | string[],
-        ticker?: typeof TickerBase<any> | TickerBase<any> | string
-    ): void;
+    unlinkComponentFromTicker(alias: string | string[], ticker?: { new (): Ticker<any> } | string): void;
     /**
      * Remove all tickers from the canvas.
      */
@@ -261,15 +277,49 @@ export default interface CanvasManagerInterface {
     removeTicker(tickerId: string | string[]): void;
     /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
-     * @param alias The alias of the canvas element that will use the ticker.
-     * @param options The options of the pause ticker.
+     * @param filters The filters to pause the ticker.
+     * @returns The ids of the paused tickers.
      */
-    pauseTicker(alias: string, options?: PauseTickerType): void;
+    pauseTicker(
+        filters:
+            | {
+                  /**
+                   * The alias of the canvas element that will use the ticker.
+                   * Will pause all tickers that are connected to this canvas element.
+                   */
+                  canvasAlias: string;
+                  /**
+                   * Ticker ids excluded from the pause. If not provided, all tickers will be paused.
+                   */
+                  tickerIdsExcluded?: string[];
+              }
+            | {
+                  /**
+                   * The id of the ticker to be paused. If provided, only this ticker will be paused.
+                   */
+                  id: string | string[];
+              }
+    ): string[];
     /**
      * Resume a ticker.
-     * @param alias The alias of the canvas element that will use the ticker.
+     * @param filters The filters to resume the ticker.
      */
-    resumeTicker(alias: string | string[]): void;
+    resumeTicker(
+        filters:
+            | {
+                  /**
+                   * The alias of the canvas element that will use the ticker.
+                   * Will resume all tickers that are connected to this canvas element.
+                   */
+                  canvasAlias: string;
+              }
+            | {
+                  /**
+                   * The id of the ticker to be resumed. If provided, only this ticker will be resumed.
+                   */
+                  id: string | string[];
+              }
+    ): void;
     /**
      * Check if a ticker is paused.
      * @param alias The alias of the canvas element that will use the ticker.
@@ -298,7 +348,45 @@ export default interface CanvasManagerInterface {
      * @param id The id of the ticker. If the alias provided, the id is the id of the sequence of tickers.
      * @param alias The alias of the sequence of tickers.
      */
-    forceCompletionOfTicker(id: string, alias?: string): void;
+    forceCompletionOfTicker(id: string, alias?: string): Promise<void>;
+    /**
+     * Animate a Pixi’VN component or components using [motion's animate](https://motion.dev/docs/animate) function.
+     * This function integrates with the PixiJS ticker to ensure smooth animations.
+     *
+     * Pixi’VN will keep track of the animation state of this function.
+     * So Pixi’VN will save the animation state in saves.
+     * @param components - The PixiJS component(s) to animate.
+     * @param keyframes - The keyframes to animate the component(s) with.
+     * @param options - Additional options for the animation, including duration, easing, and ticker.
+     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     * @returns The id of tickers.
+     * @template T - The type of Pixi’VN component(s) being animated.
+     */
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string | (string | T)[],
+        keyframes: KeyframesType<T>,
+        options?: AnimationOptions,
+        priority?: UPDATE_PRIORITY
+    ): string | undefined;
+    /**
+     * Animate a Pixi’VN component or components using [motion's animate](https://motion.dev/docs/animate) function.
+     * This function integrates with the PixiJS ticker to ensure smooth animations.
+     *
+     * Pixi’VN will keep track of the animation state of this function.
+     * So Pixi’VN will save the animation state in saves.
+     * @param components - The PixiJS component(s) to animate.
+     * @param sequence - The sequence of keyframes to animate the component(s) with.
+     * @param options - Additional options for the animation, including duration, easing, and ticker.
+     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     * @returns The id of tickers.
+     * @template T - The type of Pixi’VN component(s) being animated.
+     */
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string,
+        sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+        options?: SequenceOptions,
+        priority?: UPDATE_PRIORITY
+    ): string | undefined;
 
     /* Layers Methods */
 
@@ -395,13 +483,26 @@ export default interface CanvasManagerInterface {
      * @param data The object.
      */
     restore(data: object): Promise<void>;
-
+    /**
+     * @deprecated Use {@link onTickerComplete}
+     */
     onEndOfTicker(
         tickerId: string,
         options: {
-            aliasToRemoveAfter: string[] | string;
-            tickerAliasToResume: string[] | string;
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
+            tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
+        }
+    ): void;
+    onTickerComplete(
+        tickerId: string,
+        options: {
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
+            tickerIdToResume: string[];
+            ignoreTickerSteps?: boolean;
+            stopTicker?: boolean;
         }
     ): void;
 }

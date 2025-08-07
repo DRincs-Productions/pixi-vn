@@ -1,5 +1,9 @@
 import TickerProgrationType from "../interfaces/TickerProgrationType";
+import { CommonTickerProps } from "./CommonTickerProps";
 
+/**
+ * @deprecated
+ */
 export type FadeAlphaTickerProps = {
     /**
      * @deprecated use speed instead
@@ -25,19 +29,4 @@ export type FadeAlphaTickerProps = {
      * The progression of the speed
      */
     speedProgression?: TickerProgrationType;
-    /**
-     * The alias to remove after the fade is done
-     * @default []
-     */
-    aliasToRemoveAfter?: string[] | string;
-    /**
-     * If true, the effect only starts if the canvas element have a texture
-     * @default false
-     */
-    startOnlyIfHaveTexture?: boolean;
-    /**
-     * The alias to resume after the effect is done
-     * @default []
-     */
-    tickerAliasToResume?: string[] | string;
-};
+} & CommonTickerProps;

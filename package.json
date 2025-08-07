@@ -35,7 +35,8 @@
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
     "@pixi/sound": "^6.0.1",
-    "pixi.js": "^8.10.1"
+    "motion": "^12.23.12",
+    "pixi.js": "^8.11.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
@@ -48,7 +49,7 @@
     "microdiff": "^1.5.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
-    "typescript": "^5.8.3",
+    "typescript": "^5.9.2",
     "vitest": "^3.2.4"
   },
   "keywords": [

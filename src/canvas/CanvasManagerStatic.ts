@@ -4,7 +4,7 @@ import { Application, ApplicationOptions, Container as PixiContainer } from "pix
 import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
 import additionalPositionsProperties from "../pixi-devtools/additionalPositionsProperties";
 import { logger } from "../utils/log-utility";
-import { TickerHistory, TickersSequence, TickerTimeoutHistory } from "./tickers";
+import { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
 import PauseTickerType from "./types/PauseTickerType";
 
 function throttle(func: (...args: any[]) => Promise<void>, limit: number) {
@@ -214,20 +214,37 @@ export default class CanvasManagerStatic {
 
     /** Edit Tickers Methods */
 
-    static get currentTickersWithoutCreatedBySteps() {
+    static get currentTickersWithoutCreatedBySteps(): {
+        [k: string]: TickerHistory<any>;
+    } {
         return Object.fromEntries(
-            Object.entries(CanvasManagerStatic._currentTickers).filter(([_, ticker]) => !ticker.createdByTicketSteps)
+            Object.entries(CanvasManagerStatic._currentTickers)
+                .filter(([_, info]) => !info.createdByTicketSteps)
+                .map(([id, info]) => [
+                    id,
+                    {
+                        id: info.ticker.id,
+                        args: info.ticker.args,
+                        canvasElementAliases: info.ticker.canvasElementAliases,
+                        priority: info.ticker.priority,
+                        duration: info.ticker.duration,
+                        paused: info.ticker.paused,
+                    },
+                ])
         );
     }
-    static _currentTickers: { [id: string]: TickerHistory<any> } = {};
+    static _currentTickers: { [id: string]: TickerInfo<any> } = {};
     static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } = {};
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
     static _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
     } = { tikersIds: [], stepAlias: [] };
+    /**
+     * @deprecated
+     */
     static _tickersOnPause: { [aliasOrId: string]: PauseTickerType } = {};
-    static generateTickerId(tickerData: TickerHistory<any> | TickersSequence): string {
+    static generateTickerId(tickerData: TickerInfo<any> | TickersSequence): string {
         try {
             return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7);
         } catch (e) {

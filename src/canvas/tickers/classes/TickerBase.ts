@@ -1,8 +1,8 @@
-import { UPDATE_PRIORITY } from "pixi.js";
-import { canvas } from "../..";
+import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
+import { canvas, CanvasManagerStatic, Ticker } from "../..";
+import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
-import RegisteredTickers, { tickerDecorator } from "../decorators/ticker-decorator";
-import Ticker from "../interfaces/Ticker";
+import RegisteredTickers, { tickerDecorator } from "../decorators/RegisteredTickers";
 import TickerArgs from "../interfaces/TickerArgs";
 import TickerValue from "./TickerValue";
 
@@ -12,6 +12,7 @@ import TickerValue from "./TickerValue";
  * This class should be extended and the fn method should be overridden.
  * You must use the {@link tickerDecorator} to register the ticker in the game.
  * In Ren'Py is a transform.
+ * @template TArgs The type of the arguments that you want to pass to the ticker.
  * @example
  * ```typescript
  * \@tickerDecorator() // this is equivalent to tickerDecorator("RotateTicker")
@@ -38,7 +39,7 @@ import TickerValue from "./TickerValue";
  * }
  * ```
  */
-export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArgs> {
+export default abstract class TickerBase<TArgs extends TickerArgs> implements Ticker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
      * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
@@ -57,6 +58,9 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
     args: TArgs;
     duration?: number;
     priority?: UPDATE_PRIORITY;
+    protected ticker = new PixiTicker();
+    protected tickerId?: string;
+    canvasElementAliases: string[] = [];
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
@@ -65,29 +69,44 @@ export default class TickerBase<TArgs extends TickerArgs> implements Ticker<TArg
      * @param _alias The alias of the canvas elements that are connected to this ticker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
-    fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void {
-        throw new Error("[Pixi’VN] The method TickerBase.fn() must be overridden");
+    abstract fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void;
+    protected fnValue?: () => void;
+    complete(_options?: { ignoreTickerSteps?: boolean }) {
+        this.stop();
     }
-    /**
-     * This method is called when the ticker is added to the canvas.
-     * @param alias The alias of the canvas elements that are connected to this ticker
-     * @param tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
-     * @param options The options that you passed when you added the ticker
-     */
-    public onEndOfTicker(_alias: string | string[], tickerId: string, args: TArgs) {
-        let aliasToRemoveAfter: string | string[] =
-            ("aliasToRemoveAfter" in args && (args.aliasToRemoveAfter as any)) || [];
-        if (typeof aliasToRemoveAfter === "string") {
-            aliasToRemoveAfter = [aliasToRemoveAfter];
+    stop() {
+        const fnValue = this.fnValue;
+        if (!fnValue) {
+            logger.warn("TickerBase.stop() called without fnValue set. This may cause issues.");
+            return;
         }
-        let tickerAliasToResume: string | string[] =
-            ("tickerAliasToResume" in args && (args.tickerAliasToResume as any)) || [];
-        if (typeof tickerAliasToResume === "string") {
-            tickerAliasToResume = [tickerAliasToResume];
-        }
-        canvas.onEndOfTicker(tickerId, {
-            aliasToRemoveAfter: aliasToRemoveAfter,
-            tickerAliasToResume: tickerAliasToResume,
-        });
+        this.ticker.remove(fnValue, null);
+    }
+    start(id: string) {
+        this.tickerId = id;
+        const fnValue = () => {
+            const { createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
+            let canvasElementAliases = this.canvasElementAliases;
+            if (createdByTicketSteps) {
+                if (canvas.isTickerPaused(createdByTicketSteps.canvasElementAlias, createdByTicketSteps.id)) {
+                    return;
+                }
+            } else {
+                canvasElementAliases = canvasElementAliases.filter((alias) => !canvas.isTickerPaused(alias, id));
+            }
+            return this.fn(this.ticker, this.args, canvasElementAliases, id);
+        };
+        this.fnValue = fnValue;
+        this.ticker.add(fnValue, null, this.priority);
+        this.ticker.start();
+    }
+    pause() {
+        this.ticker.stop();
+    }
+    play() {
+        this.ticker.start();
+    }
+    get paused(): boolean {
+        return !this.ticker.started;
     }
 }

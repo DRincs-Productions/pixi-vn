@@ -1,5 +1,9 @@
 import TickerProgrationType from "../interfaces/TickerProgrationType";
+import { CommonTickerProps } from "./CommonTickerProps";
 
+/**
+ * @deprecated
+ */
 export type ZoomTickerProps = {
     /**
      * The speed of the zoom effect (100% zoom per 10 second)
@@ -25,21 +29,6 @@ export type ZoomTickerProps = {
      */
     speedProgression?: TickerProgrationType;
     /**
-     * The alias to remove after the effect is done
-     * @default []
-     */
-    aliasToRemoveAfter?: string[] | string;
-    /**
-     * If true, the effect only starts if the canvas element have a texture
-     * @default false
-     */
-    startOnlyIfHaveTexture?: boolean;
-    /**
-     * The alias to resume after the effect is done
-     * @default []
-     */
-    tickerAliasToResume?: string[] | string;
-    /**
      * Is a special prop used in the zoom in/out transition.
      * @default false
      */
@@ -47,4 +36,4 @@ export type ZoomTickerProps = {
         pivot: { x: number; y: number };
         position: { x: number; y: number };
     };
-};
+} & CommonTickerProps;

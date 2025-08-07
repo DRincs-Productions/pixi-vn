@@ -1,5 +1,5 @@
 import { Devtools } from "@pixi/devtools";
-import { ApplicationOptions, Container as PixiContainer } from "pixi.js";
+import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -16,12 +16,18 @@ import { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
 import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
-import { Ticker, TickerArgs, TickerHistory, TickerValue } from "./tickers";
-import TickerBase from "./tickers/classes/TickerBase";
-import RegisteredTickers from "./tickers/decorators/ticker-decorator";
+import { Ticker, TickerArgs, TickerInfo } from "./tickers";
+import MotionSequenceTicker from "./tickers/components/MotionSequenceTicker";
+import MotionTicker from "./tickers/components/MotionTicker";
+import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
-import PauseTickerType from "./types/PauseTickerType";
+import AnimationOptions, {
+    KeyframesType,
+    ObjectSegment,
+    ObjectSegmentWithTransition,
+    SequenceOptions,
+} from "./types/AnimationOptions";
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
 import { TickerIdType } from "./types/TickerIdType";
@@ -155,73 +161,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             await setMemoryContainer(newAlias, oldAlias);
         }
     }
-    transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
-        if (CanvasManagerStatic._currentTickersSequence[oldAlias]) {
-            if (mode === "move") {
-                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
-                    CanvasManagerStatic._currentTickersSequence[oldAlias]
-                );
-            } else if (mode === "duplicate") {
-                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
-                    CanvasManagerStatic._currentTickersSequence[oldAlias]
-                );
-            }
-        }
-        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-            if (ticker.createdByTicketSteps?.canvasElementAlias === oldAlias) {
-                this.removeTicker(id);
-            }
-            if (ticker.canvasElementAliases.includes(oldAlias)) {
-                if (mode === "move") {
-                    ticker.canvasElementAliases = ticker.canvasElementAliases.map((t) =>
-                        t === oldAlias ? newAlias : t
-                    );
-                } else if (mode === "duplicate") {
-                    if (ticker.canvasElementAliases.find((t) => t === oldAlias)) {
-                        ticker.canvasElementAliases.push(newAlias);
-                    }
-                }
-                if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
-                    let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter;
-                    if (typeof aliasToRemoveAfter === "string") {
-                        aliasToRemoveAfter = [aliasToRemoveAfter];
-                    }
-                    if (Array.isArray(aliasToRemoveAfter)) {
-                        if (mode === "move") {
-                            ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) =>
-                                t === oldAlias ? newAlias : t
-                            );
-                        } else if (mode === "duplicate") {
-                            if (aliasToRemoveAfter.find((t) => t === oldAlias)) {
-                                ticker.args.aliasToRemoveAfter = [...aliasToRemoveAfter, newAlias];
-                            }
-                        }
-                    }
-                }
-            }
-        });
-        Object.values(CanvasManagerStatic._currentTickersTimeouts).forEach((tickerTimeout) => {
-            if (tickerTimeout.aliases.includes(oldAlias)) {
-                if (mode === "move") {
-                    tickerTimeout.aliases = tickerTimeout.aliases.map((t) => (t === oldAlias ? newAlias : t));
-                } else if (mode === "duplicate") {
-                    if (tickerTimeout.aliases.find((t) => t === oldAlias)) {
-                        tickerTimeout.aliases.push(newAlias);
-                    }
-                }
-            }
-        });
-        if (CanvasManagerStatic._currentTickersSequence[newAlias]) {
-            Object.keys(CanvasManagerStatic._currentTickersSequence[newAlias]).forEach((key) => {
-                this.runTickersSequence(newAlias, key);
-            });
-        }
-        if (mode === "duplicate" && CanvasManagerStatic._currentTickersSequence[oldAlias]) {
-            Object.keys(CanvasManagerStatic._currentTickersSequence[oldAlias]).forEach((key) => {
-                this.runTickersSequence(oldAlias, key);
-            });
-        }
-    }
     public add(
         alias: string,
         canvasComponent: CanvasBaseInterface<any>,
@@ -308,7 +247,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
     public removeAll() {
         this.gameLayer.removeChildren();
-        this.removeAllTickers();
     }
     public editAlias(
         oldAlias: string,
@@ -336,80 +274,49 @@ export default class CanvasManager implements CanvasManagerInterface {
     public get currentTickersSteps() {
         return CanvasManagerStatic._currentTickersSequence;
     }
-    addTicker<TArgs extends TickerArgs>(canvasElementAlias: string | string[], ticker: TickerBase<TArgs>) {
+    findTicker<TArgs extends TickerArgs>(tickerId: string): Ticker<TArgs> | undefined {
+        let ticker = CanvasManagerStatic._currentTickers[tickerId];
+        if (ticker) {
+            return ticker.ticker as Ticker<TArgs>;
+        }
+        return undefined;
+    }
+    addTicker<TArgs extends TickerArgs>(
+        canvasElementAlias: string | string[],
+        ticker: Ticker<TArgs>,
+        options?: {
+            /**
+             * The id of the ticker.
+             */
+            id?: string;
+        }
+    ) {
         let tickerId: TickerIdType = ticker.id;
         if (typeof canvasElementAlias === "string") {
             canvasElementAlias = [canvasElementAlias];
         }
-        if (!RegisteredTickers.getInstance<TArgs>(tickerId, ticker.args, ticker.duration, ticker.priority)) {
+        ticker.canvasElementAliases = canvasElementAlias;
+        if (!RegisteredTickers.has(tickerId)) {
             logger.error(`Ticker ${tickerId} not found`);
             return;
         }
-        let tickerHistory: TickerHistory<TArgs> = {
-            fn: () => {},
-            id: tickerId,
-            args: createExportableElement(ticker.args),
-            canvasElementAliases: canvasElementAlias,
-            priority: ticker.priority,
-            duration: ticker.duration,
-            onEndOfTicker: () => {},
+        let tickerHistory: TickerInfo<TArgs> = {
+            ticker: ticker,
         };
-        let id = CanvasManagerStatic.generateTickerId(tickerHistory);
-        this.pushTicker(id, tickerHistory, ticker);
-        this.pushEndOfTicker(id, tickerHistory, ticker);
+        const { id = CanvasManagerStatic.generateTickerId(tickerHistory) } = options || {};
+        CanvasManagerStatic._currentTickers[id] = tickerHistory;
+        tickerHistory.ticker.start(id);
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()];
                 if (tickerTimeoutInfo) {
-                    this.onEndOfTicker(id, {
-                        aliasToRemoveAfter:
-                            aliasToRemoveAfter in ticker.args ? (ticker.args.aliasToRemoveAfter as any) || [] : [],
-                        tickerAliasToResume:
-                            "tickerAliasToResume" in ticker.args ? (ticker.args.tickerAliasToResume as any) || [] : [],
-                        ignoreTickerSteps: true,
-                    });
+                    tickerHistory.ticker.complete({ ignoreTickerSteps: true });
                 }
             }, ticker.duration * 1000);
             CanvasManagerStatic.addTickerTimeoutInfo(canvasElementAlias, tickerId, timeout.toString(), true);
         }
         return id;
-    }
-    private pushTicker<TArgs extends TickerArgs>(
-        id: string,
-        tickerData: TickerHistory<TArgs>,
-        ticker: TickerBase<TArgs>
-    ) {
-        CanvasManagerStatic._currentTickers[id] = tickerData;
-        tickerData.fn = (t: TickerValue) => {
-            let data = CanvasManagerStatic._currentTickers[id];
-            if (data) {
-                let canvasElementAliases = data.canvasElementAliases;
-                if (tickerData.createdByTicketSteps) {
-                    if (
-                        this.isTickerPaused(
-                            tickerData.createdByTicketSteps.canvasElementAlias,
-                            tickerData.createdByTicketSteps.id
-                        )
-                    ) {
-                        return;
-                    }
-                } else {
-                    canvasElementAliases = canvasElementAliases.filter((alias) => !this.isTickerPaused(alias, id));
-                }
-                ticker?.fn(t, data.args, canvasElementAliases, id);
-            }
-        };
-        this.app.ticker.add(tickerData.fn, undefined, tickerData.priority);
-    }
-    private pushEndOfTicker<TArgs extends TickerArgs>(
-        id: string,
-        tickerData: TickerHistory<TArgs>,
-        ticker: TickerBase<TArgs>
-    ) {
-        tickerData.onEndOfTicker = () => {
-            ticker.onEndOfTicker(tickerData.canvasElementAliases, id, tickerData.args);
-        };
     }
     addTickersSequence(alias: string, steps: (Ticker<any> | RepeatType | PauseType)[], currentStepNumber = 0) {
         if (steps.length == 0) {
@@ -431,7 +338,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 let tickerId = (step as Ticker<any>).id;
                 return {
                     ticker: tickerId,
-                    args: createExportableElement((step as TickerBase<any>).args),
+                    args: createExportableElement((step as Ticker<any>).args),
                     duration: step.duration,
                 };
             }),
@@ -483,33 +390,23 @@ export default class CanvasManager implements CanvasManagerInterface {
             logger.error(`Ticker ${(step as TickersStep<TArgs>).ticker} not found`);
             return;
         }
+        ticker.canvasElementAliases = [alias];
         let tickerName: TickerIdType = ticker.id;
-        let tickerHistory: TickerHistory<TArgs> = {
-            fn: () => {},
-            id: tickerName,
-            args: createExportableElement(ticker.args),
-            canvasElementAliases: [alias],
-            priority: ticker.priority,
-            duration: ticker.duration,
+        let tickerHistory: TickerInfo<TArgs> = {
             createdByTicketSteps: {
                 canvasElementAlias: alias,
                 id: key,
             },
-            onEndOfTicker: () => {},
+            ticker: ticker,
         };
         let id = CanvasManagerStatic.generateTickerId(tickerHistory);
-        this.pushTicker(id, tickerHistory, ticker);
+        CanvasManagerStatic._currentTickers[id] = tickerHistory;
+        tickerHistory.ticker.start(id);
         if (ticker.duration) {
             let timeout = setTimeout(() => {
                 let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()];
                 if (tickerTimeoutInfo) {
-                    this.onEndOfTicker(id, {
-                        aliasToRemoveAfter:
-                            aliasToRemoveAfter in ticker.args ? (ticker.args.aliasToRemoveAfter as any) || [] : [],
-                        tickerAliasToResume:
-                            "tickerAliasToResume" in ticker.args ? (ticker.args.tickerAliasToResume as any) || [] : [],
-                        ignoreTickerSteps: true,
-                    });
+                    tickerHistory.ticker.complete({ ignoreTickerSteps: true });
                     tickerTimeoutInfo.aliases.forEach((alias) => {
                         this.nextTickerStep(alias, key);
                     });
@@ -550,28 +447,42 @@ export default class CanvasManager implements CanvasManagerInterface {
     public onEndOfTicker(
         tickerId: string,
         options: {
-            aliasToRemoveAfter: string[] | string;
-            tickerAliasToResume: string[] | string;
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
+            tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
         }
     ) {
-        let tickerData = CanvasManagerStatic._currentTickers[tickerId];
+        return this.onTickerComplete(tickerId, options);
+    }
+    public onTickerComplete(
+        tickerId: string,
+        options: {
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
+            tickerIdToResume: string[];
+            ignoreTickerSteps?: boolean;
+            stopTicker?: boolean;
+        }
+    ) {
+        const { stopTicker = true, aliasToRemoveAfter, tickerAliasToResume, tickerIdToResume } = options;
+        let info = CanvasManagerStatic._currentTickers[tickerId];
         let ignoreTickerSteps = options.ignoreTickerSteps || false;
-        this.remove(options.aliasToRemoveAfter);
-        this.resumeTicker(options.tickerAliasToResume);
-        if (tickerData) {
-            this.removeTicker(tickerId);
-            if (!ignoreTickerSteps && tickerData.duration == undefined && tickerData.createdByTicketSteps) {
-                this.nextTickerStep(
-                    tickerData.createdByTicketSteps.canvasElementAlias,
-                    tickerData.createdByTicketSteps.id
-                );
+        this.remove(aliasToRemoveAfter);
+        tickerAliasToResume.forEach((alias) => this.resumeTicker({ canvasAlias: alias }));
+        this.resumeTicker({ id: tickerIdToResume });
+        if (info) {
+            this.removeTicker(tickerId, {
+                stopTicker: stopTicker,
+            });
+            if (!ignoreTickerSteps && info.ticker.duration == undefined && info.createdByTicketSteps) {
+                this.nextTickerStep(info.createdByTicketSteps.canvasElementAlias, info.createdByTicketSteps.id);
             }
         }
     }
     public unlinkComponentFromTicker(
         alias: string | string[],
-        ticker?: typeof TickerBase<any> | TickerBase<any> | string
+        ticker?: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> } | string
     ) {
         if (typeof alias === "string") {
             alias = [alias];
@@ -579,12 +490,14 @@ export default class CanvasManager implements CanvasManagerInterface {
 
         if (!ticker) {
             alias.forEach((alias) => {
-                Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-                    if (ticker.canvasElementAliases.includes(alias)) {
-                        if (ticker.canvasElementAliases.length === 1) {
+                Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
+                    if (info.ticker.canvasElementAliases.includes(alias)) {
+                        if (info.ticker.canvasElementAliases.length === 1) {
                             this.removeTicker(id);
                         } else {
-                            ticker.canvasElementAliases = ticker.canvasElementAliases.filter((t) => t !== alias);
+                            info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter(
+                                (t) => t !== alias
+                            );
                         }
                     }
                 });
@@ -599,8 +512,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         let tickerId: TickerIdType;
         if (typeof ticker === "string") {
             tickerId = ticker;
-        } else if (ticker instanceof TickerBase) {
-            tickerId = ticker.id;
         } else {
             tickerId = ticker.prototype.id;
         }
@@ -613,11 +524,10 @@ export default class CanvasManager implements CanvasManagerInterface {
                 });
             }
         });
-        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-            if (ticker.id === tickerId) {
-                CanvasManagerStatic._currentTickers[id].canvasElementAliases = ticker.canvasElementAliases.filter(
-                    (e) => !alias.includes(e)
-                );
+        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
+            if (info.ticker.id === tickerId) {
+                CanvasManagerStatic._currentTickers[id].ticker.canvasElementAliases =
+                    info.ticker.canvasElementAliases.filter((e) => !alias.includes(e));
             }
         });
         Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(([timeout, tickerTimeout]) => {
@@ -633,14 +543,10 @@ export default class CanvasManager implements CanvasManagerInterface {
      * Remove all tickers that are not connected to any existing canvas element.
      */
     private removeTickersWithoutAssociatedCanvasElement() {
-        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, ticker]) => {
-            ticker.canvasElementAliases = ticker.canvasElementAliases.filter((e) => this.find(e));
-            if (ticker.canvasElementAliases.length === 0) {
-                this.onEndOfTicker(id, {
-                    aliasToRemoveAfter: aliasToRemoveAfter in ticker.args ? ticker.args.aliasToRemoveAfter : [],
-                    tickerAliasToResume: "tickerAliasToResume" in ticker.args ? ticker.args.tickerAliasToResume : [],
-                    ignoreTickerSteps: true,
-                });
+        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
+            info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter((e) => this.find(e));
+            if (info.ticker.canvasElementAliases.length === 0) {
+                info.ticker.complete({ ignoreTickerSteps: true });
             }
         });
         Object.entries(CanvasManagerStatic._currentTickersSequence).forEach(([alias, ticker]) => {
@@ -666,57 +572,98 @@ export default class CanvasManager implements CanvasManagerInterface {
         CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
         CanvasManagerStatic._tickersOnPause = {};
     }
-    removeTicker(tickerId: string | string[]) {
+    removeTicker(
+        tickerId: string | string[],
+        options: {
+            stopTicker?: boolean;
+        } = { stopTicker: true }
+    ) {
         if (typeof tickerId === "string") {
             tickerId = [tickerId];
         }
         tickerId.forEach((tickerId) => {
-            let ticker = CanvasManagerStatic._currentTickers[tickerId];
-            if (ticker) {
-                if (ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
-                    let aliasToRemoveAfter: string | string[] = ticker.args.aliasToRemoveAfter;
-                    this.remove(aliasToRemoveAfter);
-                }
-                this.app.ticker.remove(ticker.fn);
+            let info = CanvasManagerStatic._currentTickers[tickerId];
+            if (info) {
+                options.stopTicker && info.ticker.stop();
                 delete CanvasManagerStatic._currentTickers[tickerId];
             }
         });
     }
 
-    pauseTicker(alias: string, options: PauseTickerType = {}) {
-        let oldOptions = CanvasManagerStatic._tickersOnPause[alias];
-        if (!oldOptions) {
-            CanvasManagerStatic._tickersOnPause[alias] = options;
-            return;
-        }
-        if (options.tickerIdsExcluded) {
-            if (oldOptions.tickerIdsExcluded) {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = [
-                    ...oldOptions.tickerIdsExcluded,
-                    ...options.tickerIdsExcluded,
-                ];
-            } else {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsExcluded = options.tickerIdsExcluded;
+    pauseTicker(
+        filters:
+            | {
+                  canvasAlias: string;
+                  tickerIdsExcluded?: string[];
+              }
+            | {
+                  id: string | string[];
+              }
+    ) {
+        let ids: string[] = [];
+        if ("canvasAlias" in filters) {
+            const { canvasAlias, tickerIdsExcluded = [] } = filters;
+            Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
+                if (
+                    info.ticker.canvasElementAliases.includes(canvasAlias) &&
+                    !tickerIdsExcluded.includes(info.ticker.id) &&
+                    info.ticker.paused === false
+                ) {
+                    info.ticker.pause();
+                    ids.push(id);
+                }
+            });
+        } else if ("id" in filters) {
+            let { id } = filters;
+            if (typeof id === "string") {
+                id = [id];
             }
+            id.forEach((id) => {
+                let info = CanvasManagerStatic._currentTickers[id];
+                if (info) {
+                    if (info.ticker.paused === false) {
+                        info.ticker.pause();
+                        ids.push(id);
+                    }
+                } else {
+                    logger.error(`Ticker with id ${id} not found`);
+                }
+            });
         }
-        if (options.tickerIdsIncluded) {
-            if (oldOptions.tickerIdsIncluded) {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = [
-                    ...oldOptions.tickerIdsIncluded,
-                    ...options.tickerIdsIncluded,
-                ];
-            } else {
-                CanvasManagerStatic._tickersOnPause[alias].tickerIdsIncluded = options.tickerIdsIncluded;
-            }
-        }
+        return ids;
     }
-    resumeTicker(alias: string | string[]) {
-        if (typeof alias === "string") {
-            alias = [alias];
+    resumeTicker(
+        filters:
+            | {
+                  canvasAlias: string;
+              }
+            | {
+                  id: string | string[];
+              }
+    ) {
+        if ("canvasAlias" in filters) {
+            const { canvasAlias } = filters;
+            Object.values(CanvasManagerStatic._currentTickers).forEach((info) => {
+                if (info.ticker.canvasElementAliases.includes(canvasAlias)) {
+                    info.ticker.play();
+                }
+            });
+            // TODO: to remove in the future
+            delete CanvasManagerStatic._tickersOnPause[canvasAlias];
+        } else if ("id" in filters) {
+            let { id } = filters;
+            if (typeof id === "string") {
+                id = [id];
+            }
+            id.forEach((id) => {
+                let info = CanvasManagerStatic._currentTickers[id];
+                if (info) {
+                    info.ticker.play();
+                } else {
+                    logger.error(`Ticker with id ${id} not found`);
+                }
+            });
         }
-        alias.forEach((alias) => {
-            delete CanvasManagerStatic._tickersOnPause[alias];
-        });
     }
     isTickerPaused(alias: string, tickerId?: string): boolean {
         let tickersOnPauseData = CanvasManagerStatic._tickersOnPause[alias];
@@ -732,6 +679,86 @@ export default class CanvasManager implements CanvasManagerInterface {
             return true;
         }
         return false;
+    }
+    transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
+        if (CanvasManagerStatic._currentTickersSequence[oldAlias]) {
+            if (mode === "move") {
+                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
+                    CanvasManagerStatic._currentTickersSequence[oldAlias]
+                );
+            } else if (mode === "duplicate") {
+                CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
+                    CanvasManagerStatic._currentTickersSequence[oldAlias]
+                );
+            }
+        }
+        Object.entries(CanvasManagerStatic._currentTickers).forEach(([id, info]) => {
+            if (info.createdByTicketSteps?.canvasElementAlias === oldAlias) {
+                this.removeTicker(id);
+            }
+            if (info.ticker.canvasElementAliases.includes(oldAlias)) {
+                let ticker = RegisteredTickers.getInstance(
+                    info.ticker.id,
+                    createExportableElement(info.ticker.args),
+                    info.ticker.duration,
+                    info.ticker.priority
+                );
+                if (ticker) {
+                    ticker.canvasElementAliases = [newAlias];
+                    this.addTicker(newAlias, ticker);
+                    if (info.ticker.paused) {
+                        ticker.pause();
+                    }
+                } else {
+                    logger.error(`Ticker ${info.ticker.id} not found`);
+                }
+
+                if (mode === "move") {
+                    info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter(
+                        (alias) => alias !== oldAlias
+                    );
+                }
+
+                if (info.ticker.args.hasOwnProperty(aliasToRemoveAfter)) {
+                    let aliasToRemoveAfter: string | string[] = info.ticker.args.aliasToRemoveAfter;
+                    if (typeof aliasToRemoveAfter === "string") {
+                        aliasToRemoveAfter = [aliasToRemoveAfter];
+                    }
+                    if (Array.isArray(aliasToRemoveAfter)) {
+                        if (mode === "move") {
+                            info.ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) =>
+                                t === oldAlias ? newAlias : t
+                            );
+                        } else if (mode === "duplicate") {
+                            if (aliasToRemoveAfter.find((t) => t === oldAlias)) {
+                                info.ticker.args.aliasToRemoveAfter = [...aliasToRemoveAfter, newAlias];
+                            }
+                        }
+                    }
+                }
+            }
+        });
+        Object.values(CanvasManagerStatic._currentTickersTimeouts).forEach((tickerTimeout) => {
+            if (tickerTimeout.aliases.includes(oldAlias)) {
+                if (mode === "move") {
+                    tickerTimeout.aliases = tickerTimeout.aliases.map((t) => (t === oldAlias ? newAlias : t));
+                } else if (mode === "duplicate") {
+                    if (tickerTimeout.aliases.find((t) => t === oldAlias)) {
+                        tickerTimeout.aliases.push(newAlias);
+                    }
+                }
+            }
+        });
+        if (CanvasManagerStatic._currentTickersSequence[newAlias]) {
+            Object.keys(CanvasManagerStatic._currentTickersSequence[newAlias]).forEach((key) => {
+                this.runTickersSequence(newAlias, key);
+            });
+        }
+        if (mode === "duplicate" && CanvasManagerStatic._currentTickersSequence[oldAlias]) {
+            Object.keys(CanvasManagerStatic._currentTickersSequence[oldAlias]).forEach((key) => {
+                this.runTickersSequence(oldAlias, key);
+            });
+        }
     }
     completeTickerOnStepEnd(step: {
         /**
@@ -750,11 +777,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
-    forceCompletionOfTicker(id: string, alias?: string) {
+    async forceCompletionOfTicker(id: string, alias?: string) {
         if (!alias) {
-            let ticker = CanvasManagerStatic._currentTickers[id];
-            if (ticker) {
-                ticker.onEndOfTicker();
+            let info = CanvasManagerStatic._currentTickers[id];
+            if (info) {
+                await info.ticker.complete();
             }
         } else {
             let tickers = CanvasManagerStatic._currentTickersSequence[alias];
@@ -765,7 +792,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                         tickers[id]
                     );
                 } else {
-                    tickers[id].steps.forEach((step) => {
+                    const promises = tickers[id].steps.map((step) => {
                         if (typeof step === "object" && "ticker" in step) {
                             let ticker = RegisteredTickers.getInstance<any>(
                                 (step as TickersStep<any>).ticker,
@@ -774,13 +801,83 @@ export default class CanvasManager implements CanvasManagerInterface {
                                 (step as TickersStep<any>).priority
                             );
                             if (ticker) {
-                                ticker.onEndOfTicker([alias], id, (step as TickersStep<any>).args);
+                                ticker.canvasElementAliases = [alias];
+                                return ticker.complete();
                             }
                         }
                     });
+                    await Promise.all(promises);
                 }
             }
         }
+    }
+
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string | (string | T)[],
+        keyframes: KeyframesType<T>,
+        options?: AnimationOptions,
+        priority?: UPDATE_PRIORITY
+    ): string | undefined;
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string,
+        sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+        options?: SequenceOptions,
+        priority?: UPDATE_PRIORITY
+    ): string | undefined;
+    animate<T extends CanvasBaseInterface<any>>(
+        components: T | string | (string | T)[],
+        keyframes: KeyframesType<T> | (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+        options?: AnimationOptions | SequenceOptions,
+        priority?: UPDATE_PRIORITY
+    ): string | undefined {
+        try {
+            keyframes = createExportableElement(keyframes);
+        } catch (e) {
+            logger.error("animate keyframes cannot contain functions or classes");
+            throw e;
+        }
+        try {
+            options = createExportableElement(options);
+        } catch (e) {
+            logger.error("animate options cannot contain functions or classes");
+            throw e;
+        }
+        let aliases: string[] = [];
+        if (typeof components === "string") {
+            aliases = [components];
+        } else if (Array.isArray(components)) {
+            aliases = components.map((c) => (typeof c === "string" ? c : c.label));
+        } else {
+            aliases = [components.label];
+        }
+        let ticker: MotionSequenceTicker | MotionTicker;
+        if (Array.isArray(keyframes)) {
+            ticker = new MotionSequenceTicker(
+                {
+                    sequence: keyframes as (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+                    options: options as SequenceOptions,
+                },
+                undefined,
+                priority
+            );
+        } else {
+            ticker = new MotionTicker(
+                {
+                    keyframes: keyframes as KeyframesType<T>,
+                    options: options as AnimationOptions,
+                },
+                undefined,
+                priority
+            );
+        }
+        const id = this.addTicker<any>(aliases, ticker);
+        const { forceCompleteBeforeNext } = options || {};
+        if (id && forceCompleteBeforeNext) {
+            this.completeTickerOnStepEnd({
+                id: id,
+            });
+        }
+        return id;
     }
 
     /* Layers Methods */
@@ -820,6 +917,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
 
     clear() {
+        this.removeAllTickers();
         this.removeAll();
     }
 
@@ -843,20 +941,20 @@ export default class CanvasManager implements CanvasManagerInterface {
         };
     }
     public async restore(data: object) {
+        this.clear();
         try {
-            let tickersToTrasfer: { [oldId: string]: string } = {};
             if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
-                let currentElements = (data as CanvasGameState)["elements"];
                 let elementAliasesOrder = (data as CanvasGameState)["elementAliasesOrder"];
-                let promises = elementAliasesOrder
-                    .filter((alias) => currentElements[alias])
-                    .map((alias) => importCanvasElement(currentElements[alias]));
-                let list = await Promise.all(promises);
-                this.clear();
-                list.forEach((element, i) => {
-                    let alias = elementAliasesOrder[i];
-                    this.add(alias, element);
-                    CanvasManagerStatic.childrenAliasesOrder.push(alias);
+                let elements: {
+                    [alias: string]: CanvasBaseInterface<any>;
+                } = {};
+                const promises = Object.entries((data as CanvasGameState)["elements"]).map(async ([alias, element]) => {
+                    elements[alias] = await importCanvasElement(element);
+                });
+                await Promise.all(promises);
+                elementAliasesOrder.forEach((alias) => {
+                    let element = elements[alias];
+                    element && this.add(alias, element);
                 });
             } else {
                 logger.error("The data does not have the properties elementAliasesOrder and elements");
@@ -871,14 +969,21 @@ export default class CanvasManager implements CanvasManagerInterface {
                 let tickers = (data as CanvasGameState)["tickers"];
                 Object.entries(tickers).forEach(([oldId, t]) => {
                     let aliases: string[] = t.canvasElementAliases;
-                    let ticker = RegisteredTickers.getInstance(t.id, t.args, t.duration, t.priority);
-                    if (ticker) {
-                        let id = this.addTicker(aliases, ticker);
-                        if (id) {
-                            tickersToTrasfer[oldId] = id;
+                    if (aliases.length !== 0) {
+                        let ticker = RegisteredTickers.getInstance(t.id, t.args, t.duration, t.priority);
+                        if (ticker) {
+                            ticker.canvasElementAliases = aliases;
+                            this.addTicker(aliases, ticker, {
+                                id: oldId,
+                            });
+                            // TODO: it should be paused even before starting
+                            // TODO: All tickets should be started at the same time and not wait for the previous one to initialize.
+                            if (t.paused) {
+                                ticker.pause();
+                            }
+                        } else {
+                            logger.error(`Ticker ${t.id} not found`);
                         }
-                    } else {
-                        logger.error(`Ticker ${t.id} not found`);
                     }
                 });
             }
@@ -896,23 +1001,17 @@ export default class CanvasManager implements CanvasManagerInterface {
                 Object.keys(tickersOnPause).forEach((alias) => {
                     let data = tickersOnPause[alias];
                     if ("tickerIdsExcluded" in data && data.tickerIdsExcluded) {
-                        tickersOnPause[alias].tickerIdsExcluded = data.tickerIdsExcluded.map(
-                            (id: string) => tickersToTrasfer[id] || id
-                        );
+                        tickersOnPause[alias].tickerIdsExcluded = data.tickerIdsExcluded;
                     }
                     if ("tickerIdsIncluded" in data && data.tickerIdsIncluded) {
-                        tickersOnPause[alias].tickerIdsIncluded = data.tickerIdsIncluded.map(
-                            (id: string) => tickersToTrasfer[id] || id
-                        );
+                        tickersOnPause[alias].tickerIdsIncluded = data.tickerIdsIncluded;
                     }
                 });
                 CanvasManagerStatic._tickersOnPause = tickersOnPause;
             }
             if (data.hasOwnProperty("tickersToCompleteOnStepEnd")) {
                 let tickersToCompleteOnStepEnd = (data as CanvasGameState)["tickersToCompleteOnStepEnd"];
-                let tikersIds = tickersToCompleteOnStepEnd.tikersIds.map((t) => ({
-                    id: tickersToTrasfer[t.id] || t.id,
-                }));
+                let tikersIds = tickersToCompleteOnStepEnd.tikersIds;
                 let stepAlias = tickersToCompleteOnStepEnd.stepAlias.map((t) => ({ id: t.id, alias: t.alias }));
                 CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds, stepAlias };
             }

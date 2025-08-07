@@ -2,13 +2,21 @@ import { UPDATE_PRIORITY } from "pixi.js";
 import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
-import TickerBase from "../classes/TickerBase";
+import MotionSequenceTicker from "../components/MotionSequenceTicker";
+import MotionTicker from "../components/MotionTicker";
+import Ticker from "../interfaces/Ticker";
 import TickerArgs from "../interfaces/TickerArgs";
 
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.
  */
-const registeredTickers = new CachedMap<TickerIdType, typeof TickerBase>({ cacheSize: 5 });
+const registeredTickers = new CachedMap<
+    TickerIdType,
+    { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }
+>({ cacheSize: 5 });
+registeredTickers.set("motion", MotionTicker);
+registeredTickers.set("motion-sequence", MotionSequenceTicker);
+
 /**
  * Is a decorator that register a ticker in the game.
  * Is a required decorator for use the ticker in the game.
@@ -17,7 +25,7 @@ const registeredTickers = new CachedMap<TickerIdType, typeof TickerBase>({ cache
  * @returns
  */
 export function tickerDecorator(name?: TickerIdType) {
-    return function (target: typeof TickerBase<any>) {
+    return function (target: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }) {
         RegisteredTickers.add(target, name);
     };
 }
@@ -28,7 +36,12 @@ namespace RegisteredTickers {
      * @param target The class of the ticker.
      * @param name Name of the ticker, by default it will use the class name. If the name is already registered, it will show a warning
      */
-    export function add(target: typeof TickerBase<any>, name?: TickerIdType) {
+    export function add(
+        target: {
+            new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any>;
+        },
+        name?: TickerIdType
+    ) {
         if (!name) {
             name = target.name;
         }
@@ -44,7 +57,7 @@ namespace RegisteredTickers {
      * @param canvasId The id of the ticker.
      * @returns The ticker type.
      */
-    export function get<T = typeof TickerBase<any>>(tickerId: TickerIdType): T | undefined {
+    export function get<T = Ticker<any>>(tickerId: TickerIdType): T | undefined {
         try {
             let tickerType = registeredTickers.get(tickerId);
             if (!tickerType) {
@@ -71,7 +84,7 @@ namespace RegisteredTickers {
         args: TArgs,
         duration?: number,
         priority?: UPDATE_PRIORITY
-    ): TickerBase<TArgs> | undefined {
+    ): Ticker<TArgs> | undefined {
         try {
             let ticker = registeredTickers.get(tickerId);
             if (!ticker) {
@@ -89,7 +102,9 @@ namespace RegisteredTickers {
      * Get a list of all tickers registered.
      * @returns An array of tickers.
      */
-    export function values(): (typeof TickerBase<any>)[] {
+    export function values(): {
+        new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any>;
+    }[] {
         return Array.from(registeredTickers.values());
     }
 

@@ -13,7 +13,7 @@ import {
 } from "../../functions/canvas-property-utility";
 import TickerBase from "../classes/TickerBase";
 import TickerValue from "../classes/TickerValue";
-import RegisteredTickers from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/RegisteredTickers";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 import { MoveTickerProps } from "../types/MoveTickerProps";
@@ -58,6 +58,7 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
 /**
  * A ticker that moves the canvas element of the canvas.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
+ * @deprecated Use {@link canvas.animate}
  * @example
  * ```typescript
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
@@ -69,7 +70,7 @@ function calculateDestination<T extends PixiContainer>(args: MoveTickerProps, el
  * ```
  */
 export default class MoveTicker extends TickerBase<MoveTickerProps> {
-    override fn(ticker: TickerValue, args: MoveTickerProps, aliases: string[], tickerId: string): void {
+    fn(ticker: TickerValue, args: MoveTickerProps, aliases: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             args.speed = DEFAULT_SPEED;
         }
@@ -128,7 +129,7 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         }
                     }
                     if (element.x == destination.x && element.y == destination.y) {
-                        this.onEndOfTicker(alias, tickerId, args);
+                        this.complete();
                         return;
                     } else if (
                         xSpeed < 0.00001 &&
@@ -136,19 +137,14 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the MoveTicker must be greater than 0.");
-                        this.onEndOfTicker(alias, tickerId, args, { editPosition: false });
+                        this.complete();
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onEndOfTicker(
-        alias: string | string[],
-        tickerId: string,
-        args: MoveTickerProps,
-        options: { editPosition: boolean } = { editPosition: true }
-    ): void {
+    onComplete(alias: string | string[], _tickerId: string, args: MoveTickerProps): void {
         if (typeof alias === "string") {
             alias = [alias];
         }
@@ -156,20 +152,49 @@ export default class MoveTicker extends TickerBase<MoveTickerProps> {
             let element = canvas.find(alias);
             if (element) {
                 let destination = args.destination;
-                if (options.editPosition) {
-                    if (element instanceof ImageSprite || element instanceof ImageContainer) {
-                        element.positionInfo = destination;
-                    } else {
-                        element.x = destination.x;
-                        element.y = destination.y;
-                    }
+                if (element instanceof ImageSprite || element instanceof ImageContainer) {
+                    element.positionInfo = destination;
+                } else {
+                    element.x = destination.x;
+                    element.y = destination.y;
                 }
             }
         });
-        super.onEndOfTicker(alias, tickerId, args);
     }
     private speedConvert(speed: number): number {
         return speed * (66 / 400);
+    }
+
+    override complete(options?: { ignoreTickerSteps?: boolean }): void {
+        const { ignoreTickerSteps } = options || {};
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        this.onComplete(this.canvasElementAliases, id, this.args);
+        let aliasToRemoveAfter: string | string[] =
+            ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        let tickerAliasToResume: string | string[] =
+            ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume];
+        }
+        let tickerIdToResume: string | string[] =
+            ("tickerIdToResume" in this.args && (this.args.tickerIdToResume as any)) || [];
+        if (typeof tickerIdToResume === "string") {
+            tickerIdToResume = [tickerIdToResume];
+        }
+        canvas.onTickerComplete(id, {
+            aliasToRemoveAfter: aliasToRemoveAfter,
+            tickerAliasToResume: tickerAliasToResume,
+            tickerIdToResume: tickerIdToResume,
+            ignoreTickerSteps: ignoreTickerSteps,
+        });
+        super.complete(options);
     }
 }
 RegisteredTickers.add(MoveTicker);

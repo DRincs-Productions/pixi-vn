@@ -4,10 +4,11 @@ export { default as FadeAlphaTicker } from "./components/FadeAlphaTicker";
 export { default as MoveTicker } from "./components/MoveTicker";
 export { default as RotateTicker } from "./components/RotateTicker";
 export { default as ZoomTicker } from "./components/ZoomTicker";
-export { default as RegisteredTickers, tickerDecorator } from "./decorators/ticker-decorator";
+export { default as RegisteredTickers, tickerDecorator } from "./decorators/RegisteredTickers";
+export { default as animate } from "./functions/motion";
 export type { default as Ticker } from "./interfaces/Ticker";
 export type { default as TickerArgs } from "./interfaces/TickerArgs";
-export type { default as TickerHistory, TickerHistoryForExport } from "./interfaces/TickerHistory";
+export type { TickerHistory, default as TickerInfo } from "./interfaces/TickerInfo";
 export type {
     TickerProgrationExponential,
     TickerProgrationLinear,
@@ -15,6 +16,7 @@ export type {
 } from "./interfaces/TickerProgrationType";
 export type { default as TickersSequence } from "./interfaces/TickersSequence";
 export type { default as TickerTimeoutHistory } from "./interfaces/TickerTimeoutHistory";
+export type { CommonTickerProps } from "./types/CommonTickerProps";
 export type { FadeAlphaTickerProps } from "./types/FadeAlphaTickerProps";
 export type { MoveTickerProps } from "./types/MoveTickerProps";
 export type { RotateTickerProps } from "./types/RotateTickerProps";

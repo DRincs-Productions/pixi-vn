@@ -2,7 +2,7 @@ import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { canvas, TickerValue } from "../..";
 import { logger } from "../../../utils/log-utility";
 import TickerBase from "../classes/TickerBase";
-import RegisteredTickers from "../decorators/ticker-decorator";
+import RegisteredTickers from "../decorators/RegisteredTickers";
 import { checkIfTextureNotIsEmpty } from "../functions/ticker-texture-utility";
 import { updateTickerProgression } from "../functions/ticker-utility";
 import { FadeAlphaTickerProps } from "../types/FadeAlphaTickerProps";
@@ -12,6 +12,7 @@ const DEFAULT_SPEED = 5;
 /**
  * A ticker that fades the alpha of the canvas element of the canvas.
  * This ticker can be used on all canvas elements that extend the {@link PixiContainer} class.
+ * @deprecated Use {@link canvas.animate}
  * @example
  * ```typescript
  * let bunny = addImage("bunny1", "https://pixijs.com/assets/eggHead.png")
@@ -29,7 +30,7 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     constructor(args: FadeAlphaTickerProps = {}, duration?: number, priority?: UPDATE_PRIORITY) {
         super(args, duration, priority);
     }
-    override fn(ticker: TickerValue, args: FadeAlphaTickerProps, aliases: string[], tickerId: string): void {
+    fn(ticker: TickerValue, args: FadeAlphaTickerProps, aliases: string[], _tickerId: string): void {
         if (args.speed === undefined) {
             if (args.duration === undefined) {
                 args.speed = DEFAULT_SPEED;
@@ -71,10 +72,10 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                         element.alpha -= speed * ticker.deltaTime;
                     }
                     if (type === "show" && element.alpha >= limit) {
-                        this.onEndOfTicker(alias, tickerId, args);
+                        this.complete();
                         return;
                     } else if (type === "hide" && element.alpha <= limit) {
-                        this.onEndOfTicker(alias, tickerId, args);
+                        this.complete();
                         return;
                     }
                     if (
@@ -82,32 +83,24 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
                         !(speedProgression && speedProgression.type == "linear" && speedProgression.amt != 0)
                     ) {
                         logger.warn("The speed of the FadeAlphaTicker must be greater than 0.");
-                        this.onEndOfTicker(alias, tickerId, args, { editAlpha: false });
+                        this.complete();
                         return;
                     }
                 }
             });
         if (speedProgression) updateTickerProgression(args, "speed", speedProgression);
     }
-    override onEndOfTicker(
-        alias: string | string[],
-        tickerId: string,
-        args: FadeAlphaTickerProps,
-        options: { editAlpha?: boolean } = { editAlpha: true }
-    ): void {
+    onComplete(alias: string | string[], _tickerId: string, args: FadeAlphaTickerProps): void {
         if (typeof alias === "string") {
             alias = [alias];
         }
         alias.forEach((alias) => {
             let element = canvas.find(alias);
             if (element) {
-                if (options.editAlpha) {
-                    let limit = this.getLimit(args);
-                    element.alpha = limit;
-                }
+                let limit = this.getLimit(args);
+                element.alpha = limit;
             }
         });
-        super.onEndOfTicker(alias, tickerId, args);
     }
     private getLimit(args: FadeAlphaTickerProps): number {
         const { type = "hide", limit = type === "hide" ? 0 : 1 } = args;
@@ -115,6 +108,38 @@ export default class FadeAlphaTicker extends TickerBase<FadeAlphaTickerProps> {
     }
     private speedConvert(speed: number): number {
         return speed / 600;
+    }
+
+    override complete(options?: { ignoreTickerSteps?: boolean }): void {
+        const { ignoreTickerSteps } = options || {};
+        const id = this.tickerId;
+        if (!id) {
+            logger.warn("TickerBase.complete() called without tickerId set. This may cause issues.");
+            return;
+        }
+        this.onComplete(this.canvasElementAliases, id, this.args);
+        let aliasToRemoveAfter: string | string[] =
+            ("aliasToRemoveAfter" in this.args && (this.args.aliasToRemoveAfter as any)) || [];
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        let tickerAliasToResume: string | string[] =
+            ("tickerAliasToResume" in this.args && (this.args.tickerAliasToResume as any)) || [];
+        if (typeof tickerAliasToResume === "string") {
+            tickerAliasToResume = [tickerAliasToResume];
+        }
+        let tickerIdToResume: string | string[] =
+            ("tickerIdToResume" in this.args && (this.args.tickerIdToResume as any)) || [];
+        if (typeof tickerIdToResume === "string") {
+            tickerIdToResume = [tickerIdToResume];
+        }
+        canvas.onTickerComplete(id, {
+            aliasToRemoveAfter: aliasToRemoveAfter,
+            tickerAliasToResume: tickerAliasToResume,
+            tickerIdToResume: tickerIdToResume,
+            ignoreTickerSteps: ignoreTickerSteps,
+        });
+        super.complete(options);
     }
 }
 RegisteredTickers.add(FadeAlphaTicker);

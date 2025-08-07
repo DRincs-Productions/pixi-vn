@@ -1,3 +1,4 @@
+export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "pixi.js";
 export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "pixi.js";
 export type {
@@ -112,12 +113,13 @@ export namespace Game {
             },
             // canvas
             onGoNextEnd: async () => {
-                canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.forEach(({ id }) => {
-                    canvasUtils.canvas.forceCompletionOfTicker(id);
-                });
-                canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.forEach(({ alias, id }) => {
-                    canvasUtils.canvas.forceCompletionOfTicker(id, alias);
-                });
+                const promises = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.map(({ id }) =>
+                    canvasUtils.canvas.forceCompletionOfTicker(id)
+                );
+                const promises2 = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.map(
+                    ({ alias, id }) => canvasUtils.canvas.forceCompletionOfTicker(id, alias)
+                );
+                await Promise.all([...promises, ...promises2]);
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
             },
             // storage
