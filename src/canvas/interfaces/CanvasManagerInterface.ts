@@ -211,7 +211,7 @@ export default interface CanvasManagerInterface {
         };
     };
     /**
-     * Find a ticker by its id and args.
+     * Find a ticker by its id.
      * @param tickerId The id of the ticker.
      * @param args The args of the ticker.
      * @returns The ticker if found, undefined otherwise.
@@ -263,6 +263,7 @@ export default interface CanvasManagerInterface {
      * ```typescript
      * canvas.unlinkComponentFromTicker("alien", RotateTicker)
      * ```
+     * @deprecated
      */
     unlinkComponentFromTicker(alias: string | string[], ticker?: { new (): Ticker<any> } | string): void;
     /**
