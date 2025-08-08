@@ -144,7 +144,11 @@ export async function showWithDissolve(
     component.alpha = 0;
     // remove the old component
     if (oldComponentAlias) {
-        let ids = removeWithDissolve(oldComponentAlias, { ...props, autoplay: false }, priority);
+        let ids = removeWithDissolve(
+            oldComponentAlias,
+            { ...props, autoplay: false, forceCompleteBeforeNext },
+            priority
+        );
         if (ids) {
             res.push(...ids);
             tickerIdToResume.push(...ids);
@@ -270,6 +274,7 @@ export async function showWithFade(
             {
                 ...props,
                 tickerIdToResume: idShow,
+                forceCompleteBeforeNext,
             },
             priority
         );
@@ -369,7 +374,7 @@ export async function moveIn(
     // remove the old component
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            let ids = moveOut(oldComponentAlias, { ...props, autoplay: false }, priority);
+            let ids = moveOut(oldComponentAlias, { ...props, autoplay: false, forceCompleteBeforeNext }, priority);
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
@@ -538,7 +543,7 @@ export async function zoomIn(
     // remove the old component
     if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            let ids = zoomOut(oldComponentAlias, { ...props, autoplay: false }, priority);
+            let ids = zoomOut(oldComponentAlias, { ...props, autoplay: false, forceCompleteBeforeNext }, priority);
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
@@ -736,6 +741,7 @@ export async function pushIn(
         let ids = pushOut(oldComponentAlias, {
             ...props,
             direction: direction, //== "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
+            forceCompleteBeforeNext,
         });
         if (ids) {
             res.push(...ids);
