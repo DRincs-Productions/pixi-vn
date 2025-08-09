@@ -80,7 +80,7 @@ export default class ImageContainer
         return {
             ...super.memory,
             pixivnId: CANVAS_IMAGE_CONTAINER_ID,
-            anchor: this._anchor,
+            anchor: this._anchor ? this.anchor : undefined,
             align: this._align,
             percentagePosition: this._percentagePosition,
             loadIsStarted: this._loadIsStarted,
@@ -384,15 +384,15 @@ RegisteredCanvasComponents.add(ImageContainer, CANVAS_IMAGE_CONTAINER_ID);
 export async function setMemoryImageContainer(
     element: ImageContainer,
     memory: ImageContainerOptions | {},
-    opstions?: {
+    options?: {
         ignoreScale?: boolean;
     }
 ) {
     memory = analizePositionsExtensionProps(memory)!;
     setMemoryContainer(element, memory, {
-        ...opstions,
+        ...options,
         end: async () => {
-            "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
+            // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
             "align" in memory && memory.align !== undefined && (element.align = memory.align as Partial<PointData>);
             "percentagePosition" in memory &&
                 memory.percentagePosition !== undefined &&
