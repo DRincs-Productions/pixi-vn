@@ -19,8 +19,7 @@ interface TArgs {
 
 export default class MotionTicker extends MotionTickerBase<TArgs> {
     id: TickerIdType = "motion";
-    start(id: string): void {
-        this.tickerId = id;
+    initialize(): void {
         let proxies = this.canvasElementAliases.map((alias) => this.createItem(alias));
         this.animation = animate(proxies, this._args.keyframes, {
             ...this._args.options,
