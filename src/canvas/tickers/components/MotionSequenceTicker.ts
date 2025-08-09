@@ -21,8 +21,7 @@ interface TArgs {
 
 export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
     id: TickerIdType = "motion-sequence";
-    start(id: string) {
-        this.tickerId = id;
+    initialize() {
         let alias = this.canvasElementAliases[0];
         let proxy = this.createItem(alias);
         let sequence: (

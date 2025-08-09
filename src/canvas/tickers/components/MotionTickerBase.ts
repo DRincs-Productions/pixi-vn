@@ -8,7 +8,9 @@ export default abstract class MotionTickerBase<
     TArgs extends TickerArgs & {
         startState?: object;
         time?: number;
-        options: Omit<CommonTickerProps, "startOnlyIfHaveTexture">;
+        options: Omit<CommonTickerProps, "startOnlyIfHaveTexture"> & {
+            autoplay?: boolean;
+        };
     }
 > implements Ticker<TArgs>
 {
@@ -64,14 +66,20 @@ export default abstract class MotionTickerBase<
         await new Promise((resolve) => setTimeout(resolve, this.timeout));
     }
     stop() {
+        this.stopped = true;
         if (!this.animation) {
             logger.warn("MotionTicker.stop() called without animation set. This may cause issues.");
             return;
         }
-        this.stopped = true;
         this.animation.stop();
     }
-    abstract start(id: string): void;
+    start(id: string) {
+        this.tickerId = id;
+        if (this._args.options.autoplay !== false) {
+            return this.initialize();
+        }
+    }
+    abstract initialize(): void;
     protected onComplete = () => {
         if (this.ignoreOnComplete) {
             return;
@@ -211,6 +219,9 @@ export default abstract class MotionTickerBase<
         this.animation.pause();
     }
     play() {
+        if (!this.animation) {
+            this.initialize();
+        }
         if (!this.animation) {
             logger.warn("MotionTicker.play() called without animation set. This may cause issues.");
             return;
