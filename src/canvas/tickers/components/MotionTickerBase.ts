@@ -213,7 +213,6 @@ export default abstract class MotionTickerBase<
     }
     pause() {
         if (!this.animation) {
-            logger.warn("MotionTicker.pause() called without animation set. This may cause issues.");
             return;
         }
         this.animation.pause();
@@ -230,7 +229,6 @@ export default abstract class MotionTickerBase<
     }
     get paused(): boolean {
         if (!this.animation) {
-            logger.warn("MotionTicker.paused() called without animation set. This may cause issues.");
             return true;
         }
         return this.animation.state === "paused";
