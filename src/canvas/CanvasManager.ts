@@ -893,7 +893,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     /* Other Methods */
 
     async extractImage() {
-        const image = await this.app.renderer.extract.image(this.gameLayer);
+        const image = await this.app.renderer.extract.image(this.app.stage);
         return image.src;
     }
 
