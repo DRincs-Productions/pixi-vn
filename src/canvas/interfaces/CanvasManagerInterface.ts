@@ -7,6 +7,7 @@ import {
     Rectangle,
     UPDATE_PRIORITY,
 } from "pixi.js";
+import Layer from "../components/Layer";
 import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
 import AnimationOptions, {
     KeyframesType,
@@ -389,7 +390,7 @@ export default interface CanvasManagerInterface {
      * canvas.addLayer("ui", uiLayer);
      * ```
      */
-    addLayer(label: string, layer: PixiContainer): PixiContainer<ContainerChild> | undefined;
+    addLayer(label: string, layer: PixiContainer): Layer | undefined;
     /**
      * Get a layer from the canvas.
      * @param label The label of the layer.
@@ -399,7 +400,7 @@ export default interface CanvasManagerInterface {
      * const uiLayer = canvas.getLayer("ui");
      * ```
      */
-    getLayer(label: string): PixiContainer<ContainerChild> | null;
+    getLayer(label: string): Layer | null;
     /**
      * Remove a layer from the canvas.
      * @param label The label of the layer to be removed.

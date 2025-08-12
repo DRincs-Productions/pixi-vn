@@ -11,6 +11,7 @@ export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 export { default as CanvasBaseItem } from "./classes/CanvasBaseItem";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
+export { default as Layer } from "./components/Layer";
 export { default as Sprite } from "./components/Sprite";
 export { default as Text } from "./components/Text";
 export { canvasComponentDecorator, default as RegisteredCanvasComponents } from "./decorators/canvas-element-decorator";
