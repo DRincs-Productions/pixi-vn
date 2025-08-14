@@ -24,7 +24,6 @@ export {
 export * from "./history";
 export * from "./interfaces";
 export * from "./narration";
-export * as PIXI from "./pixijs";
 export * from "./sound";
 export * from "./storage";
 export { default as GameUnifier } from "./unifier";
