@@ -36,7 +36,7 @@
     "@pixi/devtools": "^2.0.1",
     "@pixi/sound": "^6.0.1",
     "motion": "^12.23.12",
-    "pixi.js": "^8.11.0"
+    "pixi.js": "^8.12.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
@@ -44,7 +44,7 @@
     "crypto-js": "^4.2.0",
     "deep-diff": "^1.0.2",
     "jsdom": "^26.1.0",
-    "keyv": "^5.3.3",
+    "keyv": "^5.5.0",
     "lru-cache": "^11.1.0",
     "microdiff": "^1.5.0",
     "ts-node": "^10.9.2",
