@@ -31,7 +31,6 @@ import AnimationOptions, {
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
 import { TickerIdType } from "./types/TickerIdType";
-export * as PIXI from "pixi.js";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
