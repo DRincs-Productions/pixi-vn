@@ -877,7 +877,10 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
 
     removeLayer(label: string) {
-        CanvasManagerStatic.app.stage.getChildrenByLabel(label);
+        let child = CanvasManagerStatic.app.stage.getChildByLabel(label);
+        if (child) {
+            CanvasManagerStatic.app.stage.removeChild(child);
+        }
     }
 
     addHtmlLayer(id: string, element: HTMLElement, style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">) {
