@@ -1,3 +1,4 @@
+import * as PIXI from "pixi.js";
 import CanvasManager from "./CanvasManager";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
@@ -5,7 +6,6 @@ import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 // * This import must be imported before the ImageSprite import.
 export { default as VideoSprite } from "./components/VideoSprite";
 
-export * as PIXI from "pixi.js";
 export { default as CanvasEvent } from "../canvas/classes/CanvasEvent";
 export { default as ImageContainer } from "../canvas/components/ImageContainer";
 export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
@@ -74,6 +74,7 @@ export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";
 export { canvas };
+export { PIXI };
 
 const canvas: CanvasManagerInterface = new CanvasManager();
 CanvasUtilitiesStatic.init({
