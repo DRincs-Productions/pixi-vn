@@ -36,14 +36,23 @@ export default interface CanvasManagerInterface {
      * If the manager is initialized.
      */
     readonly isInitialized: boolean;
+
     /**
-     * The width of the canvas.
+     * @deprecated Use {@link width} instead.
      */
     canvasWidth: number;
     /**
-     * The height of the canvas.
+     * The width of the canvas.
+     */
+    width: number;
+    /**
+     * @deprecated Use {@link height} instead.
      */
     canvasHeight: number;
+    /**
+     * The height of the canvas.
+     */
+    height: number;
     /**
      * The screen of the canvas ({@link Application.screen}).
      */

@@ -390,13 +390,13 @@ export async function moveIn(
     // special
     switch (direction) {
         case "up":
-            component.y = canvas.canvasHeight + component.height;
+            component.y = canvas.height + component.height;
             break;
         case "down":
             component.y = -component.height;
             break;
         case "left":
-            component.x = canvas.canvasWidth + component.width;
+            component.x = canvas.width + component.width;
             break;
         case "right":
             component.x = -component.width;
@@ -449,13 +449,13 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
             destination.y = -component.height;
             break;
         case "down":
-            destination.y = canvas.canvasHeight + component.height;
+            destination.y = canvas.height + component.height;
             break;
         case "left":
             destination.x = -component.width;
             break;
         case "right":
-            destination.x = canvas.canvasWidth + component.width;
+            destination.x = canvas.width + component.width;
             break;
     }
     // create the ticker and play it
@@ -558,25 +558,25 @@ export async function zoomIn(
     }
     // edit the properties of the new component
     if (direction == "up") {
-        component.pivot.y = canvas.canvasHeight - component.y;
-        component.pivot.x = canvas.canvasWidth / 2 - component.x;
-        component.y = canvas.canvasHeight;
-        component.x = canvas.canvasWidth / 2;
+        component.pivot.y = canvas.height - component.y;
+        component.pivot.x = canvas.width / 2 - component.x;
+        component.y = canvas.height;
+        component.x = canvas.width / 2;
     } else if (direction == "down") {
         component.pivot.y = 0 - component.y;
-        component.pivot.x = canvas.canvasWidth / 2 - component.x;
+        component.pivot.x = canvas.width / 2 - component.x;
         component.y = 0;
-        component.x = canvas.canvasWidth / 2;
+        component.x = canvas.width / 2;
     } else if (direction == "left") {
-        component.pivot.x = canvas.canvasWidth - component.x;
-        component.pivot.y = canvas.canvasHeight / 2 - component.y;
-        component.x = canvas.canvasWidth;
-        component.y = canvas.canvasHeight / 2;
+        component.pivot.x = canvas.width - component.x;
+        component.pivot.y = canvas.height / 2 - component.y;
+        component.x = canvas.width;
+        component.y = canvas.height / 2;
     } else if (direction == "right") {
         component.pivot.x = 0 - component.x;
-        component.pivot.y = canvas.canvasHeight / 2 - component.y;
+        component.pivot.y = canvas.height / 2 - component.y;
         component.x = 0;
-        component.y = canvas.canvasHeight / 2;
+        component.y = canvas.height / 2;
     }
     component.pivot = getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
@@ -634,25 +634,25 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         y: component.pivot.y,
     };
     if (direction == "down") {
-        destination.y = canvas.canvasHeight;
-        destination.x = canvas.canvasWidth / 2;
-        pivot.y = canvas.canvasHeight - destination.y;
-        pivot.x = canvas.canvasWidth / 2 - destination.x;
+        destination.y = canvas.height;
+        destination.x = canvas.width / 2;
+        pivot.y = canvas.height - destination.y;
+        pivot.x = canvas.width / 2 - destination.x;
     } else if (direction == "up") {
         destination.y = 0;
-        destination.x = canvas.canvasWidth / 2;
+        destination.x = canvas.width / 2;
         pivot.y = 0 - destination.y;
-        pivot.x = canvas.canvasWidth / 2 - destination.x;
+        pivot.x = canvas.width / 2 - destination.x;
     } else if (direction == "right") {
-        destination.x = canvas.canvasWidth;
-        destination.y = canvas.canvasHeight / 2;
-        pivot.x = canvas.canvasWidth - destination.x;
-        pivot.y = canvas.canvasHeight / 2 - destination.y;
+        destination.x = canvas.width;
+        destination.y = canvas.height / 2;
+        pivot.x = canvas.width - destination.x;
+        pivot.y = canvas.height / 2 - destination.y;
     } else if (direction == "left") {
         destination.x = 0;
-        destination.y = canvas.canvasHeight / 2;
+        destination.y = canvas.height / 2;
         pivot.x = 0 - destination.x;
-        pivot.y = canvas.canvasHeight / 2 - destination.y;
+        pivot.y = canvas.height / 2 - destination.y;
     }
     pivot = getPointBySuperPoint(pivot, component.angle);
     // create the ticker and play it
@@ -722,13 +722,13 @@ export async function pushIn(
     }
     switch (direction) {
         case "up":
-            component.y = canvas.canvasHeight + component.height;
+            component.y = canvas.height + component.height;
             break;
         case "down":
             component.y = -component.height;
             break;
         case "left":
-            component.x = canvas.canvasWidth + component.width;
+            component.x = canvas.width + component.width;
             break;
         case "right":
             component.x = -component.width;
