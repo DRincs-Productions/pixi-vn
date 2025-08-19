@@ -27,9 +27,13 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
             throw new Error(`The video ${alias} does not exist in the cache.`);
         }
     }
-    let video = new VideoSprite(options, videoUrl);
-    canvas.add(alias, video);
-    return video;
+    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    let component = new VideoSprite(options, videoUrl);
+    if (oldMemory) {
+        canvas.copyCanvasElementProperty(oldMemory, component);
+    }
+    canvas.add(alias, component, { ignoreOldStyle: true });
+    return component;
 }
 
 /**
@@ -53,8 +57,12 @@ export async function showVideo(alias: string, videoUrl?: string, options?: Vide
             throw new Error(`The video ${alias} does not exist in the cache.`);
         }
     }
-    let video = new VideoSprite(options, videoUrl);
-    await video.load();
-    canvas.add(alias, video);
-    return video;
+    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    let component = new VideoSprite(options, videoUrl);
+    await component.load();
+    if (oldMemory) {
+        canvas.copyCanvasElementProperty(oldMemory, component);
+    }
+    canvas.add(alias, component, { ignoreOldStyle: true });
+    return component;
 }

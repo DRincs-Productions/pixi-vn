@@ -21,9 +21,13 @@ export function addImageCointainer(
     imageUrls: string[],
     options?: ImageContainerOptions<ImageSprite>
 ): ImageContainer {
-    let container = new ImageContainer(options, imageUrls);
-    canvas.add(alias, container);
-    return container;
+    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    let component = new ImageContainer(options, imageUrls);
+    if (oldMemory) {
+        canvas.copyCanvasElementProperty(oldMemory, component);
+    }
+    canvas.add(alias, component, { ignoreOldStyle: true });
+    return component;
 }
 
 /**
@@ -42,8 +46,12 @@ export async function showImageContainer(
     imageUrls: string[],
     options?: ImageContainerOptions<ImageSprite>
 ): Promise<ImageContainer> {
-    let container = new ImageContainer(options, imageUrls);
-    await container.load();
-    canvas.add(alias, container);
-    return container;
+    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    let component = new ImageContainer(options, imageUrls);
+    await component.load();
+    if (oldMemory) {
+        canvas.copyCanvasElementProperty(oldMemory, component);
+    }
+    canvas.add(alias, component, { ignoreOldStyle: true });
+    return component;
 }
