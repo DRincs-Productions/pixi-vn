@@ -27,9 +27,13 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
             throw new Error(`The image ${alias} does not exist in the cache.`);
         }
     }
-    let image = new ImageSprite(options, imageUrl);
-    canvas.add(alias, image);
-    return image;
+    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    let component = new ImageSprite(options, imageUrl);
+    if (oldMemory) {
+        canvas.copyCanvasElementProperty(oldMemory, component);
+    }
+    canvas.add(alias, component, { ignoreOldStyle: true });
+    return component;
 }
 
 /**
@@ -53,8 +57,12 @@ export async function showImage(alias: string, imageUrl?: string, options?: Imag
             throw new Error(`The image ${alias} does not exist in the cache.`);
         }
     }
-    let image = new ImageSprite(options, imageUrl);
-    await image.load();
-    canvas.add(alias, image);
-    return image;
+    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    let component = new ImageSprite(options, imageUrl);
+    await component.load();
+    if (oldMemory) {
+        canvas.copyCanvasElementProperty(oldMemory, component);
+    }
+    canvas.add(alias, component, { ignoreOldStyle: true });
+    return component;
 }
