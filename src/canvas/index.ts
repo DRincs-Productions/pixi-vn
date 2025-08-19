@@ -12,7 +12,7 @@ export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 export { default as CanvasBaseItem } from "./classes/CanvasBaseItem";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
-export { default as Layer } from "./components/Layer";
+export type { default as Layer } from "./components/Layer";
 export { default as Sprite } from "./components/Sprite";
 export { default as Text } from "./components/Text";
 export { canvasComponentDecorator, default as RegisteredCanvasComponents } from "./decorators/canvas-element-decorator";
@@ -73,8 +73,7 @@ export type { default as CanvasEventNamesType } from "./types/CanvasEventNamesTy
 export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";
-export { canvas };
-export { PIXI };
+export { canvas, PIXI };
 
 const canvas: CanvasManagerInterface = new CanvasManager();
 CanvasUtilitiesStatic.init({
