@@ -1,3 +1,4 @@
+import { Ticker as PixiTicker } from "@drincs/pixi-vn/pixi.js";
 import {
     animate as animateMotion,
     AnimationOptions,
@@ -7,7 +8,6 @@ import {
     ObjectTarget,
     SequenceOptions,
 } from "motion";
-import { Ticker as PixiTicker } from "pixi.js";
 import { canvas } from "../..";
 
 type ObjectSegmentWithTransition<O extends {} = {}> = [

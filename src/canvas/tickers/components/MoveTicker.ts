@@ -1,4 +1,4 @@
-import { Container as PixiContainer, Sprite as PixiSprite } from "pixi.js";
+import { Container as PixiContainer, Sprite as PixiSprite } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "../..";
 import { createExportableElement } from "../../../utils";
 import { logger } from "../../../utils/log-utility";

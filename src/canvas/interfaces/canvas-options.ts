@@ -3,7 +3,7 @@ import {
     EventEmitter,
     SpriteOptions as PixiSpriteOptions,
     TextOptions as PixiTextOptions,
-} from "pixi.js";
+} from "@drincs/pixi-vn/pixi.js";
 import { AdditionalPositionsExtensionProps } from "../components/AdditionalPositions";
 import { AnchorExtensionProps } from "../components/AnchorExtension";
 import ContainerChild from "../types/ContainerChild";

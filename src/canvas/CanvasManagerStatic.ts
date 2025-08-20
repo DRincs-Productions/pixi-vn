@@ -1,9 +1,9 @@
+import { Application, ApplicationOptions, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import { Devtools, initDevtools } from "@pixi/devtools";
 import sha1 from "crypto-js/sha1";
-import { Application, ApplicationOptions, Container as PixiContainer } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
-import additionalPositionsProperties from "../pixi-devtools/additionalPositionsProperties";
 import { logger } from "../utils/log-utility";
+import additionalPositionsProperties from "./pixi-devtools/additionalPositionsProperties";
 import { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
 import PauseTickerType from "./types/PauseTickerType";
 

@@ -1,5 +1,5 @@
 import { PropertiesExtension } from "@pixi/devtools";
-import { ImageContainer, ImageSprite, VideoSprite } from "../canvas";
+import { ImageContainer, ImageSprite, VideoSprite } from "..";
 
 const additionalPositionsProperties: PropertiesExtension = {
     extension: {

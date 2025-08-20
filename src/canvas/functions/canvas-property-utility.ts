@@ -1,4 +1,4 @@
-import { Container as PixiContainer } from "pixi.js";
+import { Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import CanvasUtilitiesStatic from "../CanvasUtilitiesStatic";
 
 export function calculatePositionByAlign(

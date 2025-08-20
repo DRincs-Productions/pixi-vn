@@ -1,7 +1,7 @@
-import { Container as PixiContainer, PointData } from "pixi.js";
+import { Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
 
 export interface AnchorExtensionProps {
-    anchor?: PointData | number
+    anchor?: PointData | number;
 }
 
 export default class AnchorExtension extends PixiContainer {
@@ -23,9 +23,9 @@ export default class AnchorExtension extends PixiContainer {
      * imageContainer.anchor = 0.5;
      */
     get anchor(): PointData {
-        throw new Error("Anchor is not implemented")
+        throw new Error("Anchor is not implemented");
     }
     set anchor(_value: PointData | number) {
-        throw new Error("Anchor is not implemented")
+        throw new Error("Anchor is not implemented");
     }
 }

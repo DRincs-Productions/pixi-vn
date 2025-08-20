@@ -1,5 +1,5 @@
+import { Ticker as PixiTicker, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { AnimationPlaybackControlsWithThen } from "motion";
-import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
 import { canvas, CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";

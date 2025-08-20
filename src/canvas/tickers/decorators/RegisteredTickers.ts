@@ -1,4 +1,4 @@
-import { UPDATE_PRIORITY } from "pixi.js";
+import { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";

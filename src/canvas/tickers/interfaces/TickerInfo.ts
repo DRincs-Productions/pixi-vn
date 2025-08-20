@@ -1,4 +1,4 @@
-import { UPDATE_PRIORITY } from "pixi.js";
+import { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { TickerIdType } from "../../types/TickerIdType";
 import Ticker from "./Ticker";
 import TickerArgs from "./TickerArgs";

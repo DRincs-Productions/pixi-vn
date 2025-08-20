@@ -10,18 +10,19 @@ export default defineConfig({
     format: ["cjs", "esm"], // Build for commonJS and ESmodules
     dts: true, // Generate declaration file (.d.ts)
     treeshake: true,
-    splitting: false,
     // sourcemap: true, // Generate sourcemap, it was removed because otherwise it would explode
     clean: false,
     minify: true,
     bundle: true,
     skipNodeModulesBundle: false, // Skip bundling of node_modules
-    noExternal: ["pixi.js", "@pixi/sound", "@pixi/devtools", "motion"],
     external: [
         "@drincs/pixi-vn/unifier",
+        "@drincs/pixi-vn/pixi.js",
         "@drincs/pixi-vn/narration",
         "@drincs/pixi-vn/history",
         "@drincs/pixi-vn/storage",
+        "@drincs/pixi-vn/canvas",
+        "@drincs/pixi-vn/sound",
     ],
     outExtension({ format }) {
         return {

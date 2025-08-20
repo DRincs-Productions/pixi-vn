@@ -1,4 +1,4 @@
-import { Ticker as PixiTicker, UPDATE_PRIORITY } from "pixi.js";
+import { Ticker as PixiTicker, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { canvas, CanvasManagerStatic, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";

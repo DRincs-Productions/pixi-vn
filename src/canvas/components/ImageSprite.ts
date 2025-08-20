@@ -1,4 +1,11 @@
-import { ObservablePoint, Sprite as PixiSprite, PointData, Texture, TextureSource, TextureSourceLike } from "pixi.js";
+import {
+    ObservablePoint,
+    Sprite as PixiSprite,
+    PointData,
+    Texture,
+    TextureSource,
+    TextureSourceLike,
+} from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";

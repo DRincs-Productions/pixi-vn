@@ -1,4 +1,4 @@
-import { Container as PixiContainer } from "pixi.js";
+import { Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 

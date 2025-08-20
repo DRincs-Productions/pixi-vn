@@ -1,4 +1,4 @@
-import { Sprite as PixiSprite, UPDATE_PRIORITY } from "pixi.js";
+import { Sprite as PixiSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { canvas, CanvasBaseInterface, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";

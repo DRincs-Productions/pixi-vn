@@ -1,4 +1,4 @@
-import { Sprite as PixiSprite, Texture, TextureSourceLike } from "pixi.js";
+import { Sprite as PixiSprite, Texture, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { showWithDissolve } from "../functions/canvas-transition";

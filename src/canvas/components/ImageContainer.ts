@@ -1,4 +1,4 @@
-import { ObservablePoint, PointData, Texture } from "pixi.js";
+import { ObservablePoint, PointData, Texture } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";

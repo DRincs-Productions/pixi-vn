@@ -1,4 +1,4 @@
-import { Sprite as PixiSprite } from "pixi.js";
+import { Sprite as PixiSprite } from "@drincs/pixi-vn/pixi.js";
 import Container from "../../components/Container";
 import ImageContainer from "../../components/ImageContainer";
 import ImageSprite from "../../components/ImageSprite";

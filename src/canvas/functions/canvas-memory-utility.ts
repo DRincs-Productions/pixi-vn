@@ -9,7 +9,7 @@ import {
     TextStyle,
     TextStyleOptions,
     Texture,
-} from "pixi.js";
+} from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";

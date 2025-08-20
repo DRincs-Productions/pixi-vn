@@ -1,10 +1,11 @@
+export * from "@drincs/pixi-vn/canvas";
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
+export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
+export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
 export * from "@drincs/pixi-vn/unifier";
-export type { AnimationOptions as MotionAnimationOptions } from "motion";
-export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "pixi.js";
-export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "pixi.js";
 export type {
     AssetsBundle,
     AssetsManifest,
@@ -14,40 +15,24 @@ export type {
     ResolvedSrc,
     UnresolvedAsset,
 } from "pixi.js/lib/assets/types";
-export * from "./canvas";
 export * from "./character";
 export * from "./classes";
-export {
-    CANVAS_APP_GAME_LAYER_ALIAS,
-    filters,
-    Pause,
-    PIXIVN_VERSION,
-    Repeat,
-    SYSTEM_RESERVED_STORAGE_KEYS,
-} from "./constants";
+export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
 export * from "./interfaces";
-export * from "./sound";
 export * from "./utils";
 
+import * as canvasUtils from "@drincs/pixi-vn/canvas";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
+import { ApplicationOptions, Assets, Rectangle } from "@drincs/pixi-vn/pixi.js";
+import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
-import { Devtools } from "@pixi/devtools";
-import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
-import * as canvasUtils from "./canvas";
+import type { Devtools } from "@pixi/devtools";
 import * as characterUtils from "./character";
 import { registeredCharacters } from "./character/decorators/character-decorator";
-import {
-    CANVAS_APP_GAME_LAYER_ALIAS,
-    filters,
-    Pause,
-    PIXIVN_VERSION,
-    Repeat,
-    SYSTEM_RESERVED_STORAGE_KEYS,
-} from "./constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
 import * as pixivninterface from "./interfaces";
-import * as soundUtils from "./sound";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
 import { getGamePath } from "./utils/path-utility";
@@ -276,7 +261,6 @@ export default {
     narrationUtils,
     soundUtils,
     CANVAS_APP_GAME_LAYER_ALIAS,
-    filters,
     Pause,
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
