@@ -19,6 +19,7 @@ jobs:
       - uses: actions/setup-node@v3
         with:
           node-version: 20
+      - run: npm i
       - run: npm ci
       - run: npm run build
       - run: npm test
@@ -34,6 +35,7 @@ jobs:
           node-version: 20
           registry-url: https://registry.npmjs.org/
       - run: |
+          npm i
           npm ci
           npm run build
       - run: npm publish -f
