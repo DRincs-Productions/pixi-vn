@@ -1,4 +1,4 @@
-import { Assets } from "pixi.js";
+import { Assets } from "@drincs/pixi-vn/pixi.js";
 import { canvas, VideoSpriteOptions } from "..";
 import VideoSprite from "../components/VideoSprite";
 

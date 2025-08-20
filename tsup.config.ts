@@ -16,7 +16,7 @@ export default defineConfig({
     minify: true,
     bundle: true,
     skipNodeModulesBundle: false, // Skip bundling of node_modules
-    noExternal: ["pixi.js", "@pixi/sound", "@pixi/devtools", "motion"],
+    noExternal: ["@pixi/sound", "@pixi/devtools", "motion"],
     external: [
         "@drincs/pixi-vn/unifier",
         "@drincs/pixi-vn/narration",

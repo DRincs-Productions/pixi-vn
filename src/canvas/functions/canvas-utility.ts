@@ -1,4 +1,4 @@
-import { Assets, Texture } from "pixi.js";
+import { Assets, Texture } from "@drincs/pixi-vn/pixi.js";
 import { videoFormats } from "../../constants";
 
 // Precompile the regular expression for video formats

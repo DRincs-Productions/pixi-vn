@@ -7,7 +7,7 @@ import {
     SpriteOptions as PixiSpriteOptions,
     Texture,
     TextureSourceLike,
-} from "pixi.js";
+} from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";

@@ -1,4 +1,4 @@
-import { Container as PixiContainer, PointData } from "pixi.js";
+import { Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
 
 export interface AdditionalPositionsExtensionProps {
     /**

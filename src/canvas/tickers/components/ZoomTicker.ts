@@ -1,4 +1,4 @@
-import { Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
+import { Container as PixiContainer, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { TickerBase, TickerValue, ZoomTickerProps } from "..";
 import { canvas } from "../..";
 import { logger } from "../../../utils/log-utility";

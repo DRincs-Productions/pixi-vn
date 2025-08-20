@@ -1,4 +1,4 @@
-import { ContainerOptions } from "pixi.js";
+import { ContainerOptions } from "@drincs/pixi-vn/pixi.js";
 import ContainerChild from "../../types/ContainerChild";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 

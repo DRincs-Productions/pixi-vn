@@ -1,5 +1,5 @@
+import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { Devtools } from "@pixi/devtools";
-import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "pixi.js";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";

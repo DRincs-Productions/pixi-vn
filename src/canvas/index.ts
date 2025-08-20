@@ -1,4 +1,4 @@
-import * as PIXI from "pixi.js";
+import * as PIXI from "@drincs/pixi-vn/pixi.js";
 import CanvasManager from "./CanvasManager";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";

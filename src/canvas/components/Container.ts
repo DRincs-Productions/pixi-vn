@@ -1,4 +1,4 @@
-import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "pixi.js";
+import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";

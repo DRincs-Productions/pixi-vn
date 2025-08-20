@@ -3,9 +3,7 @@ import { defineConfig } from "tsup";
 export default defineConfig({
     target: "es2020",
     entry: {
-        narration: "src/narration/index.ts",
-        history: "src/history/index.ts",
-        storage: "src/storage/index.ts",
+        "pixi.js": "src/pixi-js/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,
@@ -15,7 +13,7 @@ export default defineConfig({
     minify: true,
     bundle: true,
     skipNodeModulesBundle: false,
-    external: ["@drincs/pixi-vn/unifier", "@drincs/pixi-vn/pixi.js"],
+    noExternal: ["pixi.js"],
     outExtension({ format }) {
         return {
             js: format === "esm" ? ".mjs" : ".cjs",

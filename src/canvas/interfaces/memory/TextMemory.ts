@@ -1,4 +1,4 @@
-import { TextOptions } from "pixi.js";
+import { TextOptions } from "@drincs/pixi-vn/pixi.js";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 

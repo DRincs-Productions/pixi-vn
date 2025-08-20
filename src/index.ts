@@ -1,10 +1,10 @@
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
+export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
 export * from "@drincs/pixi-vn/storage";
 export * from "@drincs/pixi-vn/unifier";
 export type { AnimationOptions as MotionAnimationOptions } from "motion";
-export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "pixi.js";
-export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "pixi.js";
 export type {
     AssetsBundle,
     AssetsManifest,
@@ -31,10 +31,10 @@ export * from "./utils";
 
 import * as historyUtils from "@drincs/pixi-vn/history";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
+import { ApplicationOptions, Assets, Rectangle } from "@drincs/pixi-vn/pixi.js";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import { Devtools } from "@pixi/devtools";
-import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
 import * as characterUtils from "./character";
 import { registeredCharacters } from "./character/decorators/character-decorator";

@@ -1,4 +1,3 @@
-import { Devtools } from "@pixi/devtools";
 import {
     Application,
     ApplicationOptions,
@@ -6,7 +5,8 @@ import {
     Container as PixiContainer,
     Rectangle,
     UPDATE_PRIORITY,
-} from "pixi.js";
+} from "@drincs/pixi-vn/pixi.js";
+import { Devtools } from "@pixi/devtools";
 import Layer from "../components/Layer";
 import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
 import AnimationOptions, {
