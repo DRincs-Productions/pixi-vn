@@ -1,6 +1,6 @@
+import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import { LabelAbstract } from ".";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import GameUnifier from "../unifier/GameUnifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";

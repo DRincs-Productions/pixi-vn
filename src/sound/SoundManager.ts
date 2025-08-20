@@ -1,3 +1,4 @@
+import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import {
     Filter,
     filters,
@@ -8,7 +9,6 @@ import {
     SoundLibrary,
     SoundMap,
 } from "@pixi/sound";
-import GameUnifier from "../unifier/GameUnifier";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
