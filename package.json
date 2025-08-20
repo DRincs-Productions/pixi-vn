@@ -10,7 +10,10 @@
     "dist"
   ],
   "scripts": {
-    "build": "tsup",
+    "build:unifier": "tsup --config tsup.unifier.config.ts",
+    "build:submodules": "tsup --config tsup.submodules.config.ts",
+    "build:index": "tsup --config tsup.config.ts",
+    "build": "npm run build:submodules && npm run build:index",
     "test": "vitest"
   },
   "exports": {
@@ -19,6 +22,18 @@
       "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
       "default": "./dist/index.mjs"
+    },
+    "./unifier": {
+      "types": "./dist/narration.d.ts",
+      "import": "./dist/narration.mjs",
+      "require": "./dist/narration.cjs",
+      "default": "./dist/narration.mjs"
+    },
+    "./narration": {
+      "types": "./dist/narration.d.ts",
+      "import": "./dist/narration.mjs",
+      "require": "./dist/narration.cjs",
+      "default": "./dist/narration.mjs"
     }
   },
   "repository": {

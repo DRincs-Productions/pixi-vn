@@ -1,4 +1,4 @@
-import GameUnifier from "../unifier";
+import GameUnifier from "../unifier/GameUnifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import StorageGameState, { StorageGameStateItem } from "./interfaces/StorageGameState";
