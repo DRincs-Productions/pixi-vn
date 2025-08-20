@@ -2,6 +2,7 @@ import StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManager from "./StorageManager";
 
 export { default as StoredClassModel } from "./classes/StoredClassModel";
+export { SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
 export type { default as StorageGameState } from "./interfaces/StorageGameState";
 export type { default as StorageManagerInterface } from "./interfaces/StorageManagerInterface";
 export { default as StorageManagerStatic } from "./StorageManagerStatic";

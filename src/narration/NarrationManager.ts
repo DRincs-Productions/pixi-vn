@@ -1,7 +1,7 @@
 import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { StorageElementType } from "../storage";
+import type { StorageElementType } from "../storage";
+import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import LabelAbstract from "./classes/LabelAbstract";

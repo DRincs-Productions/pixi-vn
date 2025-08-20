@@ -17,7 +17,7 @@ export type {
 } from "pixi.js/lib/assets/types";
 export * from "./character";
 export * from "./classes";
-export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
+export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 export * from "./interfaces";
 export * from "./utils";
 
@@ -31,7 +31,7 @@ import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import type { Devtools } from "@pixi/devtools";
 import * as characterUtils from "./character";
 import { registeredCharacters } from "./character/decorators/character-decorator";
-import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 import * as pixivninterface from "./interfaces";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
@@ -263,7 +263,6 @@ export default {
     CANVAS_APP_GAME_LAYER_ALIAS,
     Pause,
     Repeat,
-    SYSTEM_RESERVED_STORAGE_KEYS,
     PIXIVN_VERSION,
     ...functions,
     ...pixivninterface,
