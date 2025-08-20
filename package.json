@@ -53,6 +53,18 @@
       "import": "./dist/storage.mjs",
       "require": "./dist/storage.cjs",
       "default": "./dist/storage.mjs"
+    },
+    "./canvas": {
+      "types": "./dist/canvas.d.ts",
+      "import": "./dist/canvas.mjs",
+      "require": "./dist/canvas.cjs",
+      "default": "./dist/canvas.mjs"
+    },
+    "./sound": {
+      "types": "./dist/sound.d.ts",
+      "import": "./dist/sound.mjs",
+      "require": "./dist/sound.cjs",
+      "default": "./dist/sound.mjs"
     }
   },
   "repository": {

@@ -7,6 +7,7 @@ export default defineConfig({
         history: "src/history/index.ts",
         storage: "src/storage/index.ts",
         canvas: "src/canvas/index.ts",
+        sound: "src/sound/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,

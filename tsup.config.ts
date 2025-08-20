@@ -18,10 +18,12 @@ export default defineConfig({
     skipNodeModulesBundle: false, // Skip bundling of node_modules
     external: [
         "@drincs/pixi-vn/unifier",
+        "@drincs/pixi-vn/pixi.js",
         "@drincs/pixi-vn/narration",
         "@drincs/pixi-vn/history",
         "@drincs/pixi-vn/storage",
         "@drincs/pixi-vn/canvas",
+        "@drincs/pixi-vn/sound",
     ],
     outExtension({ format }) {
         return {
