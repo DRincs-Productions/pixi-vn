@@ -34,6 +34,18 @@
       "import": "./dist/narration.mjs",
       "require": "./dist/narration.cjs",
       "default": "./dist/narration.mjs"
+    },
+    "./history": {
+      "types": "./dist/history.d.ts",
+      "import": "./dist/history.mjs",
+      "require": "./dist/history.cjs",
+      "default": "./dist/history.mjs"
+    },
+    "./storage": {
+      "types": "./dist/storage.d.ts",
+      "import": "./dist/storage.mjs",
+      "require": "./dist/storage.cjs",
+      "default": "./dist/storage.mjs"
     }
   },
   "repository": {

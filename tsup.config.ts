@@ -19,9 +19,8 @@ export default defineConfig({
     noExternal: ["pixi.js", "@pixi/sound", "@pixi/devtools", "motion"],
     external: [
         "@drincs/pixi-vn/unifier",
-        "@drincs/pixi-vn/canvas",
         "@drincs/pixi-vn/narration",
-        "@drincs/pixi-vn/sound",
+        "@drincs/pixi-vn/history",
         "@drincs/pixi-vn/storage",
     ],
     outExtension({ format }) {
