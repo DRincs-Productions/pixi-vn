@@ -27,7 +27,7 @@ import * as narrationUtils from "@drincs/pixi-vn/narration";
 import { ApplicationOptions, Assets, Rectangle } from "@drincs/pixi-vn/pixi.js";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
-import { Devtools } from "@pixi/devtools";
+import type { Devtools } from "@pixi/devtools";
 import * as canvasUtils from "./canvas";
 import * as characterUtils from "./character";
 import { registeredCharacters } from "./character/decorators/character-decorator";
