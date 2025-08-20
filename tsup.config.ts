@@ -18,6 +18,7 @@ export default defineConfig({
     skipNodeModulesBundle: false, // Skip bundling of node_modules
     noExternal: ["pixi.js", "@pixi/sound", "@pixi/devtools", "motion"],
     external: [
+        "@drincs/pixi-vn/unifier",
         "@drincs/pixi-vn/canvas",
         "@drincs/pixi-vn/narration",
         "@drincs/pixi-vn/sound",
