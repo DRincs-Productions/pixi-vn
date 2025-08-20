@@ -1,4 +1,3 @@
-import { filters as f } from "@pixi/sound";
 import { PauseType, RepeatType } from "./canvas";
 
 export { version as PIXIVN_VERSION } from "../package.json";
@@ -14,16 +13,6 @@ export function Pause(duration: number): PauseType {
         duration: duration,
     };
 }
-
-export const filters = {
-    DistortionFilter: f.DistortionFilter,
-    EqualizerFilter: f.EqualizerFilter,
-    MonoFilter: f.MonoFilter,
-    ReverbFilter: f.ReverbFilter,
-    StereoFilter: f.StereoFilter,
-    StreamFilter: f.StreamFilter,
-    TelephoneFilter: f.TelephoneFilter,
-};
 
 export const videoFormats = [
     "webm",

@@ -17,14 +17,7 @@ export type {
 export * from "./canvas";
 export * from "./character";
 export * from "./classes";
-export {
-    CANVAS_APP_GAME_LAYER_ALIAS,
-    filters,
-    Pause,
-    PIXIVN_VERSION,
-    Repeat,
-    SYSTEM_RESERVED_STORAGE_KEYS,
-} from "./constants";
+export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
 export * from "./interfaces";
 export * from "./sound";
 export * from "./utils";
@@ -38,14 +31,7 @@ import { Devtools } from "@pixi/devtools";
 import * as canvasUtils from "./canvas";
 import * as characterUtils from "./character";
 import { registeredCharacters } from "./character/decorators/character-decorator";
-import {
-    CANVAS_APP_GAME_LAYER_ALIAS,
-    filters,
-    Pause,
-    PIXIVN_VERSION,
-    Repeat,
-    SYSTEM_RESERVED_STORAGE_KEYS,
-} from "./constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
 import * as pixivninterface from "./interfaces";
 import * as soundUtils from "./sound";
 import * as functions from "./utils";
@@ -276,7 +262,6 @@ export default {
     narrationUtils,
     soundUtils,
     CANVAS_APP_GAME_LAYER_ALIAS,
-    filters,
     Pause,
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
