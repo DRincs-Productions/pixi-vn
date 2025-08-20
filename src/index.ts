@@ -1,3 +1,4 @@
+export * from "@drincs/pixi-vn/canvas";
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
 export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
@@ -13,7 +14,6 @@ export type {
     ResolvedSrc,
     UnresolvedAsset,
 } from "pixi.js/lib/assets/types";
-export * from "./canvas";
 export * from "./character";
 export * from "./classes";
 export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
@@ -21,13 +21,13 @@ export * from "./interfaces";
 export * from "./sound";
 export * from "./utils";
 
+import * as canvasUtils from "@drincs/pixi-vn/canvas";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
 import { ApplicationOptions, Assets, Rectangle } from "@drincs/pixi-vn/pixi.js";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import type { Devtools } from "@pixi/devtools";
-import * as canvasUtils from "./canvas";
 import * as characterUtils from "./character";
 import { registeredCharacters } from "./character/decorators/character-decorator";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";

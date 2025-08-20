@@ -21,6 +21,7 @@ export default defineConfig({
         "@drincs/pixi-vn/narration",
         "@drincs/pixi-vn/history",
         "@drincs/pixi-vn/storage",
+        "@drincs/pixi-vn/canvas",
     ],
     outExtension({ format }) {
         return {

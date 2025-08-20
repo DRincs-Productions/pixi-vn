@@ -6,6 +6,7 @@ export default defineConfig({
         narration: "src/narration/index.ts",
         history: "src/history/index.ts",
         storage: "src/storage/index.ts",
+        canvas: "src/canvas/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,
