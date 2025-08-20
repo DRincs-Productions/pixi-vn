@@ -73,7 +73,13 @@ export type { default as CanvasEventNamesType } from "./types/CanvasEventNamesTy
 export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";
-export { canvas, PIXI };
+export {
+    canvas,
+    /**
+     * @deprecated Use `@drincs/pixi-vn/pixi.js` instead.
+     */
+    PIXI,
+};
 
 const canvas: CanvasManagerInterface = new CanvasManager();
 CanvasUtilitiesStatic.init({
