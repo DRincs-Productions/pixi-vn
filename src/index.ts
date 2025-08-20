@@ -4,7 +4,6 @@ export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "@drincs/pixi-vn/pix
 export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
 export * from "@drincs/pixi-vn/storage";
 export * from "@drincs/pixi-vn/unifier";
-export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export type {
     AssetsBundle,
     AssetsManifest,

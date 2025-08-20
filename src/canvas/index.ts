@@ -6,6 +6,7 @@ import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 // * This import must be imported before the ImageSprite import.
 export { default as VideoSprite } from "./components/VideoSprite";
 
+export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export { default as CanvasEvent } from "../canvas/classes/CanvasEvent";
 export { default as ImageContainer } from "../canvas/components/ImageContainer";
 export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
