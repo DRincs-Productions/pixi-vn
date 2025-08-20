@@ -1,3 +1,7 @@
+export * from "@drincs/pixi-vn/history";
+export * from "@drincs/pixi-vn/narration";
+export * from "@drincs/pixi-vn/storage";
+export * from "@drincs/pixi-vn/unifier";
 export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "pixi.js";
 export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "pixi.js";
@@ -21,14 +25,14 @@ export {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
-export * from "./history";
 export * from "./interfaces";
-export * from "./narration";
 export * from "./sound";
-export * from "./storage";
-export { default as GameUnifier } from "./unifier";
 export * from "./utils";
 
+import * as historyUtils from "@drincs/pixi-vn/history";
+import * as narrationUtils from "@drincs/pixi-vn/narration";
+import * as storageUtils from "@drincs/pixi-vn/storage";
+import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import { Devtools } from "@pixi/devtools";
 import { ApplicationOptions, Assets, Rectangle } from "pixi.js";
 import * as canvasUtils from "./canvas";
@@ -42,12 +46,8 @@ import {
     Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
-import * as historyUtils from "./history";
 import * as pixivninterface from "./interfaces";
-import * as narrationUtils from "./narration";
 import * as soundUtils from "./sound";
-import * as storageUtils from "./storage";
-import GameUnifier from "./unifier";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
 import { getGamePath } from "./utils/path-utility";

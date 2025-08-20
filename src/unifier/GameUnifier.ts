@@ -1,7 +1,7 @@
 import { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import { StepLabelPropsType, StepLabelType } from "./narration/types/StepLabelType";
-import { StorageElementType } from "./storage/types/StorageElementType";
-import { logger } from "./utils/log-utility";
+import { StepLabelPropsType, StepLabelType } from "../narration/types/StepLabelType";
+import { StorageElementType } from "../storage/types/StorageElementType";
+import { logger } from "../utils/log-utility";
 
 export default class GameUnifier {
     static init(options: {
