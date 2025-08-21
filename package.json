@@ -73,6 +73,18 @@
       "default": "./dist/characters.mjs"
     }
   },
+  "typesVersions": {
+    "*": {
+      "pixi.js": ["./dist/pixi.js.d.ts"],
+      "unifier": ["./dist/unifier.d.ts"],
+      "narration": ["./dist/narration.d.ts"],
+      "history": ["./dist/history.d.ts"],
+      "storage": ["./dist/storage.d.ts"],
+      "canvas": ["./dist/canvas.d.ts"],
+      "sound": ["./dist/sound.d.ts"],
+      "characters": ["./dist/characters.d.ts"]
+    }
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DRincs-Productions/pixi-vn.git"
