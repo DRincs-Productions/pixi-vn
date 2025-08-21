@@ -37,6 +37,7 @@
       "@drincs/pixi-vn/pixi.js": ["src/pixi-js/index.ts"],
       "@drincs/pixi-vn/canvas": ["src/canvas/index.ts"],
       "@drincs/pixi-vn/sound": ["src/sound/index.ts"],
+      "@drincs/pixi-vn/characters": ["src/characters/index.ts"],
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */

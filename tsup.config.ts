@@ -23,6 +23,7 @@ export default defineConfig({
         "@drincs/pixi-vn/storage",
         "@drincs/pixi-vn/canvas",
         "@drincs/pixi-vn/sound",
+        "@drincs/pixi-vn/characters",
     ],
     outExtension({ format }) {
         return {

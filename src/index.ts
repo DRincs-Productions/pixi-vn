@@ -1,4 +1,5 @@
 export * from "@drincs/pixi-vn/canvas";
+export * from "@drincs/pixi-vn/characters";
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
 export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
@@ -15,13 +16,13 @@ export type {
     ResolvedSrc,
     UnresolvedAsset,
 } from "pixi.js/lib/assets/types";
-export * from "./character";
 export * from "./classes";
 export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 export * from "./interfaces";
 export * from "./utils";
 
 import * as canvasUtils from "@drincs/pixi-vn/canvas";
+import * as characterUtils from "@drincs/pixi-vn/characters";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
 import { ApplicationOptions, Assets, Rectangle } from "@drincs/pixi-vn/pixi.js";
@@ -29,8 +30,6 @@ import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import type { Devtools } from "@pixi/devtools";
-import * as characterUtils from "./character";
-import { registeredCharacters } from "./character/decorators/character-decorator";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 import * as pixivninterface from "./interfaces";
 import * as functions from "./utils";
@@ -94,7 +93,7 @@ export namespace Game {
             },
             getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             getCharacter: (id: string) => {
-                return registeredCharacters.get(id);
+                return characterUtils.RegisteredCharacters.get(id);
             },
             // canvas
             onGoNextEnd: async () => {

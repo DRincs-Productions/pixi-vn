@@ -65,6 +65,12 @@
       "import": "./dist/sound.mjs",
       "require": "./dist/sound.cjs",
       "default": "./dist/sound.mjs"
+    },
+    "./characters": {
+      "types": "./dist/characters.d.ts",
+      "import": "./dist/characters.mjs",
+      "require": "./dist/characters.cjs",
+      "default": "./dist/characters.mjs"
     }
   },
   "repository": {

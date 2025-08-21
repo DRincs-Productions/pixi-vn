@@ -8,6 +8,7 @@ export default defineConfig({
         storage: "src/storage/index.ts",
         canvas: "src/canvas/index.ts",
         sound: "src/sound/index.ts",
+        characters: "src/characters/index.ts",
     },
     format: ["cjs", "esm"],
     dts: true,
