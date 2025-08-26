@@ -23,15 +23,11 @@ export default class StorageManager implements StorageManagerInterface {
         return StorageManagerStatic.tempStorageDeadlines;
     }
     set startingStorage(value: { [key: string]: StorageElementType }) {
-        let data: StorageGameStateItem[] = [];
         const isTheStart = GameUnifier.stepCounter === 0;
         Object.entries(value).forEach(([key, value]) => {
-            data.push({ key, value: value });
-            if (isTheStart) {
-                StorageManagerStatic.storage.set(key, value);
-            }
+            StorageManagerStatic.startingStorage.push({ key, value: value });
+            isTheStart && StorageManagerStatic.storage.set(key, value);
         });
-        StorageManagerStatic.startingStorage = data;
     }
     public setVariable(key: string, value: StorageElementType) {
         return StorageManagerStatic.setVariable(key, value);
