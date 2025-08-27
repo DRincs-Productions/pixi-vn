@@ -125,8 +125,7 @@ test("stepCounter & currentStepTimesCounter test", async () => {
     });
     expect(narration.stepCounter).toBe(7);
     expect(
-        (storage.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY) as any).stepCounter["1"]
-            .stepCounters
+        (storage.get(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY) as any).stepCounter["1"].stepCounters
     ).toEqual([2, 5]);
 });
 

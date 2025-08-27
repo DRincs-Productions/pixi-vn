@@ -6,7 +6,7 @@ export default interface StorageManagerInterface {
     /**
      * The internal storage. **Do not modify this directly.**
      *
-     * ATTENTION: If you edit this directly, the {@link this.cache} will not be updated.
+     * ATTENTION: If you edit this directly, the {@link cache} will not be updated.
      *
      * You can use Keyv with Pixi’VN by creating a new instance of Keyv and passing the storage object as a parameter.
      * ```ts
@@ -36,11 +36,19 @@ export default interface StorageManagerInterface {
      * @param value The value of the variable. If undefined, the variable will be removed
      * @returns
      */
+    set(key: string, value: StorageElementType): void;
+    /**
+     * @deprecated use {@link set} instead
+     */
     setVariable(key: string, value: StorageElementType): void;
     /**
      * Get a variable from the storage. If the variable is a temporary variable, it will return the temporary variable
      * @param key The key of the variable
      * @returns The value of the variable. If the variable does not exist, it will return undefined
+     */
+    get<T extends StorageElementType>(key: string): T | undefined;
+    /**
+     * @deprecated use {@link get} instead
      */
     getVariable<T extends StorageElementType>(key: string): T | undefined;
     /**
@@ -51,7 +59,7 @@ export default interface StorageManagerInterface {
     removeVariable(key: string): void;
     /**
      * Set a variable in the temporary storage. The lifespan of the variable is the number of opened labels.
-     * To get the temporary variable, use {@link getVariable}
+     * To get the temporary variable, use {@link get}
      * @param key The key of the temporary variable
      * @param value The value of the temporary variable. If undefined, the variable will be removed
      * @returns

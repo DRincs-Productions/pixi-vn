@@ -48,8 +48,8 @@ test("setup", async () => {
             return RegisteredCharacters.get(id);
         },
         // storage
-        getVariable: (key) => storage.getVariable(key),
-        setVariable: (key, value) => storage.setVariable(key, value),
+        getVariable: (key) => storage.get(key),
+        setVariable: (key, value) => storage.set(key, value),
         removeVariable: (key) => storage.removeVariable(key),
         getFlag: (key) => storage.getFlag(key),
         setFlag: (name, value) => storage.setFlag(name, value),

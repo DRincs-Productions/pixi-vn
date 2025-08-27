@@ -107,8 +107,8 @@ export namespace Game {
                 canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
             },
             // storage
-            getVariable: (key) => storageUtils.storage.getVariable(key),
-            setVariable: (key, value) => storageUtils.storage.setVariable(key, value),
+            getVariable: (key) => storageUtils.storage.get(key),
+            setVariable: (key, value) => storageUtils.storage.set(key, value),
             removeVariable: (key) => storageUtils.storage.removeVariable(key),
             getFlag: (key) => storageUtils.storage.getFlag(key),
             setFlag: (name, value) => storageUtils.storage.setFlag(name, value),

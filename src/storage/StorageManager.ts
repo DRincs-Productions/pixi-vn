@@ -29,11 +29,17 @@ export default class StorageManager implements StorageManagerInterface {
             isTheStart && StorageManagerStatic.storage.set(key, value);
         });
     }
-    public setVariable(key: string, value: StorageElementType) {
+    public set(key: string, value: StorageElementType) {
         return StorageManagerStatic.setVariable(key, value);
     }
-    public getVariable<T extends StorageElementType>(key: string): T | undefined {
+    public setVariable(key: string, value: StorageElementType) {
+        return this.set(key, value);
+    }
+    public get<T extends StorageElementType>(key: string): T | undefined {
         return StorageManagerStatic.getVariable<T>(key);
+    }
+    public getVariable<T extends StorageElementType>(key: string): T | undefined {
+        return this.get<T>(key);
     }
     public removeVariable(key: string) {
         return StorageManagerStatic.removeVariable(key);

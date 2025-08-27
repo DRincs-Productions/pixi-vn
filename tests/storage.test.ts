@@ -10,15 +10,15 @@ const temTestLabel = newLabel<{
         storage.setTempVariable("counter", counter + 1);
     },
     () => {
-        let counter = storage.getVariable<number>("counter") || 0;
+        let counter = storage.get<number>("counter") || 0;
         storage.setTempVariable("counter", counter + 1);
     },
     () => {
-        let counter = storage.getVariable<number>("counter") || 0;
+        let counter = storage.get<number>("counter") || 0;
         storage.setTempVariable("counter", counter + 1);
     },
     async (props, { labelId }) => {
-        let counter = storage.getVariable<number>("counter") || 0;
+        let counter = storage.get<number>("counter") || 0;
         return await narration.callLabel(labelId, {
             counter,
             ...props,
@@ -27,30 +27,30 @@ const temTestLabel = newLabel<{
 ]);
 
 test("setVariable & getVariable", async () => {
-    storage.setVariable("test", "test1");
-    expect(storage.getVariable("test")).toBe("test1");
-    expect(storage.getVariable("Test")).toBe(undefined);
+    storage.set("test", "test1");
+    expect(storage.get("test")).toBe("test1");
+    expect(storage.get("Test")).toBe(undefined);
 
-    storage.setVariable("Test", "test2");
-    expect(storage.getVariable("test")).toBe("test1");
-    expect(storage.getVariable("Test")).toBe("test2");
+    storage.set("Test", "test2");
+    expect(storage.get("test")).toBe("test1");
+    expect(storage.get("Test")).toBe("test2");
 
-    storage.setVariable("test", "test3");
-    expect(storage.getVariable("test")).toBe("test3");
-    expect(storage.getVariable("Test")).toBe("test2");
+    storage.set("test", "test3");
+    expect(storage.get("test")).toBe("test3");
+    expect(storage.get("Test")).toBe("test2");
 });
 
 test("clear & startingStorage", async () => {
-    storage.setVariable("variable1", {
+    storage.set("variable1", {
         test: "test",
         test2: 1,
     });
-    storage.setVariable("variable2", 435);
-    storage.setVariable("variable3", "test");
-    storage.setVariable("variable4", true);
-    storage.setVariable("variable5", false);
-    storage.setVariable("variable6", null);
-    storage.setVariable("variable7", undefined);
+    storage.set("variable2", 435);
+    storage.set("variable3", "test");
+    storage.set("variable4", true);
+    storage.set("variable5", false);
+    storage.set("variable6", null);
+    storage.set("variable7", undefined);
 
     storage.clear();
     let items: StorageGameStateItem[] = [];
@@ -67,12 +67,12 @@ test("clear & startingStorage", async () => {
         e: null,
         f: undefined,
     };
-    storage.setVariable("variable2", 435);
-    storage.setVariable("variable3", "test");
-    storage.setVariable("variable4", true);
-    storage.setVariable("variable5", false);
-    storage.setVariable("variable6", null);
-    storage.setVariable("variable7", undefined);
+    storage.set("variable2", 435);
+    storage.set("variable3", "test");
+    storage.set("variable4", true);
+    storage.set("variable5", false);
+    storage.set("variable6", null);
+    storage.set("variable7", undefined);
 
     storage.clear();
     let items2: StorageGameStateItem[] = [];
@@ -83,46 +83,46 @@ test("clear & startingStorage", async () => {
 });
 
 test("setTempVariable & getTempVariable", async () => {
-    storage.setVariable("counter", 0);
+    storage.set("counter", 0);
     await narration.callLabel(temTestLabel, { counter: 5 });
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(7);
+    expect(storage.get("counter")).toBe(7);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(8);
+    expect(storage.get("counter")).toBe(8);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(9);
+    expect(storage.get("counter")).toBe(9);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(10);
+    expect(storage.get("counter")).toBe(10);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(11);
+    expect(storage.get("counter")).toBe(11);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(12);
+    expect(storage.get("counter")).toBe(12);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(13);
+    expect(storage.get("counter")).toBe(13);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(14);
+    expect(storage.get("counter")).toBe(14);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(15);
+    expect(storage.get("counter")).toBe(15);
     await narration.goNext({});
-    storage.setVariable("counter", 1);
-    expect(storage.getVariable("counter")).toBe(16);
+    storage.set("counter", 1);
+    expect(storage.get("counter")).toBe(16);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(17);
+    expect(storage.get("counter")).toBe(17);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(18);
+    expect(storage.get("counter")).toBe(18);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(19);
+    expect(storage.get("counter")).toBe(19);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(20);
+    expect(storage.get("counter")).toBe(20);
     await narration.goNext({});
-    expect(storage.getVariable("counter")).toBe(21);
-    storage.setVariable("test", "test");
+    expect(storage.get("counter")).toBe(21);
+    storage.set("test", "test");
     storage.setTempVariable("test", "no");
     narration.closeCurrentLabel();
-    expect(storage.getVariable("counter")).toBe(21);
-    expect(storage.getVariable("test")).toBe("test");
+    expect(storage.get("counter")).toBe(21);
+    expect(storage.get("test")).toBe("test");
     narration.closeAllLabels();
-    expect(storage.getVariable("counter")).toBe(1);
+    expect(storage.get("counter")).toBe(1);
 });
 
 test("setFlag & getFlag", async () => {
@@ -162,12 +162,12 @@ test("import & exoprt", async () => {
         e: null,
         f: undefined,
     });
-    expect(storage.getVariable("a")).toBe(1);
-    expect(storage.getVariable("b")).toBe("test");
-    expect(storage.getVariable("c")).toBe(true);
-    expect(storage.getVariable("d")).toBe(false);
-    expect(storage.getVariable("e")).toBe(null);
-    expect(storage.getVariable("f")).toBe(undefined);
+    expect(storage.get("a")).toBe(1);
+    expect(storage.get("b")).toBe("test");
+    expect(storage.get("c")).toBe(true);
+    expect(storage.get("d")).toBe(false);
+    expect(storage.get("e")).toBe(null);
+    expect(storage.get("f")).toBe(undefined);
     let exported = storage.export();
     expect(exported).toEqual({
         base: [
