@@ -241,7 +241,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label",
                     },
-                    stepSha1: "f8a7a1ac6f734312857b47f23fa95abb31466c99",
+                    stepSha1: "e839eeafad10f5e30b2b3ad286ba6797ff9f0588",
                     index: 3,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
@@ -394,7 +394,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label",
                     },
-                    stepSha1: "f8a7a1ac6f734312857b47f23fa95abb31466c99",
+                    stepSha1: "e839eeafad10f5e30b2b3ad286ba6797ff9f0588",
                     index: 6,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
