@@ -342,7 +342,7 @@ test("choice test", async () => {
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});
-    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await stepHistory.back((path) => window.history.pushState({}, "test", path));
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
