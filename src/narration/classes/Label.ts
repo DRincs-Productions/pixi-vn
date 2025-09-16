@@ -18,7 +18,7 @@ import LabelAbstract from "./LabelAbstract";
  *         (props) => {
  *             canvas.clear()
  *             narration.dialogue = { character: liam, text: "Which test do you want to perform?" }
- *             narration.choiceMenuOptions = [
+ *             narration.choices = [
  *                 newChoiceOption("Events Test", eventsTestLabel),
  *                 newChoiceOption("Show Image Test", showImageTest),
  *             ]

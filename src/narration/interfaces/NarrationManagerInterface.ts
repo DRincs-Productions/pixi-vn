@@ -263,7 +263,7 @@ export default interface NarrationManagerInterface {
      * The options to be shown in the game
      * @example
      * ```typescript
-     * narration.choiceMenuOptions = [
+     * narration.choices = [
      *     newChoiceOption("Events Test", EventsTestLabel, {}),
      *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
      *     newChoiceOption("Ticker Test", TickerTestLabel, {}),
@@ -272,12 +272,16 @@ export default interface NarrationManagerInterface {
      * ]
      * ```
      */
+    get choices(): StoredIndexedChoiceInterface[] | undefined;
+    /**
+     * @deprecated use {@link choices} instead.
+     */
     get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined;
     /**
      * The options to be shown in the game
      * @example
      * ```typescript
-     * narration.choiceMenuOptions = [
+     * narration.choices = [
      *     newChoiceOption("Events Test", EventsTestLabel, {}),
      *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
      *     newChoiceOption("Ticker Test", TickerTestLabel, {}),
@@ -285,6 +289,10 @@ export default interface NarrationManagerInterface {
      *     newChoiceOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
      * ]
      * ```
+     */
+    set choices(data: StoredChoiceInterface[] | undefined);
+    /**
+     * @deprecated use {@link choices} instead.
      */
     set choiceMenuOptions(data: StoredChoiceInterface[] | undefined);
     /**
