@@ -39,7 +39,7 @@ export default class GameUnifier {
          */
         getOpenedLabels: () => number;
         /**
-         * This function is called after the narration.goNext() method is executed.
+         * This function is called after the narration.continue() method is executed.
          * It can be used to force the completion of the ticker in the game engine.
          */
         onGoNextEnd?: () => Promise<void>;
@@ -72,7 +72,7 @@ export default class GameUnifier {
          */
         setFlag: (name: string, value: boolean) => void;
         /**
-         * This function is called after the narration.goNext() method is executed.
+         * This function is called after the narration.continue() method is executed.
          *
          * It can be used to clear old temporary variables.
          *
@@ -180,7 +180,7 @@ export default class GameUnifier {
     }
     private static _onGoNextEnd: () => Promise<void> = async () => {};
     /**
-     * This function is called after the narration.goNext() method is executed.
+     * This function is called after the narration.continue() method is executed.
      * It can be used to force the completion of the ticker in the game engine.
      */
     static get onGoNextEnd() {
@@ -246,7 +246,7 @@ export default class GameUnifier {
     }
     private static _onLabelClosing: (openedLabelsNumber: number) => void = () => {};
     /**
-     * This function is called after the narration.goNext() method is executed
+     * This function is called after the narration.continue() method is executed
      * It can be used to clear old temporary variables.
      * @param openedLabelsNumber The number of opened labels.
      */

@@ -122,7 +122,7 @@ export default interface NarrationManagerInterface {
      * ```typescript
      *     function nextOnClick() {
      *     setLoading(true)
-     *     narration.goNext(yourParams)
+     *     narration.continue(yourParams)
      *         .then((result) => {
      *             setUpdate((p) => p + 1)
      *             setLoading(false)
