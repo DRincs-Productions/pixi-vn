@@ -185,7 +185,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Run Methods */
 
-    private getCanGoNext(options?: {
+    private getCanContinue(options?: {
         /**
          * If true, show a warning in the console.
          * @default false
@@ -208,7 +208,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (NarrationManagerStatic.stepsRunning !== 0) {
             return false;
         }
-        return this.getCanGoNext();
+        return this.getCanContinue();
     }
     private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
         let res: (void | Promise<void> | Promise<void[]>)[] = [];
@@ -241,7 +241,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         options: { choiceMade?: number; runNow?: boolean } = {}
     ): Promise<StepLabelResultType> {
         const { runNow = false } = options;
-        if (!runNow && !this.getCanGoNext({ showWarn: true })) {
+        if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
         if (!runNow && NarrationManagerStatic.stepsRunning !== 0) {
