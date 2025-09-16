@@ -245,7 +245,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             return;
         }
         if (!runNow && NarrationManagerStatic.stepsRunning !== 0) {
-            NarrationManagerStatic.goNextRequests++;
+            NarrationManagerStatic.continueRequests++;
             return;
         }
         try {
@@ -342,8 +342,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                         });
                         NarrationManagerStatic.choiceMadeTemp = undefined;
 
-                        if (NarrationManagerStatic.goNextRequests > 0) {
-                            NarrationManagerStatic.goNextRequests--;
+                        if (NarrationManagerStatic.continueRequests > 0) {
+                            NarrationManagerStatic.continueRequests--;
                             return await this.continue(props);
                         }
                     }

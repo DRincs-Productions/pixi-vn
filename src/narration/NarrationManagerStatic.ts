@@ -38,7 +38,7 @@ export default class NarrationManagerStatic {
      * Number of requests to go to the next step.
      * If it is > 0, after the stepsRunning is 0, the next step will be executed
      */
-    static goNextRequests: number = 0;
+    static continueRequests: number = 0;
     static choiceMadeTemp: undefined | number = undefined;
     static lastHistoryStep: Omit<HistoryStep, "diff"> | null = null;
     /**
