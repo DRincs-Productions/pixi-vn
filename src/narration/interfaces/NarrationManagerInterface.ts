@@ -137,10 +137,6 @@ export default interface NarrationManagerInterface {
         props: StepLabelPropsType,
         options?: {
             /**
-             * The index of the choice made by the player. (This params is used in the choice menu)
-             */
-            choiceMade?: number;
-            /**
              * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
              */
             runNow?: boolean;
