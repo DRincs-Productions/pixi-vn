@@ -204,11 +204,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return true;
     }
-    get canGoNext(): boolean {
+    get canContinue(): boolean {
         if (NarrationManagerStatic.stepsRunning !== 0) {
             return false;
         }
         return this.getCanContinue();
+    }
+    get canGoNext(): boolean {
+        return this.canContinue;
     }
     private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
         let res: (void | Promise<void> | Promise<void[]>)[] = [];

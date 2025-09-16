@@ -107,6 +107,10 @@ export default interface NarrationManagerInterface {
      * Return if can go to the next step.
      * @returns True if can go to the next step.
      */
+    readonly canContinue: boolean;
+    /**
+     * @deprecated use {@link canContinue} instead.
+     */
     readonly canGoNext: boolean;
     /**
      * Execute the next step and add it to the history. If a step is already running, it will put the request in the queue,
