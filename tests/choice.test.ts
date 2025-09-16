@@ -62,7 +62,7 @@ test("choice A", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
-    await narration.callLabel(ChoiseLabel, {});
+    await narration.call(ChoiseLabel, {});
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});
@@ -94,7 +94,7 @@ test("choice B", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
-    await narration.callLabel(ChoiseLabel, {});
+    await narration.call(ChoiseLabel, {});
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});
@@ -126,7 +126,7 @@ test("choice close", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
-    await narration.callLabel(ChoiseLabel, {});
+    await narration.call(ChoiseLabel, {});
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});

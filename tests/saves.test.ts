@@ -13,7 +13,7 @@ const testLabel = newLabel("stepCounter", [
         narration.dialogue = "This is a test label 3";
     },
     async (props, { labelId }) => {
-        return await narration.jumpLabel(labelId, props);
+        return await narration.jump(labelId, props);
     },
 ]);
 
@@ -58,7 +58,7 @@ export async function restoreGameState(
 
 test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
     clear();
-    await narration.callLabel(testLabel, {});
+    await narration.call(testLabel, {});
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});

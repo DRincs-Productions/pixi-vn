@@ -109,7 +109,7 @@ test("choice test", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
-    await narration.callLabel(startLabel, {});
+    await narration.call(startLabel, {});
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});

@@ -165,7 +165,7 @@ export default interface NarrationManagerInterface {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * narration.callLabel(startLabel, yourParams).then((result) => {
+     * narration.call(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -174,10 +174,17 @@ export default interface NarrationManagerInterface {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return narration.callLabel(startLabel).then((result) => {
+     * return narration.call(startLabel).then((result) => {
      *     return result
      * })
      * ```
+     */
+    call<T extends {} = {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
+    /**
+     * @deprecated use {@link call} instead.
      */
     callLabel<T extends {} = {}>(
         label: LabelAbstract<any, T> | LabelIdType,
@@ -190,7 +197,7 @@ export default interface NarrationManagerInterface {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * narration.jumpLabel(startLabel, yourParams).then((result) => {
+     * narration.jump(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -199,11 +206,18 @@ export default interface NarrationManagerInterface {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return narration.jumpLabel(startLabel).then((result) => {
+     * return narration.jump(startLabel).then((result) => {
      *     return result
      * })
      * ```
      */
+    jump<T extends {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
+    /**
+     * @deprecated use {@link jump} instead.
+     **/
     jumpLabel<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>

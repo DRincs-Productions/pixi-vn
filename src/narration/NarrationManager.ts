@@ -237,7 +237,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType,
         options: { choiceMade?: number; runNow?: boolean } = {}
     ): Promise<StepLabelResultType> {
-        await this.continue(props, options);
+        return await this.continue(props, options);
     }
     public async continue(
         props: StepLabelPropsType,
@@ -396,6 +396,18 @@ export default class NarrationManager implements NarrationManagerInterface {
             choiceMade?: number;
         }
     ): Promise<StepLabelResultType> {
+        return await this.call(label, props, options);
+    }
+    public async call<T extends {} = {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>,
+        options?: {
+            /**
+             * The index of the choice made by the player. (This params is used in the choice menu)
+             */
+            choiceMade?: number;
+        }
+    ): Promise<StepLabelResultType> {
         const { choiceMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
@@ -423,6 +435,18 @@ export default class NarrationManager implements NarrationManagerInterface {
         return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
     }
     public async jumpLabel<T extends {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>,
+        options?: {
+            /**
+             * The index of the choice made by the player. (This params is used in the choice menu)
+             */
+            choiceMade?: number;
+        }
+    ): Promise<StepLabelResultType> {
+        return await this.jump(label, props, options);
+    }
+    public async jump<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
         options?: {
@@ -467,7 +491,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         const type = item.type;
         switch (type) {
             case "call":
-                return await this.callLabel(
+                return await this.call(
                     item.label,
                     { ...item.props, ...props },
                     {
@@ -475,7 +499,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                 );
             case "jump":
-                return await this.jumpLabel(
+                return await this.jump(
                     item.label,
                     { ...item.props, ...props },
                     {

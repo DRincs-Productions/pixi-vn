@@ -19,7 +19,7 @@ const temTestLabel = newLabel<{
     },
     async (props, { labelId }) => {
         let counter = storage.get<number>("counter") || 0;
-        return await narration.callLabel(labelId, {
+        return await narration.call(labelId, {
             counter,
             ...props,
         });
@@ -84,7 +84,7 @@ test("clear & startingStorage", async () => {
 
 test("setTempVariable & getTempVariable", async () => {
     storage.set("counter", 0);
-    await narration.callLabel(temTestLabel, { counter: 5 });
+    await narration.call(temTestLabel, { counter: 5 });
     await narration.continue({});
     expect(storage.get("counter")).toBe(7);
     await narration.continue({});

@@ -23,11 +23,11 @@ import LabelAbstract from "./LabelAbstract";
  *                 newChoiceOption("Show Image Test", showImageTest),
  *             ]
  *         },
- *         (props) => narration.jumpLabel(START_LABEL_ID, props),
+ *         (props) => narration.jump(START_LABEL_ID, props),
  *     ]
  * )
  *
- * narration.callLabel(StartLabel)
+ * narration.call(StartLabel)
  * ```
  */
 export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T> {
