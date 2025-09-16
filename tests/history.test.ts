@@ -45,7 +45,7 @@ const startLabel = newLabel("choiceshistory", [
     },
     async () => {
         narration.dialogue = `You want continue to the next part?`;
-        narration.choiceMenuOptions = [
+        narration.choices = [
             newChoiceOption("Yes, I want to continue", secondPart, {}, { type: "jump" }),
             newCloseChoiceOption("No, I want to stop here"),
         ];
@@ -220,7 +220,7 @@ test("choice test", async () => {
             stepIndex: 12,
         },
     ]);
-    let choice = narration.choiceMenuOptions![0];
+    let choice = narration.choices![0];
     await narration.selectChoice(choice, {});
     expect(stepHistory.narrativeHistory).toEqual([
         {

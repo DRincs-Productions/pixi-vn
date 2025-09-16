@@ -193,7 +193,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         showWarn?: boolean;
     }): boolean {
         let showWarn = options?.showWarn || false;
-        let choiceMenuOptions = this.choiceMenuOptions;
+        let choiceMenuOptions = this.choices;
         if (choiceMenuOptions && choiceMenuOptions.length > 0) {
             showWarn && logger.warn("The player must make a choice");
             return false;
@@ -314,7 +314,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     NarrationManagerStatic.stepsRunning++;
                     let result = await step(props, { labelId: currentLabel.id });
 
-                    let choiceMenuOptions = this.choiceMenuOptions;
+                    let choiceMenuOptions = this.choices;
                     if (choiceMenuOptions?.length === 1 && choiceMenuOptions[0].autoSelect) {
                         let choice = choiceMenuOptions[0];
                         result = await this.selectChoice(choice, props);
@@ -487,7 +487,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         item: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType> {
-        this.choiceMenuOptions = undefined;
+        this.choices = undefined;
         const type = item.type;
         switch (type) {
             case "call":
@@ -630,6 +630,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     public get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined {
+        return this.choices;
+    }
+    public get choices(): StoredIndexedChoiceInterface[] | undefined {
         let d = GameUnifier.getVariable<any>(
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
         ) as StoredChoiceInterface[];
@@ -664,6 +667,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         return undefined;
     }
     public set choiceMenuOptions(options: StoredChoiceInterface[] | undefined) {
+        this.choices = options;
+    }
+    public set choices(options: StoredChoiceInterface[] | undefined) {
         if (!options || options.length === 0) {
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined);
             return;
