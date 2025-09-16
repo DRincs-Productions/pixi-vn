@@ -33,12 +33,12 @@ test("path test", async () => {
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(stepHistory.canGoBack).toBe(true);
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 3",
     });
@@ -77,41 +77,41 @@ test("stepCounter & currentStepTimesCounter test", async () => {
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
     });
     expect(narration.stepCounter).toBe(2);
     expect(narration.currentStepTimesCounter).toBe(1);
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 3",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
     });
     expect(narration.stepCounter).toBe(5);
     expect(narration.currentStepTimesCounter).toBe(2);
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 3",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
     });
     expect(narration.stepCounter).toBe(8);
     expect(narration.currentStepTimesCounter).toBe(3);
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 3",
     });
@@ -134,9 +134,9 @@ test("addCurrentStepToHistory", async () => {
     storage.clear();
     stepHistory.clear();
     await narration.callLabel(stepCounterLabel, {});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
     expect(narration.stepCounter).toBe(4);
     narration.addCurrentStepToHistory();
     expect(narration.stepCounter).toBe(5);
@@ -180,30 +180,30 @@ test("currentLabelStepIndex", async () => {
     expect(narration.stepCounter).toBe(0);
     await narration.callLabel(currentLabelStepIndexLabel, {});
     expect(narration.stepCounter).toBe(1);
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.stepCounter).toBe(2);
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     expect(narration.stepCounter).toBe(1);
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
-    await narration.goNext({});
+    await narration.continue({});
     await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
     expect(narration.stepCounter).toBe(1);
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.stepCounter).toBe(2);
     expect(NarrationManagerStatic.currentLabelStepIndex).toBe(1);
 });

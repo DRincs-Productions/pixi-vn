@@ -234,6 +234,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType,
         options: { choiceMade?: number; runNow?: boolean } = {}
     ): Promise<StepLabelResultType> {
+        await this.continue(props, options);
+    }
+    public async continue(
+        props: StepLabelPropsType,
+        options: { choiceMade?: number; runNow?: boolean } = {}
+    ): Promise<StepLabelResultType> {
         const { runNow = false } = options;
         if (!runNow && !this.getCanGoNext({ showWarn: true })) {
             return;
@@ -338,7 +344,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
                         if (NarrationManagerStatic.goNextRequests > 0) {
                             NarrationManagerStatic.goNextRequests--;
-                            return await this.goNext(props);
+                            return await this.continue(props);
                         }
                     }
                     return result;
@@ -356,7 +362,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
             } else if (this.openedLabels.length > 1) {
                 this.closeCurrentLabel();
-                return await this.goNext(props, options);
+                return await this.continue(props, options);
             } else if (this.openedLabels.length === 1) {
                 NarrationManagerStatic.openedLabels = [];
                 if (GameUnifier.onEnd) {
@@ -509,7 +515,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
         }
-        return this.goNext(props, { choiceMade });
+        return this.continue(props, { choiceMade });
     }
 
     /* Go Back & Refresh Methods */

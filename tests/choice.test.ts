@@ -63,10 +63,10 @@ test("choice A", async () => {
     storage.clear();
     stepHistory.clear();
     await narration.callLabel(ChoiseLabel, {});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "What do you choose?",
     });
@@ -76,15 +76,15 @@ test("choice A", async () => {
     expect(narration.dialogue).toEqual({
         text: "This is a A label",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a A label 2",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a A label 3",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "end",
     });
@@ -95,10 +95,10 @@ test("choice B", async () => {
     storage.clear();
     stepHistory.clear();
     await narration.callLabel(ChoiseLabel, {});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "What do you choose?",
     });
@@ -108,15 +108,15 @@ test("choice B", async () => {
     expect(narration.dialogue).toEqual({
         text: "This is a B label",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a B label 2",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a B label 3",
     });
-    await narration.goNext({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "This is a B label 3",
     });
@@ -127,10 +127,10 @@ test("choice close", async () => {
     storage.clear();
     stepHistory.clear();
     await narration.callLabel(ChoiseLabel, {});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
     expect(narration.dialogue).toEqual({
         text: "What do you choose?",
     });

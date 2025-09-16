@@ -133,6 +133,18 @@ export default interface NarrationManagerInterface {
      * }
      * ```
      */
+    continue(
+        props: StepLabelPropsType,
+        options?: {
+            /**
+             * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
+             */
+            runNow?: boolean;
+        }
+    ): Promise<StepLabelResultType>;
+    /**
+     * @deprecated use {@link continue} instead.
+     */
     goNext(
         props: StepLabelPropsType,
         options?: {
