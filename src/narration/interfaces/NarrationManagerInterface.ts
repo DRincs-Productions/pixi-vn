@@ -107,6 +107,10 @@ export default interface NarrationManagerInterface {
      * Return if can go to the next step.
      * @returns True if can go to the next step.
      */
+    readonly canContinue: boolean;
+    /**
+     * @deprecated use {@link canContinue} instead.
+     */
     readonly canGoNext: boolean;
     /**
      * Execute the next step and add it to the history. If a step is already running, it will put the request in the queue,
@@ -118,7 +122,7 @@ export default interface NarrationManagerInterface {
      * ```typescript
      *     function nextOnClick() {
      *     setLoading(true)
-     *     narration.goNext(yourParams)
+     *     narration.continue(yourParams)
      *         .then((result) => {
      *             setUpdate((p) => p + 1)
      *             setLoading(false)
@@ -132,6 +136,18 @@ export default interface NarrationManagerInterface {
      *         })
      * }
      * ```
+     */
+    continue(
+        props: StepLabelPropsType,
+        options?: {
+            /**
+             * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
+             */
+            runNow?: boolean;
+        }
+    ): Promise<StepLabelResultType>;
+    /**
+     * @deprecated use {@link continue} instead.
      */
     goNext(
         props: StepLabelPropsType,
@@ -149,7 +165,7 @@ export default interface NarrationManagerInterface {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * narration.callLabel(startLabel, yourParams).then((result) => {
+     * narration.call(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -158,10 +174,17 @@ export default interface NarrationManagerInterface {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return narration.callLabel(startLabel).then((result) => {
+     * return narration.call(startLabel).then((result) => {
      *     return result
      * })
      * ```
+     */
+    call<T extends {} = {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
+    /**
+     * @deprecated use {@link call} instead.
      */
     callLabel<T extends {} = {}>(
         label: LabelAbstract<any, T> | LabelIdType,
@@ -174,7 +197,7 @@ export default interface NarrationManagerInterface {
      * @returns StepLabelResultType or undefined.
      * @example
      * ```typescript
-     * narration.jumpLabel(startLabel, yourParams).then((result) => {
+     * narration.jump(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
      *     }
@@ -183,11 +206,18 @@ export default interface NarrationManagerInterface {
      * @example
      * ```typescript
      * // if you use it in a step label you should return the result.
-     * return narration.jumpLabel(startLabel).then((result) => {
+     * return narration.jump(startLabel).then((result) => {
      *     return result
      * })
      * ```
      */
+    jump<T extends {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>
+    ): Promise<StepLabelResultType>;
+    /**
+     * @deprecated use {@link jump} instead.
+     **/
     jumpLabel<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>

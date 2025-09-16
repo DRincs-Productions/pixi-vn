@@ -19,7 +19,7 @@ const temTestLabel = newLabel<{
     },
     async (props, { labelId }) => {
         let counter = storage.get<number>("counter") || 0;
-        return await narration.callLabel(labelId, {
+        return await narration.call(labelId, {
             counter,
             ...props,
         });
@@ -84,37 +84,37 @@ test("clear & startingStorage", async () => {
 
 test("setTempVariable & getTempVariable", async () => {
     storage.set("counter", 0);
-    await narration.callLabel(temTestLabel, { counter: 5 });
-    await narration.goNext({});
+    await narration.call(temTestLabel, { counter: 5 });
+    await narration.continue({});
     expect(storage.get("counter")).toBe(7);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(8);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(9);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(10);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(11);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(12);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(13);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(14);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(15);
-    await narration.goNext({});
+    await narration.continue({});
     storage.set("counter", 1);
     expect(storage.get("counter")).toBe(16);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(17);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(18);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(19);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(20);
-    await narration.goNext({});
+    await narration.continue({});
     expect(storage.get("counter")).toBe(21);
     storage.set("test", "test");
     storage.setTempVariable("test", "no");

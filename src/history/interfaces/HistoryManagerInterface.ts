@@ -41,10 +41,14 @@ export default interface HistoryManagerInterface {
      * @example
      * ```typescript
      * export function goBack(navigate: (path: string) => void | Promise<void>, afterBack?: () => void) {
-     *     narration.goBack(navigate)
+     *     stepHistory.back(navigate)
      *     afterBack && afterBack()
      * }
      * ```
+     */
+    back(navigate: (path: string) => void | Promise<void>, steps?: number): Promise<void>;
+    /**
+     * @deprecated use {@link back} instead.
      */
     goBack(navigate: (path: string) => void | Promise<void>, steps?: number): Promise<void>;
     /**

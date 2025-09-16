@@ -185,7 +185,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Run Methods */
 
-    private getCanGoNext(options?: {
+    private getCanContinue(options?: {
         /**
          * If true, show a warning in the console.
          * @default false
@@ -204,11 +204,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return true;
     }
-    get canGoNext(): boolean {
+    get canContinue(): boolean {
         if (NarrationManagerStatic.stepsRunning !== 0) {
             return false;
         }
-        return this.getCanGoNext();
+        return this.getCanContinue();
+    }
+    get canGoNext(): boolean {
+        return this.canContinue;
     }
     private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
         let res: (void | Promise<void> | Promise<void[]>)[] = [];
@@ -234,12 +237,18 @@ export default class NarrationManager implements NarrationManagerInterface {
         props: StepLabelPropsType,
         options: { choiceMade?: number; runNow?: boolean } = {}
     ): Promise<StepLabelResultType> {
+        return await this.continue(props, options);
+    }
+    public async continue(
+        props: StepLabelPropsType,
+        options: { choiceMade?: number; runNow?: boolean } = {}
+    ): Promise<StepLabelResultType> {
         const { runNow = false } = options;
-        if (!runNow && !this.getCanGoNext({ showWarn: true })) {
+        if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
         if (!runNow && NarrationManagerStatic.stepsRunning !== 0) {
-            NarrationManagerStatic.goNextRequests++;
+            NarrationManagerStatic.continueRequests++;
             return;
         }
         try {
@@ -336,9 +345,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                         });
                         NarrationManagerStatic.choiceMadeTemp = undefined;
 
-                        if (NarrationManagerStatic.goNextRequests > 0) {
-                            NarrationManagerStatic.goNextRequests--;
-                            return await this.goNext(props);
+                        if (NarrationManagerStatic.continueRequests > 0) {
+                            NarrationManagerStatic.continueRequests--;
+                            return await this.continue(props);
                         }
                     }
                     return result;
@@ -356,7 +365,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
             } else if (this.openedLabels.length > 1) {
                 this.closeCurrentLabel();
-                return await this.goNext(props, options);
+                return await this.continue(props, options);
             } else if (this.openedLabels.length === 1) {
                 NarrationManagerStatic.openedLabels = [];
                 if (GameUnifier.onEnd) {
@@ -378,6 +387,18 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     public async callLabel<T extends {} = {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>,
+        options?: {
+            /**
+             * The index of the choice made by the player. (This params is used in the choice menu)
+             */
+            choiceMade?: number;
+        }
+    ): Promise<StepLabelResultType> {
+        return await this.call(label, props, options);
+    }
+    public async call<T extends {} = {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
         options?: {
@@ -423,6 +444,18 @@ export default class NarrationManager implements NarrationManagerInterface {
             choiceMade?: number;
         }
     ): Promise<StepLabelResultType> {
+        return await this.jump(label, props, options);
+    }
+    public async jump<T extends {}>(
+        label: LabelAbstract<any, T> | LabelIdType,
+        props: StepLabelPropsType<T>,
+        options?: {
+            /**
+             * The index of the choice made by the player. (This params is used in the choice menu)
+             */
+            choiceMade?: number;
+        }
+    ): Promise<StepLabelResultType> {
         if (this.openedLabels.length > 0) this.closeCurrentLabel();
         const { choiceMade } = options || {};
         let labelId: LabelIdType;
@@ -458,7 +491,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         const type = item.type;
         switch (type) {
             case "call":
-                return await this.callLabel(
+                return await this.call(
                     item.label,
                     { ...item.props, ...props },
                     {
@@ -466,7 +499,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                 );
             case "jump":
-                return await this.jumpLabel(
+                return await this.jump(
                     item.label,
                     { ...item.props, ...props },
                     {
@@ -509,7 +542,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
         }
-        return this.goNext(props, { choiceMade });
+        return this.continue(props, { choiceMade });
     }
 
     /* Go Back & Refresh Methods */

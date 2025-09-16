@@ -109,20 +109,20 @@ test("choice test", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
-    await narration.callLabel(startLabel, {});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
+    await narration.call(startLabel, {});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
@@ -335,14 +335,14 @@ test("choice test", async () => {
             stepIndex: 13,
         },
     ]);
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await stepHistory.goBack((path) => window.history.pushState({}, "test", path));
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await stepHistory.back((path) => window.history.pushState({}, "test", path));
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
@@ -403,11 +403,11 @@ test("choice test", async () => {
             inputValue: undefined,
         },
     ]);
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
@@ -481,21 +481,21 @@ test("choice test", async () => {
             stepIndex: 24,
         },
     ]);
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
-    await narration.goNext({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
