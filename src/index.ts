@@ -15,7 +15,7 @@ export type {
     ResolvedAsset,
     ResolvedSrc,
     UnresolvedAsset,
-} from "pixi.js/lib/assets/types";
+} from "pixi.js";
 export * from "./classes";
 export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 export * from "./interfaces";
@@ -34,6 +34,7 @@ import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./co
 import * as pixivninterface from "./interfaces";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
+import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
 export namespace Game {
@@ -62,13 +63,28 @@ export namespace Game {
         element: HTMLElement,
         options: Partial<ApplicationOptions> & { width: number; height: number },
         devtoolsOptions?: Devtools
-    ) {
+    ): Promise<void>;
+    /**
+     * Initialize only the GameUnifier, and not the PixiJS Application and the interface div.
+     * This method can be used if you want to use only the GameUnifier features, such as save/load game,
+     * without initializing the canvas.
+     */
+    export async function init(): Promise<void>;
+    export async function init(
+        element?: HTMLElement,
+        options?: Partial<ApplicationOptions> & { width: number; height: number },
+        devtoolsOptions?: Devtools
+    ): Promise<void> {
         GameUnifier.init({
             getCurrentGameStepState: () => {
+                let canvasData = {};
+                try {
+                    canvasData = canvasUtils.canvas.export();
+                } catch (e) {}
                 return {
                     path: getGamePath(),
                     storage: storageUtils.storage.export(),
-                    canvas: canvasUtils.canvas.export(),
+                    canvas: canvasData,
                     sound: soundUtils.sound.export(),
                     labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0,
                     openedLabels: narrationUtils.narration.openedLabels,
@@ -78,7 +94,9 @@ export namespace Game {
                 historyUtils.HistoryManagerStatic._originalStepData = state;
                 narrationUtils.NarrationManagerStatic.openedLabels = state.openedLabels;
                 storageUtils.storage.restore(state.storage);
-                await canvasUtils.canvas.restore(state.canvas);
+                try {
+                    await canvasUtils.canvas.restore(state.canvas);
+                } catch (e) {}
                 soundUtils.sound.restore(state.sound);
                 navigate(state.path);
             },
@@ -97,14 +115,16 @@ export namespace Game {
             },
             // canvas
             onGoNextEnd: async () => {
-                const promises = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.map(({ id }) =>
-                    canvasUtils.canvas.forceCompletionOfTicker(id)
-                );
-                const promises2 = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.map(
-                    ({ alias, id }) => canvasUtils.canvas.forceCompletionOfTicker(id, alias)
-                );
-                await Promise.all([...promises, ...promises2]);
-                canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+                try {
+                    const promises = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.map(
+                        ({ id }) => canvasUtils.canvas.forceCompletionOfTicker(id)
+                    );
+                    const promises2 = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.map(
+                        ({ alias, id }) => canvasUtils.canvas.forceCompletionOfTicker(id, alias)
+                    );
+                    await Promise.all([...promises, ...promises2]);
+                    canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+                } catch (e) {}
             },
             // storage
             getVariable: (key) => storageUtils.storage.get(key),
@@ -116,6 +136,10 @@ export namespace Game {
                 storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
         });
         asciiArtLog();
+        if (!element || !options) {
+            logger.warn("The canvas element or options are not defined. The canvas will not be initialized.");
+            return;
+        }
         return await canvasUtils.canvas.init(element, options, devtoolsOptions);
     }
 
@@ -124,7 +148,9 @@ export namespace Game {
      */
     export function clear() {
         storageUtils.storage.clear();
-        canvasUtils.canvas.clear();
+        try {
+            canvasUtils.canvas.clear();
+        } catch (e) {}
         soundUtils.sound.clear();
         narrationUtils.narration.clear();
         historyUtils.stepHistory.clear();
@@ -135,11 +161,15 @@ export namespace Game {
      * @returns The game data
      */
     export function exportGameState(): pixivninterface.GameState {
+        let canvasData: any = {};
+        try {
+            canvasData = canvasUtils.canvas.export();
+        } catch (e) {}
         return {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
             storageData: storageUtils.storage.export(),
-            canvasData: canvasUtils.canvas.export(),
+            canvasData: canvasData as canvasUtils.CanvasGameState,
             soundData: soundUtils.sound.export(),
             historyData: historyUtils.stepHistory.export(),
             path: getGamePath(),
@@ -168,7 +198,9 @@ export namespace Game {
             await narrationUtils.narration.restore(data.stepData, historyItem);
         }
         storageUtils.storage.restore(data.storageData);
-        await canvasUtils.canvas.restore(data.canvasData);
+        try {
+            await canvasUtils.canvas.restore(data.canvasData);
+        } catch (e) {}
         soundUtils.sound.restore(data.soundData);
         await navigate(data.path);
     }
