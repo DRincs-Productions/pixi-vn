@@ -2,8 +2,6 @@ export * from "@drincs/pixi-vn/canvas";
 export * from "@drincs/pixi-vn/characters";
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
-export { Assets, Rectangle, Texture, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
 export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
 export * from "@drincs/pixi-vn/unifier";

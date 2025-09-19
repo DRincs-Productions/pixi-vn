@@ -1,11 +1,10 @@
 import {
-    ColorSource,
-    FillGradient,
-    FillPattern,
+    FillInput,
+    GradientOptions,
     Container as PixiContainer,
     Sprite as PixiSprite,
     Text as PixiText,
-    StrokeStyle,
+    StrokeInput,
     TextStyle,
     TextStyleOptions,
     Texture,
@@ -173,18 +172,22 @@ function getOnEvents(element: any): Record<string, any> {
 /**
  * Handle fill gradient or fill pattern
  * @param prop Fill property
- * @param propName Property name
  * @returns Processed fill property
  */
-function getFillGradientFillPattern(
-    prop: ColorSource | FillGradient | FillPattern | StrokeStyle,
-    propName: keyof TextStyle
-): ColorSource | undefined {
-    if (typeof prop !== "object" || prop === null) {
-        return prop;
-    }
+function getFill(prop: FillInput): GradientOptions | undefined {
     // TODO: FillGradient and FillPattern are not supported yet
-    logger.warn(`Unsupported property type for Text.style.${propName}: FillGradient or FillPattern.`, prop);
+    logger.warn(`Unsupported property type for Text.style.fill: FillGradient or FillPattern.`, prop);
+    return undefined;
+}
+
+/**
+ * Handle stroke
+ * @param prop Stroke property
+ * @returns Processed stroke property
+ */
+function getStroke(prop: StrokeInput): GradientOptions | undefined {
+    // TODO: FillGradient and FillPattern are not supported yet
+    logger.warn(`Unsupported property type for Text.style.stroke: FillGradient or FillPattern.`, prop);
     return undefined;
 }
 
@@ -198,7 +201,7 @@ function getTextStyle(style: TextStyle): TextStyleOptions {
         align: style.align,
         breakWords: style.breakWords,
         dropShadow: style.dropShadow,
-        fill: getFillGradientFillPattern(style.stroke, "fill"),
+        fill: getFill(style.fill),
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontStyle: style.fontStyle,
@@ -208,7 +211,7 @@ function getTextStyle(style: TextStyle): TextStyleOptions {
         letterSpacing: style.letterSpacing,
         lineHeight: style.lineHeight,
         padding: style.padding,
-        stroke: getFillGradientFillPattern(style.stroke, "stroke"),
+        stroke: getStroke(style.stroke),
         textBaseline: style.textBaseline,
         trim: style.trim,
         whiteSpace: style.whiteSpace,
