@@ -72,5 +72,13 @@ namespace RegisteredCharacters {
     export function has(id: string): boolean {
         return registeredCharacters.has(id);
     }
+
+    /**
+     * Get a list of all character ids registered.
+     * @returns An array of label ids.
+     */
+    export function keys(): string[] {
+        return Array.from(registeredCharacters.keys());
+    }
 }
 export default RegisteredCharacters;

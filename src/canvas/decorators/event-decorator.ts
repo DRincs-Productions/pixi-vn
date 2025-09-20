@@ -95,5 +95,13 @@ namespace RegisteredEvents {
     export function has(id: string): boolean {
         return registeredEvents.has(id);
     }
+
+    /**
+     * Get a list of all event ids registered.
+     * @returns An array of label ids.
+     */
+    export function keys(): string[] {
+        return Array.from(registeredEvents.keys());
+    }
 }
 export default RegisteredEvents;

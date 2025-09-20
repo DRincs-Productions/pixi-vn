@@ -56,5 +56,13 @@ namespace RegisteredLabels {
     export function has(id: string): boolean {
         return registeredLabels.has(id);
     }
+
+    /**
+     * Get a list of all label ids registered.
+     * @returns An array of label ids.
+     */
+    export function keys(): string[] {
+        return Array.from(registeredLabels.keys());
+    }
 }
 export default RegisteredLabels;

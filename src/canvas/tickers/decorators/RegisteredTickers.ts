@@ -116,5 +116,13 @@ namespace RegisteredTickers {
     export function has(id: string): boolean {
         return registeredTickers.has(id);
     }
+
+    /**
+     * Get a list of all ticker ids registered.
+     * @returns An array of label ids.
+     */
+    export function keys(): string[] {
+        return Array.from(registeredTickers.keys());
+    }
 }
 export default RegisteredTickers;
