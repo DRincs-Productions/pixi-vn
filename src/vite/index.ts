@@ -1,0 +1,1 @@
+export { vitePluginPixivn } from "./plugins";
