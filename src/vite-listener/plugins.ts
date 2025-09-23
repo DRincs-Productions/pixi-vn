@@ -1,6 +1,7 @@
 import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
 import { RegisteredLabels } from "@drincs/pixi-vn/narration";
-import { Assets, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
+import { ApplicationOptions, Assets, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
+import { canvas } from "dist";
 
 /**
  * Function that setup the pixivn vite data.
@@ -46,6 +47,17 @@ export function setupPixivnViteData() {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(manifest),
+        });
+    } catch (e) {}
+    try {
+        const options: Partial<ApplicationOptions> = {
+            height: canvas.app.screen.height,
+            width: canvas.app.screen.width,
+        };
+        fetch("/pixi-vn/canvas/options", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(options),
         });
     } catch (e) {}
 }

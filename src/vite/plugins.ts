@@ -1,10 +1,11 @@
 import type { CharacterInterface } from "@drincs/pixi-vn";
-import type { AssetsManifest } from "@drincs/pixi-vn/pixi.js";
+import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import { Plugin } from "vite";
 
 let characters: CharacterInterface[] | null = null;
 let labels: string[] | null = null;
 let manifest: AssetsManifest | null = null;
+let options: Partial<ApplicationOptions> | null = null;
 
 /**
  * Vite plugin to handle pixi-vn related endpoints.
@@ -99,6 +100,35 @@ export function vitePluginPixivn(): Plugin {
                             manifest = JSON.parse(body);
                             res.statusCode = 201;
                             res.end(JSON.stringify({ message: "Manifest updated successfully" }));
+                        } catch {
+                            res.statusCode = 400;
+                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
+                        }
+                    });
+                }
+            });
+
+            server.middlewares.use("/pixi-vn/canvas/options", (req, res) => {
+                res.setHeader("Content-Type", "application/json");
+
+                if (req.method === "GET") {
+                    if (!options) {
+                        res.statusCode = 404;
+                        res.end(JSON.stringify({ error: "Options not initialized" }));
+                        return;
+                    }
+                    res.statusCode = 200;
+                    res.end(JSON.stringify(options));
+                }
+
+                if (req.method === "POST") {
+                    let body = "";
+                    req.on("data", (chunk) => (body += chunk));
+                    req.on("end", () => {
+                        try {
+                            options = JSON.parse(body);
+                            res.statusCode = 201;
+                            res.end(JSON.stringify({ message: "Options updated successfully" }));
                         } catch {
                             res.statusCode = 400;
                             res.end(JSON.stringify({ error: "Invalid JSON format" }));
