@@ -1,9 +1,12 @@
 import type { CharacterInterface } from "@drincs/pixi-vn";
+import type { AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import { Plugin } from "vite";
 
 let characters: CharacterInterface[] = [];
 let labels: string[] = [];
-let assets: Record<string, string> = {};
+let manifest: AssetsManifest = {
+    bundles: [],
+};
 
 /**
  * Vite plugin to handle pixi-vn related endpoints.
@@ -51,16 +54,16 @@ export function vitePluginPixivn(): Plugin {
             });
 
             // endpoint GET
-            server.middlewares.use("/pixi-vn/assets", (req, res) => {
+            server.middlewares.use("/pixi-vn/manifest", (req, res) => {
                 res.setHeader("Content-Type", "application/json");
-                res.end(JSON.stringify(assets));
+                res.end(JSON.stringify(manifest));
             });
             // endpoint POST
-            server.middlewares.use("/pixi-vn/assets", (req, res) => {
+            server.middlewares.use("/pixi-vn/manifest", (req, res) => {
                 let body = "";
                 req.on("data", (chunk) => (body += chunk));
                 req.on("end", () => {
-                    assets = JSON.parse(body);
+                    manifest = JSON.parse(body);
                     res.end("ok");
                 });
             });
