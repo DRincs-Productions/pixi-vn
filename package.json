@@ -71,6 +71,18 @@
       "import": "./dist/characters.mjs",
       "require": "./dist/characters.cjs",
       "default": "./dist/characters.mjs"
+    },
+    "./vite": {
+      "types": "./dist/vite.d.ts",
+      "import": "./dist/vite.mjs",
+      "require": "./dist/vite.cjs",
+      "default": "./dist/vite.mjs"
+    },
+    "./vite-listener": {
+      "types": "./dist/vite-listener.d.ts",
+      "import": "./dist/vite-listener.mjs",
+      "require": "./dist/vite-listener.cjs",
+      "default": "./dist/vite-listener.mjs"
     }
   },
   "typesVersions": {

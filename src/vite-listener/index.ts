@@ -1,0 +1,1 @@
+export { setupPixivnViteListener } from "./plugins";
