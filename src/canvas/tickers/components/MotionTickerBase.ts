@@ -37,10 +37,6 @@ export default abstract class MotionTickerBase<
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
      */
     private stopped = false;
-    /**
-     * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3337)
-     */
-    private ignoreOnComplete = true;
     protected tickerId?: string;
     canvasElementAliases: string[] = [];
     protected getItemByAlias(alias: string): CanvasBaseInterface<any> | undefined {
@@ -81,10 +77,6 @@ export default abstract class MotionTickerBase<
     }
     abstract initialize(): void;
     protected onComplete = () => {
-        if (this.ignoreOnComplete) {
-            return;
-        }
-        // TODO: viene eseguita 2 volte
         const id = this.tickerId;
         if (!id) {
             logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
@@ -123,11 +115,6 @@ export default abstract class MotionTickerBase<
                     let target = this.getItemByAlias(alias);
                     if (!target) {
                         return true;
-                    }
-                    if (this.ignoreOnComplete) {
-                        setTimeout(() => {
-                            this.ignoreOnComplete = false;
-                        }, 10);
                     }
                     switch (p) {
                         case "pivotX":
