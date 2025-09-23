@@ -3,9 +3,10 @@ import { RegisteredLabels } from "@drincs/pixi-vn/narration";
 import { Assets, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
 
 /**
- * Function that setup the pixivn vite listener, it will send to the vite server the list of characters and labels registered.
+ * Function that setup the pixivn vite data.
+ * This function should be called in the client side, after the RegisteredCharacters and RegisteredLabels are populated.
  */
-export function setupPixivnViteListener() {
+export function setupPixivnViteData() {
     try {
         const characters = RegisteredCharacters.values();
         fetch("/pixi-vn/characters", {
@@ -41,7 +42,7 @@ export function setupPixivnViteListener() {
                 assets: res,
             });
         });
-        fetch("/pixi-vn/manifest", {
+        fetch("/pixi-vn/assets/manifest", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(manifest),

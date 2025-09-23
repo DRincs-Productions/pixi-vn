@@ -2,70 +2,109 @@ import type { CharacterInterface } from "@drincs/pixi-vn";
 import type { AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import { Plugin } from "vite";
 
-let characters: CharacterInterface[] = [];
-let labels: string[] = [];
-let manifest: AssetsManifest = {
-    bundles: [],
-};
+let characters: CharacterInterface[] | null = null;
+let labels: string[] | null = null;
+let manifest: AssetsManifest | null = null;
 
 /**
  * Vite plugin to handle pixi-vn related endpoints.
- * List:
- * - GET /pixi-vn/characters: Get the list of registered characters.
- * - POST /pixi-vn/characters: Update the list of registered characters.
- * - GET /pixi-vn/labels: Get the list of registered labels.
- * - POST /pixi-vn/labels: Update the list of registered labels.
- * - GET /pixi-vn/assets: Get the list of all assets loaded in the Assets resolver.
- * - POST /pixi-vn/assets: Update the list of all assets loaded in the Assets resolver.
- * @returns The vite plugin.
+ * Endpoints:
+ * - GET  /pixi-vn/characters       -> list of registered characters
+ * - POST /pixi-vn/characters       -> update the list of registered characters
+ * - GET  /pixi-vn/labels           -> list of registered labels
+ * - POST /pixi-vn/labels           -> update the list of registered labels
+ * - GET  /pixi-vn/assets/manifest  -> assets manifest
+ * - POST /pixi-vn/assets/manifest  -> update assets manifest
  */
 export function vitePluginPixivn(): Plugin {
     return {
         name: "vite-plugin-pixi-vn",
         configureServer(server) {
-            // endpoint GET
             server.middlewares.use("/pixi-vn/characters", (req, res) => {
                 res.setHeader("Content-Type", "application/json");
-                res.end(JSON.stringify(characters));
-            });
-            // endpoint POST
-            server.middlewares.use("/pixi-vn/characters", (req, res) => {
-                let body = "";
-                req.on("data", (chunk) => (body += chunk));
-                req.on("end", () => {
-                    characters = JSON.parse(body);
-                    res.end("ok");
-                });
+
+                if (req.method === "GET") {
+                    if (!characters) {
+                        res.statusCode = 404;
+                        res.end(JSON.stringify({ error: "Characters not initialized" }));
+                        return;
+                    }
+                    res.statusCode = 200;
+                    res.end(JSON.stringify(characters));
+                }
+
+                if (req.method === "POST") {
+                    let body = "";
+                    req.on("data", (chunk) => (body += chunk));
+                    req.on("end", () => {
+                        try {
+                            characters = JSON.parse(body);
+                            res.statusCode = 201;
+                            res.end(JSON.stringify({ message: "Characters updated successfully" }));
+                        } catch {
+                            res.statusCode = 400;
+                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
+                        }
+                    });
+                }
             });
 
-            // endpoint GET
             server.middlewares.use("/pixi-vn/labels", (req, res) => {
                 res.setHeader("Content-Type", "application/json");
-                res.end(JSON.stringify(labels));
-            });
-            // endpoint POST
-            server.middlewares.use("/pixi-vn/labels", (req, res) => {
-                let body = "";
-                req.on("data", (chunk) => (body += chunk));
-                req.on("end", () => {
-                    labels = JSON.parse(body);
-                    res.end("ok");
-                });
+
+                if (req.method === "GET") {
+                    if (!labels) {
+                        res.statusCode = 404;
+                        res.end(JSON.stringify({ error: "Labels not initialized" }));
+                        return;
+                    }
+                    res.statusCode = 200;
+                    res.end(JSON.stringify(labels));
+                }
+
+                if (req.method === "POST") {
+                    let body = "";
+                    req.on("data", (chunk) => (body += chunk));
+                    req.on("end", () => {
+                        try {
+                            labels = JSON.parse(body);
+                            res.statusCode = 201;
+                            res.end(JSON.stringify({ message: "Labels updated successfully" }));
+                        } catch {
+                            res.statusCode = 400;
+                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
+                        }
+                    });
+                }
             });
 
-            // endpoint GET
-            server.middlewares.use("/pixi-vn/manifest", (req, res) => {
+            server.middlewares.use("/pixi-vn/assets/manifest", (req, res) => {
                 res.setHeader("Content-Type", "application/json");
-                res.end(JSON.stringify(manifest));
-            });
-            // endpoint POST
-            server.middlewares.use("/pixi-vn/manifest", (req, res) => {
-                let body = "";
-                req.on("data", (chunk) => (body += chunk));
-                req.on("end", () => {
-                    manifest = JSON.parse(body);
-                    res.end("ok");
-                });
+
+                if (req.method === "GET") {
+                    if (!manifest) {
+                        res.statusCode = 404;
+                        res.end(JSON.stringify({ error: "Manifest not initialized" }));
+                        return;
+                    }
+                    res.statusCode = 200;
+                    res.end(JSON.stringify(manifest));
+                }
+
+                if (req.method === "POST") {
+                    let body = "";
+                    req.on("data", (chunk) => (body += chunk));
+                    req.on("end", () => {
+                        try {
+                            manifest = JSON.parse(body);
+                            res.statusCode = 201;
+                            res.end(JSON.stringify({ message: "Manifest updated successfully" }));
+                        } catch {
+                            res.statusCode = 400;
+                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
+                        }
+                    });
+                }
             });
         },
     };

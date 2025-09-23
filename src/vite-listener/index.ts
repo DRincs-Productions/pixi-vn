@@ -1,1 +1,1 @@
-export { setupPixivnViteListener } from "./plugins";
+export { setupPixivnViteData } from "./plugins";
