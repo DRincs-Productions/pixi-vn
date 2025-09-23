@@ -1,7 +1,7 @@
+import { canvas } from "@drincs/pixi-vn/canvas";
 import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
 import { RegisteredLabels } from "@drincs/pixi-vn/narration";
 import { ApplicationOptions, Assets, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
-import { canvas } from "dist";
 
 /**
  * Function that setup the pixivn vite data.
