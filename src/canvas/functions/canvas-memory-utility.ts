@@ -204,9 +204,9 @@ function gradientToOptions(prop: FillGradient): GradientOptions {
  * @param prop Fill property
  * @returns Processed fill property
  */
-function getFill(prop: FillInput): GradientOptions | undefined | string | number[] | number {
+function getFill(prop: FillInput | undefined | null): GradientOptions | undefined | string | number[] | number {
     if (prop === undefined || prop === null) {
-        return prop;
+        return undefined;
     } else if (typeof prop === "number") {
         return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
@@ -223,9 +223,9 @@ function getFill(prop: FillInput): GradientOptions | undefined | string | number
  * @param prop Stroke property
  * @returns Processed stroke property
  */
-function getStroke(prop: StrokeInput): GradientOptions | undefined | string | number[] | number {
+function getStroke(prop: StrokeInput | undefined | null): GradientOptions | undefined | string | number[] | number {
     if (prop === undefined || prop === null) {
-        return prop;
+        return undefined;
     } else if (typeof prop === "number") {
         return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
