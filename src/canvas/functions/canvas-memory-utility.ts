@@ -1,4 +1,5 @@
 import {
+    FillGradient,
     FillInput,
     GradientOptions,
     Container as PixiContainer,
@@ -169,6 +170,35 @@ function getOnEvents(element: any): Record<string, any> {
     return "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
 }
 
+function gradientToOptions(prop: FillGradient): GradientOptions {
+    switch (prop.type) {
+        case "linear":
+            return {
+                type: "linear",
+                colorStops: prop.colorStops,
+                end: { x: prop.end.x, y: prop.end.y },
+                start: { x: prop.start.x, y: prop.start.y },
+                textureSpace: prop.textureSpace,
+                wrapMode: prop.texture.source.wrapMode,
+                textureSize: prop.texture.source.width / prop.texture.source.height,
+            };
+        case "radial":
+            return {
+                type: "radial",
+                colorStops: prop.colorStops,
+                textureSpace: prop.textureSpace,
+                center: { x: prop.center.x, y: prop.center.y },
+                innerRadius: prop.innerRadius,
+                outerCenter: { x: prop.outerCenter.x, y: prop.outerCenter.y },
+                outerRadius: prop.outerRadius,
+                rotation: prop.rotation,
+                scale: prop.scale,
+                wrapMode: prop.texture.source.wrapMode,
+                textureSize: prop.texture.source.width / prop.texture.source.height,
+            };
+    }
+}
+
 /**
  * Handle fill gradient or fill pattern
  * @param prop Fill property
@@ -177,6 +207,9 @@ function getOnEvents(element: any): Record<string, any> {
 function getFill(prop: FillInput): GradientOptions | undefined {
     if (prop === undefined || prop === null) {
         return prop;
+    } else if (typeof prop === "string" || Array.isArray(prop)) {
+    } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
+        return gradientToOptions(prop);
     }
     // TODO: FillGradient and FillPattern are not supported yet
     logger.warn(`Unsupported property type for Text.style.fill: FillGradient or FillPattern.`, prop);
@@ -191,6 +224,9 @@ function getFill(prop: FillInput): GradientOptions | undefined {
 function getStroke(prop: StrokeInput): GradientOptions | undefined {
     if (prop === undefined || prop === null) {
         return prop;
+    } else if (typeof prop === "string" || Array.isArray(prop)) {
+    } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
+        return gradientToOptions(prop);
     }
     // TODO: FillGradient and FillPattern are not supported yet
     logger.warn(`Unsupported property type for Text.style.stroke: FillGradient or FillPattern.`, prop);
