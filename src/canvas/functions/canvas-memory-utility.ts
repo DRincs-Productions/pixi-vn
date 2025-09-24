@@ -175,6 +175,9 @@ function getOnEvents(element: any): Record<string, any> {
  * @returns Processed fill property
  */
 function getFill(prop: FillInput): GradientOptions | undefined {
+    if (prop === undefined || prop === null) {
+        return prop;
+    }
     // TODO: FillGradient and FillPattern are not supported yet
     logger.warn(`Unsupported property type for Text.style.fill: FillGradient or FillPattern.`, prop);
     return undefined;
@@ -186,6 +189,9 @@ function getFill(prop: FillInput): GradientOptions | undefined {
  * @returns Processed stroke property
  */
 function getStroke(prop: StrokeInput): GradientOptions | undefined {
+    if (prop === undefined || prop === null) {
+        return prop;
+    }
     // TODO: FillGradient and FillPattern are not supported yet
     logger.warn(`Unsupported property type for Text.style.stroke: FillGradient or FillPattern.`, prop);
     return undefined;
