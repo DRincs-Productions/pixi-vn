@@ -214,8 +214,7 @@ function getFill(prop: FillInput): GradientOptions | undefined | string | number
     } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
         return gradientToOptions(prop);
     }
-    // TODO: FillGradient and FillPattern are not supported yet
-    logger.warn(`Unsupported property type for Text.style.fill: FillGradient or FillPattern.`, prop);
+    logger.warn(`Unsupported property type for Text.style.fill.`, prop);
     return undefined;
 }
 
@@ -234,8 +233,7 @@ function getStroke(prop: StrokeInput): GradientOptions | undefined | string | nu
     } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
         return gradientToOptions(prop);
     }
-    // TODO: FillGradient and FillPattern are not supported yet
-    logger.warn(`Unsupported property type for Text.style.stroke: FillGradient or FillPattern.`, prop);
+    logger.warn(`Unsupported property type for Text.style.stroke.`, prop);
     return undefined;
 }
 
