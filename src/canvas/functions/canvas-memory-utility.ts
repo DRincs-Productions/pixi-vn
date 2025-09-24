@@ -204,10 +204,13 @@ function gradientToOptions(prop: FillGradient): GradientOptions {
  * @param prop Fill property
  * @returns Processed fill property
  */
-function getFill(prop: FillInput): GradientOptions | undefined {
+function getFill(prop: FillInput): GradientOptions | undefined | string | number[] | number {
     if (prop === undefined || prop === null) {
         return prop;
+    } else if (typeof prop === "number") {
+        return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
+        return prop;
     } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
         return gradientToOptions(prop);
     }
@@ -221,10 +224,13 @@ function getFill(prop: FillInput): GradientOptions | undefined {
  * @param prop Stroke property
  * @returns Processed stroke property
  */
-function getStroke(prop: StrokeInput): GradientOptions | undefined {
+function getStroke(prop: StrokeInput): GradientOptions | undefined | string | number[] | number {
     if (prop === undefined || prop === null) {
         return prop;
+    } else if (typeof prop === "number") {
+        return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
+        return prop;
     } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
         return gradientToOptions(prop);
     }
