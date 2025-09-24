@@ -1,0 +1,1 @@
+export { setupPixivnViteData } from "./plugins";

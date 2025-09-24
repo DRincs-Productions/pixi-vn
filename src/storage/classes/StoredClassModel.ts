@@ -35,15 +35,12 @@ export default class StoredClassModel {
      */
     constructor(categoryId: string, id: string) {
         this.categoryId = categoryId;
-        this._id = id;
+        this.id = id;
     }
-    private _id: string;
     /**
      * Is id of the stored class. is unique for this class.
      */
-    get id(): string {
-        return this._id;
-    }
+    readonly id: string;
     private categoryId: string;
     /**
      * Update a property in the storage.

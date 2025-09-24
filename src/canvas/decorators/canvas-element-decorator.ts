@@ -70,5 +70,13 @@ namespace RegisteredCanvasComponents {
     export function has(id: string): boolean {
         return registeredCanvasComponent.has(id);
     }
+
+    /**
+     * Get a list of all canvas component ids registered.
+     * @returns An array of label ids.
+     */
+    export function keys(): string[] {
+        return Array.from(registeredCanvasComponent.keys());
+    }
 }
 export default RegisteredCanvasComponents;

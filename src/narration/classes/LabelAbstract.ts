@@ -11,19 +11,16 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
      * @param props is the properties of the label
      */
     constructor(id: LabelIdType, props?: LabelProps<TLabel, StepIdType>) {
-        this._id = id;
+        this.id = id;
         this._onStepStart = props?.onStepStart;
         this._onLoadingLabel = props?.onLoadingLabel;
         this._onStepEnd = props?.onStepEnd;
     }
 
-    private _id: LabelIdType;
     /**
      * Get the id of the label. This variable is used in the system to get the label by id, {@link RegisteredLabels.get}
      */
-    public get id(): LabelIdType {
-        return this._id;
-    }
+    readonly id: LabelIdType;
 
     /**
      * Get the number of steps in the label. This variable is used in the system to get the number of steps in the label.

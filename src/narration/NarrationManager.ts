@@ -581,7 +581,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         };
     }
     public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {
-        if (!dialogue) {
+        if (dialogue === undefined) {
             GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, undefined);
             return;
         }
