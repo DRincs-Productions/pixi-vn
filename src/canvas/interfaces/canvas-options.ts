@@ -1,8 +1,8 @@
 import {
+    CanvasTextOptions,
     ContainerOptions,
     EventEmitter,
     SpriteOptions as PixiSpriteOptions,
-    TextOptions as PixiTextOptions,
 } from "@drincs/pixi-vn/pixi.js";
 import { AdditionalPositionsExtensionProps } from "../components/AdditionalPositions";
 import { AnchorExtensionProps } from "../components/AnchorExtension";
@@ -19,7 +19,7 @@ export interface SpriteOptions extends Omit<PixiSpriteOptions, "on"> {
         context?: any
     ) => this;
 }
-export interface TextOptions extends Omit<PixiTextOptions, "on"> {
+export interface TextOptions extends Omit<CanvasTextOptions, "on">, AdditionalPositionsExtensionProps {
     /**
      * Add a listener for a given event.
      * Unlike {@link onEvent}, this method does **not track the event association in the current game state**, so it will not be included in saves.

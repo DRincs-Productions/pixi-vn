@@ -1,4 +1,11 @@
-import { ContainerChild, ContainerEvents, EventEmitter, Text as PixiText } from "@drincs/pixi-vn/pixi.js";
+import {
+    ContainerChild,
+    ContainerEvents,
+    EventEmitter,
+    ObservablePoint,
+    Text as PixiText,
+    PointData,
+} from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -6,10 +13,20 @@ import CanvasEvent from "../classes/CanvasEvent";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { default as RegisteredEvents } from "../decorators/event-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
+import {
+    calculateAlignByPosition,
+    calculatePercentagePositionByPosition,
+    calculatePositionByAlign,
+    calculatePositionByPercentagePosition,
+    getSuperHeight,
+    getSuperPoint,
+    getSuperWidth,
+} from "../functions/canvas-property-utility";
 import { TextOptions } from "../interfaces/canvas-options";
 import TextMemory from "../interfaces/memory/TextMemory";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { EventIdType } from "../types/EventIdType";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
 import { setMemoryContainer } from "./Container";
 
 /**
@@ -22,19 +39,42 @@ import { setMemoryContainer } from "./Container";
  * canvas.add("text", text);
  * ```
  */
-export default class Text extends PixiText implements CanvasBaseItem<TextMemory> {
+export default class Text extends PixiText implements CanvasBaseItem<TextMemory>, AdditionalPositionsExtension {
     constructor(options?: TextOptions) {
+        options = analizePositionsExtensionProps(options as any);
+        let align = undefined;
+        let percentagePosition = undefined;
+        if (options && "align" in options && options?.align !== undefined) {
+            align = options.align;
+            delete options.align;
+        }
+        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+            percentagePosition = options.percentagePosition;
+            delete options.percentagePosition;
+        }
         super(options);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_TEXT_ID;
+        if (align) {
+            this.align = align;
+        }
+        if (percentagePosition) {
+            this.percentagePosition = percentagePosition;
+        }
     }
     pixivnId: string = CANVAS_TEXT_ID;
     get memory(): TextMemory {
-        return getMemoryText(this);
+        return {
+            ...getMemoryText(this),
+            pixivnId: this.pixivnId,
+            align: this._align,
+            percentagePosition: this._percentagePosition,
+        };
     }
     set memory(_value: TextMemory) {}
     async setMemory(value: TextMemory) {
         this.memory = value;
-        return await setMemoryText(this, value);
+        await setMemoryText(this, value);
+        this.reloadPosition();
     }
     private _onEvents: { [name: string]: EventIdType } = {};
     get onEvents() {
@@ -101,6 +141,210 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
     ): this {
         return super.on(event, fn, context);
     }
+
+    /** AdditionalPositions */
+    private _align: Partial<PointData> | undefined = undefined;
+    set align(value: Partial<PointData> | number) {
+        this._percentagePosition = undefined;
+        this._align === undefined && (this._align = {});
+        if (typeof value === "number") {
+            this._align.x = value;
+            this._align.y = value;
+        } else {
+            value.x !== undefined && (this._align.x = value.x);
+            value.y !== undefined && (this._align.y = value.y);
+        }
+        this.reloadPosition();
+    }
+    get align() {
+        let superPivot = getSuperPoint(this.pivot, this.angle);
+        let superScale = getSuperPoint(this.scale, this.angle);
+        return {
+            x: calculateAlignByPosition(
+                "width",
+                this.x,
+                getSuperWidth(this),
+                superPivot.x,
+                superScale.x < 0,
+                this.anchor.x
+            ),
+            y: calculateAlignByPosition(
+                "height",
+                this.y,
+                getSuperHeight(this),
+                superPivot.y,
+                superScale.y < 0,
+                this.anchor.y
+            ),
+        };
+    }
+    set xAlign(value: number) {
+        this._percentagePosition = undefined;
+        this._align === undefined && (this._align = {});
+        this._align.x = value;
+        this.reloadPosition();
+    }
+    get xAlign() {
+        let superPivot = getSuperPoint(this.pivot, this.angle);
+        let superScale = getSuperPoint(this.scale, this.angle);
+        return calculateAlignByPosition(
+            "width",
+            this.x,
+            getSuperWidth(this),
+            superPivot.x,
+            superScale.x < 0,
+            this.anchor.x
+        );
+    }
+    set yAlign(value: number) {
+        this._percentagePosition = undefined;
+        this._align === undefined && (this._align = {});
+        this._align.y = value;
+        this.reloadPosition();
+    }
+    get yAlign() {
+        let superPivot = getSuperPoint(this.pivot, this.angle);
+        let superScale = getSuperPoint(this.scale, this.angle);
+        return calculateAlignByPosition(
+            "height",
+            this.y,
+            getSuperHeight(this),
+            superPivot.y,
+            superScale.y < 0,
+            this.anchor.y
+        );
+    }
+    private _percentagePosition: Partial<PointData> | undefined = undefined;
+    set percentagePosition(value: Partial<PointData> | number) {
+        this._align = undefined;
+        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (typeof value === "number") {
+            this._percentagePosition.x = value;
+            this._percentagePosition.y = value;
+        } else {
+            value.x !== undefined && (this._percentagePosition.x = value.x);
+            value.y !== undefined && (this._percentagePosition.y = value.y);
+        }
+        this.reloadPosition();
+    }
+    get percentagePosition() {
+        return {
+            x: calculatePercentagePositionByPosition("width", this.x),
+            y: calculatePercentagePositionByPosition("height", this.y),
+        };
+    }
+    get percentageX() {
+        return calculatePercentagePositionByPosition("width", this.x);
+    }
+    set percentageX(_value: number) {
+        this._align = undefined;
+        this._percentagePosition === undefined && (this._percentagePosition = {});
+        this._percentagePosition.x = _value;
+        this.reloadPosition();
+    }
+    get percentageY() {
+        return calculatePercentagePositionByPosition("height", this.y);
+    }
+    set percentageY(_value: number) {
+        this._align = undefined;
+        this._percentagePosition === undefined && (this._percentagePosition = {});
+        this._percentagePosition.y = _value;
+        this.reloadPosition();
+    }
+    set xPercentagePosition(_value: number) {
+        this.percentageX = _value;
+    }
+    get xPercentagePosition() {
+        return this.percentageX;
+    }
+    set yPercentagePosition(_value: number) {
+        this.percentageY = _value;
+    }
+    get yPercentagePosition() {
+        return this.percentageY;
+    }
+    get positionType(): "pixel" | "percentage" | "align" {
+        if (this._align) {
+            return "align";
+        } else if (this._percentagePosition) {
+            return "percentage";
+        }
+        return "pixel";
+    }
+    get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align" } {
+        if (this._align) {
+            return { x: this._align.x || 0, y: this._align.y || 0, type: "align" };
+        } else if (this._percentagePosition) {
+            return { x: this._percentagePosition.x || 0, y: this._percentagePosition.y || 0, type: "percentage" };
+        }
+        return { x: this.x, y: this.y, type: "pixel" };
+    }
+    set positionInfo(value: { x: number; y: number; type?: "pixel" | "percentage" | "align" }) {
+        if (value.type === "align") {
+            this.align = { x: value.x, y: value.y };
+        } else if (value.type === "percentage") {
+            this.percentagePosition = { x: value.x, y: value.y };
+        } else {
+            this.position.set(value.x, value.y);
+        }
+    }
+    private reloadPosition() {
+        if (this._align) {
+            let superPivot = getSuperPoint(this.pivot, this.angle);
+            let superScale = getSuperPoint(this.scale, this.angle);
+            if (this._align.x !== undefined) {
+                super.x = calculatePositionByAlign(
+                    "width",
+                    this._align.x,
+                    getSuperWidth(this),
+                    superPivot.x,
+                    superScale.x < 0,
+                    this.anchor.x
+                );
+            }
+            if (this._align.y !== undefined) {
+                super.y = calculatePositionByAlign(
+                    "height",
+                    this._align.y,
+                    getSuperHeight(this),
+                    superPivot.y,
+                    superScale.y < 0,
+                    this.anchor.y
+                );
+            }
+        } else if (this._percentagePosition) {
+            if (this._percentagePosition.x !== undefined) {
+                super.x = calculatePositionByPercentagePosition("width", this._percentagePosition.x);
+            }
+            if (this._percentagePosition.y !== undefined) {
+                super.y = calculatePositionByPercentagePosition("height", this._percentagePosition.y);
+            }
+        }
+    }
+    get position(): ObservablePoint {
+        return super.position;
+    }
+    set position(value: ObservablePoint) {
+        this._align = undefined;
+        this._percentagePosition = undefined;
+        super.position = value;
+    }
+    get x(): number {
+        return super.x;
+    }
+    set x(value: number) {
+        this._align = undefined;
+        this._percentagePosition = undefined;
+        super.x = value;
+    }
+    override get y(): number {
+        return super.y;
+    }
+    override set y(value: number) {
+        this._align = undefined;
+        this._percentagePosition = undefined;
+        super.y = value;
+    }
 }
 RegisteredCanvasComponents.add(Text, CANVAS_TEXT_ID);
 
@@ -119,6 +363,17 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
         }
     }
     "resolution" in memory && memory.resolution !== undefined && (element.resolution = memory.resolution);
+    if ("anchor" in memory && memory.anchor !== undefined) {
+        if (typeof memory.anchor === "number") {
+            element.anchor.set(memory.anchor, memory.anchor);
+        } else {
+            element.anchor.set(memory.anchor.x, memory.anchor.y);
+        }
+    }
+    "align" in memory && memory.align !== undefined && (element.align = memory.align);
+    "percentagePosition" in memory &&
+        memory.percentagePosition !== undefined &&
+        (element.percentagePosition = memory.percentagePosition);
     "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
     if ("onEvents" in memory) {
         for (let event in memory.onEvents) {
