@@ -1,6 +1,7 @@
 import {
     FillGradient,
     FillInput,
+    FillPattern,
     GradientOptions,
     Container as PixiContainer,
     Sprite as PixiSprite,
@@ -211,10 +212,14 @@ function getFill(prop: FillInput | undefined | null): GradientOptions | undefine
         return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
         return prop;
-    } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
+    } else if (prop instanceof FillGradient) {
         return gradientToOptions(prop);
     } else if (typeof prop === "object" && "fill" in prop && typeof prop.fill !== "function") {
-        return getFill(prop.fill);
+        if (!prop.fill) {
+        } else if (prop.fill instanceof FillPattern) {
+        } else {
+            return getFill(prop.fill);
+        }
     }
     logger.warn(`Unsupported property type for Text.style.fill.`, prop);
     return undefined;
@@ -232,10 +237,14 @@ function getStroke(prop: StrokeInput | undefined | null): GradientOptions | unde
         return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
         return prop;
-    } else if (typeof prop === "object" && "type" in prop && (prop.type === "linear" || prop.type === "radial")) {
+    } else if (prop instanceof FillGradient) {
         return gradientToOptions(prop);
     } else if (typeof prop === "object" && "fill" in prop && typeof prop.fill !== "function") {
-        return getFill(prop.fill);
+        if (!prop.fill) {
+        } else if (prop.fill instanceof FillPattern) {
+        } else {
+            return getStroke(prop.fill);
+        }
     }
     logger.warn(`Unsupported property type for Text.style.stroke.`, prop);
     return undefined;
