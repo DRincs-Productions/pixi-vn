@@ -1,4 +1,6 @@
 import {
+    Color,
+    ColorSource,
     FillGradient,
     FillInput,
     FillPattern,
@@ -7,6 +9,7 @@ import {
     Sprite as PixiSprite,
     Text as PixiText,
     StrokeInput,
+    StrokeStyle,
     TextStyle,
     TextStyleOptions,
     Texture,
@@ -218,11 +221,24 @@ function getFill(prop: FillInput | undefined | null): GradientOptions | undefine
         if (!prop.fill) {
         } else if (prop.fill instanceof FillPattern) {
         } else {
-            return getFill(prop.fill);
+            return gradientToOptions(prop.fill);
         }
     }
     logger.warn(`Unsupported property type for Text.style.fill.`, prop);
     return undefined;
+}
+
+function convertColor(color?: ColorSource): string | number | number[] | undefined {
+    if (typeof color === "number") {
+        return color;
+    } else if (typeof color === "string") {
+        return color;
+    } else if (Array.isArray(color)) {
+        return color;
+    } else if (color instanceof Color) {
+        return color.toNumber();
+    }
+    logger.warn(`Unsupported color type.`, color);
 }
 
 /**
@@ -239,11 +255,27 @@ function getStroke(prop: StrokeInput | undefined | null): GradientOptions | unde
         return prop;
     } else if (prop instanceof FillGradient) {
         return gradientToOptions(prop);
+    } else if (typeof prop === "object" && "alignment" in prop) {
+        const strokeProp: StrokeStyle = {
+            alignment: prop.alignment,
+            alpha: prop.alpha,
+            color: convertColor(prop.color),
+            join: prop.join,
+            miterLimit: prop.miterLimit,
+            width: prop.width,
+            cap: prop.cap,
+            // texture: prop.texture,
+            // fill: getFill(prop.fill),
+            // matrix: prop.matrix,
+            pixelLine: prop.pixelLine,
+            textureSpace: prop.textureSpace,
+        };
+        return strokeProp;
     } else if (typeof prop === "object" && "fill" in prop && typeof prop.fill !== "function") {
         if (!prop.fill) {
         } else if (prop.fill instanceof FillPattern) {
         } else {
-            return getStroke(prop.fill);
+            return gradientToOptions(prop.fill);
         }
     }
     logger.warn(`Unsupported property type for Text.style.stroke.`, prop);
