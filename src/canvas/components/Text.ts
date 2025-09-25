@@ -105,7 +105,12 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
 RegisteredCanvasComponents.add(Text, CANVAS_TEXT_ID);
 
 export async function setMemoryText(element: Text, memory: TextMemory | {}) {
-    await setMemoryContainer(element, memory);
+    "text" in memory && memory.text !== undefined && (element.text = memory.text);
+    await setMemoryContainer(element, memory, {
+        end: () => {
+            "style" in memory && memory.style !== undefined && (element.style = memory.style);
+        },
+    });
     if ("anchor" in memory && memory.anchor !== undefined) {
         if (typeof memory.anchor === "number") {
             element.anchor.set(memory.anchor, memory.anchor);
@@ -113,9 +118,7 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
             element.anchor.set(memory.anchor.x, memory.anchor.y);
         }
     }
-    "text" in memory && memory.text !== undefined && (element.text = memory.text);
     "resolution" in memory && memory.resolution !== undefined && (element.resolution = memory.resolution);
-    "style" in memory && memory.style !== undefined && (element.style = memory.style);
     "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
     if ("onEvents" in memory) {
         for (let event in memory.onEvents) {
