@@ -125,7 +125,7 @@ export async function setMemoryContainer<T extends PixiContainer>(
     memory: ContainerOptions | {},
     options?: {
         ignoreScale?: boolean;
-        end?: () => Promise<void>;
+        end?: () => Promise<void> | void;
     }
 ) {
     let ignoreScale = options?.ignoreScale || false;

@@ -1,10 +1,14 @@
 import {
+    Color,
     ColorSource,
     FillGradient,
+    FillInput,
     FillPattern,
+    GradientOptions,
     Container as PixiContainer,
     Sprite as PixiSprite,
     Text as PixiText,
+    StrokeInput,
     StrokeStyle,
     TextStyle,
     TextStyleOptions,
@@ -170,21 +174,111 @@ function getOnEvents(element: any): Record<string, any> {
     return "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
 }
 
+function gradientToOptions(prop: FillGradient): GradientOptions {
+    switch (prop.type) {
+        case "linear":
+            return {
+                type: "linear",
+                colorStops: prop.colorStops,
+                end: { x: prop.end.x, y: prop.end.y },
+                start: { x: prop.start.x, y: prop.start.y },
+                textureSpace: prop.textureSpace,
+                wrapMode: prop.texture.source.wrapMode,
+                textureSize: prop.texture.source.width / prop.texture.source.height,
+            };
+        case "radial":
+            return {
+                type: "radial",
+                colorStops: prop.colorStops,
+                textureSpace: prop.textureSpace,
+                center: { x: prop.center.x, y: prop.center.y },
+                innerRadius: prop.innerRadius,
+                outerCenter: { x: prop.outerCenter.x, y: prop.outerCenter.y },
+                outerRadius: prop.outerRadius,
+                rotation: prop.rotation,
+                scale: prop.scale,
+                wrapMode: prop.texture.source.wrapMode,
+                textureSize: prop.texture.source.width / prop.texture.source.height,
+            };
+    }
+}
+
 /**
  * Handle fill gradient or fill pattern
  * @param prop Fill property
- * @param propName Property name
  * @returns Processed fill property
  */
-function getFillGradientFillPattern(
-    prop: ColorSource | FillGradient | FillPattern | StrokeStyle,
-    propName: keyof TextStyle
-): ColorSource | undefined {
-    if (typeof prop !== "object" || prop === null) {
+function getFill(prop: FillInput | undefined | null): GradientOptions | undefined | string | number[] | number {
+    if (prop === undefined || prop === null) {
+        return undefined;
+    } else if (typeof prop === "number") {
         return prop;
+    } else if (typeof prop === "string" || Array.isArray(prop)) {
+        return prop;
+    } else if (prop instanceof FillGradient) {
+        return gradientToOptions(prop);
+    } else if (typeof prop === "object" && "fill" in prop && typeof prop.fill !== "function") {
+        if (!prop.fill) {
+        } else if (prop.fill instanceof FillPattern) {
+        } else {
+            return gradientToOptions(prop.fill);
+        }
     }
-    // TODO: FillGradient and FillPattern are not supported yet
-    logger.warn(`Unsupported property type for Text.style.${propName}: FillGradient or FillPattern.`, prop);
+    logger.warn(`Unsupported property type for Text.style.fill.`, prop);
+    return undefined;
+}
+
+function convertColor(color?: ColorSource): string | number | number[] | undefined {
+    if (typeof color === "number") {
+        return color;
+    } else if (typeof color === "string") {
+        return color;
+    } else if (Array.isArray(color)) {
+        return color;
+    } else if (color instanceof Color) {
+        return color.toNumber();
+    }
+    logger.warn(`Unsupported color type.`, color);
+}
+
+/**
+ * Handle stroke
+ * @param prop Stroke property
+ * @returns Processed stroke property
+ */
+function getStroke(prop: StrokeInput | undefined | null): GradientOptions | undefined | string | number[] | number {
+    if (prop === undefined || prop === null) {
+        return undefined;
+    } else if (typeof prop === "number") {
+        return prop;
+    } else if (typeof prop === "string" || Array.isArray(prop)) {
+        return prop;
+    } else if (prop instanceof FillGradient) {
+        return gradientToOptions(prop);
+    } else if (typeof prop === "object" && "alignment" in prop) {
+        const strokeProp: StrokeStyle = {
+            alignment: prop.alignment,
+            alpha: prop.alpha,
+            color: convertColor(prop.color),
+            join: prop.join,
+            miterLimit: prop.miterLimit,
+            width: prop.width,
+            cap: prop.cap,
+            // texture: prop.texture,
+            // fill: getFill(prop.fill),
+            // matrix: prop.matrix,
+            pixelLine: prop.pixelLine,
+            textureSpace: prop.textureSpace,
+        };
+        return strokeProp;
+    } else if (typeof prop === "object" && "fill" in prop && typeof prop.fill !== "function") {
+        if (!prop.fill) {
+        } else if (prop.fill instanceof FillPattern) {
+        } else {
+            return gradientToOptions(prop.fill);
+        }
+    }
+    logger.warn(`Unsupported property type for Text.style.stroke.`, prop);
     return undefined;
 }
 
@@ -198,7 +292,7 @@ function getTextStyle(style: TextStyle): TextStyleOptions {
         align: style.align,
         breakWords: style.breakWords,
         dropShadow: style.dropShadow,
-        fill: getFillGradientFillPattern(style.stroke, "fill"),
+        fill: getFill(style.fill),
         fontFamily: style.fontFamily,
         fontSize: style.fontSize,
         fontStyle: style.fontStyle,
@@ -208,7 +302,7 @@ function getTextStyle(style: TextStyle): TextStyleOptions {
         letterSpacing: style.letterSpacing,
         lineHeight: style.lineHeight,
         padding: style.padding,
-        stroke: getFillGradientFillPattern(style.stroke, "stroke"),
+        stroke: getStroke(style.stroke),
         textBaseline: style.textBaseline,
         trim: style.trim,
         whiteSpace: style.whiteSpace,
