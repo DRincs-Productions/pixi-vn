@@ -55,7 +55,7 @@ export default abstract class MotionTickerBase<
     private timeout = 50;
     async complete() {
         if (!this.animation) {
-            logger.warn("MotionTicker.complete() called without animation set. This may cause issues.");
+            logger.warn("MotionTicker.complete() called without animation set. This may cause issues.", this.id);
             return;
         }
         this.animation.complete();
@@ -64,7 +64,7 @@ export default abstract class MotionTickerBase<
     stop() {
         this.stopped = true;
         if (!this.animation) {
-            logger.warn("MotionTicker.stop() called without animation set. This may cause issues.");
+            logger.warn("MotionTicker.stop() called without animation set. This may cause issues.", this.id);
             return;
         }
         this.animation.stop();
@@ -79,7 +79,7 @@ export default abstract class MotionTickerBase<
     protected onComplete = () => {
         const id = this.tickerId;
         if (!id) {
-            logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.");
+            logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.", this.id);
             return;
         }
         let aliasToRemoveAfter = this._args.options?.aliasToRemoveAfter || [];
@@ -209,7 +209,7 @@ export default abstract class MotionTickerBase<
             this.initialize();
         }
         if (!this.animation) {
-            logger.warn("MotionTicker.play() called without animation set. This may cause issues.");
+            logger.warn("MotionTicker.play() called without animation set. This may cause issues.", this.id);
             return;
         }
         this.animation.play();
