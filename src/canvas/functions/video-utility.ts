@@ -37,7 +37,7 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
 }
 
 /**
- * Add and show a video in the canvas. This function is a combination of {@link addVideo} and {@link loadVideo}.
+ * Add and show a video in the canvas. This function is a combination of {@link addVideo}.
  * @param alias The unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl The url of the video.
  * @param options The options of the video.

@@ -37,7 +37,7 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
 }
 
 /**
- * Add and show a image in the canvas. This function is a combination of {@link addImage} and {@link loadImage}.
+ * Add and show a image in the canvas. This function is a combination of {@link addImage}.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
  * @param imageUrl The url of the image.
  * @param options The options of the image.
