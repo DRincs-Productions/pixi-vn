@@ -35,6 +35,7 @@ export {
 } from "./functions/canvas-transition";
 export { addImageCointainer, showImageContainer } from "./functions/image-container-utility";
 export { addImage, showImage } from "./functions/image-utility";
+export { showText } from "./functions/text-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, showVideo } from "./functions/video-utility";
 export type {
