@@ -1,5 +1,4 @@
-import { TextOptions } from "dist";
-import { canvas, Text } from "..";
+import { canvas, Text, TextOptions } from "..";
 
 /**
  * Add and show a text in the canvas.
