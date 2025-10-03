@@ -127,7 +127,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
      */
     play() {
         this._paused = false;
-        if (this.texture?.source?.resource) {
+        if (this.texture?.source?.resource?.play && typeof this.texture.source.resource.play === "function") {
             this.texture.source.resource.play();
         }
     }

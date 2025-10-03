@@ -1,8 +1,5 @@
 import { Assets, Texture } from "@drincs/pixi-vn/pixi.js";
-import { videoFormats } from "../../constants";
-
-// Precompile the regular expression for video formats
-const videoFormatRegex = new RegExp(`(${videoFormats.join("|")})$`);
+import { lookup } from "mime-types";
 
 export function checkIfVideo(textureAlias: string): boolean {
     const cachedTexture = Assets.cache.has(textureAlias) ? Assets.get(textureAlias) : null;
@@ -11,5 +8,10 @@ export function checkIfVideo(textureAlias: string): boolean {
         textureAlias = cachedTexture.source?.label || textureAlias;
     }
 
-    return videoFormatRegex.test(textureAlias);
+    return isVideoPath(textureAlias);
+}
+
+function isVideoPath(path: string): boolean {
+    const type = lookup(path); // es: "video/mp4" o "image/png"
+    return typeof type === "string" && type.startsWith("video/");
 }

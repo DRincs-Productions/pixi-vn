@@ -1,6 +1,6 @@
 {
   "name": "@drincs/pixi-vn",
-  "version": "1.3.29",
+  "version": "1.3.30",
   "type": "module",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.cjs",
@@ -87,14 +87,30 @@
   },
   "typesVersions": {
     "*": {
-      "pixi.js": ["./dist/pixi.js.d.ts"],
-      "unifier": ["./dist/unifier.d.ts"],
-      "narration": ["./dist/narration.d.ts"],
-      "history": ["./dist/history.d.ts"],
-      "storage": ["./dist/storage.d.ts"],
-      "canvas": ["./dist/canvas.d.ts"],
-      "sound": ["./dist/sound.d.ts"],
-      "characters": ["./dist/characters.d.ts"]
+      "pixi.js": [
+        "./dist/pixi.js.d.ts"
+      ],
+      "unifier": [
+        "./dist/unifier.d.ts"
+      ],
+      "narration": [
+        "./dist/narration.d.ts"
+      ],
+      "history": [
+        "./dist/history.d.ts"
+      ],
+      "storage": [
+        "./dist/storage.d.ts"
+      ],
+      "canvas": [
+        "./dist/canvas.d.ts"
+      ],
+      "sound": [
+        "./dist/sound.d.ts"
+      ],
+      "characters": [
+        "./dist/characters.d.ts"
+      ]
     }
   },
   "repository": {
@@ -117,12 +133,14 @@
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
     "@types/deep-diff": "^1.0.5",
+    "@types/mime-types": "^3.0.1",
     "crypto-js": "^4.2.0",
     "deep-diff": "^1.0.2",
     "jsdom": "^27.0.0",
     "keyv": "^5.5.2",
     "lru-cache": "^11.2.1",
     "microdiff": "^1.5.0",
+    "mime-types": "^3.0.1",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
     "typescript": "^5.9.2",
