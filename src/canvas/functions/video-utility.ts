@@ -32,7 +32,7 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
-    canvas.add(alias, component, { ignoreOldStyle: true });
+    canvas.add(alias, component, { ignoreOldStyle: true, zIndex: options?.zIndex });
     return component;
 }
 
@@ -63,6 +63,6 @@ export async function showVideo(alias: string, videoUrl?: string, options?: Vide
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
-    canvas.add(alias, component, { ignoreOldStyle: true });
+    canvas.add(alias, component, { ignoreOldStyle: true, zIndex: options?.zIndex });
     return component;
 }

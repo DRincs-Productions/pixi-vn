@@ -32,7 +32,7 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
-    canvas.add(alias, component, { ignoreOldStyle: true });
+    canvas.add(alias, component, { ignoreOldStyle: true, zIndex: options?.zIndex });
     return component;
 }
 
@@ -63,6 +63,6 @@ export async function showImage(alias: string, imageUrl?: string, options?: Imag
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
-    canvas.add(alias, component, { ignoreOldStyle: true });
+    canvas.add(alias, component, { ignoreOldStyle: true, zIndex: options?.zIndex });
     return component;
 }

@@ -26,7 +26,7 @@ export function addImageCointainer(
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
-    canvas.add(alias, component, { ignoreOldStyle: true });
+    canvas.add(alias, component, { ignoreOldStyle: true, zIndex: options?.zIndex });
     return component;
 }
 
@@ -52,6 +52,6 @@ export async function showImageContainer(
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
-    canvas.add(alias, component, { ignoreOldStyle: true });
+    canvas.add(alias, component, { ignoreOldStyle: true, zIndex: options?.zIndex });
     return component;
 }

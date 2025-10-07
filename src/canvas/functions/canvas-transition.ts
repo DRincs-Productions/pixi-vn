@@ -80,27 +80,36 @@ type TComponent =
           value: string[];
           options: ImageContainerOptions;
       };
-function addComponent(alias: string, canvasElement: TComponent): CanvasBaseInterface<any> {
+function addComponent(
+    alias: string,
+    canvasElement: TComponent,
+    options: {
+        zIndex?: number;
+    }
+): CanvasBaseInterface<any> {
     if (typeof canvasElement === "string") {
         if (checkIfVideo(canvasElement)) {
-            return addVideo(alias, canvasElement);
+            return addVideo(alias, canvasElement, options);
         } else {
-            return addImage(alias, canvasElement);
+            return addImage(alias, canvasElement, options);
         }
     } else if (Array.isArray(canvasElement)) {
-        return addImageCointainer(alias, canvasElement);
+        return addImageCointainer(alias, canvasElement, options);
     } else if (typeof canvasElement === "object" && "value" in canvasElement && "options" in canvasElement) {
         if (typeof canvasElement.value === "string") {
             if (checkIfVideo(canvasElement.value)) {
-                return addVideo(alias, canvasElement.value, canvasElement.options);
+                return addVideo(alias, canvasElement.value, { ...canvasElement.options, zIndex: options.zIndex });
             } else {
-                return addImage(alias, canvasElement.value, canvasElement.options);
+                return addImage(alias, canvasElement.value, { ...canvasElement.options, zIndex: options.zIndex });
             }
         } else if (Array.isArray(canvasElement.value)) {
-            return addImageCointainer(alias, canvasElement.value, canvasElement.options as any);
+            return addImageCointainer(alias, canvasElement.value, {
+                ...canvasElement.options,
+                zIndex: options.zIndex,
+            } as any);
         }
     }
-    canvas.add(alias, canvasElement as CanvasBaseInterface<any>);
+    canvas.add(alias, canvasElement as CanvasBaseInterface<any>, options);
     return canvasElement as CanvasBaseInterface<any>;
 }
 
@@ -132,12 +141,15 @@ export async function showWithDissolve(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    if (canvas.find(alias)) {
+    let oldComponent = canvas.find(alias);
+    if (oldComponent) {
         oldComponentAlias = alias + "_temp_disolve";
         canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component);
+    component = addComponent(alias, component, {
+        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+    });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
@@ -242,14 +254,17 @@ export async function showWithFade(
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
-    if (!canvas.find(alias)) {
+    let oldComponent = canvas.find(alias);
+    if (!oldComponent) {
         return showWithDissolve(alias, component, props, priority);
     }
     let oldComponentAlias = alias + "_temp_fade";
     canvas.editAlias(alias, oldComponentAlias);
     aliasToRemoveAfter.push(oldComponentAlias);
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component);
+    component = addComponent(alias, component, {
+        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+    });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
@@ -356,12 +371,15 @@ export async function moveIn(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    if (canvas.find(alias)) {
+    let oldComponent = canvas.find(alias);
+    if (oldComponent) {
         oldComponentAlias = alias + "_temp_movein";
         canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component);
+    component = addComponent(alias, component, {
+        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+    });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
@@ -517,12 +535,15 @@ export async function zoomIn(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    if (canvas.find(alias)) {
+    let oldComponent = canvas.find(alias);
+    if (oldComponent) {
         oldComponentAlias = alias + "_temp_zoom";
         canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component);
+    component = addComponent(alias, component, {
+        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+    });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
@@ -705,12 +726,15 @@ export async function pushIn(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    if (canvas.find(alias)) {
+    let oldComponent = canvas.find(alias);
+    if (oldComponent) {
         oldComponentAlias = alias + "_temp_push";
         canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
-    component = addComponent(alias, component);
+    component = addComponent(alias, component, {
+        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+    });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
