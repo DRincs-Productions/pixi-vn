@@ -23,10 +23,8 @@ export default class StorageManager implements StorageManagerInterface {
         return StorageManagerStatic.tempStorageDeadlines;
     }
     set startingStorage(value: { [key: string]: StorageElementType }) {
-        const isTheStart = GameUnifier.stepCounter === 0;
         Object.entries(value).forEach(([key, value]) => {
-            StorageManagerStatic.startingStorage.push({ key, value: value });
-            isTheStart && StorageManagerStatic.storage.set(key, value);
+            StorageManagerStatic.startingStorage.set(key, value);
         });
     }
     public set(key: string, value: StorageElementType) {
@@ -41,8 +39,11 @@ export default class StorageManager implements StorageManagerInterface {
     public getVariable<T extends StorageElementType>(key: string): T | undefined {
         return this.get<T>(key);
     }
-    public removeVariable(key: string) {
+    public remove(key: string) {
         return StorageManagerStatic.removeVariable(key);
+    }
+    public removeVariable(key: string) {
+        return this.remove(key);
     }
     public setTempVariable(key: string, value: StorageElementType) {
         if (value === undefined || value === null) {
@@ -75,9 +76,6 @@ export default class StorageManager implements StorageManagerInterface {
         StorageManagerStatic.flags = [];
         StorageManagerStatic.tempStorage.clear();
         StorageManagerStatic.tempStorageDeadlines.clear();
-        StorageManagerStatic.startingStorage.forEach(({ key, value }) => {
-            this.storage.set(key, value);
-        });
     }
     public export(): StorageGameState {
         let base: StorageGameStateItem[] = [];

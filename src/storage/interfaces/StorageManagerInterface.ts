@@ -27,6 +27,7 @@ export default interface StorageManagerInterface {
     readonly cache: LRUCache<string, any, unknown>;
     /**
      * Set the starting storage. The starting storage that will be used when the game starts.
+     * **If variables are defined inside it, they can be edited during the game, but if you {@link delete} them, they will be restored to the starting storage.**
      * By default, the starting storage is empty.
      */
     set startingStorage(value: { [key: string]: StorageElementType });
@@ -55,6 +56,10 @@ export default interface StorageManagerInterface {
      * Remove a variable from the storage
      * @param key The key of the variable
      * @returns
+     */
+    remove(key: string): void;
+    /**
+     * @deprecated use {@link remove} instead
      */
     removeVariable(key: string): void;
     /**

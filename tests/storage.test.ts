@@ -41,6 +41,15 @@ test("setVariable & getVariable", async () => {
 });
 
 test("clear & startingStorage", async () => {
+    storage.startingStorage = {
+        variable1: 1,
+        variable2: 2,
+        variable3: 3,
+        variable4: 4,
+        variable5: 5,
+        variable6: 6,
+        variable7: 7,
+    };
     storage.set("variable1", {
         test: "test",
         test2: 1,
@@ -58,15 +67,14 @@ test("clear & startingStorage", async () => {
         items.push({ key, value: storage.storage.get(key) });
     });
     expect(items.length).toBe(0);
+    expect(storage.get("variable1")).toEqual(1);
+    expect(storage.get("variable2")).toEqual(2);
+    expect(storage.get("variable3")).toEqual(3);
+    expect(storage.get("variable4")).toEqual(4);
+    expect(storage.get("variable5")).toEqual(5);
+    expect(storage.get("variable6")).toEqual(6);
+    expect(storage.get("variable7")).toEqual(7);
 
-    storage.startingStorage = {
-        a: 1,
-        b: "test",
-        c: true,
-        d: false,
-        e: null,
-        f: undefined,
-    };
     storage.set("variable2", 435);
     storage.set("variable3", "test");
     storage.set("variable4", true);
@@ -74,12 +82,20 @@ test("clear & startingStorage", async () => {
     storage.set("variable6", null);
     storage.set("variable7", undefined);
 
-    storage.clear();
+    expect(storage.get("variable1")).toEqual(1);
+    expect(storage.get("variable2")).toEqual(435);
+    expect(storage.get("variable3")).toEqual("test");
+    expect(storage.get("variable4")).toEqual(true);
+    expect(storage.get("variable5")).toEqual(false);
+    expect(storage.get("variable6")).toEqual(6);
+    expect(storage.get("variable7")).toEqual(7);
+
     let items2: StorageGameStateItem[] = [];
     [...storage.storage.keys()].forEach((key) => {
         items2.push({ key, value: storage.storage.get(key) });
     });
-    expect(items2.length).toBe(6);
+    expect(items2.length).toBe(4);
+    storage.clear();
 });
 
 test("setTempVariable & getTempVariable", async () => {
