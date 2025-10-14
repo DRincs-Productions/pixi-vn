@@ -22,10 +22,13 @@ export default class StorageManager implements StorageManagerInterface {
     get tempStorageDeadlines() {
         return StorageManagerStatic.tempStorageDeadlines;
     }
-    set startingStorage(value: { [key: string]: StorageElementType }) {
+    set default(value: { [key: string]: StorageElementType }) {
         Object.entries(value).forEach(([key, value]) => {
-            StorageManagerStatic.startingStorage.set(key, value);
+            StorageManagerStatic.default.set(key, value);
         });
+    }
+    set startingStorage(value: { [key: string]: StorageElementType }) {
+        this.default = value;
     }
     public set(key: string, value: StorageElementType) {
         return StorageManagerStatic.setVariable(key, value);

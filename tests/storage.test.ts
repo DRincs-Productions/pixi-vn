@@ -40,8 +40,8 @@ test("setVariable & getVariable", async () => {
     expect(storage.get("Test")).toBe("test2");
 });
 
-test("clear & startingStorage", async () => {
-    storage.startingStorage = {
+test("clear & default", async () => {
+    storage.default = {
         variable1: 1,
         variable2: 2,
         variable3: 3,

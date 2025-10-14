@@ -30,6 +30,10 @@ export default interface StorageManagerInterface {
      * **If variables are defined inside it, they can be edited during the game, but if you {@link delete} them, they will be restored to the starting storage.**
      * By default, the starting storage is empty.
      */
+    set default(value: { [key: string]: StorageElementType });
+    /**
+     * @deprecated use {@link default} instead
+     */
     set startingStorage(value: { [key: string]: StorageElementType });
     /**
      * Set a variable in the storage

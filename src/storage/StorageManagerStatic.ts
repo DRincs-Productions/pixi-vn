@@ -4,7 +4,7 @@ import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {
     static storage = new CachedMap<string, any>({ cacheSize: 20 });
-    static startingStorage = new CachedMap<string, any>({ cacheSize: 20 });
+    static default = new CachedMap<string, any>({ cacheSize: 20 });
     static flags = Array<string>();
     static tempStorage = new Map<string, StorageElementType>();
     static tempStorageDeadlines = new Map<string, number>();
@@ -41,7 +41,7 @@ export default class StorageManagerStatic {
             result = StorageManagerStatic.storage.map.get(key);
         }
         if (result === undefined) {
-            result = StorageManagerStatic.startingStorage.get(key);
+            result = StorageManagerStatic.default.get(key);
         }
         return createExportableElement(result) as T;
     }
