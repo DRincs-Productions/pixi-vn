@@ -1,11 +1,10 @@
 import { CachedMap } from "../classes";
 import { createExportableElement } from "../utils/export-utility";
-import { StorageGameStateItem } from "./interfaces/StorageGameState";
 import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {
     static storage = new CachedMap<string, any>({ cacheSize: 20 });
-    static startingStorage: StorageGameStateItem[] = [];
+    static default = new CachedMap<string, any>({ cacheSize: 20 });
     static flags = Array<string>();
     static tempStorage = new Map<string, StorageElementType>();
     static tempStorageDeadlines = new Map<string, number>();
@@ -40,6 +39,9 @@ export default class StorageManagerStatic {
         }
         if (result === undefined) {
             result = StorageManagerStatic.storage.map.get(key);
+        }
+        if (result === undefined) {
+            result = StorageManagerStatic.default.get(key);
         }
         return createExportableElement(result) as T;
     }
