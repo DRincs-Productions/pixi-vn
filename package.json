@@ -127,8 +127,8 @@
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
     "@pixi/sound": "^6.0.1",
-    "motion": "^12.23.19",
-    "pixi.js": "^8.13.2"
+    "motion": "^12.23.24",
+    "pixi.js": "^8.14.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
@@ -138,12 +138,12 @@
     "deep-diff": "^1.0.2",
     "jsdom": "^27.0.0",
     "keyv": "^5.5.2",
-    "lru-cache": "^11.2.1",
+    "lru-cache": "^11.2.2",
     "microdiff": "^1.5.0",
     "mime-db": "^1.54.0",
     "ts-node": "^10.9.2",
     "tsup": "^8.5.0",
-    "typescript": "^5.9.2",
+    "typescript": "^5.9.3",
     "vitest": "^3.2.4"
   },
   "keywords": [
