@@ -63,7 +63,7 @@ export default class CanvasManagerStatic {
         CanvasManagerStatic._app = new Application();
         return CanvasManagerStatic.app
             .init({
-                resolution: window.devicePixelRatio || 1,
+                resolution: 1,
                 autoDensity: true,
                 width: width,
                 height: height,
