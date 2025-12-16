@@ -118,7 +118,7 @@
     "url": "git+https://github.com/DRincs-Productions/pixi-vn.git"
   },
   "author": "DRincs-Productions",
-  "license": "GPL-3.0",
+  "license": "LGPL-2.1",
   "bugs": {
     "url": "https://github.com/DRincs-Productions/pixi-vn/issues"
   },
