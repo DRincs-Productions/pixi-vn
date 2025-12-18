@@ -25,6 +25,7 @@ import { getCanvasElementInstanceById } from "../functions/canvas-import-utility
  * ```
  */
 export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
+    constructor(..._args: any[]) {}
     /**
      * This method return the memory of the canvas element.
      */
@@ -38,7 +39,7 @@ export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
         throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden");
     }
     /**
-     * This method set the memory of the canvas element. Is equivalent to the {@link CanvasBaseItem.memory} method, but this method is async.
+     * This method set the memory of the canvas element. Is equivalent to the {@link memory} method, but this method is async.
      */
     setMemory(_value: T2): Promise<void> | void {
         throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden");
