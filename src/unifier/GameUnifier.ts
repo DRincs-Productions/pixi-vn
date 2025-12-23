@@ -48,7 +48,7 @@ export default class GameUnifier {
          * (i.e. when the list of pending `continue()` and `back()` requests has been drained).
          * It is useful when you need to run logic only after all pending continue/back requests finish.
          */
-        onAllContinuesComplete?: () => Promise<void>;
+        onNavigationSettled?: () => Promise<void>;
         /**
          * This function returns the value of a variable.
          * @param key The key of the variable.
@@ -119,7 +119,7 @@ export default class GameUnifier {
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
         options.onContinueComplete && (GameUnifier._onContinueComplete = options.onContinueComplete);
-        options.onAllContinuesComplete && (GameUnifier._onAllContinuesComplete = options.onAllContinuesComplete);
+        options.onNavigationSettled && (GameUnifier._onNavigationSettled = options.onNavigationSettled);
         GameUnifier._getVariable = options.getVariable;
         GameUnifier._setVariable = options.setVariable;
         GameUnifier._removeVariable = options.removeVariable;
@@ -194,13 +194,13 @@ export default class GameUnifier {
         return GameUnifier._onContinueComplete;
     }
 
-    private static _onAllContinuesComplete: () => Promise<void> = async () => {};
+    private static _onNavigationSettled: () => Promise<void> = async () => {};
     /**
      * This function is called when the narration continue/back queue is fully processed
      * (i.e. when all pending `continue()` and `back()` requests have finished).
      */
-    static get onAllContinuesComplete() {
-        return GameUnifier._onAllContinuesComplete;
+    static get onNavigationSettled() {
+        return GameUnifier._onNavigationSettled;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
