@@ -6,6 +6,12 @@ import { logger } from "../utils/log-utility";
 export default class GameUnifier {
     static init(options: {
         /**
+         * The navigate function.
+         * @param path The path to navigate to.
+         * @returns
+         */
+        navigate?: (path: string) => void | Promise<void>;
+        /**
          * This function returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
          *
          * If your game engine does not have a history of steps, you can return 0.
@@ -109,6 +115,7 @@ export default class GameUnifier {
          */
         getCharacter: (id: string) => CharacterInterface | undefined;
     }) {
+        options.navigate && (GameUnifier._navigate = options.navigate);
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
@@ -124,6 +131,22 @@ export default class GameUnifier {
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._getCharacter = options.getCharacter;
+    }
+    private static _navigate: (path: string) => void | Promise<void> = () => {
+        logger.warn(
+            "Navigate function not initialized. You should add the navigate function in the Game.init() method."
+        );
+    };
+    /**
+     * The navigate function.
+     * @param path The path to navigate to.
+     * @returns
+     */
+    static get navigate() {
+        return GameUnifier._navigate;
+    }
+    static set navigate(value: (path: string) => void | Promise<void>) {
+        GameUnifier._navigate = value;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");

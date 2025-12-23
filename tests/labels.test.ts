@@ -9,8 +9,6 @@ import {
 } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
-const navigate = (path: string) => window.history.pushState({}, "test", path);
-
 const pathLabel = newLabel("path", [
     () => {
         narration.dialogue = "This is a test label";
@@ -45,12 +43,12 @@ test("path test", async () => {
         text: "This is a test label 3",
     });
     expect(getGamePath()).toBe("/test");
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
     });
     expect(getGamePath()).toBe("/test");
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
     });
@@ -117,11 +115,11 @@ test("stepCounter & currentStepTimesCounter test", async () => {
     expect(narration.dialogue).toEqual({
         text: "This is a test label 3",
     });
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label 2",
     });
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     expect(narration.dialogue).toEqual({
         text: "This is a test label",
     });
@@ -184,26 +182,26 @@ test("currentLabelStepIndex", async () => {
     expect(narration.stepCounter).toBe(1);
     await narration.continue({});
     expect(narration.stepCounter).toBe(2);
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     expect(narration.stepCounter).toBe(1);
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     expect(narration.stepCounter).toBe(1);
     await narration.continue({});
     expect(narration.stepCounter).toBe(2);

@@ -9,6 +9,7 @@ import {
     StoredChoiceInterface,
     StoredIndexedChoiceInterface,
 } from "..";
+import type { NavigationFunctionType } from "../../interfaces";
 import { StorageElementType } from "../../storage";
 import { LabelIdType } from "../types/LabelIdType";
 import HistoryStep from "./HistoryStep";
@@ -137,27 +138,15 @@ export default interface NarrationManagerInterface {
      * }
      * ```
      */
-    continue(
-        props: StepLabelPropsType,
-        options?: {
+    continue: NavigationFunctionType<
+        {
             /**
              * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
              */
             runNow?: boolean;
-        }
-    ): Promise<StepLabelResultType>;
-    /**
-     * @deprecated use {@link continue} instead.
-     */
-    goNext(
-        props: StepLabelPropsType,
-        options?: {
-            /**
-             * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
-             */
-            runNow?: boolean;
-        }
-    ): Promise<StepLabelResultType>;
+        },
+        StepLabelResultType
+    >;
     /**
      * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
      * @param label The label to execute or the id of the label

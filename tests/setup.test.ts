@@ -14,6 +14,7 @@ import { getGamePath } from "../src/utils/path-utility";
 
 test("setup", async () => {
     GameUnifier.init({
+        navigate: (path: string) => window.history.pushState({}, "test", path),
         getCurrentGameStepState: () => {
             return {
                 path: getGamePath(),

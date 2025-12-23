@@ -1,5 +1,6 @@
 import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
+import type { NavigationFunctionType } from "../interfaces";
 import type { StorageElementType } from "../storage";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
 import { createExportableElement } from "../utils";
@@ -233,17 +234,11 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return await Promise.all(res);
     }
-    public async goNext(
-        props: StepLabelPropsType,
-        options: { choiceMade?: number; runNow?: boolean } = {}
-    ): Promise<StepLabelResultType> {
-        return await this.continue(props, options);
-    }
-    public async continue(
-        props: StepLabelPropsType,
-        options: { choiceMade?: number; runNow?: boolean } = {}
-    ): Promise<StepLabelResultType> {
-        const { runNow = false } = options;
+    continue: NavigationFunctionType<{ runNow?: boolean; choiceMade?: number }, StepLabelResultType> = async (
+        props,
+        options
+    ) => {
+        const { runNow = false } = options || {};
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
@@ -262,7 +257,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
         return await this.runCurrentStep(props, options);
-    }
+    };
     /**
      * Execute the current step and add it to the history.
      * @param props The props to pass to the step.

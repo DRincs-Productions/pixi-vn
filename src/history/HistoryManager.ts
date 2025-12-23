@@ -77,8 +77,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
     }
     back: NavigationFunctionType<{ steps?: number }> = async (props, options) => {
-        const { steps = 1 } = options;
-        const { navigate } = options;
+        const { steps = 1 } = options || {};
         if (steps <= 0) {
             logger.warn("The parameter steps must be greater than 0");
             return;
@@ -97,7 +96,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                 this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
             );
             if (restoredStep) {
-                await GameUnifier.restoreGameStepState(restoredStep, navigate);
+                await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
                 const stepCounter = GameUnifier.stepCounter - 1;
                 const item = HistoryManagerStatic._narrationHistory.get(stepCounter);
                 if (item && Object.keys(item).length === 1 && item.stepIndex !== undefined) {

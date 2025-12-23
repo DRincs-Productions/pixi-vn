@@ -39,13 +39,6 @@ export default interface HistoryManagerInterface {
      * @param props The step label properties.
      * @param options The navigation options.
      * @returns
-     * @example
-     * ```typescript
-     * export function goBack(navigate: (path: string) => void | Promise<void>, afterBack?: () => void) {
-     *     stepHistory.back(navigate)
-     *     afterBack && afterBack()
-     * }
-     * ```
      */
     back: NavigationFunctionType<{
         /**

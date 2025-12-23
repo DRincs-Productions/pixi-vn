@@ -3,8 +3,6 @@ import { narration, newLabel, stepHistory, storage } from "../src";
 import { newChoiceOption } from "../src/narration/classes/ChoiceMenuOption";
 import { newCloseChoiceOption } from "../src/narration/classes/CloseChoiceOption";
 
-const navigate = (path: string) => window.history.pushState({}, "test", path);
-
 const startLabel = newLabel("choiceshistory", [
     async () => {
         narration.dialogue = { character: "steph", text: `Wait!` };
@@ -344,7 +342,7 @@ test("choice test", async () => {
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});
-    await stepHistory.back({}, { navigate });
+    await stepHistory.back({});
     expect(stepHistory.currentLabelHistory).toEqual([
         {
             dialogue: {
