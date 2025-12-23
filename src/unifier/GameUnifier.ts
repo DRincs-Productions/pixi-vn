@@ -103,10 +103,6 @@ export default class GameUnifier {
             }
         ): void;
         /**
-         * This function returns the number of steps that are currently running.
-         */
-        getCurrentStepsRunningNumber: () => number;
-        /**
          * This function returns the character by its id.
          * @param id The id of the character.
          * @returns The character or undefined if it does not exist.
@@ -127,7 +123,6 @@ export default class GameUnifier {
         GameUnifier._setFlag = options.setFlag;
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._addHistoryItem = options.addHistoryItem;
-        GameUnifier._getCurrentStepsRunningNumber = options.getCurrentStepsRunningNumber;
         GameUnifier._getCharacter = options.getCharacter;
     }
     private static _getStepCounter: () => number = () => {
@@ -289,16 +284,11 @@ export default class GameUnifier {
     static get addHistoryItem() {
         return GameUnifier._addHistoryItem;
     }
-    private static _getCurrentStepsRunningNumber: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new Error("Method not implemented, you should initialize the Game: Game.init()");
-    };
     /**
-     * Returns the number of steps that are currently running.
+     * Number of steps function that are running.
+     * If you run a step that have a narration.continue(), this number is > 1.
      */
-    static get currentStepsRunningNumber() {
-        return GameUnifier._getCurrentStepsRunningNumber();
-    }
+    static runningStepsCount: number = 0;
     private static _getCharacter: (id: string) => CharacterInterface | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");

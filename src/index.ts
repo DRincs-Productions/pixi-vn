@@ -107,7 +107,6 @@ export namespace Game {
             addHistoryItem: (historyInfo, options) => {
                 return historyUtils.stepHistory.add(historyInfo, options);
             },
-            getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             getCharacter: (id: string) => {
                 return characterUtils.RegisteredCharacters.get(id);
             },

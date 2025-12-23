@@ -43,7 +43,6 @@ test("setup", async () => {
         addHistoryItem: (historyInfo, options) => {
             return stepHistory.add(historyInfo, options);
         },
-        getCurrentStepsRunningNumber: () => NarrationManagerStatic.stepsRunning,
         getCharacter: (id: string) => {
             return RegisteredCharacters.get(id);
         },

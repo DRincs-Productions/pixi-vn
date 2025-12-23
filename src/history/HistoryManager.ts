@@ -327,7 +327,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         return HistoryManagerStatic._diffHistory.has(lastKey);
     }
     blockGoBack() {
-        if (GameUnifier.currentStepsRunningNumber !== 0) {
+        if (GameUnifier.runningStepsCount !== 0) {
             return;
         }
         HistoryManagerStatic._diffHistory.clear();

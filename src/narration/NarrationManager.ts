@@ -205,7 +205,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return true;
     }
     get canContinue(): boolean {
-        if (NarrationManagerStatic.stepsRunning !== 0) {
+        if (GameUnifier.runningStepsCount !== 0) {
             return false;
         }
         return this.getCanContinue();
@@ -247,7 +247,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
-        if (!runNow && NarrationManagerStatic.stepsRunning !== 0) {
+        if (!runNow && GameUnifier.runningStepsCount !== 0) {
             NarrationManagerStatic.continueRequests++;
             return;
         }
@@ -257,7 +257,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } catch (e) {
             logger.error("Error running onStepEnd", e);
         }
-        if (NarrationManagerStatic.stepsRunning === 0) {
+        if (GameUnifier.runningStepsCount === 0) {
             await GameUnifier.onContinueComplete();
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
@@ -311,7 +311,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
                 try {
-                    NarrationManagerStatic.stepsRunning++;
+                    GameUnifier.runningStepsCount++;
                     let result = await step(props, { labelId: currentLabel.id });
 
                     let choiceMenuOptions = this.choices;
@@ -336,8 +336,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
 
-                    NarrationManagerStatic.stepsRunning--;
-                    if (NarrationManagerStatic.stepsRunning === 0) {
+                    GameUnifier.runningStepsCount--;
+                    if (GameUnifier.runningStepsCount === 0) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha, {
                             ...options,
@@ -352,8 +352,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                     return result;
                 } catch (e) {
-                    if (NarrationManagerStatic.stepsRunning > 0) {
-                        NarrationManagerStatic.stepsRunning--;
+                    if (GameUnifier.runningStepsCount > 0) {
+                        GameUnifier.runningStepsCount--;
                     }
                     // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
                     // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
