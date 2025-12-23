@@ -342,7 +342,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
                         if (GameUnifier.continueRequestsCount > 0) {
                             GameUnifier.decreaseContinueRequest();
-                            return await this.continue(props);
+                            return (await this.continue(props)) || result;
                         }
                     }
                     return result;
