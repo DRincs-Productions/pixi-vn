@@ -1,6 +1,7 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import diff from "microdiff";
+import type { NavigationFunctionType } from "../interfaces";
 import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory } from "../narration";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { createExportableElement } from "../utils";
@@ -75,10 +76,9 @@ export default class HistoryManager implements HistoryManagerInterface {
             return restoredStep;
         }
     }
-    async goBack(navigate: (path: string) => void | Promise<void>, steps: number = 1) {
-        return await this.back(navigate, steps);
-    }
-    async back(navigate: (path: string) => void | Promise<void>, steps: number = 1) {
+    back: NavigationFunctionType<{ steps?: number }> = async (props, options) => {
+        const { steps = 1 } = options;
+        const { navigate } = options;
         if (steps <= 0) {
             logger.warn("The parameter steps must be greater than 0");
             return;
@@ -118,7 +118,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.error("Error going back", e);
             GameUnifier.runningStepsCount--;
         }
-    }
+    };
     add(
         historyInfo: HistoryInfo,
         options: {
