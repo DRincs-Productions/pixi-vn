@@ -134,6 +134,18 @@ export namespace Game {
             getCharacter: (id: string) => {
                 return characterUtils.RegisteredCharacters.get(id);
             },
+            processNavigationRequests: (navigationRequestsCount: number) => {
+                let newValue = navigationRequestsCount;
+                let result: Promise<void | narrationUtils.StepLabelResultType> = Promise.resolve();
+                if (navigationRequestsCount > 0) {
+                    newValue--;
+                    result = narrationUtils.narration.continue({});
+                } else if (navigationRequestsCount < 0) {
+                    newValue = 0;
+                    result = historyUtils.stepHistory.back({}, { steps: navigationRequestsCount * -1 });
+                }
+                return { newValue, result };
+            },
             // canvas
             onContinueComplete: async () => {
                 try {

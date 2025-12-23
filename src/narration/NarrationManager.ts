@@ -234,10 +234,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return await Promise.all(res);
     }
-    continue: NavigationFunctionType<{ runNow?: boolean; choiceMade?: number }, StepLabelResultType> = async (
-        props,
-        options
-    ) => {
+    continue: NavigationFunctionType<{ runNow?: boolean; choiceMade?: number }> = async (props, options) => {
         const { runNow = false } = options || {};
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
@@ -341,8 +338,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.choiceMadeTemp = undefined;
 
                         if (GameUnifier.continueRequestsCount > 0) {
-                            GameUnifier.decreaseContinueRequest();
-                            return (await this.continue(props)) || result;
+                            return await GameUnifier.processNavigationRequests();
                         }
                     }
                     return result;

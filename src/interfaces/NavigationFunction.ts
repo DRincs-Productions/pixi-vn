@@ -1,6 +1,6 @@
-import { StepLabelPropsType } from "../narration/types/StepLabelType";
+import { StepLabelPropsType, StepLabelResultType } from "../narration/types/StepLabelType";
 
-export type NavigationFunctionType<OltherOptions, Result = void> = (
+export type NavigationFunctionType<OltherOptions> = (
     props: StepLabelPropsType,
     options?: OltherOptions
-) => Promise<Result>;
+) => Promise<StepLabelResultType>;

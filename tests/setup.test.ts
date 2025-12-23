@@ -7,6 +7,7 @@ import {
     RegisteredCharacters,
     sound,
     stepHistory,
+    StepLabelResultType,
     storage,
     StorageManagerStatic,
 } from "../src";
@@ -46,6 +47,18 @@ test("setup", async () => {
         },
         getCharacter: (id: string) => {
             return RegisteredCharacters.get(id);
+        },
+        processNavigationRequests: (navigationRequestsCount: number) => {
+            let newValue = navigationRequestsCount;
+            let result: Promise<void | StepLabelResultType> = Promise.resolve();
+            if (navigationRequestsCount > 0) {
+                newValue--;
+                result = narration.continue({});
+            } else if (navigationRequestsCount < 0) {
+                newValue = 0;
+                result = stepHistory.back({}, { steps: navigationRequestsCount * -1 });
+            }
+            return { newValue, result };
         },
         // storage
         getVariable: (key) => storage.get(key),

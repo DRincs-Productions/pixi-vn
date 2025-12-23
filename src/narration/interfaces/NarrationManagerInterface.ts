@@ -138,15 +138,12 @@ export default interface NarrationManagerInterface {
      * }
      * ```
      */
-    continue: NavigationFunctionType<
-        {
-            /**
-             * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
-             */
-            runNow?: boolean;
-        },
-        StepLabelResultType
-    >;
+    continue: NavigationFunctionType<{
+        /**
+         * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
+         */
+        runNow?: boolean;
+    }>;
     /**
      * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
      * @param label The label to execute or the id of the label

@@ -1,5 +1,5 @@
 import { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import { StepLabelPropsType, StepLabelType } from "../narration/types/StepLabelType";
+import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../narration/types/StepLabelType";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { logger } from "../utils/log-utility";
 
@@ -50,11 +50,12 @@ export default class GameUnifier {
          */
         onContinueComplete?: () => Promise<void> | void;
         /**
-         * This function is called after the narration continue/back queue is fully processed
-         * (i.e. when the list of pending `continue()` and `back()` requests has been drained).
-         * It is useful when you need to run logic only after all pending continue/back requests finish.
+         * This function is called to process the pending navigation requests (continue/back).
          */
-        onNavigationSettled?: () => Promise<void> | void;
+        processNavigationRequests: (navigationRequestsCount: number) => {
+            newValue: number;
+            result: Promise<StepLabelResultType>;
+        };
         /**
          * This function returns the value of a variable.
          * @param key The key of the variable.
@@ -122,7 +123,7 @@ export default class GameUnifier {
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
         options.onContinueComplete && (GameUnifier._onContinueComplete = options.onContinueComplete);
-        options.onNavigationSettled && (GameUnifier._onNavigationSettled = options.onNavigationSettled);
+        GameUnifier._processNavigationRequests = options.processNavigationRequests;
         GameUnifier._getVariable = options.getVariable;
         GameUnifier._setVariable = options.setVariable;
         GameUnifier._removeVariable = options.removeVariable;
@@ -255,13 +256,20 @@ export default class GameUnifier {
     static decreaseBackRequest() {
         GameUnifier.navigationRequestsCount++;
     }
-    private static _onNavigationSettled: () => Promise<void> | void = () => {};
+    private static _processNavigationRequests: (navigationRequestsCount: number) => {
+        newValue: number;
+        result: Promise<StepLabelResultType>;
+    } = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new Error("Method not implemented, you should initialize the Game: Game.init()");
+    };
     /**
-     * This function is called when the narration continue/back queue is fully processed
-     * (i.e. when all pending `continue()` and `back()` requests have finished).
+     * This function processes the pending navigation requests (continue/back).
      */
-    static get onNavigationSettled() {
-        return GameUnifier._onNavigationSettled;
+    static async processNavigationRequests() {
+        const { newValue, result } = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
+        GameUnifier.navigationRequestsCount = newValue;
+        return await result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
