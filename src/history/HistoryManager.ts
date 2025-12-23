@@ -87,11 +87,11 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
-        if (HistoryManagerStatic.goBackRunning) {
-            logger.warn("Go back is already running");
+        if (GameUnifier.runningStepsCount > 0) {
+            logger.warn("You can't go back while steps are running");
             return;
         }
-        HistoryManagerStatic.goBackRunning = true;
+        GameUnifier.runningStepsCount++;
         try {
             let restoredStep = createExportableElement(
                 this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
@@ -113,10 +113,10 @@ export default class HistoryManager implements HistoryManagerInterface {
                 logger.error("Error going back");
             }
             HistoryManagerStatic.originalStepData = restoredStep;
-            HistoryManagerStatic.goBackRunning = false;
+            GameUnifier.runningStepsCount--;
         } catch (e) {
             logger.error("Error going back", e);
-            HistoryManagerStatic.goBackRunning = false;
+            GameUnifier.runningStepsCount--;
         }
     }
     add(
