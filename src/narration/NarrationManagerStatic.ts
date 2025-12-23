@@ -29,11 +29,6 @@ type CurrentStepTimesCounterMemoty = {
 
 export default class NarrationManagerStatic {
     private constructor() {}
-    /**
-     * Number of requests to go to the next step.
-     * If it is > 0, after the stepsRunning is 0, the next step will be executed
-     */
-    static continueRequests: number = 0;
     static choiceMadeTemp: undefined | number = undefined;
     static lastHistoryStep: Omit<HistoryStep, "diff"> | null = null;
     /**

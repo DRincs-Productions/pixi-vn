@@ -248,7 +248,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             return;
         }
         if (!runNow && GameUnifier.runningStepsCount !== 0) {
-            NarrationManagerStatic.continueRequests++;
+            GameUnifier.increaseContinueRequest();
             return;
         }
         try {
@@ -345,8 +345,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                         });
                         NarrationManagerStatic.choiceMadeTemp = undefined;
 
-                        if (NarrationManagerStatic.continueRequests > 0) {
-                            NarrationManagerStatic.continueRequests--;
+                        if (GameUnifier.continueRequestsCount > 0) {
+                            GameUnifier.decreaseContinueRequest();
                             return await this.continue(props);
                         }
                     }

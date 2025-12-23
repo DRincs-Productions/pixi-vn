@@ -42,13 +42,13 @@ export default class GameUnifier {
          * This function is called after the narration.continue() method is executed.
          * It can be used to force the completion of the ticker in the game engine.
          */
-        onContinueComplete?: () => Promise<void>;
+        onContinueComplete?: () => Promise<void> | void;
         /**
          * This function is called after the narration continue/back queue is fully processed
          * (i.e. when the list of pending `continue()` and `back()` requests has been drained).
          * It is useful when you need to run logic only after all pending continue/back requests finish.
          */
-        onNavigationSettled?: () => Promise<void>;
+        onNavigationSettled?: () => Promise<void> | void;
         /**
          * This function returns the value of a variable.
          * @param key The key of the variable.
@@ -180,7 +180,7 @@ export default class GameUnifier {
     static get openedLabels() {
         return GameUnifier._getOpenedLabels();
     }
-    private static _onContinueComplete: () => Promise<void> = async () => {};
+    private static _onContinueComplete: () => Promise<void> | void = () => {};
     /**
      * This function is called after the narration.continue() method is executed.
      * It can be used to force the completion of the ticker in the game engine.
@@ -188,8 +188,51 @@ export default class GameUnifier {
     static get onContinueComplete() {
         return GameUnifier._onContinueComplete;
     }
-
-    private static _onNavigationSettled: () => Promise<void> = async () => {};
+    /**
+     * Number of pending navigation requests (continue/back).
+     * Positive values indicate pending continue requests,
+     * negative values indicate pending back requests.
+     */
+    private static navigationRequestsCount: number = 0;
+    /**
+     * This function is called to get the number of pending continue requests.
+     * If it is > 0, after the stepsRunning is 0, the next step will be executed.
+     */
+    static get continueRequestsCount() {
+        return GameUnifier.navigationRequestsCount;
+    }
+    /**
+     * This function is called to increase/decrease the number of pending continue requests.
+     */
+    static increaseContinueRequest() {
+        GameUnifier.navigationRequestsCount++;
+    }
+    /**
+     * This function is called to decrease the number of pending continue requests.
+     */
+    static decreaseContinueRequest() {
+        GameUnifier.navigationRequestsCount--;
+    }
+    /**
+     * This function is called to get the number of pending back requests.
+     * If it is > 0, after the stepsRunning is 0, the previous step will be executed.
+     */
+    static get backRequestsCount() {
+        return -1 * GameUnifier.navigationRequestsCount;
+    }
+    /**
+     * This function is called to increase/decrease the number of pending back requests.
+     */
+    static increaseBackRequest() {
+        GameUnifier.navigationRequestsCount--;
+    }
+    /**
+     * This function is called to decrease the number of pending back requests.
+     */
+    static decreaseBackRequest() {
+        GameUnifier.navigationRequestsCount++;
+    }
+    private static _onNavigationSettled: () => Promise<void> | void = () => {};
     /**
      * This function is called when the narration continue/back queue is fully processed
      * (i.e. when all pending `continue()` and `back()` requests have finished).
