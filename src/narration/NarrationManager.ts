@@ -258,7 +258,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("Error running onStepEnd", e);
         }
         if (NarrationManagerStatic.stepsRunning === 0) {
-            await GameUnifier.onGoNextEnd();
+            await GameUnifier.onContinueComplete();
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
         return await this.runCurrentStep(props, options);

@@ -112,7 +112,7 @@ export namespace Game {
                 return characterUtils.RegisteredCharacters.get(id);
             },
             // canvas
-            onGoNextEnd: async () => {
+            onContinueComplete: async () => {
                 try {
                     const promises = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.map(
                         ({ id }) => canvasUtils.canvas.forceCompletionOfTicker(id)
