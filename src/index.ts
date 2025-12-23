@@ -51,6 +51,9 @@ export namespace Game {
      *     throw new Error('body element not found')
      * }
      * await Game.initialize(body, {
+     *     navigate: (path) => {
+     *         // navigate to the path
+     *     },
      *     width: 1920,
      *     height: 1080,
      *     backgroundColor: "#303030"
