@@ -31,7 +31,7 @@ export default class NarrationManagerStatic {
     private constructor() {}
     /**
      * Number of steps function that are running.
-     * If you run a step that have a goNext, this number is > 1.
+     * If you run a step that have a narration.continue(), this number is > 1.
      */
     static stepsRunning: number = 0;
     /**
