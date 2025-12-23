@@ -67,6 +67,7 @@ export namespace Game {
             height: number;
             /**
              * The route navigate function.
+             * You can set this function after the initialization using {@link GameUnifier.navigate}
              * @param path The path to navigate to.
              * @returns
              */
@@ -87,6 +88,7 @@ export namespace Game {
             height: number;
             /**
              * The route navigate function.
+             * You can set this function after the initialization using {@link GameUnifier.navigate}
              * @param path The path to navigate to.
              * @returns
              */
