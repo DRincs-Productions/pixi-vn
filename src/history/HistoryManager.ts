@@ -71,7 +71,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                 return restoredStep;
             }
         } else {
-            logger.error("You can't go back, there is no step to go back");
+            logger.error("No diff found for the last step, cannot go back");
             return restoredStep;
         }
     }
