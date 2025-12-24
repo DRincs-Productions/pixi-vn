@@ -267,11 +267,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         return (await this.afterRunCurrentStep()) || result;
     }
     private beforeRunCurrentStep() {
-        console.log(`Before running step, GameUnifier.runningStepsCount`, GameUnifier.runningStepsCount);
         GameUnifier.runningStepsCount++;
     }
     private async afterRunCurrentStep() {
-        console.log(`After running step, GameUnifier.runningStepsCount`, GameUnifier.runningStepsCount);
         GameUnifier.runningStepsCount--;
         if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
             return await GameUnifier.processNavigationRequests();

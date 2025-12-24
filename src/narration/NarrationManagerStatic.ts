@@ -171,7 +171,6 @@ export default class NarrationManagerStatic {
      * Increase the last step index that occurred during the progression of the steps.
      */
     static increaseStepCounter() {
-        console.log("Increasing step counter to", NarrationManagerStatic._stepCounter + 1);
         NarrationManagerStatic._stepCounter++;
     }
     private static _openedLabels: OpenedLabel[] = [];

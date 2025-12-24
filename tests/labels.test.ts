@@ -245,7 +245,6 @@ const asyncLabel = newLabel("asyncLabel", [
 ]);
 
 test("roolback roolnext", async () => {
-    console.log("--- roolback roolnext test ---");
     narration.clear();
     storage.clear();
     stepHistory.clear();
