@@ -48,7 +48,7 @@ export default class GameUnifier {
          * This function is called after the narration.continue() method is executed.
          * It can be used to force the completion of the ticker in the game engine.
          */
-        onContinueComplete?: () => Promise<void> | void;
+        onPreContinue?: () => Promise<void> | void;
         /**
          * This function is called to process the pending navigation requests (continue/back).
          */
@@ -122,7 +122,7 @@ export default class GameUnifier {
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
-        options.onContinueComplete && (GameUnifier._onContinueComplete = options.onContinueComplete);
+        options.onPreContinue && (GameUnifier._onPreContinue = options.onPreContinue);
         GameUnifier._processNavigationRequests = options.processNavigationRequests;
         GameUnifier._getVariable = options.getVariable;
         GameUnifier._setVariable = options.setVariable;
@@ -204,13 +204,13 @@ export default class GameUnifier {
     static get openedLabels() {
         return GameUnifier._getOpenedLabels();
     }
-    private static _onContinueComplete: () => Promise<void> | void = () => {};
+    private static _onPreContinue: () => Promise<void> | void = () => {};
     /**
-     * This function is called after the narration.continue() method is executed.
+     * This function is called before the narration.continue() method is executed.
      * It can be used to force the completion of the ticker in the game engine.
      */
-    static get onContinueComplete() {
-        return GameUnifier._onContinueComplete;
+    static get onPreContinue() {
+        return GameUnifier._onPreContinue;
     }
     /**
      * Number of pending navigation requests (continue/back).

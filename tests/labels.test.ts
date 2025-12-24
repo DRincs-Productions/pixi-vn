@@ -209,6 +209,7 @@ test("currentLabelStepIndex", async () => {
 });
 
 const asyncLabel = newLabel("asyncLabel", [
+    () => (narration.dialogue = "This is a sync step 0"),
     async () => {
         narration.dialogue = "This is an async step 1";
         await new Promise((resolve) => setTimeout(resolve, 100));
@@ -244,13 +245,15 @@ const asyncLabel = newLabel("asyncLabel", [
 ]);
 
 test("roolback roolnext", async () => {
+    console.log("--- roolback roolnext test ---");
     narration.clear();
     storage.clear();
     stepHistory.clear();
     expect(narration.stepCounter).toBe(0);
-    const promise1 = narration.call(asyncLabel, {});
-    expect(narration.stepCounter).toBe(0);
-    narration.continue({});
+    await narration.call(asyncLabel, {});
+    expect(narration.stepCounter).toBe(1);
+    const promise1 = narration.continue({});
+    expect(narration.stepCounter).toBe(1);
     narration.continue({});
     narration.continue({});
     narration.continue({});
@@ -263,10 +266,10 @@ test("roolback roolnext", async () => {
     stepHistory.back({});
     stepHistory.back({});
     stepHistory.back({});
-    expect(narration.stepCounter).toBe(0);
+    expect(narration.stepCounter).toBe(1);
     await promise1;
-    expect(narration.stepCounter).toBe(5);
-    expect(narration.dialogue).toEqual({ text: "This is a sync step 6" });
+    expect(narration.stepCounter).toBe(2);
+    expect(narration.dialogue).toEqual({ text: "This is a sync step 9" });
     narration.continue({});
     narration.continue({});
     narration.continue({});
