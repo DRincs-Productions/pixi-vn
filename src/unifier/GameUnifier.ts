@@ -227,10 +227,10 @@ export default class GameUnifier {
     }
     /**
      * This function is called to increase the number of pending continue requests.
-     * @param amt The number of steps to increase. Default is 1.
+     * @param amount The number of steps to increase. Default is 1.
      */
-    static increaseContinueRequest(amt: number = 1) {
-        GameUnifier.navigationRequestsCount = GameUnifier.navigationRequestsCount + amt;
+    static increaseContinueRequest(amount: number = 1) {
+        GameUnifier.navigationRequestsCount = GameUnifier.navigationRequestsCount + amount;
     }
     /**
      * This function is called to get the number of pending back requests.
@@ -241,10 +241,10 @@ export default class GameUnifier {
     }
     /**
      * This function is called to increase the number of pending back requests.
-     * @param amt The number of steps to increase. Default is 1.
+     * @param amount The number of steps to increase. Default is 1.
      */
-    static increaseBackRequest(amt: number = 1) {
-        GameUnifier.navigationRequestsCount = GameUnifier.navigationRequestsCount - amt;
+    static increaseBackRequest(amount: number = 1) {
+        GameUnifier.navigationRequestsCount = GameUnifier.navigationRequestsCount - amount;
     }
     private static _processNavigationRequests: (navigationRequestsCount: number) => {
         newValue: number;
