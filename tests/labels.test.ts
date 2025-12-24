@@ -9,6 +9,10 @@ import {
 } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
+// Test timeout constants for async operations
+const ASYNC_STEP_TIMEOUT = 100;
+const SHORT_ASYNC_TIMEOUT = 60;
+
 const pathLabel = newLabel("path", [
     () => {
         narration.dialogue = "This is a test label";
@@ -371,7 +375,7 @@ test("queue with errors during rapid navigation", async () => {
     narration.continue({});
     narration.continue({});
     
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
     
     // At least one error should have been caught
     expect(errorCount).toBeGreaterThan(0);
@@ -415,7 +419,7 @@ test("error recovery with mixed sync and async steps", async () => {
     
     // Continue to async step
     await narration.continue({});
-    await new Promise((resolve) => setTimeout(resolve, 60));
+    await new Promise((resolve) => setTimeout(resolve, SHORT_ASYNC_TIMEOUT));
     expect(narration.stepCounter).toBe(2);
     expect(narration.dialogue).toEqual({ text: "Step 1: Async before error" });
     
@@ -446,7 +450,7 @@ test("queue inconsistent state with back and continue during errors", async () =
     
     // Navigate forward through async step
     await narration.continue({});
-    await new Promise((resolve) => setTimeout(resolve, 60));
+    await new Promise((resolve) => setTimeout(resolve, SHORT_ASYNC_TIMEOUT));
     expect(narration.stepCounter).toBe(2);
     
     // Queue multiple operations: back, continue (to error), continue again
@@ -454,7 +458,7 @@ test("queue inconsistent state with back and continue during errors", async () =
     narration.continue({});
     narration.continue({});
     
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
     
     // System should handle the queued requests even with errors
     expect(errorCount).toBeGreaterThan(0);
@@ -495,7 +499,7 @@ test("back navigation with history containing errors", async () => {
     stepHistory.back({});
     stepHistory.back({});
     
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
     
     // Should handle gracefully without crashing
     // Step counter should remain at minimum (can't go back further than start)
