@@ -207,3 +207,106 @@ test("currentLabelStepIndex", async () => {
     expect(narration.stepCounter).toBe(2);
     expect(NarrationManagerStatic.currentLabelStepIndex).toBe(1);
 });
+
+const asyncLabel = newLabel("asyncLabel", [
+    async () => {
+        narration.dialogue = "This is an async step 1";
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    },
+    async () => {
+        narration.dialogue = "This is an async step 2";
+        await new Promise((resolve) => setTimeout(resolve, 50));
+    },
+    () => (narration.dialogue = "This is a sync step 3"),
+    () => (narration.dialogue = "This is a sync step 4"),
+    () => (narration.dialogue = "This is a sync step 5"),
+    () => (narration.dialogue = "This is a sync step 6"),
+    () => (narration.dialogue = "This is a sync step 7"),
+    () => (narration.dialogue = "This is a sync step 8"),
+    () => (narration.dialogue = "This is a sync step 9"),
+    () => (narration.dialogue = "This is a sync step 10"),
+    async () => {
+        narration.dialogue = "This is an async step 11";
+        await new Promise((resolve) => setTimeout(resolve, 50));
+    },
+    () => (narration.dialogue = "This is a sync step 12"),
+    () => (narration.dialogue = "This is a sync step 13"),
+    () => (narration.dialogue = "This is a sync step 14"),
+    async () => {
+        narration.dialogue = "This is an async step 15";
+        await new Promise((resolve) => setTimeout(resolve, 100));
+    },
+    () => (narration.dialogue = "This is a sync step 16"),
+    () => (narration.dialogue = "This is a sync step 17"),
+    () => (narration.dialogue = "This is a sync step 18"),
+    () => (narration.dialogue = "This is a sync step 19"),
+    () => (narration.dialogue = "This is a sync step 20"),
+]);
+
+test("roolback roolnext", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    expect(narration.stepCounter).toBe(0);
+    const promise1 = narration.call(asyncLabel, {});
+    expect(narration.stepCounter).toBe(0);
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    expect(narration.stepCounter).toBe(0);
+    await promise1;
+    expect(narration.stepCounter).toBe(5);
+    expect(narration.dialogue).toEqual({ text: "This is a sync step 6" });
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    narration.continue({});
+    expect(narration.stepCounter).toBe(10);
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    await new Promise((resolve) => setTimeout(resolve, 51));
+    expect(narration.stepCounter).toBe(10);
+    expect(narration.dialogue).toEqual({ text: "This is a sync step 6" });
+    await new Promise((resolve) => setTimeout(resolve, 100));
+    expect(narration.stepCounter).toBe(10);
+    expect(narration.dialogue).toEqual({ text: "This is a sync step 6" });
+    const promise = stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    await promise;
+    expect(narration.stepCounter).toBe(0);
+    expect(narration.dialogue).toEqual({ text: "This is an async step 1" });
+});
