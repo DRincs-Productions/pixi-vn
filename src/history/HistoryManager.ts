@@ -81,12 +81,12 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("The parameter steps must be greater than 0");
             return;
         }
-        if (HistoryManagerStatic._diffHistory.size < 1) {
-            logger.warn("You can't go back, there is no step to go back");
-            return;
-        }
         if (GameUnifier.runningStepsCount > 0) {
             GameUnifier.increaseBackRequest(steps);
+            return;
+        }
+        if (HistoryManagerStatic._diffHistory.size < 1) {
+            logger.warn("You can't go back, there is no step to go back");
             return;
         }
         GameUnifier.runningStepsCount++;
