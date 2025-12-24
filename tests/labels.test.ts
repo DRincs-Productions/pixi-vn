@@ -13,8 +13,7 @@ import { getGamePath } from "../src/utils/path-utility";
 const ASYNC_STEP_TIMEOUT = 100;
 const SHORT_ASYNC_TIMEOUT = 60;
 
-// Label step timing constants (simulating async operations within labels)
-const LONG_STEP_DELAY = 100;
+// Label step timing constant (simulating async operations within labels)
 const SHORT_STEP_DELAY = 50;
 
 const pathLabel = newLabel("path", [
