@@ -1,8 +1,7 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import diff from "microdiff";
-import type { NavigationFunctionType } from "../interfaces";
-import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory } from "../narration";
+import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory, StepLabelPropsType } from "../narration";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { createExportableElement } from "../utils";
 import { restoreDiffChanges } from "../utils/diff-utility";
@@ -57,7 +56,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         const lastKey = this.lastKey;
         if (typeof lastKey !== "number") {
-            logger.error("You can't go back, there is no step to go back");
+            logger.warn("You can't go back, there is no step to go back");
             return restoredStep;
         }
         const diff = HistoryManagerStatic._diffHistory.get(lastKey);
@@ -76,8 +75,8 @@ export default class HistoryManager implements HistoryManagerInterface {
             return restoredStep;
         }
     }
-    back: NavigationFunctionType<{ steps?: number }> = async (props, options) => {
-        const { steps = 1 } = options || {};
+    public async back(props: StepLabelPropsType, options: { steps?: number } = {}) {
+        const { steps = 1 } = options;
         if (steps <= 0) {
             logger.warn("The parameter steps must be greater than 0");
             return;
@@ -87,7 +86,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             return;
         }
         if (GameUnifier.runningStepsCount > 0) {
-            logger.warn("You can't go back while steps are running");
+            GameUnifier.increaseBackRequest(steps);
             return;
         }
         GameUnifier.runningStepsCount++;
@@ -112,12 +111,14 @@ export default class HistoryManager implements HistoryManagerInterface {
                 logger.error("Error going back");
             }
             HistoryManagerStatic.originalStepData = restoredStep;
-            GameUnifier.runningStepsCount--;
         } catch (e) {
             logger.error("Error going back", e);
-            GameUnifier.runningStepsCount--;
         }
-    };
+        GameUnifier.runningStepsCount--;
+        if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
+            return await GameUnifier.processNavigationRequests();
+        }
+    }
     add(
         historyInfo: HistoryInfo,
         options: {

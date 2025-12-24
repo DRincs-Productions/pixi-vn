@@ -2,8 +2,7 @@ import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
 import { CachedMap } from "../../classes";
-import type { NavigationFunctionType } from "../../interfaces";
-import { HistoryStep, NarrationHistory } from "../../narration";
+import { HistoryStep, NarrationHistory, StepLabelPropsType, StepLabelResultType } from "../../narration";
 import HistoryGameState from "./HistoryGameState";
 
 export default interface HistoryManagerInterface {
@@ -40,12 +39,15 @@ export default interface HistoryManagerInterface {
      * @param options The navigation options.
      * @returns
      */
-    back: NavigationFunctionType<{
-        /**
-         * The number of steps to go back. Must be greater than 0. @default 1
-         */
-        steps?: number;
-    }>;
+    back: (
+        props: StepLabelPropsType,
+        options?: {
+            /**
+             * The number of steps to go back. Must be greater than 0. @default 1
+             */
+            steps?: number;
+        }
+    ) => Promise<StepLabelResultType>;
     /**
      * Block the go back function.
      */

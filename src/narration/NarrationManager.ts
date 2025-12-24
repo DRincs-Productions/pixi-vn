@@ -1,6 +1,5 @@
 import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
-import type { NavigationFunctionType } from "../interfaces";
 import type { StorageElementType } from "../storage";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
 import { createExportableElement } from "../utils";
@@ -234,14 +233,24 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return await Promise.all(res);
     }
-    continue: NavigationFunctionType<{ runNow?: boolean; choiceMade?: number }> = async (props, options) => {
-        const { runNow = false } = options || {};
+    public async continue(
+        props: StepLabelPropsType,
+        options: { steps?: number; runNow?: boolean; choiceMade?: number } = {}
+    ) {
+        const { runNow = false, steps = 1 } = options;
+        if (steps <= 0) {
+            logger.warn("The parameter steps must be greater than 0");
+            return;
+        }
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
         if (!runNow && GameUnifier.runningStepsCount !== 0) {
-            GameUnifier.increaseContinueRequest();
+            GameUnifier.increaseContinueRequest(steps);
             return;
+        }
+        if (steps > 1) {
+            GameUnifier.increaseContinueRequest(steps - 1);
         }
         try {
             this.currentLabel &&
@@ -254,7 +263,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         NarrationManagerStatic.increaseCurrentStepIndex();
         return await this.runCurrentStep(props, options);
-    };
+    }
     /**
      * Execute the current step and add it to the history.
      * @param props The props to pass to the step.
@@ -337,7 +346,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                         });
                         NarrationManagerStatic.choiceMadeTemp = undefined;
 
-                        if (GameUnifier.continueRequestsCount > 0) {
+                        if (GameUnifier.continueRequestsCount !== 0) {
                             return await GameUnifier.processNavigationRequests();
                         }
                     }
