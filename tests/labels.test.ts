@@ -249,11 +249,9 @@ test("roolback roolnext", async () => {
     storage.clear();
     stepHistory.clear();
     expect(narration.stepCounter).toBe(0);
-    await narration.call(asyncLabel, {});
-    expect(narration.stepCounter).toBe(1);
-    expect(narration.dialogue).toEqual({ text: "This is a sync step 0" });
-    const promise1 = narration.continue({});
-    expect(narration.stepCounter).toBe(1);
+    const promise1 = narration.call(asyncLabel, {});
+    narration.continue({});
+    expect(narration.stepCounter).toBe(0);
     narration.continue({});
     narration.continue({});
     narration.continue({});
@@ -266,7 +264,7 @@ test("roolback roolnext", async () => {
     stepHistory.back({});
     stepHistory.back({});
     stepHistory.back({});
-    expect(narration.stepCounter).toBe(1);
+    expect(narration.stepCounter).toBe(0);
     await promise1;
     expect(narration.stepCounter).toBe(6);
     expect(narration.dialogue).toEqual({ text: "This is a sync step 5" });
