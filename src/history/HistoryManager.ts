@@ -113,10 +113,11 @@ export default class HistoryManager implements HistoryManagerInterface {
             HistoryManagerStatic.originalStepData = restoredStep;
         } catch (e) {
             logger.error("Error going back", e);
-        }
-        GameUnifier.runningStepsCount--;
-        if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
-            return await GameUnifier.processNavigationRequests();
+        } finally {
+            GameUnifier.runningStepsCount--;
+            if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
+                return await GameUnifier.processNavigationRequests();
+            }
         }
     }
     add(
