@@ -13,6 +13,10 @@ import { getGamePath } from "../src/utils/path-utility";
 const ASYNC_STEP_TIMEOUT = 100;
 const SHORT_ASYNC_TIMEOUT = 60;
 
+// Label step timing constants (simulating async operations within labels)
+const LONG_STEP_DELAY = 100;
+const SHORT_STEP_DELAY = 50;
+
 const pathLabel = newLabel("path", [
     () => {
         narration.dialogue = "This is a test label";
@@ -388,7 +392,7 @@ const mixedErrorLabel = newLabel("mixedErrorLabel", [
     () => (narration.dialogue = "Step 0: Start"),
     async () => {
         narration.dialogue = "Step 1: Async before error";
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY));
     },
     () => {
         narration.dialogue = "Step 2: Will throw";
@@ -397,7 +401,7 @@ const mixedErrorLabel = newLabel("mixedErrorLabel", [
     () => (narration.dialogue = "Step 3: After error"),
     async () => {
         narration.dialogue = "Step 4: Async after error";
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY));
     },
     () => (narration.dialogue = "Step 5: Final step"),
 ]);
