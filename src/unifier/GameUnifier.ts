@@ -257,13 +257,9 @@ export default class GameUnifier {
      * This function processes the pending navigation requests (continue/back).
      */
     static async processNavigationRequests() {
-        try {
-            const { newValue, result } = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
-            GameUnifier.navigationRequestsCount = newValue;
-            return await result;
-        } catch (e) {
-            logger.error("Error processing navigation requests", e);
-        }
+        const { newValue, result } = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
+        GameUnifier.navigationRequestsCount = newValue;
+        return await result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
