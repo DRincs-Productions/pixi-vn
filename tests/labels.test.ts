@@ -260,9 +260,7 @@ test("rollback rollnext", async () => {
     narration.continue({});
     narration.continue({});
     narration.continue({});
-    stepHistory.back({});
-    stepHistory.back({});
-    stepHistory.back({});
+    stepHistory.back({}, { steps: 3 });
     stepHistory.back({});
     expect(narration.stepCounter).toBe(0);
     await promise1;
@@ -272,10 +270,7 @@ test("rollback rollnext", async () => {
     narration.continue({});
     narration.continue({});
     narration.continue({});
-    narration.continue({});
-    narration.continue({});
-    narration.continue({});
-    narration.continue({});
+    narration.continue({}, { steps: 4 });
     narration.continue({});
     narration.continue({});
     narration.continue({});
@@ -297,11 +292,7 @@ test("rollback rollnext", async () => {
     stepHistory.back({});
     stepHistory.back({});
     stepHistory.back({});
-    stepHistory.back({});
-    stepHistory.back({});
-    stepHistory.back({});
-    stepHistory.back({});
-    stepHistory.back({});
+    stepHistory.back({}, { steps: 5 });
     stepHistory.back({});
     stepHistory.back({});
     stepHistory.back({});
