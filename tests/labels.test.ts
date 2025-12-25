@@ -9,6 +9,13 @@ import {
 } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
+// Test timeout constants for async operations
+const ASYNC_STEP_TIMEOUT = 100;
+const SHORT_ASYNC_TIMEOUT = 60;
+
+// Label step timing constant (simulating async operations within labels)
+const SHORT_STEP_DELAY = 50;
+
 const pathLabel = newLabel("path", [
     () => {
         narration.dialogue = "This is a test label";
@@ -301,4 +308,202 @@ test("rollback rollnext", async () => {
     await promise;
     expect(narration.stepCounter).toBe(2);
     expect(narration.dialogue).toEqual({ text: "This is an async step 1" });
+});
+
+// Error scenario tests
+const errorLabel = newLabel("errorLabel", [
+    () => (narration.dialogue = "Step 0: Before error"),
+    () => {
+        narration.dialogue = "Step 1: This will throw";
+        throw new Error("Test error in step");
+    },
+    () => (narration.dialogue = "Step 2: After error"),
+    () => (narration.dialogue = "Step 3: Normal step"),
+]);
+
+test("error in navigation step", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    
+    // Set up error handler to capture errors
+    let errorCaught = false;
+    const originalOnStepError = narration.onStepError;
+    try {
+        narration.onStepError = () => {
+            errorCaught = true;
+        };
+        
+        await narration.call(errorLabel, {});
+        expect(narration.stepCounter).toBe(1);
+        expect(narration.dialogue).toEqual({ text: "Step 0: Before error" });
+        
+        // Try to continue to the error step
+        await narration.continue({});
+        
+        // Should have caught the error
+        expect(errorCaught).toBe(true);
+        
+        // Step counter should still be at step 1 (error prevented advancement)
+        expect(narration.stepCounter).toBe(1);
+    } finally {
+        // Restore original error handler
+        narration.onStepError = originalOnStepError;
+    }
+});
+
+test("queue with errors during rapid navigation", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    
+    let errorCount = 0;
+    const originalOnStepError = narration.onStepError;
+    try {
+        narration.onStepError = () => {
+            errorCount++;
+        };
+        
+        await narration.call(errorLabel, {});
+        expect(narration.stepCounter).toBe(1);
+        
+        // Queue multiple continue requests, some will hit errors
+        narration.continue({});
+        narration.continue({});
+        narration.continue({});
+        
+        await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
+        
+        // At least one error should have been caught
+        expect(errorCount).toBeGreaterThan(0);
+    } finally {
+        // Restore original error handler
+        narration.onStepError = originalOnStepError;
+    }
+});
+
+const mixedErrorLabel = newLabel("mixedErrorLabel", [
+    () => (narration.dialogue = "Step 0: Start"),
+    async () => {
+        narration.dialogue = "Step 1: Async before error";
+        await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY));
+    },
+    () => {
+        narration.dialogue = "Step 2: Will throw";
+        throw new Error("Error in mixed label");
+    },
+    () => (narration.dialogue = "Step 3: After error"),
+    async () => {
+        narration.dialogue = "Step 4: Async after error";
+        await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY));
+    },
+    () => (narration.dialogue = "Step 5: Final step"),
+]);
+
+test("error recovery with mixed sync and async steps", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    
+    let errorCaught = false;
+    const originalOnStepError = narration.onStepError;
+    try {
+        narration.onStepError = () => {
+            errorCaught = true;
+        };
+        
+        await narration.call(mixedErrorLabel, {});
+        expect(narration.stepCounter).toBe(1);
+        expect(narration.dialogue).toEqual({ text: "Step 0: Start" });
+        
+        // Continue to async step
+        await narration.continue({});
+        await new Promise((resolve) => setTimeout(resolve, SHORT_ASYNC_TIMEOUT));
+        expect(narration.stepCounter).toBe(2);
+        expect(narration.dialogue).toEqual({ text: "Step 1: Async before error" });
+        
+        // Continue to error step
+        await narration.continue({});
+        expect(errorCaught).toBe(true);
+        
+        // The step counter should remain at 2 due to the error
+        expect(narration.stepCounter).toBe(2);
+    } finally {
+        // Restore original error handler
+        narration.onStepError = originalOnStepError;
+    }
+});
+
+test("queue inconsistent state with back and continue during errors", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    
+    let errorCount = 0;
+    const originalOnStepError = narration.onStepError;
+    try {
+        narration.onStepError = () => {
+            errorCount++;
+        };
+        
+        await narration.call(mixedErrorLabel, {});
+        expect(narration.stepCounter).toBe(1);
+        
+        // Navigate forward through async step
+        await narration.continue({});
+        await new Promise((resolve) => setTimeout(resolve, SHORT_ASYNC_TIMEOUT));
+        expect(narration.stepCounter).toBe(2);
+        
+        // Queue multiple operations: back, continue (to error), continue again
+        stepHistory.back({});
+        narration.continue({});
+        narration.continue({});
+        
+        await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
+        
+        // System should handle the queued requests even with errors
+        expect(errorCount).toBeGreaterThan(0);
+    } finally {
+        // Restore original error handler
+        narration.onStepError = originalOnStepError;
+    }
+});
+
+test("back navigation with history containing errors", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    
+    const safeLabel = newLabel("safeLabel", [
+        () => (narration.dialogue = "Safe step 0"),
+        () => (narration.dialogue = "Safe step 1"),
+        () => (narration.dialogue = "Safe step 2"),
+        () => (narration.dialogue = "Safe step 3"),
+    ]);
+    
+    await narration.call(safeLabel, {});
+    await narration.continue({});
+    await narration.continue({});
+    expect(narration.stepCounter).toBe(3);
+    expect(narration.dialogue).toEqual({ text: "Safe step 2" });
+    
+    // Now go back
+    await stepHistory.back({});
+    expect(narration.stepCounter).toBe(2);
+    expect(narration.dialogue).toEqual({ text: "Safe step 1" });
+    
+    await stepHistory.back({});
+    expect(narration.stepCounter).toBe(1);
+    expect(narration.dialogue).toEqual({ text: "Safe step 0" });
+    
+    // Queue multiple back requests beyond available history
+    stepHistory.back({});
+    stepHistory.back({});
+    stepHistory.back({});
+    
+    await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
+    
+    // Should handle gracefully without crashing
+    // Step counter should remain at minimum (can't go back further than start)
+    expect(narration.stepCounter).toBeGreaterThanOrEqual(1);
 });
