@@ -270,8 +270,8 @@ export default class GameUnifier {
         await GameUnifier.processNavigationLock;
         
         // Create a new lock for this execution
-        let releaseLock: () => void;
-        GameUnifier.processNavigationLock = new Promise(resolve => {
+        let releaseLock!: () => void;
+        GameUnifier.processNavigationLock = new Promise<void>(resolve => {
             releaseLock = resolve;
         });
         
@@ -280,7 +280,7 @@ export default class GameUnifier {
         GameUnifier.navigationRequestsCount = newValue;
         
         // Release the lock immediately after the synchronous part
-        releaseLock!();
+        releaseLock();
         
         // Return the async result
         return await result;
