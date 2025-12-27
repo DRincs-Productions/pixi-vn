@@ -275,14 +275,19 @@ export default class GameUnifier {
             releaseLock = resolve;
         });
         
-        // Perform the atomic read-modify-write operation
-        const { newValue, result } = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
-        GameUnifier.navigationRequestsCount = newValue;
+        let result: Promise<StepLabelResultType>;
+        try {
+            // Perform the atomic read-modify-write operation
+            const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
+            GameUnifier.navigationRequestsCount = processResult.newValue;
+            result = processResult.result;
+        } finally {
+            // Release the lock immediately after the synchronous part
+            // This must happen before awaiting result to prevent deadlocks
+            releaseLock();
+        }
         
-        // Release the lock immediately after the synchronous part
-        releaseLock();
-        
-        // Return the async result
+        // Return the async result (lock is already released)
         return await result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
