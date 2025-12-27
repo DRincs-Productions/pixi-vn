@@ -232,7 +232,9 @@ export default class GameUnifier {
     }
     /**
      * This function is called to increase the number of pending continue requests.
-     * This operation is atomic in JavaScript's single-threaded execution model.
+     * Note: While the increment operation itself is atomic, the overall navigation
+     * processing uses a lock in processNavigationRequests to ensure atomicity of
+     * read-modify-write operations across async boundaries.
      * @param amount The number of steps to increase. Default is 1.
      */
     static increaseContinueRequest(amount: number = 1) {
@@ -247,7 +249,9 @@ export default class GameUnifier {
     }
     /**
      * This function is called to increase the number of pending back requests.
-     * This operation is atomic in JavaScript's single-threaded execution model.
+     * Note: While the decrement operation itself is atomic, the overall navigation
+     * processing uses a lock in processNavigationRequests to ensure atomicity of
+     * read-modify-write operations across async boundaries.
      * @param amount The number of steps to increase. Default is 1.
      */
     static increaseBackRequest(amount: number = 1) {
