@@ -292,7 +292,7 @@ test("rollback rollnext", async () => {
     await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY + 1));
     expect(narration.stepCounter).toBe(11);
     expect(narration.dialogue).toEqual({ text: "This is an async step 11" });
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
     expect(narration.stepCounter).toBe(14);
     expect(narration.dialogue).toEqual({ text: "This is a sync step 13" });
     const promise = stepHistory.back({});
