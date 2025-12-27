@@ -1,5 +1,6 @@
 import { expect, test } from "vitest";
 import {
+    GameUnifier,
     narration,
     NarrationManagerStatic,
     newLabel,
@@ -328,9 +329,9 @@ test("error in navigation step", async () => {
 
     // Set up error handler to capture errors
     let errorCaught = false;
-    const originalOnStepError = narration.onStepError;
+    const originalOnStepError = GameUnifier.onError;
     try {
-        narration.onStepError = () => {
+        GameUnifier.onError = () => {
             errorCaught = true;
         };
 
@@ -348,7 +349,7 @@ test("error in navigation step", async () => {
         expect(narration.stepCounter).toBe(1);
     } finally {
         // Restore original error handler
-        narration.onStepError = originalOnStepError;
+        GameUnifier.onError = originalOnStepError;
     }
 });
 
@@ -358,9 +359,9 @@ test("queue with errors during rapid navigation", async () => {
     stepHistory.clear();
 
     let errorCount = 0;
-    const originalOnStepError = narration.onStepError;
+    const originalOnStepError = GameUnifier.onError;
     try {
-        narration.onStepError = () => {
+        GameUnifier.onError = () => {
             errorCount++;
         };
 
@@ -378,7 +379,7 @@ test("queue with errors during rapid navigation", async () => {
         expect(errorCount).toBeGreaterThan(0);
     } finally {
         // Restore original error handler
-        narration.onStepError = originalOnStepError;
+        GameUnifier.onError = originalOnStepError;
     }
 });
 
@@ -406,9 +407,9 @@ test("error recovery with mixed sync and async steps", async () => {
     stepHistory.clear();
 
     let errorCaught = false;
-    const originalOnStepError = narration.onStepError;
+    const originalOnStepError = GameUnifier.onError;
     try {
-        narration.onStepError = () => {
+        GameUnifier.onError = () => {
             errorCaught = true;
         };
 
@@ -430,7 +431,7 @@ test("error recovery with mixed sync and async steps", async () => {
         expect(narration.stepCounter).toBe(2);
     } finally {
         // Restore original error handler
-        narration.onStepError = originalOnStepError;
+        GameUnifier.onError = originalOnStepError;
     }
 });
 
@@ -440,9 +441,9 @@ test("queue inconsistent state with back and continue during errors", async () =
     stepHistory.clear();
 
     let errorCount = 0;
-    const originalOnStepError = narration.onStepError;
+    const originalOnStepError = GameUnifier.onError;
     try {
-        narration.onStepError = () => {
+        GameUnifier.onError = () => {
             errorCount++;
         };
 
@@ -465,7 +466,7 @@ test("queue inconsistent state with back and continue during errors", async () =
         expect(errorCount).toBeGreaterThan(0);
     } finally {
         // Restore original error handler
-        narration.onStepError = originalOnStepError;
+        GameUnifier.onError = originalOnStepError;
     }
 });
 
