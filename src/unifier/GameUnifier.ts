@@ -378,8 +378,8 @@ export default class GameUnifier {
         return GameUnifier._addHistoryItem;
     }
     /**
-     * Number of steps function that are running.
-     * If you run a step that have a narration.continue(), this number is > 1.
+     * Count of currently executing steps.
+     * If a step triggers a narration.continue(), this number is greater than 1.
      */
     static runningStepsCount: number = 0;
     private static _getCharacter: (id: string) => CharacterInterface | undefined = () => {
