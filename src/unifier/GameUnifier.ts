@@ -206,8 +206,9 @@ export default class GameUnifier {
     }
     private static _onPreContinue: () => Promise<void> | void = () => {};
     /**
-     * This function is called before the narration.continue() method is executed.
-     * It can be used to force the completion of the ticker in the game engine.
+     * Callback hook intended to run immediately before a narration "continue" operation.
+     * Game engines can use this to force completion of their ticker or pending updates,
+     * if supported by the underlying narration manager.
      */
     static get onPreContinue() {
         return GameUnifier._onPreContinue;
