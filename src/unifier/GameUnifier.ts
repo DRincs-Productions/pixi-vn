@@ -219,6 +219,11 @@ export default class GameUnifier {
      */
     private static navigationRequestsCount: number = 0;
     /**
+     * Promise-based lock to ensure only one processNavigationRequests executes at a time.
+     * This prevents race conditions in the read-modify-write operation.
+     */
+    private static processNavigationLock: Promise<void> = Promise.resolve();
+    /**
      * This function is called to get the number of pending continue requests.
      * If it is > 0, after the stepsRunning is 0, the next step will be executed.
      */
@@ -227,10 +232,11 @@ export default class GameUnifier {
     }
     /**
      * This function is called to increase the number of pending continue requests.
+     * This operation is atomic in JavaScript's single-threaded execution model.
      * @param amount The number of steps to increase. Default is 1.
      */
     static increaseContinueRequest(amount: number = 1) {
-        GameUnifier.navigationRequestsCount = GameUnifier.navigationRequestsCount + amount;
+        GameUnifier.navigationRequestsCount += amount;
     }
     /**
      * This function is called to get the number of pending back requests.
@@ -241,10 +247,11 @@ export default class GameUnifier {
     }
     /**
      * This function is called to increase the number of pending back requests.
+     * This operation is atomic in JavaScript's single-threaded execution model.
      * @param amount The number of steps to increase. Default is 1.
      */
     static increaseBackRequest(amount: number = 1) {
-        GameUnifier.navigationRequestsCount = GameUnifier.navigationRequestsCount - amount;
+        GameUnifier.navigationRequestsCount -= amount;
     }
     private static _processNavigationRequests: (navigationRequestsCount: number) => {
         newValue: number;
@@ -255,10 +262,27 @@ export default class GameUnifier {
     };
     /**
      * This function processes the pending navigation requests (continue/back).
+     * Uses a promise-based lock to ensure atomic read-modify-write operations
+     * and prevent race conditions when called from multiple async contexts.
      */
     static async processNavigationRequests() {
+        // Wait for any previous processNavigationRequests to complete
+        await GameUnifier.processNavigationLock;
+        
+        // Create a new lock for this execution
+        let releaseLock: () => void;
+        GameUnifier.processNavigationLock = new Promise(resolve => {
+            releaseLock = resolve;
+        });
+        
+        // Perform the atomic read-modify-write operation
         const { newValue, result } = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
         GameUnifier.navigationRequestsCount = newValue;
+        
+        // Release the lock immediately after the synchronous part
+        releaseLock!();
+        
+        // Return the async result
         return await result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
