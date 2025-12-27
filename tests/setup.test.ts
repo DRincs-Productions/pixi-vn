@@ -7,6 +7,7 @@ import {
     RegisteredCharacters,
     sound,
     stepHistory,
+    StepLabelResultType,
     storage,
     StorageManagerStatic,
 } from "../src";
@@ -14,6 +15,7 @@ import { getGamePath } from "../src/utils/path-utility";
 
 test("setup", async () => {
     GameUnifier.init({
+        navigate: (path: string) => window.history.pushState({}, "test", path),
         getCurrentGameStepState: () => {
             return {
                 path: getGamePath(),
@@ -43,9 +45,20 @@ test("setup", async () => {
         addHistoryItem: (historyInfo, options) => {
             return stepHistory.add(historyInfo, options);
         },
-        getCurrentStepsRunningNumber: () => NarrationManagerStatic.stepsRunning,
         getCharacter: (id: string) => {
             return RegisteredCharacters.get(id);
+        },
+        processNavigationRequests: (navigationRequestsCount: number) => {
+            let newValue = navigationRequestsCount;
+            let result: Promise<void | StepLabelResultType> = Promise.resolve();
+            if (navigationRequestsCount > 0) {
+                newValue--;
+                result = narration.continue({});
+            } else if (navigationRequestsCount < 0) {
+                newValue = 0;
+                result = stepHistory.back({}, { steps: navigationRequestsCount * -1 });
+            }
+            return { newValue, result };
         },
         // storage
         getVariable: (key) => storage.get(key),

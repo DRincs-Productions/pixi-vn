@@ -2,7 +2,7 @@ import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
 import { CachedMap } from "../../classes";
-import { HistoryStep, NarrationHistory } from "../../narration";
+import { HistoryStep, NarrationHistory, StepLabelPropsType, StepLabelResultType } from "../../narration";
 import HistoryGameState from "./HistoryGameState";
 
 export default interface HistoryManagerInterface {
@@ -35,22 +35,19 @@ export default interface HistoryManagerInterface {
     removeNarrativeHistory(itemsNumber?: number): void;
     /**
      * Go back to the last step and add it to the history.
-     * @param navigate The navigate function.
-     * @param steps The number of steps to go back. Must be greater than 0. @default 1
+     * @param props The step label properties.
+     * @param options The navigation options.
      * @returns
-     * @example
-     * ```typescript
-     * export function goBack(navigate: (path: string) => void | Promise<void>, afterBack?: () => void) {
-     *     stepHistory.back(navigate)
-     *     afterBack && afterBack()
-     * }
-     * ```
      */
-    back(navigate: (path: string) => void | Promise<void>, steps?: number): Promise<void>;
-    /**
-     * @deprecated use {@link back} instead.
-     */
-    goBack(navigate: (path: string) => void | Promise<void>, steps?: number): Promise<void>;
+    back: (
+        props: StepLabelPropsType,
+        options?: {
+            /**
+             * The number of steps to go back. Must be greater than 0. @default 1
+             */
+            steps?: number;
+        }
+    ) => Promise<StepLabelResultType>;
     /**
      * Block the go back function.
      */

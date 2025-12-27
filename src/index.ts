@@ -42,7 +42,7 @@ export namespace Game {
      * @param element The html element where I will put the canvas. Example: document.body
      * @param width The width of the canvas
      * @param height The height of the canvas
-     * @param options The options of PixiJS Application
+     * @param options The options of PixiJS Application and other options
      * @param devtoolsOptions The options of the devtools. You can read more about it in the [PixiJS Devtools documentation](https://pixijs.io/devtools/docs/plugin/)
      * @example
      * ```typescript
@@ -51,6 +51,9 @@ export namespace Game {
      *     throw new Error('body element not found')
      * }
      * await Game.initialize(body, {
+     *     navigate: (path) => {
+     *         // navigate to the path
+     *     },
      *     width: 1920,
      *     height: 1080,
      *     backgroundColor: "#303030"
@@ -59,7 +62,17 @@ export namespace Game {
      */
     export async function init(
         element: HTMLElement,
-        options: Partial<ApplicationOptions> & { width: number; height: number },
+        options: Partial<ApplicationOptions> & {
+            width: number;
+            height: number;
+            /**
+             * The route navigate function.
+             * You can set this function after the initialization using {@link GameUnifier.navigate}
+             * @param path The path to navigate to.
+             * @returns
+             */
+            navigate?: (path: string) => void | Promise<void>;
+        },
         devtoolsOptions?: Devtools
     ): Promise<void>;
     /**
@@ -70,10 +83,21 @@ export namespace Game {
     export async function init(): Promise<void>;
     export async function init(
         element?: HTMLElement,
-        options?: Partial<ApplicationOptions> & { width: number; height: number },
+        options?: Partial<ApplicationOptions> & {
+            width: number;
+            height: number;
+            /**
+             * The route navigate function.
+             * You can set this function after the initialization using {@link GameUnifier.navigate}
+             * @param path The path to navigate to.
+             * @returns
+             */
+            navigate?: (path: string) => void | Promise<void>;
+        },
         devtoolsOptions?: Devtools
     ): Promise<void> {
         GameUnifier.init({
+            navigate: options?.navigate,
             getCurrentGameStepState: () => {
                 let canvasData = {};
                 try {
@@ -107,12 +131,23 @@ export namespace Game {
             addHistoryItem: (historyInfo, options) => {
                 return historyUtils.stepHistory.add(historyInfo, options);
             },
-            getCurrentStepsRunningNumber: () => narrationUtils.NarrationManagerStatic.stepsRunning,
             getCharacter: (id: string) => {
                 return characterUtils.RegisteredCharacters.get(id);
             },
+            processNavigationRequests: (navigationRequestsCount: number) => {
+                let newValue = navigationRequestsCount;
+                let result: Promise<void | narrationUtils.StepLabelResultType> = Promise.resolve();
+                if (navigationRequestsCount > 0) {
+                    newValue--;
+                    result = narrationUtils.narration.continue({});
+                } else if (navigationRequestsCount < 0) {
+                    newValue = 0;
+                    result = historyUtils.stepHistory.back({}, { steps: navigationRequestsCount * -1 });
+                }
+                return { newValue, result };
+            },
             // canvas
-            onGoNextEnd: async () => {
+            onPreContinue: async () => {
                 try {
                     const promises = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.map(
                         ({ id }) => canvasUtils.canvas.forceCompletionOfTicker(id)
