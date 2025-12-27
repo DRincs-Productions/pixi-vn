@@ -219,11 +219,11 @@ const asyncLabel = newLabel("asyncLabel", [
     () => (narration.dialogue = "This is a sync step 0"),
     async () => {
         narration.dialogue = "This is an async step 1";
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
     },
     async () => {
         narration.dialogue = "This is an async step 2";
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY));
     },
     () => (narration.dialogue = "This is a sync step 3"),
     () => (narration.dialogue = "This is a sync step 4"),
@@ -235,14 +235,14 @@ const asyncLabel = newLabel("asyncLabel", [
     () => (narration.dialogue = "This is a sync step 10"),
     async () => {
         narration.dialogue = "This is an async step 11";
-        await new Promise((resolve) => setTimeout(resolve, 50));
+        await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY));
     },
     () => (narration.dialogue = "This is a sync step 12"),
     () => (narration.dialogue = "This is a sync step 13"),
     () => (narration.dialogue = "This is a sync step 14"),
     async () => {
         narration.dialogue = "This is an async step 15";
-        await new Promise((resolve) => setTimeout(resolve, 100));
+        await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
     },
     () => (narration.dialogue = "This is a sync step 16"),
     () => (narration.dialogue = "This is a sync step 17"),
