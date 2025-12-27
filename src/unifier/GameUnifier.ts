@@ -271,14 +271,16 @@ export default class GameUnifier {
      * and prevent race conditions when called from multiple async contexts.
      */
     static async processNavigationRequests() {
-        // Wait for any previous processNavigationRequests to complete
-        await GameUnifier.processNavigationLock;
-        
-        // Create a new lock for this execution
+        // Create a new lock for this execution and chain it to the previous one
+        // This ensures that concurrent calls will properly queue
         let releaseLock!: () => void;
-        GameUnifier.processNavigationLock = new Promise<void>(resolve => {
+        const previousLock = GameUnifier.processNavigationLock;
+        GameUnifier.processNavigationLock = previousLock.then(() => new Promise<void>(resolve => {
             releaseLock = resolve;
-        });
+        }));
+        
+        // Wait for the previous operation to complete
+        await previousLock;
         
         let result: Promise<StepLabelResultType>;
         try {
