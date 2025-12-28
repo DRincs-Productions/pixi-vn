@@ -331,7 +331,7 @@ test("error in navigation step", async () => {
     let errorCaught = false;
     const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = () => {
+        GameUnifier.onError = (type, error, props) => {
             errorCaught = true;
         };
 
@@ -361,7 +361,7 @@ test("queue with errors during rapid navigation", async () => {
     let errorCount = 0;
     const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = () => {
+        GameUnifier.onError = (type, error, props) => {
             errorCount++;
         };
 
@@ -443,7 +443,7 @@ test("queue inconsistent state with back and continue during errors", async () =
     let errorCount = 0;
     const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = () => {
+        GameUnifier.onError = (type, error, props) => {
             errorCount++;
         };
 
