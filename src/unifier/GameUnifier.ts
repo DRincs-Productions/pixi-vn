@@ -226,6 +226,7 @@ export default class GameUnifier {
     private static processNavigationLock: Promise<void> = Promise.resolve();
     /**
      * This function is called to get the number of pending continue requests.
+     * Returns a positive count of pending continue requests when navigationRequestsCount is positive.
      * If it is > 0, after the stepsRunning is 0, the next step will be executed.
      */
     static get continueRequestsCount() {
