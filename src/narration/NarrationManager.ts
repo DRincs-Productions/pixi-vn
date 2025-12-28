@@ -253,12 +253,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
         GameUnifier.runningStepsCount++;
-        try {
-            this.currentLabel &&
-                (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
-        } catch (e) {
-            logger.warn("Error running onStepEnd", e);
-        }
         if (GameUnifier.runningStepsCount === 1) {
             await GameUnifier.onPreContinue();
         }
@@ -324,8 +318,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                     logger.warn("stepSha not found, setting to ERROR");
                     stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
+                let result;
                 try {
-                    let result = await step(props, { labelId: currentLabel.id });
+                    result = await step(props, { labelId: currentLabel.id });
 
                     let choiceMenuOptions = this.choices;
                     if (choiceMenuOptions?.length === 1 && choiceMenuOptions[0].autoSelect) {
@@ -357,7 +352,6 @@ export default class NarrationManager implements NarrationManagerInterface {
                         });
                         NarrationManagerStatic.choiceMadeTemp = undefined;
                     }
-                    return result;
                 } catch (e) {
                     // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
                     // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
@@ -367,6 +361,13 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                     return;
                 }
+                try {
+                    this.currentLabel &&
+                        (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
+                } catch (e) {
+                    logger.warn("Error running onStepEnd", e);
+                }
+                return result;
             } else if (this.openedLabels.length > 1) {
                 this.closeCurrentLabel();
                 return await this.continue(props, options);
@@ -426,12 +427,6 @@ export default class NarrationManager implements NarrationManagerInterface {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
 
-            try {
-                this.currentLabel &&
-                    (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
-            } catch (e) {
-                logger.error("Error running onStepEnd", e);
-            }
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
         } catch (e) {
             logger.error("Error calling label", e);
@@ -482,12 +477,6 @@ export default class NarrationManager implements NarrationManagerInterface {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
 
-            try {
-                this.currentLabel &&
-                    (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
-            } catch (e) {
-                logger.error("Error running onStepEnd", e);
-            }
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
         } catch (e) {
             logger.error("Error jumping label", e);
