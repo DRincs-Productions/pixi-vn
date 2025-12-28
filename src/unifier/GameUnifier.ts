@@ -273,7 +273,7 @@ export default class GameUnifier {
     static async processNavigationRequests() {
         // Create a new lock for this execution and chain it to the previous one
         // This ensures that concurrent calls will properly queue
-        let releaseLock!: () => void;
+        let releaseLock: () => void = () => {};
         const previousLock = GameUnifier.processNavigationLock;
         GameUnifier.processNavigationLock = previousLock.then(() => new Promise<void>(resolve => {
             releaseLock = resolve;
