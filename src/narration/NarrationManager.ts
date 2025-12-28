@@ -252,7 +252,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (steps > 1) {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
-        this.beforeRunCurrentStep();
+        GameUnifier.runningStepsCount++;
         try {
             this.currentLabel &&
                 (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
@@ -270,9 +270,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.runningStepsCount--;
             throw e;
         }
-    }
-    private beforeRunCurrentStep() {
-        GameUnifier.runningStepsCount++;
     }
     private async afterRunCurrentStep() {
         GameUnifier.runningStepsCount--;
@@ -422,7 +419,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        this.beforeRunCurrentStep();
+        GameUnifier.runningStepsCount++;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -478,7 +475,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        this.beforeRunCurrentStep();
+        GameUnifier.runningStepsCount++;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
