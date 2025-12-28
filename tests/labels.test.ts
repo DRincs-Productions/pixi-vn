@@ -409,7 +409,7 @@ test("error recovery with mixed sync and async steps", async () => {
     let errorCaught = false;
     const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = () => {
+        GameUnifier.onError = (type, error, props) => {
             errorCaught = true;
         };
 
