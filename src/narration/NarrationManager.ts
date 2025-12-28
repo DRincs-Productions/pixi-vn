@@ -213,7 +213,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     get canGoNext(): boolean {
         return this.canContinue;
     }
-    private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
+    private async onStepStart(label: LabelAbstract<any, any>, stepId: number) {
         let res: (void | Promise<void> | Promise<void[]>)[] = [];
         if (label.onStepStart) {
             res.push(label.onStepStart(stepId, label));
@@ -306,7 +306,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             }
             if (currentLabel.stepCount > currentLabelStepIndex) {
                 try {
-                    await this.onStepRun(currentLabel, currentLabelStepIndex);
+                    await this.onStepStart(currentLabel, currentLabelStepIndex);
                 } catch (e) {
                     logger.error("Error running onStepStart", e);
                     if (this.onStepError) {
