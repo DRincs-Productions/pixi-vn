@@ -262,9 +262,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (GameUnifier.runningStepsCount === 1) {
             await GameUnifier.onPreContinue();
         }
-        NarrationManagerStatic.increaseCurrentStepIndex();
-        const result = await this.runCurrentStep(props, options);
-        return (await this.afterRunCurrentStep()) || result;
+        try {
+            NarrationManagerStatic.increaseCurrentStepIndex();
+            const result = await this.runCurrentStep(props, options);
+            return (await this.afterRunCurrentStep()) || result;
+        } catch (e) {
+            GameUnifier.runningStepsCount--;
+            throw e;
+        }
     }
     private beforeRunCurrentStep() {
         GameUnifier.runningStepsCount++;
@@ -435,8 +440,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("Error calling label", e);
             return await this.afterRunCurrentStep();
         }
-        const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
-        return (await this.afterRunCurrentStep()) || result;
+        try {
+            const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+            return (await this.afterRunCurrentStep()) || result;
+        } catch (e) {
+            GameUnifier.runningStepsCount--;
+            throw e;
+        }
     }
     public async jumpLabel<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
@@ -486,8 +496,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("Error jumping label", e);
             return await this.afterRunCurrentStep();
         }
-        const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
-        return (await this.afterRunCurrentStep()) || result;
+        try {
+            const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+            return (await this.afterRunCurrentStep()) || result;
+        } catch (e) {
+            GameUnifier.runningStepsCount--;
+            throw e;
+        }
     }
     public async selectChoice<T extends {}>(
         item: StoredIndexedChoiceInterface,
