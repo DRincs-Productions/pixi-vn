@@ -141,8 +141,9 @@ export default interface NarrationManagerInterface {
         props: StepLabelPropsType,
         options?: {
             /**
-             * The number of steps to advance. Must be greater than 0. If a value less than or equal to 0 is
-             * provided, the implementation will emit a warning and return early without advancing steps. @default 1
+             * The number of steps to advance. Must be a valid finite number greater than 0. 
+             * If NaN, Infinity, or a value less than or equal to 0 is provided, the implementation 
+             * will emit a warning and return early without advancing steps. @default 1
              */
             steps?: number;
             /**
