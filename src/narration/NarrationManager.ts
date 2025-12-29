@@ -257,7 +257,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType;
+        let result: StepLabelResultType = undefined;
         try {
             if (GameUnifier.runningStepsCount === 1) {
                 await GameUnifier.onPreContinue();
@@ -269,7 +269,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         } finally {
             GameUnifier.runningStepsCount--;
-            result = await this.afterRunCurrentStep();
+            result = (await this.afterRunCurrentStep()) || result;
         }
         return result;
     }
@@ -432,7 +432,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType;
+        let result: StepLabelResultType = undefined;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -446,7 +446,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         } finally {
             GameUnifier.runningStepsCount--;
-            result = await this.afterRunCurrentStep();
+            result = (await this.afterRunCurrentStep()) || result;
         }
         return result;
     }
@@ -481,7 +481,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType;
+        let result: StepLabelResultType = undefined;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -495,7 +495,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         } finally {
             GameUnifier.runningStepsCount--;
-            result = await this.afterRunCurrentStep();
+            result = (await this.afterRunCurrentStep()) || result;
         }
         return result;
     }
