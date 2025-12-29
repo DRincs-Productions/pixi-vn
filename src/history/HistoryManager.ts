@@ -78,11 +78,11 @@ export default class HistoryManager implements HistoryManagerInterface {
     public async back(props: StepLabelPropsType, options: { steps?: number } = {}) {
         const { steps = 1 } = options;
         if (!Number.isFinite(steps)) {
-            logger.warn(`The parameter steps must be a valid finite number, received: ${steps}`);
+            logger.warn(`[back] The parameter steps must be a valid finite number, received: ${steps}`);
             return;
         }
         if (steps <= 0) {
-            logger.warn(`The parameter steps must be greater than 0, received: ${steps}`);
+            logger.warn(`[back] The parameter steps must be greater than 0, received: ${steps}`);
             return;
         }
         if (GameUnifier.runningStepsCount > 0) {
