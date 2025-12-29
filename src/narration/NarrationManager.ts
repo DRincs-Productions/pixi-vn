@@ -259,6 +259,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             NarrationManagerStatic.increaseCurrentStepIndex();
             const result = await this.runCurrentStep(props, options);
+            GameUnifier.runningStepsCount--;
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
             GameUnifier.runningStepsCount--;
@@ -266,7 +267,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     private async afterRunCurrentStep() {
-        GameUnifier.runningStepsCount--;
         if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
             return await GameUnifier.processNavigationRequests();
         }
@@ -434,6 +434,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         try {
             const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+            GameUnifier.runningStepsCount--;
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
             GameUnifier.runningStepsCount--;
@@ -484,6 +485,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         try {
             const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+            GameUnifier.runningStepsCount--;
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
             GameUnifier.runningStepsCount--;
