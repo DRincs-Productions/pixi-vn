@@ -287,20 +287,18 @@ export default class GameUnifier {
         // Wait for the previous operation to complete
         await previousLock;
         
-        let result: Promise<StepLabelResultType>;
         try {
             // Perform the atomic read-modify-write operation
             const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
             GameUnifier.navigationRequestsCount = processResult.newValue;
-            result = processResult.result;
+            
+            // Hold the lock until the async navigation operation completes
+            const result = await processResult.result;
+            return result;
         } finally {
-            // Release the lock immediately after the synchronous part
-            // This must happen before awaiting result to prevent deadlocks
+            // Release the lock after the entire async operation has completed
             releaseLock();
         }
-        
-        // Return the async result (lock is already released)
-        return await result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
