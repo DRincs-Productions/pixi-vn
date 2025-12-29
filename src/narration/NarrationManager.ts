@@ -253,12 +253,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
         GameUnifier.runningStepsCount++;
-        if (GameUnifier.runningStepsCount === 1) {
+        const shouldAddHistory = GameUnifier.runningStepsCount === 1;
+        if (shouldAddHistory) {
             await GameUnifier.onPreContinue();
         }
         try {
             NarrationManagerStatic.increaseCurrentStepIndex();
-            const result = await this.runCurrentStep(props, options);
+            const result = await this.runCurrentStep(props, { ...options, shouldAddHistory });
             GameUnifier.runningStepsCount--;
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
@@ -284,9 +285,13 @@ export default class NarrationManager implements NarrationManagerInterface {
              * The index of the choice made by the player. (This params is used in the choice menu)
              */
             choiceMade?: number;
+            /**
+             * Whether to add this step to the history. Should be true for top-level executions.
+             */
+            shouldAddHistory?: boolean;
         } = {}
     ): Promise<StepLabelResultType> {
-        const { choiceMade } = options;
+        const { choiceMade, shouldAddHistory = false } = options;
         if (NarrationManagerStatic.currentLabelId) {
             let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
             if (currentLabelStepIndex === null) {
@@ -344,7 +349,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
 
-                    if (GameUnifier.runningStepsCount === 1) {
+                    if (shouldAddHistory) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha, {
                             ...options,
@@ -421,6 +426,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
+        const shouldAddHistory = GameUnifier.runningStepsCount === 1;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -433,7 +439,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             return await this.afterRunCurrentStep();
         }
         try {
-            const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+            const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade, shouldAddHistory });
             GameUnifier.runningStepsCount--;
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
@@ -472,6 +478,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
+        const shouldAddHistory = GameUnifier.runningStepsCount === 1;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -484,7 +491,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             return await this.afterRunCurrentStep();
         }
         try {
-            const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+            const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade, shouldAddHistory });
             GameUnifier.runningStepsCount--;
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
