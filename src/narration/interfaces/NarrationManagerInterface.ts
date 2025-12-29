@@ -137,27 +137,21 @@ export default interface NarrationManagerInterface {
      * }
      * ```
      */
-    continue(
+    continue: (
         props: StepLabelPropsType,
         options?: {
+            /**
+             * The number of steps to advance. Must be a valid finite number greater than 0. 
+             * If NaN, Infinity, or a value less than or equal to 0 is provided, the implementation 
+             * will emit a warning and return early without advancing steps. @default 1
+             */
+            steps?: number;
             /**
              * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
              */
             runNow?: boolean;
         }
-    ): Promise<StepLabelResultType>;
-    /**
-     * @deprecated use {@link continue} instead.
-     */
-    goNext(
-        props: StepLabelPropsType,
-        options?: {
-            /**
-             * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
-             */
-            runNow?: boolean;
-        }
-    ): Promise<StepLabelResultType>;
+    ) => Promise<StepLabelResultType>;
     /**
      * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
      * @param label The label to execute or the id of the label

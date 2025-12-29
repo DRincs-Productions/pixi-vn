@@ -1,7 +1,7 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import diff from "microdiff";
-import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory } from "../narration";
+import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory, StepLabelPropsType } from "../narration";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { createExportableElement } from "../utils";
 import { restoreDiffChanges } from "../utils/diff-utility";
@@ -56,7 +56,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         const lastKey = this.lastKey;
         if (typeof lastKey !== "number") {
-            logger.error("You can't go back, there is no step to go back");
+            logger.warn("You can't go back, there is no step to go back");
             return restoredStep;
         }
         const diff = HistoryManagerStatic._diffHistory.get(lastKey);
@@ -71,33 +71,35 @@ export default class HistoryManager implements HistoryManagerInterface {
                 return restoredStep;
             }
         } else {
-            logger.error("You can't go back, there is no step to go back");
+            logger.warn("No diff found for the last step, cannot go back");
             return restoredStep;
         }
     }
-    async goBack(navigate: (path: string) => void | Promise<void>, steps: number = 1) {
-        return await this.back(navigate, steps);
-    }
-    async back(navigate: (path: string) => void | Promise<void>, steps: number = 1) {
+    public async back(props: StepLabelPropsType, options: { steps?: number } = {}) {
+        const { steps = 1 } = options;
+        if (!Number.isFinite(steps)) {
+            logger.warn(`[back] The parameter steps must be a valid finite number, received: ${steps}`);
+            return;
+        }
         if (steps <= 0) {
-            logger.warn("The parameter steps must be greater than 0");
+            logger.warn(`[back] The parameter steps must be greater than 0, received: ${steps}`);
+            return;
+        }
+        if (GameUnifier.runningStepsCount > 0) {
+            GameUnifier.increaseBackRequest(steps);
             return;
         }
         if (HistoryManagerStatic._diffHistory.size < 1) {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
-        if (HistoryManagerStatic.goBackRunning) {
-            logger.warn("Go back is already running");
-            return;
-        }
-        HistoryManagerStatic.goBackRunning = true;
+        GameUnifier.runningStepsCount++;
         try {
             let restoredStep = createExportableElement(
                 this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
             );
             if (restoredStep) {
-                await GameUnifier.restoreGameStepState(restoredStep, navigate);
+                await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
                 const stepCounter = GameUnifier.stepCounter - 1;
                 const item = HistoryManagerStatic._narrationHistory.get(stepCounter);
                 if (item && Object.keys(item).length === 1 && item.stepIndex !== undefined) {
@@ -113,10 +115,13 @@ export default class HistoryManager implements HistoryManagerInterface {
                 logger.error("Error going back");
             }
             HistoryManagerStatic.originalStepData = restoredStep;
-            HistoryManagerStatic.goBackRunning = false;
         } catch (e) {
             logger.error("Error going back", e);
-            HistoryManagerStatic.goBackRunning = false;
+        } finally {
+            GameUnifier.runningStepsCount--;
+            if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
+                return await GameUnifier.processNavigationRequests();
+            }
         }
     }
     add(
@@ -327,7 +332,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         return HistoryManagerStatic._diffHistory.has(lastKey);
     }
     blockGoBack() {
-        if (GameUnifier.currentStepsRunningNumber !== 0) {
+        if (GameUnifier.runningStepsCount !== 0) {
             return;
         }
         HistoryManagerStatic._diffHistory.clear();

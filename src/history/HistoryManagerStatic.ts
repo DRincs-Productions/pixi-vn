@@ -12,10 +12,6 @@ export default class HistoryManagerStatic {
     static _stepsInfoHistory = new CachedMap<number, Omit<HistoryStep, "diff">>({ cacheSize: 5 });
     static _narrationHistory = new CachedMap<number, NarrationHistory>({ cacheSize: 50 });
     static stepLimitSaved: number = 20;
-    /**
-     * goBackRunning is a boolean that indicates if the go back is running.
-     */
-    static goBackRunning: boolean = false;
     static _originalStepData: GameStepState | undefined = undefined;
     static get originalStepData(): GameStepState {
         if (!HistoryManagerStatic._originalStepData) {

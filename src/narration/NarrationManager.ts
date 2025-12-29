@@ -205,7 +205,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return true;
     }
     get canContinue(): boolean {
-        if (NarrationManagerStatic.stepsRunning !== 0) {
+        if (GameUnifier.runningStepsCount !== 0) {
             return false;
         }
         return this.getCanContinue();
@@ -213,7 +213,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     get canGoNext(): boolean {
         return this.canContinue;
     }
-    private async onStepRun(label: LabelAbstract<any, any>, stepId: number) {
+    private async onStepStart(label: LabelAbstract<any, any>, stepId: number) {
         let res: (void | Promise<void> | Promise<void[]>)[] = [];
         if (label.onStepStart) {
             res.push(label.onStepStart(stepId, label));
@@ -233,35 +233,50 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return await Promise.all(res);
     }
-    public async goNext(
-        props: StepLabelPropsType,
-        options: { choiceMade?: number; runNow?: boolean } = {}
-    ): Promise<StepLabelResultType> {
-        return await this.continue(props, options);
-    }
     public async continue(
         props: StepLabelPropsType,
-        options: { choiceMade?: number; runNow?: boolean } = {}
-    ): Promise<StepLabelResultType> {
-        const { runNow = false } = options;
+        options: { steps?: number; runNow?: boolean; choiceMade?: number } = {}
+    ) {
+        const { runNow = false, steps = 1 } = options;
+        if (!Number.isFinite(steps)) {
+            logger.warn(`[continue] The parameter steps must be a valid finite number, received: ${steps}`);
+            return;
+        }
+        if (steps <= 0) {
+            logger.warn(`[continue] The parameter steps must be greater than 0, received: ${steps}`);
+            return;
+        }
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
-        if (!runNow && NarrationManagerStatic.stepsRunning !== 0) {
-            NarrationManagerStatic.continueRequests++;
+        if (GameUnifier.runningStepsCount !== 0) {
+            GameUnifier.increaseContinueRequest(steps);
             return;
         }
+        if (steps > 1) {
+            GameUnifier.increaseContinueRequest(steps - 1);
+        }
+        GameUnifier.runningStepsCount++;
+        let result: StepLabelResultType = undefined;
         try {
-            this.currentLabel &&
-                (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
+            if (GameUnifier.runningStepsCount === 1) {
+                await GameUnifier.onPreContinue();
+            }
+            NarrationManagerStatic.increaseCurrentStepIndex();
+            result = await this.runCurrentStep(props, options);
         } catch (e) {
-            logger.error("Error running onStepEnd", e);
+            logger.error("Error continuing", e);
+            throw e;
+        } finally {
+            GameUnifier.runningStepsCount--;
+            result = (await this.afterRunCurrentStep()) || result;
         }
-        if (NarrationManagerStatic.stepsRunning === 0) {
-            await GameUnifier.onGoNextEnd();
+        return result;
+    }
+    private async afterRunCurrentStep() {
+        if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
+            return await GameUnifier.processNavigationRequests();
         }
-        NarrationManagerStatic.increaseCurrentStepIndex();
-        return await this.runCurrentStep(props, options);
     }
     /**
      * Execute the current step and add it to the history.
@@ -292,7 +307,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             }
             if (currentLabel.stepCount > currentLabelStepIndex) {
                 try {
-                    await this.onStepRun(currentLabel, currentLabelStepIndex);
+                    await this.onStepStart(currentLabel, currentLabelStepIndex);
                 } catch (e) {
                     logger.error("Error running onStepStart", e);
                     if (this.onStepError) {
@@ -310,9 +325,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                     logger.warn("stepSha not found, setting to ERROR");
                     stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
+                let result;
                 try {
-                    NarrationManagerStatic.stepsRunning++;
-                    let result = await step(props, { labelId: currentLabel.id });
+                    result = await step(props, { labelId: currentLabel.id });
 
                     let choiceMenuOptions = this.choices;
                     if (choiceMenuOptions?.length === 1 && choiceMenuOptions[0].autoSelect) {
@@ -322,7 +337,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
                     let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
                     if (choiceMade !== undefined && lastHistoryStep) {
-                        let stepSha = lastHistoryStep.stepSha1;
+                        stepSha = lastHistoryStep.stepSha1;
                         if (!stepSha) {
                             logger.warn("stepSha not found, setting to ERROR");
                             stepSha = AdditionalShaSpetsEnum.ERROR;
@@ -335,34 +350,36 @@ export default class NarrationManager implements NarrationManagerInterface {
                         );
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
+                } catch (e) {
+                    // TODO(#narration-rollback): Implement state restoration/rollback on step errors (e.g. restoring from the last safe history step) to keep the narration state consistent.
+                    logger.error("Error running step", e);
+                    if (this.onStepError) {
+                        this.onStepError(e, props);
+                    }
+                    throw e;
+                }
 
-                    NarrationManagerStatic.stepsRunning--;
-                    if (NarrationManagerStatic.stepsRunning === 0) {
+                try {
+                    // Only add to history if is the main step (not a nested call/jump)
+                    if (GameUnifier.runningStepsCount === 1) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha, {
                             ...options,
                             choiceMade: NarrationManagerStatic.choiceMadeTemp,
                         });
                         NarrationManagerStatic.choiceMadeTemp = undefined;
-
-                        if (NarrationManagerStatic.continueRequests > 0) {
-                            NarrationManagerStatic.continueRequests--;
-                            return await this.continue(props);
-                        }
                     }
-                    return result;
                 } catch (e) {
-                    if (NarrationManagerStatic.stepsRunning > 0) {
-                        NarrationManagerStatic.stepsRunning--;
-                    }
-                    // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
-                    // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
-                    logger.error("Error running step", e);
-                    if (this.onStepError) {
-                        this.onStepError(e, props);
-                    }
-                    return;
+                    logger.warn("Error adding step to history", e);
                 }
+
+                try {
+                    this.currentLabel &&
+                        (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
+                } catch (e) {
+                    logger.warn("Error running onStepEnd", e);
+                }
+                return result;
             } else if (this.openedLabels.length > 1) {
                 this.closeCurrentLabel();
                 return await this.continue(props, options);
@@ -415,24 +432,24 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
+        GameUnifier.runningStepsCount++;
+        let result: StepLabelResultType = undefined;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
 
-            try {
-                this.currentLabel &&
-                    (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
-            } catch (e) {
-                logger.error("Error running onStepEnd", e);
-            }
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
+            result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
         } catch (e) {
             logger.error("Error calling label", e);
-            return;
+            throw e;
+        } finally {
+            GameUnifier.runningStepsCount--;
+            result = (await this.afterRunCurrentStep()) || result;
         }
-        return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+        return result;
     }
     public async jumpLabel<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
@@ -464,24 +481,24 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
+        GameUnifier.runningStepsCount++;
+        let result: StepLabelResultType = undefined;
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new Error(`[Pixi’VN] Label ${labelId} not found`);
             }
 
-            try {
-                this.currentLabel &&
-                    (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
-            } catch (e) {
-                logger.error("Error running onStepEnd", e);
-            }
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
+            result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
         } catch (e) {
-            logger.error("Error jumping label", e);
-            return;
+            logger.error("Error jumping to label", e);
+            throw e;
+        } finally {
+            GameUnifier.runningStepsCount--;
+            result = (await this.afterRunCurrentStep()) || result;
         }
-        return await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+        return result;
     }
     public async selectChoice<T extends {}>(
         item: StoredIndexedChoiceInterface,
@@ -542,7 +559,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (choice.closeCurrentLabel) {
             this.closeCurrentLabel();
         }
-        return this.continue(props, { choiceMade });
+        return await this.continue(props, { choiceMade });
     }
 
     /* Go Back & Refresh Methods */

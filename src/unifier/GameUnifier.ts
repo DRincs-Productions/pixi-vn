@@ -1,10 +1,16 @@
 import { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import { StepLabelPropsType, StepLabelType } from "../narration/types/StepLabelType";
+import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../narration/types/StepLabelType";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { logger } from "../utils/log-utility";
 
 export default class GameUnifier {
     static init(options: {
+        /**
+         * The navigate function.
+         * @param path The path to navigate to.
+         * @returns
+         */
+        navigate?: (path: string) => void | Promise<void>;
         /**
          * This function returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
          *
@@ -42,7 +48,14 @@ export default class GameUnifier {
          * This function is called after the narration.continue() method is executed.
          * It can be used to force the completion of the ticker in the game engine.
          */
-        onGoNextEnd?: () => Promise<void>;
+        onPreContinue?: () => Promise<void> | void;
+        /**
+         * This function is called to process the pending navigation requests (continue/back).
+         */
+        processNavigationRequests: (navigationRequestsCount: number) => {
+            newValue: number;
+            result: Promise<StepLabelResultType>;
+        };
         /**
          * This function returns the value of a variable.
          * @param key The key of the variable.
@@ -97,22 +110,20 @@ export default class GameUnifier {
             }
         ): void;
         /**
-         * This function returns the number of steps that are currently running.
-         */
-        getCurrentStepsRunningNumber: () => number;
-        /**
          * This function returns the character by its id.
          * @param id The id of the character.
          * @returns The character or undefined if it does not exist.
          */
         getCharacter: (id: string) => CharacterInterface | undefined;
     }) {
+        options.navigate && (GameUnifier._navigate = options.navigate);
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
-        options.onGoNextEnd && (GameUnifier._onGoNextEnd = options.onGoNextEnd);
+        options.onPreContinue && (GameUnifier._onPreContinue = options.onPreContinue);
+        GameUnifier._processNavigationRequests = options.processNavigationRequests;
         GameUnifier._getVariable = options.getVariable;
         GameUnifier._setVariable = options.setVariable;
         GameUnifier._removeVariable = options.removeVariable;
@@ -120,8 +131,23 @@ export default class GameUnifier {
         GameUnifier._setFlag = options.setFlag;
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._addHistoryItem = options.addHistoryItem;
-        GameUnifier._getCurrentStepsRunningNumber = options.getCurrentStepsRunningNumber;
         GameUnifier._getCharacter = options.getCharacter;
+    }
+    private static _navigate: (path: string) => void | Promise<void> = () => {
+        logger.warn(
+            "Navigate function not initialized. You should add the navigate function in the Game.init() method."
+        );
+    };
+    /**
+     * The navigate function.
+     * @param path The path to navigate to.
+     * @returns
+     */
+    static get navigate() {
+        return GameUnifier._navigate;
+    }
+    static set navigate(value: (path: string) => void | Promise<void>) {
+        GameUnifier._navigate = value;
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
@@ -178,13 +204,82 @@ export default class GameUnifier {
     static get openedLabels() {
         return GameUnifier._getOpenedLabels();
     }
-    private static _onGoNextEnd: () => Promise<void> = async () => {};
+    private static _onPreContinue: () => Promise<void> | void = () => {};
     /**
-     * This function is called after the narration.continue() method is executed.
-     * It can be used to force the completion of the ticker in the game engine.
+     * Callback hook intended to run immediately before a narration "continue" operation.
+     * Game engines can use this to force completion of their ticker or pending updates,
+     * if supported by the underlying narration manager.
      */
-    static get onGoNextEnd() {
-        return GameUnifier._onGoNextEnd;
+    static get onPreContinue() {
+        return GameUnifier._onPreContinue;
+    }
+    /**
+     * Number of pending navigation requests (continue/back).
+     * Positive values indicate pending continue requests,
+     * negative values indicate pending back requests.
+     */
+    private static navigationRequestsCount: number = 0;
+    /**
+     * Promise-based lock to ensure only one processNavigationRequests executes at a time.
+     * This prevents race conditions in the read-modify-write operation.
+     */
+    private static processNavigationLock: Promise<void> = Promise.resolve();
+    /**
+     * This function is called to get the number of pending continue requests.
+     * Returns a positive count of pending continue requests when navigationRequestsCount is positive.
+     * If it is > 0, after the stepsRunning is 0, the next step will be executed.
+     */
+    static get continueRequestsCount() {
+        return GameUnifier.navigationRequestsCount;
+    }
+    /**
+     * This function is called to increase the number of pending continue requests.
+     * Note: While the increment operation itself is atomic, the overall navigation
+     * processing uses a lock in processNavigationRequests to ensure atomicity of
+     * read-modify-write operations across async boundaries.
+     * @param amount The number of steps to increase. Default is 1.
+     */
+    static increaseContinueRequest(amount: number = 1) {
+        GameUnifier.navigationRequestsCount += amount;
+    }
+    /**
+     * This function is called to get the number of pending back requests.
+     * Returns the negation of navigationRequestsCount:
+     * - Positive value (absolute value of navigationRequestsCount) when navigationRequestsCount is negative (back requests pending)
+     * - Negative value when navigationRequestsCount is positive (continue requests pending)
+     * - Zero when navigationRequestsCount is zero (no requests pending)
+     * If it is > 0, after the stepsRunning is 0, the previous step will be executed.
+     */
+    static get backRequestsCount() {
+        return -1 * GameUnifier.navigationRequestsCount;
+    }
+    /**
+     * This function is called to increase the number of pending back requests.
+     * Note: While the decrement operation itself is atomic, the overall navigation
+     * processing uses a lock in processNavigationRequests to ensure atomicity of
+     * read-modify-write operations across async boundaries.
+     * @param amount The number of steps to increase. Default is 1.
+     */
+    static increaseBackRequest(amount: number = 1) {
+        GameUnifier.navigationRequestsCount -= amount;
+    }
+    private static _processNavigationRequests: (navigationRequestsCount: number) => {
+        newValue: number;
+        result: Promise<StepLabelResultType>;
+    } = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new Error("Method not implemented, you should initialize the Game: Game.init()");
+    };
+    /**
+     * This function processes the pending navigation requests (continue/back).
+     */
+    static async processNavigationRequests() {
+        const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
+        GameUnifier.navigationRequestsCount = processResult.newValue;
+
+        // Hold the lock until the async navigation operation completes
+        const result = await processResult.result;
+        return result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
@@ -273,16 +368,11 @@ export default class GameUnifier {
     static get addHistoryItem() {
         return GameUnifier._addHistoryItem;
     }
-    private static _getCurrentStepsRunningNumber: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new Error("Method not implemented, you should initialize the Game: Game.init()");
-    };
     /**
-     * Returns the number of steps that are currently running.
+     * Count of currently executing steps.
+     * If a step triggers a narration.continue(), this number is greater than 1.
      */
-    static get currentStepsRunningNumber() {
-        return GameUnifier._getCurrentStepsRunningNumber();
-    }
+    static runningStepsCount: number = 0;
     private static _getCharacter: (id: string) => CharacterInterface | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");
