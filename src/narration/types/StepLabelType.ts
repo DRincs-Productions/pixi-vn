@@ -11,7 +11,7 @@ import { StepLabelProps, StepLabelResult } from "@drincs/pixi-vn";
  * `StepLabelResult` with a more specific, well-typed structure instead of
  * using untyped string tokens.
  */
-export type StepLabelResultType = StepLabelResult | void;
+export type StepLabelResultType = StepLabelResult | void | string;
 export type StepLabelPropsType<T extends {} = {}> = StepLabelProps & T;
 
 /**
