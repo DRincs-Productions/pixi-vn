@@ -268,57 +268,36 @@ export default class GameUnifier {
         throw new Error("Method not implemented, you should initialize the Game: Game.init()");
     };
     /**
-     * Tracks the current recursion depth of processNavigationRequests to prevent
-     * re-entrant calls that could lead to complex race conditions.
-     */
-    private static navigationProcessingDepth = 0;
-
-    /**
      * This function processes the pending navigation requests (continue/back).
      * Uses a promise-based lock to ensure atomic read-modify-write operations
      * and prevent race conditions when called from multiple async contexts.
      */
     static async processNavigationRequests() {
-        if (GameUnifier.navigationProcessingDepth > 0) {
-            logger.error("Recursive call to processNavigationRequests detected. This pattern is not supported and may cause deadlocks.");
-            throw new Error("Recursive call to processNavigationRequests detected. This pattern is not supported and may cause deadlocks.");
-        }
-
-        GameUnifier.navigationProcessingDepth++;
+        // Create a new lock for this execution and chain it to the previous one
+        // This ensures that concurrent calls will properly queue
+        let releaseLock: () => void = () => {};
+        const previousLock = GameUnifier.processNavigationLock;
+        GameUnifier.processNavigationLock = previousLock.then(() => new Promise<void>(resolve => {
+            releaseLock = resolve;
+        }));
+        
+        // Wait for the previous operation to complete
+        await previousLock;
+        
+        let result: Promise<StepLabelResultType>;
         try {
-            // Create a new lock for this execution and chain it to the previous one
-            // This ensures that concurrent calls will properly queue
-            let releaseLock: () => void = () => {};
-            const previousLock = GameUnifier.processNavigationLock;
-            GameUnifier.processNavigationLock = previousLock.then(
-                () =>
-                    new Promise<void>(resolve => {
-                        releaseLock = resolve;
-                    }),
-            );
-
-            // Wait for the previous operation to complete
-            await previousLock;
-
-            let result: Promise<StepLabelResultType>;
-            try {
-                // Perform the atomic read-modify-write operation
-                const processResult = GameUnifier._processNavigationRequests(
-                    GameUnifier.navigationRequestsCount,
-                );
-                GameUnifier.navigationRequestsCount = processResult.newValue;
-                result = processResult.result;
-            } finally {
-                // Release the lock immediately after the synchronous part
-                // This must happen before awaiting result to prevent deadlocks
-                releaseLock();
-            }
-
-            // Return the async result (lock is already released)
-            return await result;
+            // Perform the atomic read-modify-write operation
+            const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
+            GameUnifier.navigationRequestsCount = processResult.newValue;
+            result = processResult.result;
         } finally {
-            GameUnifier.navigationProcessingDepth--;
+            // Release the lock immediately after the synchronous part
+            // This must happen before awaiting result to prevent deadlocks
+            releaseLock();
         }
+        
+        // Return the async result (lock is already released)
+        return await result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
