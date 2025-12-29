@@ -244,7 +244,10 @@ export default class GameUnifier {
     }
     /**
      * This function is called to get the number of pending back requests.
-     * Returns a positive count of pending back requests when navigationRequestsCount is negative.
+     * Returns the negation of navigationRequestsCount:
+     * - Positive value (absolute value of navigationRequestsCount) when navigationRequestsCount is negative (back requests pending)
+     * - Negative value when navigationRequestsCount is positive (continue requests pending)
+     * - Zero when navigationRequestsCount is zero (no requests pending)
      * If it is > 0, after the stepsRunning is 0, the previous step will be executed.
      */
     static get backRequestsCount() {
