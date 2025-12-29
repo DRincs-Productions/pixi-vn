@@ -50,6 +50,18 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@v3
+    - name: Extract dependency versions
+      id: versions
+      run: |
+        PIXIJS_VERSION=$(node -p "require('./package.json').dependencies['pixi.js']")
+        MOTION_VERSION=$(node -p "require('./package.json').dependencies['motion']")
+        echo "pixijs=$PIXIJS_VERSION" >> $GITHUB_OUTPUT
+        echo "motion=$MOTION_VERSION" >> $GITHUB_OUTPUT
     - uses: ncipollo/release-action@v1
       with:
-        body: "Release ${{ github.ref }}"
+        body: |
+          Release ${{ github.ref }}
+          
+          ### Dependencies
+          - **PixiJS**: ${{ steps.versions.outputs.pixijs }}
+          - **Motion**: ${{ steps.versions.outputs.motion }}
