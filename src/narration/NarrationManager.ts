@@ -253,18 +253,19 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
         GameUnifier.runningStepsCount++;
-        if (GameUnifier.runningStepsCount === 1) {
-            await GameUnifier.onPreContinue();
-        }
+        let result: StepLabelResultType;
         try {
+            if (GameUnifier.runningStepsCount === 1) {
+                await GameUnifier.onPreContinue();
+            }
             NarrationManagerStatic.increaseCurrentStepIndex();
-            const result = await this.runCurrentStep(props, options);
-            GameUnifier.runningStepsCount--;
-            return (await this.afterRunCurrentStep()) || result;
+            result = await this.runCurrentStep(props, options);
         } catch (e) {
-            GameUnifier.runningStepsCount--;
             throw e;
+        } finally {
+            GameUnifier.runningStepsCount--;
         }
+        return (await this.afterRunCurrentStep()) || result;
     }
     private async afterRunCurrentStep() {
         if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
