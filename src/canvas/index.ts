@@ -1,4 +1,3 @@
-import * as PIXI from "@drincs/pixi-vn/pixi.js";
 import CanvasManager from "./CanvasManager";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
@@ -77,13 +76,7 @@ export type { default as CanvasEventNamesType } from "./types/CanvasEventNamesTy
 export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";
-export {
-    canvas,
-    /**
-     * @deprecated Use `@drincs/pixi-vn/pixi.js` instead.
-     */
-    PIXI,
-};
+export { canvas };
 
 const canvas: CanvasManagerInterface = new CanvasManager();
 CanvasUtilitiesStatic.init({
