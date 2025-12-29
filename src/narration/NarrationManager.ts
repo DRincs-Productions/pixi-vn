@@ -360,6 +360,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
 
                 try {
+                    // Only add to history if is the main step (not a nested call/jump)
                     if (GameUnifier.runningStepsCount === 1) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha, {
