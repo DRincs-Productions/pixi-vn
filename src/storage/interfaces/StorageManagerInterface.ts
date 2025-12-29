@@ -32,10 +32,6 @@ export default interface StorageManagerInterface {
      */
     set default(value: { [key: string]: StorageElementType });
     /**
-     * @deprecated use {@link default} instead
-     */
-    set startingStorage(value: { [key: string]: StorageElementType });
-    /**
      * Set a variable in the storage
      * @param key The key of the variable
      * @param value The value of the variable. If undefined, the variable will be removed
@@ -43,29 +39,17 @@ export default interface StorageManagerInterface {
      */
     set(key: string, value: StorageElementType): void;
     /**
-     * @deprecated use {@link set} instead
-     */
-    setVariable(key: string, value: StorageElementType): void;
-    /**
      * Get a variable from the storage. If the variable is a temporary variable, it will return the temporary variable
      * @param key The key of the variable
      * @returns The value of the variable. If the variable does not exist, it will return undefined
      */
     get<T extends StorageElementType>(key: string): T | undefined;
     /**
-     * @deprecated use {@link get} instead
-     */
-    getVariable<T extends StorageElementType>(key: string): T | undefined;
-    /**
      * Remove a variable from the storage
      * @param key The key of the variable
      * @returns
      */
     remove(key: string): void;
-    /**
-     * @deprecated use {@link remove} instead
-     */
-    removeVariable(key: string): void;
     /**
      * Set a variable in the temporary storage. The lifespan of the variable is the number of opened labels.
      * To get the temporary variable, use {@link get}
