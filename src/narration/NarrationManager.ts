@@ -238,8 +238,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         options: { steps?: number; runNow?: boolean; choiceMade?: number } = {}
     ) {
         const { runNow = false, steps = 1 } = options;
+        if (!Number.isFinite(steps)) {
+            logger.warn(`The parameter steps must be a valid finite number, received: ${steps}`);
+            return;
+        }
         if (steps <= 0) {
-            logger.warn("The parameter steps must be greater than 0");
+            logger.warn(`The parameter steps must be greater than 0, received: ${steps}`);
             return;
         }
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
