@@ -81,15 +81,17 @@ export default class HistoryManager implements HistoryManagerInterface {
             logger.warn("The parameter steps must be greater than 0");
             return;
         }
-        if (GameUnifier.runningStepsCount > 0) {
-            GameUnifier.increaseBackRequest(steps);
-            return;
-        }
         if (HistoryManagerStatic._diffHistory.size < 1) {
             logger.warn("You can't go back, there is no step to go back");
             return;
         }
-        GameUnifier.runningStepsCount++;
+        const { wasZero } = await GameUnifier.checkAndIncrementRunningSteps();
+        if (!wasZero) {
+            // Count was not zero, so we should queue instead of running
+            await GameUnifier.decrementRunningSteps();
+            GameUnifier.increaseBackRequest(steps);
+            return;
+        }
         try {
             let restoredStep = createExportableElement(
                 this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
@@ -114,8 +116,8 @@ export default class HistoryManager implements HistoryManagerInterface {
         } catch (e) {
             logger.error("Error going back", e);
         } finally {
-            GameUnifier.runningStepsCount--;
-            if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
+            await GameUnifier.decrementRunningSteps();
+            if (GameUnifier.runningStepsCountValue === 0 && GameUnifier.backRequestsCount !== 0) {
                 return await GameUnifier.processNavigationRequests();
             }
         }
@@ -328,7 +330,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         return HistoryManagerStatic._diffHistory.has(lastKey);
     }
     blockGoBack() {
-        if (GameUnifier.runningStepsCount !== 0) {
+        if (GameUnifier.runningStepsCountValue !== 0) {
             return;
         }
         HistoryManagerStatic._diffHistory.clear();

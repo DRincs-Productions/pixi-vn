@@ -389,8 +389,90 @@ export default class GameUnifier {
     /**
      * Count of currently executing steps.
      * If a step triggers a narration.continue(), this number is greater than 1.
+     * 
+     * NOTE: Do not access this directly. Use incrementRunningSteps() and decrementRunningSteps()
+     * to ensure thread-safe updates.
      */
-    static runningStepsCount: number = 0;
+    private static runningStepsCount: number = 0;
+    /**
+     * Promise-based lock to ensure thread-safe updates to runningStepsCount.
+     * Prevents race conditions when multiple async operations modify the counter.
+     */
+    private static runningStepsLock: Promise<void> = Promise.resolve();
+    /**
+     * Get the current count of running steps.
+     * This is a read-only getter to prevent direct modification.
+     */
+    static get runningStepsCountValue(): number {
+        return GameUnifier.runningStepsCount;
+    }
+    /**
+     * Atomically check if running steps count is zero and increment if it is.
+     * Uses a lock to ensure thread-safe check-then-act operation.
+     * @returns An object with `wasZero` (whether count was 0 before) and `newCount` (the count after operation).
+     */
+    static async checkAndIncrementRunningSteps(): Promise<{ wasZero: boolean; newCount: number }> {
+        let releaseLock: () => void = () => {};
+        const previousLock = GameUnifier.runningStepsLock;
+        GameUnifier.runningStepsLock = previousLock.then(() => new Promise<void>(resolve => {
+            releaseLock = resolve;
+        }));
+        
+        let result: { wasZero: boolean; newCount: number };
+        try {
+            await previousLock;
+            const wasZero = GameUnifier.runningStepsCount === 0;
+            GameUnifier.runningStepsCount++;
+            result = { wasZero, newCount: GameUnifier.runningStepsCount };
+        } finally {
+            releaseLock();
+        }
+        return result;
+    }
+    /**
+     * Atomically increment the running steps count.
+     * Uses a lock to ensure thread-safe updates even across async boundaries.
+     * @returns The new count after incrementing.
+     */
+    static async incrementRunningSteps(): Promise<number> {
+        let releaseLock: () => void = () => {};
+        const previousLock = GameUnifier.runningStepsLock;
+        GameUnifier.runningStepsLock = previousLock.then(() => new Promise<void>(resolve => {
+            releaseLock = resolve;
+        }));
+        
+        let newValue: number;
+        try {
+            await previousLock;
+            GameUnifier.runningStepsCount++;
+            newValue = GameUnifier.runningStepsCount;
+        } finally {
+            releaseLock();
+        }
+        return newValue;
+    }
+    /**
+     * Atomically decrement the running steps count.
+     * Uses a lock to ensure thread-safe updates even across async boundaries.
+     * @returns The new count after decrementing.
+     */
+    static async decrementRunningSteps(): Promise<number> {
+        let releaseLock: () => void = () => {};
+        const previousLock = GameUnifier.runningStepsLock;
+        GameUnifier.runningStepsLock = previousLock.then(() => new Promise<void>(resolve => {
+            releaseLock = resolve;
+        }));
+        
+        let newValue: number;
+        try {
+            await previousLock;
+            GameUnifier.runningStepsCount--;
+            newValue = GameUnifier.runningStepsCount;
+        } finally {
+            releaseLock();
+        }
+        return newValue;
+    }
     private static _getCharacter: (id: string) => CharacterInterface | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented.");

@@ -205,7 +205,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return true;
     }
     get canContinue(): boolean {
-        if (GameUnifier.runningStepsCount !== 0) {
+        if (GameUnifier.runningStepsCountValue !== 0) {
             return false;
         }
         return this.getCanContinue();
@@ -245,29 +245,31 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
-        if (GameUnifier.runningStepsCount !== 0) {
+        const { wasZero, newCount } = await GameUnifier.checkAndIncrementRunningSteps();
+        if (!wasZero) {
+            // Count was not zero, so we should queue instead of running
+            await GameUnifier.decrementRunningSteps();
             GameUnifier.increaseContinueRequest(steps);
             return;
         }
         if (steps > 1) {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
-        GameUnifier.runningStepsCount++;
-        if (GameUnifier.runningStepsCount === 1) {
+        if (newCount === 1) {
             await GameUnifier.onPreContinue();
         }
         try {
             NarrationManagerStatic.increaseCurrentStepIndex();
             const result = await this.runCurrentStep(props, options);
-            GameUnifier.runningStepsCount--;
+            await GameUnifier.decrementRunningSteps();
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
-            GameUnifier.runningStepsCount--;
+            await GameUnifier.decrementRunningSteps();
             throw e;
         }
     }
     private async afterRunCurrentStep() {
-        if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
+        if (GameUnifier.runningStepsCountValue === 0 && GameUnifier.continueRequestsCount !== 0) {
             return await GameUnifier.processNavigationRequests();
         }
     }
@@ -344,7 +346,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
 
-                    if (GameUnifier.runningStepsCount === 1) {
+                    if (GameUnifier.runningStepsCountValue === 1) {
                         NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
                         this.addStepHistory(stepSha, {
                             ...options,
@@ -420,7 +422,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        GameUnifier.runningStepsCount++;
+        await GameUnifier.incrementRunningSteps();
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -434,10 +436,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         try {
             const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
-            GameUnifier.runningStepsCount--;
+            await GameUnifier.decrementRunningSteps();
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
-            GameUnifier.runningStepsCount--;
+            await GameUnifier.decrementRunningSteps();
             throw e;
         }
     }
@@ -471,7 +473,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        GameUnifier.runningStepsCount++;
+        await GameUnifier.incrementRunningSteps();
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -485,10 +487,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         try {
             const result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
-            GameUnifier.runningStepsCount--;
+            await GameUnifier.decrementRunningSteps();
             return (await this.afterRunCurrentStep()) || result;
         } catch (e) {
-            GameUnifier.runningStepsCount--;
+            await GameUnifier.decrementRunningSteps();
             throw e;
         }
     }
