@@ -265,7 +265,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             NarrationManagerStatic.increaseCurrentStepIndex();
             result = await this.runCurrentStep(props, options);
         } catch (e) {
-            console.error("Error continuing", e);
+            logger.error("Error continuing", e);
             throw e;
         } finally {
             GameUnifier.runningStepsCount--;
