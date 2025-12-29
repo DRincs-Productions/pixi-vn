@@ -272,33 +272,14 @@ export default class GameUnifier {
     };
     /**
      * This function processes the pending navigation requests (continue/back).
-     * Uses a promise-based lock to ensure atomic read-modify-write operations
-     * and prevent race conditions when called from multiple async contexts.
      */
     static async processNavigationRequests() {
-        // Create a new lock for this execution and chain it to the previous one
-        // This ensures that concurrent calls will properly queue
-        let releaseLock: () => void = () => {};
-        const previousLock = GameUnifier.processNavigationLock;
-        GameUnifier.processNavigationLock = previousLock.then(() => new Promise<void>(resolve => {
-            releaseLock = resolve;
-        }));
-        
-        // Wait for the previous operation to complete
-        await previousLock;
-        
-        try {
-            // Perform the atomic read-modify-write operation
-            const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
-            GameUnifier.navigationRequestsCount = processResult.newValue;
-            
-            // Hold the lock until the async navigation operation completes
-            const result = await processResult.result;
-            return result;
-        } finally {
-            // Release the lock after the entire async operation has completed
-            releaseLock();
-        }
+        const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
+        GameUnifier.navigationRequestsCount = processResult.newValue;
+
+        // Hold the lock until the async navigation operation completes
+        const result = await processResult.result;
+        return result;
     }
     private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
