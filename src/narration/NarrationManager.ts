@@ -331,7 +331,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
                     let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
                     if (choiceMade !== undefined && lastHistoryStep) {
-                        let stepSha = lastHistoryStep.stepSha1;
+                        stepSha = lastHistoryStep.stepSha1;
                         if (!stepSha) {
                             logger.warn("stepSha not found, setting to ERROR");
                             stepSha = AdditionalShaSpetsEnum.ERROR;
@@ -344,15 +344,6 @@ export default class NarrationManager implements NarrationManagerInterface {
                         );
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
-
-                    if (GameUnifier.runningStepsCount === 1) {
-                        NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
-                        this.addStepHistory(stepSha, {
-                            ...options,
-                            choiceMade: NarrationManagerStatic.choiceMadeTemp,
-                        });
-                        NarrationManagerStatic.choiceMadeTemp = undefined;
-                    }
                 } catch (e) {
                     // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
                     // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
@@ -362,6 +353,20 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                     throw e;
                 }
+
+                try {
+                    if (GameUnifier.runningStepsCount === 1) {
+                        NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
+                        this.addStepHistory(stepSha, {
+                            ...options,
+                            choiceMade: NarrationManagerStatic.choiceMadeTemp,
+                        });
+                        NarrationManagerStatic.choiceMadeTemp = undefined;
+                    }
+                } catch (e) {
+                    logger.warn("Error adding step to history", e);
+                }
+
                 try {
                     this.currentLabel &&
                         (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
