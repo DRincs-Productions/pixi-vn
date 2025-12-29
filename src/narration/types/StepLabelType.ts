@@ -5,11 +5,12 @@ import { StepLabelProps, StepLabelResult } from "@drincs/pixi-vn";
  *
  * - `StepLabelResult`: a structured result consumed by the narration engine.
  * - `void`: the step completed without returning an explicit result.
+ * - `string`: a simple token or message interpreted by higher-level logic.
  *
- * Returning arbitrary strings from step labels is intentionally not supported
- * by this type. If you need to signal additional information, extend
- * `StepLabelResult` with a more specific, well-typed structure instead of
- * using untyped string tokens.
+ * Prefer returning a well-typed {@link StepLabelResult} for anything that
+ * needs to be consumed programmatically. Use plain strings only where a
+ * lightweight, convention-based signal is sufficient and clearly documented
+ * by the surrounding game logic.
  */
 export type StepLabelResultType = StepLabelResult | void | string;
 export type StepLabelPropsType<T extends {} = {}> = StepLabelProps & T;
