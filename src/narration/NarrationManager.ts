@@ -360,7 +360,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     if (this.onStepError) {
                         this.onStepError(e, props);
                     }
-                    return;
+                    throw e;
                 }
                 try {
                     this.currentLabel &&
