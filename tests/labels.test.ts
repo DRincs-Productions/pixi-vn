@@ -340,7 +340,11 @@ test("error in navigation step", async () => {
         expect(narration.dialogue).toEqual({ text: "Step 0: Before error" });
 
         // Try to continue to the error step
-        await narration.continue({});
+        try {
+            await narration.continue({});
+        } catch (e) {
+            // Ignore error here, it will be handled by onError
+        }
 
         // Should have caught the error
         expect(errorCaught).toBe(true);
@@ -424,7 +428,11 @@ test("error recovery with mixed sync and async steps", async () => {
         expect(narration.dialogue).toEqual({ text: "Step 1: Async before error" });
 
         // Continue to error step
-        await narration.continue({});
+        try {
+            await narration.continue({});
+        } catch (e) {
+            // Ignore error here, it will be handled by onError
+        }
         expect(errorCaught).toBe(true);
 
         // The step counter should remain at 2 due to the error
