@@ -12,7 +12,7 @@ import { getGamePath } from "../src/utils/path-utility";
 
 // Test timeout constants for async operations
 const ASYNC_STEP_TIMEOUT = 100;
-const SHORT_ASYNC_TIMEOUT = 60;
+const SHORT_ASYNC_TIMEOUT = 40;
 
 // Label step timing constant (simulating async operations within labels)
 const SHORT_STEP_DELAY = 50;
