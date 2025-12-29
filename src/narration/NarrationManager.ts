@@ -351,8 +351,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
                 } catch (e) {
-                    // TODO: It might be useful to revert to the original state to avoid errors, but I don't have the browser to do that and I haven't asked for it yet.
-                    // await GameStepManager.restoreFromHistoryStep(GameStepManager.originalStepData, navigate)
+                    // TODO(#narration-rollback): Implement state restoration/rollback on step errors (e.g. restoring from the last safe history step) to keep the narration state consistent.
                     logger.error("Error running step", e);
                     if (this.onStepError) {
                         this.onStepError(e, props);
