@@ -210,9 +210,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return this.getCanContinue();
     }
-    get canGoNext(): boolean {
-        return this.canContinue;
-    }
     private async onStepStart(label: LabelAbstract<any, any>, stepId: number) {
         let res: (void | Promise<void> | Promise<void[]>)[] = [];
         if (label.onStepStart) {
@@ -403,18 +400,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabelId not found");
         }
     }
-    public async callLabel<T extends {} = {}>(
-        label: LabelAbstract<any, T> | LabelIdType,
-        props: StepLabelPropsType<T>,
-        options?: {
-            /**
-             * The index of the choice made by the player. (This params is used in the choice menu)
-             */
-            choiceMade?: number;
-        }
-    ): Promise<StepLabelResultType> {
-        return await this.call(label, props, options);
-    }
     public async call<T extends {} = {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
@@ -450,18 +435,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             result = (await this.afterRunCurrentStep()) || result;
         }
         return result;
-    }
-    public async jumpLabel<T extends {}>(
-        label: LabelAbstract<any, T> | LabelIdType,
-        props: StepLabelPropsType<T>,
-        options?: {
-            /**
-             * The index of the choice made by the player. (This params is used in the choice menu)
-             */
-            choiceMade?: number;
-        }
-    ): Promise<StepLabelResultType> {
-        return await this.jump(label, props, options);
     }
     public async jump<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
@@ -646,9 +619,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         }
     }
-    public get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined {
-        return this.choices;
-    }
     public get choices(): StoredIndexedChoiceInterface[] | undefined {
         let d = GameUnifier.getVariable<any>(
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
@@ -682,9 +652,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             }
         }
         return undefined;
-    }
-    public set choiceMenuOptions(options: StoredChoiceInterface[] | undefined) {
-        this.choices = options;
     }
     public set choices(options: StoredChoiceInterface[] | undefined) {
         if (!options || options.length === 0) {

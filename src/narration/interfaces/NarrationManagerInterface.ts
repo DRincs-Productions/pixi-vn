@@ -109,10 +109,6 @@ export default interface NarrationManagerInterface {
      */
     readonly canContinue: boolean;
     /**
-     * @deprecated use {@link canContinue} instead.
-     */
-    readonly canGoNext: boolean;
-    /**
      * Execute the next step and add it to the history. If a step is already running, it will put the request in the queue,
      * and when the step is finished, it will execute the next step.
      * @param props The props to pass to the step.
@@ -141,8 +137,8 @@ export default interface NarrationManagerInterface {
         props: StepLabelPropsType,
         options?: {
             /**
-             * The number of steps to advance. Must be a valid finite number greater than 0. 
-             * If NaN, Infinity, or a value less than or equal to 0 is provided, the implementation 
+             * The number of steps to advance. Must be a valid finite number greater than 0.
+             * If NaN, Infinity, or a value less than or equal to 0 is provided, the implementation
              * will emit a warning and return early without advancing steps. @default 1
              */
             steps?: number;
@@ -178,13 +174,6 @@ export default interface NarrationManagerInterface {
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType>;
     /**
-     * @deprecated use {@link call} instead.
-     */
-    callLabel<T extends {} = {}>(
-        label: LabelAbstract<any, T> | LabelIdType,
-        props: StepLabelPropsType<T>
-    ): Promise<StepLabelResultType>;
-    /**
      * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
      * @param label The label to execute.
      * @param props The props to pass to the label or the id of the label
@@ -206,13 +195,6 @@ export default interface NarrationManagerInterface {
      * ```
      */
     jump<T extends {}>(
-        label: LabelAbstract<any, T> | LabelIdType,
-        props: StepLabelPropsType<T>
-    ): Promise<StepLabelResultType>;
-    /**
-     * @deprecated use {@link jump} instead.
-     **/
-    jumpLabel<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>
     ): Promise<StepLabelResultType>;
@@ -268,10 +250,6 @@ export default interface NarrationManagerInterface {
      */
     get choices(): StoredIndexedChoiceInterface[] | undefined;
     /**
-     * @deprecated use {@link choices} instead.
-     */
-    get choiceMenuOptions(): StoredIndexedChoiceInterface[] | undefined;
-    /**
      * The options to be shown in the game
      * @example
      * ```typescript
@@ -285,10 +263,6 @@ export default interface NarrationManagerInterface {
      * ```
      */
     set choices(data: StoredChoiceInterface[] | undefined);
-    /**
-     * @deprecated use {@link choices} instead.
-     */
-    set choiceMenuOptions(data: StoredChoiceInterface[] | undefined);
     /**
      * If true, the next dialogue text will be added to the current dialogue text.
      */
