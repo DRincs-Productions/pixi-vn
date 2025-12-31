@@ -27,26 +27,14 @@ export default class StorageManager implements StorageManagerInterface {
             StorageManagerStatic.default.set(key, value);
         });
     }
-    set startingStorage(value: { [key: string]: StorageElementType }) {
-        this.default = value;
-    }
     public set(key: string, value: StorageElementType) {
         return StorageManagerStatic.setVariable(key, value);
-    }
-    public setVariable(key: string, value: StorageElementType) {
-        return this.set(key, value);
     }
     public get<T extends StorageElementType>(key: string): T | undefined {
         return StorageManagerStatic.getVariable<T>(key);
     }
-    public getVariable<T extends StorageElementType>(key: string): T | undefined {
-        return this.get<T>(key);
-    }
     public remove(key: string) {
         return StorageManagerStatic.removeVariable(key);
-    }
-    public removeVariable(key: string) {
-        return this.remove(key);
     }
     public setTempVariable(key: string, value: StorageElementType) {
         if (value === undefined || value === null) {

@@ -275,18 +275,6 @@ export default class ImageContainer
     get percentageX() {
         return calculatePercentagePositionByPosition("width", this.x);
     }
-    set xPercentagePosition(_value: number) {
-        this.percentageX = _value;
-    }
-    get xPercentagePosition() {
-        return this.percentageX;
-    }
-    set yPercentagePosition(_value: number) {
-        this.percentageY = _value;
-    }
-    get yPercentagePosition() {
-        return this.percentageY;
-    }
     set percentageY(_value: number) {
         if (this._align) {
             this._align = undefined;

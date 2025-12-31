@@ -61,14 +61,6 @@ export interface AdditionalPositionsExtensionProps {
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
     percentageY?: number;
-    /**
-     * @deprecated Use {@link align} instead.
-     */
-    xPercentagePosition?: number;
-    /**
-     * @deprecated Use {@link align} instead.
-     */
-    yPercentagePosition?: number;
 }
 
 export default class AdditionalPositionsExtension {
@@ -148,15 +140,6 @@ export default class AdditionalPositionsExtension {
         throw new Error("Method not implemented.");
     }
     /**
-     * @deprecated Use {@link align} instead.
-     */
-    set xPercentagePosition(_value: number) {
-        throw new Error("Method not implemented.");
-    }
-    get xPercentagePosition(): number {
-        throw new Error("Method not implemented.");
-    }
-    /**
      * is a way to set the position of the element in the canvas calculated in percentage.
      * For example, if you set the {@link PixiContainer.pivot} to 0.5, and:
      * - if you set percentagePosition to 0.5, the element will be in the center of the canvas.
@@ -169,15 +152,6 @@ export default class AdditionalPositionsExtension {
         throw new Error("Method not implemented.");
     }
     get percentageY(): number {
-        throw new Error("Method not implemented.");
-    }
-    /**
-     * @deprecated Use {@link align} instead.
-     */
-    set yPercentagePosition(_value: number) {
-        throw new Error("Method not implemented.");
-    }
-    get yPercentagePosition(): number {
         throw new Error("Method not implemented.");
     }
     get positionType(): "pixel" | "percentage" | "align" {
@@ -213,12 +187,6 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
         }
     }
     if (typeof props.percentagePosition !== "number") {
-        if (props.xPercentagePosition != undefined && props.percentageX === undefined) {
-            props.percentageX = props.xPercentagePosition;
-        }
-        if (props.yPercentagePosition != undefined && props.percentageY === undefined) {
-            props.percentageY = props.yPercentagePosition;
-        }
         if (props.percentageX != undefined) {
             if (props.percentagePosition === undefined) {
                 props.percentagePosition = { x: props.percentageX };

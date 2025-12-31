@@ -38,17 +38,9 @@ export default interface CanvasManagerInterface {
     readonly isInitialized: boolean;
 
     /**
-     * @deprecated Use {@link width} instead.
-     */
-    canvasWidth: number;
-    /**
      * The width of the canvas.
      */
     width: number;
-    /**
-     * @deprecated Use {@link height} instead.
-     */
-    canvasHeight: number;
     /**
      * The height of the canvas.
      */
@@ -481,18 +473,6 @@ export default interface CanvasManagerInterface {
      * @param data The object.
      */
     restore(data: object): Promise<void>;
-    /**
-     * @deprecated Use {@link onTickerComplete}
-     */
-    onEndOfTicker(
-        tickerId: string,
-        options: {
-            aliasToRemoveAfter: string[];
-            tickerAliasToResume: string[];
-            tickerIdToResume: string[];
-            ignoreTickerSteps?: boolean;
-        }
-    ): void;
     onTickerComplete(
         tickerId: string,
         options: {

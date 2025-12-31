@@ -48,25 +48,13 @@ export default class CanvasManager implements CanvasManagerInterface {
     get width() {
         return CanvasManagerStatic.canvasWidth;
     }
-    get canvasWidth() {
-        return CanvasManagerStatic.canvasWidth;
-    }
     get height() {
-        return CanvasManagerStatic.canvasHeight;
-    }
-    get canvasHeight() {
         return CanvasManagerStatic.canvasHeight;
     }
     set width(value: number) {
         CanvasManagerStatic.canvasWidth = value;
     }
-    set canvasWidth(value: number) {
-        CanvasManagerStatic.canvasWidth = value;
-    }
     set height(value: number) {
-        CanvasManagerStatic.canvasHeight = value;
-    }
-    set canvasHeight(value: number) {
         CanvasManagerStatic.canvasHeight = value;
     }
     get screen() {
@@ -436,17 +424,6 @@ export default class CanvasManager implements CanvasManagerInterface {
                 }
             }
         }
-    }
-    public onEndOfTicker(
-        tickerId: string,
-        options: {
-            aliasToRemoveAfter: string[];
-            tickerAliasToResume: string[];
-            tickerIdToResume: string[];
-            ignoreTickerSteps?: boolean;
-        }
-    ) {
-        return this.onTickerComplete(tickerId, options);
     }
     public onTickerComplete(
         tickerId: string,

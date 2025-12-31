@@ -63,7 +63,7 @@ test("setup", async () => {
         // storage
         getVariable: (key) => storage.get(key),
         setVariable: (key, value) => storage.set(key, value),
-        removeVariable: (key) => storage.removeVariable(key),
+        removeVariable: (key) => storage.remove(key),
         getFlag: (key) => storage.getFlag(key),
         setFlag: (name, value) => storage.setFlag(name, value),
         onLabelClosing: (openedLabelsNumber) => StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
