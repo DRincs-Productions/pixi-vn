@@ -353,7 +353,11 @@ export default class NarrationManager implements NarrationManagerInterface {
                     if (this.onStepError) {
                         this.onStepError(e, props);
                     }
-                    throw e;
+                    // Do not rethrow here: errors during step execution should be
+                    // handled by the onStepError handler. Returning prevents
+                    // unhandled promise rejections when continue/back are queued
+                    // without awaiting their promises.
+                    return;
                 }
 
                 try {
