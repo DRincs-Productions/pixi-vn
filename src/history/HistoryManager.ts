@@ -47,7 +47,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         HistoryManagerStatic._diffHistory.delete(stepIndex);
         HistoryManagerStatic._narrationHistory.delete(stepIndex);
     }
-    private internalRestoreOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
+    private getOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
         }
@@ -65,7 +65,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                 let result = restoreDiffChanges(restoredStep, diff);
                 GameUnifier.stepCounter = lastKey;
                 this.delete(lastKey);
-                return this.internalRestoreOldGameState(steps - 1, result);
+                return this.getOldGameState(steps - 1, result);
             } catch (e) {
                 logger.error("Error applying diff", e);
                 return restoredStep;
@@ -96,7 +96,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         GameUnifier.runningStepsCount++;
         try {
             let restoredStep = createExportableElement(
-                this.internalRestoreOldGameState(steps, HistoryManagerStatic.originalStepData)
+                this.getOldGameState(steps, HistoryManagerStatic.originalStepData)
             );
             if (restoredStep) {
                 await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
