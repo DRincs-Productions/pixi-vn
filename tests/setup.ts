@@ -66,3 +66,7 @@ GameUnifier.init({
     setFlag: (name, value) => storage.setFlag(name, value),
     onLabelClosing: (openedLabelsNumber) => StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
 });
+
+GameUnifier.onError = async (type, error, props) => {
+    await GameUnifier.restoreGameStepState(HistoryManagerStatic.originalStepData, GameUnifier.navigate);
+};
