@@ -315,6 +315,20 @@ export namespace Game {
     ) {
         narrationUtils.NarrationManagerStatic.onStepEnd = value;
     }
+
+    /**
+     * Function to be executed when navigation is requested.
+     * @example
+     * ```typescript
+     * Game.onNavigate(async (path) => {
+     *    // custom navigation logic
+     *    window.history.pushState({}, "title", path)
+     * })
+     * ```
+     */
+    export function onNavigate(value: (path: string) => void | Promise<void>) {
+        GameUnifier.navigate = value;
+    }
 }
 
 export default {
