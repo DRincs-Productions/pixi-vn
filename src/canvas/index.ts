@@ -76,7 +76,6 @@ export type { default as CanvasEventNamesType } from "./types/CanvasEventNamesTy
 export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";
-export { canvas };
 
 const canvas: CanvasManagerInterface = new CanvasManager();
 CanvasUtilitiesStatic.init({
@@ -84,3 +83,5 @@ CanvasUtilitiesStatic.init({
         return canvas.screen;
     },
 });
+
+export { canvas };
