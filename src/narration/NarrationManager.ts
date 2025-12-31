@@ -348,15 +348,16 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
                 } catch (e) {
-                    // TODO(#narration-rollback): Implement state restoration/rollback on step errors (e.g. restoring from the last safe history step) to keep the narration state consistent.
                     logger.error("Error running step", e);
                     if (this.onStepError) {
                         this.onStepError(e, props);
                     }
-                    // Do not rethrow here: errors during step execution should be
-                    // handled by the onStepError handler. Returning prevents
-                    // unhandled promise rejections when continue/back are queued
-                    // without awaiting their promises.
+                    // Rollback step index
+                    if (GameUnifier.continueRequestsCount > 0) {
+                        GameUnifier.increaseBackRequest(GameUnifier.continueRequestsCount + 1);
+                    } else {
+                        GameUnifier.increaseBackRequest(1);
+                    }
                     return;
                 }
 
