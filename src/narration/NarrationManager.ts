@@ -308,7 +308,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 } catch (e) {
                     logger.error("Error running onStepStart", e);
                     if (this.onStepError) {
-                        this.onStepError(e, props);
+                        await this.onStepError(e, props);
                     }
                     return;
                 }
@@ -323,15 +323,25 @@ export default class NarrationManager implements NarrationManagerInterface {
                     stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
                 let result;
+                let err = undefined;
                 try {
                     result = await step(props, { labelId: currentLabel.id });
+                } catch (e) {
+                    logger.error("Error running step", e);
+                    err = e;
+                }
 
+                try {
                     let choiceMenuOptions = this.choices;
                     if (choiceMenuOptions?.length === 1 && choiceMenuOptions[0].autoSelect) {
                         let choice = choiceMenuOptions[0];
                         result = await this.selectChoice(choice, props);
                     }
+                } catch (e) {
+                    logger.error("Error auto-selecting choice", e);
+                }
 
+                try {
                     let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
                     if (choiceMade !== undefined && lastHistoryStep) {
                         stepSha = lastHistoryStep.stepSha1;
@@ -348,17 +358,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
                 } catch (e) {
-                    logger.error("Error running step", e);
-                    if (this.onStepError) {
-                        this.onStepError(e, props);
-                    }
-                    // Rollback step index
-                    if (GameUnifier.continueRequestsCount > 0) {
-                        GameUnifier.increaseBackRequest(GameUnifier.continueRequestsCount + 1);
-                    } else {
-                        GameUnifier.increaseBackRequest(1);
-                    }
-                    return;
+                    logger.warn("Error adding choice made to history", e);
                 }
 
                 try {
@@ -380,6 +380,10 @@ export default class NarrationManager implements NarrationManagerInterface {
                         (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
                 } catch (e) {
                     logger.warn("Error running onStepEnd", e);
+                }
+
+                if (err && this.onStepError) {
+                    await this.onStepError(err, props);
                 }
                 return result;
             } else if (this.openedLabels.length > 1) {
@@ -542,15 +546,20 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Go Back & Refresh Methods */
 
-    get onStepError(): ((error: any, props: StepLabelPropsType) => void) | undefined {
+    private get onStepError(): ((error: any, props: StepLabelPropsType) => void | Promise<void>) | undefined {
         const onError = GameUnifier.onError;
-        return onError
-            ? (error: any, props: StepLabelPropsType) => {
-                  return onError("step", error, props);
-              }
-            : undefined;
+        if (!onError) {
+            return undefined;
+        }
+        return async (error: any, props: StepLabelPropsType) => {
+            try {
+                return await onError("step", error, props);
+            } catch (e) {
+                logger.error("Error in onError handler", e);
+            }
+        };
     }
-    set onStepError(value: (error: any, props: StepLabelPropsType) => void) {
+    private set onStepError(value: (error: any, props: StepLabelPropsType) => void) {
         GameUnifier.onError = (type: string, error: any, props: StepLabelPropsType) => {
             return value(error, props);
         };

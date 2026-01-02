@@ -168,12 +168,6 @@ export namespace Game {
             onLabelClosing: (openedLabelsNumber) =>
                 storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
         });
-        GameUnifier.onError = async (type, error, props) => {
-            await GameUnifier.restoreGameStepState(
-                historyUtils.HistoryManagerStatic.originalStepData,
-                GameUnifier.navigate
-            );
-        };
         asciiArtLog();
         if (!element || !options) {
             logger.warn("The canvas element or options are not defined. The canvas will not be initialized.");
@@ -275,12 +269,23 @@ export namespace Game {
      * })
      * ```
      */
-    export function onError(value: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void) {
+    export function onError(
+        value: (
+            /**
+             * The type of error. Currently, only "step" type is supported.
+             */
+            type: "step",
+            /**
+             * The error object
+             */
+            error: any,
+            /**
+             * The step label properties
+             */
+            props: narrationUtils.StepLabelPropsType
+        ) => void
+    ) {
         GameUnifier.onError = async (type, error, props) => {
-            await GameUnifier.restoreGameStepState(
-                historyUtils.HistoryManagerStatic.originalStepData,
-                GameUnifier.navigate
-            );
             return value(type, error, props);
         };
     }
