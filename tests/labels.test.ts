@@ -366,7 +366,7 @@ test("restore after error in navigation step", async () => {
     try {
         GameUnifier.onError = async (type, error, props) => {
             errorCaught = true;
-            await stepHistory.back({});
+            await stepHistory.back(props);
         };
 
         await narration.call(errorLabel, {});
