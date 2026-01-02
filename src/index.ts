@@ -275,6 +275,13 @@ export namespace Game {
      *    await logErrorToServer(error)
      *    props.notify("An error occurred")
      * })
+     * 
+     * // Error handler with step restoration/rollback
+     * Game.onError(async (type, error, props) => {
+     *    // Restore the game state to the previous step
+     *    await stepHistory.back(props)
+     *    props.notify("An error occurred, returning to previous step")
+     * })
      * ```
      */
     export function onError(
