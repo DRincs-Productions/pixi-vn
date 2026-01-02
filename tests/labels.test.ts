@@ -380,7 +380,7 @@ test("restore after error in navigation step", async () => {
         expect(errorCaught).toBe(true);
         expect(narration.dialogue).toEqual({ text: "Step 1: Before error" });
 
-        // Step counter should still be at step 1 (error prevented advancement)
+        // Step counter should now be at step 2 after error recovery
         expect(narration.stepCounter).toBe(2);
     } finally {
         // Restore original error handler
