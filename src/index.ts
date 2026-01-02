@@ -261,11 +261,19 @@ export namespace Game {
     }
     /**
      * Function to be executed when an error occurs in the step.
+     * Supports both synchronous and asynchronous error handlers.
      * @example
      * ```typescript
+     * // Synchronous error handler
      * Game.onError((type, error, props) => {
      *    props.notify("An error occurred")
      *    // send a notification to GlitchTip, Sentry, etc...
+     * })
+     * 
+     * // Asynchronous error handler
+     * Game.onError(async (type, error, props) => {
+     *    await logErrorToServer(error)
+     *    props.notify("An error occurred")
      * })
      * ```
      */
@@ -283,7 +291,7 @@ export namespace Game {
              * The step label properties
              */
             props: narrationUtils.StepLabelPropsType
-        ) => void
+        ) => void | Promise<void>
     ) {
         GameUnifier.onError = async (type, error, props) => {
             return value(type, error, props);
