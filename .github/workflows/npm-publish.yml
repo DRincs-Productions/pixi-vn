@@ -54,8 +54,12 @@ jobs:
       id: versions
       run: |
         PIXIJS_VERSION=$(node -p "require('./package.json').dependencies['pixi.js']")
+        PIXISOUND_VERSION=$(node -p "require('./package.json').dependencies['@pixi/sound']")
+        PIXIDEVTOOLS_VERSION=$(node -p "require('./package.json').dependencies['@pixi/devtools']")
         MOTION_VERSION=$(node -p "require('./package.json').dependencies['motion']")
         echo "pixijs=$PIXIJS_VERSION" >> $GITHUB_OUTPUT
+        echo "pixisound=$PIXISOUND_VERSION" >> $GITHUB_OUTPUT
+        echo "pixidevtools=$PIXIDEVTOOLS_VERSION" >> $GITHUB_OUTPUT
         echo "motion=$MOTION_VERSION" >> $GITHUB_OUTPUT
     - uses: ncipollo/release-action@v1
       with:
@@ -64,4 +68,6 @@ jobs:
           
           ### Dependencies
           - **PixiJS**: ${{ steps.versions.outputs.pixijs }}
+          - **Pixi Sound**: ${{ steps.versions.outputs.pixisound }}
+          - **Pixi Devtools**: ${{ steps.versions.outputs.pixidevtools }}
           - **Motion**: ${{ steps.versions.outputs.motion }}
