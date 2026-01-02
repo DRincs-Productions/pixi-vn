@@ -339,6 +339,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                 } catch (e) {
                     logger.error("Error auto-selecting choice", e);
+                    if (err === undefined) {
+                        err = e as any;
+                    }
                 }
 
                 try {
