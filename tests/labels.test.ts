@@ -313,13 +313,14 @@ test("rollback rollnext", async () => {
 
 // Error scenario tests
 const errorLabel = newLabel("errorLabel", [
-    () => (narration.dialogue = "Step 0: Before error"),
+    () => (narration.dialogue = "Step 0: Normal step"),
+    () => (narration.dialogue = "Step 1: Before error"),
     () => {
-        narration.dialogue = "Step 1: This will throw";
+        narration.dialogue = "Step 2: This will throw";
         throw new Error("Test error in step");
     },
-    () => (narration.dialogue = "Step 2: After error"),
-    () => (narration.dialogue = "Step 3: Normal step"),
+    () => (narration.dialogue = "Step 3: After error"),
+    () => (narration.dialogue = "Step 4: Normal step"),
 ]);
 
 test("error in navigation step", async () => {
@@ -337,20 +338,50 @@ test("error in navigation step", async () => {
 
         await narration.call(errorLabel, {});
         expect(narration.stepCounter).toBe(1);
-        expect(narration.dialogue).toEqual({ text: "Step 0: Before error" });
-
-        // Try to continue to the error step
-        try {
-            await narration.continue({});
-        } catch (e) {
-            // Ignore error here, it will be handled by onError
-        }
+        expect(narration.dialogue).toEqual({ text: "Step 0: Normal step" });
+        await narration.continue({});
+        expect(narration.stepCounter).toBe(2);
+        await narration.continue({});
 
         // Should have caught the error
         expect(errorCaught).toBe(true);
+        expect(narration.dialogue).toEqual({ text: "Step 2: This will throw" });
 
-        // Step counter should still be at step 1 (error prevented advancement)
+        // Step counter should have advanced despite the error
+        expect(narration.stepCounter).toBe(3);
+    } finally {
+        // Restore original error handler
+        GameUnifier.onError = originalOnStepError;
+    }
+});
+
+test("restore after error in navigation step", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+
+    // Set up error handler to capture errors
+    let errorCaught = false;
+    const originalOnStepError = GameUnifier.onError;
+    try {
+        GameUnifier.onError = async (type, error, props) => {
+            errorCaught = true;
+            await stepHistory.back(props);
+        };
+
+        await narration.call(errorLabel, {});
         expect(narration.stepCounter).toBe(1);
+        expect(narration.dialogue).toEqual({ text: "Step 0: Normal step" });
+        await narration.continue({});
+        expect(narration.stepCounter).toBe(2);
+        await narration.continue({});
+
+        // Should have caught the error
+        expect(errorCaught).toBe(true);
+        expect(narration.dialogue).toEqual({ text: "Step 1: Before error" });
+
+        // Step counter should now be at step 2 after error recovery
+        expect(narration.stepCounter).toBe(2);
     } finally {
         // Restore original error handler
         GameUnifier.onError = originalOnStepError;
@@ -435,8 +466,8 @@ test("error recovery with mixed sync and async steps", async () => {
         }
         expect(errorCaught).toBe(true);
 
-        // The step counter should remain at 2 due to the error
-        expect(narration.stepCounter).toBe(2);
+        // The step counter should have advanced despite the error
+        expect(narration.stepCounter).toBe(3);
     } finally {
         // Restore original error handler
         GameUnifier.onError = originalOnStepError;

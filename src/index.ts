@@ -261,16 +261,48 @@ export namespace Game {
     }
     /**
      * Function to be executed when an error occurs in the step.
+     * Supports both synchronous and asynchronous error handlers.
      * @example
      * ```typescript
+     * // Synchronous error handler
      * Game.onError((type, error, props) => {
      *    props.notify("An error occurred")
      *    // send a notification to GlitchTip, Sentry, etc...
      * })
+     * 
+     * // Asynchronous error handler
+     * Game.onError(async (type, error, props) => {
+     *    await logErrorToServer(error)
+     *    props.notify("An error occurred")
+     * })
+     * 
+     * // Error handler with step restoration/rollback
+     * Game.onError(async (type, error, props) => {
+     *    // Restore the game state to the previous step
+     *    await stepHistory.back(props)
+     *    props.notify("An error occurred, returning to previous step")
+     * })
      * ```
      */
-    export function onError(value: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void) {
-        GameUnifier.onError = value;
+    export function onError(
+        value: (
+            /**
+             * The type of error. Currently, only "step" type is supported.
+             */
+            type: "step",
+            /**
+             * The error object
+             */
+            error: any,
+            /**
+             * The step label properties
+             */
+            props: narrationUtils.StepLabelPropsType
+        ) => void | Promise<void>
+    ) {
+        GameUnifier.onError = async (type, error, props) => {
+            return value(type, error, props);
+        };
     }
     /**
      * Is a function that will be executed before any step is executed.
@@ -314,6 +346,20 @@ export namespace Game {
         value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>
     ) {
         narrationUtils.NarrationManagerStatic.onStepEnd = value;
+    }
+
+    /**
+     * Function to be executed when navigation is requested.
+     * @example
+     * ```typescript
+     * Game.onNavigate(async (path) => {
+     *    // custom navigation logic
+     *    window.history.pushState({}, "title", path)
+     * })
+     * ```
+     */
+    export function onNavigate(value: (path: string) => void | Promise<void>) {
+        GameUnifier.navigate = value;
     }
 }
 

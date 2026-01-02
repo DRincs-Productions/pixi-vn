@@ -387,5 +387,5 @@ export default class GameUnifier {
     }
 
     static onEnd?: StepLabelType;
-    static onError?: (type: "step", error: any, props: StepLabelPropsType) => void;
+    static onError?: (type: "step", error: any, props: StepLabelPropsType) => void | Promise<void>;
 }
