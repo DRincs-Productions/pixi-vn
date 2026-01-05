@@ -552,7 +552,7 @@ const inputRequest = newLabel("inputRequest", [
     async () => (narration.dialogue = "Hello!"),
     async () => {
         narration.requestInput({ type: "string" });
-        narration.continue({}, { runNow: true });
+        await narration.continue({}, { runNow: true });
     },
     () => (narration.dialogue = "What is your name?"),
 ]);
