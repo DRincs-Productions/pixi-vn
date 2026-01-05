@@ -6,8 +6,22 @@ import { ApplicationOptions, Assets, AssetsManifest, UnresolvedAsset } from "@dr
 /**
  * Function that setup the pixivn vite data.
  * This function should be called in the client side, after the RegisteredCharacters and RegisteredLabels are populated.
+ * **Note:** This function only runs in development mode and does nothing in production.
  */
 export function setupPixivnViteData() {
+    // Only run in development mode
+    // We check import.meta.env.DEV at runtime using eval to avoid TypeScript compilation issues
+    try {
+        // @ts-ignore - Using eval to bypass TypeScript checking for import.meta
+        const isDev = eval('typeof import !== "undefined" && typeof import.meta !== "undefined" && typeof import.meta.env !== "undefined" && import.meta.env.DEV === true');
+        if (!isDev) {
+            return;
+        }
+    } catch (e) {
+        // If import.meta is not available (non-Vite environment), skip execution
+        return;
+    }
+
     try {
         const characters = RegisteredCharacters.values();
         fetch("/pixi-vn/characters", {
