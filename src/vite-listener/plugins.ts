@@ -10,10 +10,20 @@ import { ApplicationOptions, Assets, AssetsManifest, UnresolvedAsset } from "@dr
  */
 export function setupPixivnViteData() {
     // Only run in development mode
-    // We check import.meta.env.DEV at runtime using eval to avoid TypeScript compilation issues
+    // We check import.meta.env.DEV at runtime using eval to bypass TypeScript compilation issues.
+    // This is safe because:
+    // 1. The eval expression is a static string we control (not user input)
+    // 2. It only checks environment variables, doesn't execute external code
+    // 3. The entire function is designed to fail gracefully in non-Vite environments
     try {
-        // @ts-ignore - Using eval to bypass TypeScript checking for import.meta
-        const isDev = eval('typeof import !== "undefined" && typeof import.meta !== "undefined" && typeof import.meta.env !== "undefined" && import.meta.env.DEV === true');
+        // Using eval here because tsconfig.json uses module: "commonjs" which doesn't support import.meta,
+        // but this code will run in a Vite environment where import.meta.env is available
+        const checkExpression = 
+            'typeof import !== "undefined" && ' +
+            'typeof import.meta !== "undefined" && ' + 
+            'typeof import.meta.env !== "undefined" && ' +
+            'import.meta.env.DEV === true';
+        const isDev = eval(checkExpression);
         if (!isDev) {
             return;
         }
