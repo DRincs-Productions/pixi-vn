@@ -252,7 +252,7 @@ const asyncLabel = newLabel("asyncLabel", [
     () => (narration.dialogue = "This is a sync step 20"),
 ]);
 
-test("rollback rollnext", async () => {
+test("rollback rollforward", async () => {
     narration.clear();
     storage.clear();
     stepHistory.clear();
