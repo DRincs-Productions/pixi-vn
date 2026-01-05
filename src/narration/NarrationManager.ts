@@ -246,7 +246,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
             return;
         }
-        if (GameUnifier.runningStepsCount !== 0) {
+        if (!runNow && GameUnifier.runningStepsCount !== 0) {
             GameUnifier.increaseContinueRequest(steps);
             return;
         }

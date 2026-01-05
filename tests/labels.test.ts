@@ -547,3 +547,24 @@ test("back navigation with history containing errors", async () => {
     // Step counter should remain at minimum (can't go back further than start)
     expect(narration.stepCounter).toBeGreaterThanOrEqual(1);
 });
+
+const inputRequest = newLabel("inputRequest", [
+    async () => (narration.dialogue = "Hello!"),
+    async () => {
+        narration.requestInput({ type: "string" });
+        narration.continue({}, { runNow: true });
+    },
+    () => (narration.dialogue = "What is your name?"),
+]);
+
+test("runNow input request", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+
+    await narration.call(inputRequest, {});
+    expect(narration.dialogue).toEqual({ text: "Hello!" });
+    await narration.continue({});
+    expect(narration.dialogue).toEqual({ text: "What is your name?" });
+    expect(narration.isRequiredInput).toBe(true);
+});
