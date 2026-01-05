@@ -9,6 +9,7 @@ let options: Partial<ApplicationOptions> | null = null;
 
 /**
  * Vite plugin to handle pixi-vn related endpoints.
+ * This plugin only runs in development mode (serve).
  * Endpoints:
  * - GET  /pixi-vn/characters       -> list of registered characters
  * - POST /pixi-vn/characters       -> update the list of registered characters
@@ -20,6 +21,7 @@ let options: Partial<ApplicationOptions> | null = null;
 export function vitePluginPixivn(): Plugin {
     return {
         name: "vite-plugin-pixi-vn",
+        apply: "serve",
         configureServer(server) {
             server.middlewares.use("/pixi-vn/characters", (req, res) => {
                 res.setHeader("Content-Type", "application/json");
