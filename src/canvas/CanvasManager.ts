@@ -63,7 +63,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     public async init(
         element: HTMLElement,
-        widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number }) | number,
+        widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number; id?: string }) | number,
         heightOrDevtoolsOptions?: Devtools | number,
         options?: Partial<ApplicationOptions> & {
             id?: string;
