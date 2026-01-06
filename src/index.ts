@@ -63,6 +63,10 @@ export namespace Game {
     export async function init(
         element: HTMLElement,
         options: Partial<ApplicationOptions> & {
+            /**
+             * The id of the canvas element.
+             * @default "pixi-vn-canvas"
+             */
             id?: string;
             width: number;
             height: number;
