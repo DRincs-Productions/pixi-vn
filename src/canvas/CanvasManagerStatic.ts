@@ -89,7 +89,7 @@ export default class CanvasManagerStatic {
 
                 CanvasManagerStatic._isInitialized = true;
                 // Manager.app.ticker.add(Manager.update)
-                CanvasManagerStatic.addCanvasIntoHTMLElement(element);
+                CanvasManagerStatic.addCanvasIntoHTMLElement(element, options?.id);
                 // listen for the browser telling us that the screen size changed
                 window.addEventListener("resize", CanvasManagerStatic.resize);
 
