@@ -72,7 +72,13 @@ export default interface CanvasManagerInterface {
      */
     init(
         element: HTMLElement,
-        options: Partial<ApplicationOptions> & { width: number; height: number },
+        options: Partial<ApplicationOptions> & { width: number; height: number } & {
+            /**
+             * The id of the canvas element.
+             * @default "pixi-vn-canvas"
+             */
+            id?: string;
+        },
         devtoolsOptions?: Devtools
     ): Promise<void>;
     /**

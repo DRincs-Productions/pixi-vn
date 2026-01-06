@@ -65,7 +65,9 @@ export default class CanvasManager implements CanvasManagerInterface {
         element: HTMLElement,
         widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number }) | number,
         heightOrDevtoolsOptions?: Devtools | number,
-        options?: Partial<ApplicationOptions>,
+        options?: Partial<ApplicationOptions> & {
+            id?: string;
+        },
         devtoolsOptions?: Devtools
     ): Promise<void> {
         if (typeof widthOrOptions === "number" && typeof heightOrDevtoolsOptions === "number") {

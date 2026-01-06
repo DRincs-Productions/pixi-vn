@@ -55,7 +55,12 @@ export default class CanvasManagerStatic {
         element: HTMLElement,
         width: number,
         height: number,
-        options?: Partial<ApplicationOptions>,
+        options?: Partial<ApplicationOptions> & {
+            /**
+             * The id of the canvas element.
+             */
+            id?: string;
+        },
         devtoolsOptions?: Devtools
     ): Promise<void> {
         CanvasManagerStatic.canvasWidth = width;
@@ -97,10 +102,12 @@ export default class CanvasManagerStatic {
     /**
      * Add the canvas into a html element.
      * @param element it is the html element where I will put the canvas. Example: document.body
+     * @param id it is the id of the canvas element.
      */
-    private static addCanvasIntoHTMLElement(element: HTMLElement) {
+    private static addCanvasIntoHTMLElement(element: HTMLElement, id: string = "pixi-vn-canvas") {
         if (CanvasManagerStatic._isInitialized) {
             element.appendChild(CanvasManagerStatic.app.canvas as HTMLCanvasElement);
+            CanvasManagerStatic.app.canvas.id = id;
         } else {
             logger.error("GameWindowManager is not initialized");
         }
