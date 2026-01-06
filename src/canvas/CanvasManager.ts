@@ -63,9 +63,15 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     public async init(
         element: HTMLElement,
-        widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number }) | number,
+        widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number; id?: string }) | number,
         heightOrDevtoolsOptions?: Devtools | number,
-        options?: Partial<ApplicationOptions>,
+        options?: Partial<ApplicationOptions> & {
+            /**
+             * The id of the canvas element.
+             * @default "pixi-vn-canvas"
+             */
+            id?: string;
+        },
         devtoolsOptions?: Devtools
     ): Promise<void> {
         if (typeof widthOrOptions === "number" && typeof heightOrDevtoolsOptions === "number") {

@@ -63,6 +63,11 @@ export namespace Game {
     export async function init(
         element: HTMLElement,
         options: Partial<ApplicationOptions> & {
+            /**
+             * The id of the canvas element.
+             * @default "pixi-vn-canvas"
+             */
+            id?: string;
             width: number;
             height: number;
             /**
@@ -84,6 +89,11 @@ export namespace Game {
     export async function init(
         element?: HTMLElement,
         options?: Partial<ApplicationOptions> & {
+            /**
+             * The id of the canvas element.
+             * @default "pixi-vn-canvas"
+             */
+            id?: string;
             width: number;
             height: number;
             /**
@@ -269,13 +279,13 @@ export namespace Game {
      *    props.notify("An error occurred")
      *    // send a notification to GlitchTip, Sentry, etc...
      * })
-     * 
+     *
      * // Asynchronous error handler
      * Game.onError(async (type, error, props) => {
      *    await logErrorToServer(error)
      *    props.notify("An error occurred")
      * })
-     * 
+     *
      * // Error handler with step restoration/rollback
      * Game.onError(async (type, error, props) => {
      *    // Restore the game state to the previous step
