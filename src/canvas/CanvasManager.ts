@@ -66,6 +66,10 @@ export default class CanvasManager implements CanvasManagerInterface {
         widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number; id?: string }) | number,
         heightOrDevtoolsOptions?: Devtools | number,
         options?: Partial<ApplicationOptions> & {
+            /**
+             * The id of the canvas element.
+             * @default "pixi-vn-canvas"
+             */
             id?: string;
         },
         devtoolsOptions?: Devtools
