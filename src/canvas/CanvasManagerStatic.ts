@@ -58,6 +58,7 @@ export default class CanvasManagerStatic {
         options?: Partial<ApplicationOptions> & {
             /**
              * The id of the canvas element.
+             * @default "pixi-vn-canvas"
              */
             id?: string;
         },
