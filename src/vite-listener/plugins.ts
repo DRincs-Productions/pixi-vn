@@ -4,10 +4,30 @@ import { RegisteredLabels } from "@drincs/pixi-vn/narration";
 import { ApplicationOptions, Assets, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
 
 /**
+ * Checks if the code is running in Vite development mode.
+ * Uses indirect access to avoid TypeScript compilation issues with import.meta in commonjs modules.
+ */
+function isViteDevelopmentMode(): boolean {
+    try {
+        // Use Function constructor to indirectly access import.meta at runtime
+        // This avoids direct eval while still bypassing TypeScript's static analysis
+        return new Function('return typeof import !== "undefined" && typeof import.meta !== "undefined" && import.meta.env?.DEV === true')();
+    } catch {
+        return false;
+    }
+}
+
+/**
  * Function that setup the pixivn vite data.
  * This function should be called in the client side, after the RegisteredCharacters and RegisteredLabels are populated.
+ * **Note:** This function only runs in development mode and does nothing in production.
  */
 export function setupPixivnViteData() {
+    // Only run in development mode
+    if (!isViteDevelopmentMode()) {
+        return;
+    }
+
     try {
         const characters = RegisteredCharacters.values();
         fetch("/pixi-vn/characters", {
