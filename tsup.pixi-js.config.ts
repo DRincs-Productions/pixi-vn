@@ -3,9 +3,9 @@ import { defineConfig } from "tsup";
 export default defineConfig({
     target: "es2020",
     entry: {
-        "pixi.js": "src/pixi-js/index.ts",
+        pixi: "src/pixi-js/index.ts",
     },
-    format: ["cjs", "esm"],
+    format: ["esm"],
     dts: true,
     treeshake: true,
     splitting: false,
@@ -14,9 +14,4 @@ export default defineConfig({
     bundle: true,
     skipNodeModulesBundle: false,
     noExternal: ["pixi.js"],
-    outExtension({ format }) {
-        return {
-            js: format === "esm" ? ".mjs" : ".cjs",
-        };
-    },
 });

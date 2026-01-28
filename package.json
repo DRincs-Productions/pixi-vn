@@ -25,10 +25,10 @@
       "default": "./dist/index.mjs"
     },
     "./pixi.js": {
-      "types": "./dist/pixi.js.d.ts",
-      "import": "./dist/pixi.js.mjs",
-      "require": "./dist/pixi.js.cjs",
-      "default": "./dist/pixi.js.mjs"
+      "types": "./dist/pixi.d.ts",
+      "import": "./dist/pixi.js",
+      "require": "./dist/pixi.js",
+      "default": "./dist/pixi.js"
     },
     "./unifier": {
       "types": "./dist/unifier.d.ts",
@@ -88,7 +88,7 @@
   "typesVersions": {
     "*": {
       "pixi.js": [
-        "./dist/pixi.js.d.ts"
+        "./dist/pixi.d.ts"
       ],
       "unifier": [
         "./dist/unifier.d.ts"
