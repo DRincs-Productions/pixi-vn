@@ -125,10 +125,16 @@
   "homepage": "https://pixi-vn.web.app/",
   "funding": "https://github.com/DRincs-Productions/pixi-vn?sponsor=1",
   "dependencies": {
-    "@pixi/devtools": "2.0.1",
-    "@pixi/sound": "6.0.1",
-    "motion": "12.24.7",
-    "pixi.js": "8.15.0"
+    "@pixi/devtools": "^2.0.1",
+    "@pixi/sound": "^6.0.1",
+    "motion": "^12.29.2",
+    "pixi.js": "^8.15.0"
+  },
+  "peerDependencies": {
+    "@pixi/devtools": "^2.0.0",
+    "@pixi/sound": "^6.0.0",
+    "motion": "^12.29.0",
+    "pixi.js": "^8.15.0"
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",

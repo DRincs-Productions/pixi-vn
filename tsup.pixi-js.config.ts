@@ -7,11 +7,10 @@ export default defineConfig({
     },
     format: ["esm"],
     dts: true,
-    treeshake: true,
     splitting: false,
-    clean: false,
+    clean: true,
     minify: true,
     bundle: true,
     skipNodeModulesBundle: false,
-    noExternal: ["pixi.js"],
+    external: ["pixi.js"],
 });

@@ -8,7 +8,6 @@ export default defineConfig({
     format: ["cjs", "esm"],
     dts: true,
     treeshake: true,
-    splitting: false,
     clean: false,
     minify: true,
     bundle: true,
