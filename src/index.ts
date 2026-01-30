@@ -21,7 +21,6 @@ export * from "./interfaces";
 export * from "./utils";
 
 import * as canvasUtils from "@drincs/pixi-vn/canvas";
-import { Assets, Rectangle } from "@drincs/pixi-vn/canvas";
 import * as characterUtils from "@drincs/pixi-vn/characters";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
@@ -376,8 +375,6 @@ export namespace Game {
 }
 
 export default {
-    Assets,
-    Rectangle,
     characterUtils,
     canvasUtils,
     narrationUtils,
