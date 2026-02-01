@@ -1,8 +1,8 @@
+import type { Texture } from "@drincs/pixi-vn/pixi.js";
 import {
     ObservablePoint,
     Sprite as PixiSprite,
     PointData,
-    Texture,
     TextureSource,
     TextureSourceLike,
 } from "@drincs/pixi-vn/pixi.js";
@@ -163,7 +163,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                 getSuperWidth(this),
                 superPivot.x,
                 superScale.x < 0,
-                this.anchor.x
+                this.anchor.x,
             ),
             y: calculateAlignByPosition(
                 "height",
@@ -171,7 +171,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                 getSuperHeight(this),
                 superPivot.y,
                 superScale.y < 0,
-                this.anchor.y
+                this.anchor.y,
             ),
         };
     }
@@ -190,7 +190,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             getSuperWidth(this),
             superPivot.x,
             superScale.x < 0,
-            this.anchor.x
+            this.anchor.x,
         );
     }
     set yAlign(value: number) {
@@ -208,7 +208,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             getSuperHeight(this),
             superPivot.y,
             superScale.y < 0,
-            this.anchor.y
+            this.anchor.y,
         );
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined;
@@ -284,7 +284,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                     getSuperWidth(this),
                     superPivot.x,
                     superScale.x < 0,
-                    this.anchor.x
+                    this.anchor.x,
                 );
             }
             if (this._align.y !== undefined) {
@@ -294,7 +294,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                     getSuperHeight(this),
                     superPivot.y,
                     superScale.y < 0,
-                    this.anchor.y
+                    this.anchor.y,
                 );
             }
         } else if (this._percentagePosition) {
@@ -338,7 +338,7 @@ export async function setMemoryImageSprite(
     memory: ImageSpriteMemory | {},
     options?: {
         ignoreTexture?: boolean;
-    }
+    },
 ) {
     let ignoreTexture = options?.ignoreTexture || false;
     memory = analizePositionsExtensionProps(memory)!;

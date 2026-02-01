@@ -1,4 +1,5 @@
-import { Sprite as PixiSprite, Texture, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
+import type { Texture } from "@drincs/pixi-vn/pixi.js";
+import { Sprite as PixiSprite, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { showWithDissolve } from "../functions/canvas-transition";
@@ -173,7 +174,7 @@ export async function setMemoryVideoSprite(
     memory: VideoSpriteMemory | {},
     options?: {
         ignoreTexture?: boolean;
-    }
+    },
 ) {
     await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture });
     "loop" in memory && memory.loop !== undefined && (element.loop = memory.loop);

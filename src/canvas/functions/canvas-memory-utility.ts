@@ -1,3 +1,4 @@
+import type { Texture } from "@drincs/pixi-vn/pixi.js";
 import {
     Color,
     ColorSource,
@@ -12,7 +13,6 @@ import {
     StrokeStyle,
     TextStyle,
     TextStyleOptions,
-    Texture,
 } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
@@ -91,7 +91,7 @@ function getTextureMemory(texture: Texture, alias?: string): TextureMemory {
  */
 export function getMemoryContainer<T extends PixiContainer>(
     element: T,
-    options?: { childrenExport?: boolean }
+    options?: { childrenExport?: boolean },
 ): ContainerMemory {
     const pixivnId = getPixivnId(element, CANVAS_CONTAINER_ID);
     const childrenExport = options?.childrenExport || false;

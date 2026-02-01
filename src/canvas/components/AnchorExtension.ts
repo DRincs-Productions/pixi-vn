@@ -1,4 +1,4 @@
-import { Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
+import { Container as PixiContainer, PointData, Texture } from "@drincs/pixi-vn/pixi.js";
 
 export interface AnchorExtensionProps {
     anchor?: PointData | number;

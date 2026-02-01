@@ -2,10 +2,8 @@ export * from "@drincs/pixi-vn/canvas";
 export * from "@drincs/pixi-vn/characters";
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
-export * from "@drincs/pixi-vn/sound";
-export * from "@drincs/pixi-vn/storage";
-export * from "@drincs/pixi-vn/unifier";
 export type {
+    ApplicationOptions,
     AssetsBundle,
     AssetsManifest,
     AssetSrc,
@@ -13,7 +11,10 @@ export type {
     ResolvedAsset,
     ResolvedSrc,
     UnresolvedAsset,
-} from "pixi.js";
+} from "@drincs/pixi-vn/pixi.js";
+export * from "@drincs/pixi-vn/sound";
+export * from "@drincs/pixi-vn/storage";
+export * from "@drincs/pixi-vn/unifier";
 export * from "./classes";
 export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 export * from "./interfaces";
@@ -23,7 +24,7 @@ import * as canvasUtils from "@drincs/pixi-vn/canvas";
 import * as characterUtils from "@drincs/pixi-vn/characters";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
-import { ApplicationOptions, Assets, Rectangle } from "@drincs/pixi-vn/pixi.js";
+import type { ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
@@ -78,7 +79,7 @@ export namespace Game {
              */
             navigate?: (path: string) => void | Promise<void>;
         },
-        devtoolsOptions?: Devtools
+        devtoolsOptions?: Devtools,
     ): Promise<void>;
     /**
      * Initialize only the GameUnifier, and not the PixiJS Application and the interface div.
@@ -104,7 +105,7 @@ export namespace Game {
              */
             navigate?: (path: string) => void | Promise<void>;
         },
-        devtoolsOptions?: Devtools
+        devtoolsOptions?: Devtools,
     ): Promise<void> {
         GameUnifier.init({
             navigate: options?.navigate,
@@ -160,10 +161,10 @@ export namespace Game {
             onPreContinue: async () => {
                 try {
                     const promises = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.map(
-                        ({ id }) => canvasUtils.canvas.forceCompletionOfTicker(id)
+                        ({ id }) => canvasUtils.canvas.forceCompletionOfTicker(id),
                     );
                     const promises2 = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.map(
-                        ({ alias, id }) => canvasUtils.canvas.forceCompletionOfTicker(id, alias)
+                        ({ alias, id }) => canvasUtils.canvas.forceCompletionOfTicker(id, alias),
                     );
                     await Promise.all([...promises, ...promises2]);
                     canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
@@ -226,7 +227,7 @@ export namespace Game {
      */
     export async function restoreGameState(
         data: pixivninterface.GameState,
-        navigate: (path: string) => void | Promise<void>
+        navigate: (path: string) => void | Promise<void>,
     ) {
         if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
             data.historyData.stepsHistory = data.stepData.stepsHistory;
@@ -307,8 +308,8 @@ export namespace Game {
             /**
              * The step label properties
              */
-            props: narrationUtils.StepLabelPropsType
-        ) => void | Promise<void>
+            props: narrationUtils.StepLabelPropsType,
+        ) => void | Promise<void>,
     ) {
         GameUnifier.onError = async (type, error, props) => {
             return value(type, error, props);
@@ -321,7 +322,7 @@ export namespace Game {
      * @returns
      */
     export function onStepStart(
-        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>
+        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>,
     ) {
         narrationUtils.NarrationManagerStatic.onStepStart = value;
     }
@@ -342,7 +343,7 @@ export namespace Game {
      * ```
      */
     export function onLoadingLabel(
-        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>
+        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>,
     ) {
         narrationUtils.NarrationManagerStatic.onLoadingLabel = value;
     }
@@ -353,7 +354,7 @@ export namespace Game {
      * @returns
      */
     export function onStepEnd(
-        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>
+        value: (stepId: number, label: narrationUtils.LabelAbstract<any>) => void | Promise<void>,
     ) {
         narrationUtils.NarrationManagerStatic.onStepEnd = value;
     }
@@ -374,8 +375,6 @@ export namespace Game {
 }
 
 export default {
-    Assets,
-    Rectangle,
     characterUtils,
     canvasUtils,
     narrationUtils,
