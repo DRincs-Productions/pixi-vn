@@ -107,7 +107,8 @@ export default class CanvasManagerStatic {
                 // listen for the browser telling us that the screen size changed
                 switch (resizeMode) {
                     case "contain":
-                        CanvasManagerStatic.app.renderer.on("resize", CanvasManagerStatic.resize);
+                        const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
+                        CanvasManagerStatic.app.renderer.on("resize", throttledResize);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
                         break;
@@ -200,29 +201,26 @@ export default class CanvasManagerStatic {
      * This method is called when the screen is resized.
      */
     private static async resize(): Promise<void> {
-        const resize = throttle(async () => {
-            // now we use css trickery to set the sizes and margins
-            if (CanvasManagerStatic._isInitialized) {
-                let style = CanvasManagerStatic.app.canvas.style;
-                style.width = `${CanvasManagerStatic.screenWidth}px`;
-                style.height = `${CanvasManagerStatic.screenHeight}px`;
-                (style as any).marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
-                (style as any).marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
-                (style as any).marginTop = `${CanvasManagerStatic.verticalMargin}px`;
-                (style as any).marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
-            }
+        // now we use css trickery to set the sizes and margins
+        if (CanvasManagerStatic._isInitialized) {
+            let style = CanvasManagerStatic.app.canvas.style;
+            style.width = `${CanvasManagerStatic.screenWidth}px`;
+            style.height = `${CanvasManagerStatic.screenHeight}px`;
+            (style as any).marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
+            (style as any).marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
+            (style as any).marginTop = `${CanvasManagerStatic.verticalMargin}px`;
+            (style as any).marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
+        }
 
-            const promises = CanvasManagerStatic.htmlLayers.map((layer) => {
-                layer.style.width = `${CanvasManagerStatic.screenWidth}px`;
-                layer.style.height = `${CanvasManagerStatic.screenHeight}px`;
-                layer.style.marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
-                layer.style.marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
-                layer.style.marginTop = `${CanvasManagerStatic.verticalMargin}px`;
-                layer.style.marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
-            });
-            await Promise.all(promises);
-        }, 10);
-        await resize();
+        const promises = CanvasManagerStatic.htmlLayers.map((layer) => {
+            layer.style.width = `${CanvasManagerStatic.screenWidth}px`;
+            layer.style.height = `${CanvasManagerStatic.screenHeight}px`;
+            layer.style.marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
+            layer.style.marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
+            layer.style.marginTop = `${CanvasManagerStatic.verticalMargin}px`;
+            layer.style.marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
+        });
+        await Promise.all(promises);
     }
 
     /* Edit Canvas Elements Methods */
