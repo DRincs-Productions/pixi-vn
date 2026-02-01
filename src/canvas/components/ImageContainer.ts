@@ -130,7 +130,7 @@ export default class ImageContainer
         if (this.children.length > 0) {
             return this.children[0].texture;
         }
-        return new Texture();
+        return undefined;
     }
 
     /**
@@ -193,7 +193,7 @@ export default class ImageContainer
                 getSuperWidth(this),
                 superPivot.x,
                 superScale.x < 0,
-                this.anchor.x
+                this.anchor.x,
             ),
             y: calculateAlignByPosition(
                 "height",
@@ -201,7 +201,7 @@ export default class ImageContainer
                 getSuperHeight(this),
                 superPivot.y,
                 superScale.y < 0,
-                this.anchor.y
+                this.anchor.y,
             ),
         };
     }
@@ -222,7 +222,7 @@ export default class ImageContainer
             getSuperWidth(this),
             superPivot.x,
             superScale.x < 0,
-            this.anchor.x
+            this.anchor.x,
         );
     }
     set yAlign(value: number) {
@@ -242,7 +242,7 @@ export default class ImageContainer
             getSuperHeight(this),
             superPivot.y,
             superScale.y < 0,
-            this.anchor.y
+            this.anchor.y,
         );
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined;
@@ -321,7 +321,7 @@ export default class ImageContainer
                     this._align.x,
                     getSuperWidth(this),
                     superPivot.x,
-                    superScale.x < 0
+                    superScale.x < 0,
                 );
             }
             if (this._align.y !== undefined) {
@@ -330,7 +330,7 @@ export default class ImageContainer
                     this._align.y,
                     getSuperHeight(this),
                     superPivot.y,
-                    superScale.y < 0
+                    superScale.y < 0,
                 );
             }
         } else if (this._percentagePosition) {
@@ -374,7 +374,7 @@ export async function setMemoryImageContainer(
     memory: ImageContainerOptions | {},
     options?: {
         ignoreScale?: boolean;
-    }
+    },
 ) {
     memory = analizePositionsExtensionProps(memory)!;
     setMemoryContainer(element, memory, {

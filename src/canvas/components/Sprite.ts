@@ -1,3 +1,4 @@
+import type { Texture } from "@drincs/pixi-vn/pixi.js";
 import {
     Assets,
     ContainerChild,
@@ -5,7 +6,6 @@ import {
     EventEmitter,
     Sprite as PixiSprite,
     SpriteOptions as PixiSpriteOptions,
-    Texture,
     TextureSourceLike,
 } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
@@ -130,7 +130,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
                 ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
             >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
         ) => void,
-        context?: any
+        context?: any,
     ): this {
         return super.on(event, fn, context);
     }
@@ -149,7 +149,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     options?: {
         half?: () => Promise<void>;
         ignoreTexture?: boolean;
-    }
+    },
 ) {
     let ignoreTexture = options?.ignoreTexture || false;
     await setMemoryContainer(element, memory);
