@@ -53,26 +53,38 @@ export default class CanvasManagerStatic {
 
     static async init(
         element: HTMLElement,
-        width: number,
-        height: number,
         options?: Partial<ApplicationOptions> & {
             /**
              * The id of the canvas element.
              * @default "pixi-vn-canvas"
              */
             id?: string;
+            /**
+             * The resize mode of the canvas.
+             * @default "contain"
+             */
+            resizeMode?: "contain";
         },
-        devtoolsOptions?: Devtools
+        devtoolsOptions?: Devtools,
     ): Promise<void> {
+        const {
+            width = 800,
+            height = 600,
+            resizeTo = element,
+            resolution = 1,
+            autoDensity = true,
+            resizeMode = "contain",
+        } = options || {};
         CanvasManagerStatic.canvasWidth = width;
         CanvasManagerStatic.canvasHeight = height;
         CanvasManagerStatic._app = new Application();
         return CanvasManagerStatic.app
             .init({
-                resolution: 1,
-                autoDensity: true,
                 width: width,
                 height: height,
+                resizeTo: resizeTo,
+                resolution: resolution,
+                autoDensity: autoDensity,
                 ...options,
             })
             .then(() => {
@@ -91,8 +103,11 @@ export default class CanvasManagerStatic {
                 // Manager.app.ticker.add(Manager.update)
                 CanvasManagerStatic.addCanvasIntoHTMLElement(element, options?.id);
                 // listen for the browser telling us that the screen size changed
-                window.addEventListener("resize", CanvasManagerStatic.resize);
-
+                switch (resizeMode) {
+                    case "contain":
+                    default:
+                        CanvasManagerStatic.app.renderer.on("resize", CanvasManagerStatic.resize);
+                }
                 // call it manually once so we are sure we are the correct size after starting
                 CanvasManagerStatic.resize();
 
@@ -119,7 +134,7 @@ export default class CanvasManagerStatic {
         style: Pick<CSSStyleDeclaration, "position" | "pointerEvents"> = {
             position: "absolute",
             pointerEvents: "none",
-        }
+        },
     ) {
         let div = document.createElement("div");
         div.setAttribute("id", id);
@@ -216,7 +231,7 @@ export default class CanvasManagerStatic {
             .filter((child) => child.label)
             .sort(
                 (a, b) =>
-                    CanvasManagerStatic.gameLayer.getChildIndex(a) - CanvasManagerStatic.gameLayer.getChildIndex(b)
+                    CanvasManagerStatic.gameLayer.getChildIndex(a) - CanvasManagerStatic.gameLayer.getChildIndex(b),
             )
             .map((item) => item.label);
     }
@@ -239,7 +254,7 @@ export default class CanvasManagerStatic {
                         duration: info.ticker.duration,
                         paused: info.ticker.paused,
                     },
-                ])
+                ]),
         );
     }
     static _currentTickers: { [id: string]: TickerInfo<any> } = {};
@@ -264,7 +279,7 @@ export default class CanvasManagerStatic {
         aliases: string | string[],
         ticker: string,
         timeout: string,
-        canBeDeletedBeforeEnd: boolean
+        canBeDeletedBeforeEnd: boolean,
     ) {
         if (typeof aliases === "string") {
             aliases = [aliases];

@@ -72,14 +72,19 @@ export default interface CanvasManagerInterface {
      */
     init(
         element: HTMLElement,
-        options: Partial<ApplicationOptions> & { width: number; height: number } & {
+        options: Partial<ApplicationOptions> & {
             /**
              * The id of the canvas element.
              * @default "pixi-vn-canvas"
              */
             id?: string;
+            /**
+             * The resize mode of the canvas. (For now, only "contain" is supported)
+             * @default "contain"
+             */
+            resizeMode?: "contain";
         },
-        devtoolsOptions?: Devtools
+        devtoolsOptions?: Devtools,
     ): Promise<void>;
     /**
      * The children of the canvas.
@@ -93,7 +98,7 @@ export default interface CanvasManagerInterface {
      */
     copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseInterface<T> | string,
-        newAlias: CanvasBaseInterface<T> | string
+        newAlias: CanvasBaseInterface<T> | string,
     ): Promise<void>;
 
     /**
@@ -131,7 +136,7 @@ export default interface CanvasManagerInterface {
              * @default undefined
              */
             zIndex?: number;
-        }
+        },
     ): void;
     /**
      * Remove a canvas element from the canvas.
@@ -152,7 +157,7 @@ export default interface CanvasManagerInterface {
              * @default false
              */
             ignoreTickers?: boolean;
-        }
+        },
     ): void;
     /**
      * Get a canvas element by the alias.
@@ -189,7 +194,7 @@ export default interface CanvasManagerInterface {
              * @default false
              */
             ignoreTickers?: boolean;
-        }
+        },
     ): void;
 
     /** Edit Tickers Methods */
@@ -227,7 +232,7 @@ export default interface CanvasManagerInterface {
      */
     addTicker<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
-        ticker: Ticker<TArgs>
+        ticker: Ticker<TArgs>,
     ): string | undefined;
     /**
      * Run a sequence of tickers.
@@ -248,7 +253,7 @@ export default interface CanvasManagerInterface {
     addTickersSequence(
         alias: string,
         steps: (Ticker<any> | RepeatType | PauseType)[],
-        currentStepNumber?: number
+        currentStepNumber?: number,
     ): string | undefined;
     /**
      * Remove a connection between a canvas element and a ticker.
@@ -294,7 +299,7 @@ export default interface CanvasManagerInterface {
                    * The id of the ticker to be paused. If provided, only this ticker will be paused.
                    */
                   id: string | string[];
-              }
+              },
     ): string[];
     /**
      * Resume a ticker.
@@ -314,7 +319,7 @@ export default interface CanvasManagerInterface {
                    * The id of the ticker to be resumed. If provided, only this ticker will be resumed.
                    */
                   id: string | string[];
-              }
+              },
     ): void;
     /**
      * Check if a ticker is paused.
@@ -362,7 +367,7 @@ export default interface CanvasManagerInterface {
         components: T | string | (string | T)[],
         keyframes: KeyframesType<T>,
         options?: AnimationOptions,
-        priority?: UPDATE_PRIORITY
+        priority?: UPDATE_PRIORITY,
     ): string | undefined;
     /**
      * Animate a Pixi’VN component or components using [motion's animate](https://motion.dev/docs/animate) function.
@@ -381,7 +386,7 @@ export default interface CanvasManagerInterface {
         components: T | string,
         sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
         options?: SequenceOptions,
-        priority?: UPDATE_PRIORITY
+        priority?: UPDATE_PRIORITY,
     ): string | undefined;
 
     /* Layers Methods */
@@ -441,7 +446,7 @@ export default interface CanvasManagerInterface {
     addHtmlLayer(
         id: string,
         element: HTMLElement,
-        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">
+        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">,
     ): HTMLDivElement;
     /**
      * Get a HTML layer from the canvas.
@@ -487,6 +492,6 @@ export default interface CanvasManagerInterface {
             tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
             stopTicker?: boolean;
-        }
+        },
     ): void;
 }
