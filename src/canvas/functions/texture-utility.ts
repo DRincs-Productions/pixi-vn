@@ -1,5 +1,4 @@
-import type { Texture } from "@drincs/pixi-vn/pixi.js";
-import { Assets } from "@drincs/pixi-vn/pixi.js";
+import { Assets, Texture } from "@drincs/pixi-vn/pixi.js";
 import { logger } from "../../utils/log-utility";
 
 /**
@@ -28,7 +27,7 @@ export async function getTexture(textureAlias?: string): Promise<Texture | void>
                 return;
             }
             // if texture not is a Texture, then it is a TextureResource
-            if (!("source" in texture)) {
+            if (!(texture instanceof Texture)) {
                 logger.error("File not is a file", textureAlias);
                 return;
             }

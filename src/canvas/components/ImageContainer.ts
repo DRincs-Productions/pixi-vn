@@ -130,7 +130,7 @@ export default class ImageContainer
         if (this.children.length > 0) {
             return this.children[0].texture;
         }
-        return undefined;
+        return new Texture();
     }
 
     /**
