@@ -25,7 +25,7 @@ export default defineConfig([
         clean: false,
         minify: true,
         bundle: true,
-        external: ["pixi.js"],
+        noExternal: ["pixi.js"],
     },
     {
         target: "es2020",

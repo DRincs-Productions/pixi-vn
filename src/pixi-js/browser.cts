@@ -7,11 +7,13 @@ const globalAny: any = globalThis || (global as any);
 const PIXI = globalAny && globalAny.PIXI;
 
 if (PIXI) {
+    console.log("Using global PIXI for browser bundle.");
     Object.keys(PIXI).forEach((k) => {
         (exports as any)[k] = (PIXI as any)[k];
     });
     (exports as any).default = PIXI;
     Object.defineProperty(exports, "__esModule", { value: true });
 } else {
+    console.log("Falling back to require('pixi.js')");
     module.exports = require("pixi.js");
 }
