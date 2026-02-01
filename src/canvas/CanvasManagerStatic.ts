@@ -68,12 +68,14 @@ export default class CanvasManagerStatic {
         devtoolsOptions?: Devtools,
     ): Promise<void> {
         const {
+            id = "pixi-vn-canvas",
             width = 800,
             height = 600,
             resizeTo = element,
             resolution = 1,
             autoDensity = true,
             resizeMode = "contain",
+            ...rest
         } = options || {};
         CanvasManagerStatic.canvasWidth = width;
         CanvasManagerStatic.canvasHeight = height;
@@ -85,7 +87,7 @@ export default class CanvasManagerStatic {
                 resizeTo: resizeTo,
                 resolution: resolution,
                 autoDensity: autoDensity,
-                ...options,
+                ...rest,
             })
             .then(() => {
                 const {
@@ -101,7 +103,7 @@ export default class CanvasManagerStatic {
 
                 CanvasManagerStatic._isInitialized = true;
                 // Manager.app.ticker.add(Manager.update)
-                CanvasManagerStatic.addCanvasIntoHTMLElement(element, options?.id);
+                CanvasManagerStatic.addCanvasIntoHTMLElement(element, id);
                 // listen for the browser telling us that the screen size changed
                 switch (resizeMode) {
                     case "contain":
@@ -122,7 +124,7 @@ export default class CanvasManagerStatic {
      * @param element it is the html element where I will put the canvas. Example: document.body
      * @param id it is the id of the canvas element.
      */
-    private static addCanvasIntoHTMLElement(element: HTMLElement, id: string = "pixi-vn-canvas") {
+    private static addCanvasIntoHTMLElement(element: HTMLElement, id: string) {
         if (CanvasManagerStatic._isInitialized) {
             element.appendChild(CanvasManagerStatic.app.canvas as HTMLCanvasElement);
             CanvasManagerStatic.app.canvas.id = id;
