@@ -1,8 +1,8 @@
 import CanvasManager from "./CanvasManager";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
-export { Assets, Color, Rectangle, TextStyle, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-export type { ContainerOptions, Texture, TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
+export { Assets, Color, Rectangle, TextStyle, Texture, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
 
 // * This import must be imported before the ImageSprite import.
 export { default as VideoSprite } from "./components/VideoSprite";
