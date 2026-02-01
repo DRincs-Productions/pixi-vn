@@ -73,7 +73,7 @@ export default class CanvasManager implements CanvasManagerInterface {
              * The resize mode of the canvas.
              * @default "contain"
              */
-            resizeMode?: "contain";
+            resizeMode?: "contain" | "none";
         },
         devtoolsOptions?: Devtools,
     ): Promise<void> {

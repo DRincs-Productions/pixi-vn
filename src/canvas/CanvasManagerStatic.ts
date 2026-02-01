@@ -63,7 +63,7 @@ export default class CanvasManagerStatic {
              * The resize mode of the canvas.
              * @default "contain"
              */
-            resizeMode?: "contain";
+            resizeMode?: "contain" | "none";
         },
         devtoolsOptions?: Devtools,
     ): Promise<void> {
@@ -105,12 +105,14 @@ export default class CanvasManagerStatic {
                 // listen for the browser telling us that the screen size changed
                 switch (resizeMode) {
                     case "contain":
-                    default:
                         CanvasManagerStatic.app.renderer.on("resize", CanvasManagerStatic.resize);
+                        // call it manually once so we are sure we are the correct size after starting
+                        CanvasManagerStatic.resize();
+                        break;
+                    case "none":
+                    default:
+                        break;
                 }
-                // call it manually once so we are sure we are the correct size after starting
-                CanvasManagerStatic.resize();
-
                 // add the game layer
                 CanvasManagerStatic.gameLayer;
             });

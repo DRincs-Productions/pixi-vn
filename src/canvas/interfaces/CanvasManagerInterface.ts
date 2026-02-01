@@ -79,10 +79,10 @@ export default interface CanvasManagerInterface {
              */
             id?: string;
             /**
-             * The resize mode of the canvas. (For now, only "contain" is supported)
+             * The resize mode of the canvas.
              * @default "contain"
              */
-            resizeMode?: "contain";
+            resizeMode?: "contain" | "none";
         },
         devtoolsOptions?: Devtools,
     ): Promise<void>;
