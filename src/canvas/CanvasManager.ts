@@ -63,36 +63,21 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     public async init(
         element: HTMLElement,
-        widthOrOptions: (Partial<ApplicationOptions> & { width: number; height: number; id?: string }) | number,
-        heightOrDevtoolsOptions?: Devtools | number,
-        options?: Partial<ApplicationOptions> & {
+        options: Partial<ApplicationOptions> & {
             /**
              * The id of the canvas element.
              * @default "pixi-vn-canvas"
              */
             id?: string;
+            /**
+             * The resize mode of the canvas.
+             * @default "contain"
+             */
+            resizeMode?: "contain" | "none";
         },
-        devtoolsOptions?: Devtools
+        devtoolsOptions?: Devtools,
     ): Promise<void> {
-        if (typeof widthOrOptions === "number" && typeof heightOrDevtoolsOptions === "number") {
-            return await CanvasManagerStatic.init(
-                element,
-                widthOrOptions,
-                heightOrDevtoolsOptions,
-                options,
-                devtoolsOptions
-            );
-        } else if (typeof widthOrOptions !== "number" && typeof heightOrDevtoolsOptions !== "number") {
-            return await CanvasManagerStatic.init(
-                element,
-                widthOrOptions.width,
-                widthOrOptions.height,
-                widthOrOptions,
-                heightOrDevtoolsOptions
-            );
-        } else {
-            throw new Error("Invalid parameters");
-        }
+        return await CanvasManagerStatic.init(element, options, devtoolsOptions);
     }
 
     /* Edit Canvas Elements Methods */
@@ -102,7 +87,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
     async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseInterface<T> | string,
-        newAlias: CanvasBaseInterface<T> | string
+        newAlias: CanvasBaseInterface<T> | string,
     ) {
         if (typeof newAlias === "string") {
             let element = this.find(newAlias);
@@ -162,7 +147,7 @@ export default class CanvasManager implements CanvasManagerInterface {
              * @default undefined
              */
             zIndex?: number;
-        } = {}
+        } = {},
     ) {
         if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
             logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
@@ -179,7 +164,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         let zIndex = options.zIndex;
         if (oldCanvasElement && !this.gameLayer.children.includes(oldCanvasElement)) {
             logger.error(
-                `The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`
+                `The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`,
             );
         } else if (oldCanvasElement) {
             zIndex === undefined && (zIndex = this.gameLayer.getChildIndex(oldCanvasElement));
@@ -202,7 +187,7 @@ export default class CanvasManager implements CanvasManagerInterface {
              * @default false
              */
             ignoreTickers?: boolean;
-        } = {}
+        } = {},
     ) {
         if (alias === CANVAS_APP_GAME_LAYER_ALIAS) {
             logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
@@ -244,7 +229,7 @@ export default class CanvasManager implements CanvasManagerInterface {
              * @default false
              */
             ignoreTickers?: boolean;
-        } = {}
+        } = {},
     ) {
         let canvasComponent = this.find(oldAlias);
         if (canvasComponent) {
@@ -276,7 +261,7 @@ export default class CanvasManager implements CanvasManagerInterface {
              * The id of the ticker.
              */
             id?: string;
-        }
+        },
     ) {
         let tickerId: TickerIdType = ticker.id;
         if (typeof canvasElementAlias === "string") {
@@ -355,15 +340,18 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         }
         if (step.hasOwnProperty("type") && (step as PauseType).type === "pause") {
-            let timeout = setTimeout(() => {
-                let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()];
-                if (tickerTimeoutInfo) {
-                    tickerTimeoutInfo.aliases.forEach((alias) => {
-                        this.nextTickerStep(alias, key);
-                    });
-                }
-                CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
-            }, (step as PauseType).duration * 1000);
+            let timeout = setTimeout(
+                () => {
+                    let tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts[timeout.toString()];
+                    if (tickerTimeoutInfo) {
+                        tickerTimeoutInfo.aliases.forEach((alias) => {
+                            this.nextTickerStep(alias, key);
+                        });
+                    }
+                    CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
+                },
+                (step as PauseType).duration * 1000,
+            );
             CanvasManagerStatic.addTickerTimeoutInfo(alias, "steps", timeout.toString(), false);
             return;
         }
@@ -371,7 +359,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             (step as TickersStep<TArgs>).ticker,
             (step as TickersStep<TArgs>).args,
             step.duration,
-            (step as TickersStep<TArgs>).priority
+            (step as TickersStep<TArgs>).priority,
         );
         if (!ticker) {
             logger.error(`Ticker ${(step as TickersStep<TArgs>).ticker} not found`);
@@ -439,7 +427,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             tickerIdToResume: string[];
             ignoreTickerSteps?: boolean;
             stopTicker?: boolean;
-        }
+        },
     ) {
         const { stopTicker = true, aliasToRemoveAfter, tickerAliasToResume, tickerIdToResume } = options;
         let info = CanvasManagerStatic._currentTickers[tickerId];
@@ -458,7 +446,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
     public unlinkComponentFromTicker(
         alias: string | string[],
-        ticker?: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> } | string
+        ticker?: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> } | string,
     ) {
         if (typeof alias === "string") {
             alias = [alias];
@@ -472,7 +460,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                             this.removeTicker(id);
                         } else {
                             info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter(
-                                (t) => t !== alias
+                                (t) => t !== alias,
                             );
                         }
                     }
@@ -509,7 +497,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(([timeout, tickerTimeout]) => {
             if (tickerTimeout.ticker === tickerId && tickerTimeout.canBeDeletedBeforeEnd) {
                 CanvasManagerStatic._currentTickersTimeouts[timeout].aliases = tickerTimeout.aliases.filter(
-                    (t) => !alias.includes(t)
+                    (t) => !alias.includes(t),
                 );
             }
         });
@@ -552,7 +540,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         tickerId: string | string[],
         options: {
             stopTicker?: boolean;
-        } = { stopTicker: true }
+        } = { stopTicker: true },
     ) {
         if (typeof tickerId === "string") {
             tickerId = [tickerId];
@@ -574,7 +562,7 @@ export default class CanvasManager implements CanvasManagerInterface {
               }
             | {
                   id: string | string[];
-              }
+              },
     ) {
         let ids: string[] = [];
         if ("canvasAlias" in filters) {
@@ -615,7 +603,7 @@ export default class CanvasManager implements CanvasManagerInterface {
               }
             | {
                   id: string | string[];
-              }
+              },
     ) {
         if ("canvasAlias" in filters) {
             const { canvasAlias } = filters;
@@ -660,11 +648,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (CanvasManagerStatic._currentTickersSequence[oldAlias]) {
             if (mode === "move") {
                 CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
-                    CanvasManagerStatic._currentTickersSequence[oldAlias]
+                    CanvasManagerStatic._currentTickersSequence[oldAlias],
                 );
             } else if (mode === "duplicate") {
                 CanvasManagerStatic._currentTickersSequence[newAlias] = createExportableElement(
-                    CanvasManagerStatic._currentTickersSequence[oldAlias]
+                    CanvasManagerStatic._currentTickersSequence[oldAlias],
                 );
             }
         }
@@ -677,7 +665,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                     info.ticker.id,
                     createExportableElement(info.ticker.args),
                     info.ticker.duration,
-                    info.ticker.priority
+                    info.ticker.priority,
                 );
                 if (ticker) {
                     ticker.canvasElementAliases = [newAlias];
@@ -691,7 +679,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
                 if (mode === "move") {
                     info.ticker.canvasElementAliases = info.ticker.canvasElementAliases.filter(
-                        (alias) => alias !== oldAlias
+                        (alias) => alias !== oldAlias,
                     );
                 }
 
@@ -703,7 +691,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                     if (Array.isArray(aliasToRemoveAfter)) {
                         if (mode === "move") {
                             info.ticker.args.aliasToRemoveAfter = aliasToRemoveAfter.map((t) =>
-                                t === oldAlias ? newAlias : t
+                                t === oldAlias ? newAlias : t,
                             );
                         } else if (mode === "duplicate") {
                             if (aliasToRemoveAfter.find((t) => t === oldAlias)) {
@@ -765,7 +753,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 if (tickers[id].steps.includes(Repeat)) {
                     logger.error(
                         `The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`,
-                        tickers[id]
+                        tickers[id],
                     );
                 } else {
                     const promises = tickers[id].steps.map((step) => {
@@ -774,7 +762,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                                 (step as TickersStep<any>).ticker,
                                 (step as TickersStep<any>).args,
                                 step.duration,
-                                (step as TickersStep<any>).priority
+                                (step as TickersStep<any>).priority,
                             );
                             if (ticker) {
                                 ticker.canvasElementAliases = [alias];
@@ -792,19 +780,19 @@ export default class CanvasManager implements CanvasManagerInterface {
         components: T | string | (string | T)[],
         keyframes: KeyframesType<T>,
         options?: AnimationOptions,
-        priority?: UPDATE_PRIORITY
+        priority?: UPDATE_PRIORITY,
     ): string | undefined;
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string,
         sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
         options?: SequenceOptions,
-        priority?: UPDATE_PRIORITY
+        priority?: UPDATE_PRIORITY,
     ): string | undefined;
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: KeyframesType<T> | (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
         options?: AnimationOptions | SequenceOptions,
-        priority?: UPDATE_PRIORITY
+        priority?: UPDATE_PRIORITY,
     ): string | undefined {
         try {
             keyframes = createExportableElement(keyframes);
@@ -834,7 +822,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                     options: options as SequenceOptions,
                 },
                 undefined,
-                priority
+                priority,
             );
         } else {
             ticker = new MotionTicker(
@@ -843,7 +831,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                     options: options as AnimationOptions,
                 },
                 undefined,
-                priority
+                priority,
             );
         }
         const id = this.addTicker<any>(aliases, ticker);
