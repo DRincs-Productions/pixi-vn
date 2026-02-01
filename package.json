@@ -10,11 +10,7 @@
     "dist"
   ],
   "scripts": {
-    "build:unifier": "tsup --config tsup.unifier.config.ts",
-    "build:pixi-js": "tsup --config tsup.pixi-js.config.ts",
-    "build:submodules": "tsup --config tsup.submodules.config.ts",
-    "build:index": "tsup --config tsup.config.ts",
-    "build": "npm run build:pixi-js && npm run build:unifier && npm run build:submodules && npm run build:index",
+    "build": "tsup --config tsup.config.ts",
     "test": "vitest"
   },
   "exports": {
@@ -25,10 +21,14 @@
       "default": "./dist/index.mjs"
     },
     "./pixi.js": {
-      "types": "./dist/pixi.d.ts",
-      "import": "./dist/pixi.js",
-      "require": "./dist/pixi.js",
-      "default": "./dist/pixi.js"
+      "types": "./dist/pixi/index.d.ts",
+      "browser": {
+        "import": "./dist/pixi/browser.js",
+        "require": "./dist/pixi/browser.js"
+      },
+      "import": "./dist/pixi/index.js",
+      "require": "./dist/pixi/index.js",
+      "default": "./dist/pixi/index.js"
     },
     "./unifier": {
       "types": "./dist/unifier.d.ts",
