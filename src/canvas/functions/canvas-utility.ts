@@ -1,12 +1,11 @@
-import type { Texture } from "@drincs/pixi-vn/pixi.js";
-import { Assets } from "@drincs/pixi-vn/pixi.js";
+import { Assets, Texture } from "@drincs/pixi-vn/pixi.js";
 import db from "mime-db";
 
 export function checkIfVideo(textureAlias: string): boolean {
     const cachedTexture = Assets.cache.has(textureAlias) ? Assets.get(textureAlias) : null;
 
-    if (cachedTexture && "source" in cachedTexture) {
-        textureAlias = (cachedTexture as Texture).source?.label || textureAlias;
+    if (cachedTexture instanceof Texture) {
+        textureAlias = cachedTexture.source?.label || textureAlias;
     }
 
     return isVideoPath(textureAlias);
