@@ -62,14 +62,7 @@ export default defineConfig([
         minify: true,
         bundle: true,
         skipNodeModulesBundle: false,
-        external: [
-            "@drincs/pixi-vn/unifier",
-            "@drincs/pixi-vn/pixi.js",
-            "@pixi/sound",
-            "@pixi/devtools",
-            "motion",
-            "pixi.js",
-        ],
+        external: ["@drincs/pixi-vn/unifier", "@drincs/pixi-vn/pixi.js", "@pixi/sound", "@pixi/devtools", "motion"],
         outExtension({ format }) {
             return {
                 js: format === "esm" ? ".mjs" : ".cjs",
