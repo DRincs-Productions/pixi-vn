@@ -71,7 +71,6 @@ export default class CanvasManagerStatic {
             id = "pixi-vn-canvas",
             width = 800,
             height = 600,
-            resizeTo = element,
             resolution = 1,
             autoDensity = true,
             resizeMode = "contain",
@@ -82,11 +81,10 @@ export default class CanvasManagerStatic {
         CanvasManagerStatic._app = new Application();
         return CanvasManagerStatic.app
             .init({
-                width: width,
-                height: height,
-                resizeTo: resizeTo,
-                resolution: resolution,
-                autoDensity: autoDensity,
+                width,
+                height,
+                resolution,
+                autoDensity,
                 ...rest,
             })
             .then(() => {
@@ -108,7 +106,7 @@ export default class CanvasManagerStatic {
                 switch (resizeMode) {
                     case "contain":
                         const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
-                        CanvasManagerStatic.app.renderer.on("resize", throttledResize);
+                        window.addEventListener("resize", throttledResize);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
                         break;
