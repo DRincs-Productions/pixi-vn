@@ -1,3 +1,6 @@
+export * from "pixi.js";
+
+/**
 // CommonJS-flavored TypeScript for bundles inside a "type": "module" package.
 // This file intentionally uses CommonJS `module.exports`/`exports` so esbuild
 // (through tsup) will treat it as CJS when building the browser bundle.
@@ -17,3 +20,4 @@ if (PIXI) {
     console.log("Falling back to require('pixi.js')");
     module.exports = require("pixi.js");
 }
+ */
