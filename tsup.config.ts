@@ -17,7 +17,7 @@ export default defineConfig([
     {
         target: "es2020",
         entry: {
-            "pixi/browser": "src/pixi-js/browser.ts",
+            "pixi/browser": "src/pixi-js/browser.cts",
         },
         format: ["esm"],
         dts: false,
