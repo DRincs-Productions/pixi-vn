@@ -167,15 +167,13 @@ export default class CanvasManagerStatic {
      * This method returns the scale of the screen.
      */
     private static get screenScale() {
-        const container = CanvasManagerStatic.app.resizeTo;
-        if (container instanceof HTMLElement) {
-            let screenWidth = Math.max(container.clientWidth, window.innerWidth || 0);
-            let screenHeight = Math.max(container.clientHeight, window.innerHeight || 0);
-            return Math.min(
-                screenWidth / CanvasManagerStatic.canvasWidth,
-                screenHeight / CanvasManagerStatic.canvasHeight,
-            );
+        let container = CanvasManagerStatic.app.resizeTo;
+        if (!(container instanceof HTMLElement)) {
+            container = document.documentElement;
         }
+        let screenWidth = Math.max(container.clientWidth, window.innerWidth || 0);
+        let screenHeight = Math.max(container.clientHeight, window.innerHeight || 0);
+        return Math.min(screenWidth / CanvasManagerStatic.canvasWidth, screenHeight / CanvasManagerStatic.canvasHeight);
     }
     /**
      * This method returns the width of the screen enlarged by the scale.
@@ -193,21 +191,23 @@ export default class CanvasManagerStatic {
      * This method returns the horizontal margin of the screen.
      */
     private static get horizontalMargin() {
-        const container = CanvasManagerStatic.app.resizeTo;
-        if (container instanceof HTMLElement) {
-            let screenWidth = Math.max((container as HTMLElement).clientWidth, window.innerWidth || 0);
-            return (screenWidth - CanvasManagerStatic.screenWidth) / 2;
+        let container = CanvasManagerStatic.app.resizeTo;
+        if (!(container instanceof HTMLElement)) {
+            container = document.documentElement;
         }
+        let screenWidth = Math.max((container as HTMLElement).clientWidth, window.innerWidth || 0);
+        return (screenWidth - CanvasManagerStatic.screenWidth) / 2;
     }
     /**
      * This method returns the vertical margin of the screen.
      */
     private static get verticalMargin() {
-        const container = CanvasManagerStatic.app.resizeTo;
-        if (container instanceof HTMLElement) {
-            let screenHeight = Math.max((container as HTMLElement).clientHeight, window.innerHeight || 0);
-            return (screenHeight - CanvasManagerStatic.screenHeight) / 2;
+        let container = CanvasManagerStatic.app.resizeTo;
+        if (!(container instanceof HTMLElement)) {
+            container = document.documentElement;
         }
+        let screenHeight = Math.max((container as HTMLElement).clientHeight, window.innerHeight || 0);
+        return (screenHeight - CanvasManagerStatic.screenHeight) / 2;
     }
     /**
      * This method is called when the screen is resized.
