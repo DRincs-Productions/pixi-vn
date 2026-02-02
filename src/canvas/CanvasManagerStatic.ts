@@ -74,7 +74,6 @@ export default class CanvasManagerStatic {
             resolution = 1,
             autoDensity = true,
             resizeMode = "contain",
-            resizeTo = element,
             ...rest
         } = options || {};
         CanvasManagerStatic.canvasWidth = width;
@@ -86,7 +85,6 @@ export default class CanvasManagerStatic {
                 height,
                 resolution,
                 autoDensity,
-                resizeTo,
                 ...rest,
             })
             .then(() => {
@@ -108,7 +106,7 @@ export default class CanvasManagerStatic {
                 switch (resizeMode) {
                     case "contain":
                         const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
-                        app.renderer.on("resize", throttledResize);
+                        new ResizeObserver(throttledResize).observe(element);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
                         break;
