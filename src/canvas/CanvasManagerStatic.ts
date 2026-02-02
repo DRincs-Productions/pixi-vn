@@ -173,8 +173,20 @@ export default class CanvasManagerStatic {
         if (!(container instanceof HTMLElement)) {
             container = document.documentElement;
         }
-        const containerWidth = container.clientWidth;
-        const containerHeight = container.clientHeight;
+        let containerWidth: number;
+        let containerHeight: number;
+        // If the container is the document body or the documentElement,
+        // use the viewport size (documentElement or window) because
+        // body.clientHeight can be affected by CSS/content and not
+        // reflect the visible viewport height.
+        if (container === document.body || container === document.documentElement) {
+            containerWidth = document.documentElement.clientWidth || window.innerWidth;
+            containerHeight = document.documentElement.clientHeight || window.innerHeight;
+        } else {
+            const rect = container.getBoundingClientRect();
+            containerWidth = rect.width || container.clientWidth;
+            containerHeight = rect.height || container.clientHeight;
+        }
         const horizontalMargin = 0;
         const verticalMargin = 0;
         const scale = Math.min(containerWidth / canvasWidth, containerHeight / canvasHeight);
