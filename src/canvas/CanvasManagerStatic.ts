@@ -74,6 +74,7 @@ export default class CanvasManagerStatic {
             resolution = 1,
             autoDensity = true,
             resizeMode = "contain",
+            resizeTo = element,
             ...rest
         } = options || {};
         CanvasManagerStatic.canvasWidth = width;
@@ -85,6 +86,7 @@ export default class CanvasManagerStatic {
                 height,
                 resolution,
                 autoDensity,
+                resizeTo,
                 ...rest,
             })
             .then(() => {
@@ -106,7 +108,7 @@ export default class CanvasManagerStatic {
                 switch (resizeMode) {
                     case "contain":
                         const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
-                        window.addEventListener("resize", throttledResize);
+                        app.renderer.on("resize", throttledResize);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
                         break;
@@ -165,8 +167,9 @@ export default class CanvasManagerStatic {
      * This method returns the scale of the screen.
      */
     private static get screenScale() {
-        let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
-        let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        const container = CanvasManagerStatic.app.resizeTo as HTMLElement;
+        let screenWidth = Math.max(container.clientWidth, window.innerWidth || 0);
+        let screenHeight = Math.max(container.clientHeight, window.innerHeight || 0);
         return Math.min(screenWidth / CanvasManagerStatic.canvasWidth, screenHeight / CanvasManagerStatic.canvasHeight);
     }
     /**
@@ -185,14 +188,16 @@ export default class CanvasManagerStatic {
      * This method returns the horizontal margin of the screen.
      */
     private static get horizontalMargin() {
-        let screenWidth = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        const container = CanvasManagerStatic.app.resizeTo as HTMLElement;
+        let screenWidth = Math.max((container as HTMLElement).clientWidth, window.innerWidth || 0);
         return (screenWidth - CanvasManagerStatic.screenWidth) / 2;
     }
     /**
      * This method returns the vertical margin of the screen.
      */
     private static get verticalMargin() {
-        let screenHeight = Math.max(document.documentElement.clientHeight, window.innerHeight || 0);
+        const container = CanvasManagerStatic.app.resizeTo as HTMLElement;
+        let screenHeight = Math.max((container as HTMLElement).clientHeight, window.innerHeight || 0);
         return (screenHeight - CanvasManagerStatic.screenHeight) / 2;
     }
     /**
@@ -201,13 +206,18 @@ export default class CanvasManagerStatic {
     private static async resize(): Promise<void> {
         // now we use css trickery to set the sizes and margins
         if (CanvasManagerStatic._isInitialized) {
-            let style = CanvasManagerStatic.app.canvas.style;
-            style.width = `${CanvasManagerStatic.screenWidth}px`;
-            style.height = `${CanvasManagerStatic.screenHeight}px`;
-            (style as any).marginLeft = `${CanvasManagerStatic.horizontalMargin}px`;
-            (style as any).marginRight = `${CanvasManagerStatic.horizontalMargin}px`;
-            (style as any).marginTop = `${CanvasManagerStatic.verticalMargin}px`;
-            (style as any).marginBottom = `${CanvasManagerStatic.verticalMargin}px`;
+            const DESIGN_WIDTH = CanvasManagerStatic.canvasWidth;
+            const DESIGN_HEIGHT = CanvasManagerStatic.canvasHeight;
+            const container = CanvasManagerStatic.app.resizeTo;
+            const containerWidth = (container as HTMLElement).clientWidth;
+            const containerHeight = (container as HTMLElement).clientHeight;
+
+            const scale = Math.min(containerWidth / DESIGN_WIDTH, containerHeight / DESIGN_HEIGHT);
+
+            CanvasManagerStatic.app.stage.scale.set(scale);
+
+            CanvasManagerStatic.app.stage.x = this.horizontalMargin;
+            CanvasManagerStatic.app.stage.y = this.verticalMargin;
         }
 
         const promises = CanvasManagerStatic.htmlLayers.map((layer) => {
