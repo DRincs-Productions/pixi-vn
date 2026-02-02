@@ -170,6 +170,7 @@ export default class CanvasManagerStatic {
         const canvasWidth = CanvasManagerStatic.canvasWidth;
         const canvasHeight = CanvasManagerStatic.canvasHeight;
         let container = CanvasManagerStatic.app.resizeTo;
+        let style = CanvasManagerStatic.app.canvas.style;
         if (!(container instanceof HTMLElement)) {
             container = document.documentElement;
         }
@@ -188,14 +189,16 @@ export default class CanvasManagerStatic {
             containerHeight = rect.height || container.clientHeight;
         }
         const scale = Math.min(containerWidth / canvasWidth, containerHeight / canvasHeight);
-        CanvasManagerStatic.app.stage.scale.set(scale);
-
         const screenWidth = Math.floor(scale * canvasWidth);
         const screenHeight = Math.floor(scale * canvasHeight);
+        style.width = `${screenWidth}px`;
+        style.height = `${screenHeight}px`;
         const horizontalMargin = (containerWidth - screenWidth) / 2;
         const verticalMargin = (containerHeight - screenHeight) / 2;
-        CanvasManagerStatic.app.stage.x = horizontalMargin;
-        CanvasManagerStatic.app.stage.y = verticalMargin;
+        (style as any).marginLeft = `${horizontalMargin}px`;
+        (style as any).marginRight = `${horizontalMargin}px`;
+        (style as any).marginTop = `${verticalMargin}px`;
+        (style as any).marginBottom = `${verticalMargin}px`;
 
         const promises = CanvasManagerStatic.htmlLayers.map((layer) => {
             layer.style.width = `${screenWidth}px`;
