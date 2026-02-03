@@ -6,6 +6,7 @@ import {
     RegisteredCharacters,
     sound,
     stepHistory,
+    StepLabelPropsType,
     StepLabelResultType,
     storage,
     StorageManagerStatic,
@@ -46,15 +47,15 @@ GameUnifier.init({
     getCharacter: (id: string) => {
         return RegisteredCharacters.get(id);
     },
-    processNavigationRequests: (navigationRequestsCount: number) => {
+    processNavigationRequests: (navigationRequestsCount: number, props: StepLabelPropsType<any>) => {
         let newValue = navigationRequestsCount;
         let result: Promise<void | StepLabelResultType> = Promise.resolve();
         if (navigationRequestsCount > 0) {
             newValue--;
-            result = narration.continue({});
+            result = narration.continue(props);
         } else if (navigationRequestsCount < 0) {
             newValue = 0;
-            result = stepHistory.back({}, { steps: navigationRequestsCount * -1 });
+            result = stepHistory.back(props, { steps: navigationRequestsCount * -1 });
         }
         return { newValue, result };
     },

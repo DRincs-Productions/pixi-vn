@@ -96,7 +96,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         GameUnifier.runningStepsCount++;
         try {
             let restoredStep = createExportableElement(
-                this.getOldGameState(steps, HistoryManagerStatic.originalStepData)
+                this.getOldGameState(steps, HistoryManagerStatic.originalStepData),
             );
             if (restoredStep) {
                 await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
@@ -120,7 +120,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         } finally {
             GameUnifier.runningStepsCount--;
             if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
-                return await GameUnifier.processNavigationRequests();
+                return await GameUnifier.processNavigationRequests(props);
             }
         }
     }
@@ -128,7 +128,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         historyInfo: HistoryInfo,
         options: {
             ignoreSameStep?: boolean;
-        } = {}
+        } = {},
     ) {
         const originalStepData = HistoryManagerStatic.originalStepData;
         const { ignoreSameStep } = options;
@@ -160,7 +160,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                     {
                         step: historyInfo,
                     },
-                    previousItem
+                    previousItem,
                 );
                 HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
                 if (lastStepHistory && lastNarrativeHistory && typeof lastKey === "number") {
@@ -169,7 +169,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                             ...previousItem,
                             step: lastStepHistory,
                         },
-                        {}
+                        {},
                     );
                     HistoryManagerStatic._narrationHistory.set(lastKey, previousNarrativeHistory);
                 }
@@ -187,7 +187,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             inputValue?: StorageElementType;
             removeDialogue?: boolean;
         },
-        previousItem?: { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean }
+        previousItem?: { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean },
     ): NarrationHistory {
         const { step, choiceIndexMade, inputValue, removeDialogue } = item;
         let dialogue = step.dialogue || step.dialoge;
@@ -419,7 +419,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                         inputValue: moreInfo.inputValue,
                         removeDialogue: moreInfo.removeDialogue,
                     },
-                    previousItem
+                    previousItem,
                 );
                 if (res) {
                     HistoryManagerStatic._narrationHistory.set(key, res);
