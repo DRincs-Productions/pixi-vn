@@ -1,4 +1,5 @@
-import { Ticker as PixiTicker, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, CanvasManagerStatic, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
@@ -58,7 +59,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
     args: TArgs;
     duration?: number;
     priority?: UPDATE_PRIORITY;
-    protected ticker = new PixiTicker();
+    protected ticker = new PIXI.Ticker();
     protected tickerId?: string;
     canvasElementAliases: string[] = [];
     /**

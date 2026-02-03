@@ -1,10 +1,7 @@
-import type { Texture } from "@drincs/pixi-vn/pixi.js";
-import {
-    Color,
+import type {
     ColorSource,
     FillGradient,
     FillInput,
-    FillPattern,
     GradientOptions,
     Container as PixiContainer,
     Sprite as PixiSprite,
@@ -13,7 +10,9 @@ import {
     StrokeStyle,
     TextStyle,
     TextStyleOptions,
+    Texture,
 } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
@@ -31,9 +30,9 @@ import TextureMemory from "../interfaces/TextureMemory";
 export function exportCanvasElement<T extends PixiContainer>(canvasComponent: T): CanvasBaseItemMemory {
     if ("memory" in canvasComponent) {
         return canvasComponent.memory as CanvasBaseItemMemory;
-    } else if (canvasComponent instanceof PixiText) {
+    } else if (canvasComponent instanceof PIXI.Text) {
         return getMemoryText(canvasComponent);
-    } else if (canvasComponent instanceof PixiSprite) {
+    } else if (canvasComponent instanceof PIXI.Sprite) {
         return getMemorySprite(canvasComponent);
     } else {
         return getMemoryContainer(canvasComponent);
@@ -215,11 +214,11 @@ function getFill(prop: FillInput | undefined | null): GradientOptions | undefine
         return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
         return prop;
-    } else if (prop instanceof FillGradient) {
+    } else if (prop instanceof PIXI.FillGradient) {
         return gradientToOptions(prop);
     } else if (typeof prop === "object" && "fill" in prop && typeof prop.fill !== "function") {
         if (!prop.fill) {
-        } else if (prop.fill instanceof FillPattern) {
+        } else if (prop.fill instanceof PIXI.FillPattern) {
         } else {
             return gradientToOptions(prop.fill);
         }
@@ -235,7 +234,7 @@ function convertColor(color?: ColorSource): string | number | number[] | undefin
         return color;
     } else if (Array.isArray(color)) {
         return color;
-    } else if (color instanceof Color) {
+    } else if (color instanceof PIXI.Color) {
         return color.toNumber();
     }
     logger.warn(`Unsupported color type.`, color);
@@ -253,7 +252,7 @@ function getStroke(prop: StrokeInput | undefined | null): GradientOptions | unde
         return prop;
     } else if (typeof prop === "string" || Array.isArray(prop)) {
         return prop;
-    } else if (prop instanceof FillGradient) {
+    } else if (prop instanceof PIXI.FillGradient) {
         return gradientToOptions(prop);
     } else if (typeof prop === "object" && "alignment" in prop) {
         const strokeProp: StrokeStyle = {
@@ -273,7 +272,7 @@ function getStroke(prop: StrokeInput | undefined | null): GradientOptions | unde
         return strokeProp;
     } else if (typeof prop === "object" && "fill" in prop && typeof prop.fill !== "function") {
         if (!prop.fill) {
-        } else if (prop.fill instanceof FillPattern) {
+        } else if (prop.fill instanceof PIXI.FillPattern) {
         } else {
             return gradientToOptions(prop.fill);
         }

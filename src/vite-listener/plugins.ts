@@ -1,7 +1,8 @@
 import { canvas } from "@drincs/pixi-vn/canvas";
 import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
 import { RegisteredLabels } from "@drincs/pixi-vn/narration";
-import { ApplicationOptions, Assets, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
+import type { ApplicationOptions, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 
 /**
  * Checks if the code is running in Vite development mode.
@@ -11,7 +12,9 @@ function isViteDevelopmentMode(): boolean {
     try {
         // Use Function constructor to indirectly access import.meta at runtime
         // This avoids direct eval while still bypassing TypeScript's static analysis
-        return new Function('return typeof import !== "undefined" && typeof import.meta !== "undefined" && import.meta.env?.DEV === true')();
+        return new Function(
+            'return typeof import !== "undefined" && typeof import.meta !== "undefined" && import.meta.env?.DEV === true',
+        )();
     } catch {
         return false;
     }
@@ -45,8 +48,8 @@ export function setupPixivnViteData() {
         });
     } catch (e) {}
     try {
-        const assetMap = Assets.resolver["_assetMap"];
-        const bundles: { [key: string]: string[] } = Assets.resolver["_bundles"];
+        const assetMap = PIXI.Assets.resolver["_assetMap"];
+        const bundles: { [key: string]: string[] } = PIXI.Assets.resolver["_bundles"];
         const manifest: AssetsManifest = {
             bundles: [],
         };

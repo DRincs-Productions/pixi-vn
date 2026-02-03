@@ -1,4 +1,4 @@
-import { SpriteOptions } from "@drincs/pixi-vn/pixi.js";
+import type { SpriteOptions } from "@drincs/pixi-vn/pixi.js";
 import { EventIdType } from "../../types/EventIdType";
 import TextureMemory from "../TextureMemory";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";

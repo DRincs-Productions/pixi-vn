@@ -1,11 +1,5 @@
-import type { Texture } from "@drincs/pixi-vn/pixi.js";
-import {
-    ObservablePoint,
-    Sprite as PixiSprite,
-    PointData,
-    TextureSource,
-    TextureSourceLike,
-} from "@drincs/pixi-vn/pixi.js";
+import type { ObservablePoint, PointData, Texture, TextureSource, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
@@ -95,7 +89,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         this.reloadPosition();
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = PixiSprite.from(source, skipCache);
+        let sprite = PIXI.Sprite.from(source, skipCache);
         let mySprite = new ImageSprite();
         mySprite.texture = sprite.texture;
         return mySprite;

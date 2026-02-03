@@ -1,4 +1,4 @@
-import { Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
+import type { Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import CanvasUtilitiesStatic from "../CanvasUtilitiesStatic";
 
 export function calculatePositionByAlign(
@@ -7,7 +7,7 @@ export function calculatePositionByAlign(
     value: number,
     pivot: number,
     negativeScale: boolean,
-    anchor: number = 0
+    anchor: number = 0,
 ): number {
     pivot = pivot * (negativeScale ? -1 : 1);
     if (type === "width") {
@@ -27,7 +27,7 @@ export function calculateAlignByPosition(
     value: number,
     pivot: number,
     negativeScale: boolean,
-    anchor: number = 0
+    anchor: number = 0,
 ): number {
     pivot = pivot * (negativeScale ? -1 : 1);
     if (type === "width") {

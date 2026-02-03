@@ -1,4 +1,5 @@
-import { Application, ApplicationOptions, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
+import type { Application, ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Devtools, initDevtools } from "@pixi/devtools";
 import sha1 from "crypto-js/sha1";
 import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
@@ -35,7 +36,7 @@ export default class CanvasManagerStatic {
     static get gameLayer() {
         let layer = this.app.stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
         if (!layer) {
-            layer = new PixiContainer();
+            layer = new PIXI.Container();
             layer.label = CANVAS_APP_GAME_LAYER_ALIAS;
             this.app.stage.addChild(layer);
         }
@@ -78,7 +79,7 @@ export default class CanvasManagerStatic {
         } = options || {};
         CanvasManagerStatic.canvasWidth = width;
         CanvasManagerStatic.canvasHeight = height;
-        CanvasManagerStatic._app = new Application();
+        CanvasManagerStatic._app = new PIXI.Application();
         return CanvasManagerStatic.app
             .init({
                 width,

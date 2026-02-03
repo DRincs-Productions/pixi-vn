@@ -30,9 +30,9 @@ import { EventIdType } from "../types/EventIdType";
  * ```
  */
 export default class Container<
-        C extends ContainerChild = ContainerChild,
-        Memory extends ContainerMemory = ContainerMemory
-    >
+    C extends ContainerChild = ContainerChild,
+    Memory extends ContainerMemory = ContainerMemory,
+>
     extends PixiContainer<C>
     implements CanvasBaseItem<Memory>
 {
@@ -113,7 +113,7 @@ export default class Container<
                 ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
             >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
         ) => void,
-        context?: any
+        context?: any,
     ): this {
         return super.on(event, fn, context);
     }
@@ -126,7 +126,7 @@ export async function setMemoryContainer<T extends PixiContainer>(
     options?: {
         ignoreScale?: boolean;
         end?: () => Promise<void> | void;
-    }
+    },
 ) {
     let ignoreScale = options?.ignoreScale || false;
     let end = options?.end;

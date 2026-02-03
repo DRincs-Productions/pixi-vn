@@ -1,4 +1,5 @@
-import { Sprite as PixiSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, CanvasBaseInterface, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";
@@ -30,12 +31,12 @@ function calculateDestination(
         y: number;
         x: number;
     },
-    component: CanvasBaseInterface<any>
+    component: CanvasBaseInterface<any>,
 ) {
     if (destination.type === "align") {
         let anchorx = undefined;
         let anchory = undefined;
-        if (component instanceof PixiSprite) {
+        if (component instanceof PIXI.Sprite) {
             anchorx = component.anchor.x;
             anchory = component.anchor.y;
         }
@@ -47,7 +48,7 @@ function calculateDestination(
             getSuperWidth(component),
             superPivot.x,
             superScale.x < 0,
-            anchorx
+            anchorx,
         );
         destination.y = calculatePositionByAlign(
             "height",
@@ -55,7 +56,7 @@ function calculateDestination(
             getSuperHeight(component),
             superPivot.y,
             superScale.y < 0,
-            anchory
+            anchory,
         );
     }
     if (destination.type === "percentage") {
@@ -85,7 +86,7 @@ function addComponent(
     canvasElement: TComponent,
     options: {
         zIndex?: number;
-    }
+    },
 ): CanvasBaseInterface<any> {
     if (typeof canvasElement === "string") {
         if (checkIfVideo(canvasElement)) {
@@ -129,7 +130,7 @@ export async function showWithDissolve(
     alias: string,
     component?: TComponent,
     props: ShowWithDissolveTransitionProps = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { forceCompleteBeforeNext = true, tickerIdToResume = [], ...options } = props;
     let res: string[] = [];
@@ -159,7 +160,7 @@ export async function showWithDissolve(
         let ids = removeWithDissolve(
             oldComponentAlias,
             { ...props, autoplay: false, forceCompleteBeforeNext },
-            priority
+            priority,
         );
         if (ids) {
             res.push(...ids);
@@ -177,7 +178,7 @@ export async function showWithDissolve(
             tickerIdToResume,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     idShow && res.push(idShow);
     // load the image if the image is not loaded
@@ -202,7 +203,7 @@ export async function showWithDissolve(
 export function removeWithDissolve(
     alias: string,
     props: ShowWithDissolveTransitionProps = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
     let { forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
@@ -220,7 +221,7 @@ export function removeWithDissolve(
             aliasToRemoveAfter,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     if (id) {
         return [id];
@@ -243,7 +244,7 @@ export async function showWithFade(
     alias: string,
     component?: TComponent,
     props: ShowWithFadeTransitionProps = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
     let res: string[] = [];
@@ -280,7 +281,7 @@ export async function showWithFade(
             aliasToRemoveAfter,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     if (idShow) {
         // remove the old component
@@ -291,7 +292,7 @@ export async function showWithFade(
                 tickerIdToResume: idShow,
                 forceCompleteBeforeNext,
             },
-            priority
+            priority,
         );
         if (idHide) {
             res.push(...idHide);
@@ -323,7 +324,7 @@ export async function showWithFade(
 export function removeWithFade(
     alias: string,
     props: ShowWithFadeTransitionProps = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
     return removeWithDissolve(alias, props, priority);
 }
@@ -349,7 +350,7 @@ export async function moveIn(
          */
         removeOldComponentWithMoveOut?: boolean;
     } = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let {
         direction = "right",
@@ -432,7 +433,7 @@ export async function moveIn(
             aliasToRemoveAfter,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     idShow && res.push(idShow);
     // return the ids of the tickers
@@ -486,7 +487,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
             aliasToRemoveAfter,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     if (id) {
         return [id];
@@ -514,7 +515,7 @@ export async function zoomIn(
          */
         removeOldComponentWithZoomOut?: boolean;
     } = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let {
         direction = "right",
@@ -620,7 +621,7 @@ export async function zoomIn(
             aliasToRemoveAfter,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     idShow && res.push(idShow);
     // return the ids of the tickers
@@ -692,7 +693,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
             aliasToRemoveAfter,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     if (id) {
         return [id];
@@ -714,7 +715,7 @@ export async function pushIn(
     alias: string,
     component?: TComponent,
     props: PushInOutProps = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { direction = "right", forceCompleteBeforeNext = true, tickerIdToResume = [], ...options } = props;
     let res: string[] = [];
@@ -780,7 +781,7 @@ export async function pushIn(
             tickerIdToResume,
             forceCompleteBeforeNext,
         },
-        priority
+        priority,
     );
     idShow && res.push(idShow);
     // load the image if the image is not loaded
@@ -804,7 +805,7 @@ export async function pushIn(
 export function pushOut(
     alias: string,
     props: PushInOutProps = { direction: "right" },
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
     return moveOut(alias, props, priority);
 }

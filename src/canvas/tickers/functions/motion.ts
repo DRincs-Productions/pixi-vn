@@ -1,4 +1,5 @@
-import { Ticker as PixiTicker } from "@drincs/pixi-vn/pixi.js";
+import type { Ticker as PixiTicker } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import {
     animate as animateMotion,
     AnimationOptions,
@@ -16,7 +17,7 @@ type ObjectSegmentWithTransition<O extends {} = {}> = [
     AnimationOptions &
         At & {
             ticker?: PixiTicker;
-        }
+        },
 ];
 
 /**
@@ -34,7 +35,7 @@ type ObjectSegmentWithTransition<O extends {} = {}> = [
 function animate<T extends {}>(
     components: T | T[],
     keyframes: ObjectTarget<T>,
-    options?: AnimationOptions & { ticker?: PixiTicker }
+    options?: AnimationOptions & { ticker?: PixiTicker },
 ): AnimationPlaybackControlsWithThen;
 /**
  * Animate a sequence of PixiJS components with transitions using [motion's animate](https://motion.dev/docs/animate) function.
@@ -55,13 +56,13 @@ function animate<T extends {}>(
  */
 function animate<T extends {}>(
     sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
-    options?: SequenceOptions
+    options?: SequenceOptions,
 ): AnimationPlaybackControlsWithThen;
 
 function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
     if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
         const sequence = arg1.map((segment: any) => {
-            const { ticker = new PixiTicker(), ...rest } = segment[2] || {};
+            const { ticker = new PIXI.Ticker(), ...rest } = segment[2] || {};
             return [
                 segment[0],
                 segment[1],
@@ -83,7 +84,7 @@ function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWit
         });
         return animateMotion(sequence, arg2);
     } else {
-        const { ticker = new PixiTicker() } = arg3 || {};
+        const { ticker = new PIXI.Ticker() } = arg3 || {};
         return animateMotion(arg1, arg2, {
             driver: (update: any) => {
                 const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);

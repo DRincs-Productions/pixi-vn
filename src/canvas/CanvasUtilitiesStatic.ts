@@ -1,4 +1,4 @@
-import { Rectangle } from "@drincs/pixi-vn/pixi.js";
+import type { Rectangle } from "@drincs/pixi-vn/pixi.js";
 
 export default class CanvasUtilitiesStatic {
     static init(options: { getScreen: () => Rectangle }) {

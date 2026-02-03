@@ -1,5 +1,5 @@
-import type { Texture } from "@drincs/pixi-vn/pixi.js";
-import { Sprite as PixiSprite, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
+import type { Texture, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { showWithDissolve } from "../functions/canvas-transition";
@@ -73,7 +73,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         return await setMemoryVideoSprite(this, value);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = PixiSprite.from(source, skipCache);
+        let sprite = PIXI.Sprite.from(source, skipCache);
         let mySprite = new VideoSprite();
         mySprite.texture = sprite.texture;
         return mySprite;

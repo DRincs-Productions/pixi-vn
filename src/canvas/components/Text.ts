@@ -1,11 +1,11 @@
-import {
+import type {
     ContainerChild,
     ContainerEvents,
     EventEmitter,
     ObservablePoint,
-    Text as PixiText,
     PointData,
 } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -39,7 +39,7 @@ import { setMemoryContainer } from "./Container";
  * canvas.add("text", text);
  * ```
  */
-export default class Text extends PixiText implements CanvasBaseItem<TextMemory>, AdditionalPositionsExtension {
+export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory>, AdditionalPositionsExtension {
     constructor(options?: TextOptions) {
         options = analizePositionsExtensionProps(options as any);
         let align = undefined;
@@ -137,7 +137,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                 ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
             >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
         ) => void,
-        context?: any
+        context?: any,
     ): this {
         return super.on(event, fn, context);
     }
@@ -166,7 +166,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                 getSuperWidth(this),
                 superPivot.x,
                 superScale.x < 0,
-                this.anchor.x
+                this.anchor.x,
             ),
             y: calculateAlignByPosition(
                 "height",
@@ -174,7 +174,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                 getSuperHeight(this),
                 superPivot.y,
                 superScale.y < 0,
-                this.anchor.y
+                this.anchor.y,
             ),
         };
     }
@@ -193,7 +193,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
             getSuperWidth(this),
             superPivot.x,
             superScale.x < 0,
-            this.anchor.x
+            this.anchor.x,
         );
     }
     set yAlign(value: number) {
@@ -211,7 +211,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
             getSuperHeight(this),
             superPivot.y,
             superScale.y < 0,
-            this.anchor.y
+            this.anchor.y,
         );
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined;
@@ -287,7 +287,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                     getSuperWidth(this),
                     superPivot.x,
                     superScale.x < 0,
-                    this.anchor.x
+                    this.anchor.x,
                 );
             }
             if (this._align.y !== undefined) {
@@ -297,7 +297,7 @@ export default class Text extends PixiText implements CanvasBaseItem<TextMemory>
                     getSuperHeight(this),
                     superPivot.y,
                     superScale.y < 0,
-                    this.anchor.y
+                    this.anchor.y,
                 );
             }
         } else if (this._percentagePosition) {

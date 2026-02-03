@@ -1,4 +1,5 @@
-import { Ticker as PixiTicker, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { AnimationPlaybackControlsWithThen } from "motion";
 import { canvas, CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "../..";
 import { logger } from "../../../utils/log-utility";
@@ -11,9 +12,8 @@ export default abstract class MotionTickerBase<
         options: Omit<CommonTickerProps, "startOnlyIfHaveTexture"> & {
             autoplay?: boolean;
         };
-    }
-> implements Ticker<TArgs>
-{
+    },
+> implements Ticker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
      * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
@@ -31,7 +31,7 @@ export default abstract class MotionTickerBase<
     }
     duration?: number;
     priority?: UPDATE_PRIORITY;
-    protected ticker = new PixiTicker();
+    protected ticker = new PIXI.Ticker();
     animation?: AnimationPlaybackControlsWithThen;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
@@ -195,7 +195,7 @@ export default abstract class MotionTickerBase<
                     }
                     return Object.keys(target);
                 },
-            }
+            },
         ) as any as CanvasBaseInterface<any>;
     }
     pause() {

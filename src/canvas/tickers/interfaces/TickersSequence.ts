@@ -1,4 +1,4 @@
-import { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { PauseType } from "../../types/PauseType";
 import { RepeatType } from "../../types/RepeatType";
 import TickerArgs from "./TickerArgs";

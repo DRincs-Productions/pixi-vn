@@ -1,4 +1,4 @@
-import { Assets } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, VideoSpriteOptions } from "..";
 import VideoSprite from "../components/VideoSprite";
 
@@ -21,7 +21,7 @@ import VideoSprite from "../components/VideoSprite";
  */
 export function addVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): VideoSprite {
     if (!videoUrl) {
-        if (Assets.resolver.hasKey(alias)) {
+        if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;
         } else {
             throw new Error(`The video ${alias} does not exist in the cache.`);
@@ -51,7 +51,7 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
  */
 export async function showVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): Promise<VideoSprite> {
     if (!videoUrl) {
-        if (Assets.resolver.hasKey(alias)) {
+        if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;
         } else {
             throw new Error(`The video ${alias} does not exist in the cache.`);

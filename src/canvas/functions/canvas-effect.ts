@@ -1,4 +1,4 @@
-import { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { canvas, ShakeEffectProps } from "..";
 import { logger } from "../../utils/log-utility";
 
@@ -13,7 +13,7 @@ import { logger } from "../../utils/log-utility";
 export async function shakeEffect(
     alias: string,
     options: ShakeEffectProps = {},
-    priority?: UPDATE_PRIORITY
+    priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let elemet = canvas.find(alias);
     if (!elemet) {

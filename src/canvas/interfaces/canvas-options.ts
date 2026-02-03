@@ -1,4 +1,4 @@
-import {
+import type {
     CanvasTextOptions,
     ContainerOptions,
     EventEmitter,
@@ -16,7 +16,7 @@ export interface SpriteOptions extends Omit<PixiSpriteOptions, "on"> {
     on?: <T extends EventEmitter.EventNames<string | symbol>>(
         event: T,
         fn: EventEmitter.EventListener<string | symbol, T>,
-        context?: any
+        context?: any,
     ) => this;
 }
 export interface TextOptions extends Omit<CanvasTextOptions, "on">, AdditionalPositionsExtensionProps {
@@ -27,13 +27,11 @@ export interface TextOptions extends Omit<CanvasTextOptions, "on">, AdditionalPo
     on?: <T extends EventEmitter.EventNames<string | symbol>>(
         event: T,
         fn: EventEmitter.EventListener<string | symbol, T>,
-        context?: any
+        context?: any,
     ) => this;
 }
 export interface ImageContainerOptions<C extends ContainerChild = ContainerChild>
-    extends ContainerOptions<C>,
-        AnchorExtensionProps,
-        AdditionalPositionsExtensionProps {}
+    extends ContainerOptions<C>, AnchorExtensionProps, AdditionalPositionsExtensionProps {}
 export interface ImageSpriteOptions extends SpriteOptions, AdditionalPositionsExtensionProps {}
 export interface VideoSpriteOptions extends ImageSpriteOptions {
     loop?: boolean;

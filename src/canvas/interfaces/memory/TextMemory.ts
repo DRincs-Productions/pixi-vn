@@ -1,4 +1,4 @@
-import { TextOptions } from "@drincs/pixi-vn/pixi.js";
+import type { TextOptions } from "@drincs/pixi-vn/pixi.js";
 import { AdditionalPositionsExtensionProps } from "src/canvas/components/AdditionalPositions";
 import { EventIdType } from "../../types/EventIdType";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";

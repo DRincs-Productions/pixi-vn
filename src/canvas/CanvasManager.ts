@@ -1,4 +1,5 @@
-import { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
@@ -107,7 +108,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 return;
             }
         }
-        if (oldAlias instanceof PixiContainer) {
+        if (oldAlias instanceof PIXI.Container) {
             oldAlias = oldAlias.memory;
         }
         "isRenderGroup" in oldAlias && delete oldAlias.isRenderGroup;
@@ -129,7 +130,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             await setMemoryText(newAlias, oldAlias);
         } else if (newAlias instanceof ImageContainer) {
             await setMemoryImageContainer(newAlias, oldAlias);
-        } else if (newAlias instanceof PixiContainer) {
+        } else if (newAlias instanceof PIXI.Container) {
             await setMemoryContainer(newAlias, oldAlias);
         }
     }

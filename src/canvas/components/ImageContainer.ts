@@ -1,4 +1,5 @@
-import { ObservablePoint, PointData, Texture } from "@drincs/pixi-vn/pixi.js";
+import type { ObservablePoint, PointData, Texture } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
@@ -130,7 +131,7 @@ export default class ImageContainer
         if (this.children.length > 0) {
             return this.children[0].texture;
         }
-        return new Texture();
+        return new PIXI.Texture();
     }
 
     /**

@@ -1,10 +1,11 @@
-import { Container as PixiContainer, PointData, Texture } from "@drincs/pixi-vn/pixi.js";
+import type { PointData, Texture } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 
 export interface AnchorExtensionProps {
     anchor?: PointData | number;
 }
 
-export default class AnchorExtension extends PixiContainer {
+export default class AnchorExtension extends PIXI.Container {
     /**
      * The anchor sets the origin point of the imageContainer. The default value is taken from the {@link Texture}
      * and passed to the constructor.

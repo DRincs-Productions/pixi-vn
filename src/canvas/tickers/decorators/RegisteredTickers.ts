@@ -1,4 +1,4 @@
-import { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
@@ -40,7 +40,7 @@ namespace RegisteredTickers {
         target: {
             new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any>;
         },
-        name?: TickerIdType
+        name?: TickerIdType,
     ) {
         if (!name) {
             name = target.name;
@@ -83,7 +83,7 @@ namespace RegisteredTickers {
         tickerId: TickerIdType,
         args: TArgs,
         duration?: number,
-        priority?: UPDATE_PRIORITY
+        priority?: UPDATE_PRIORITY,
     ): Ticker<TArgs> | undefined {
         try {
             let ticker = registeredTickers.get(tickerId);

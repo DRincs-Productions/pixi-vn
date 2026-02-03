@@ -1,13 +1,12 @@
-import type { Texture } from "@drincs/pixi-vn/pixi.js";
-import {
-    Assets,
+import type {
     ContainerChild,
     ContainerEvents,
     EventEmitter,
-    Sprite as PixiSprite,
     SpriteOptions as PixiSpriteOptions,
+    Texture,
     TextureSourceLike,
 } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -43,7 +42,7 @@ import { setMemoryContainer } from "./Container";
  * ```
  */
 export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMemory = SpriteMemory>
-    extends PixiSprite
+    extends PIXI.Sprite
     implements CanvasBaseItem<Memory | SpriteMemory>
 {
     constructor(options?: SpriteOptions | Omit<Texture, "on">) {
@@ -135,7 +134,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         return super.on(event, fn, context);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
-        let sprite = PixiSprite.from(source, skipCache);
+        let sprite = PIXI.Sprite.from(source, skipCache);
         let mySprite = new Sprite();
         mySprite.texture = sprite.texture;
         return mySprite;
@@ -167,7 +166,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
 
             if (memory.textureData.url !== "EMPTY") {
                 let textureUrl: string = memory.textureData.url;
-                if (memory.textureData.alias && Assets.resolver.hasKey(memory.textureData.alias)) {
+                if (memory.textureData.alias && PIXI.Assets.resolver.hasKey(memory.textureData.alias)) {
                     textureUrl = memory.textureData.alias;
                 }
                 let texture = await getTexture(textureUrl);

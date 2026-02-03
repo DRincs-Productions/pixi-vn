@@ -1,4 +1,4 @@
-import { Assets } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, ImageSpriteOptions } from "..";
 import ImageSprite from "../components/ImageSprite";
 
@@ -21,7 +21,7 @@ import ImageSprite from "../components/ImageSprite";
  */
 export function addImage(alias: string, imageUrl?: string, options?: ImageSpriteOptions): ImageSprite {
     if (!imageUrl) {
-        if (Assets.resolver.hasKey(alias)) {
+        if (PIXI.Assets.resolver.hasKey(alias)) {
             imageUrl = alias;
         } else {
             throw new Error(`The image ${alias} does not exist in the cache.`);
@@ -51,7 +51,7 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
  */
 export async function showImage(alias: string, imageUrl?: string, options?: ImageSpriteOptions): Promise<ImageSprite> {
     if (!imageUrl) {
-        if (Assets.resolver.hasKey(alias)) {
+        if (PIXI.Assets.resolver.hasKey(alias)) {
             imageUrl = alias;
         } else {
             throw new Error(`The image ${alias} does not exist in the cache.`);
