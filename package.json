@@ -21,11 +21,9 @@
       "default": "./dist/index.mjs"
     },
     "./pixi.js": {
+      "jsDelivr": "./dist/pixi/browser.js",
+      "unpkg": "./dist/pixi/browser.js",
       "types": "./dist/pixi/index.d.ts",
-      "browser": {
-        "import": "./dist/pixi/browser.js",
-        "require": "./dist/pixi/browser.js"
-      },
       "import": "./dist/pixi/index.js",
       "require": "./dist/pixi/index.js",
       "default": "./dist/pixi/index.js"
