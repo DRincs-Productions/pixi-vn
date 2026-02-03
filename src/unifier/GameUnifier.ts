@@ -52,7 +52,10 @@ export default class GameUnifier {
         /**
          * This function is called to process the pending navigation requests (continue/back).
          */
-        processNavigationRequests: (navigationRequestsCount: number) => {
+        processNavigationRequests: (
+            navigationRequestsCount: number,
+            props: StepLabelPropsType<any>,
+        ) => {
             newValue: number;
             result: Promise<StepLabelResultType>;
         };
@@ -107,7 +110,7 @@ export default class GameUnifier {
                  * If true, the step will not be added to the history if the current step is the same as the last step.
                  */
                 ignoreSameStep?: boolean;
-            }
+            },
         ): void;
         /**
          * This function returns the character by its id.
@@ -135,7 +138,7 @@ export default class GameUnifier {
     }
     private static _navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
-            "Navigate function not initialized. You should add the navigate function in the Game.init() method."
+            "Navigate function not initialized. You should add the navigate function in the Game.init() method.",
         );
     };
     /**
@@ -181,7 +184,7 @@ export default class GameUnifier {
     }
     private static _restoreGameStepState: (
         state: GameStepState,
-        navigate: (path: string) => void | Promise<void>
+        navigate: (path: string) => void | Promise<void>,
     ) => Promise<void> = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented, you should initialize the Game: Game.init()");
@@ -263,7 +266,10 @@ export default class GameUnifier {
     static increaseBackRequest(amount: number = 1) {
         GameUnifier.navigationRequestsCount -= amount;
     }
-    private static _processNavigationRequests: (navigationRequestsCount: number) => {
+    private static _processNavigationRequests: (
+        navigationRequestsCount: number,
+        props: StepLabelPropsType<any>,
+    ) => {
         newValue: number;
         result: Promise<StepLabelResultType>;
     } = () => {
@@ -273,8 +279,8 @@ export default class GameUnifier {
     /**
      * This function processes the pending navigation requests (continue/back).
      */
-    static async processNavigationRequests() {
-        const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount);
+    static async processNavigationRequests(props: StepLabelPropsType<any>) {
+        const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount, props);
         GameUnifier.navigationRequestsCount = processResult.newValue;
 
         // Hold the lock until the async navigation operation completes
@@ -355,7 +361,7 @@ export default class GameUnifier {
              * If true, the step will not be added to the history if the current step is the same as the last step.
              */
             ignoreSameStep?: boolean;
-        }
+        },
     ) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new Error("Method not implemented, you should initialize the Game: Game.init()");

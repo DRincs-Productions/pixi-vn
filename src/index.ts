@@ -145,15 +145,18 @@ export namespace Game {
             getCharacter: (id: string) => {
                 return characterUtils.RegisteredCharacters.get(id);
             },
-            processNavigationRequests: (navigationRequestsCount: number) => {
+            processNavigationRequests: (
+                navigationRequestsCount: number,
+                props: narrationUtils.StepLabelPropsType<any>,
+            ) => {
                 let newValue = navigationRequestsCount;
                 let result: Promise<void | narrationUtils.StepLabelResultType> = Promise.resolve();
                 if (navigationRequestsCount > 0) {
                     newValue--;
-                    result = narrationUtils.narration.continue({});
+                    result = narrationUtils.narration.continue(props);
                 } else if (navigationRequestsCount < 0) {
                     newValue = 0;
-                    result = historyUtils.stepHistory.back({}, { steps: navigationRequestsCount * -1 });
+                    result = historyUtils.stepHistory.back(props, { steps: navigationRequestsCount * -1 });
                 }
                 return { newValue, result };
             },

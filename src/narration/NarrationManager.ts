@@ -52,7 +52,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         options: {
             choiceMade?: number;
             ignoreSameStep?: boolean;
-        } = {}
+        } = {},
     ) {
         const { choiceMade, ignoreSameStep } = options;
         let dialogue: StoredDialogue | undefined = undefined;
@@ -64,7 +64,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             this.stepCounter
         ) {
             dialogue = GameUnifier.getVariable<StoredDialogue>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
             );
         }
         if (
@@ -72,12 +72,12 @@ export default class NarrationManager implements NarrationManagerInterface {
             this.stepCounter
         ) {
             choices = GameUnifier.getVariable<any>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
             ) as StoredChoiceInterface[];
         }
         if (
             GameUnifier.getVariable<StorageElementType>(
-                SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY,
             ) === this.stepCounter
         ) {
             inputValue = GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
@@ -232,7 +232,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public async continue(
         props: StepLabelPropsType,
-        options: { steps?: number; runNow?: boolean; choiceMade?: number } = {}
+        options: { steps?: number; runNow?: boolean; choiceMade?: number } = {},
     ) {
         const { runNow = false, steps = 1 } = options;
         if (!Number.isFinite(steps)) {
@@ -266,13 +266,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         } finally {
             GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep()) || result;
+            result = (await this.afterRunCurrentStep(props)) || result;
         }
         return result;
     }
-    private async afterRunCurrentStep() {
+    private async afterRunCurrentStep(props: StepLabelPropsType<any>) {
         if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
-            return await GameUnifier.processNavigationRequests();
+            return await GameUnifier.processNavigationRequests(props);
         }
     }
     /**
@@ -288,7 +288,7 @@ export default class NarrationManager implements NarrationManagerInterface {
              * The index of the choice made by the player. (This params is used in the choice menu)
              */
             choiceMade?: number;
-        } = {}
+        } = {},
     ): Promise<StepLabelResultType> {
         const { choiceMade } = options;
         if (NarrationManagerStatic.currentLabelId) {
@@ -356,7 +356,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                             lastHistoryStep.currentLabel || "error",
                             typeof lastHistoryStep.labelStepIndex === "number" ? lastHistoryStep.labelStepIndex : -1,
                             lastHistoryStep.stepSha1 || AdditionalShaSpetsEnum.ERROR,
-                            choiceMade
+                            choiceMade,
                         );
                         NarrationManagerStatic.choiceMadeTemp = choiceMade;
                     }
@@ -405,7 +405,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return await GameUnifier.onEnd(props, { labelId: "end" });
             }
             logger.error(
-                "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game"
+                "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game",
             );
             return;
         } else {
@@ -420,7 +420,7 @@ export default class NarrationManager implements NarrationManagerInterface {
              * The index of the choice made by the player. (This params is used in the choice menu)
              */
             choiceMade?: number;
-        }
+        },
     ): Promise<StepLabelResultType> {
         const { choiceMade } = options || {};
         let labelId: LabelIdType;
@@ -444,7 +444,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         } finally {
             GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep()) || result;
+            result = (await this.afterRunCurrentStep(props)) || result;
         }
         return result;
     }
@@ -456,7 +456,7 @@ export default class NarrationManager implements NarrationManagerInterface {
              * The index of the choice made by the player. (This params is used in the choice menu)
              */
             choiceMade?: number;
-        }
+        },
     ): Promise<StepLabelResultType> {
         if (this.openedLabels.length > 0) this.closeCurrentLabel();
         const { choiceMade } = options || {};
@@ -481,13 +481,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             throw e;
         } finally {
             GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep()) || result;
+            result = (await this.afterRunCurrentStep(props)) || result;
         }
         return result;
     }
     public async selectChoice<T extends {}>(
         item: StoredIndexedChoiceInterface,
-        props: StepLabelPropsType<T>
+        props: StepLabelPropsType<T>,
     ): Promise<StepLabelResultType> {
         this.choices = undefined;
         const type = item.type;
@@ -498,7 +498,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     { ...item.props, ...props },
                     {
                         choiceMade: item.choiceIndex,
-                    }
+                    },
                 );
             case "jump":
                 return await this.jump(
@@ -506,7 +506,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     { ...item.props, ...props },
                     {
                         choiceMade: item.choiceIndex,
-                    }
+                    },
                 );
             case "close":
                 return await this.closeChoiceMenu(item, { ...item.props, ...props });
@@ -531,7 +531,7 @@ export default class NarrationManager implements NarrationManagerInterface {
      */
     public async closeChoiceMenu<T extends {} = {}>(
         choice: StoredIndexedChoiceInterface,
-        props: StepLabelPropsType<T>
+        props: StepLabelPropsType<T>,
     ): Promise<StepLabelResultType> {
         if (choice.type !== "close") {
             logger.error("For closeChoiceMenu, the type must be close");
@@ -575,7 +575,7 @@ export default class NarrationManager implements NarrationManagerInterface {
           })
         | undefined {
         const dialogue = GameUnifier.getVariable<StoredDialogue>(
-            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
         );
         if (!dialogue) {
             return undefined;
@@ -599,7 +599,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
         if (this.dialogGlue) {
             let glueDialogue = GameUnifier.getVariable<StoredDialogue>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
             );
             if (glueDialogue) {
                 let newText = [];
@@ -625,11 +625,11 @@ export default class NarrationManager implements NarrationManagerInterface {
                 createExportableElement({
                     ...dialogue,
                     character: typeof dialogue.character === "string" ? dialogue.character : dialogue.character?.id,
-                })
+                }),
             );
             GameUnifier.setVariable(
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
-                this.stepCounter
+                this.stepCounter,
             );
         } catch (e) {
             logger.error("DialogueInterface cannot contain functions or classes");
@@ -638,7 +638,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public get choices(): StoredIndexedChoiceInterface[] | undefined {
         let d = GameUnifier.getVariable<any>(
-            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
         ) as StoredChoiceInterface[];
         if (d) {
             let onlyHaveNoChoice: StoredIndexedChoiceInterface[] = [];
@@ -678,11 +678,11 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             GameUnifier.setVariable(
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
-                createExportableElement(options) as any
+                createExportableElement(options) as any,
             );
             GameUnifier.setVariable(
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
-                this.stepCounter
+                this.stepCounter,
             );
         } catch (e) {
             logger.error("ChoiceInterface cannot contain functions or classes");
