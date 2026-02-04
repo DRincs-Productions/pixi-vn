@@ -58,6 +58,7 @@ export namespace Game {
      *     width: 1920,
      *     height: 1080,
      *     backgroundColor: "#303030"
+     *     resizeMode: "contain"
      * })
      * ```
      */
@@ -69,8 +70,6 @@ export namespace Game {
              * @default "pixi-vn-canvas"
              */
             id?: string;
-            width: number;
-            height: number;
             /**
              * The route navigate function.
              * You can set this function after the initialization using {@link GameUnifier.navigate}
@@ -78,6 +77,11 @@ export namespace Game {
              * @returns
              */
             navigate?: (path: string) => void | Promise<void>;
+            /**
+             * The resize mode of the canvas.
+             * @default "contain"
+             */
+            resizeMode?: "contain" | "none";
         },
         devtoolsOptions?: Devtools,
     ): Promise<void>;
@@ -95,8 +99,6 @@ export namespace Game {
              * @default "pixi-vn-canvas"
              */
             id?: string;
-            width: number;
-            height: number;
             /**
              * The route navigate function.
              * You can set this function after the initialization using {@link GameUnifier.navigate}
@@ -104,6 +106,11 @@ export namespace Game {
              * @returns
              */
             navigate?: (path: string) => void | Promise<void>;
+            /**
+             * The resize mode of the canvas.
+             * @default "contain"
+             */
+            resizeMode?: "contain" | "none";
         },
         devtoolsOptions?: Devtools,
     ): Promise<void> {
