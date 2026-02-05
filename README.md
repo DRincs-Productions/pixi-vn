@@ -155,7 +155,7 @@ Game.onError((type, error, { notify }) => {
 </html>
 ```
 
-```css title="src/styles.css"
+```css title="styles.css"
 :root {
   background-color: #242424;
 }
