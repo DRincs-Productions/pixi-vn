@@ -38,20 +38,14 @@ namespace RegisteredCanvasComponents {
      * @returns The canvas component type.
      */
     export function get<T extends typeof CanvasBaseItem<any>>(canvasId: CanvasElementAliasType): T | undefined {
-        try {
-            let eventType = registeredCanvasComponent.get(canvasId);
-            if (!eventType) {
-                logger.error(
-                    `CanvasElement "${canvasId}" not found, did you forget to register it with the canvasComponentDecorator?`
-                );
-                return;
-            }
-            new eventType();
-            return eventType as T;
-        } catch (e) {
-            logger.error(`Error while getting CanvasElement "${canvasId}"`, e);
+        let eventType = registeredCanvasComponent.get(canvasId);
+        if (!eventType) {
+            logger.error(
+                `CanvasElement "${canvasId}" not found, did you forget to register it with the canvasComponentDecorator?`,
+            );
             return;
         }
+        return eventType as T;
     }
 
     /**

@@ -9,10 +9,10 @@ import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
  * @param memory Memory object of the canvas
  * @returns Canvas element
  */
-export async function importCanvasElement<T extends CanvasBaseInterface<any>>(
-    memory: CanvasBaseItemMemory
+export async function importCanvasElement<T extends CanvasBaseInterface<CanvasBaseItemMemory>>(
+    memory: CanvasBaseItemMemory,
 ): Promise<T> {
-    let element = getCanvasElementInstanceById<T>(memory.pixivnId);
+    let element = getCanvasElementInstanceById<T>(memory.pixivnId, memory);
     if (element) {
         await element.setMemory(memory);
     } else {
@@ -23,14 +23,15 @@ export async function importCanvasElement<T extends CanvasBaseInterface<any>>(
 }
 
 export function getCanvasElementInstanceById<T extends CanvasBaseInterface<any>>(
-    canvasId: CanvasElementAliasType
+    canvasId: CanvasElementAliasType,
+    memory: CanvasBaseItemMemory,
 ): T | undefined {
     try {
         let eventType = RegisteredCanvasComponents.get(canvasId);
         if (!eventType) {
             return;
         }
-        let canvasElement = new eventType();
+        let canvasElement = new eventType(memory);
         return canvasElement as T;
     } catch (e) {
         logger.error(`Error while getting CanvasElement ${canvasId}`, e);

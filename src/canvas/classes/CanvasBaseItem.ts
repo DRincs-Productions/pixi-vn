@@ -25,6 +25,7 @@ import { getCanvasElementInstanceById } from "../functions/canvas-import-utility
  * ```
  */
 export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
+    constructor(memory?: Partial<T2>) {}
     /**
      * This method return the memory of the canvas element.
      */
