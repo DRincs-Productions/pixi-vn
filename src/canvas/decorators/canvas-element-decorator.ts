@@ -59,7 +59,14 @@ namespace RegisteredCanvasComponents {
             getInstance?: (memory: M) => T | Promise<T>;
         } = {},
     ) {
-        const { name = target.name, getInstance = (cc: T, memory: M) => new cc() } = options;
+        const {
+            name = target.name,
+            getInstance = (cc: T, memory: M) => {
+                const instance = new cc();
+                instance.memory = memory;
+                return instance;
+            },
+        } = options;
         if (registeredCanvasComponent.get(name)) {
             logger.warn(`CanvasElement "${name}" already registered`);
         }
