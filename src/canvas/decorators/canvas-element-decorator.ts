@@ -8,6 +8,7 @@ const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof C
 const registeredCanvasInstanceGetters = new CachedMap<
     CanvasElementAliasType,
     (
+        canvasClass: typeof CanvasBaseItem<CanvasBaseItemMemory>,
         memory: CanvasBaseItemMemory,
     ) => CanvasBaseItem<CanvasBaseItemMemory> | Promise<CanvasBaseItem<CanvasBaseItemMemory>>
 >({ cacheSize: 5 });
@@ -58,7 +59,7 @@ namespace RegisteredCanvasComponents {
             getInstance?: (memory: M) => T | Promise<T>;
         } = {},
     ) {
-        const { name = target.name, getInstance = (memory: M) => new target() } = options;
+        const { name = target.name, getInstance = (cc: T, memory: M) => new cc() } = options;
         if (registeredCanvasComponent.get(name)) {
             logger.warn(`CanvasElement "${name}" already registered`);
         }
@@ -96,7 +97,7 @@ namespace RegisteredCanvasComponents {
             return;
         }
         try {
-            let canvasElement = await getInstance(memory);
+            let canvasElement = await getInstance(eventType, memory);
             return canvasElement as T;
         } catch (e) {
             logger.error(`Error while getting CanvasElement instance "${canvasId}"`, e);
