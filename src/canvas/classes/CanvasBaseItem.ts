@@ -47,5 +47,5 @@ export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
     /**
      * Get the id of the canvas element. This variable is used in the system to get the canvas element by id, {@link getCanvasElementInstanceById}
      */
-    readonly pixivnId: string = "canvas_element_id_not_set";
+    pixivnId: string = "canvas_element_id_not_set";
 }
