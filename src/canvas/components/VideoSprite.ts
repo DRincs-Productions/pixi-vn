@@ -11,7 +11,7 @@ import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
 /**
  * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,
  * but it has some features that make video management easier.
- * You need to use {@link VideoSprite.load()} to show the video in the canvas.
+ * You need to use {@link load} to show the video in the canvas.
  * This class is used for functions like {@link addVideo} and {@link showWithDissolve}.
  * @example
  * ```typescript

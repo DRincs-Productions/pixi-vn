@@ -5,5 +5,5 @@ export interface AsyncLoadExtensionProps {
 }
 
 export default class AsyncLoadExtension {
-    assetsAliases: string[] = [];
+    readonly assetsAliases: string[] = [];
 }

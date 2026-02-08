@@ -51,16 +51,6 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID;
     }
     pixivnId: string = CANVAS_SPRITE_ID;
-    private _textureAlias?: string;
-    public get textureAlias() {
-        if (this._textureAlias) {
-            return this._textureAlias;
-        }
-        return this.texture.source.label;
-    }
-    public set textureAlias(value: string) {
-        this._textureAlias = value;
-    }
     get memory(): Memory | SpriteMemory {
         return getMemorySprite(this);
     }
@@ -170,10 +160,6 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
             }
         }
         if (textureData) {
-            if (textureData.alias) {
-                element.textureAlias = textureData.alias;
-            }
-
             if (textureData.url !== "EMPTY") {
                 let textureUrl: string = textureData.url;
                 if (textureData.alias && PIXI.Assets.resolver.hasKey(textureData.alias)) {
