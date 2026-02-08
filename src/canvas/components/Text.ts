@@ -334,7 +334,7 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(Text, CANVAS_TEXT_ID);
+RegisteredCanvasComponents.add(Text, { name: CANVAS_TEXT_ID });
 
 export async function setMemoryText(element: Text, memory: TextMemory | {}) {
     "text" in memory && memory.text !== undefined && (element.text = memory.text);

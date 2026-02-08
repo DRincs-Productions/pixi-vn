@@ -53,7 +53,7 @@ export default class Container<
     protected async importChildren(value: Memory) {
         for (let i = 0; i < value.elements.length; i++) {
             let child = value.elements[i];
-            let element = await importCanvasElement<C>(child);
+            let element = await importCanvasElement<any, C>(child);
             this.addChild(element);
         }
     }
@@ -118,7 +118,7 @@ export default class Container<
         return super.on(event, fn, context);
     }
 }
-RegisteredCanvasComponents.add(Container, CANVAS_CONTAINER_ID);
+RegisteredCanvasComponents.add(Container, { name: CANVAS_CONTAINER_ID });
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,

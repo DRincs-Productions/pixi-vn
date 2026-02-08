@@ -368,7 +368,7 @@ export default class ImageContainer
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(ImageContainer, CANVAS_IMAGE_CONTAINER_ID);
+RegisteredCanvasComponents.add(ImageContainer, { name: CANVAS_IMAGE_CONTAINER_ID });
 
 export async function setMemoryImageContainer(
     element: ImageContainer,

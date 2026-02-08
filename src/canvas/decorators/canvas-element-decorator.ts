@@ -1,17 +1,38 @@
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
+import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
 const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof CanvasBaseItem<any>>({ cacheSize: 5 });
+const registeredCanvasInstanceGetters = new CachedMap<
+    CanvasElementAliasType,
+    (
+        memory: CanvasBaseItemMemory,
+    ) => CanvasBaseItem<CanvasBaseItemMemory> | Promise<CanvasBaseItem<CanvasBaseItemMemory>>
+>({ cacheSize: 5 });
 /**
  * Is a decorator that register a canvas component in the game.
- * @param name Name of the canvas component, by default it will use the class name. If the name is already registered, it will show a warning
+ * @param options Options for the canvas component.
  * @returns
  */
-export function canvasComponentDecorator(name?: CanvasElementAliasType) {
-    return function (target: typeof CanvasBaseItem<any>) {
-        RegisteredCanvasComponents.add(target, name);
+export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T extends typeof CanvasBaseItem<M>>(
+    options: {
+        /**
+         * Name of the canvas component. If the name is already registered, it will show a warning
+         * @default target.name
+         */
+        name?: CanvasElementAliasType;
+        /**
+         * Function to get the instance of the canvas component. If not set, it will use the default constructor of the class.
+         * @param memory Memory of the canvas component.
+         * @returns The instance of the canvas component.
+         */
+        getInstance?: (memory: M) => T | Promise<T>;
+    } = {},
+) {
+    return function (target: T) {
+        RegisteredCanvasComponents.add(target, options);
     };
 }
 
@@ -19,17 +40,31 @@ namespace RegisteredCanvasComponents {
     /**
      * Register a canvas component in the game.
      * @param target The class of the canvas component.
-     * @param name Name of the canvas component, by default it will use the class name. If the name is already registered, it will show a warning
+     * @param options Options for the canvas component.
      */
-    export function add(target: typeof CanvasBaseItem<any>, name?: CanvasElementAliasType) {
-        if (!name) {
-            name = target.name;
-        }
+    export function add<M extends CanvasBaseItemMemory, T extends typeof CanvasBaseItem<M>>(
+        target: T,
+        options: {
+            /**
+             * Name of the canvas component. If the name is already registered, it will show a warning
+             * @default target.name
+             */
+            name?: CanvasElementAliasType;
+            /**
+             * Function to get the instance of the canvas component. If not set, it will use the default constructor of the class.
+             * @param memory Memory of the canvas component.
+             * @returns The instance of the canvas component.
+             */
+            getInstance?: (memory: M) => T | Promise<T>;
+        } = {},
+    ) {
+        const { name = target.name, getInstance = (memory: M) => new target() } = options;
         if (registeredCanvasComponent.get(name)) {
             logger.warn(`CanvasElement "${name}" already registered`);
         }
         target.prototype.pixivnId = name;
         registeredCanvasComponent.set(name, target);
+        registeredCanvasInstanceGetters.set(name, getInstance as any);
     }
 
     /**
@@ -46,6 +81,26 @@ namespace RegisteredCanvasComponents {
             return;
         }
         return eventType as T;
+    }
+
+    export async function getInstance<M extends CanvasBaseItemMemory, T extends CanvasBaseItem<M>>(
+        canvasId: CanvasElementAliasType,
+        memory: M,
+    ): Promise<T | undefined> {
+        const eventType = get(canvasId);
+        const getInstance = registeredCanvasInstanceGetters.get(canvasId);
+        if (!eventType || !getInstance) {
+            logger.error(
+                `CanvasElement "${canvasId}" not found, did you forget to register it with the canvasComponentDecorator?`,
+            );
+            return;
+        }
+        try {
+            let canvasElement = await getInstance(memory);
+            return canvasElement as T;
+        } catch (e) {
+            logger.error(`Error while getting CanvasElement instance "${canvasId}"`, e);
+        }
     }
 
     /**

@@ -131,7 +131,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         return mySprite;
     }
 }
-RegisteredCanvasComponents.add(Sprite, CANVAS_SPRITE_ID);
+RegisteredCanvasComponents.add(Sprite, { name: CANVAS_SPRITE_ID });
 
 export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     element: Sprite<any>,

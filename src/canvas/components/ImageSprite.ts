@@ -353,7 +353,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(ImageSprite, CANVAS_IMAGE_ID);
+RegisteredCanvasComponents.add(ImageSprite, { name: CANVAS_IMAGE_ID });
 
 export async function setMemoryImageSprite(
     element: ImageSprite,

@@ -167,7 +167,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         }
     }
 }
-RegisteredCanvasComponents.add(VideoSprite, CANVAS_VIDEO_ID);
+RegisteredCanvasComponents.add(VideoSprite, { name: CANVAS_VIDEO_ID });
 
 export async function setMemoryVideoSprite(
     element: VideoSprite,
