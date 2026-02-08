@@ -26,10 +26,11 @@ export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T exten
         name?: CanvasElementAliasType;
         /**
          * Function to get the instance of the canvas component. If not set, it will use the default constructor of the class.
+         * @param canvasClass The class of the canvas component.
          * @param memory Memory of the canvas component.
          * @returns The instance of the canvas component.
          */
-        getInstance?: (memory: M) => T | Promise<T>;
+        getInstance?: (canvasClass: T, memory: M) => T | Promise<T>;
     } = {},
 ) {
     return function (target: T) {
@@ -53,10 +54,11 @@ namespace RegisteredCanvasComponents {
             name?: CanvasElementAliasType;
             /**
              * Function to get the instance of the canvas component. If not set, it will use the default constructor of the class.
+             * @param canvasClass The class of the canvas component.
              * @param memory Memory of the canvas component.
              * @returns The instance of the canvas component.
              */
-            getInstance?: (memory: M) => T | Promise<T>;
+            getInstance?: (canvasClass: T, memory: M) => T | Promise<T>;
         } = {},
     ) {
         const {
