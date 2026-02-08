@@ -50,7 +50,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         super(options);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID;
     }
-    pixivnId: string = CANVAS_SPRITE_ID;
+    readonly pixivnId: string = CANVAS_SPRITE_ID;
     get memory(): Memory | SpriteMemory {
         return getMemorySprite(this);
     }

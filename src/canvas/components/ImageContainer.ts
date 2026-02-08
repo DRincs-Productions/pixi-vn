@@ -95,7 +95,7 @@ export default class ImageContainer
         this.reloadAnchor();
         this.reloadPosition();
     }
-    pixivnId: string = CANVAS_IMAGE_CONTAINER_ID;
+    readonly pixivnId: string = CANVAS_IMAGE_CONTAINER_ID;
     private _loadIsStarted: boolean = false;
     get loadIsStarted() {
         return this._loadIsStarted;

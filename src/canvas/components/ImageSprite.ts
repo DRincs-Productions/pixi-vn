@@ -58,7 +58,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         }
         return [this.texture.source.label];
     }
-    pixivnId: string = CANVAS_IMAGE_ID;
+    readonly pixivnId: string = CANVAS_IMAGE_ID;
     constructor(options?: ImageSpriteOptions | Omit<Texture, "on"> | undefined, textureAlias?: string) {
         options = analizePositionsExtensionProps(options as any);
         let align = undefined;

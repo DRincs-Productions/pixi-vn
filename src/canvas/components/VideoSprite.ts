@@ -57,7 +57,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             this.currentTime = currentTime;
         }
     }
-    pixivnId: string = CANVAS_VIDEO_ID;
+    readonly pixivnId: string = CANVAS_VIDEO_ID;
     override get memory(): VideoSpriteMemory {
         return {
             ...super.memory,

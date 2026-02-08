@@ -61,7 +61,7 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
             this.percentagePosition = percentagePosition;
         }
     }
-    pixivnId: string = CANVAS_TEXT_ID;
+    readonly pixivnId: string = CANVAS_TEXT_ID;
     get memory(): TextMemory {
         return {
             ...getMemoryText(this),

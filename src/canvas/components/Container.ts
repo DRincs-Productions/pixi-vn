@@ -40,7 +40,7 @@ export default class Container<
         super(options);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID;
     }
-    pixivnId: string = CANVAS_CONTAINER_ID;
+    readonly pixivnId: string = CANVAS_CONTAINER_ID;
     get memory(): Memory {
         return getMemoryContainer(this, { childrenExport: true }) as Memory;
     }
