@@ -18,7 +18,7 @@ import { addImage } from "../functions/image-utility";
 import { getTexture } from "../functions/texture-utility";
 import { ImageSpriteOptions } from "../interfaces/canvas-options";
 import ImageSpriteMemory from "../interfaces/memory/ImageSpriteMemory";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import Sprite, { setMemorySprite } from "./Sprite";
 
 /**

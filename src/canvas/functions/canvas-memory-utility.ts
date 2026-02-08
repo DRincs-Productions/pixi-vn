@@ -15,12 +15,12 @@ import type {
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
+import AssetMemory from "../interfaces/AssetMemory";
 import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
 import SpriteMemory from "../interfaces/memory/SpriteMemory";
 import TextMemory from "../interfaces/memory/TextMemory";
-import TextureMemory from "../interfaces/TextureMemory";
 
 /**
  * Export a Canvas element to a memory object
@@ -75,7 +75,7 @@ function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Par
  * @param alias Optional alias for the texture
  * @returns Memory object of the texture
  */
-function getTextureMemory(texture: Texture, alias?: string): TextureMemory {
+function getTextureMemory(texture: Texture, alias?: string): AssetMemory {
     return {
         url: texture.source.label,
         alias: alias === texture.source.label ? undefined : alias,
@@ -118,14 +118,16 @@ export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): 
     const pixivnId = baseMemory.pixivnId ?? CANVAS_SPRITE_ID;
     const onEvents = getOnEvents(element);
     const textureData =
-        "textureAlias" in element
-            ? getTextureMemory(element.texture, element.textureAlias as string)
-            : getTextureMemory(element.texture);
+        "assetsAliases" in element && Array.isArray(element.assetsAliases)
+            ? getTextureMemory(element.texture, element.assetsAliases[0] as string)
+            : "textureAlias" in element
+              ? getTextureMemory(element.texture, element.textureAlias as string)
+              : getTextureMemory(element.texture);
 
     return {
         ...baseMemory,
         pixivnId,
-        textureData,
+        assetsData: [textureData],
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
         onEvents,

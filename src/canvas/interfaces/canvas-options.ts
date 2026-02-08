@@ -4,7 +4,7 @@ import type {
     EventEmitter,
     SpriteOptions as PixiSpriteOptions,
 } from "@drincs/pixi-vn/pixi.js";
-import { AdditionalPositionsExtensionProps } from "../components/AdditionalPositions";
+import { AdditionalPositionsExtensionProps } from "../components/AdditionalPositionsExtension";
 import { AnchorExtensionProps } from "../components/AnchorExtension";
 import ContainerChild from "../types/ContainerChild";
 

@@ -1,5 +1,5 @@
 import type { PointData } from "@drincs/pixi-vn/pixi.js";
-import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositions";
+import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositionsExtension";
 import ImageSprite from "../../components/ImageSprite";
 import ContainerMemory from "./ContainerMemory";
 import ImageSpriteMemory from "./ImageSpriteMemory";

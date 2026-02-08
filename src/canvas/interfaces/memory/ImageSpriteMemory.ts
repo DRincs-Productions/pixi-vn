@@ -1,4 +1,4 @@
-import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositions";
+import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositionsExtension";
 import { SpriteBaseMemory } from "./SpriteMemory";
 
 /**

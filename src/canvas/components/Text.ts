@@ -26,7 +26,7 @@ import { TextOptions } from "../interfaces/canvas-options";
 import TextMemory from "../interfaces/memory/TextMemory";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { EventIdType } from "../types/EventIdType";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import { setMemoryContainer } from "./Container";
 
 /**

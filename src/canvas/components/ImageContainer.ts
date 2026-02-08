@@ -15,7 +15,7 @@ import {
 import { checkIfVideo } from "../functions/canvas-utility";
 import { ImageContainerOptions } from "../interfaces/canvas-options";
 import ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositions";
+import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import AnchorExtension from "./AnchorExtension";
 import Container, { setMemoryContainer } from "./Container";
 import ImageSprite from "./ImageSprite";

@@ -15,6 +15,7 @@ import { default as RegisteredCanvasComponents } from "../decorators/canvas-elem
 import RegisteredEvents from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
+import AssetMemory from "../interfaces/AssetMemory";
 import { SpriteOptions } from "../interfaces/canvas-options";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
@@ -159,15 +160,24 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
                 element.texture = texture;
             }
         }
-        if ("textureData" in memory) {
-            if (memory.textureData.alias) {
-                element.textureAlias = memory.textureData.alias;
+        let textureData: AssetMemory | undefined = undefined;
+        if ("textureData" in memory && memory.textureData) {
+            textureData = memory.textureData;
+        }
+        if ("assetsData" in memory) {
+            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
+                textureData = memory.assetsData[0];
+            }
+        }
+        if (textureData) {
+            if (textureData.alias) {
+                element.textureAlias = textureData.alias;
             }
 
-            if (memory.textureData.url !== "EMPTY") {
-                let textureUrl: string = memory.textureData.url;
-                if (memory.textureData.alias && PIXI.Assets.resolver.hasKey(memory.textureData.alias)) {
-                    textureUrl = memory.textureData.alias;
+            if (textureData.url !== "EMPTY") {
+                let textureUrl: string = textureData.url;
+                if (textureData.alias && PIXI.Assets.resolver.hasKey(textureData.alias)) {
+                    textureUrl = textureData.alias;
                 }
                 let texture = await getTexture(textureUrl);
                 if (texture) {

@@ -13,6 +13,13 @@ export { default as CanvasEvent } from "../canvas/classes/CanvasEvent";
 export { default as ImageContainer } from "../canvas/components/ImageContainer";
 export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 export { default as CanvasBaseItem } from "./classes/CanvasBaseItem";
+export {
+    default as AdditionalPositionsExtension,
+    AdditionalPositionsExtensionProps,
+    analizePositionsExtensionProps,
+} from "./components/AdditionalPositionsExtension";
+export { default as AnchorExtension, AnchorExtensionProps } from "./components/AnchorExtension";
+export { default as AsyncLoadExtension, AsyncLoadExtensionProps } from "./components/AsyncLoadExtension";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";
@@ -38,6 +45,7 @@ export { addImage, showImage } from "./functions/image-utility";
 export { showText } from "./functions/text-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, showVideo } from "./functions/video-utility";
+export type { default as AssetMemory } from "./interfaces/AssetMemory";
 export type {
     ImageContainerOptions,
     ImageSpriteOptions,
@@ -56,7 +64,6 @@ export type { default as ImageSpriteMemory } from "./interfaces/memory/ImageSpri
 export type { SpriteBaseMemory, default as SpriteMemory } from "./interfaces/memory/SpriteMemory";
 export type { default as TextMemory } from "./interfaces/memory/TextMemory";
 export type { default as VideoSpriteMemory } from "./interfaces/memory/VideoSpriteMemory";
-export type { default as TextureMemory } from "./interfaces/TextureMemory";
 export type {
     MoveInOutProps,
     PushInOutProps,

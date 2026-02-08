@@ -1,14 +1,18 @@
 import type { SpriteOptions } from "@drincs/pixi-vn/pixi.js";
+import { AsyncLoadExtensionProps } from "src/canvas/components/AsyncLoadExtension";
 import { EventIdType } from "../../types/EventIdType";
-import TextureMemory from "../TextureMemory";
+import AssetMemory from "../AssetMemory";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
-export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {
+export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory, AsyncLoadExtensionProps {
     /**
      * @deprecated
      */
-    textureImage?: TextureMemory;
-    textureData: TextureMemory;
+    textureImage?: AssetMemory;
+    /**
+     * @deprecated
+     */
+    textureData?: AssetMemory;
     onEvents: { [name: string]: EventIdType };
 }
 
