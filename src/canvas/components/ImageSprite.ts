@@ -92,25 +92,6 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         };
     }
     override set memory(_value: ImageSpriteMemory) {}
-    override async setMemory(memory: ImageSpriteMemory) {
-        let textureData: AssetMemory | undefined = undefined;
-        if ("textureData" in memory && memory.textureData) {
-            textureData = memory.textureData;
-        }
-        if ("assetsData" in memory) {
-            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
-                textureData = memory.assetsData[0];
-            }
-        }
-        if (textureData) {
-            if (textureData.alias) {
-                this._textureAlias = textureData.alias;
-            }
-        }
-        this.memory = memory;
-        await setMemoryImageSprite(this, memory);
-        this.reloadPosition();
-    }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PIXI.Sprite.from(source, skipCache);
         let mySprite = new ImageSprite();
@@ -295,7 +276,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             this.position.set(value.x, value.y);
         }
     }
-    private reloadPosition() {
+    reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
@@ -353,7 +334,25 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(ImageSprite, { name: CANVAS_IMAGE_ID });
+RegisteredCanvasComponents.add<ImageSpriteMemory, typeof ImageSprite>(ImageSprite, {
+    name: CANVAS_IMAGE_ID,
+    getInstance: async (type, memory) => {
+        let textureData: AssetMemory | undefined = undefined;
+        if ("textureData" in memory && memory.textureData) {
+            textureData = memory.textureData;
+        }
+        if ("assetsData" in memory) {
+            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
+                textureData = memory.assetsData[0];
+            }
+        }
+        const instance = new type(undefined, textureData?.alias);
+        instance.memory = memory;
+        await setMemoryImageSprite(instance, memory);
+        instance.reloadPosition();
+        return instance;
+    },
+});
 
 export async function setMemoryImageSprite(
     element: ImageSprite,

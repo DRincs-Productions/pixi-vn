@@ -71,11 +71,6 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
         };
     }
     set memory(_value: TextMemory) {}
-    async setMemory(value: TextMemory) {
-        this.memory = value;
-        await setMemoryText(this, value);
-        this.reloadPosition();
-    }
     private _onEvents: { [name: string]: EventIdType } = {};
     get onEvents() {
         return this._onEvents;
@@ -276,7 +271,7 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
             this.position.set(value.x, value.y);
         }
     }
-    private reloadPosition() {
+    reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
@@ -334,7 +329,16 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(Text, { name: CANVAS_TEXT_ID });
+RegisteredCanvasComponents.add<TextMemory, typeof Text>(Text, {
+    name: CANVAS_TEXT_ID,
+    getInstance: async (type, memory) => {
+        const instance = new type();
+        instance.memory = memory;
+        await setMemoryText(instance, memory);
+        instance.reloadPosition();
+        return instance;
+    },
+});
 
 export async function setMemoryText(element: Text, memory: TextMemory | {}) {
     "text" in memory && memory.text !== undefined && (element.text = memory.text);

@@ -23,7 +23,7 @@ import VideoSprite from "./VideoSprite";
 
 /**
  * This class is a extension of the {@link Container}, it has the same properties and methods,
- * but this container is composed only of {@link ImageSprite} and introduces the {@link ImageContainer.load} functionality
+ * but this container is composed only of {@link ImageSprite} and introduces the {@link load} functionality
  * @example
  * ```typescript
  *  const liamBodyImageUrl = 'https://example.com/assets/liam/body.png';
@@ -88,13 +88,6 @@ export default class ImageContainer
         };
     }
     override set memory(_value: ImageContainerMemory) {}
-    override async setMemory(value: ImageContainerMemory) {
-        this.memory = value;
-        await this.importChildren(value);
-        await setMemoryImageContainer(this, value);
-        this.reloadAnchor();
-        this.reloadPosition();
-    }
     readonly pixivnId: string = CANVAS_IMAGE_CONTAINER_ID;
     private _loadIsStarted: boolean = false;
     get loadIsStarted() {
@@ -157,7 +150,7 @@ export default class ImageContainer
         }
         this.reloadAnchor();
     }
-    private reloadAnchor() {
+    reloadAnchor() {
         if (this._anchor) {
             super.pivot.set(this._anchor.x * this.width, this._anchor.y * this.height);
         }
@@ -312,7 +305,7 @@ export default class ImageContainer
             this.position.set(value.x, value.y);
         }
     }
-    private reloadPosition() {
+    reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
@@ -368,7 +361,18 @@ export default class ImageContainer
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(ImageContainer, { name: CANVAS_IMAGE_CONTAINER_ID });
+RegisteredCanvasComponents.add<ImageContainerMemory, typeof ImageContainer>(ImageContainer, {
+    name: CANVAS_IMAGE_CONTAINER_ID,
+    getInstance: async (type, memory) => {
+        const instance = new type();
+        instance.memory = memory;
+        await instance.importChildren(memory);
+        await setMemoryImageContainer(instance, memory);
+        instance.reloadAnchor();
+        instance.reloadPosition();
+        return instance;
+    },
+});
 
 export async function setMemoryImageContainer(
     element: ImageContainer,
