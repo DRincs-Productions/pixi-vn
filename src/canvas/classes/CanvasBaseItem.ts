@@ -9,15 +9,19 @@ import canvasComponentDecorator from "../decorators/canvas-element-decorator";
  * In Ren'Py is a displayable.
  * @example
  * ```typescript
- * \@canvasComponentDecorator() // this is equivalent to canvasComponentDecorator("CanvasExample")
- * export class CanvasExample extends Container implements CanvasBaseItem<ICanvasExampleMemory> {
- *     get memory(): ICanvasExampleMemory {
+ * const CANVAS_EXAMPLE_ID = "CanvasExample";
+ *
+ * \@canvasComponentDecorator({
+ *     name: CANVAS_EXAMPLE_ID,
+ * })
+ * export class CanvasExample extends Container implements CanvasBaseItem<Memory> {
+ *     get memory(): Memory {
  *         return {
- *             pixivnId: "CanvasExample",
+ *             pixivnId: CANVAS_EXAMPLE_ID,
  *             // ... other properties
  *         }
  *     }
- *     set memory(value: ICanvasExampleMemory) {
+ *     async setMemory(value: Memory) {
  *         // ... set other properties
  *     }
  * }
@@ -34,8 +38,8 @@ export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
     /**
      * This method set the memory of the canvas element.
      */
-    set memory(_value: T2) {
-        throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden");
+    setMemory(_value: T2): Promise<void> | void {
+        throw new Error("[Pixi’VN] The method CanvasBaseItem.setMemory must be overridden");
     }
     /**
      * Get the id of the canvas element. This variable is used in the system to get the canvas element by id

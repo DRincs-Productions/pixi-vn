@@ -39,10 +39,10 @@ export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T exten
         /**
          * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
          * @param component The instance of the canvas component to copy the properties.
-         * @param source The memory of the canvas component to copy the properties.
+         * @param memory The memory of the canvas component to copy the properties.
          * @returns
          */
-        copyProperty?: (component: CanvasBaseItem<M>, source: CanvasBaseItemMemory) => void | Promise<void>;
+        copyProperty?: (component: CanvasBaseItem<M>, memory: M) => void | Promise<void>;
     } = {},
 ) {
     return function (target: T) {
@@ -131,21 +131,21 @@ namespace RegisteredCanvasComponents {
             /**
              * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
              * @param component The instance of the canvas component to copy the properties.
-             * @param source The memory of the canvas component to copy the properties.
+             * @param memory The memory of the canvas component to copy the properties.
              * @returns
              */
-            copyProperty?: (component: CanvasBaseItem<M>, source: CanvasBaseItemMemory) => void | Promise<void>;
+            copyProperty?: (component: CanvasBaseItem<M>, memory: M) => void | Promise<void>;
         } = {},
     ) {
         const {
             name = target.name,
-            getInstance = (cc: T, memory: M) => {
-                const instance = new cc();
-                instance.memory = memory;
+            getInstance = async (canvasClass: T, memory: M) => {
+                const instance = new canvasClass();
+                await instance.setMemory(memory);
                 return instance;
             },
-            copyProperty = (component: CanvasBaseItem<M>, source: CanvasBaseItemMemory) => {
-                component.memory = source as M;
+            copyProperty = async (component: CanvasBaseItem<M>, memory: M) => {
+                await component.setMemory(memory);
             },
         } = options;
         if (registeredCanvasComponent.get(name)) {
