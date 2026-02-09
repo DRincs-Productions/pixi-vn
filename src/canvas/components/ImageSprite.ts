@@ -91,8 +91,22 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             loadIsStarted: this._loadIsStarted,
         };
     }
-    override async setMemory(value: Memory | SpriteMemory): Promise<void> {
-        await setMemoryImageSprite(this, value);
+    override async setMemory(memory: Memory | SpriteMemory): Promise<void> {
+        let textureData: AssetMemory | undefined = undefined;
+        if ("textureData" in memory && memory.textureData) {
+            textureData = memory.textureData;
+        }
+        if ("assetsData" in memory) {
+            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
+                textureData = memory.assetsData[0];
+            }
+        }
+        if (textureData) {
+            if (textureData.alias) {
+                this._textureAlias = textureData.alias;
+            }
+        }
+        await setMemoryImageSprite(this, memory);
         this.reloadPosition();
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
@@ -334,15 +348,6 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
 }
 RegisteredCanvasComponents.add<ImageSpriteMemory, typeof ImageSprite>(ImageSprite, {
     name: CANVAS_IMAGE_ID,
-    getInstance: async (type, memory) => {
-        let textureData: AssetMemory | undefined = undefined;
-        if ("textureData" in memory && memory.textureData) {
-            textureData = memory.textureData;
-        }
-        const instance = new type(undefined, textureData?.alias);
-        await instance.setMemory(memory);
-        return instance;
-    },
     copyProperty: async (component, source) => {
         await setMemoryImageSprite(component as ImageSprite, source, { ignoreTexture: true });
     },
