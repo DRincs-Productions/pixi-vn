@@ -1,4 +1,5 @@
 import { ContainerOptions, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
+import { canvas } from "..";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -31,6 +32,7 @@ export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T exten
         name?: CanvasElementAliasType;
         /**
          * Function to get the instance of the canvas component. If not set, it will use the default constructor of the class.
+         * This function is used into {@link canvas.restore} to restore the canvas.
          * @param canvasClass The class of the canvas component.
          * @param memory Memory of the canvas component.
          * @returns The instance of the canvas component.
@@ -38,6 +40,7 @@ export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T exten
         getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
         /**
          * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
+         * This function is used into {@link canvas.copyCanvasElementProperty} to copy the properties of the canvas component.
          * @param component The instance of the canvas component to copy the properties.
          * @param memory The memory of the canvas component to copy the properties.
          * @returns
@@ -123,6 +126,7 @@ namespace RegisteredCanvasComponents {
             name?: CanvasElementAliasType;
             /**
              * Function to get the instance of the canvas component. If not set, it will use the default constructor of the class.
+             * This function is used into {@link canvas.restore} to restore the canvas.
              * @param canvasClass The class of the canvas component.
              * @param memory Memory of the canvas component.
              * @returns The instance of the canvas component.
@@ -130,6 +134,7 @@ namespace RegisteredCanvasComponents {
             getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
             /**
              * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
+             * This function is used into {@link canvas.copyCanvasElementProperty} to copy the properties of the canvas component.
              * @param component The instance of the canvas component to copy the properties.
              * @param memory The memory of the canvas component to copy the properties.
              * @returns
