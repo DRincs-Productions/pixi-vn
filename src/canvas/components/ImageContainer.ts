@@ -155,7 +155,7 @@ export default class ImageContainer
         }
         this.reloadAnchor();
     }
-    reloadAnchor() {
+    protected reloadAnchor() {
         if (this._anchor) {
             super.pivot.set(this._anchor.x * this.width, this._anchor.y * this.height);
         }
@@ -310,7 +310,7 @@ export default class ImageContainer
             this.position.set(value.x, value.y);
         }
     }
-    reloadPosition() {
+    protected reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
