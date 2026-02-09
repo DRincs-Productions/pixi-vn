@@ -4,6 +4,7 @@ import { CANVAS_VIDEO_ID } from "../../constants";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { showWithDissolve } from "../functions/canvas-transition";
 import { addVideo } from "../functions/video-utility";
+import AssetMemory from "../interfaces/AssetMemory";
 import { VideoSpriteOptions } from "../interfaces/canvas-options";
 import VideoSpriteMemory from "../interfaces/memory/VideoSpriteMemory";
 import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
@@ -67,10 +68,9 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             currentTime: this.currentTime,
         };
     }
-    override set memory(_value: VideoSpriteMemory) {}
     override async setMemory(value: VideoSpriteMemory) {
-        this.memory = value;
-        return await setMemoryVideoSprite(this, value);
+        await setMemoryVideoSprite(this, value);
+        this.reloadPosition();
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PIXI.Sprite.from(source, skipCache);
@@ -167,7 +167,21 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         }
     }
 }
-RegisteredCanvasComponents.add(VideoSprite, CANVAS_VIDEO_ID);
+RegisteredCanvasComponents.add<VideoSpriteMemory, typeof VideoSprite>(VideoSprite, {
+    name: CANVAS_VIDEO_ID,
+    getInstance: async (type, memory) => {
+        let textureData: AssetMemory | undefined = undefined;
+        if ("textureData" in memory && memory.textureData) {
+            textureData = memory.textureData;
+        }
+        const instance = new type(undefined, textureData?.alias);
+        await instance.setMemory(memory);
+        return instance;
+    },
+    copyProperty: async (component, source) => {
+        await setMemoryVideoSprite(component as VideoSprite, source, { ignoreTexture: true });
+    },
+});
 
 export async function setMemoryVideoSprite(
     element: VideoSprite,

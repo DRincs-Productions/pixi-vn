@@ -5,12 +5,7 @@ import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import CanvasManagerStatic from "./CanvasManagerStatic";
-import { setMemoryContainer } from "./components/Container";
-import ImageContainer, { setMemoryImageContainer } from "./components/ImageContainer";
-import ImageSprite, { setMemoryImageSprite } from "./components/ImageSprite";
-import Sprite, { setMemorySprite } from "./components/Sprite";
-import Text, { setMemoryText } from "./components/Text";
-import VideoSprite, { setMemoryVideoSprite } from "./components/VideoSprite";
+import RegisteredCanvasComponents, { setMemoryContainer } from "./decorators/canvas-element-decorator";
 import { importCanvasElement } from "./functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "./functions/canvas-memory-utility";
 import { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
@@ -120,19 +115,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         "style" in oldAlias && delete oldAlias.style;
         "height" in oldAlias && delete oldAlias.height;
         "width" in oldAlias && delete oldAlias.width;
-        if (newAlias instanceof VideoSprite) {
-            await setMemoryVideoSprite(newAlias, oldAlias, { ignoreTexture: true });
-        } else if (newAlias instanceof ImageSprite) {
-            await setMemoryImageSprite(newAlias, oldAlias, { ignoreTexture: true });
-        } else if (newAlias instanceof Sprite) {
-            await setMemorySprite(newAlias, oldAlias, { ignoreTexture: true });
-        } else if (newAlias instanceof Text) {
-            await setMemoryText(newAlias, oldAlias);
-        } else if (newAlias instanceof ImageContainer) {
-            await setMemoryImageContainer(newAlias, oldAlias);
-        } else if (newAlias instanceof PIXI.Container) {
-            await setMemoryContainer(newAlias, oldAlias);
-        }
+        await RegisteredCanvasComponents.copyProperty(newAlias.pixivnId, newAlias, oldAlias);
     }
     public add(
         alias: string,

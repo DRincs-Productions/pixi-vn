@@ -19,13 +19,16 @@ export {
     analizePositionsExtensionProps,
 } from "./components/AdditionalPositionsExtension";
 export { default as AnchorExtension, AnchorExtensionProps } from "./components/AnchorExtension";
-export { default as AsyncLoadExtension, AsyncLoadExtensionProps } from "./components/AsyncLoadExtension";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";
 export { default as Sprite } from "./components/Sprite";
 export { default as Text } from "./components/Text";
-export { canvasComponentDecorator, default as RegisteredCanvasComponents } from "./decorators/canvas-element-decorator";
+export {
+    canvasComponentDecorator,
+    default as RegisteredCanvasComponents,
+    setMemoryContainer,
+} from "./decorators/canvas-element-decorator";
 export { eventDecorator, default as RegisteredEvents } from "./decorators/event-decorator";
 export { shakeEffect } from "./functions/canvas-effect";
 export {

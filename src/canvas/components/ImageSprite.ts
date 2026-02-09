@@ -1,5 +1,6 @@
 import type { ObservablePoint, PointData, Texture, TextureSource, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { SpriteMemory } from "..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
@@ -20,7 +21,6 @@ import AssetMemory from "../interfaces/AssetMemory";
 import { ImageSpriteOptions } from "../interfaces/canvas-options";
 import ImageSpriteMemory from "../interfaces/memory/ImageSpriteMemory";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
-import AsyncLoadExtension from "./AsyncLoadExtension";
 import Sprite, { setMemorySprite } from "./Sprite";
 
 /**
@@ -49,14 +49,14 @@ import Sprite, { setMemorySprite } from "./Sprite";
  */
 export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory>
     extends Sprite<Memory>
-    implements AdditionalPositionsExtension, AsyncLoadExtension
+    implements AdditionalPositionsExtension
 {
     private _textureAlias?: string;
-    public get assetsAliases() {
+    protected get textureAlias() {
         if (this._textureAlias) {
-            return [this._textureAlias];
+            return this._textureAlias;
         }
-        return [this.texture.source.label];
+        return this.texture.source.label;
     }
     readonly pixivnId: string = CANVAS_IMAGE_ID;
     constructor(options?: ImageSpriteOptions | Omit<Texture, "on"> | undefined, textureAlias?: string) {
@@ -91,8 +91,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             loadIsStarted: this._loadIsStarted,
         };
     }
-    override set memory(_value: ImageSpriteMemory) {}
-    override async setMemory(memory: ImageSpriteMemory) {
+    override async setMemory(memory: Memory | SpriteMemory): Promise<void> {
         let textureData: AssetMemory | undefined = undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
@@ -107,7 +106,6 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                 this._textureAlias = textureData.alias;
             }
         }
-        this.memory = memory;
         await setMemoryImageSprite(this, memory);
         this.reloadPosition();
     }
@@ -126,13 +124,8 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
      * @returns A promise that resolves when the image is loaded.
      */
     async load() {
-        const assetsAliases = this.assetsAliases;
-        if (assetsAliases.length === 0) {
-            logger.warn("ImageSprite.load() called but no textureAlias is set.");
-            return;
-        }
         this._loadIsStarted = true;
-        return getTexture(assetsAliases[0])
+        return getTexture(this.textureAlias)
             .then((texture) => {
                 this._loadIsStarted = false;
                 if (texture) {
@@ -295,7 +288,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             this.position.set(value.x, value.y);
         }
     }
-    private reloadPosition() {
+    protected reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
@@ -353,7 +346,12 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(ImageSprite, CANVAS_IMAGE_ID);
+RegisteredCanvasComponents.add<ImageSpriteMemory, typeof ImageSprite>(ImageSprite, {
+    name: CANVAS_IMAGE_ID,
+    copyProperty: async (component, source) => {
+        await setMemoryImageSprite(component as ImageSprite, source, { ignoreTexture: true });
+    },
+});
 
 export async function setMemoryImageSprite(
     element: ImageSprite,

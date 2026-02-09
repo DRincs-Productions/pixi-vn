@@ -11,7 +11,7 @@ import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
 import RegisteredEvents from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
@@ -21,7 +21,6 @@ import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { EventIdType } from "../types/EventIdType";
-import { setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
@@ -54,9 +53,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     get memory(): Memory | SpriteMemory {
         return getMemorySprite(this);
     }
-    set memory(_value: Memory | SpriteMemory) {}
     async setMemory(value: Memory | SpriteMemory): Promise<void> {
-        this.memory = value;
         return await setMemorySprite(this, value);
     }
     private _onEvents: { [name: string]: EventIdType } = {};
@@ -131,7 +128,12 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         return mySprite;
     }
 }
-RegisteredCanvasComponents.add(Sprite, CANVAS_SPRITE_ID);
+RegisteredCanvasComponents.add<SpriteMemory, typeof Sprite<SpriteMemory>>(Sprite, {
+    name: CANVAS_SPRITE_ID,
+    copyProperty: async (component, source) => {
+        await setMemorySprite(component as Sprite, source, { ignoreTexture: true });
+    },
+});
 
 export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     element: Sprite<any>,
@@ -153,11 +155,6 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
         let textureData: AssetMemory | undefined = undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
-        }
-        if ("assetsData" in memory) {
-            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
-                textureData = memory.assetsData[0];
-            }
         }
         if (textureData) {
             if (textureData.url !== "EMPTY") {

@@ -2,7 +2,7 @@ import type { ObservablePoint, PointData, Texture } from "@drincs/pixi-vn/pixi.j
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
 import {
     calculateAlignByPosition,
     calculatePercentagePositionByPosition,
@@ -17,13 +17,13 @@ import { ImageContainerOptions } from "../interfaces/canvas-options";
 import ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import AnchorExtension from "./AnchorExtension";
-import Container, { setMemoryContainer } from "./Container";
+import Container from "./Container";
 import ImageSprite from "./ImageSprite";
 import VideoSprite from "./VideoSprite";
 
 /**
  * This class is a extension of the {@link Container}, it has the same properties and methods,
- * but this container is composed only of {@link ImageSprite} and introduces the {@link ImageContainer.load} functionality
+ * but this container is composed only of {@link ImageSprite} and introduces the {@link load} functionality
  * @example
  * ```typescript
  *  const liamBodyImageUrl = 'https://example.com/assets/liam/body.png';
@@ -87,9 +87,7 @@ export default class ImageContainer
             loadIsStarted: this._loadIsStarted,
         };
     }
-    override set memory(_value: ImageContainerMemory) {}
-    override async setMemory(value: ImageContainerMemory) {
-        this.memory = value;
+    override async setMemory(value: ImageContainerMemory): Promise<void> {
         await this.importChildren(value);
         await setMemoryImageContainer(this, value);
         this.reloadAnchor();
@@ -157,7 +155,7 @@ export default class ImageContainer
         }
         this.reloadAnchor();
     }
-    private reloadAnchor() {
+    protected reloadAnchor() {
         if (this._anchor) {
             super.pivot.set(this._anchor.x * this.width, this._anchor.y * this.height);
         }
@@ -312,7 +310,7 @@ export default class ImageContainer
             this.position.set(value.x, value.y);
         }
     }
-    private reloadPosition() {
+    protected reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
@@ -368,18 +366,16 @@ export default class ImageContainer
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(ImageContainer, CANVAS_IMAGE_CONTAINER_ID);
-
-export async function setMemoryImageContainer(
-    element: ImageContainer,
-    memory: ImageContainerOptions | {},
-    options?: {
-        ignoreScale?: boolean;
+RegisteredCanvasComponents.add<ImageContainerMemory, typeof ImageContainer>(ImageContainer, {
+    name: CANVAS_IMAGE_CONTAINER_ID,
+    copyProperty: async (component, memory) => {
+        return await setMemoryImageContainer(component as ImageContainer, memory);
     },
-) {
+});
+
+export async function setMemoryImageContainer(element: ImageContainer, memory: ImageContainerOptions | {}) {
     memory = analizePositionsExtensionProps(memory)!;
     setMemoryContainer(element, memory, {
-        ...options,
         end: async () => {
             // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
             "align" in memory && memory.align !== undefined && (element.align = memory.align as Partial<PointData>);

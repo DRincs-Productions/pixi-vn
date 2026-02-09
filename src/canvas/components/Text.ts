@@ -10,7 +10,7 @@ import { CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
 import { default as RegisteredEvents } from "../decorators/event-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
 import {
@@ -27,7 +27,6 @@ import TextMemory from "../interfaces/memory/TextMemory";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { EventIdType } from "../types/EventIdType";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
-import { setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -70,9 +69,7 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
             percentagePosition: this._percentagePosition,
         };
     }
-    set memory(_value: TextMemory) {}
-    async setMemory(value: TextMemory) {
-        this.memory = value;
+    async setMemory(value: TextMemory): Promise<void> {
         await setMemoryText(this, value);
         this.reloadPosition();
     }
@@ -276,7 +273,7 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
             this.position.set(value.x, value.y);
         }
     }
-    private reloadPosition() {
+    protected reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
@@ -334,7 +331,9 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
         super.y = value;
     }
 }
-RegisteredCanvasComponents.add(Text, CANVAS_TEXT_ID);
+RegisteredCanvasComponents.add<TextMemory, typeof Text>(Text, {
+    name: CANVAS_TEXT_ID,
+});
 
 export async function setMemoryText(element: Text, memory: TextMemory | {}) {
     "text" in memory && memory.text !== undefined && (element.text = memory.text);
