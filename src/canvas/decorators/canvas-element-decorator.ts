@@ -1,3 +1,4 @@
+import { ContainerOptions, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -11,7 +12,11 @@ const registeredCanvasInstanceGetters = new CachedMap<
         canvasClass: typeof CanvasBaseItem<CanvasBaseItemMemory>,
         memory: CanvasBaseItemMemory,
     ) => CanvasBaseItem<CanvasBaseItemMemory> | Promise<CanvasBaseItem<CanvasBaseItemMemory>>
->({ cacheSize: 5 });
+>({ cacheSize: 2 });
+const registeredCanvasComponentCopyProperties = new CachedMap<
+    CanvasElementAliasType,
+    (component: CanvasBaseItem<CanvasBaseItemMemory>, source: CanvasBaseItemMemory) => void | Promise<void>
+>({ cacheSize: 2 });
 /**
  * Is a decorator that register a canvas component in the game.
  * @param options Options for the canvas component.
@@ -31,11 +36,75 @@ export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T exten
          * @returns The instance of the canvas component.
          */
         getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
+        /**
+         * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
+         * @param component The instance of the canvas component to copy the properties.
+         * @param source The memory of the canvas component to copy the properties.
+         * @returns
+         */
+        copyProperty?: (component: CanvasBaseItem<M>, source: CanvasBaseItemMemory) => void | Promise<void>;
     } = {},
 ) {
     return function (target: T) {
         RegisteredCanvasComponents.add(target, options);
     };
+}
+
+export async function setMemoryContainer<T extends PixiContainer>(
+    element: T | PixiContainer,
+    memory: ContainerOptions | {},
+    options?: {
+        ignoreScale?: boolean;
+        end?: () => Promise<void> | void;
+    },
+) {
+    let ignoreScale = options?.ignoreScale || false;
+    let end = options?.end;
+    "isRenderGroup" in memory && memory.isRenderGroup !== undefined && (element.isRenderGroup = memory.isRenderGroup);
+    "blendMode" in memory && memory.blendMode !== undefined && (element.blendMode = memory.blendMode);
+    "tint" in memory && memory.tint !== undefined && (element.tint = memory.tint);
+    "alpha" in memory && memory.alpha !== undefined && (element.alpha = memory.alpha);
+    "angle" in memory && memory.angle !== undefined && (element.angle = memory.angle);
+    "renderable" in memory && memory.renderable !== undefined && (element.renderable = memory.renderable);
+    "rotation" in memory && memory.rotation !== undefined && (element.rotation = memory.rotation);
+    if (!ignoreScale && "scale" in memory && memory.scale !== undefined) {
+        if (typeof memory.scale === "number") {
+            element.scale.set(memory.scale, memory.scale);
+        } else {
+            element.scale.set(memory.scale.x, memory.scale.y);
+        }
+    }
+    if ("pivot" in memory && memory.pivot !== undefined) {
+        if (typeof memory.pivot === "number") {
+            element.pivot.set(memory.pivot, memory.pivot);
+        } else {
+            element.pivot.set(memory.pivot.x, memory.pivot.y);
+        }
+    }
+    "position" in memory && memory.position !== undefined && element.position.set(memory.position.x, memory.position.y);
+    "skew" in memory && memory.skew !== undefined && element.skew.set(memory.skew.x, memory.skew.y);
+    "visible" in memory && memory.visible !== undefined && (element.visible = memory.visible);
+    "x" in memory && memory.x !== undefined && (element.x = memory.x);
+    "y" in memory && memory.y !== undefined && (element.y = memory.y);
+    "boundsArea" in memory && memory.boundsArea !== undefined && (element.boundsArea = memory.boundsArea);
+
+    "cursor" in memory && memory.cursor !== undefined && (element.cursor = memory.cursor);
+    "eventMode" in memory && memory.eventMode !== undefined && (element.eventMode = memory.eventMode);
+    "interactive" in memory && memory.interactive !== undefined && (element.interactive = memory.interactive);
+    "interactiveChildren" in memory &&
+        memory.interactiveChildren !== undefined &&
+        (element.interactiveChildren = memory.interactiveChildren);
+    "hitArea" in memory && memory.hitArea !== undefined && (element.hitArea = memory.hitArea);
+
+    // end
+    if (end) {
+        await end();
+    }
+    // width and height must be set after the scale
+    if (!ignoreScale) {
+        "width" in memory && memory.width !== undefined && (element.width = memory.width);
+        "height" in memory && memory.height !== undefined && (element.height = memory.height);
+    }
 }
 
 namespace RegisteredCanvasComponents {
@@ -59,6 +128,13 @@ namespace RegisteredCanvasComponents {
              * @returns The instance of the canvas component.
              */
             getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
+            /**
+             * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
+             * @param component The instance of the canvas component to copy the properties.
+             * @param source The memory of the canvas component to copy the properties.
+             * @returns
+             */
+            copyProperty?: (component: CanvasBaseItem<M>, source: CanvasBaseItemMemory) => void | Promise<void>;
         } = {},
     ) {
         const {
@@ -68,6 +144,9 @@ namespace RegisteredCanvasComponents {
                 instance.memory = memory;
                 return instance;
             },
+            copyProperty = (component: CanvasBaseItem<M>, source: CanvasBaseItemMemory) => {
+                component.memory = source as M;
+            },
         } = options;
         if (registeredCanvasComponent.get(name)) {
             logger.warn(`CanvasElement "${name}" already registered`);
@@ -75,6 +154,7 @@ namespace RegisteredCanvasComponents {
         target.prototype.pixivnId = name;
         registeredCanvasComponent.set(name, target);
         registeredCanvasInstanceGetters.set(name, getInstance as any);
+        registeredCanvasComponentCopyProperties.set(name, copyProperty as any);
     }
 
     /**
@@ -111,6 +191,26 @@ namespace RegisteredCanvasComponents {
         } catch (e) {
             logger.error(`Error while getting CanvasElement instance "${canvasId}"`, e);
         }
+    }
+
+    export async function copyProperty<M extends CanvasBaseItemMemory>(
+        canvasId: CanvasElementAliasType,
+        component: CanvasBaseItem<M>,
+        source: CanvasBaseItemMemory,
+    ) {
+        const copyProperty = registeredCanvasComponentCopyProperties.get(canvasId);
+        if (!copyProperty) {
+            logger.error(
+                `CanvasElement "${canvasId}" not found, did you forget to register it with the canvasComponentDecorator?`,
+            );
+            return;
+        }
+        try {
+            await copyProperty(component, source);
+        } catch (e) {
+            logger.error(`Error while copying properties of CanvasElement "${canvasId}"`, e);
+        }
+        return;
     }
 
     /**

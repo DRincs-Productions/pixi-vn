@@ -341,6 +341,9 @@ RegisteredCanvasComponents.add<ImageSpriteMemory, typeof ImageSprite>(ImageSprit
         instance.reloadPosition();
         return instance;
     },
+    copyProperty: async (component, source) => {
+        await setMemoryImageSprite(component as ImageSprite, source, { ignoreTexture: true });
+    },
 });
 
 export async function setMemoryImageSprite(

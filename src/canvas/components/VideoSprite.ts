@@ -176,6 +176,9 @@ RegisteredCanvasComponents.add<VideoSpriteMemory, typeof VideoSprite>(VideoSprit
         await setMemoryVideoSprite(instance, memory);
         return instance;
     },
+    copyProperty: async (component, source) => {
+        await setMemoryVideoSprite(component as VideoSprite, source, { ignoreTexture: true });
+    },
 });
 
 export async function setMemoryVideoSprite(

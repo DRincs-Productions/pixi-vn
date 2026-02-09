@@ -2,7 +2,7 @@ import type { ObservablePoint, PointData, Texture } from "@drincs/pixi-vn/pixi.j
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
 import {
     calculateAlignByPosition,
     calculatePercentagePositionByPosition,
@@ -17,7 +17,7 @@ import { ImageContainerOptions } from "../interfaces/canvas-options";
 import ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import AnchorExtension from "./AnchorExtension";
-import Container, { setMemoryContainer } from "./Container";
+import Container from "./Container";
 import ImageSprite from "./ImageSprite";
 import VideoSprite from "./VideoSprite";
 
@@ -371,6 +371,9 @@ RegisteredCanvasComponents.add<ImageContainerMemory, typeof ImageContainer>(Imag
         instance.reloadAnchor();
         instance.reloadPosition();
         return instance;
+    },
+    copyProperty: async (component, source) => {
+        await setMemoryImageContainer(component as ImageContainer, source);
     },
 });
 

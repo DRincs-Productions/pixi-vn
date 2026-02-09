@@ -10,7 +10,7 @@ import { CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import CanvasEvent from "../classes/CanvasEvent";
-import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
+import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
 import { default as RegisteredEvents } from "../decorators/event-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
 import {
@@ -27,7 +27,6 @@ import TextMemory from "../interfaces/memory/TextMemory";
 import CanvasEventNamesType from "../types/CanvasEventNamesType";
 import { EventIdType } from "../types/EventIdType";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
-import { setMemoryContainer } from "./Container";
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -337,6 +336,9 @@ RegisteredCanvasComponents.add<TextMemory, typeof Text>(Text, {
         await setMemoryText(instance, memory);
         instance.reloadPosition();
         return instance;
+    },
+    copyProperty: async (component, source) => {
+        await setMemoryText(component as Text, source);
     },
 });
 
