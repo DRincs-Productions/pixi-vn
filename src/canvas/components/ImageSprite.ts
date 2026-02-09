@@ -1,5 +1,6 @@
 import type { ObservablePoint, PointData, Texture, TextureSource, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { SpriteMemory } from "dist";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
@@ -90,7 +91,10 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             loadIsStarted: this._loadIsStarted,
         };
     }
-    override set memory(_value: ImageSpriteMemory) {}
+    override async setMemory(value: Memory | SpriteMemory): Promise<void> {
+        await setMemoryImageSprite(this, value);
+        this.reloadPosition();
+    }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PIXI.Sprite.from(source, skipCache);
         let mySprite = new ImageSprite();
@@ -270,7 +274,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             this.position.set(value.x, value.y);
         }
     }
-    reloadPosition() {
+    protected reloadPosition() {
         if (this._align) {
             let superPivot = getSuperPoint(this.pivot, this.angle);
             let superScale = getSuperPoint(this.scale, this.angle);
@@ -336,9 +340,7 @@ RegisteredCanvasComponents.add<ImageSpriteMemory, typeof ImageSprite>(ImageSprit
             textureData = memory.textureData;
         }
         const instance = new type(undefined, textureData?.alias);
-        instance.memory = memory;
-        await setMemoryImageSprite(instance, memory);
-        instance.reloadPosition();
+        await instance.setMemory(memory);
         return instance;
     },
     copyProperty: async (component, source) => {

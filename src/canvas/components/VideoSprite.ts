@@ -68,7 +68,10 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             currentTime: this.currentTime,
         };
     }
-    override set memory(_value: VideoSpriteMemory) {}
+    override async setMemory(memory: VideoSpriteMemory) {
+        await setMemoryVideoSprite(this, memory);
+        this.reloadPosition();
+    }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         let sprite = PIXI.Sprite.from(source, skipCache);
         let mySprite = new VideoSprite();
@@ -172,8 +175,7 @@ RegisteredCanvasComponents.add<VideoSpriteMemory, typeof VideoSprite>(VideoSprit
             textureData = memory.textureData;
         }
         const instance = new type(undefined, textureData?.alias);
-        instance.memory = memory;
-        await setMemoryVideoSprite(instance, memory);
+        await instance.setMemory(memory);
         return instance;
     },
     copyProperty: async (component, source) => {
