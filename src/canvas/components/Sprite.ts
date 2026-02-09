@@ -53,7 +53,9 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     get memory(): Memory | SpriteMemory {
         return getMemorySprite(this);
     }
-    set memory(_value: Memory | SpriteMemory) {}
+    async setMemory(value: Memory | SpriteMemory): Promise<void> {
+        return await setMemorySprite(this, value);
+    }
     private _onEvents: { [name: string]: EventIdType } = {};
     get onEvents() {
         return this._onEvents;
@@ -128,12 +130,6 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
 }
 RegisteredCanvasComponents.add<SpriteMemory, typeof Sprite<SpriteMemory>>(Sprite, {
     name: CANVAS_SPRITE_ID,
-    getInstance: async (type, memory) => {
-        const instance = new type();
-        instance.memory = memory;
-        await setMemorySprite(instance, memory);
-        return instance;
-    },
     copyProperty: async (component, source) => {
         await setMemorySprite(component as Sprite, source, { ignoreTexture: true });
     },

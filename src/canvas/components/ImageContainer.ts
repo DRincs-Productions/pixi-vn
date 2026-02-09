@@ -87,7 +87,12 @@ export default class ImageContainer
             loadIsStarted: this._loadIsStarted,
         };
     }
-    override set memory(_value: ImageContainerMemory) {}
+    override async setMemory(value: ImageContainerMemory): Promise<void> {
+        await this.importChildren(value);
+        await setMemoryImageContainer(this, value);
+        this.reloadAnchor();
+        this.reloadPosition();
+    }
     readonly pixivnId: string = CANVAS_IMAGE_CONTAINER_ID;
     private _loadIsStarted: boolean = false;
     get loadIsStarted() {
@@ -363,30 +368,14 @@ export default class ImageContainer
 }
 RegisteredCanvasComponents.add<ImageContainerMemory, typeof ImageContainer>(ImageContainer, {
     name: CANVAS_IMAGE_CONTAINER_ID,
-    getInstance: async (type, memory) => {
-        const instance = new type();
-        instance.memory = memory;
-        await instance.importChildren(memory);
-        await setMemoryImageContainer(instance, memory);
-        instance.reloadAnchor();
-        instance.reloadPosition();
-        return instance;
-    },
-    copyProperty: async (component, source) => {
-        await setMemoryImageContainer(component as ImageContainer, source);
+    copyProperty: async (component, memory) => {
+        return await setMemoryImageContainer(component as ImageContainer, memory);
     },
 });
 
-export async function setMemoryImageContainer(
-    element: ImageContainer,
-    memory: ImageContainerOptions | {},
-    options?: {
-        ignoreScale?: boolean;
-    },
-) {
+export async function setMemoryImageContainer(element: ImageContainer, memory: ImageContainerOptions | {}) {
     memory = analizePositionsExtensionProps(memory)!;
     setMemoryContainer(element, memory, {
-        ...options,
         end: async () => {
             // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
             "align" in memory && memory.align !== undefined && (element.align = memory.align as Partial<PointData>);
