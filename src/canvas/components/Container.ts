@@ -44,9 +44,9 @@ export default class Container<
     get memory(): Memory {
         return getMemoryContainer(this, { childrenExport: true }) as Memory;
     }
-    async setMemory(memory: Memory): Promise<void> {
-        await this.importChildren(memory);
-        return await setMemoryContainer(this, memory);
+    async setMemory(value: Memory): Promise<void> {
+        await this.importChildren(value);
+        return await setMemoryContainer(this, value);
     }
     protected async importChildren(value: Memory) {
         for (let i = 0; i < value.elements.length; i++) {
