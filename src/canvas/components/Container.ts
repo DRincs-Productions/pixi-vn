@@ -45,12 +45,7 @@ export default class Container<
         return getMemoryContainer(this, { childrenExport: true }) as Memory;
     }
     set memory(_value: Memory) {}
-    async setMemory(value: Memory): Promise<void> {
-        this.memory = value;
-        await this.importChildren(value);
-        return await setMemoryContainer(this, value);
-    }
-    protected async importChildren(value: Memory) {
+    async importChildren(value: Memory) {
         for (let i = 0; i < value.elements.length; i++) {
             let child = value.elements[i];
             let element = await importCanvasElement<any, C>(child);
@@ -118,7 +113,16 @@ export default class Container<
         return super.on(event, fn, context);
     }
 }
-RegisteredCanvasComponents.add(Container, { name: CANVAS_CONTAINER_ID });
+RegisteredCanvasComponents.add<ContainerMemory, typeof Container>(Container, {
+    name: CANVAS_CONTAINER_ID,
+    getInstance: async (type, memory) => {
+        const instance = new type();
+        instance.memory = memory;
+        await instance.importChildren(memory);
+        await setMemoryContainer(instance, memory);
+        return instance;
+    },
+});
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,

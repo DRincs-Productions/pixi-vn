@@ -30,7 +30,7 @@ export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T exten
          * @param memory Memory of the canvas component.
          * @returns The instance of the canvas component.
          */
-        getInstance?: (canvasClass: T, memory: M) => T | Promise<T>;
+        getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
     } = {},
 ) {
     return function (target: T) {
@@ -58,7 +58,7 @@ namespace RegisteredCanvasComponents {
              * @param memory Memory of the canvas component.
              * @returns The instance of the canvas component.
              */
-            getInstance?: (canvasClass: T, memory: M) => T | Promise<T>;
+            getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
         } = {},
     ) {
         const {

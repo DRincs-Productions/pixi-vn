@@ -1,6 +1,5 @@
 import { canvas, CanvasBaseItemMemory } from "..";
 import canvasComponentDecorator from "../decorators/canvas-element-decorator";
-import { getCanvasElementInstanceById } from "../functions/canvas-import-utility";
 
 /**
  * This class is used to create a canvas element to add into a Pixi Application.
@@ -39,13 +38,7 @@ export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
         throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden");
     }
     /**
-     * This method set the memory of the canvas element. Is equivalent to the {@link memory} method, but this method is async.
-     */
-    setMemory(_value: T2): Promise<void> | void {
-        throw new Error("[Pixi’VN] The method CanvasBaseItems.memory must be overridden");
-    }
-    /**
-     * Get the id of the canvas element. This variable is used in the system to get the canvas element by id, {@link getCanvasElementInstanceById}
+     * Get the id of the canvas element. This variable is used in the system to get the canvas element by id
      */
     pixivnId: string = "canvas_element_id_not_set";
 }
