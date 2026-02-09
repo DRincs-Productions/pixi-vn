@@ -68,8 +68,8 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             currentTime: this.currentTime,
         };
     }
-    override async setMemory(memory: VideoSpriteMemory) {
-        await setMemoryVideoSprite(this, memory);
+    override async setMemory(value: VideoSpriteMemory) {
+        await setMemoryVideoSprite(this, value);
         this.reloadPosition();
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
