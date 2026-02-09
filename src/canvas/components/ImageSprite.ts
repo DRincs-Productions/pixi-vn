@@ -52,7 +52,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
     implements AdditionalPositionsExtension
 {
     private _textureAlias?: string;
-    private get textureAlias() {
+    protected get textureAlias() {
         if (this._textureAlias) {
             return this._textureAlias;
         }
