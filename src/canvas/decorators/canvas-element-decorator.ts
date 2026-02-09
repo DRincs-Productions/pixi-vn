@@ -39,7 +39,7 @@ export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T exten
          */
         getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
         /**
-         * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
+         * Function to copy the properties of the canvas component. This function is used when to copy the properties of the canvas component into another instance of the same canvas component.
          * This function is used into {@link canvas.copyCanvasElementProperty} to copy the properties of the canvas component.
          * @param component The instance of the canvas component to copy the properties.
          * @param memory The memory of the canvas component to copy the properties.
@@ -133,7 +133,7 @@ namespace RegisteredCanvasComponents {
              */
             getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
             /**
-             * Function to copy the properties of the canvas component. This function is used when the canvas component is updated to the latest modification and when the game is loaded.
+             * Function to copy the properties of the canvas component. This function is used when to copy the properties of the canvas component into another instance of the same canvas component.
              * This function is used into {@link canvas.copyCanvasElementProperty} to copy the properties of the canvas component.
              * @param component The instance of the canvas component to copy the properties.
              * @param memory The memory of the canvas component to copy the properties.
