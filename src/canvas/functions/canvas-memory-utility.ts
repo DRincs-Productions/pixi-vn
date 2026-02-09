@@ -127,7 +127,7 @@ export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): 
     return {
         ...baseMemory,
         pixivnId,
-        assetsData: [textureData],
+        textureData,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
         onEvents,

@@ -20,7 +20,6 @@ import AssetMemory from "../interfaces/AssetMemory";
 import { ImageSpriteOptions } from "../interfaces/canvas-options";
 import ImageSpriteMemory from "../interfaces/memory/ImageSpriteMemory";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
-import AsyncLoadExtension from "./AsyncLoadExtension";
 import Sprite, { setMemorySprite } from "./Sprite";
 
 /**
@@ -49,14 +48,14 @@ import Sprite, { setMemorySprite } from "./Sprite";
  */
 export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory>
     extends Sprite<Memory>
-    implements AdditionalPositionsExtension, AsyncLoadExtension
+    implements AdditionalPositionsExtension
 {
     private _textureAlias?: string;
-    public get assetsAliases() {
+    private get textureAlias() {
         if (this._textureAlias) {
-            return [this._textureAlias];
+            return this._textureAlias;
         }
-        return [this.texture.source.label];
+        return this.texture.source.label;
     }
     readonly pixivnId: string = CANVAS_IMAGE_ID;
     constructor(options?: ImageSpriteOptions | Omit<Texture, "on"> | undefined, textureAlias?: string) {
@@ -107,13 +106,8 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
      * @returns A promise that resolves when the image is loaded.
      */
     async load() {
-        const assetsAliases = this.assetsAliases;
-        if (assetsAliases.length === 0) {
-            logger.warn("ImageSprite.load() called but no textureAlias is set.");
-            return;
-        }
         this._loadIsStarted = true;
-        return getTexture(assetsAliases[0])
+        return getTexture(this.textureAlias)
             .then((texture) => {
                 this._loadIsStarted = false;
                 if (texture) {
@@ -340,11 +334,6 @@ RegisteredCanvasComponents.add<ImageSpriteMemory, typeof ImageSprite>(ImageSprit
         let textureData: AssetMemory | undefined = undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
-        }
-        if ("assetsData" in memory) {
-            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
-                textureData = memory.assetsData[0];
-            }
         }
         const instance = new type(undefined, textureData?.alias);
         instance.memory = memory;

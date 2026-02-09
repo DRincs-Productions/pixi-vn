@@ -19,7 +19,6 @@ export {
     analizePositionsExtensionProps,
 } from "./components/AdditionalPositionsExtension";
 export { default as AnchorExtension, AnchorExtensionProps } from "./components/AnchorExtension";
-export { default as AsyncLoadExtension, AsyncLoadExtensionProps } from "./components/AsyncLoadExtension";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";

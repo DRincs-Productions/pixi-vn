@@ -158,11 +158,6 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
         }
-        if ("assetsData" in memory) {
-            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
-                textureData = memory.assetsData[0];
-            }
-        }
         if (textureData) {
             if (textureData.url !== "EMPTY") {
                 let textureUrl: string = textureData.url;

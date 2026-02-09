@@ -171,11 +171,6 @@ RegisteredCanvasComponents.add<VideoSpriteMemory, typeof VideoSprite>(VideoSprit
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
         }
-        if ("assetsData" in memory) {
-            if (Array.isArray(memory.assetsData) && memory.assetsData.length > 0) {
-                textureData = memory.assetsData[0];
-            }
-        }
         const instance = new type(undefined, textureData?.alias);
         instance.memory = memory;
         await setMemoryVideoSprite(instance, memory);
