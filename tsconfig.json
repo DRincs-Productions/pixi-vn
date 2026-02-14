@@ -28,16 +28,15 @@
     "module": "commonjs",                                /* Specify what module code is generated. */
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
-    "baseUrl": ".",                                      /* Specify the base directory to resolve non-relative module names. */
     "paths": {                                           /* Specify a set of entries that re-map imports to additional lookup locations. */
-      "@drincs/pixi-vn/unifier": ["src/unifier/index.ts"],
-      "@drincs/pixi-vn/narration": ["src/narration/index.ts"],
-      "@drincs/pixi-vn/history": ["src/history/index.ts"],
-      "@drincs/pixi-vn/storage": ["src/storage/index.ts"],
-      "@drincs/pixi-vn/pixi.js": ["src/pixi-js/index.ts"],
-      "@drincs/pixi-vn/canvas": ["src/canvas/index.ts"],
-      "@drincs/pixi-vn/sound": ["src/sound/index.ts"],
-      "@drincs/pixi-vn/characters": ["src/characters/index.ts"],
+      "@drincs/pixi-vn/unifier": ["./src/unifier/index.ts"],
+      "@drincs/pixi-vn/narration": ["./src/narration/index.ts"],
+      "@drincs/pixi-vn/history": ["./src/history/index.ts"],
+      "@drincs/pixi-vn/storage": ["./src/storage/index.ts"],
+      "@drincs/pixi-vn/pixi.js": ["./src/pixi-js/index.ts"],
+      "@drincs/pixi-vn/canvas": ["./src/canvas/index.ts"],
+      "@drincs/pixi-vn/sound": ["./src/sound/index.ts"],
+      "@drincs/pixi-vn/characters": ["./src/characters/index.ts"],
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
