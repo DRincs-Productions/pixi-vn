@@ -60,9 +60,9 @@ function animate<T extends {}>(
 ): AnimationPlaybackControlsWithThen;
 
 function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
+    const { ticker = new PIXI.Ticker(), ...rest } = arg3 || {};
     if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
         const sequence = arg1.map((segment: any) => {
-            const { ticker = new PIXI.Ticker(), ...rest } = segment[2] || {};
             return [
                 segment[0],
                 segment[1],
@@ -84,7 +84,6 @@ function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWit
         });
         return animateMotion(sequence, arg2);
     } else {
-        const { ticker = new PIXI.Ticker() } = arg3 || {};
         return animateMotion(arg1, arg2, {
             driver: (update: any) => {
                 const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
