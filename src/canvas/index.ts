@@ -15,10 +15,11 @@ export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 export { default as CanvasBaseItem } from "./classes/CanvasBaseItem";
 export {
     default as AdditionalPositionsExtension,
-    AdditionalPositionsExtensionProps,
     analizePositionsExtensionProps,
 } from "./components/AdditionalPositionsExtension";
-export { default as AnchorExtension, AnchorExtensionProps } from "./components/AnchorExtension";
+export type { AdditionalPositionsExtensionProps } from "./components/AdditionalPositionsExtension";
+export { default as AnchorExtension } from "./components/AnchorExtension";
+export type { AnchorExtensionProps } from "./components/AnchorExtension";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";
