@@ -11,14 +11,11 @@ import {
 } from "motion";
 import { canvas } from "../..";
 
-type ObjectSegmentWithTransition<O extends {} = {}> = [
-    O,
-    ObjectTarget<O>,
-    AnimationOptions &
-        At & {
-            ticker?: PixiTicker;
-        },
-];
+type Options = AnimationOptions &
+    At & {
+        ticker?: PixiTicker;
+    };
+type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, Options];
 
 /**
  * Animate a PixiJS component or components using [motion's animate](https://motion.dev/docs/animate) function.
@@ -101,4 +98,22 @@ function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWit
     }
 }
 
-export default animate;
+/**
+ * Create a timeline for running a sequence of functions with transitions. Each function will be called with the provided arguments and will run for the specified duration.
+ * @example
+ * timeline([
+ *     { duration: 10, onComplete: () => console.log("First step completed") },
+ *     { duration: 5, onComplete: () => console.log("Second step completed") },
+ * ]);
+ * @param options
+ * @returns
+ */
+function timeline(options: Options[]) {
+    const n = 0;
+    const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
+        return [n, index + 1, option];
+    });
+    return animate<number>(sequence, { duration: 1 });
+}
+
+export { animate, timeline };
