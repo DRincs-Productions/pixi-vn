@@ -3,7 +3,6 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import sha1 from "crypto-js/sha1";
 import { AnimationPlaybackControlsWithThen } from "motion";
 import { canvas, CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "../..";
-import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
 
 export default abstract class MotionTickerBase<
@@ -51,12 +50,13 @@ export default abstract class MotionTickerBase<
     readonly id: string;
     protected _args: TArgs;
     get args(): TArgs {
-        return { ...this._args, time: this.animation?.time };
+        return { ...this._args, time: this._animation?.time };
     }
     duration?: number;
     priority?: UPDATE_PRIORITY;
     protected ticker = new PIXI.Ticker();
-    abstract animation: AnimationPlaybackControlsWithThen;
+    protected _animation?: AnimationPlaybackControlsWithThen;
+    abstract readonly animation: AnimationPlaybackControlsWithThen;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
      */
@@ -84,22 +84,17 @@ export default abstract class MotionTickerBase<
      */
     private timeout = 50;
     async complete() {
-        if (!this.animation) {
-            logger.warn("MotionTicker.complete() called without animation set. This may cause issues.", this.alias);
-            return;
-        }
         this.animation.complete();
         await new Promise((resolve) => setTimeout(resolve, this.timeout));
     }
     stop() {
         this.stopped = true;
-        if (!this.animation) {
-            logger.warn("MotionTicker.stop() called without animation set. This may cause issues.", this.alias);
-            return;
-        }
         this.animation.stop();
     }
     start() {
+        if (this.args.options.autoplay === false) {
+            return;
+        }
         this.animation.play();
     }
     protected onComplete = () => {
