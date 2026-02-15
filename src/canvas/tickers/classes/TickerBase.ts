@@ -1,9 +1,10 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import sha1 from "crypto-js/sha1";
 import { canvas, CanvasManagerStatic, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
-import RegisteredTickers, { tickerDecorator } from "../decorators/RegisteredTickers";
+import { tickerDecorator } from "../decorators/RegisteredTickers";
 import TickerArgs from "../interfaces/TickerArgs";
 import TickerValue from "./TickerValue";
 
@@ -43,25 +44,56 @@ import TickerValue from "./TickerValue";
 export default abstract class TickerBase<TArgs extends TickerArgs> implements Ticker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
-     * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
-     * @param priority The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     * @param options The options of the ticker.
      */
-    constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
+    constructor(
+        args: TArgs,
+        options?: {
+            /**
+             * The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
+             */
+            duration?: number;
+            /**
+             * The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+             */
+            priority?: UPDATE_PRIORITY;
+            /**
+             * The id of the ticker. This param is used by the system when will ber restoring the tickers from a save. If not provided, a random id will be generated. @default undefined
+             */
+            id?: string;
+            /**
+             * The aliases of the canvas elements that are connected to this ticker. This is used by the system to know which canvas elements are connected to this ticker, and to pass them to the fn method. @default []
+             */
+            canvasElementAliases: string[];
+        },
+    ) {
+        this.alias = this.constructor.prototype.id;
+        const {
+            duration,
+            priority,
+            id = this.generateTickerId(this.alias, options),
+            canvasElementAliases = [],
+        } = options || {};
         this.args = args;
         this.duration = duration;
         this.priority = priority;
-        this.id = this.constructor.prototype.id;
+        this.id = id;
+        this.canvasElementAliases = canvasElementAliases;
     }
-    /**
-     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link RegisteredTickers.getInstance}
-     */
-    id: TickerIdType = "ticker_id_not_set";
+    readonly alias: TickerIdType;
+    readonly id: string;
     args: TArgs;
     duration?: number;
     priority?: UPDATE_PRIORITY;
     protected ticker = new PIXI.Ticker();
-    protected tickerId?: string;
     canvasElementAliases: string[] = [];
+    private generateTickerId(...args: any[]): string {
+        try {
+            return sha1(JSON.stringify(args)).toString() + "_" + Math.random().toString(36).substring(7);
+        } catch (e) {
+            throw new Error(`[Pixi’VN] Error to generate ticker id: ${e}`);
+        }
+    }
     /**
      * The method that will be called every frame.
      * This method should be overridden and you can use {@link canvas.add()} to get the canvas element of the canvas, and edit them.
@@ -83,8 +115,8 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
         }
         this.ticker.remove(fnValue, null);
     }
-    start(id: string) {
-        this.tickerId = id;
+    start() {
+        const id = this.id;
         const fnValue = () => {
             const { createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
             let canvasElementAliases = this.canvasElementAliases;

@@ -236,7 +236,7 @@ export default class CanvasManagerStatic {
                 .map(([id, info]) => [
                     id,
                     {
-                        id: info.ticker.id,
+                        id: info.ticker.alias,
                         args: info.ticker.args,
                         canvasElementAliases: info.ticker.canvasElementAliases,
                         priority: info.ticker.priority,
@@ -257,9 +257,9 @@ export default class CanvasManagerStatic {
      * @deprecated
      */
     static _tickersOnPause: { [aliasOrId: string]: PauseTickerType } = {};
-    static generateTickerId(tickerData: TickerInfo<any> | TickersSequence): string {
+    static generateTickerId(...args: any[]): string {
         try {
-            return sha1(JSON.stringify(tickerData)).toString() + "_" + Math.random().toString(36).substring(7);
+            return sha1(JSON.stringify(args)).toString() + "_" + Math.random().toString(36).substring(7);
         } catch (e) {
             throw new Error(`[Pixi’VN] Error to generate ticker id: ${e}`);
         }

@@ -12,7 +12,17 @@ import TickerArgs from "../interfaces/TickerArgs";
  */
 const registeredTickers = new CachedMap<
     TickerIdType,
-    { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }
+    {
+        new (
+            args: any,
+            options?: {
+                duration?: number;
+                priority?: UPDATE_PRIORITY;
+                id?: string;
+                canvasElementAliases?: string[];
+            },
+        ): Ticker<any>;
+    }
 >({ cacheSize: 5 });
 registeredTickers.set("motion", MotionTicker);
 registeredTickers.set("motion-sequence", MotionSequenceTicker);
@@ -25,7 +35,17 @@ registeredTickers.set("motion-sequence", MotionSequenceTicker);
  * @returns
  */
 export function tickerDecorator(name?: TickerIdType) {
-    return function (target: { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }) {
+    return function (target: {
+        new (
+            args: any,
+            options?: {
+                duration?: number;
+                priority?: UPDATE_PRIORITY;
+                id?: string;
+                canvasElementAliases?: string[];
+            },
+        ): Ticker<any>;
+    }) {
         RegisteredTickers.add(target, name);
     };
 }
@@ -38,7 +58,15 @@ namespace RegisteredTickers {
      */
     export function add(
         target: {
-            new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any>;
+            new (
+                args: any,
+                options?: {
+                    duration?: number;
+                    priority?: UPDATE_PRIORITY;
+                    id?: string;
+                    canvasElementAliases?: string[];
+                },
+            ): Ticker<any>;
         },
         name?: TickerIdType,
     ) {
@@ -82,8 +110,12 @@ namespace RegisteredTickers {
     export function getInstance<TArgs extends TickerArgs>(
         tickerId: TickerIdType,
         args: TArgs,
-        duration?: number,
-        priority?: UPDATE_PRIORITY,
+        options?: {
+            duration?: number;
+            priority?: UPDATE_PRIORITY;
+            id?: string;
+            canvasElementAliases?: string[];
+        },
     ): Ticker<TArgs> | undefined {
         try {
             let ticker = registeredTickers.get(tickerId);
@@ -91,7 +123,7 @@ namespace RegisteredTickers {
                 logger.error(`Ticker "${tickerId}" not found, did you forget to register it with the tickerDecorator?`);
                 return;
             }
-            return new ticker(args, duration, priority);
+            return new ticker(args, options);
         } catch (e) {
             logger.error(`Error while getting Ticker "${tickerId}"`, e);
             return;
@@ -103,7 +135,15 @@ namespace RegisteredTickers {
      * @returns An array of tickers.
      */
     export function values(): {
-        new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any>;
+        new (
+            args: any,
+            options?: {
+                duration?: number;
+                priority?: UPDATE_PRIORITY;
+                id?: string;
+                canvasElementAliases?: string[];
+            },
+        ): Ticker<any>;
     }[] {
         return Array.from(registeredTickers.values());
     }
