@@ -560,7 +560,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             if (typeof id === "string") {
                 id = [id];
             }
-            id.forEach((id) => {
+            [...new Set(id)].forEach((id) => {
                 let info = CanvasManagerStatic._currentTickers[id];
                 if (info) {
                     if (info.ticker.paused === false) {
