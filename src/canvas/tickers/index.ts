@@ -1,7 +1,7 @@
 export { default as TickerBase } from "./classes/TickerBase";
 export type { default as TickerValue } from "./classes/TickerValue";
 export { default as RegisteredTickers, tickerDecorator } from "./decorators/RegisteredTickers";
-export { default as animate } from "./functions/motion";
+export { animate, timeline } from "./functions/motion";
 export type { default as Ticker } from "./interfaces/Ticker";
 export type { default as TickerArgs } from "./interfaces/TickerArgs";
 export type { TickerHistory, default as TickerInfo } from "./interfaces/TickerInfo";
