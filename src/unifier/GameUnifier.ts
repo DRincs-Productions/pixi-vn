@@ -223,13 +223,11 @@ export default class GameUnifier {
         GameUnifier._onPreContinueHandlers = [];
     }
     static async runOnPreContinue() {
-        // Iterate over a shallow copy to allow handlers to add/remove handlers safely
-        for (const h of GameUnifier._onPreContinueHandlers.slice()) {
-            // await each handler so the engine can complete async work sequentially
-            // (preserves registration order semantics)
-            // eslint-disable-next-line no-await-in-loop
-            await h();
-        }
+        // Execute handlers concurrently using a shallow copy to avoid
+        // mutation during iteration. All handlers are started immediately
+        // and we wait for all to complete.
+        const handlers = GameUnifier._onPreContinueHandlers.slice();
+        await Promise.all(handlers.map((h) => h()));
     }
     // Backwards-compatible getter: returns the runner function so existing callers
     // using `GameUnifier.onPreContinue()` continue to work.
