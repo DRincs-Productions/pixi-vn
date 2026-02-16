@@ -400,6 +400,18 @@ export namespace Game {
     export function onNavigate(value: (path: string) => void | Promise<void>) {
         GameUnifier.navigate = value;
     }
+
+    /**
+     * Register a handler to run immediately before a narration "continue" operation.
+     * Handlers are executed in registration order and may be async. Use
+     * `{@link addOnPreContinue}` / `{@link removeOnPreContinue}` to manage them programmatically.
+     */
+    export function addOnPreContinue(handler: () => Promise<void> | void) {
+        return GameUnifier.addOnPreContinue(handler);
+    }
+    export function removeOnPreContinue(handler: () => Promise<void> | void) {
+        return GameUnifier.removeOnPreContinue(handler);
+    }
 }
 
 export default {

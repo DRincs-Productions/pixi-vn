@@ -125,7 +125,7 @@ export default class GameUnifier {
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
-        options.onPreContinue && (GameUnifier._onPreContinue = options.onPreContinue);
+        options.onPreContinue && GameUnifier.addOnPreContinue(options.onPreContinue);
         GameUnifier._processNavigationRequests = options.processNavigationRequests;
         GameUnifier._getVariable = options.getVariable;
         GameUnifier._setVariable = options.setVariable;
@@ -207,14 +207,32 @@ export default class GameUnifier {
     static get openedLabels() {
         return GameUnifier._getOpenedLabels();
     }
-    private static _onPreContinue: () => Promise<void> | void = () => {};
+    private static _onPreContinueHandlers: Array<() => Promise<void> | void> = [];
     /**
-     * Callback hook intended to run immediately before a narration "continue" operation.
-     * Game engines can use this to force completion of their ticker or pending updates,
-     * if supported by the underlying narration manager.
+     * Register a handler to run immediately before a narration "continue" operation.
+     * Handlers are executed in registration order and may be async. Use
+     * `{@link addOnPreContinue}` / `{@link removeOnPreContinue}` to manage them programmatically.
      */
+    static addOnPreContinue(handler: () => Promise<void> | void) {
+        GameUnifier._onPreContinueHandlers.push(handler);
+    }
+    static removeOnPreContinue(handler: () => Promise<void> | void) {
+        GameUnifier._onPreContinueHandlers = GameUnifier._onPreContinueHandlers.filter((h) => h !== handler);
+    }
+    static clearOnPreContinueHandlers() {
+        GameUnifier._onPreContinueHandlers = [];
+    }
+    static async runOnPreContinue() {
+        // Execute handlers concurrently using a shallow copy to avoid
+        // mutation during iteration. All handlers are started immediately
+        // and we wait for all to complete.
+        const handlers = GameUnifier._onPreContinueHandlers.slice();
+        await Promise.all(handlers.map((h) => h()));
+    }
+    // Backwards-compatible getter: returns the runner function so existing callers
+    // using `GameUnifier.onPreContinue()` continue to work.
     static get onPreContinue() {
-        return GameUnifier._onPreContinue;
+        return GameUnifier.runOnPreContinue;
     }
     /**
      * Number of pending navigation requests (continue/back).
