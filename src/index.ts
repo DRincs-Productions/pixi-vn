@@ -170,13 +170,31 @@ export namespace Game {
             // canvas
             onPreContinue: async () => {
                 try {
-                    const promises = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.map(
-                        ({ id }) => canvasUtils.canvas.forceCompletionOfTicker(id),
-                    );
-                    const promises2 = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.map(
-                        ({ alias, id }) => canvasUtils.canvas.forceCompletionOfTicker(id, alias),
-                    );
-                    await Promise.all([...promises, ...promises2]);
+                    // `reverse()` was previously used to ensure the most recently added
+                    // tickers are completed first (LIFO). Keep that semantic: process
+                    // newest tickers before older ones. Using `pop()` is more
+                    // performant and avoids creating/ mutating a reversed array.
+                    const tikers = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds;
+                    const stepAliases = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias;
+
+                    // Process `tikersIds` and `stepAlias` in parallel (separate async flows)
+                    // and wait for both to finish before clearing `_tickersToCompleteOnStepEnd`.
+                    const p1 = (async () => {
+                        while (tikers.length) {
+                            const { id } = tikers.pop() || {};
+                            id && (await canvasUtils.canvas.forceCompletionOfTicker(id));
+                        }
+                    })();
+
+                    const p2 = (async () => {
+                        while (stepAliases.length) {
+                            const { alias, id } = stepAliases.pop() || {};
+                            alias && id && (await canvasUtils.canvas.forceCompletionOfTicker(id, alias));
+                        }
+                    })();
+
+                    await Promise.all([p1, p2]);
+
                     canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
                 } catch (e) {}
             },
