@@ -1,16 +1,16 @@
 import type {
     ContainerChild,
     ContainerEvents,
-    EventEmitter,
     SpriteOptions as PixiSpriteOptions,
     Texture,
     TextureSourceLike,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
+import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
-import RegisteredEvents from "../decorators/event-decorator";
+import RegisteredEvents, { SERIALIZABLE_EVENT } from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
 import AssetMemory from "../interfaces/AssetMemory";
@@ -52,20 +52,23 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     async setMemory(value: Memory | SpriteMemory): Promise<void> {
         return await setMemorySprite(this, value);
     }
-    private _onEvents: { [name: string]: string } = {};
-    get onEvents() {
-        return this._onEvents;
-    }
+    private readonly onEventsHandlers: { [name: string]: string } = {};
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,
-        fn: (
-            ...args: EventEmitter.ArgumentMap<
-                ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
-            >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
-        ) => void,
+        fn: (event: T, component: typeof this) => void,
         context?: any,
     ): this {
-        return super.on(event, fn, context);
+        const handlerId = (fn as any)[SERIALIZABLE_EVENT] as string;
+
+        if (handlerId && typeof handlerId === "string") {
+            this.onEventsHandlers[event as string] = handlerId;
+        } else {
+            logger.warn(
+                `The event handler for event "${event as string}" is not registered with the eventDecorator, it will not be saved in the memory and it will not work after loading the game. Please register the event handler with the eventDecorator to avoid this warning. Read more about it here: https://pixi-vn.web.app/start/canvas-functions#add-a-listener-to-an-event`,
+            );
+        }
+
+        return super.on<T>(event, (e) => fn(e as T, this), context);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
         let sprite = PIXI.Sprite.from(source, skipCache);
@@ -133,7 +136,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
             let id = memory.onEvents[event];
             let instance = RegisteredEvents.get(id);
             if (instance) {
-                element.onEvent(event as any, instance);
+                element.on(event, instance as (event: any, component: typeof element) => void);
             }
         }
     }

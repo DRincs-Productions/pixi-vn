@@ -18,7 +18,7 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  *     // event code here
  * }
  *
- * sprite.on("eventExample", eventExample);
+ * sprite.on("pointerdown", eventExample);
  * ```
  * @param name is th identifier of the event, by default is the name of the class
  * @returns
