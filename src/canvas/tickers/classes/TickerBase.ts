@@ -64,7 +64,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
             /**
              * The aliases of the canvas elements that are connected to this ticker. This is used by the system to know which canvas elements are connected to this ticker, and to pass them to the fn method. @default []
              */
-            canvasElementAliases: string[];
+            canvasElementAliases?: string[];
         },
     ) {
         this.alias = this.constructor.prototype.id;
