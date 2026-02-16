@@ -1,4 +1,5 @@
 import {
+    AnimationPlaybackControlsWithThen,
     ObjectSegment as MotionObjectSegment,
     ObjectSegmentWithTransition as MotionObjectSegmentWithTransition,
 } from "motion";
@@ -20,8 +21,11 @@ interface TArgs {
 }
 
 export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
-    id: TickerIdType = "motion-sequence";
-    initialize() {
+    get animation(): AnimationPlaybackControlsWithThen {
+        let animation = this._animation;
+        if (animation) {
+            return animation;
+        }
         let alias = this.canvasElementAliases[0];
         let proxy = this.createItem(alias);
         let sequence: (
@@ -39,12 +43,15 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
                 },
             ];
         });
-        this.animation = animate(sequence, {
+        animation = animate(sequence, {
             ...this._args.options,
             repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
         });
         if (this._args.time) {
             this.animation.time = this._args.time;
         }
+        this._animation = animation;
+        return animation;
     }
+    alias: TickerIdType = "motion-sequence";
 }

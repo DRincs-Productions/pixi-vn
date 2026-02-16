@@ -1,8 +1,8 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import sha1 from "crypto-js/sha1";
 import { AnimationPlaybackControlsWithThen } from "motion";
 import { canvas, CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "../..";
-import { logger } from "../../../utils/log-utility";
 import { TickerIdType } from "../../types/TickerIdType";
 
 export default abstract class MotionTickerBase<
@@ -16,28 +16,51 @@ export default abstract class MotionTickerBase<
 > implements Ticker<TArgs> {
     /**
      * @param args The arguments that you want to pass to the ticker.
-     * @param duration The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
-     * @param priority The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     * @param options The options of the ticker.
      */
-    constructor(args: TArgs, duration?: number, priority?: UPDATE_PRIORITY) {
+    constructor(
+        args: TArgs,
+        options?: {
+            /**
+             * The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
+             */
+            duration?: number;
+            /**
+             * The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+             */
+            priority?: UPDATE_PRIORITY;
+            /**
+             * The id of the ticker. This param is used by the system when will ber restoring the tickers from a save. If not provided, a random id will be generated. @default undefined
+             */
+            id?: string;
+            /**
+             * The aliases of the canvas elements that are connected to this ticker. This is used by the system to know which canvas elements are connected to this ticker, and to pass them to the fn method. @default []
+             */
+            canvasElementAliases?: string[];
+        },
+    ) {
+        const { duration, priority, id = this.generateTickerId(options), canvasElementAliases = [] } = options || {};
         this._args = args;
         this.duration = duration;
         this.priority = priority;
+        this.id = id;
+        this.canvasElementAliases = canvasElementAliases;
     }
-    abstract id: TickerIdType;
+    abstract alias: TickerIdType;
+    readonly id: string;
     protected _args: TArgs;
     get args(): TArgs {
-        return { ...this._args, time: this.animation?.time };
+        return { ...this._args, time: this._animation?.time };
     }
     duration?: number;
     priority?: UPDATE_PRIORITY;
     protected ticker = new PIXI.Ticker();
-    animation?: AnimationPlaybackControlsWithThen;
+    protected _animation?: AnimationPlaybackControlsWithThen;
+    abstract readonly animation: AnimationPlaybackControlsWithThen;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
      */
     private stopped = false;
-    protected tickerId?: string;
     canvasElementAliases: string[] = [];
     protected getItemByAlias(alias: string): CanvasBaseInterface<any> | undefined {
         if (!this.canvasElementAliases.includes(alias)) {
@@ -49,39 +72,33 @@ export default abstract class MotionTickerBase<
         }
         return element;
     }
+    private generateTickerId(...args: any[]): string {
+        try {
+            return sha1(JSON.stringify(args)).toString() + "_motion_" + Math.random().toString(36).substring(7);
+        } catch (e) {
+            throw new Error(`[Pixi’VN] Error to generate ticker id: ${e}`);
+        }
+    }
     /**
      * This is a hack to await for the animation to complete.
      */
     private timeout = 50;
     async complete() {
-        if (!this.animation) {
-            logger.warn("MotionTicker.complete() called without animation set. This may cause issues.", this.id);
-            return;
-        }
         this.animation.complete();
         await new Promise((resolve) => setTimeout(resolve, this.timeout));
     }
     stop() {
         this.stopped = true;
-        if (!this.animation) {
-            logger.warn("MotionTicker.stop() called without animation set. This may cause issues.", this.id);
-            return;
-        }
         this.animation.stop();
     }
-    start(id: string) {
-        this.tickerId = id;
-        if (this._args.options.autoplay !== false) {
-            return this.initialize();
-        }
-    }
-    abstract initialize(): void;
-    protected onComplete = () => {
-        const id = this.tickerId;
-        if (!id) {
-            logger.warn("MotionTicker.complete() called without tickerId set. This may cause issues.", this.id);
+    start() {
+        if (this.args.options.autoplay === false) {
             return;
         }
+        this.animation.play();
+    }
+    protected onComplete = () => {
+        const id = this.id;
         let aliasToRemoveAfter = this._args.options?.aliasToRemoveAfter || [];
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter];
@@ -205,13 +222,6 @@ export default abstract class MotionTickerBase<
         this.animation.pause();
     }
     play() {
-        if (!this.animation) {
-            this.initialize();
-        }
-        if (!this.animation) {
-            logger.warn("MotionTicker.play() called without animation set. This may cause issues.", this.id);
-            return;
-        }
         this.animation.play();
     }
     get paused(): boolean {

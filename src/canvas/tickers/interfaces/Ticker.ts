@@ -17,9 +17,13 @@ export default interface Ticker<TArgs extends TickerArgs> {
      */
     priority?: UPDATE_PRIORITY;
     /**
-     * Get the id of the ticker. This variable is used in the system to get the ticker by id, {@link RegisteredTickers.getInstance}
+     * Get the alias of the ticker class. This variable is used in the system to get the ticker class by id, {@link RegisteredTickers.getInstance}
      */
-    id: TickerIdType;
+    readonly alias: TickerIdType;
+    /**
+     * The id of the ticker. Must be unique for each ticker instance.
+     */
+    readonly id: string;
     /**
      * The aliases of the canvas elements that are connected to this ticker
      */
@@ -34,9 +38,8 @@ export default interface Ticker<TArgs extends TickerArgs> {
     stop: () => void;
     /**
      * Starts the ticker. This will start the ticker and begin the animation.
-     * @param id The id of the ticker.
      */
-    start: (id: string) => void;
+    start: () => void;
     /**
      * Pauses the animation.
      */
