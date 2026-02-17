@@ -13,8 +13,8 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  * Thanks to this decoration the game has the possibility of updating the events to the latest modification and saving the game.
  * @example
  * ```typescript
- * @eventDecorator()
- * function eventExample() {
+ * \@eventDecorator()
+ * function eventExample(event: InteractionEvent, component: Sprite) {
  *     // event code here
  * }
  *

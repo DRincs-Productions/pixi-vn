@@ -5,5 +5,18 @@ export interface ListenerExtensionProps {
 }
 
 export default interface ListenerExtension {
+    /**
+     * Add a listener for a given event.
+     * @example
+     * ```ts
+     * \@eventDecorator()
+     * function eventExample() {
+     *     // event code here
+     * }
+     *
+     * sprite.on("pointerdown", eventExample);
+     * ```
+     */
     on: Container["on"];
+    readonly onEventsHandlers: { [name: string]: string };
 }
