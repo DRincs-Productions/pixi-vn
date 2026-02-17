@@ -8,8 +8,12 @@ import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
 import { CommonTickerProps } from "../tickers";
 import MotionComponentExtension from "../tickers/interfaces/MotionComponentExtension";
 
-type AnimationOptions = Omit<MotionAnimationOptions, "onComplete" | "onPlay" | "onStop" | "onUpdate" | "onRepeat"> &
-    Omit<CommonTickerProps, "startOnlyIfHaveTexture">;
+export type AnimationOptionsCommon = Omit<
+    MotionAnimationOptions,
+    "onComplete" | "onPlay" | "onStop" | "onUpdate" | "onRepeat"
+>;
+export { At };
+type AnimationOptions = AnimationOptionsCommon & Omit<CommonTickerProps, "startOnlyIfHaveTexture">;
 export default AnimationOptions;
 export type KeyframesType<T> = ObjectTarget<T> & MotionComponentExtension;
 export type AnimationSequenceOptions = Omit<

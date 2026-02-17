@@ -78,7 +78,9 @@ export type {
 export * from "./tickers";
 export type {
     default as AnimationOptions,
+    AnimationOptionsCommon,
     AnimationSequenceOptions,
+    At,
     KeyframesType,
     ObjectSegment,
     ObjectSegmentWithTransition,
