@@ -12,9 +12,9 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  * Is a required decorator for use the event in the game.
  * Thanks to this decoration the game has the possibility of updating the events to the latest modification and saving the game.
  * @example
- * ```typescript
+ * ```ts
  * \@eventDecorator()
- * function eventExample(event: InteractionEvent, component: Sprite) {
+ * function eventExample(event: AllFederatedEventMap, component: Sprite) {
  *     // event code here
  * }
  *

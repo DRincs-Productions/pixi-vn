@@ -10,7 +10,7 @@ export default interface ListenerExtension {
      * @example
      * ```ts
      * \@eventDecorator()
-     * function eventExample() {
+     * function eventExample(event: AllFederatedEventMap, component: Sprite) {
      *     // event code here
      * }
      *
