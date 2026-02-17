@@ -12,13 +12,12 @@ export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export { default as ImageContainer } from "../canvas/components/ImageContainer";
 export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 export { default as CanvasBaseItem } from "./classes/CanvasBaseItem";
-export {
+export { analizePositionsExtensionProps } from "./components/AdditionalPositionsExtension";
+export type {
     default as AdditionalPositionsExtension,
-    analizePositionsExtensionProps,
+    AdditionalPositionsExtensionProps,
 } from "./components/AdditionalPositionsExtension";
-export type { AdditionalPositionsExtensionProps } from "./components/AdditionalPositionsExtension";
-export { default as AnchorExtension } from "./components/AnchorExtension";
-export type { AnchorExtensionProps } from "./components/AnchorExtension";
+export type { default as AnchorExtension, AnchorExtensionProps } from "./components/AnchorExtension";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";

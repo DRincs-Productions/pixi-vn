@@ -63,7 +63,7 @@ export interface AdditionalPositionsExtensionProps {
     percentageY?: number;
 }
 
-export default class AdditionalPositionsExtension {
+export default interface AdditionalPositionsExtension {
     /**
      * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
      * For example:
@@ -73,12 +73,7 @@ export default class AdditionalPositionsExtension {
      *
      * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
-    set align(_value: Partial<PointData> | number) {
-        throw new Error("Method not implemented.");
-    }
-    get align(): Partial<PointData> | number {
-        throw new Error("Method not implemented.");
-    }
+    align: Partial<PointData> | number;
     /**
      * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
      * For example:
@@ -88,12 +83,7 @@ export default class AdditionalPositionsExtension {
      *
      * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
-    set xAlign(_value: number) {
-        throw new Error("Method not implemented.");
-    }
-    get xAlign(): number {
-        throw new Error("Method not implemented.");
-    }
+    xAlign: number;
     /**
      * is a way to set the position of the element in the canvas. compared to position, align, it is a percentage used to determine the proximity from the edges of the canvas.
      * For example:
@@ -103,12 +93,7 @@ export default class AdditionalPositionsExtension {
      *
      * **Important:** The {@link PixiContainer.pivot} field does not affect the alignment.
      */
-    set yAlign(_value: number) {
-        throw new Error("Method not implemented.");
-    }
-    get yAlign(): number {
-        throw new Error("Method not implemented.");
-    }
+    yAlign: number;
     /**
      * is a way to set the position of the element in the canvas calculated in percentage.
      * For example, if you set the {@link PixiContainer.pivot} to 0.5, and:
@@ -118,12 +103,7 @@ export default class AdditionalPositionsExtension {
      *
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
-    set percentagePosition(_value: Partial<PointData> | number) {
-        throw new Error("Method not implemented.");
-    }
-    get percentagePosition(): Partial<PointData> | number {
-        throw new Error("Method not implemented.");
-    }
+    percentagePosition: Partial<PointData> | number;
     /**
      * is a way to set the position of the element in the canvas calculated in percentage.
      * For example, if you set the {@link PixiContainer.pivot} to 0.5, and:
@@ -133,12 +113,7 @@ export default class AdditionalPositionsExtension {
      *
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
-    set percentageX(_value: number) {
-        throw new Error("Method not implemented.");
-    }
-    get percentageX(): number {
-        throw new Error("Method not implemented.");
-    }
+    percentageX: number;
     /**
      * is a way to set the position of the element in the canvas calculated in percentage.
      * For example, if you set the {@link PixiContainer.pivot} to 0.5, and:
@@ -148,18 +123,9 @@ export default class AdditionalPositionsExtension {
      *
      * **Important:** The {@link PixiContainer.pivot} field does affect the percentagePosition.
      */
-    set percentageY(_value: number) {
-        throw new Error("Method not implemented.");
-    }
-    get percentageY(): number {
-        throw new Error("Method not implemented.");
-    }
-    get positionType(): "pixel" | "percentage" | "align" {
-        throw new Error("Method not implemented.");
-    }
-    get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align" } {
-        throw new Error("Method not implemented.");
-    }
+    percentageY: number;
+    readonly positionType: "pixel" | "percentage" | "align";
+    readonly positionInfo: { x: number; y: number; type: "pixel" | "percentage" | "align" };
 }
 
 export function analizePositionsExtensionProps<T extends AdditionalPositionsExtensionProps>(props?: T): T | undefined {
