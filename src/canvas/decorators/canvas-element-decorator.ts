@@ -3,6 +3,7 @@ import { canvas } from "..";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
+import { setListenerMemory } from "../components/ListenerExtension";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
@@ -98,6 +99,7 @@ export async function setMemoryContainer<T extends PixiContainer>(
         memory.interactiveChildren !== undefined &&
         (element.interactiveChildren = memory.interactiveChildren);
     "hitArea" in memory && memory.hitArea !== undefined && (element.hitArea = memory.hitArea);
+    setListenerMemory(element, memory);
 
     // end
     if (end) {

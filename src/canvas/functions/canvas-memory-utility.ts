@@ -15,6 +15,7 @@ import type {
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
+import { getListenerMemory } from "../components/ListenerExtension";
 import AssetMemory from "../interfaces/AssetMemory";
 import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
@@ -104,6 +105,7 @@ export function getMemoryContainer<T extends PixiContainer>(
     return {
         pixivnId,
         elements,
+        onEvents: getListenerMemory(element),
         ...extractCommonMemoryProperties(element),
     };
 }
@@ -116,7 +118,6 @@ export function getMemoryContainer<T extends PixiContainer>(
 export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): SpriteMemory {
     const baseMemory = getMemoryContainer(element);
     const pixivnId = baseMemory.pixivnId ?? CANVAS_SPRITE_ID;
-    const onEvents = getOnEvents(element);
     const textureData =
         "assetsAliases" in element && Array.isArray(element.assetsAliases)
             ? getTextureMemory(element.texture, element.assetsAliases[0] as string)
@@ -130,7 +131,6 @@ export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): 
         textureData,
         anchor: { x: element.anchor.x, y: element.anchor.y },
         roundPixels: element.roundPixels,
-        onEvents,
     };
 }
 
@@ -142,7 +142,6 @@ export function getMemorySprite<T extends PixiSprite>(element: T | PixiSprite): 
 export function getMemoryText<T extends PixiText>(element: T | PixiText): TextMemory {
     const baseMemory = getMemoryContainer(element);
     const pixivnId = baseMemory.pixivnId ?? CANVAS_TEXT_ID;
-    const onEvents = getOnEvents(element);
 
     return {
         ...baseMemory,
@@ -152,7 +151,6 @@ export function getMemoryText<T extends PixiText>(element: T | PixiText): TextMe
         resolution: element.resolution,
         style: getTextStyle(element.style),
         roundPixels: element.roundPixels,
-        onEvents,
     };
 }
 
@@ -164,15 +162,6 @@ export function getMemoryText<T extends PixiText>(element: T | PixiText): TextMe
  */
 function getPixivnId(element: any, defaultId: string): string {
     return Object.prototype.hasOwnProperty.call(element, "pixivnId") ? element.pixivnId : defaultId;
-}
-
-/**
- * Get the onEvents property of an element
- * @param element PixiJS element
- * @returns onEvents object
- */
-function getOnEvents(element: any): Record<string, any> {
-    return "onEvents" in element ? (element.onEvents as Record<string, any>) : {};
 }
 
 function gradientToOptions(prop: FillGradient): GradientOptions {

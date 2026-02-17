@@ -1,9 +1,9 @@
 import type { SpriteOptions } from "@drincs/pixi-vn/pixi.js";
-import { ListenerExtensionProps } from "../../components/ListenerExtension";
+import { ListenerExtensionMemory } from "../../components/ListenerExtension";
 import AssetMemory from "../AssetMemory";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
-export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory, ListenerExtensionProps {
+export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory, ListenerExtensionMemory {
     /**
      * @deprecated
      */

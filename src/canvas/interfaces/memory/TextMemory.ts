@@ -1,11 +1,10 @@
 import type { TextOptions } from "@drincs/pixi-vn/pixi.js";
-import { AdditionalPositionsExtensionProps } from "src/canvas/components/AdditionalPositionsExtension";
-import { EventIdType } from "../../types/EventIdType";
+import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositionsExtension";
+import { ListenerExtensionMemory } from "../../components/ListenerExtension";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
 /**
  * Interface for the canvas text memory
  */
-export default interface TextMemory extends TextOptions, CanvasBaseItemMemory, AdditionalPositionsExtensionProps {
-    onEvents: { [name: string]: EventIdType };
-}
+export default interface TextMemory
+    extends TextOptions, CanvasBaseItemMemory, AdditionalPositionsExtensionProps, ListenerExtensionMemory {}
