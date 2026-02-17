@@ -21,6 +21,8 @@ export type { default as AnchorExtension, AnchorExtensionProps } from "./compone
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";
+export { setListenerMemory } from "./components/ListenerExtension";
+export type { ListenerExtensionProps, OnEventsHandlers } from "./components/ListenerExtension";
 export { default as Sprite } from "./components/Sprite";
 export { default as Text } from "./components/Text";
 export {

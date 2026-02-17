@@ -1,7 +1,12 @@
-import type { Container, PointData } from "@drincs/pixi-vn/pixi.js";
+import type { Container } from "@drincs/pixi-vn/pixi.js";
+import RegisteredEvents from "../decorators/event-decorator";
 
 export interface ListenerExtensionProps {
-    anchor?: PointData | number;
+    onEvents?: OnEventsHandlers;
+}
+
+export interface OnEventsHandlers {
+    [name: string]: string;
 }
 
 export default interface ListenerExtension {
@@ -18,5 +23,17 @@ export default interface ListenerExtension {
      * ```
      */
     on: Container["on"];
-    readonly onEventsHandlers: { [name: string]: string };
+    readonly onEventsHandlers: OnEventsHandlers;
+}
+
+export async function setListenerMemory(element: ListenerExtension, memory: ListenerExtensionProps | {}) {
+    if ("onEvents" in memory) {
+        for (let event in memory.onEvents) {
+            let id = memory.onEvents[event];
+            let instance = RegisteredEvents.get(id);
+            if (instance) {
+                element.on(event, instance as (event: any, component: typeof element) => void);
+            }
+        }
+    }
 }

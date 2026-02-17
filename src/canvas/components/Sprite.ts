@@ -10,13 +10,14 @@ import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
-import RegisteredEvents, { SERIALIZABLE_EVENT } from "../decorators/event-decorator";
+import { SERIALIZABLE_EVENT } from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
 import AssetMemory from "../interfaces/AssetMemory";
 import { SpriteOptions } from "../interfaces/canvas-options";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
+import ListenerExtension, { OnEventsHandlers, setListenerMemory } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
@@ -39,7 +40,7 @@ import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemor
  */
 export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMemory = SpriteMemory>
     extends PIXI.Sprite
-    implements CanvasBaseItem<Memory | SpriteMemory>
+    implements CanvasBaseItem<Memory | SpriteMemory>, ListenerExtension
 {
     constructor(options?: SpriteOptions | Omit<Texture, "on">) {
         super(options);
@@ -52,7 +53,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     async setMemory(value: Memory | SpriteMemory): Promise<void> {
         return await setMemorySprite(this, value);
     }
-    private readonly onEventsHandlers: { [name: string]: string } = {};
+    readonly onEventsHandlers: OnEventsHandlers = {};
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,
         fn: (event: T, component: typeof this) => void,
@@ -131,13 +132,5 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
         }
     }
     "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
-    if ("onEvents" in memory) {
-        for (let event in memory.onEvents) {
-            let id = memory.onEvents[event];
-            let instance = RegisteredEvents.get(id);
-            if (instance) {
-                element.on(event, instance as (event: any, component: typeof element) => void);
-            }
-        }
-    }
+    setListenerMemory(element, memory);
 }
