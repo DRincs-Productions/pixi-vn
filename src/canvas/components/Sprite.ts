@@ -1,26 +1,21 @@
 import type {
     ContainerChild,
     ContainerEvents,
-    EventEmitter,
     SpriteOptions as PixiSpriteOptions,
     Texture,
     TextureSourceLike,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
-import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
-import CanvasEvent from "../classes/CanvasEvent";
 import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
-import RegisteredEvents from "../decorators/event-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { getTexture } from "../functions/texture-utility";
 import AssetMemory from "../interfaces/AssetMemory";
 import { SpriteOptions } from "../interfaces/canvas-options";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
-import CanvasEventNamesType from "../types/CanvasEventNamesType";
-import { EventIdType } from "../types/EventIdType";
+import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
@@ -43,7 +38,7 @@ import { EventIdType } from "../types/EventIdType";
  */
 export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMemory = SpriteMemory>
     extends PIXI.Sprite
-    implements CanvasBaseItem<Memory | SpriteMemory>
+    implements CanvasBaseItem<Memory | SpriteMemory>, ListenerExtension
 {
     constructor(options?: SpriteOptions | Omit<Texture, "on">) {
         super(options);
@@ -56,70 +51,15 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     async setMemory(value: Memory | SpriteMemory): Promise<void> {
         return await setMemorySprite(this, value);
     }
-    private _onEvents: { [name: string]: EventIdType } = {};
-    get onEvents() {
-        return this._onEvents;
-    }
-    /**
-     * is same function as on(), but it keeps in memory the children.
-     * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
-     * @param eventClass The class that extends CanvasEvent.
-     * @returns
-     * @example
-     * ```typescript
-     * \@eventDecorator()
-     * export class EventTest extends CanvasEvent<Sprite> {
-     *     override fn(event: CanvasEventNamesType, sprite: Sprite): void {
-     *         if (event === 'pointerdown') {
-     *             sprite.scale.x *= 1.25;
-     *             sprite.scale.y *= 1.25;
-     *         }
-     *     }
-     * }
-     * ```
-     *
-     * ```typescript
-     * let sprite = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
-     * await sprite.load()
-     *
-     * sprite.eventMode = 'static';
-     * sprite.cursor = 'pointer';
-     * sprite.onEvent('pointerdown', EventTest);
-     *
-     * canvas.add("bunny", sprite);
-     * ```
-     */
-    onEvent<T extends typeof CanvasEvent<typeof this>>(event: CanvasEventNamesType, eventClass: T) {
-        let id = eventClass.prototype.id;
-        let instance = RegisteredEvents.getInstance(id);
-        this._onEvents[event] = id;
-        if (instance) {
-            super.on(event, () => {
-                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
-            });
-            if (!this.interactive) {
-                this.interactive = true;
-                this.eventMode = "dynamic";
-            }
-        } else {
-            logger.error(`Event ${id} not found`);
-        }
-        return this;
-    }
-    /**
-     * Add a listener for a given event.
-     * Unlike {@link onEvent}, this method does **not track the event association in the current game state**, so it will not be included in saves.
-     */
+    readonly onEventsHandlers: OnEventsHandlers = {};
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,
-        fn: (
-            ...args: EventEmitter.ArgumentMap<
-                ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
-            >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
-        ) => void,
+        fn: (event: T, component: typeof this) => void,
         context?: any,
     ): this {
-        return super.on(event, fn, context);
+        addListenerHandler(event, this, fn);
+
+        return super.on<T>(event, (e) => fn(e as T, this), context);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
         let sprite = PIXI.Sprite.from(source, skipCache);
@@ -182,13 +122,4 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
         }
     }
     "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
-    if ("onEvents" in memory) {
-        for (let event in memory.onEvents) {
-            let id = memory.onEvents[event];
-            let instance = RegisteredEvents.get(id);
-            if (instance) {
-                element.onEvent(event as any, instance);
-            }
-        }
-    }
 }

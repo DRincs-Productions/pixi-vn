@@ -1,17 +1,8 @@
-import type {
-    ContainerChild,
-    ContainerEvents,
-    EventEmitter,
-    ObservablePoint,
-    PointData,
-} from "@drincs/pixi-vn/pixi.js";
+import type { ContainerChild, ContainerEvents, ObservablePoint, PointData } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
-import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
-import CanvasEvent from "../classes/CanvasEvent";
 import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
-import { default as RegisteredEvents } from "../decorators/event-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
 import {
     calculateAlignByPosition,
@@ -24,9 +15,8 @@ import {
 } from "../functions/canvas-property-utility";
 import { TextOptions } from "../interfaces/canvas-options";
 import TextMemory from "../interfaces/memory/TextMemory";
-import CanvasEventNamesType from "../types/CanvasEventNamesType";
-import { EventIdType } from "../types/EventIdType";
 import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
+import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -38,7 +28,10 @@ import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./
  * canvas.add("text", text);
  * ```
  */
-export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory>, AdditionalPositionsExtension {
+export default class Text
+    extends PIXI.Text
+    implements CanvasBaseItem<TextMemory>, AdditionalPositionsExtension, ListenerExtension
+{
     constructor(options?: TextOptions) {
         options = analizePositionsExtensionProps(options as any);
         let align = undefined;
@@ -73,70 +66,15 @@ export default class Text extends PIXI.Text implements CanvasBaseItem<TextMemory
         await setMemoryText(this, value);
         this.reloadPosition();
     }
-    private _onEvents: { [name: string]: EventIdType } = {};
-    get onEvents() {
-        return this._onEvents;
-    }
-    /**
-     * is same function as on(), but it keeps in memory the children.
-     * @param event The event type, e.g., 'click', 'mousedown', 'mouseup', 'pointerdown', etc.
-     * @param eventClass The class that extends CanvasEvent.
-     * @returns
-     * @example
-     * ```typescript
-     * \@eventDecorator()
-     * export class EventTest extends CanvasEvent<Text> {
-     *     override fn(event: CanvasEventNamesType, text: Text): void {
-     *         if (event === 'pointerdown') {
-     *             text.scale.x *= 1.25;
-     *             text.scale.y *= 1.25;
-     *         }
-     *     }
-     * }
-     * ```
-     *
-     * ```typescript
-     * const text = new Text();
-     * text.text = "Hello World"
-     *
-     * text.eventMode = 'static';
-     * text.cursor = 'pointer';
-     * text.onEvent('pointerdown', EventTest);
-     *
-     * canvas.add("text", text);
-     * ```
-     */
-    onEvent<T extends typeof CanvasEvent<typeof this>>(event: CanvasEventNamesType, eventClass: T) {
-        let id = eventClass.prototype.id;
-        let instance = RegisteredEvents.getInstance(id);
-        this._onEvents[event] = id;
-        if (instance) {
-            super.on(event, () => {
-                (instance as CanvasEvent<CanvasBaseItem<any>>).fn(event, this);
-            });
-            if (!this.interactive) {
-                this.interactive = true;
-                this.eventMode = "dynamic";
-            }
-        } else {
-            logger.error(`Event ${id} not found`);
-        }
-        return this;
-    }
-    /**
-     * Add a listener for a given event.
-     * Unlike {@link onEvent}, this method does **not track the event association in the current game state**, so it will not be included in saves.
-     */
+    readonly onEventsHandlers: OnEventsHandlers = {};
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,
-        fn: (
-            ...args: EventEmitter.ArgumentMap<
-                ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
-            >[Extract<T, keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>]
-        ) => void,
+        fn: (event: T, component: typeof this) => void,
         context?: any,
     ): this {
-        return super.on(event, fn, context);
+        addListenerHandler(event, this, fn);
+
+        return super.on<T>(event, (e) => fn(e as T, this), context);
     }
 
     /** AdditionalPositions */
@@ -362,13 +300,4 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
         memory.percentagePosition !== undefined &&
         (element.percentagePosition = memory.percentagePosition);
     "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
-    if ("onEvents" in memory) {
-        for (let event in memory.onEvents) {
-            let id = memory.onEvents[event];
-            let instance = RegisteredEvents.get(id);
-            if (instance) {
-                element.onEvent(event as CanvasEventNamesType, instance);
-            }
-        }
-    }
 }

@@ -1,15 +1,14 @@
 import type { SpriteOptions } from "@drincs/pixi-vn/pixi.js";
-import { EventIdType } from "../../types/EventIdType";
+import { ListenerExtensionMemory } from "../../components/ListenerExtension";
 import AssetMemory from "../AssetMemory";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
-export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory {
+export interface SpriteBaseMemory extends SpriteOptions, CanvasBaseItemMemory, ListenerExtensionMemory {
     /**
      * @deprecated
      */
     textureImage?: AssetMemory;
     textureData?: AssetMemory;
-    onEvents: { [name: string]: EventIdType };
 }
 
 /**
