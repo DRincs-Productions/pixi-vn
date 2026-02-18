@@ -1,3 +1,4 @@
+import { narration } from "../../..";
 export type CommonTickerProps = {
     /**
      * The alias to remove after the effect is done
@@ -20,8 +21,12 @@ export type CommonTickerProps = {
      */
     tickerIdToResume?: string[] | string;
     /**
-     * If set to `true`, the game will force the animation to complete before moving to the next step.
-     * @default false
+     * @deprecated Use {@link completeOnContinue} instead.
      */
     forceCompleteBeforeNext?: boolean;
+    /**
+     * When true, calling {@link narration.continue()} forces the current content to complete before advancing to the next narrative step.
+     * @default false
+     */
+    completeOnContinue?: boolean;
 };

@@ -2,11 +2,15 @@ import AnimationOptions from "../types/AnimationOptions";
 
 export interface BaseTransitionProps {
     /**
+     * @deprecated Use {@link completeOnContinue} instead.
+     */
+    forceCompleteBeforeNext?: boolean;
+    /**
      * If true, the transition will be completed before the next step.
      * For example, if the transition is a dissolve transition, the "alpha" of the texture will be 1 before the next step.
      * @default true
      */
-    forceCompleteBeforeNext?: boolean;
+    completeOnContinue?: boolean;
 }
 
 export interface ShowWithDissolveTransitionProps extends BaseTransitionProps, AnimationOptions {}

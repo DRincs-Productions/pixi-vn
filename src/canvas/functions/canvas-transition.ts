@@ -132,7 +132,8 @@ export async function showWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { forceCompleteBeforeNext = true, tickerIdToResume = [], ...options } = props;
+    let { forceCompleteBeforeNext = true } = props;
+    let { completeOnContinue = forceCompleteBeforeNext, tickerIdToResume = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -157,11 +158,7 @@ export async function showWithDissolve(
     component.alpha = 0;
     // remove the old component
     if (oldComponentAlias) {
-        let ids = removeWithDissolve(
-            oldComponentAlias,
-            { ...props, autoplay: false, forceCompleteBeforeNext },
-            priority,
-        );
+        let ids = removeWithDissolve(oldComponentAlias, { ...props, autoplay: false, completeOnContinue }, priority);
         if (ids) {
             res.push(...ids);
             tickerIdToResume.push(...ids);
@@ -176,7 +173,7 @@ export async function showWithDissolve(
         {
             ...options,
             tickerIdToResume,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
@@ -205,7 +202,8 @@ export function removeWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let { forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
+    let { forceCompleteBeforeNext = true } = props;
+    let { completeOnContinue = forceCompleteBeforeNext, aliasToRemoveAfter = [], ...options } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -219,7 +217,7 @@ export function removeWithDissolve(
         {
             ...options,
             aliasToRemoveAfter,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
@@ -246,7 +244,8 @@ export async function showWithFade(
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
+    let { forceCompleteBeforeNext = true } = props;
+    let { completeOnContinue = forceCompleteBeforeNext, aliasToRemoveAfter = [], ...options } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -279,7 +278,7 @@ export async function showWithFade(
         {
             ...options,
             aliasToRemoveAfter,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
@@ -290,7 +289,7 @@ export async function showWithFade(
             {
                 ...props,
                 tickerIdToResume: idShow,
-                forceCompleteBeforeNext,
+                completeOnContinue,
             },
             priority,
         );
@@ -352,9 +351,10 @@ export async function moveIn(
     } = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    let { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
-        forceCompleteBeforeNext = true,
+        completeOnContinue = forceCompleteBeforeNext,
         tickerIdToResume = [],
         aliasToRemoveAfter = [],
         removeOldComponentWithMoveOut,
@@ -393,7 +393,7 @@ export async function moveIn(
     // remove the old component
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            let ids = moveOut(oldComponentAlias, { ...props, autoplay: false, forceCompleteBeforeNext }, priority);
+            let ids = moveOut(oldComponentAlias, { ...props, autoplay: false, completeOnContinue }, priority);
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
@@ -431,7 +431,7 @@ export async function moveIn(
             ...options,
             tickerIdToResume,
             aliasToRemoveAfter,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
@@ -451,7 +451,13 @@ export async function moveIn(
  * @returns The ids of the tickers that are used in the effect.
  */
 export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
-    let { direction = "right", forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
+    let { forceCompleteBeforeNext = true } = props;
+    let {
+        direction = "right",
+        completeOnContinue = forceCompleteBeforeNext,
+        aliasToRemoveAfter = [],
+        ...options
+    } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -485,7 +491,7 @@ export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UP
         {
             ...options,
             aliasToRemoveAfter,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
@@ -517,9 +523,10 @@ export async function zoomIn(
     } = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
+    let { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
-        forceCompleteBeforeNext = true,
+        completeOnContinue = forceCompleteBeforeNext,
         tickerIdToResume = [],
         aliasToRemoveAfter = [],
         ...options
@@ -565,7 +572,7 @@ export async function zoomIn(
     // remove the old component
     if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            let ids = zoomOut(oldComponentAlias, { ...props, autoplay: false, forceCompleteBeforeNext }, priority);
+            let ids = zoomOut(oldComponentAlias, { ...props, autoplay: false, completeOnContinue }, priority);
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
@@ -619,7 +626,7 @@ export async function zoomIn(
             ...options,
             tickerIdToResume,
             aliasToRemoveAfter,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
@@ -639,7 +646,13 @@ export async function zoomIn(
  * @returns The ids of the tickers that are used in the effect.
  */
 export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
-    let { direction = "right", forceCompleteBeforeNext = true, aliasToRemoveAfter = [], ...options } = props;
+    let { forceCompleteBeforeNext = true } = props;
+    let {
+        direction = "right",
+        completeOnContinue = forceCompleteBeforeNext,
+        aliasToRemoveAfter = [],
+        ...options
+    } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -691,7 +704,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         {
             ...options,
             aliasToRemoveAfter,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
@@ -717,7 +730,13 @@ export async function pushIn(
     props: PushInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { direction = "right", forceCompleteBeforeNext = true, tickerIdToResume = [], ...options } = props;
+    let { forceCompleteBeforeNext = true } = props;
+    let {
+        direction = "right",
+        completeOnContinue = forceCompleteBeforeNext,
+        tickerIdToResume = [],
+        ...options
+    } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -766,7 +785,7 @@ export async function pushIn(
         let ids = pushOut(oldComponentAlias, {
             ...props,
             direction: direction, //== "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
-            forceCompleteBeforeNext,
+            completeOnContinue,
         });
         if (ids) {
             res.push(...ids);
@@ -779,7 +798,7 @@ export async function pushIn(
         {
             ...options,
             tickerIdToResume,
-            forceCompleteBeforeNext,
+            completeOnContinue,
         },
         priority,
     );
