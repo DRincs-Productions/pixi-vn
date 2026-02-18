@@ -3,6 +3,7 @@ export * from "@drincs/pixi-vn/characters";
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
 export type {
+    AllFederatedEventMap,
     ApplicationOptions,
     AssetsBundle,
     AssetsManifest,
