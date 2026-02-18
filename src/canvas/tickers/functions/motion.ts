@@ -110,8 +110,15 @@ function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWit
  */
 function timeline(options: Options[]) {
     const n = 0;
-    const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
-        return [n, index + 1, option];
+    // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
+    //     return [n, index + 1, option];
+    // });
+    const sequence: ObjectSegmentWithTransition<number>[] = [];
+    options.forEach((option, index) => {
+        sequence.push([n, index + 1, option]);
+        if (option.onComplete) {
+            sequence.push([n, (() => option.onComplete!()) as any, { duration: 0 }]);
+        }
     });
     return animate<number>(sequence, { duration: 1 });
 }
