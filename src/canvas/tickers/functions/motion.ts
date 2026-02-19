@@ -5,11 +5,14 @@ import {
     AnimationOptions,
     AnimationPlaybackControlsWithThen,
     At,
+    MotionValue,
+    motionValue,
     ObjectSegment,
     ObjectTarget,
     SequenceOptions,
 } from "motion";
 import { canvas } from "../..";
+import { debounce } from "../../../utils/time-utility";
 
 type Options = AnimationOptions &
     At & {
@@ -109,18 +112,28 @@ function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWit
  * @returns
  */
 function timeline(options: Options[]) {
-    const n = 0;
+    const n = { x: 0 };
     // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
-    //     return [n, index + 1, option];
+    //     return [n, {x: index + 1}, option];
     // });
-    const sequence: ObjectSegmentWithTransition<number>[] = [];
+    const sequence: ObjectSegmentWithTransition<number | MotionValue<number> | { x: number }>[] = [];
     options.forEach((option, index) => {
-        sequence.push([n, index + 1, option]);
-        if (option.onComplete) {
-            sequence.push([n, (() => option.onComplete!()) as any, { duration: 0 }]);
+        const { onComplete, ...rest } = option;
+        sequence.push([n, { x: index + 1 }, rest]);
+        // TODO: onComplete doesn't work in the following cases. So I found this alternative method to handle it.
+        // TODO: https://github.com/motiondivision/motion/issues/3563
+        if (onComplete) {
+            const obj = motionValue(0);
+            obj.on(
+                "change",
+                debounce(() => {
+                    console.log(`Complete`, new Date());
+                }, 50),
+            );
+            sequence.push([obj, 1, { duration: 0.01 }]);
         }
     });
-    return animate<number>(sequence, { duration: 1 });
+    return animate<number | MotionValue<number> | { x: number }>(sequence, { duration: 1 });
 }
 
 export { animate, timeline };

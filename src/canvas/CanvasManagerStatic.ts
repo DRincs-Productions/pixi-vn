@@ -4,20 +4,10 @@ import { Devtools, initDevtools } from "@pixi/devtools";
 import sha1 from "crypto-js/sha1";
 import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
 import { logger } from "../utils/log-utility";
+import { throttle } from "../utils/time-utility";
 import additionalPositionsProperties from "./pixi-devtools/additionalPositionsProperties";
 import { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
 import PauseTickerType from "./types/PauseTickerType";
-
-function throttle(func: (...args: any[]) => Promise<void>, limit: number) {
-    let lastCall = 0;
-    return async (...args: any[]) => {
-        const now = Date.now();
-        if (now - lastCall >= limit) {
-            lastCall = now;
-            return await func(...args);
-        }
-    };
-}
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
