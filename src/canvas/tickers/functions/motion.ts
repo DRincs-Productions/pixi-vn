@@ -14,10 +14,7 @@ import {
 import { canvas } from "../..";
 import { debounce } from "../../../utils/time-utility";
 
-type Options = AnimationOptions &
-    At & {
-        ticker?: PixiTicker;
-    };
+type Options = AnimationOptions & At;
 type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, Options];
 
 /**
@@ -56,36 +53,15 @@ function animate<T extends {}>(
  */
 function animate<T extends {}>(
     sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
-    options?: SequenceOptions,
+    options?: SequenceOptions & { ticker?: PixiTicker },
 ): AnimationPlaybackControlsWithThen;
 
 function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
-    const { ticker = new PIXI.Ticker(), ...rest } = arg3 || {};
     if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
-        const sequence = arg1.map((segment: any) => {
-            return [
-                segment[0],
-                segment[1],
-                {
-                    driver: (update: any) => {
-                        const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
-                        return {
-                            start: (_keepAlive = true) => {
-                                ticker.add(passTimestamp);
-                                ticker.start();
-                            },
-                            stop: () => ticker.remove(passTimestamp),
-                            now: () => ticker.lastTime,
-                        };
-                    },
-                    ...rest,
-                } as AnimationOptions & At,
-            ];
-        });
-        return animateMotion(sequence, arg2);
-    } else {
-        return animateMotion(arg1, arg2, {
-            driver: (update: any) => {
+        const {
+            ticker = new PIXI.Ticker(),
+            onComplete,
+            driver = (update: any) => {
                 const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
                 return {
                     start: (_keepAlive = true) => {
@@ -96,8 +72,26 @@ function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWit
                     now: () => ticker.lastTime,
                 };
             },
-            ...(arg3 || {}),
-        });
+            ...rest
+        } = arg2 || {};
+        return animateMotion(arg1, { driver, onComplete, ...rest });
+    } else {
+        const {
+            ticker = new PIXI.Ticker(),
+            driver = (update: any) => {
+                const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
+                return {
+                    start: (_keepAlive = true) => {
+                        ticker.add(passTimestamp);
+                        ticker.start();
+                    },
+                    stop: () => ticker.remove(passTimestamp),
+                    now: () => ticker.lastTime,
+                };
+            },
+            ...rest
+        } = arg3 || {};
+        return animateMotion(arg1, arg2, { driver, ...rest });
     }
 }
 
