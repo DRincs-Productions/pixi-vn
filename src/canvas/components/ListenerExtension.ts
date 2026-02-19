@@ -16,7 +16,7 @@ export default interface ListenerExtension {
      * @example
      * ```ts
      * \@eventDecorator()
-     * function eventExample(event: AllFederatedEventMap, component: Sprite) {
+     * function eventExample(event: keyof AllFederatedEventMap, component: Sprite) {
      *     // event code here
      * }
      *

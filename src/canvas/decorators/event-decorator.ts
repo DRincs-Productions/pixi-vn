@@ -14,7 +14,7 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  * @example
  * ```ts
  * \@eventDecorator()
- * function eventExample(event: AllFederatedEventMap, component: Sprite) {
+ * function eventExample(event: keyof AllFederatedEventMap, component: Sprite) {
  *     // event code here
  * }
  *
