@@ -9,7 +9,7 @@ export default abstract class MotionTickerBase<
     TArgs extends TickerArgs & {
         startState?: object;
         time?: number;
-        options: Omit<CommonTickerProps, "startOnlyIfHaveTexture"> & {
+        options?: Omit<CommonTickerProps, "startOnlyIfHaveTexture"> & {
             autoplay?: boolean;
         };
     },
@@ -92,7 +92,7 @@ export default abstract class MotionTickerBase<
         this.animation.stop();
     }
     start() {
-        if (this.args.options.autoplay === false) {
+        if (this.args.options?.autoplay === false) {
             return;
         }
         this.animation.play();
