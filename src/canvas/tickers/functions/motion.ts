@@ -124,12 +124,7 @@ function timeline(options: Options[]) {
         // TODO: https://github.com/motiondivision/motion/issues/3563
         if (onComplete) {
             const obj = motionValue(index);
-            obj.on(
-                "change",
-                debounce(() => {
-                    console.log(`Complete`, new Date());
-                }, 50),
-            );
+            obj.on("change", debounce(onComplete, 50));
             sequence.push([obj, index + 1, { duration: 0.01 }]);
         }
     });
