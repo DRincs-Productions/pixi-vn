@@ -274,6 +274,15 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
             return await GameUnifier.processNavigationRequests(props);
         }
+        if (this.openedLabels.length === 0) {
+            if (GameUnifier.onEnd) {
+                return await GameUnifier.onEnd(props, { labelId: "end" });
+            } else {
+                logger.error(
+                    "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game",
+                );
+            }
+        }
     }
     /**
      * Execute the current step and add it to the history.
@@ -394,19 +403,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return await this.continue(props, options);
             } else if (this.openedLabels.length === 1) {
                 NarrationManagerStatic.openedLabels = [];
-                if (GameUnifier.onEnd) {
-                    return await GameUnifier.onEnd(props, { labelId: "end" });
-                }
                 return;
             }
         } else if (this.openedLabels.length === 0) {
-            NarrationManagerStatic.openedLabels = NarrationManagerStatic.originalOpenedLabels;
-            if (GameUnifier.onEnd) {
-                return await GameUnifier.onEnd(props, { labelId: "end" });
-            }
-            logger.error(
-                "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game",
-            );
             return;
         } else {
             logger.error("currentLabelId not found");
@@ -458,6 +457,9 @@ export default class NarrationManager implements NarrationManagerInterface {
             choiceMade?: number;
         },
     ): Promise<StepLabelResultType> {
+        if (this.stepCounter === 0) {
+            return await this.call(label, props, options);
+        }
         if (this.openedLabels.length > 0) this.closeCurrentLabel();
         const { choiceMade } = options || {};
         let labelId: LabelIdType;

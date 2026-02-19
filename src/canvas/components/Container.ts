@@ -1,4 +1,4 @@
-import { ContainerEvents, ContainerOptions, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
+import { ContainerEvents, ContainerOptions, EventEmitter, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
@@ -54,12 +54,20 @@ export default class Container<
     readonly onEventsHandlers: OnEventsHandlers = {};
     override on<T extends keyof ContainerEvents<C> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,
-        fn: (event: T, component: typeof this) => void,
+        fn: (
+            ...args: [
+                ...EventEmitter.ArgumentMap<ContainerEvents<C> & { [K: symbol]: any; [K: {} & string]: any }>[Extract<
+                    T,
+                    keyof ContainerEvents<C> | keyof { [K: symbol]: any; [K: {} & string]: any }
+                >],
+                typeof this,
+            ]
+        ) => void,
         context?: any,
     ): this {
         addListenerHandler(event, this, fn);
 
-        return super.on<T>(event, (e) => fn(e as T, this), context);
+        return super.on<T>(event, (...e) => fn(...e, this), context);
     }
 }
 RegisteredCanvasComponents.add<ContainerMemory, typeof Container>(Container, {

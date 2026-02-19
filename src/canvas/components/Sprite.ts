@@ -1,6 +1,7 @@
 import type {
     ContainerChild,
     ContainerEvents,
+    EventEmitter,
     SpriteOptions as PixiSpriteOptions,
     Texture,
     TextureSourceLike,
@@ -54,12 +55,22 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     readonly onEventsHandlers: OnEventsHandlers = {};
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,
-        fn: (event: T, component: typeof this) => void,
+        fn: (
+            ...args: [
+                ...EventEmitter.ArgumentMap<
+                    ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
+                >[Extract<
+                    T,
+                    keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }
+                >],
+                typeof this,
+            ]
+        ) => void,
         context?: any,
     ): this {
         addListenerHandler(event, this, fn);
 
-        return super.on<T>(event, (e) => fn(e as T, this), context);
+        return super.on<T>(event, (...e) => fn(...e, this), context);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
         let sprite = PIXI.Sprite.from(source, skipCache);

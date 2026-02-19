@@ -1,4 +1,10 @@
-import type { ContainerChild, ContainerEvents, ObservablePoint, PointData } from "@drincs/pixi-vn/pixi.js";
+import type {
+    ContainerChild,
+    ContainerEvents,
+    EventEmitter,
+    ObservablePoint,
+    PointData,
+} from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
@@ -69,12 +75,22 @@ export default class Text
     readonly onEventsHandlers: OnEventsHandlers = {};
     override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
         event: T,
-        fn: (event: T, component: typeof this) => void,
+        fn: (
+            ...args: [
+                ...EventEmitter.ArgumentMap<
+                    ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
+                >[Extract<
+                    T,
+                    keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }
+                >],
+                typeof this,
+            ]
+        ) => void,
         context?: any,
     ): this {
         addListenerHandler(event, this, fn);
 
-        return super.on<T>(event, (e) => fn(e as T, this), context);
+        return super.on<T>(event, (...e) => fn(...e, this), context);
     }
 
     /** AdditionalPositions */

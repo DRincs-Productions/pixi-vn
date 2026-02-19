@@ -5,17 +5,39 @@ import {
     AnimationOptions,
     AnimationPlaybackControlsWithThen,
     At,
+    MotionValue,
+    motionValue,
     ObjectSegment,
     ObjectTarget,
     SequenceOptions,
 } from "motion";
 import { canvas } from "../..";
+import { debounce } from "../../../utils/time-utility";
 
-type Options = AnimationOptions &
-    At & {
-        ticker?: PixiTicker;
+type SegmentOptions = AnimationOptions & At;
+type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, SegmentOptions];
+
+/**
+ * Create a motion driver that integrates with the PixiJS ticker. This driver will allow you to use motion's animation capabilities while ensuring that animations are synchronized with the PixiJS rendering loop.
+ * @param ticker - The PixiJS ticker to integrate with. If not provided, a new ticker will be created.
+ * @returns An object that implements the motion driver interface, allowing you to start, stop, and control animations using the PixiJS ticker.
+ * @example
+ * const ticker = new PIXI.Ticker();
+ * const driver = motionDriver(ticker);
+ * const animation = animate(mySprite, { x: 100 }, { duration: 1, driver });
+ * animation.start();
+ */
+const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] = (ticker) => (update) => {
+    const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
+    return {
+        start: (_keepAlive = true) => {
+            ticker.add(passTimestamp);
+            ticker.start();
+        },
+        stop: () => ticker.remove(passTimestamp),
+        now: () => ticker.lastTime,
     };
-type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, Options];
+};
 
 /**
  * Animate a PixiJS component or components using [motion's animate](https://motion.dev/docs/animate) function.
@@ -53,48 +75,26 @@ function animate<T extends {}>(
  */
 function animate<T extends {}>(
     sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
-    options?: SequenceOptions,
+    options?: SequenceOptions & { ticker?: PixiTicker; driver: any },
 ): AnimationPlaybackControlsWithThen;
 
-function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
-    const { ticker = new PIXI.Ticker(), ...rest } = arg3 || {};
+function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
     if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
-        const sequence = arg1.map((segment: any) => {
-            return [
-                segment[0],
-                segment[1],
-                {
-                    driver: (update: any) => {
-                        const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
-                        return {
-                            start: (_keepAlive = true) => {
-                                ticker.add(passTimestamp);
-                                ticker.start();
-                            },
-                            stop: () => ticker.remove(passTimestamp),
-                            now: () => ticker.lastTime,
-                        };
-                    },
-                    ...rest,
-                } as AnimationOptions & At,
-            ];
-        });
-        return animateMotion(sequence, arg2);
+        const {
+            ticker = new PIXI.Ticker(),
+            driver = motionDriver(ticker),
+            ...rest
+        } = (arg2 as SequenceOptions & { ticker?: PixiTicker; driver: any }) || {};
+        return animateMotion(
+            arg1 as (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+            {
+                driver,
+                ...rest,
+            } as any,
+        );
     } else {
-        return animateMotion(arg1, arg2, {
-            driver: (update: any) => {
-                const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
-                return {
-                    start: (_keepAlive = true) => {
-                        ticker.add(passTimestamp);
-                        ticker.start();
-                    },
-                    stop: () => ticker.remove(passTimestamp),
-                    now: () => ticker.lastTime,
-                };
-            },
-            ...(arg3 || {}),
-        });
+        const { ticker = new PIXI.Ticker(), driver = motionDriver(ticker), ...rest } = arg3 || {};
+        return animateMotion(arg1 as T | T[], arg2 as ObjectTarget<T>, { driver, ...rest });
     }
 }
 
@@ -105,15 +105,28 @@ function animate(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWit
  *     { duration: 10, onComplete: () => console.log("First step completed") },
  *     { duration: 5, onComplete: () => console.log("Second step completed") },
  * ]);
+ * @param times
  * @param options
  * @returns
  */
-function timeline(options: Options[]) {
-    const n = 0;
-    const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
-        return [n, index + 1, option];
+function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver: any }) {
+    const n = { x: 0 };
+    // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
+    //     return [n, {x: index + 1}, option];
+    // });
+    const sequence: ObjectSegmentWithTransition<number | MotionValue<number> | { x: number }>[] = [];
+    times.forEach((option, index) => {
+        const { onComplete, ...rest } = option;
+        sequence.push([n, { x: index + 1 }, rest]);
+        // TODO: onComplete doesn't work in the following cases. So I found this alternative method to handle it.
+        // TODO: https://github.com/motiondivision/motion/issues/3563
+        if (onComplete) {
+            const obj = motionValue(index);
+            obj.on("change", debounce(onComplete, 50));
+            sequence.push([obj, index + 1, { duration: 0.01 }]);
+        }
     });
-    return animate<number>(sequence, { duration: 1 });
+    return animate<number | MotionValue<number> | { x: number }>(sequence, options);
 }
 
-export { animate, timeline };
+export { animate, motionDriver, timeline };
