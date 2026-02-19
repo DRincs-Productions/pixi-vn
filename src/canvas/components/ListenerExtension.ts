@@ -15,12 +15,14 @@ export default interface ListenerExtension {
      * Add a listener for a given event.
      * @example
      * ```ts
-     * \@eventDecorator()
-     * function eventExample(event: keyof AllFederatedEventMap, component: Sprite) {
-     *     // event code here
+     * export class Events {
+     *     \@eventDecorator()
+     *     static eventExample(event: keyof AllFederatedEventMap, component: Sprite) {
+     *         // event code here
+     *     }
      * }
      *
-     * sprite.on("pointerdown", eventExample);
+     * sprite.on("pointerdown", Events.eventExample);
      * ```
      */
     on: Container["on"];

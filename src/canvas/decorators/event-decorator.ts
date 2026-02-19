@@ -13,19 +13,24 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  * Thanks to this decoration the game has the possibility of updating the events to the latest modification and saving the game.
  * @example
  * ```ts
- * \@eventDecorator()
- * function eventExample(event: keyof AllFederatedEventMap, component: Sprite) {
- *     // event code here
+ * export class Events {
+ *     \@eventDecorator()
+ *     static eventExample(event: keyof AllFederatedEventMap, component: Sprite) {
+ *         // event code here
+ *     }
  * }
  *
- * sprite.on("pointerdown", eventExample);
+ * sprite.on("pointerdown", Events.eventExample);
  * ```
  * @param name is th identifier of the event, by default is the name of the class
  * @returns
  */
 export function eventDecorator(name?: string) {
-    return function (fn: Function) {
-        RegisteredEvents.add(fn, name);
+    return function (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+        const fn = descriptor.value;
+
+        const id = name ?? propertyKey.toString();
+        RegisteredEvents.add(fn, id);
     };
 }
 
@@ -35,10 +40,7 @@ namespace RegisteredEvents {
      * @param fn The class of the event.
      * @param name Name of the event, by default it will use the class name. If the name is already registered, it will show a warning
      */
-    export function add(fn: Function, name?: string) {
-        if (!name) {
-            name = fn.name;
-        }
+    export function add(fn: Function, name: string) {
         (fn as any)[SERIALIZABLE_EVENT] = name;
         if (registeredEvents.get(name)) {
             logger.info(`Event "${name}" already exists, it will be overwritten`);
