@@ -15,7 +15,7 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  * ```ts
  * export class Events {
  *     \@eventDecorator()
- *     static eventExample(event: keyof AllFederatedEventMap, component: Sprite) {
+ *     static eventExample(event: FederatedEvent, component: Sprite) {
  *         // event code here
  *     }
  * }
@@ -29,8 +29,7 @@ export function eventDecorator(name?: string) {
     return function (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         const fn = descriptor.value;
 
-        const id = name ?? propertyKey.toString();
-        RegisteredEvents.add(fn, id);
+        RegisteredEvents.add(fn, name || `${propertyKey as string}`);
     };
 }
 
@@ -45,7 +44,6 @@ namespace RegisteredEvents {
         if (registeredEvents.get(name)) {
             logger.info(`Event "${name}" already exists, it will be overwritten`);
         }
-        fn.prototype.id = name;
         registeredEvents.set(name, fn);
     }
 

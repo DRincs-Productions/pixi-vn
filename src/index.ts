@@ -8,6 +8,7 @@ export type {
     AssetsBundle,
     AssetsManifest,
     AssetSrc,
+    FederatedEvent,
     LoadParserName,
     ResolvedAsset,
     ResolvedSrc,
