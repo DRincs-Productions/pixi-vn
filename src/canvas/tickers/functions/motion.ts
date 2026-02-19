@@ -123,14 +123,14 @@ function timeline(options: Options[]) {
         // TODO: onComplete doesn't work in the following cases. So I found this alternative method to handle it.
         // TODO: https://github.com/motiondivision/motion/issues/3563
         if (onComplete) {
-            const obj = motionValue(0);
+            const obj = motionValue(index);
             obj.on(
                 "change",
                 debounce(() => {
                     console.log(`Complete`, new Date());
                 }, 50),
             );
-            sequence.push([obj, 1, { duration: 0.01 }]);
+            sequence.push([obj, index + 1, { duration: 0.01 }]);
         }
     });
     return animate<number | MotionValue<number> | { x: number }>(sequence, { duration: 1 });
