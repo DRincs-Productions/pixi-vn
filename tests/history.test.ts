@@ -1,5 +1,5 @@
 import { expect, test } from "vitest";
-import { narration, newLabel, stepHistory, storage } from "../src";
+import { GameUnifier, narration, newLabel, stepHistory, storage } from "../src";
 import { newChoiceOption } from "../src/narration/classes/ChoiceMenuOption";
 import { newCloseChoiceOption } from "../src/narration/classes/CloseChoiceOption";
 
@@ -737,4 +737,23 @@ test("choice test", async () => {
             stepIndex: 24,
         },
     ]);
+});
+
+const twoStep = newLabel("twoStep", [async () => {}, async () => {}]);
+
+test("stepHistory.canGoBack", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    GameUnifier.onEnd = async () => {
+        narration.clear();
+        storage.clear();
+        stepHistory.clear();
+        await narration.call(startLabel, {});
+    };
+    await narration.call(twoStep, {});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    expect(stepHistory.canGoBack).toEqual(true);
 });
