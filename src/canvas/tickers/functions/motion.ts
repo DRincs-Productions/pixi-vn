@@ -14,8 +14,8 @@ import {
 import { canvas } from "../..";
 import { debounce } from "../../../utils/time-utility";
 
-type Options = AnimationOptions & At;
-type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, Options];
+type SegmentOptions = AnimationOptions & At;
+type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, SegmentOptions];
 
 /**
  * Create a motion driver that integrates with the PixiJS ticker. This driver will allow you to use motion's animation capabilities while ensuring that animations are synchronized with the PixiJS rendering loop.
@@ -31,7 +31,6 @@ const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] = (ticker
     const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
     return {
         start: (_keepAlive = true) => {
-            console.log("start ticker");
             ticker.add(passTimestamp);
             ticker.start();
         },
@@ -107,9 +106,10 @@ function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlayb
  *     { duration: 5, onComplete: () => console.log("Second step completed") },
  * ]);
  * @param times
+ * @param options
  * @returns
  */
-function timeline(times: Options[], options?: SequenceOptions & { ticker?: PixiTicker; driver: any }) {
+function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver: any }) {
     const n = { x: 0 };
     // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
     //     return [n, {x: index + 1}, option];
