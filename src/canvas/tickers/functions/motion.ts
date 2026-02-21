@@ -14,7 +14,7 @@ import {
 import { canvas } from "../..";
 import { debounce } from "../../../utils/time-utility";
 
-type SegmentOptions = AnimationOptions & At;
+export type SegmentOptions = AnimationOptions & At;
 type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, SegmentOptions];
 
 /**
@@ -75,7 +75,7 @@ function animate<T extends {}>(
  */
 function animate<T extends {}>(
     sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
-    options?: SequenceOptions & { ticker?: PixiTicker; driver: any },
+    options?: SequenceOptions & { ticker?: PixiTicker; driver?: any },
 ): AnimationPlaybackControlsWithThen;
 
 function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
@@ -84,7 +84,7 @@ function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlayb
             ticker = new PIXI.Ticker(),
             driver = motionDriver(ticker),
             ...rest
-        } = (arg2 as SequenceOptions & { ticker?: PixiTicker; driver: any }) || {};
+        } = (arg2 as SequenceOptions & { ticker?: PixiTicker; driver?: any }) || {};
         return animateMotion(
             arg1 as (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
             {
@@ -109,21 +109,26 @@ function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlayb
  * @param options
  * @returns
  */
-function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver: any }) {
+function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver?: any }) {
     const n = { x: 0 };
     // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
     //     return [n, {x: index + 1}, option];
     // });
     const sequence: ObjectSegmentWithTransition<number | MotionValue<number> | { x: number }>[] = [];
     times.forEach((option, index) => {
-        const { onComplete, ...rest } = option;
+        const { onComplete, onPlay, ...rest } = option;
+        if (onPlay) {
+            const objp = motionValue(index);
+            objp.on("change", debounce(onPlay, 50));
+            sequence.push([objp, index + 1, { duration: 0.01 }]);
+        }
         sequence.push([n, { x: index + 1 }, rest]);
         // TODO: onComplete doesn't work in the following cases. So I found this alternative method to handle it.
         // TODO: https://github.com/motiondivision/motion/issues/3563
         if (onComplete) {
-            const obj = motionValue(index);
-            obj.on("change", debounce(onComplete, 50));
-            sequence.push([obj, index + 1, { duration: 0.01 }]);
+            const objc = motionValue(index);
+            objc.on("change", debounce(onComplete, 50));
+            sequence.push([objc, index + 1, { duration: 0.01 }]);
         }
     });
     return animate<number | MotionValue<number> | { x: number }>(sequence, options);
