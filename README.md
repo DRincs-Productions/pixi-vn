@@ -2,6 +2,12 @@
 
 ![pixi-vn-cover](https://github.com/user-attachments/assets/28c41fe1-c539-4ebb-b7d4-8cb9f79e089e)
 
+<p align="center">
+  <a href="https://npmjs.com/package/@drincs/pixi-vn"><img src="https://img.shields.io/npm/v/@drincs/pixi-vn.svg" alt="npm package"></a>
+  <a href="https://npmjs.com/package/@drincs/pixi-vn"><img src="https://img.shields.io/npm/dm/@drincs/pixi-vn" alt="npm downloads"></a>
+  <img alt="Discord" src="https://img.shields.io/discord/1263071210011496501">
+</p>
+
 Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
 
 It provides the following features:
@@ -172,3 +178,4 @@ body {
   overflow: hidden;
 }
 ```
+
