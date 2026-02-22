@@ -36,6 +36,7 @@ export {
 } from "./decorators/canvas-element-decorator";
 export { eventDecorator, default as RegisteredEvents } from "./decorators/event-decorator";
 export { shakeEffect } from "./functions/canvas-effect";
+export { CanvasPropertyUtility } from "./functions/canvas-property-utility";
 export {
     moveIn,
     moveOut,
@@ -100,7 +101,5 @@ CanvasUtilitiesStatic.init({
         return canvas.screen;
     },
 });
-
-export { CanvasPropertyUtility } from "./functions/canvas-property-utility";
 
 export { canvas };
