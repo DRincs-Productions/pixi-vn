@@ -22,7 +22,11 @@ export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";
 export { addListenerHandler } from "./components/ListenerExtension";
-export type { ListenerExtensionMemory, OnEventsHandlers } from "./components/ListenerExtension";
+export type {
+    default as ListenerExtension,
+    ListenerExtensionMemory,
+    OnEventsHandlers,
+} from "./components/ListenerExtension";
 export { default as Sprite } from "./components/Sprite";
 export { default as Text } from "./components/Text";
 export {
