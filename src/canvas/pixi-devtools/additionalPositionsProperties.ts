@@ -1,5 +1,5 @@
 import { PropertiesExtension } from "@pixi/devtools";
-import { ImageContainer, ImageSprite, VideoSprite } from "..";
+import { AdditionalPositionsExtension, Container } from "..";
 
 const additionalPositionsProperties: PropertiesExtension = {
     extension: {
@@ -8,7 +8,11 @@ const additionalPositionsProperties: PropertiesExtension = {
     },
     testNode(container) {
         return (
-            container instanceof ImageSprite || container instanceof VideoSprite || container instanceof ImageContainer
+            "xAlign" in container ||
+            "yAlign" in container ||
+            "percentageX" in container ||
+            "percentageY" in container ||
+            "positionType" in container
         );
     },
     testProp(prop) {
@@ -24,28 +28,22 @@ const additionalPositionsProperties: PropertiesExtension = {
         }
     },
     setProperty(container, prop, value) {
-        if (
-            container instanceof ImageSprite ||
-            container instanceof VideoSprite ||
-            container instanceof ImageContainer
-        ) {
-            switch (prop) {
-                case "xAlign":
-                    container.xAlign = value / 100;
-                    break;
-                case "yAlign":
-                    container.yAlign = value / 100;
-                    break;
-                case "percentageX":
-                    container.percentageX = value / 100;
-                    break;
-                case "percentageY":
-                    container.percentageY = value / 100;
-                    break;
-            }
+        switch (prop) {
+            case "xAlign":
+                if ("xAlign" in container) container.xAlign = value / 100;
+                break;
+            case "yAlign":
+                if ("yAlign" in container) container.yAlign = value / 100;
+                break;
+            case "percentageX":
+                if ("percentageX" in container) container.percentageX = value / 100;
+                break;
+            case "percentageY":
+                if ("percentageY" in container) container.percentageY = value / 100;
+                break;
         }
     },
-    getProperties(container: ImageSprite | VideoSprite | ImageContainer) {
+    getProperties(container: Container & AdditionalPositionsExtension) {
         return [
             {
                 value: container.positionType,
