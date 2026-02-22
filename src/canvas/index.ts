@@ -101,4 +101,6 @@ CanvasUtilitiesStatic.init({
     },
 });
 
+export { CanvasPropertyUtility } from "./functions/canvas-property-utility";
+
 export { canvas };

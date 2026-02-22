@@ -3,15 +3,7 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
-import {
-    calculateAlignByPosition,
-    calculatePercentagePositionByPosition,
-    calculatePositionByAlign,
-    calculatePositionByPercentagePosition,
-    getSuperHeight,
-    getSuperPoint,
-    getSuperWidth,
-} from "../functions/canvas-property-utility";
+import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import { checkIfVideo } from "../functions/canvas-utility";
 import { ImageContainerOptions } from "../interfaces/canvas-options";
 import ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
@@ -183,21 +175,21 @@ export default class ImageContainer
         this.reloadPosition();
     }
     get align() {
-        let superPivot = getSuperPoint(this.pivot, this.angle);
-        let superScale = getSuperPoint(this.scale, this.angle);
+        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return {
-            x: calculateAlignByPosition(
+            x: PropsUtils.calculateAlignByPosition(
                 "width",
                 this.x,
-                getSuperWidth(this),
+                PropsUtils.getSuperWidth(this),
                 superPivot.x,
                 superScale.x < 0,
                 this.anchor.x,
             ),
-            y: calculateAlignByPosition(
+            y: PropsUtils.calculateAlignByPosition(
                 "height",
                 this.y,
-                getSuperHeight(this),
+                PropsUtils.getSuperHeight(this),
                 superPivot.y,
                 superScale.y < 0,
                 this.anchor.y,
@@ -213,12 +205,12 @@ export default class ImageContainer
         this.reloadPosition();
     }
     get xAlign() {
-        let superPivot = getSuperPoint(this.pivot, this.angle);
-        let superScale = getSuperPoint(this.scale, this.angle);
-        return calculateAlignByPosition(
+        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        return PropsUtils.calculateAlignByPosition(
             "width",
             this.x,
-            getSuperWidth(this),
+            PropsUtils.getSuperWidth(this),
             superPivot.x,
             superScale.x < 0,
             this.anchor.x,
@@ -233,12 +225,12 @@ export default class ImageContainer
         this.reloadPosition();
     }
     get yAlign() {
-        let superPivot = getSuperPoint(this.pivot, this.angle);
-        let superScale = getSuperPoint(this.scale, this.angle);
-        return calculateAlignByPosition(
+        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        return PropsUtils.calculateAlignByPosition(
             "height",
             this.y,
-            getSuperHeight(this),
+            PropsUtils.getSuperHeight(this),
             superPivot.y,
             superScale.y < 0,
             this.anchor.y,
@@ -259,8 +251,8 @@ export default class ImageContainer
     }
     get percentagePosition() {
         return {
-            x: calculatePercentagePositionByPosition("width", this.x),
-            y: calculatePercentagePositionByPosition("height", this.y),
+            x: PropsUtils.calculatePercentagePositionByPosition("width", this.x),
+            y: PropsUtils.calculatePercentagePositionByPosition("height", this.y),
         };
     }
     set percentageX(_value: number) {
@@ -272,7 +264,7 @@ export default class ImageContainer
         this.reloadPosition();
     }
     get percentageX() {
-        return calculatePercentagePositionByPosition("width", this.x);
+        return PropsUtils.calculatePercentagePositionByPosition("width", this.x);
     }
     set percentageY(_value: number) {
         if (this._align) {
@@ -283,7 +275,7 @@ export default class ImageContainer
         this.reloadPosition();
     }
     get percentageY() {
-        return calculatePercentagePositionByPosition("height", this.y);
+        return PropsUtils.calculatePercentagePositionByPosition("height", this.y);
     }
     get positionType(): "pixel" | "percentage" | "align" {
         if (this._align) {
@@ -312,32 +304,32 @@ export default class ImageContainer
     }
     protected reloadPosition() {
         if (this._align) {
-            let superPivot = getSuperPoint(this.pivot, this.angle);
-            let superScale = getSuperPoint(this.scale, this.angle);
+            let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+            let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
             if (this._align.x !== undefined) {
-                super.x = calculatePositionByAlign(
+                super.x = PropsUtils.calculatePositionByAlign(
                     "width",
                     this._align.x,
-                    getSuperWidth(this),
+                    PropsUtils.getSuperWidth(this),
                     superPivot.x,
                     superScale.x < 0,
                 );
             }
             if (this._align.y !== undefined) {
-                super.y = calculatePositionByAlign(
+                super.y = PropsUtils.calculatePositionByAlign(
                     "height",
                     this._align.y,
-                    getSuperHeight(this),
+                    PropsUtils.getSuperHeight(this),
                     superPivot.y,
                     superScale.y < 0,
                 );
             }
         } else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = calculatePositionByPercentagePosition("width", this._percentagePosition.x);
+                super.x = PropsUtils.calculatePositionByPercentagePosition("width", this._percentagePosition.x);
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = calculatePositionByPercentagePosition("height", this._percentagePosition.y);
+                super.y = PropsUtils.calculatePositionByPercentagePosition("height", this._percentagePosition.y);
             }
         }
     }
