@@ -6,7 +6,7 @@ import { importCanvasElement } from "../functions/canvas-import-utility";
 import { getMemoryContainer } from "../functions/canvas-memory-utility";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
 import ContainerChild from "../types/ContainerChild";
-import { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
+import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods,
@@ -30,7 +30,7 @@ export default class Container<
     Memory extends ContainerMemory = ContainerMemory,
 >
     extends PixiContainer<C>
-    implements CanvasBaseItem<Memory>
+    implements CanvasBaseItem<Memory>, ListenerExtension
 {
     constructor(options?: ContainerOptions<C>) {
         super(options);
