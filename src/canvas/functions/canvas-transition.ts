@@ -5,6 +5,7 @@ import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";
 import ImageSprite from "../components/ImageSprite";
 import VideoSprite from "../components/VideoSprite";
+import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import {
     MoveInOutProps,
     PushInOutProps,
@@ -12,14 +13,6 @@ import {
     ShowWithFadeTransitionProps,
     ZoomInOutProps,
 } from "../interfaces/transition-props";
-import {
-    calculatePositionByAlign,
-    calculatePositionByPercentagePosition,
-    getPointBySuperPoint,
-    getSuperHeight,
-    getSuperPoint,
-    getSuperWidth,
-} from "./canvas-property-utility";
 import { checkIfVideo } from "./canvas-utility";
 import { addImageCointainer } from "./image-container-utility";
 import { addImage } from "./image-utility";
@@ -40,28 +33,28 @@ function calculateDestination(
             anchorx = component.anchor.x;
             anchory = component.anchor.y;
         }
-        let superPivot = getSuperPoint(component.pivot, component.angle);
-        let superScale = getSuperPoint(component.scale, component.angle);
-        destination.x = calculatePositionByAlign(
+        let superPivot = PropsUtils.getSuperPoint(component.pivot, component.angle);
+        let superScale = PropsUtils.getSuperPoint(component.scale, component.angle);
+        destination.x = PropsUtils.calculatePositionByAlign(
             "width",
             destination.x,
-            getSuperWidth(component),
+            PropsUtils.getSuperWidth(component),
             superPivot.x,
             superScale.x < 0,
             anchorx,
         );
-        destination.y = calculatePositionByAlign(
+        destination.y = PropsUtils.calculatePositionByAlign(
             "height",
             destination.y,
-            getSuperHeight(component),
+            PropsUtils.getSuperHeight(component),
             superPivot.y,
             superScale.y < 0,
             anchory,
         );
     }
     if (destination.type === "percentage") {
-        destination.x = calculatePositionByPercentagePosition("width", destination.x);
-        destination.y = calculatePositionByPercentagePosition("height", destination.y);
+        destination.x = PropsUtils.calculatePositionByPercentagePosition("width", destination.x);
+        destination.y = PropsUtils.calculatePositionByPercentagePosition("height", destination.y);
     }
     return {
         x: destination.x,
@@ -607,7 +600,7 @@ export async function zoomIn(
         component.x = 0;
         component.y = canvas.height / 2;
     }
-    component.pivot = getPointBySuperPoint(component.pivot, component.angle);
+    component.pivot = PropsUtils.getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
     // pause the ticker
     let ids = canvas.pauseTicker({ canvasAlias: alias });
@@ -689,7 +682,7 @@ export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UP
         pivot.x = 0 - destination.x;
         pivot.y = canvas.height / 2 - destination.y;
     }
-    pivot = getPointBySuperPoint(pivot, component.angle);
+    pivot = PropsUtils.getPointBySuperPoint(pivot, component.angle);
     // create the ticker and play it
     canvas.pauseTicker({ canvasAlias: alias });
     let id = canvas.animate(
