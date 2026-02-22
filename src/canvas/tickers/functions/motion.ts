@@ -80,6 +80,13 @@ function animate<T extends {}>(
 
 function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
     if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
+        if (arg2 && "repeat" in arg2 && arg2?.repeat === null) arg2.repeat = Infinity;
+        arg1.forEach((segment) => {
+            if (Array.isArray(segment) && segment.length === 3) {
+                const [_, __, options] = segment as ObjectSegmentWithTransition<T>;
+                if (options && "repeat" in options && options?.repeat === null) options.repeat = Infinity;
+            }
+        });
         const {
             ticker = new PIXI.Ticker(),
             driver = motionDriver(ticker),
@@ -93,6 +100,7 @@ function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlayb
             } as any,
         );
     } else {
+        if (arg3 && "repeat" in arg3 && arg3?.repeat === null) arg3.repeat = Infinity;
         const { ticker = new PIXI.Ticker(), driver = motionDriver(ticker), ...rest } = arg3 || {};
         return animateMotion(arg1 as T | T[], arg2 as ObjectTarget<T>, { driver, ...rest });
     }

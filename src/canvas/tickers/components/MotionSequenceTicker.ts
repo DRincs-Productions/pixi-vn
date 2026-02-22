@@ -38,15 +38,11 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
                 {
                     ...(segment[1] || {}),
                     ticker: this.ticker,
-                    repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
                     onComplete: index === this._args.sequence.length - 1 ? () => this.onComplete() : undefined,
                 },
             ];
         });
-        animation = animate(sequence, {
-            ...this._args.options,
-            repeat: this._args.options.repeat === null ? Infinity : this._args.options.repeat,
-        });
+        animation = animate(sequence, this._args.options);
         if (this._args.time) {
             this.animation.time = this._args.time;
         }

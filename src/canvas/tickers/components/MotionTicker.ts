@@ -26,7 +26,6 @@ export default class MotionTicker extends MotionTickerBase<TArgs> {
         let proxies = this.canvasElementAliases.map((alias) => this.createItem(alias));
         animation = animate(proxies, this._args.keyframes, {
             ...this._args.options,
-            repeat: this._args.options?.repeat === null ? Infinity : this._args.options?.repeat,
             onComplete: () => this.onComplete(),
             ticker: this.ticker,
         });
