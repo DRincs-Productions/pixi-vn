@@ -1,4 +1,4 @@
-import type { PointData, Texture } from "@drincs/pixi-vn/pixi.js";
+import type { Texture } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
@@ -74,8 +74,6 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     override async setMemory(value: ImageContainerMemory): Promise<void> {
         await this.importChildren(value);
         await setMemoryImageContainer(this, value);
-        this.reloadAnchor();
-        this.reloadPosition();
     }
     readonly pixivnId: string = CANVAS_IMAGE_CONTAINER_ID;
     private _loadIsStarted: boolean = false;
@@ -135,11 +133,6 @@ export async function setMemoryImageContainer(element: ImageContainer, memory: I
     memory = analizePositionsExtensionProps(memory)!;
     setMemoryContainer(element, memory, {
         end: async () => {
-            // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
-            "align" in memory && memory.align !== undefined && (element.align = memory.align as Partial<PointData>);
-            "percentagePosition" in memory &&
-                memory.percentagePosition !== undefined &&
-                (element.percentagePosition = memory.percentagePosition as Partial<PointData>);
             if ("loadIsStarted" in memory && memory.loadIsStarted) {
                 await element.load();
             }

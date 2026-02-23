@@ -1,4 +1,4 @@
-import { ContainerOptions, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
+import { ContainerOptions, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
@@ -100,6 +100,16 @@ export async function setMemoryContainer<T extends PixiContainer>(
         (element.interactiveChildren = memory.interactiveChildren);
     "hitArea" in memory && memory.hitArea !== undefined && (element.hitArea = memory.hitArea);
     setListenerMemory(element, memory);
+
+    // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
+    "align" in memory &&
+        memory.align !== undefined &&
+        "align" in element &&
+        (element.align = memory.align as Partial<PointData>);
+    "percentagePosition" in memory &&
+        memory.percentagePosition !== undefined &&
+        "percentagePosition" in element &&
+        (element.percentagePosition = memory.percentagePosition as Partial<PointData>);
 
     // end
     if (end) {
