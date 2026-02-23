@@ -3,7 +3,7 @@ import CanvasManager from "./CanvasManager";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 export const { Assets, Color, Rectangle, TextStyle, Texture, UPDATE_PRIORITY } = PIXI;
-export type { ContainerOptions, TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
+export type { TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
 
 // * This import must be imported before the ImageSprite import.
 export { default as VideoSprite } from "./components/VideoSprite";
@@ -56,6 +56,7 @@ export { getTexture } from "./functions/texture-utility";
 export { addVideo, showVideo } from "./functions/video-utility";
 export type { default as AssetMemory } from "./interfaces/AssetMemory";
 export type {
+    ContainerOptions,
     ImageContainerOptions,
     ImageSpriteOptions,
     SpriteOptions,
