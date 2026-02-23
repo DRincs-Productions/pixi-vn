@@ -15,7 +15,7 @@ import Sprite, { setMemorySprite } from "./Sprite";
 /**
  * This class is a extension of the {@link Sprite} class, it has the same properties and methods,
  * but it has some features that make texture management easier.
- * You need to use {@link ImageSprite.load()} to show the image in the canvas.
+ * You need to use {@link load} to show the image in the canvas.
  * This class is used for functions like {@link addImage} and {@link showWithDissolve}.
  * @example
  * ```typescript

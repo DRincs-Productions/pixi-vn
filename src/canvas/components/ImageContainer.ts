@@ -74,6 +74,8 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
     override async setMemory(value: ImageContainerMemory): Promise<void> {
         await this.importChildren(value);
         await setMemoryImageContainer(this, value);
+        this.reloadAnchor();
+        this.reloadPosition();
     }
     readonly pixivnId: string = CANVAS_IMAGE_CONTAINER_ID;
     private _loadIsStarted: boolean = false;
