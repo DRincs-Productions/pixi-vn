@@ -2,6 +2,8 @@ import type { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } 
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
+import MotionSequenceTicker from "../motion/components/MotionSequenceTicker";
+import MotionTicker from "../motion/components/MotionTicker";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import CanvasManagerStatic from "./CanvasManagerStatic";
@@ -13,8 +15,6 @@ import CanvasGameState from "./interfaces/CanvasGameState";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
 import { Ticker, TickerArgs, TickerInfo } from "./tickers";
-import MotionSequenceTicker from "./tickers/components/MotionSequenceTicker";
-import MotionTicker from "./tickers/components/MotionTicker";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
