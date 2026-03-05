@@ -1,4 +1,5 @@
 import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
+import { PixiError } from "@drincs/pixi-vn/error";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import type { StorageElementType } from "../storage";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
@@ -433,7 +434,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
-                throw new Error(`[Pixi’VN] Label ${labelId} not found`);
+                throw new PixiError("unregistered_element", `Label ${labelId} not found`);
             }
 
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
@@ -473,7 +474,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
-                throw new Error(`[Pixi’VN] Label ${labelId} not found`);
+                throw new PixiError("unregistered_element", `Label ${labelId} not found`);
             }
 
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
