@@ -1,7 +1,7 @@
 type ErrorCodeType =
     | "obsolete_save"
-    | "unknown_lambda_id"
-    | "unknown_canvas_element_id"
+    | "unknown_element"
+    | "unregistered_element"
     | "not_json_serializable"
     | "not_implemented"
     | "unhandled_error";
