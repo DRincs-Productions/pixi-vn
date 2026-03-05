@@ -1,8 +1,6 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
-import MotionSequenceTicker from "../components/MotionSequenceTicker";
-import MotionTicker from "../components/MotionTicker";
 import Ticker from "../interfaces/Ticker";
 import TickerArgs from "../interfaces/TickerArgs";
 
@@ -23,8 +21,6 @@ const registeredTickers = new CachedMap<
         ): Ticker<any>;
     }
 >({ cacheSize: 5 });
-registeredTickers.set("motion", MotionTicker);
-registeredTickers.set("motion-sequence", MotionSequenceTicker);
 
 /**
  * Is a decorator that register a ticker in the game.
