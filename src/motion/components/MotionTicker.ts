@@ -1,6 +1,7 @@
 import { AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
-import { animate, AnimationOptions, CanvasBaseInterface } from "../..";
-import MotionComponentExtension from "../interfaces/MotionComponentExtension";
+import { AnimationOptions, CanvasBaseInterface } from "../../canvas";
+import MotionComponentExtension from "../../canvas/tickers/interfaces/MotionComponentExtension";
+import motion from "../motion";
 import MotionTickerBase from "./MotionTickerBase";
 
 interface TArgs {
@@ -23,7 +24,7 @@ export default class MotionTicker extends MotionTickerBase<TArgs> {
             return animation;
         }
         let proxies = this.canvasElementAliases.map((alias) => this.createItem(alias));
-        animation = animate(proxies, this._args.keyframes, {
+        animation = motion.animate(proxies, this._args.keyframes, {
             ...this._args.options,
             onComplete: () => this.onComplete(),
             ticker: this.ticker,

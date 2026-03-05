@@ -3,7 +3,8 @@ import {
     ObjectSegment as MotionObjectSegment,
     ObjectSegmentWithTransition as MotionObjectSegmentWithTransition,
 } from "motion";
-import { animate, CanvasBaseInterface, ObjectSegment, ObjectSegmentWithTransition, SequenceOptions } from "../..";
+import { CanvasBaseInterface, ObjectSegment, ObjectSegmentWithTransition, SequenceOptions } from "../../canvas";
+import motion from "../motion";
 import MotionTickerBase from "./MotionTickerBase";
 
 interface TArgs {
@@ -41,7 +42,7 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
                 },
             ];
         });
-        animation = animate(sequence, this._args.options);
+        animation = motion.animate(sequence, this._args.options);
         if (this._args.time) {
             this.animation.time = this._args.time;
         }
