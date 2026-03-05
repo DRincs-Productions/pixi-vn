@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import { IMediaInstance, Sound as PixiSound } from "@pixi/sound";
 import SoundManagerStatic from "../SoundManagerStatic";
@@ -7,11 +8,11 @@ export default class Sound extends PixiSound {
     alias?: string;
     override pause(): this {
         if (!this.alias) {
-            throw new Error("[Pixi’VN] The alias is not defined.");
+            throw new PixiError("unknown_element", "The alias is not defined.");
         }
         let item = SoundManagerStatic.soundsPlaying[this.alias];
         if (!item) {
-            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
+            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
             ...item,
@@ -21,11 +22,11 @@ export default class Sound extends PixiSound {
     }
     override resume(): this {
         if (!this.alias) {
-            throw new Error("[Pixi’VN] The alias is not defined.");
+            throw new PixiError("unknown_element", "The alias is not defined.");
         }
         let item = SoundManagerStatic.soundsPlaying[this.alias];
         if (!item) {
-            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
+            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
             options: item.options,
@@ -42,7 +43,7 @@ export default class Sound extends PixiSound {
     }
     override stop(): this {
         if (!this.alias) {
-            throw new Error("[Pixi’VN] The alias is not defined.");
+            throw new PixiError("unknown_element", "The alias is not defined.");
         }
         delete SoundManagerStatic.soundsPlaying[this.alias];
         return super.stop();
@@ -52,7 +53,7 @@ export default class Sound extends PixiSound {
             this.alias = options;
         }
         if (!this.alias) {
-            throw new Error("[Pixi’VN] The alias is not defined.");
+            throw new PixiError("unknown_element", "The alias is not defined.");
         }
         SoundManagerStatic.soundsPlaying[this.alias] = {
             stepIndex: GameUnifier.stepCounter,
