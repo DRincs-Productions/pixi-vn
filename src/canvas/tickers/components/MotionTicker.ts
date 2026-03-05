@@ -1,6 +1,5 @@
 import { AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
 import { animate, AnimationOptions, CanvasBaseInterface } from "../..";
-import { TickerIdType } from "../../types/TickerIdType";
 import MotionComponentExtension from "../interfaces/MotionComponentExtension";
 import MotionTickerBase from "./MotionTickerBase";
 
@@ -35,5 +34,5 @@ export default class MotionTicker extends MotionTickerBase<TArgs> {
         this._animation = animation;
         return animation;
     }
-    alias: TickerIdType = "motion";
+    alias: string = "motion";
 }

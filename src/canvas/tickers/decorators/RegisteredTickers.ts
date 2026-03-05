@@ -1,7 +1,6 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
-import { TickerIdType } from "../../types/TickerIdType";
 import MotionSequenceTicker from "../components/MotionSequenceTicker";
 import MotionTicker from "../components/MotionTicker";
 import Ticker from "../interfaces/Ticker";
@@ -11,7 +10,7 @@ import TickerArgs from "../interfaces/TickerArgs";
  * A dictionary that contains all tickers registered and avvailable to be used.
  */
 const registeredTickers = new CachedMap<
-    TickerIdType,
+    string,
     {
         new (
             args: any,
@@ -34,7 +33,7 @@ registeredTickers.set("motion-sequence", MotionSequenceTicker);
  * @param name is th identifier of the label, by default is the name of the class
  * @returns
  */
-export function tickerDecorator(name?: TickerIdType) {
+export function tickerDecorator(name?: string) {
     return function (target: {
         new (
             args: any,
@@ -68,7 +67,7 @@ namespace RegisteredTickers {
                 },
             ): Ticker<any>;
         },
-        name?: TickerIdType,
+        name?: string,
     ) {
         if (!name) {
             name = target.name;
@@ -85,7 +84,7 @@ namespace RegisteredTickers {
      * @param canvasId The id of the ticker.
      * @returns The ticker type.
      */
-    export function get<T = Ticker<any>>(tickerId: TickerIdType): T | undefined {
+    export function get<T = Ticker<any>>(tickerId: string): T | undefined {
         try {
             let tickerType = registeredTickers.get(tickerId);
             if (!tickerType) {
@@ -108,7 +107,7 @@ namespace RegisteredTickers {
      * @returns The instance of the ticker
      */
     export function getInstance<TArgs extends TickerArgs>(
-        tickerId: TickerIdType,
+        tickerId: string,
         args: TArgs,
         options?: {
             duration?: number;

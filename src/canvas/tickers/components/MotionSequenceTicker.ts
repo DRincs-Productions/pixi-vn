@@ -4,7 +4,6 @@ import {
     ObjectSegmentWithTransition as MotionObjectSegmentWithTransition,
 } from "motion";
 import { animate, CanvasBaseInterface, ObjectSegment, ObjectSegmentWithTransition, SequenceOptions } from "../..";
-import { TickerIdType } from "../../types/TickerIdType";
 import MotionTickerBase from "./MotionTickerBase";
 
 interface TArgs {
@@ -49,5 +48,5 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
         this._animation = animation;
         return animation;
     }
-    alias: TickerIdType = "motion-sequence";
+    alias: string = "motion-sequence";
 }

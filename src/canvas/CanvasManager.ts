@@ -26,7 +26,6 @@ import AnimationOptions, {
 } from "./types/AnimationOptions";
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
-import { TickerIdType } from "./types/TickerIdType";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -239,7 +238,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
     addTicker<TArgs extends TickerArgs>(canvasElementAlias: string | string[], ticker: Ticker<TArgs>) {
         const id = ticker.id;
-        const tickerName: TickerIdType = ticker.alias;
+        const tickerName: string = ticker.alias;
         if (typeof canvasElementAlias === "string") {
             canvasElementAlias = [canvasElementAlias];
         }
@@ -343,7 +342,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             logger.error(`Ticker ${(step as TickersStep<TArgs>).ticker} not found`);
             return;
         }
-        const tickerName: TickerIdType = ticker.alias;
+        const tickerName: string = ticker.alias;
         const id = ticker.id;
         ticker.canvasElementAliases = [alias];
         let tickerHistory: TickerInfo<TArgs> = {
@@ -451,7 +450,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             return;
         }
 
-        let tickerId: TickerIdType;
+        let tickerId: string;
         if (typeof ticker === "string") {
             tickerId = ticker;
         } else {
