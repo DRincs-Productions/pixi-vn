@@ -636,7 +636,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         } catch (e) {
             logger.error("DialogueInterface cannot contain functions or classes");
-            throw e;
+            throw new PixiError("not_json_serializable", "ChoiceInterface cannot contain functions or classes");
         }
     }
     public get choices(): StoredIndexedChoiceInterface[] | undefined {
@@ -689,7 +689,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         } catch (e) {
             logger.error("ChoiceInterface cannot contain functions or classes");
-            throw e;
+            throw new PixiError("not_json_serializable", "ChoiceInterface cannot contain functions or classes");
         }
     }
     public get dialogGlue(): boolean {
