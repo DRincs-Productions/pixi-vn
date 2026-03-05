@@ -20,6 +20,12 @@
       "require": "./dist/index.cjs",
       "default": "./dist/index.mjs"
     },
+    "./error": {
+      "types": "./dist/error/index.d.ts",
+      "import": "./dist/error/index.mjs",
+      "require": "./dist/error/index.cjs",
+      "default": "./dist/error/index.mjs"
+    },
     "./pixi.js": {
       "types": "./dist/pixi/index.d.ts",
       "import": "./dist/pixi/index.js",

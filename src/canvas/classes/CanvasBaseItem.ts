@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import { canvas, CanvasBaseItemMemory } from "..";
 import canvasComponentDecorator from "../decorators/canvas-element-decorator";
 
@@ -33,13 +34,13 @@ export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
      * This method return the memory of the canvas element.
      */
     get memory(): T2 {
-        throw new Error("[Pixi’VN] The method CanvasBaseItem.memory must be overridden");
+        throw new PixiError("not_implemented", "The method CanvasBaseItem.memory must be overridden");
     }
     /**
      * This method set the memory of the canvas element.
      */
     setMemory(_value: T2): Promise<void> | void {
-        throw new Error("[Pixi’VN] The method CanvasBaseItem.setMemory must be overridden");
+        throw new PixiError("not_implemented", "The method CanvasBaseItem.setMemory must be overridden");
     }
     /**
      * Get the id of the canvas element. This variable is used in the system to get the canvas element by id

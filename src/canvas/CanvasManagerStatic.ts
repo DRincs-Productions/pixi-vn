@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import type { Application, ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Devtools, initDevtools } from "@pixi/devtools";
@@ -19,7 +20,7 @@ export default class CanvasManagerStatic {
     static get app() {
         if (!CanvasManagerStatic._app) {
             logger.error("The canvas is not initialized");
-            throw new Error("[Pixi’VN] CanvasManagerStatic.app is undefined");
+            throw new PixiError("invalid_usage", "CanvasManagerStatic.app is undefined");
         }
         return CanvasManagerStatic._app;
     }
@@ -251,7 +252,7 @@ export default class CanvasManagerStatic {
         try {
             return sha1(JSON.stringify(args)).toString() + "_" + Math.random().toString(36).substring(7);
         } catch (e) {
-            throw new Error(`[Pixi’VN] Error to generate ticker id: ${e}`);
+            throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }
     }
     static addTickerTimeoutInfo(

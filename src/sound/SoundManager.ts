@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import {
     Filter,
@@ -41,7 +42,7 @@ export default class SoundManager extends SoundLibrary {
      */
     private getOptions(
         source: string | ArrayBuffer | AudioBuffer | HTMLAudioElement | SoundOptions,
-        overrides?: SoundOptions
+        overrides?: SoundOptions,
     ): SoundOptions {
         let options: SoundOptions;
 
@@ -69,8 +70,9 @@ export default class SoundManager extends SoundLibrary {
     override add(map: any, globalOptions?: SoundOptions): SoundMap;
     public override add(alias: string, sourceOptions?: SoundOptions | string): Sound | SoundMap {
         if (typeof alias === "object") {
-            throw new Error(
-                "[Pixi’VN] The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead."
+            throw new PixiError(
+                "invalid_usage",
+                "The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.",
             );
         }
         if (this.exists(alias)) {
@@ -174,7 +176,7 @@ export default class SoundManager extends SoundLibrary {
     }
     override play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
         if (!this.exists(alias)) {
-            throw new Error("[Pixi’VN] The alias is not found in the sound library.");
+            throw new PixiError("unknown_element", "The alias is not found in the sound library.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             stepIndex: GameUnifier.stepCounter,
@@ -190,7 +192,7 @@ export default class SoundManager extends SoundLibrary {
     override pause(alias: string): Sound {
         let item = SoundManagerStatic.soundsPlaying[alias];
         if (!item) {
-            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
+            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             ...item,
@@ -201,7 +203,7 @@ export default class SoundManager extends SoundLibrary {
     override resume(alias: string): Sound {
         let item = SoundManagerStatic.soundsPlaying[alias];
         if (!item) {
-            throw new Error("[Pixi’VN] The alias is not found in the playInStepIndex.");
+            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
         }
         SoundManagerStatic.soundsPlaying[alias] = {
             options: item.options,

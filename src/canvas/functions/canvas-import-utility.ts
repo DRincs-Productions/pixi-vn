@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
@@ -12,7 +13,7 @@ export async function importCanvasElement<M extends CanvasBaseItemMemory, T exte
 ): Promise<T> {
     let element = await RegisteredCanvasComponents.getInstance<M, T>(memory.pixivnId, memory);
     if (!element) {
-        throw new Error("[Pixi’VN] The element " + memory.pixivnId + " could not be created");
+        throw new PixiError("unregistered_element", `The element ${memory.pixivnId} could not be created`);
     }
 
     return element;

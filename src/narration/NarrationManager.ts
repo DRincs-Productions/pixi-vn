@@ -1,4 +1,5 @@
 import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
+import { PixiError } from "@drincs/pixi-vn/error";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import type { StorageElementType } from "../storage";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
@@ -433,7 +434,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
-                throw new Error(`[Pixi’VN] Label ${labelId} not found`);
+                throw new PixiError("unregistered_element", `Label ${labelId} not found`);
             }
 
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
@@ -473,7 +474,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
-                throw new Error(`[Pixi’VN] Label ${labelId} not found`);
+                throw new PixiError("unregistered_element", `Label ${labelId} not found`);
             }
 
             NarrationManagerStatic.pushNewLabel(tempLabel.id);
@@ -514,7 +515,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return await this.closeChoiceMenu(item, { ...item.props, ...props });
             default:
                 logger.error(`Type ${type} not found`);
-                throw new Error(`[Pixi’VN] Type ${type} not found`);
+                throw new PixiError("invalid_usage", `Type ${type} not found`);
         }
     }
     /**
@@ -537,7 +538,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     ): Promise<StepLabelResultType> {
         if (choice.type !== "close") {
             logger.error("For closeChoiceMenu, the type must be close");
-            throw new Error("[Pixi’VN] For closeChoiceMenu, the type must be close");
+            throw new PixiError("invalid_usage", "For closeChoiceMenu, the type must be close");
         }
         let choiceMade: number | undefined = undefined;
         if (typeof choice.choiceIndex === "number") {
@@ -635,7 +636,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         } catch (e) {
             logger.error("DialogueInterface cannot contain functions or classes");
-            throw e;
+            throw new PixiError("not_json_serializable", "ChoiceInterface cannot contain functions or classes");
         }
     }
     public get choices(): StoredIndexedChoiceInterface[] | undefined {
@@ -688,7 +689,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         } catch (e) {
             logger.error("ChoiceInterface cannot contain functions or classes");
-            throw e;
+            throw new PixiError("not_json_serializable", "ChoiceInterface cannot contain functions or classes");
         }
     }
     public get dialogGlue(): boolean {

@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, ImageSpriteOptions } from "..";
 import ImageSprite from "../components/ImageSprite";
@@ -24,7 +25,7 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
         if (PIXI.Assets.resolver.hasKey(alias)) {
             imageUrl = alias;
         } else {
-            throw new Error(`The image ${alias} does not exist in the cache.`);
+            throw new PixiError("unregistered_element", `The image ${alias} does not exist in the cache.`);
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
@@ -54,7 +55,7 @@ export async function showImage(alias: string, imageUrl?: string, options?: Imag
         if (PIXI.Assets.resolver.hasKey(alias)) {
             imageUrl = alias;
         } else {
-            throw new Error(`The image ${alias} does not exist in the cache.`);
+            throw new PixiError("unregistered_element", `The image ${alias} does not exist in the cache.`);
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };

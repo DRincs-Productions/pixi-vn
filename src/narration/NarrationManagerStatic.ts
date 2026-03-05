@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import { LabelAbstract } from ".";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
@@ -59,7 +60,7 @@ export default class NarrationManagerStatic {
         let stepSha1 = currentLabel.getStepSha(currentLabelStepIndex) || "error";
         let obj =
             GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
             ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
@@ -79,7 +80,7 @@ export default class NarrationManagerStatic {
         }
         let obj =
             GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
             ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
@@ -110,7 +111,7 @@ export default class NarrationManagerStatic {
         options: {
             onceOnly?: boolean;
             nestedId?: string;
-        } = {}
+        } = {},
     ): number | undefined {
         let nestedId = options.nestedId || "";
         let onceonly = options.onceOnly || false;
@@ -122,7 +123,7 @@ export default class NarrationManagerStatic {
             let usedRandomNumbers = obj.usedRandomNumbers || {};
             // get a random number between min and max and not in the usedRandomNumbers, if all numbers are in the usedRandomNumbers, return null
             let allNumbers = Array.from({ length: max - min + 1 }, (_, i) => i + min).filter(
-                (item) => !usedRandomNumbers[`${min}-${max}`]?.includes(item)
+                (item) => !usedRandomNumbers[`${min}-${max}`]?.includes(item),
             );
             if (allNumbers.length === 0) {
                 return undefined;
@@ -149,7 +150,7 @@ export default class NarrationManagerStatic {
         }
         let obj =
             GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
-                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
             ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
@@ -233,7 +234,7 @@ export default class NarrationManagerStatic {
                 item.labelId === label &&
                 item.stepIndex === stepIndex &&
                 item.choiceIndex === choiceMade &&
-                item.stepSha1 === stepSha
+                item.stepSha1 === stepSha,
         );
         if (alredyMade < 0) {
             allChoicesMade.push({
@@ -255,7 +256,7 @@ export default class NarrationManagerStatic {
     static pushNewLabel(label: LabelIdType) {
         let currentLabel = RegisteredLabels.get(label);
         if (!currentLabel) {
-            throw new Error(`[Pixi’VN] Label ${label} not found`);
+            throw new PixiError("unregistered_element", `Label ${label} not found`);
         }
         NarrationManagerStatic._openedLabels.push({
             label: label,
