@@ -20,7 +20,7 @@ export default class CanvasManagerStatic {
     static get app() {
         if (!CanvasManagerStatic._app) {
             logger.error("The canvas is not initialized");
-            throw new Error("[Pixi’VN] CanvasManagerStatic.app is undefined");
+            throw new PixiError("invalid_usage", "CanvasManagerStatic.app is undefined");
         }
         return CanvasManagerStatic._app;
     }

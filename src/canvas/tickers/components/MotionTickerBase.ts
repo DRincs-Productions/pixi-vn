@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/error";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import sha1 from "crypto-js/sha1";
@@ -76,7 +77,7 @@ export default abstract class MotionTickerBase<
         try {
             return sha1(JSON.stringify(args)).toString() + "_motion_" + Math.random().toString(36).substring(7);
         } catch (e) {
-            throw new Error(`[Pixi’VN] Error to generate ticker id: ${e}`);
+            throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }
     }
     /**

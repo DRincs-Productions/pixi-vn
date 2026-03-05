@@ -515,7 +515,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return await this.closeChoiceMenu(item, { ...item.props, ...props });
             default:
                 logger.error(`Type ${type} not found`);
-                throw new Error(`[Pixi’VN] Type ${type} not found`);
+                throw new PixiError("invalid_usage", `Type ${type} not found`);
         }
     }
     /**
@@ -538,7 +538,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     ): Promise<StepLabelResultType> {
         if (choice.type !== "close") {
             logger.error("For closeChoiceMenu, the type must be close");
-            throw new Error("[Pixi’VN] For closeChoiceMenu, the type must be close");
+            throw new PixiError("invalid_usage", "For closeChoiceMenu, the type must be close");
         }
         let choiceMade: number | undefined = undefined;
         if (typeof choice.choiceIndex === "number") {
