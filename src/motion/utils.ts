@@ -1,5 +1,20 @@
 import type { Ticker as PixiTicker } from "@drincs/pixi-vn/pixi.js";
-import { AnimationOptions } from "motion";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import {
+    animate as animateMotion,
+    AnimationOptions,
+    AnimationPlaybackControlsWithThen,
+    At,
+    MotionValue,
+    motionValue,
+    ObjectSegment,
+    ObjectTarget,
+    SequenceOptions,
+} from "motion";
+import { debounce } from "../utils/time-utility";
+
+export type SegmentOptions = AnimationOptions & At;
+type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, SegmentOptions];
 
 /**
  * Create a motion driver that integrates with the PixiJS ticker. This driver will allow you to use motion's animation capabilities while ensuring that animations are synchronized with the PixiJS rendering loop.
@@ -22,3 +37,104 @@ export const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] = 
         now: () => ticker.lastTime,
     };
 };
+
+/**
+ * Animate a PixiJS component or components using [motion's animate](https://motion.dev/docs/animate) function.
+ * This function integrates with the PixiJS ticker to ensure smooth animations.
+ *
+ * Pixi’VN will **not** keep track of the animation state of this function (This feature is intended for animating PixiJS components used for UI.).
+ * @param components - The PixiJS component(s) to animate.
+ * @param keyframes - The keyframes to animate the component(s) with.
+ * @param options - Additional options for the animation, including duration, easing, and ticker.
+ * @returns An animation playback control object that can be used to start, stop, or control the animation.
+ * @template T - The type of PixiJS component(s) being animated.
+ */
+export function animate<T extends {}>(
+    components: T | T[],
+    keyframes: ObjectTarget<T>,
+    options?: AnimationOptions & { ticker?: PixiTicker },
+): AnimationPlaybackControlsWithThen;
+/**
+ * Animate a sequence of PixiJS components with transitions using [motion's animate](https://motion.dev/docs/animate) function.
+ * This function allows for complex animations involving multiple components and transitions.
+ * It integrates with the PixiJS ticker to ensure smooth animations.
+ * This function is intended for animating PixiJS components used for UI.
+ *
+ * Pixi’VN will **not** keep track of the animation state of this function (This feature is intended for animating PixiJS components used for UI.).
+ *
+ * @param sequence An array of segments to animate, where each segment is an array containing:
+ * - The PixiJS component to animate.
+ * - The keyframes to animate the component with.
+ * - An options object that can include animation options and a ticker.
+ * @param options Additional options for the sequence, such as duration and repeat count.
+ * @returns An animation playback control object that can be used to start, stop, or control the animation.
+ * @template T - The type of PixiJS component(s) being animated.
+ */
+export function animate<T extends {}>(
+    sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+    options?: SequenceOptions & { ticker?: PixiTicker; driver?: any },
+): AnimationPlaybackControlsWithThen;
+
+export function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
+    if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
+        if (arg2 && "repeat" in arg2 && arg2?.repeat === null) arg2.repeat = Infinity;
+        arg1.forEach((segment) => {
+            if (Array.isArray(segment) && segment.length === 3) {
+                const [_, __, options] = segment as ObjectSegmentWithTransition<T>;
+                if (options && "repeat" in options && options?.repeat === null) options.repeat = Infinity;
+            }
+        });
+        const {
+            ticker = new PIXI.Ticker(),
+            driver = motionDriver(ticker),
+            ...rest
+        } = (arg2 as SequenceOptions & { ticker?: PixiTicker; driver?: any }) || {};
+        return animateMotion(
+            arg1 as (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
+            {
+                driver,
+                ...rest,
+            } as any,
+        );
+    } else {
+        if (arg3 && "repeat" in arg3 && arg3?.repeat === null) arg3.repeat = Infinity;
+        const { ticker = new PIXI.Ticker(), driver = motionDriver(ticker), ...rest } = arg3 || {};
+        return animateMotion(arg1 as T | T[], arg2 as ObjectTarget<T>, { driver, ...rest });
+    }
+}
+
+/**
+ * Create a timeline for running a sequence of functions with transitions. Each function will be called with the provided arguments and will run for the specified duration.
+ * @example
+ * timeline([
+ *     { duration: 10, onComplete: () => console.log("First step completed") },
+ *     { duration: 5, onComplete: () => console.log("Second step completed") },
+ * ]);
+ * @param times
+ * @param options
+ * @returns
+ */
+export function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver?: any }) {
+    const n = { x: 0 };
+    // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
+    //     return [n, {x: index + 1}, option];
+    // });
+    const sequence: ObjectSegmentWithTransition<number | MotionValue<number> | { x: number }>[] = [];
+    times.forEach((option, index) => {
+        const { onComplete, onPlay, ...rest } = option;
+        if (onPlay) {
+            const objp = motionValue(index);
+            objp.on("change", debounce(onPlay, 50));
+            sequence.push([objp, index + 1, { duration: 0.01 }]);
+        }
+        sequence.push([n, { x: index + 1 }, rest]);
+        // TODO: onComplete doesn't work in the following cases. So I found this alternative method to handle it.
+        // TODO: https://github.com/motiondivision/motion/issues/3563
+        if (onComplete) {
+            const objc = motionValue(index);
+            objc.on("change", debounce(onComplete, 50));
+            sequence.push([objc, index + 1, { duration: 0.01 }]);
+        }
+    });
+    return animate<number | MotionValue<number> | { x: number }>(sequence, options);
+}
