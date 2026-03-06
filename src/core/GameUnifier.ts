@@ -1,10 +1,10 @@
 import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
-import { PixiError } from "@drincs/pixi-vn/error";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../narration/types/StepLabelType";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { logger } from "../utils/log-utility";
+import PixiError from "./PixiError";
 
 export default class GameUnifier {
     static init(options: {

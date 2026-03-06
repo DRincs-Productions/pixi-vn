@@ -29,7 +29,7 @@
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
     "paths": {                                           /* Specify a set of entries that re-map imports to additional lookup locations. */
-      "@drincs/pixi-vn/unifier": ["./src/unifier/index.ts"],
+      "@drincs/pixi-vn/core": ["./src/core/index.ts"],
       "@drincs/pixi-vn/narration": ["./src/narration/index.ts"],
       "@drincs/pixi-vn/history": ["./src/history/index.ts"],
       "@drincs/pixi-vn/storage": ["./src/storage/index.ts"],
@@ -37,7 +37,6 @@
       "@drincs/pixi-vn/canvas": ["./src/canvas/index.ts"],
       "@drincs/pixi-vn/sound": ["./src/sound/index.ts"],
       "@drincs/pixi-vn/characters": ["./src/characters/index.ts"],
-      "@drincs/pixi-vn/error": ["./src/error/index.ts"],
       "@drincs/pixi-vn/motion": ["./src/motion/index.ts"],
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

@@ -20,23 +20,17 @@
       "require": "./dist/index.cjs",
       "default": "./dist/index.mjs"
     },
-    "./error": {
-      "types": "./dist/error/index.d.ts",
-      "import": "./dist/error/index.mjs",
-      "require": "./dist/error/index.cjs",
-      "default": "./dist/error/index.mjs"
+    "./core": {
+      "types": "./dist/core/index.d.ts",
+      "import": "./dist/core/index.mjs",
+      "require": "./dist/core/index.cjs",
+      "default": "./dist/core/index.mjs"
     },
     "./pixi.js": {
       "types": "./dist/pixi/index.d.ts",
       "import": "./dist/pixi/index.js",
       "require": "./dist/pixi/index.js",
       "default": "./dist/pixi/index.js"
-    },
-    "./unifier": {
-      "types": "./dist/unifier.d.ts",
-      "import": "./dist/unifier.mjs",
-      "require": "./dist/unifier.cjs",
-      "default": "./dist/unifier.mjs"
     },
     "./narration": {
       "types": "./dist/narration.d.ts",
@@ -95,14 +89,11 @@
   },
   "typesVersions": {
     "*": {
-      "error": [
-        "./dist/error.d.ts"
+      "core": [
+        "./dist/core.d.ts"
       ],
       "pixi.js": [
         "./dist/pixi.d.ts"
-      ],
-      "unifier": [
-        "./dist/unifier.d.ts"
       ],
       "narration": [
         "./dist/narration.d.ts"
