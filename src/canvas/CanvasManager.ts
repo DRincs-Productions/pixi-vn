@@ -1,3 +1,4 @@
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import type {
     AnimationOptions,
     KeyframesType,
@@ -9,7 +10,6 @@ import type { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } 
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
-import { GameUnifier } from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import CanvasManagerStatic from "./CanvasManagerStatic";

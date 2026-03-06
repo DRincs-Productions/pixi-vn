@@ -1,4 +1,4 @@
-import { PixiError } from "@drincs/pixi-vn/error";
+import { PixiError } from "@drincs/pixi-vn/core";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import sha1 from "crypto-js/sha1";

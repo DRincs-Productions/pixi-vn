@@ -1,4 +1,4 @@
-import { GameUnifier } from "@drincs/pixi-vn/unifier";
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import StorageGameState, { StorageGameStateItem } from "./interfaces/StorageGameState";
