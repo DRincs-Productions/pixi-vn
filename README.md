@@ -3,10 +3,13 @@
 ![pixi-vn-cover](https://github.com/user-attachments/assets/28c41fe1-c539-4ebb-b7d4-8cb9f79e089e)
 
 <p align="center">
-  <a href="https://npmjs.com/package/@drincs/pixi-vn"><img src="https://img.shields.io/npm/v/@drincs/pixi-vn.svg" alt="npm package"></a>
-  <a href="https://npmjs.com/package/@drincs/pixi-vn"><img src="https://img.shields.io/npm/dm/@drincs/pixi-vn" alt="npm downloads"></a>
-  <a href="https://discord.gg/E95FZWakzp"><img alt="Discord" src="https://img.shields.io/discord/1263071210011496501"></a>
+  <a href="https://www.npmjs.com/package/@drincs/pixi-vn" rel="noopener noreferrer nofollow"><img src="https://img.shields.io/npm/v/@drincs/pixi-vn?label=version" alt="npm version"></a>
+  <a href="https://www.npmjs.com/package/@drincs/pixi-vn" rel="noopener noreferrer nofollow"><img src="https://img.shields.io/npm/dm/@drincs/pixi-vn" alt="npm downloads per month"></a>
+  <a target="_blank" href="https://www.jsdelivr.com/package/npm/@drincs/pixi-vn" rel="noopener noreferrer nofollow"><img alt="jsDelivr hits (npm)" src="https://img.shields.io/jsdelivr/npm/hm/@drincs/pixi-vn?logo=jsdeliver"></a>
+  <a href="https://www.npmjs.com/package/@drincs/pixi-vn" rel="noopener noreferrer nofollow"><img alt="NPM License" src="https://img.shields.io/npm/l/@drincs/pixi-vn"></a>
+  <a target="_blank" href="https://discord.gg/E95FZWakzp" rel="noopener noreferrer nofollow"><img alt="Discord" src="https://img.shields.io/discord/1263071210011496501?label=discord"></a>
 </p>
+
 
 Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
 
@@ -178,5 +181,6 @@ body {
   overflow: hidden;
 }
 ```
+
 
 
