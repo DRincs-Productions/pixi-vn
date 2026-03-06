@@ -1,5 +1,7 @@
-import { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
+import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
+import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/error";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../narration/types/StepLabelType";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { logger } from "../utils/log-utility";
@@ -119,6 +121,21 @@ export default class GameUnifier {
          * @returns The character or undefined if it does not exist.
          */
         getCharacter: (id: string) => CharacterInterface | undefined;
+        /**
+         * This function is called to animate a component.
+         * @param components - The PixiJS component(s) to animate.
+         * @param keyframes - The keyframes to animate the component(s) with.
+         * @param options - Additional options for the animation, including duration, easing, and ticker.
+         * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+         * @returns The id of tickers.
+         * @template T - The type of Pixi’VN component(s) being animated.
+         */
+        animate: <T extends CanvasBaseInterface<any>>(
+            components: T | string | (string | T)[],
+            keyframes: any,
+            options?: any,
+            priority?: UPDATE_PRIORITY,
+        ) => string | undefined;
     }) {
         options.navigate && (GameUnifier._navigate = options.navigate);
         GameUnifier._getStepCounter = options.getStepCounter;
@@ -413,4 +430,33 @@ export default class GameUnifier {
 
     static onEnd?: StepLabelType;
     static onError?: (type: "step", error: any, props: StepLabelPropsType) => void | Promise<void>;
+    private static _animate?: <T>(
+        components: T | string | (string | T)[],
+        keyframes: any,
+        options?: any,
+        priority?: UPDATE_PRIORITY,
+    ) => string | undefined;
+    /**
+     * This function is called to animate a component.
+     * @param components - The PixiJS component(s) to animate.
+     * @param keyframes - The keyframes to animate the component(s) with.
+     * @param options - Additional options for the animation, including duration, easing, and ticker.
+     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     * @returns The id of tickers.
+     * @template T - The type of Pixi’VN component(s) being animated.
+     */
+    static get animate() {
+        if (!GameUnifier._animate) {
+            logger.warn(
+                "Animate function not initialized. You should add the animate function in the Game.init() method.",
+            );
+            return () => {
+                logger.warn(
+                    "Animate function not initialized. You should add the animate function in the Game.init() method.",
+                );
+                return undefined;
+            };
+        }
+        return GameUnifier._animate;
+    }
 }

@@ -1,9 +1,15 @@
+import type {
+    AnimationOptions,
+    KeyframesType,
+    ObjectSegment,
+    ObjectSegmentWithTransition,
+    SequenceOptions,
+} from "@drincs/pixi-vn/motion";
 import type { ApplicationOptions, Container as PixiContainer, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
-import MotionSequenceTicker from "../motion/components/MotionSequenceTicker";
-import MotionTicker from "../motion/components/MotionTicker";
+import { GameUnifier } from "../unifier";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import CanvasManagerStatic from "./CanvasManagerStatic";
@@ -18,12 +24,6 @@ import { Ticker, TickerArgs, TickerInfo } from "./tickers";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
 import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
-import AnimationOptions, {
-    KeyframesType,
-    ObjectSegment,
-    ObjectSegmentWithTransition,
-    SequenceOptions,
-} from "./types/AnimationOptions";
 import { PauseType } from "./types/PauseType";
 import { RepeatType } from "./types/RepeatType";
 
@@ -775,59 +775,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         options?: AnimationOptions | SequenceOptions,
         priority?: UPDATE_PRIORITY,
     ): string | undefined {
-        try {
-            keyframes = createExportableElement(keyframes);
-        } catch (e) {
-            logger.error("animate keyframes cannot contain functions or classes");
-            throw e;
-        }
-        try {
-            options = createExportableElement(options);
-        } catch (e) {
-            logger.error("animate options cannot contain functions or classes");
-            throw e;
-        }
-        let aliases: string[] = [];
-        if (typeof components === "string") {
-            aliases = [components];
-        } else if (Array.isArray(components)) {
-            aliases = components.map((c) => (typeof c === "string" ? c : c.label));
-        } else {
-            aliases = [components.label];
-        }
-        let ticker: MotionSequenceTicker | MotionTicker;
-        if (Array.isArray(keyframes)) {
-            ticker = new MotionSequenceTicker(
-                {
-                    sequence: keyframes as (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
-                    options: options as SequenceOptions,
-                },
-                {
-                    priority: priority,
-                    canvasElementAliases: aliases,
-                },
-            );
-        } else {
-            ticker = new MotionTicker(
-                {
-                    keyframes: keyframes as KeyframesType<T>,
-                    options: options as AnimationOptions,
-                },
-                {
-                    priority: priority,
-                    canvasElementAliases: aliases,
-                },
-            );
-        }
-        const id = this.addTicker<any>(aliases, ticker);
-        const { forceCompleteBeforeNext } = options || {};
-        const { completeOnContinue = forceCompleteBeforeNext } = options || {};
-        if (id && completeOnContinue) {
-            this.completeTickerOnStepEnd({
-                id: id,
-            });
-        }
-        return id;
+        return GameUnifier.animate(components, keyframes as any, options as any, priority);
     }
 
     /* Layers Methods */

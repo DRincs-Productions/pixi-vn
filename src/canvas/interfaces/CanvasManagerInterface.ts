@@ -1,4 +1,11 @@
 import type {
+    AnimationOptions,
+    KeyframesType,
+    ObjectSegment,
+    ObjectSegmentWithTransition,
+    SequenceOptions,
+} from "@drincs/pixi-vn/motion";
+import type {
     Application,
     ApplicationOptions,
     ContainerChild,
@@ -9,12 +16,6 @@ import type {
 import { Devtools } from "@pixi/devtools";
 import Layer from "../components/Layer";
 import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import AnimationOptions, {
-    KeyframesType,
-    ObjectSegment,
-    ObjectSegmentWithTransition,
-    SequenceOptions,
-} from "../types/AnimationOptions";
 import { PauseType } from "../types/PauseType";
 import { RepeatType } from "../types/RepeatType";
 import { CanvasBaseInterface } from "./CanvasBaseInterface";

@@ -25,6 +25,7 @@ export * from "./utils";
 import * as canvasUtils from "@drincs/pixi-vn/canvas";
 import * as characterUtils from "@drincs/pixi-vn/characters";
 import * as historyUtils from "@drincs/pixi-vn/history";
+import { motion } from "@drincs/pixi-vn/motion";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
 import type { ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import * as soundUtils from "@drincs/pixi-vn/sound";
@@ -199,6 +200,10 @@ export namespace Game {
 
                     canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
                 } catch (e) {}
+            },
+            // animate function
+            animate: (components, keyframes, options, priority) => {
+                return motion.animate(components, keyframes, options, priority);
             },
             // storage
             getVariable: (key) => storageUtils.storage.get(key),
