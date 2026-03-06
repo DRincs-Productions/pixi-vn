@@ -1,5 +1,4 @@
-import { PixiError } from "@drincs/pixi-vn/error";
-import { GameUnifier } from "@drincs/pixi-vn/unifier";
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { IMediaInstance, Sound as PixiSound } from "@pixi/sound";
 import SoundManagerStatic from "../SoundManagerStatic";
 import SoundOptions, { SoundPlayOptions } from "../interfaces/SoundOptions";

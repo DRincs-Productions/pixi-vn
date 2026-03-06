@@ -1,4 +1,4 @@
-import { PixiError } from "@drincs/pixi-vn/error";
+import { PixiError } from "@drincs/pixi-vn/core";
 import { logger } from "./log-utility";
 
 /**

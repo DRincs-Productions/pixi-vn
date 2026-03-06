@@ -1,5 +1,6 @@
 export * from "@drincs/pixi-vn/canvas";
 export * from "@drincs/pixi-vn/characters";
+export * from "@drincs/pixi-vn/core";
 export * from "@drincs/pixi-vn/history";
 export * from "@drincs/pixi-vn/narration";
 export type {
@@ -16,7 +17,6 @@ export type {
 } from "@drincs/pixi-vn/pixi.js";
 export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
-export * from "@drincs/pixi-vn/unifier";
 export * from "./classes";
 export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 export * from "./interfaces";
@@ -24,13 +24,13 @@ export * from "./utils";
 
 import * as canvasUtils from "@drincs/pixi-vn/canvas";
 import * as characterUtils from "@drincs/pixi-vn/characters";
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import { motion } from "@drincs/pixi-vn/motion";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
 import type { ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
-import { GameUnifier } from "@drincs/pixi-vn/unifier";
 import type { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
 import * as pixivninterface from "./interfaces";

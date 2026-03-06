@@ -1,5 +1,5 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import { GameUnifier } from "@drincs/pixi-vn/unifier";
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import diff from "microdiff";
 import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory, StepLabelPropsType } from "../narration";
 import { StorageElementType } from "../storage/types/StorageElementType";

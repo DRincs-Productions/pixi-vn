@@ -1,5 +1,4 @@
-import { PixiError } from "@drincs/pixi-vn/error";
-import { GameUnifier } from "@drincs/pixi-vn/unifier";
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { LabelAbstract } from ".";
 import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
 import { createExportableElement } from "../utils";

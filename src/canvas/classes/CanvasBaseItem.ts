@@ -1,4 +1,4 @@
-import { PixiError } from "@drincs/pixi-vn/error";
+import { PixiError } from "@drincs/pixi-vn/core";
 import { canvas, CanvasBaseItemMemory } from "..";
 import canvasComponentDecorator from "../decorators/canvas-element-decorator";
 

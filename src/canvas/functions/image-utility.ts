@@ -1,4 +1,4 @@
-import { PixiError } from "@drincs/pixi-vn/error";
+import { PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, ImageSpriteOptions } from "..";
 import ImageSprite from "../components/ImageSprite";
