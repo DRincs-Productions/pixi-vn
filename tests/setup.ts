@@ -1,3 +1,4 @@
+import { motion } from "@drincs/pixi-vn/motion";
 import {
     GameUnifier,
     HistoryManagerStatic,
@@ -66,4 +67,8 @@ GameUnifier.init({
     getFlag: (key) => storage.getFlag(key),
     setFlag: (name, value) => storage.setFlag(name, value),
     onLabelClosing: (openedLabelsNumber) => StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
+    // animations
+    animate: (target, animationProps, options, priority) => {
+        motion.animate(target, animationProps, options, priority);
+    },
 });
