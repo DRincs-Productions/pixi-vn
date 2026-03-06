@@ -1,4 +1,5 @@
 import type { CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "@drincs/pixi-vn/canvas";
+import { canvas } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/error";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";

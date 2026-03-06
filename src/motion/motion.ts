@@ -1,4 +1,5 @@
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
+import { canvas } from "@drincs/pixi-vn/canvas";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -74,11 +75,11 @@ namespace motion {
                 },
             );
         }
-        const id = this.addTicker<any>(aliases, ticker);
+        const id = canvas.addTicker<any>(aliases, ticker);
         const { forceCompleteBeforeNext } = options || {};
         const { completeOnContinue = forceCompleteBeforeNext } = options || {};
         if (id && completeOnContinue) {
-            this.completeTickerOnStepEnd({
+            canvas.completeTickerOnStepEnd({
                 id: id,
             });
         }
