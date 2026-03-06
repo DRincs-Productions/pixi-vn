@@ -153,6 +153,7 @@ export default class GameUnifier {
         options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._getCharacter = options.getCharacter;
+        GameUnifier._animate = options.animate;
     }
     private static _navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
@@ -430,12 +431,15 @@ export default class GameUnifier {
 
     static onEnd?: StepLabelType;
     static onError?: (type: "step", error: any, props: StepLabelPropsType) => void | Promise<void>;
-    private static _animate: <T>(
+    private static _animate: <T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: any,
         options?: any,
         priority?: UPDATE_PRIORITY,
-    ) => string | undefined;
+    ) => string | undefined = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+    };
     /**
      * This function is called to animate a component.
      * @param components - The PixiJS component(s) to animate.
