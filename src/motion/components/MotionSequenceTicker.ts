@@ -1,10 +1,11 @@
+import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import {
     AnimationPlaybackControlsWithThen,
     ObjectSegment as MotionObjectSegment,
     ObjectSegmentWithTransition as MotionObjectSegmentWithTransition,
 } from "motion";
-import { animate, CanvasBaseInterface, ObjectSegment, ObjectSegmentWithTransition, SequenceOptions } from "../..";
-import { TickerIdType } from "../../types/TickerIdType";
+import { ObjectSegment, ObjectSegmentWithTransition, SequenceOptions } from "../interfaces/AnimationOptions";
+import { animate } from "../utils";
 import MotionTickerBase from "./MotionTickerBase";
 
 interface TArgs {
@@ -49,5 +50,5 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
         this._animation = animation;
         return animation;
     }
-    alias: TickerIdType = "motion-sequence";
+    alias: string = "motion-sequence";
 }

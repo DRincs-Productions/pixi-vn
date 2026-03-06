@@ -1,12 +1,11 @@
+import type { CanvasBaseInterface, CommonTickerProps } from "@drincs/pixi-vn/canvas";
 import {
     At,
     AnimationOptions as MotionAnimationOptions,
     SequenceOptions as MotionSequenceOptions,
     ObjectTarget,
 } from "motion";
-import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
-import { CommonTickerProps } from "../tickers";
-import MotionComponentExtension from "../tickers/interfaces/MotionComponentExtension";
+import MotionComponentExtension from "./MotionComponentExtension";
 
 export type AnimationOptionsCommon = Omit<
     MotionAnimationOptions,

@@ -82,16 +82,6 @@ export type {
     ZoomInOutProps,
 } from "./interfaces/transition-props";
 export * from "./tickers";
-export type {
-    default as AnimationOptions,
-    AnimationOptionsCommon,
-    AnimationSequenceOptions,
-    At,
-    KeyframesType,
-    ObjectSegment,
-    ObjectSegmentWithTransition,
-    SequenceOptions,
-} from "./types/AnimationOptions";
 export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";

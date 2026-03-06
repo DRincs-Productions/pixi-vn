@@ -1,7 +1,8 @@
+import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import { AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
-import { animate, AnimationOptions, CanvasBaseInterface } from "../..";
-import { TickerIdType } from "../../types/TickerIdType";
+import AnimationOptions from "../interfaces/AnimationOptions";
 import MotionComponentExtension from "../interfaces/MotionComponentExtension";
+import { animate } from "../utils";
 import MotionTickerBase from "./MotionTickerBase";
 
 interface TArgs {
@@ -35,5 +36,5 @@ export default class MotionTicker extends MotionTickerBase<TArgs> {
         this._animation = animation;
         return animation;
     }
-    alias: TickerIdType = "motion";
+    alias: string = "motion";
 }

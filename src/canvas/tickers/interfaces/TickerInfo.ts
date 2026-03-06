@@ -1,5 +1,4 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { TickerIdType } from "../../types/TickerIdType";
 import Ticker from "./Ticker";
 import TickerArgs from "./TickerArgs";
 
@@ -18,7 +17,7 @@ export default interface TickerInfo<TArgs extends TickerArgs> {
 }
 
 export interface TickerHistory<TArgs extends TickerArgs> {
-    id: TickerIdType;
+    id: string;
     args: TArgs;
     /**
      * The aliases of the canvas elements that are connected to this ticker

@@ -85,10 +85,19 @@
       "import": "./dist/vite-listener.mjs",
       "require": "./dist/vite-listener.cjs",
       "default": "./dist/vite-listener.mjs"
+    },
+    "./motion": {
+      "types": "./dist/motion.d.ts",
+      "import": "./dist/motion.mjs",
+      "require": "./dist/motion.cjs",
+      "default": "./dist/motion.mjs"
     }
   },
   "typesVersions": {
     "*": {
+      "error": [
+        "./dist/error.d.ts"
+      ],
       "pixi.js": [
         "./dist/pixi.d.ts"
       ],
@@ -112,6 +121,15 @@
       ],
       "characters": [
         "./dist/characters.d.ts"
+      ],
+      "vite": [
+        "./dist/vite.d.ts"
+      ],
+      "vite-listener": [
+        "./dist/vite-listener.d.ts"
+      ],
+      "motion": [
+        "./dist/motion.d.ts"
       ]
     }
   },

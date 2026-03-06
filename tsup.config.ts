@@ -57,6 +57,7 @@ export default defineConfig([
         minify: true,
         bundle: true,
         skipNodeModulesBundle: false,
+        external: ["@drincs/pixi-vn/error"],
         outExtension({ format }) {
             return {
                 js: format === "esm" ? ".mjs" : ".cjs",
@@ -80,7 +81,46 @@ export default defineConfig([
         minify: true,
         bundle: true,
         skipNodeModulesBundle: false,
-        external: ["@drincs/pixi-vn/unifier", "@drincs/pixi-vn/pixi.js", "@pixi/sound", "@pixi/devtools", "motion"],
+        external: [
+            "@drincs/pixi-vn/unifier",
+            "@drincs/pixi-vn/pixi.js",
+            "@drincs/pixi-vn/error",
+            // external dependencies
+            "@pixi/sound",
+            "@pixi/devtools",
+        ],
+        outExtension({ format }) {
+            return {
+                js: format === "esm" ? ".mjs" : ".cjs",
+            };
+        },
+    },
+    {
+        target: "es2020",
+        entry: {
+            motion: "src/motion/index.ts",
+        },
+        format: ["cjs", "esm"],
+        dts: true,
+        treeshake: true,
+        clean: false,
+        minify: true,
+        bundle: true,
+        skipNodeModulesBundle: false,
+        external: [
+            "@drincs/pixi-vn/unifier",
+            "@drincs/pixi-vn/pixi.js",
+            "@drincs/pixi-vn/error",
+            // submodules
+            "@drincs/pixi-vn/narration",
+            "@drincs/pixi-vn/history",
+            "@drincs/pixi-vn/storage",
+            "@drincs/pixi-vn/canvas",
+            "@drincs/pixi-vn/sound",
+            "@drincs/pixi-vn/characters",
+            // external dependencies
+            "motion",
+        ],
         outExtension({ format }) {
             return {
                 js: format === "esm" ? ".mjs" : ".cjs",
@@ -105,12 +145,16 @@ export default defineConfig([
         external: [
             "@drincs/pixi-vn/unifier",
             "@drincs/pixi-vn/pixi.js",
+            "@drincs/pixi-vn/error",
+            // submodules
             "@drincs/pixi-vn/narration",
             "@drincs/pixi-vn/history",
             "@drincs/pixi-vn/storage",
             "@drincs/pixi-vn/canvas",
             "@drincs/pixi-vn/sound",
             "@drincs/pixi-vn/characters",
+            // animation
+            "@drincs/pixi-vn/motion",
         ],
         outExtension({ format }) {
             return {

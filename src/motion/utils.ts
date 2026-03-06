@@ -11,8 +11,7 @@ import {
     ObjectTarget,
     SequenceOptions,
 } from "motion";
-import { canvas } from "../..";
-import { debounce } from "../../../utils/time-utility";
+import { debounce } from "../utils/time-utility";
 
 export type SegmentOptions = AnimationOptions & At;
 type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, SegmentOptions];
@@ -27,7 +26,7 @@ type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, Segme
  * const animation = animate(mySprite, { x: 100 }, { duration: 1, driver });
  * animation.start();
  */
-const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] = (ticker) => (update) => {
+export const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] = (ticker) => (update) => {
     const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
     return {
         start: (_keepAlive = true) => {
@@ -44,14 +43,13 @@ const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] = (ticker
  * This function integrates with the PixiJS ticker to ensure smooth animations.
  *
  * Pixi’VN will **not** keep track of the animation state of this function (This feature is intended for animating PixiJS components used for UI.).
- * If you want Pixi'VN to save the animation state in saves, use the {@link canvas.animate} function instead.
  * @param components - The PixiJS component(s) to animate.
  * @param keyframes - The keyframes to animate the component(s) with.
  * @param options - Additional options for the animation, including duration, easing, and ticker.
  * @returns An animation playback control object that can be used to start, stop, or control the animation.
  * @template T - The type of PixiJS component(s) being animated.
  */
-function animate<T extends {}>(
+export function animate<T extends {}>(
     components: T | T[],
     keyframes: ObjectTarget<T>,
     options?: AnimationOptions & { ticker?: PixiTicker },
@@ -63,7 +61,6 @@ function animate<T extends {}>(
  * This function is intended for animating PixiJS components used for UI.
  *
  * Pixi’VN will **not** keep track of the animation state of this function (This feature is intended for animating PixiJS components used for UI.).
- * If you want Pixi'VN to save the animation state in saves, use the {@link canvas.animate} function instead
  *
  * @param sequence An array of segments to animate, where each segment is an array containing:
  * - The PixiJS component to animate.
@@ -73,12 +70,12 @@ function animate<T extends {}>(
  * @returns An animation playback control object that can be used to start, stop, or control the animation.
  * @template T - The type of PixiJS component(s) being animated.
  */
-function animate<T extends {}>(
+export function animate<T extends {}>(
     sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],
     options?: SequenceOptions & { ticker?: PixiTicker; driver?: any },
 ): AnimationPlaybackControlsWithThen;
 
-function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
+export function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
     if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
         if (arg2 && "repeat" in arg2 && arg2?.repeat === null) arg2.repeat = Infinity;
         arg1.forEach((segment) => {
@@ -117,7 +114,7 @@ function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlayb
  * @param options
  * @returns
  */
-function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver?: any }) {
+export function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver?: any }) {
     const n = { x: 0 };
     // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
     //     return [n, {x: index + 1}, option];
@@ -141,5 +138,3 @@ function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?
     });
     return animate<number | MotionValue<number> | { x: number }>(sequence, options);
 }
-
-export { animate, motionDriver, timeline };

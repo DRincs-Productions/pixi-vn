@@ -1,10 +1,10 @@
+import type { CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "@drincs/pixi-vn/canvas";
+import { canvas } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/error";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import sha1 from "crypto-js/sha1";
 import { AnimationPlaybackControlsWithThen } from "motion";
-import { canvas, CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "../..";
-import { TickerIdType } from "../../types/TickerIdType";
 
 export default abstract class MotionTickerBase<
     TArgs extends TickerArgs & {
@@ -47,7 +47,7 @@ export default abstract class MotionTickerBase<
         this.id = id;
         this.canvasElementAliases = canvasElementAliases;
     }
-    abstract alias: TickerIdType;
+    abstract alias: string;
     readonly id: string;
     protected _args: TArgs;
     get args(): TArgs {

@@ -4,7 +4,6 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import sha1 from "crypto-js/sha1";
 import { canvas, CanvasManagerStatic, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
-import { TickerIdType } from "../../types/TickerIdType";
 import { tickerDecorator } from "../decorators/RegisteredTickers";
 import TickerArgs from "../interfaces/TickerArgs";
 import TickerValue from "./TickerValue";
@@ -81,7 +80,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
         this.id = id;
         this.canvasElementAliases = canvasElementAliases;
     }
-    readonly alias: TickerIdType;
+    readonly alias: string;
     readonly id: string;
     args: TArgs;
     duration?: number;

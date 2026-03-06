@@ -1,4 +1,4 @@
-import AnimationOptions from "../types/AnimationOptions";
+import type { AnimationOptions } from "@drincs/pixi-vn/motion";
 
 export interface BaseTransitionProps {
     /**

@@ -1,5 +1,4 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { TickerIdType } from "../../types/TickerIdType";
 import RegisteredTickers from "../decorators/RegisteredTickers";
 import TickerArgs from "./TickerArgs";
 
@@ -19,7 +18,7 @@ export default interface Ticker<TArgs extends TickerArgs> {
     /**
      * Get the alias of the ticker class. This variable is used in the system to get the ticker class by id, {@link RegisteredTickers.getInstance}
      */
-    readonly alias: TickerIdType;
+    readonly alias: string;
     /**
      * The id of the ticker. Must be unique for each ticker instance.
      */
