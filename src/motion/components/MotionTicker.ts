@@ -1,7 +1,8 @@
+import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import { AnimationPlaybackControlsWithThen, ObjectTarget } from "motion";
-import { AnimationOptions, CanvasBaseInterface } from "../../canvas";
-import MotionComponentExtension from "../../canvas/tickers/interfaces/MotionComponentExtension";
-import motion from "../motion";
+import AnimationOptions from "../interfaces/AnimationOptions";
+import MotionComponentExtension from "../interfaces/MotionComponentExtension";
+import { animate } from "../utils";
 import MotionTickerBase from "./MotionTickerBase";
 
 interface TArgs {
@@ -24,7 +25,7 @@ export default class MotionTicker extends MotionTickerBase<TArgs> {
             return animation;
         }
         let proxies = this.canvasElementAliases.map((alias) => this.createItem(alias));
-        animation = motion.animate(proxies, this._args.keyframes, {
+        animation = animate(proxies, this._args.keyframes, {
             ...this._args.options,
             onComplete: () => this.onComplete(),
             ticker: this.ticker,
