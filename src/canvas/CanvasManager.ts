@@ -775,7 +775,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         options?: AnimationOptions | SequenceOptions,
         priority?: UPDATE_PRIORITY,
     ): string | undefined {
-        return GameUnifier.animate(components, keyframes as any, options as any, priority);
+        return GameUnifier.animate(components, keyframes, options, priority);
     }
 
     /* Layers Methods */

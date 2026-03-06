@@ -430,7 +430,7 @@ export default class GameUnifier {
 
     static onEnd?: StepLabelType;
     static onError?: (type: "step", error: any, props: StepLabelPropsType) => void | Promise<void>;
-    private static _animate?: <T>(
+    private static _animate: <T>(
         components: T | string | (string | T)[],
         keyframes: any,
         options?: any,
@@ -446,17 +446,6 @@ export default class GameUnifier {
      * @template T - The type of Pixi’VN component(s) being animated.
      */
     static get animate() {
-        if (!GameUnifier._animate) {
-            logger.warn(
-                "Animate function not initialized. You should add the animate function in the Game.init() method.",
-            );
-            return () => {
-                logger.warn(
-                    "Animate function not initialized. You should add the animate function in the Game.init() method.",
-                );
-                return undefined;
-            };
-        }
         return GameUnifier._animate;
     }
 }
