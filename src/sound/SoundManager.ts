@@ -198,9 +198,6 @@ export default class SoundManager implements SoundManagerInterface {
     duration(alias: string): number {
         return sound.duration(alias);
     }
-    close() {
-        return sound.close();
-    }
 
     clear() {
         this.stopAll();

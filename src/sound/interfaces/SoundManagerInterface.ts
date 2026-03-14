@@ -2,7 +2,7 @@ import { Sound, SoundLibrary } from "@pixi/sound";
 import SoundGameState from "./SoundGameState";
 import SoundOptions from "./SoundOptions";
 
-export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "add"> {
+export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "add" | "close"> {
     /**
      * Adds a new sound by alias.
      * @param alias - The sound alias reference.
