@@ -1,38 +1,27 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import {
-    Filter,
-    filters,
-    IMediaContext,
-    IMediaInstance,
-    Sound as PixiSound,
-    sound,
-    SoundLibrary,
-    SoundMap,
-} from "@pixi/sound";
+import { Filter, filters, IMediaContext, IMediaInstance, Sound as PixiSound, sound } from "@pixi/sound";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
 import SoundGameState, { ExportedSoundPlay } from "./interfaces/SoundGameState";
+import SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 
-export default class SoundManager extends SoundLibrary {
-    constructor() {
-        super();
-    }
-    override get context(): IMediaContext {
+export default class SoundManager implements SoundManagerInterface {
+    get context(): IMediaContext {
         return sound.context;
     }
-    override get filtersAll(): Filter[] {
+    get filtersAll(): Filter[] {
         return sound.filtersAll;
     }
-    override set filtersAll(filtersAll: Filter[]) {
+    set filtersAll(filtersAll: Filter[]) {
         sound.filtersAll = filtersAll.filter((f) => {
             return !(f instanceof filters.Filter);
         });
     }
-    override get supported(): boolean {
+    get supported(): boolean {
         return sound.supported;
     }
 
@@ -62,18 +51,7 @@ export default class SoundManager extends SoundLibrary {
 
         return options;
     }
-    override add(alias: string, options: SoundOptions | string): Sound;
-    /**
-     * @deprecated: Use `add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;` instead.
-     */
-    override add(map: any, globalOptions?: SoundOptions): SoundMap;
-    public override add(alias: string, sourceOptions?: SoundOptions | string): Sound | SoundMap {
-        if (typeof alias === "object") {
-            throw new PixiError(
-                "invalid_usage",
-                "The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.",
-            );
-        }
+    add(alias: string, sourceOptions: SoundOptions | string): Sound {
         if (this.exists(alias)) {
             this.remove(alias);
         }
@@ -95,74 +73,74 @@ export default class SoundManager extends SoundLibrary {
         sound.add(alias, s);
         return s;
     }
-    override get useLegacy(): boolean {
+    get useLegacy(): boolean {
         return sound.useLegacy;
     }
-    override set useLegacy(legacy: boolean) {
+    set useLegacy(legacy: boolean) {
         sound.useLegacy = legacy;
     }
-    override get disableAutoPause(): boolean {
+    get disableAutoPause(): boolean {
         return sound.disableAutoPause;
     }
-    override set disableAutoPause(autoPause: boolean) {
+    set disableAutoPause(autoPause: boolean) {
         sound.disableAutoPause = autoPause;
     }
-    override remove(alias: string): this {
+    remove(alias: string) {
         SoundManagerStatic.soundAliasesOrder = SoundManagerStatic.soundAliasesOrder.filter((t) => t !== alias);
         delete SoundManagerStatic.soundsPlaying[alias];
         delete SoundManagerStatic.sounds[alias];
-        return sound.remove(alias) as this;
+        return sound.remove(alias);
     }
-    override get volumeAll(): number {
+    get volumeAll(): number {
         return sound.volumeAll;
     }
-    override set volumeAll(volume: number) {
+    set volumeAll(volume: number) {
         sound.volumeAll = volume;
     }
-    override get speedAll(): number {
+    get speedAll(): number {
         return sound.speedAll;
     }
-    override set speedAll(speed: number) {
+    set speedAll(speed: number) {
         sound.speedAll = speed;
     }
-    override togglePauseAll(): boolean {
+    togglePauseAll(): boolean {
         return sound.togglePauseAll();
     }
-    override pauseAll(): this {
-        return sound.pauseAll() as this;
+    pauseAll() {
+        return sound.pauseAll();
     }
-    override resumeAll(): this {
-        return sound.resumeAll() as this;
+    resumeAll() {
+        return sound.resumeAll();
     }
-    override toggleMuteAll(): boolean {
+    toggleMuteAll(): boolean {
         return sound.toggleMuteAll();
     }
-    override muteAll(): this {
-        return sound.muteAll() as this;
+    muteAll() {
+        return sound.muteAll();
     }
-    override unmuteAll(): this {
-        return sound.unmuteAll() as this;
+    unmuteAll() {
+        return sound.unmuteAll();
     }
-    override removeAll(): this {
+    removeAll() {
         SoundManagerStatic.soundAliasesOrder = [];
         SoundManagerStatic.soundsPlaying = {};
         SoundManagerStatic.sounds = {};
-        return sound.removeAll() as this;
+        return sound.removeAll();
     }
-    override stopAll(): this {
+    stopAll() {
         for (let alias in SoundManagerStatic.sounds) {
             SoundManagerStatic.sounds[alias].stop();
         }
         SoundManagerStatic.soundsPlaying = {};
-        return sound.stopAll() as this;
+        return sound.stopAll();
     }
-    override exists(alias: string, assert?: boolean): boolean {
+    exists(alias: string, assert?: boolean): boolean {
         return sound.exists(alias, assert) || alias in SoundManagerStatic.sounds;
     }
-    override isPlaying(): boolean {
+    isPlaying(): boolean {
         return sound.isPlaying();
     }
-    override find(alias: string): Sound {
+    find(alias: string): Sound {
         let item = SoundManagerStatic.sounds[alias];
         if (item) {
             return item;
@@ -173,7 +151,7 @@ export default class SoundManager extends SoundLibrary {
         }
         return item;
     }
-    override play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
+    play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
         if (!this.exists(alias)) {
             throw new PixiError("unknown_element", "The alias is not found in the sound library.");
         }
@@ -184,11 +162,11 @@ export default class SoundManager extends SoundLibrary {
         };
         return sound.play(alias, options);
     }
-    override stop(alias: string): Sound {
+    stop(alias: string): Sound {
         delete SoundManagerStatic.soundsPlaying[alias];
         return sound.stop(alias);
     }
-    override pause(alias: string): Sound {
+    pause(alias: string): Sound {
         let item = SoundManagerStatic.soundsPlaying[alias];
         if (!item) {
             throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
@@ -199,7 +177,7 @@ export default class SoundManager extends SoundLibrary {
         };
         return sound.pause(alias);
     }
-    override resume(alias: string): Sound {
+    resume(alias: string): Sound {
         let item = SoundManagerStatic.soundsPlaying[alias];
         if (!item) {
             throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
@@ -211,17 +189,17 @@ export default class SoundManager extends SoundLibrary {
         };
         return sound.resume(alias);
     }
-    override volume(alias: string, volume?: number): number {
+    volume(alias: string, volume?: number): number {
         return sound.volume(alias, volume);
     }
-    override speed(alias: string, speed?: number): number {
+    speed(alias: string, speed?: number): number {
         return sound.speed(alias, speed);
     }
-    override duration(alias: string): number {
+    duration(alias: string): number {
         return sound.duration(alias);
     }
-    override close(): this {
-        return sound.close() as this;
+    close() {
+        return sound.close();
     }
 
     clear() {
