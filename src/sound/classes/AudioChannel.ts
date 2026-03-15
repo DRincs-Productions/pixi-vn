@@ -1,4 +1,5 @@
-import { sound, Sound, SoundLibrary } from "@pixi/sound";
+import { IMediaInstance, sound, Sound, SoundLibrary } from "@pixi/sound";
+import { proxyMedia } from "../functions/proxy-utility";
 import AudioChannelInterface from "../interfaces/AudioChannelInterface";
 import { SoundPlayOptions } from "../interfaces/SoundOptions";
 
@@ -55,9 +56,8 @@ export default class AudioChannel implements AudioChannelInterface {
     find(alias: string): Sound {
         throw new Error("Method not implemented.");
     }
-    async play(alias: string, options?: SoundPlayOptions): Promise<void> {
-        await sound.play(alias, options);
-        return;
+    async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
+        return proxyMedia(await sound.play(alias, options), this);
     }
     stop(alias: string): Sound {
         throw new Error("Method not implemented.");
