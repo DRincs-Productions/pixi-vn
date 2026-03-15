@@ -1,10 +1,7 @@
-import { SoundLibrary } from "@pixi/sound";
+import IMediaInstance from "./IMediaInstance";
 import { SoundPlayOptions } from "./SoundOptions";
 
-export default interface AudioChannelInterface extends Omit<
-    SoundLibrary,
-    "init" | "add" | "context" | "filtersAll" | "supported" | "useLegacy" | "close" | "play" | "disableAutoPause"
-> {
+export default interface AudioChannelInterface {
     /**
      * Plays a sound.
      * @param alias - The sound alias reference.
@@ -13,5 +10,5 @@ export default interface AudioChannelInterface extends Omit<
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
-    play(alias: string, options?: SoundPlayOptions): Promise<AudioChannelInterface>;
+    play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
 }
