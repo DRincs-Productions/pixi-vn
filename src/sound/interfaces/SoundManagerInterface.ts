@@ -1,16 +1,15 @@
+import type { Assets } from "@drincs/pixi-vn/pixi.js";
 import { Sound, SoundLibrary } from "@pixi/sound";
 import SoundGameState from "./SoundGameState";
-import SoundOptions from "./SoundOptions";
+import { SoundPlayOptions } from "./SoundOptions";
 
-export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "add" | "close"> {
+export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "close" | "add"> {
     /**
-     * Adds a new sound by alias.
-     * @param alias - The sound alias reference.
-     * @param options - Either the path or url to the source file.
-     *        or the object of options to use.
-     * @return Instance of the Sound object.
+     * @deprecated You can define sound assets directly in {@link Assets}
      */
-    add(alias: string, sourceOptions: SoundOptions | string): Sound;
+    add(alias: string, options?: SoundPlayOptions | string): Sound;
+    backgroundLoad(alias: string | string[]): Promise<void>;
+    backgroundLoadBundle(alias: string): Promise<void>;
     clear(): void;
     export(): SoundGameState;
     removeOldSoundAndExport(): SoundGameState;

@@ -1,5 +1,6 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import { Filter, filters, IMediaContext, IMediaInstance, Sound as PixiSound, sound } from "@pixi/sound";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { Filter, filters, IMediaContext, IMediaInstance, sound } from "@pixi/sound";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
@@ -25,53 +26,8 @@ export default class SoundManager implements SoundManagerInterface {
         return sound.supported;
     }
 
-    /**
-     * https://github.com/pixijs/sound/blob/main/src/SoundLibrary.ts#L187
-     */
-    private getOptions(
-        source: string | ArrayBuffer | AudioBuffer | HTMLAudioElement | SoundOptions,
-        overrides?: SoundOptions,
-    ): SoundOptions {
-        let options: SoundOptions;
-
-        if (typeof source === "string") {
-            options = { url: source };
-        } else if (Array.isArray(source)) {
-            options = { url: source };
-        } else if (
-            source instanceof ArrayBuffer ||
-            source instanceof AudioBuffer ||
-            source instanceof HTMLAudioElement
-        ) {
-            options = { source } as any;
-        } else {
-            options = source as SoundOptions;
-        }
-        options = { ...options, ...(overrides || {}) };
-
-        return options;
-    }
-    add(alias: string, sourceOptions: SoundOptions | string): Sound {
-        if (this.exists(alias)) {
-            this.remove(alias);
-        }
-
-        if (sourceOptions instanceof PixiSound) {
-            sourceOptions = sourceOptions.options;
-        }
-        let s: Sound;
-        if (sourceOptions instanceof Sound) {
-            s = sourceOptions;
-        } else {
-            let options: SoundOptions = this.getOptions(sourceOptions || {});
-            s = Sound.from(options);
-        }
-        s.alias = alias;
-
-        !SoundManagerStatic.soundAliasesOrder.includes(alias) && SoundManagerStatic.soundAliasesOrder.push(alias);
-        SoundManagerStatic.sounds[alias] = s;
-        sound.add(alias, s);
-        return s;
+    add(alias: string, sourceOptions: SoundOptions | string) {
+        return sound.add(alias, sourceOptions);
     }
     get useLegacy(): boolean {
         return sound.useLegacy;
@@ -86,9 +42,6 @@ export default class SoundManager implements SoundManagerInterface {
         sound.disableAutoPause = autoPause;
     }
     remove(alias: string) {
-        SoundManagerStatic.soundAliasesOrder = SoundManagerStatic.soundAliasesOrder.filter((t) => t !== alias);
-        delete SoundManagerStatic.soundsPlaying[alias];
-        delete SoundManagerStatic.sounds[alias];
         return sound.remove(alias);
     }
     get volumeAll(): number {
@@ -122,9 +75,6 @@ export default class SoundManager implements SoundManagerInterface {
         return sound.unmuteAll();
     }
     removeAll() {
-        SoundManagerStatic.soundAliasesOrder = [];
-        SoundManagerStatic.soundsPlaying = {};
-        SoundManagerStatic.sounds = {};
         return sound.removeAll();
     }
     stopAll() {
@@ -134,32 +84,26 @@ export default class SoundManager implements SoundManagerInterface {
         SoundManagerStatic.soundsPlaying = {};
         return sound.stopAll();
     }
-    exists(alias: string, assert?: boolean): boolean {
-        return sound.exists(alias, assert) || alias in SoundManagerStatic.sounds;
+    exists(alias: string): boolean {
+        return PIXI.Assets.resolver.hasKey(alias);
     }
     isPlaying(): boolean {
         return sound.isPlaying();
     }
     find(alias: string): Sound {
-        let item = SoundManagerStatic.sounds[alias];
-        if (item) {
-            return item;
-        }
-        item = sound.find(alias);
-        if (item) {
-            SoundManagerStatic.sounds[alias] = item;
-        }
-        return item;
+        return PIXI.Assets.get<Sound>(alias) || sound.find(alias);
     }
-    play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
+    async play(alias: string, options?: SoundPlayOptions | string): Promise<IMediaInstance> {
         if (!this.exists(alias)) {
             throw new PixiError("unknown_element", "The alias is not found in the sound library.");
         }
-        SoundManagerStatic.soundsPlaying[alias] = {
-            stepIndex: GameUnifier.stepCounter,
-            options: options,
-            paused: false,
-        };
+        try {
+            const item = await PIXI.Assets.load<Sound>(alias);
+            sound.add(alias, item);
+        } catch (e) {
+            logger.error("Error loading sound", e);
+            throw new PixiError("unknown_element", "The sound file could not be loaded.");
+        }
         return sound.play(alias, options);
     }
     stop(alias: string): Sound {
@@ -197,6 +141,37 @@ export default class SoundManager implements SoundManagerInterface {
     }
     duration(alias: string): number {
         return sound.duration(alias);
+    }
+    backgroundLoad(alias: string | string[]): Promise<void> {
+        const promise = PIXI.Assets.backgroundLoad(alias);
+
+        promise.then(() => {
+            if (typeof alias === "string") {
+                alias = [alias];
+            }
+            alias.forEach((alias) => {
+                const item = PIXI.Assets.get<Sound>(alias);
+                sound.add(alias, item);
+            });
+        });
+        return promise;
+    }
+    backgroundLoadBundle(alias: string): Promise<void> {
+        const promise = PIXI.Assets.backgroundLoadBundle(alias);
+        promise.then(async () => {
+            try {
+                const assets = await PIXI.Assets.loadBundle(alias);
+                for (let key in assets) {
+                    const item = assets[key];
+                    if (item instanceof Sound) {
+                        sound.add(key, item);
+                    }
+                }
+            } catch (e) {
+                logger.error("Error loading sound bundle", e);
+            }
+        });
+        return promise;
     }
 
     clear() {
