@@ -1,13 +1,12 @@
-import { CompleteCallback, IMediaInstance, PlayOptions, Sound, SoundLibrary } from "@pixi/sound";
+import { sound, Sound, SoundLibrary } from "@pixi/sound";
 import AudioChannelInterface from "../interfaces/AudioChannelInterface";
+import { SoundPlayOptions } from "../interfaces/SoundOptions";
 
 export default class AudioChannel implements AudioChannelInterface {
-    get disableAutoPause(): boolean {
-        throw new Error("Method not implemented.");
-    }
-    set disableAutoPause(autoPause: boolean) {
-        throw new Error("Method not implemented.");
-    }
+    constructor(
+        readonly alias: string,
+        private defaultOptions: SoundPlayOptions = {},
+    ) {}
     remove(alias: string): SoundLibrary {
         throw new Error("Method not implemented.");
     }
@@ -56,8 +55,9 @@ export default class AudioChannel implements AudioChannelInterface {
     find(alias: string): Sound {
         throw new Error("Method not implemented.");
     }
-    play(alias: string, options?: PlayOptions | CompleteCallback | string): IMediaInstance | Promise<IMediaInstance> {
-        throw new Error("Method not implemented.");
+    async play(alias: string, options?: SoundPlayOptions): Promise<void> {
+        await sound.play(alias, options);
+        return;
     }
     stop(alias: string): Sound {
         throw new Error("Method not implemented.");

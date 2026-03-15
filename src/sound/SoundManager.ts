@@ -1,10 +1,11 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { Filter, filters, IMediaContext, IMediaInstance, sound } from "@pixi/sound";
+import { Filter, filters, IMediaContext, sound } from "@pixi/sound";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
+import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import SoundGameState, { ExportedSoundPlay } from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
@@ -93,7 +94,7 @@ export default class SoundManager implements SoundManagerInterface {
     find(alias: string): Sound {
         return PIXI.Assets.get<Sound>(alias) || sound.find(alias);
     }
-    async play(alias: string, options?: SoundPlayOptions | string): Promise<IMediaInstance> {
+    async play(alias: string, options?: SoundPlayOptions): Promise<AudioChannelInterface> {
         if (!this.exists(alias)) {
             throw new PixiError("unknown_element", "The alias is not found in the sound library.");
         }

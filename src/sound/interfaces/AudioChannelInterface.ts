@@ -1,6 +1,14 @@
 import { SoundLibrary } from "@pixi/sound";
+import { SoundPlayOptions } from "./SoundOptions";
 
 export default interface AudioChannelInterface extends Omit<
     SoundLibrary,
-    "init" | "add" | "context" | "filtersAll" | "supported" | "useLegacy" | "close"
-> {}
+    "init" | "add" | "context" | "filtersAll" | "supported" | "useLegacy" | "close" | "play" | "disableAutoPause"
+> {
+    /**
+     * Plays a sound.
+     * @param alias - The sound alias reference.
+     * @param {PlayOptions|Function} options - The options or callback when done.
+     */
+    play(alias: string, options?: SoundPlayOptions): Promise<void>;
+}
