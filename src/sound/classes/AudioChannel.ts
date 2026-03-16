@@ -36,4 +36,34 @@ export default class AudioChannel implements AudioChannelInterface {
         });
         return media;
     }
+    private updateMediaVolume() {
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (mediaInstance.channelAlias === this.alias) {
+                mediaInstance.instance.volume = mediaInstance.options.volume || 1;
+            }
+        }
+    }
+    get volume(): number {
+        return this.channelOptions.volume || 1;
+    }
+    set volume(value: number) {
+        this.channelOptions.volume = value;
+        this.updateMediaVolume();
+    }
+    private updateMediaMuted() {
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (mediaInstance.channelAlias === this.alias) {
+                mediaInstance.instance.muted = mediaInstance.options.muted || false;
+            }
+        }
+    }
+    get muted(): boolean {
+        return this.channelOptions.muted || false;
+    }
+    set muted(value: boolean) {
+        this.channelOptions.muted = value;
+        this.updateMediaMuted();
+    }
 }
