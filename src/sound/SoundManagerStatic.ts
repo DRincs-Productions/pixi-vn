@@ -1,3 +1,4 @@
+import AudioChannel from "./classes/AudioChannel";
 import Sound from "./classes/Sound";
 import IMediaInstance from "./interfaces/IMediaInstance";
 import { SoundPlay } from "./interfaces/SoundGameState";
@@ -15,4 +16,5 @@ export default class SoundManagerStatic {
             options: SoundPlayOptions;
         };
     } = {};
+    static channels: AudioChannel[] = [];
 }

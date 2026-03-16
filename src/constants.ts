@@ -1,11 +1,15 @@
 import type { PauseType, RepeatType } from "./canvas";
 
 export { version as PIXIVN_VERSION } from "../package.json";
+/**
+ * @deprecated
+ */
 export const Repeat: RepeatType = "repeat";
 /**
  * Pause the tickers for a duration.
  * @param duration Duration in seconds
  * @returns The pause object
+ * @deprecated
  */
 export function Pause(duration: number): PauseType {
     return {
@@ -25,3 +29,8 @@ export const CANVAS_IMAGE_ID = "Image";
 export const CANVAS_SPRITE_ID = "Sprite";
 export const CANVAS_TEXT_ID = "Text";
 export const CANVAS_VIDEO_ID = "Video";
+
+/**
+ * The default audio channel for sounds that don't specify one.
+ */
+export const GENERAL_CHANNEL = "general";
