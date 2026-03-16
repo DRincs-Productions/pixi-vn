@@ -1,6 +1,6 @@
 import type { Assets } from "@drincs/pixi-vn/pixi.js";
 import { Sound, SoundLibrary } from "@pixi/sound";
-import AudioChannelInterface from "./AudioChannelInterface";
+import IMediaInstance from "./IMediaInstance";
 import SoundGameState from "./SoundGameState";
 import { SoundPlayOptions } from "./SoundOptions";
 
@@ -17,7 +17,7 @@ export default interface SoundManagerInterface extends Omit<SoundLibrary, "init"
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
-    play(alias: string, options?: SoundPlayOptions): Promise<AudioChannelInterface>;
+    play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
     backgroundLoad(alias: string | string[]): Promise<void>;
     backgroundLoadBundle(alias: string): Promise<void>;
     clear(): void;
