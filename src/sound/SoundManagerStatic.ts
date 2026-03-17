@@ -16,5 +16,5 @@ export default class SoundManagerStatic {
             options: SoundPlayOptions;
         };
     } = {};
-    static channels: AudioChannel[] = [];
+    static channels: { [alias: string]: AudioChannel } = {};
 }

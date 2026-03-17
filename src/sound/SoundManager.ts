@@ -3,12 +3,14 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Filter, filters, IMediaContext, sound } from "@pixi/sound";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
+import AudioChannel from "./classes/AudioChannel";
 import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
+import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import IMediaInstance from "./interfaces/IMediaInstance";
 import SoundGameState, { ExportedSoundPlay } from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
+import { SoundPlayOptions } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager implements SoundManagerInterface {
@@ -27,7 +29,7 @@ export default class SoundManager implements SoundManagerInterface {
         return sound.supported;
     }
 
-    add(alias: string, sourceOptions: SoundOptions | string) {
+    add(alias: string, sourceOptions: string) {
         return sound.add(alias, sourceOptions);
     }
     get useLegacy(): boolean {
@@ -177,6 +179,36 @@ export default class SoundManager implements SoundManagerInterface {
 
     clear() {
         this.stopAll();
+    }
+
+    /* Channel Methods */
+
+    addChannel(alias: string | string[]): AudioChannelInterface | undefined {
+        if (typeof alias !== "string") {
+            alias.forEach((a) => {
+                this.addChannel(a);
+            });
+            return;
+        }
+        if (SoundManagerStatic.channels[alias]) {
+            logger.warn(`Channel with alias ${alias} already exists.`);
+            return;
+        }
+        const channel = new AudioChannel(alias);
+        SoundManagerStatic.channels[alias] = channel;
+        return channel;
+    }
+
+    findChannel(alias: string): AudioChannelInterface {
+        const channel = SoundManagerStatic.channels[alias];
+        if (!channel) {
+            return this.addChannel(alias) as AudioChannelInterface;
+        }
+        return channel;
+    }
+
+    get channels(): AudioChannelInterface[] {
+        return Object.values(SoundManagerStatic.channels);
     }
 
     /* Export and Import Methods */
