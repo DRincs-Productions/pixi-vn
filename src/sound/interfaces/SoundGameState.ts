@@ -4,6 +4,7 @@ import SoundOptions, { SoundPlayOptions } from "./SoundOptions";
 export interface ExportedSound {
     options: SoundOptions;
     filters?: SoundFilterMemory[];
+    channelAlias?: string;
 }
 
 export interface SoundPlay {

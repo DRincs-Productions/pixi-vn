@@ -6,8 +6,17 @@ import { SoundPlayOptions } from "./interfaces/SoundOptions";
 
 export default class SoundManagerStatic {
     private constructor() {}
+    /**
+     * @deprecated
+     */
     static soundAliasesOrder: string[] = [];
+    /**
+     * @deprecated
+     */
     static soundsPlaying: { [key: string]: SoundPlay } = {};
+    /**
+     * @deprecated
+     */
     static sounds: { [key: string]: Sound } = {};
     static readonly mediaInstances: {
         [key: string]: {

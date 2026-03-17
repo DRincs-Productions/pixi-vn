@@ -222,6 +222,7 @@ export default class SoundManager implements SoundManagerInterface {
                 soundElements[alias] = {
                     ...sound,
                     sound: {
+                        channelAlias: SoundManagerStatic.mediaInstances[alias].channelAlias,
                         options: {
                             ...item.options,
                             autoPlay: item.autoPlay,
@@ -241,19 +242,6 @@ export default class SoundManager implements SoundManagerInterface {
             soundAliasesOrder: createExportableElement(SoundManagerStatic.soundAliasesOrder),
             filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
-    }
-    public removeOldSoundAndExport(): SoundGameState {
-        // let soundAliasesOrder = []
-        // for (let alias of GameSoundManager.soundAliasesOrder) {
-        //     if (sound.exists(alias)) {
-        //         let s = sound.find(alias)
-        //         if (s.loop) {
-        //             soundAliasesOrder.push(alias)
-        //         }
-        //     }
-        // }
-        // GameSoundManager.soundAliasesOrder = soundAliasesOrder
-        return this.export();
     }
     public restore(data: object) {
         const stepCounter = GameUnifier.stepCounter - 1;
