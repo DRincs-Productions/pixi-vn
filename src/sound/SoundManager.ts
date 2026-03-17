@@ -93,9 +93,6 @@ export default class SoundManager implements SoundManagerInterface {
     isPlaying(): boolean {
         return sound.isPlaying();
     }
-    find(alias: string): Sound {
-        return PIXI.Assets.get<Sound>(alias) || sound.find(alias);
-    }
     async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
         if (!this.exists(alias)) {
             throw new PixiError("unknown_element", "The alias is not found in the sound library.");
