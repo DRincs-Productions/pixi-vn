@@ -24,6 +24,7 @@ export default interface SoundManagerInterface extends Omit<SoundLibrary, "init"
      * If the asset is not yet loaded, it will be loaded with the new options.
      */
     edit(alias: string, options: SoundOptions): Promise<void>;
+    load(alias: string | string[]): Promise<void>;
     backgroundLoad(alias: string | string[]): Promise<void>;
     backgroundLoadBundle(alias: string): Promise<void>;
     clear(): void;

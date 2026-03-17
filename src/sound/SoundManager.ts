@@ -10,7 +10,7 @@ import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import IMediaInstance from "./interfaces/IMediaInstance";
 import SoundGameState from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import { SoundPlayOptions } from "./interfaces/SoundOptions";
+import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager implements SoundManagerInterface {
@@ -31,6 +31,18 @@ export default class SoundManager implements SoundManagerInterface {
 
     add(alias: string, sourceOptions: string) {
         return sound.add(alias, sourceOptions);
+    }
+    async edit(alias: string, options: SoundOptions): Promise<void> {
+        let s = sound.find(alias);
+        if (!s) {
+            await this.load(alias);
+            s = sound.find(alias);
+            if (!s) {
+                logger.error(`Sound with alias ${alias} not found after loading.`);
+                return;
+            }
+        }
+        s.options = options;
     }
     get useLegacy(): boolean {
         return sound.useLegacy;
@@ -141,6 +153,19 @@ export default class SoundManager implements SoundManagerInterface {
     }
     duration(alias: string): number {
         return sound.duration(alias);
+    }
+    load(alias: string | string[]): Promise<void> {
+        const promise = PIXI.Assets.load(alias);
+        promise.then(() => {
+            if (typeof alias === "string") {
+                alias = [alias];
+            }
+            alias.forEach((alias) => {
+                const item = PIXI.Assets.get<Sound>(alias);
+                sound.add(alias, item);
+            });
+        });
+        return promise;
     }
     backgroundLoad(alias: string | string[]): Promise<void> {
         const promise = PIXI.Assets.backgroundLoad(alias);
