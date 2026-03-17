@@ -23,14 +23,6 @@ export default interface SoundGameState {
     soundAliasesOrder: string[];
     filters?: SoundFilterMemory[];
     soundsPlaying: { [key: string]: ExportedSoundPlay };
-    /**
-     * @deprecated
-     */
-    playInStepIndex?: { [key: string]: SoundPlay };
-    /**
-     * @deprecated
-     */
-    sounds?: ExportedSoundOld;
 }
 
 interface ExportedSoundOld {

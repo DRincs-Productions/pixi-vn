@@ -273,45 +273,6 @@ export default class SoundManager implements SoundManagerInterface {
                 }
             }
 
-            if (data.hasOwnProperty("playInStepIndex")) {
-                let playInStepIndex = (data as SoundGameState)["playInStepIndex"];
-                if (playInStepIndex) {
-                    SoundManagerStatic.soundsPlaying = playInStepIndex;
-                }
-            }
-
-            if (data.hasOwnProperty("sounds")) {
-                let sounds = (data as SoundGameState)["sounds"];
-                for (let alias in sounds) {
-                    let item = sounds[alias];
-                    let autoPlay = false;
-                    let s = this.add(alias, {
-                        ...item.options,
-                        autoPlay: false,
-                    });
-
-                    if (alias in SoundManagerStatic.soundsPlaying) {
-                        let step = SoundManagerStatic.soundsPlaying[alias];
-                        if (
-                            item.options.loop ||
-                            (step.options && typeof step.options === "object" && step.options.loop)
-                        ) {
-                            autoPlay = true;
-                        } else if (step.stepIndex === stepCounter) {
-                            autoPlay = true;
-                        }
-
-                        if (item.filters) {
-                            s.filters = FilterMemoryToFilter(item.filters);
-                        }
-
-                        if (autoPlay) {
-                            s.play();
-                        }
-                    }
-                }
-            }
-
             if (data.hasOwnProperty("soundsPlaying")) {
                 let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
                 for (let alias in soundsPlaying) {
