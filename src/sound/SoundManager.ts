@@ -8,7 +8,7 @@ import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
 import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import IMediaInstance from "./interfaces/IMediaInstance";
-import SoundGameState, { ExportedSoundPlay } from "./interfaces/SoundGameState";
+import SoundGameState from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import { SoundPlayOptions } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
@@ -214,31 +214,31 @@ export default class SoundManager implements SoundManagerInterface {
     /* Export and Import Methods */
 
     public export(): SoundGameState {
-        let soundElements: { [key: string]: ExportedSoundPlay } = {};
-        for (let alias in SoundManagerStatic.soundsPlaying) {
-            let sound = SoundManagerStatic.soundsPlaying[alias];
-            let item = this.find(alias);
-            if (item) {
-                soundElements[alias] = {
-                    ...sound,
-                    sound: {
-                        channelAlias: SoundManagerStatic.mediaInstances[alias].channelAlias,
-                        options: {
-                            ...item.options,
-                            autoPlay: item.autoPlay,
-                            loop: item.loop,
-                            preload: item.preload,
-                            singleInstance: item.singleInstance,
-                            url: item.options.url,
-                            volume: item.options.volume,
-                        },
-                        filters: FilterToFilterMemory(item.media.filters),
-                    },
+        let mediaInstances: {
+            [key: string]: {
+                channelAlias: string;
+                soundAlias: string;
+                options: SoundPlayOptions;
+            };
+        } = Object.values(SoundManagerStatic.mediaInstances).reduce(
+            (acc, mediaInstance) => {
+                acc[mediaInstance.soundAlias] = {
+                    channelAlias: mediaInstance.channelAlias,
+                    soundAlias: mediaInstance.soundAlias,
+                    options: mediaInstance.options,
                 };
-            }
-        }
+                return acc;
+            },
+            {} as {
+                [key: string]: {
+                    channelAlias: string;
+                    soundAlias: string;
+                    options: SoundPlayOptions;
+                };
+            },
+        );
         return {
-            soundsPlaying: createExportableElement(soundElements),
+            mediaInstances: createExportableElement(mediaInstances),
             soundAliasesOrder: createExportableElement(SoundManagerStatic.soundAliasesOrder),
             filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };

@@ -21,6 +21,7 @@ export default class SoundManagerStatic {
     static readonly mediaInstances: {
         [key: string]: {
             channelAlias: string;
+            soundAlias: string;
             instance: IMediaInstance;
             options: SoundPlayOptions;
         };

@@ -23,6 +23,7 @@ export default class AudioChannel implements AudioChannelInterface {
         );
         SoundManagerStatic.mediaInstances[media.id] = {
             channelAlias: this.alias,
+            soundAlias: alias,
             instance: media,
             options: {
                 volume: options?.volume || 1,

@@ -4,7 +4,6 @@ import SoundOptions, { SoundPlayOptions } from "./SoundOptions";
 export interface ExportedSound {
     options: SoundOptions;
     filters?: SoundFilterMemory[];
-    channelAlias?: string;
 }
 
 export interface SoundPlay {
@@ -23,7 +22,17 @@ export interface ExportedSoundPlay extends SoundPlay {
 export default interface SoundGameState {
     soundAliasesOrder: string[];
     filters?: SoundFilterMemory[];
-    soundsPlaying: { [key: string]: ExportedSoundPlay };
+    /**
+     * @deprecated
+     */
+    soundsPlaying?: { [key: string]: ExportedSoundPlay };
+    mediaInstances: {
+        [key: string]: {
+            channelAlias: string;
+            soundAlias: string;
+            options: SoundPlayOptions;
+        };
+    };
 }
 
 interface ExportedSoundOld {
