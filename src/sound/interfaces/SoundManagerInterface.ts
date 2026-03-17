@@ -5,7 +5,7 @@ import IMediaInstance from "./IMediaInstance";
 import SoundGameState from "./SoundGameState";
 import SoundOptions, { SoundPlayOptions } from "./SoundOptions";
 
-export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "close" | "add" | "play"> {
+export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "close" | "add" | "play" | "find"> {
     /**
      * @deprecated You can define sound assets directly in {@link Assets}
      */
