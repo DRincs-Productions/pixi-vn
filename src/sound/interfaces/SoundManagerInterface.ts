@@ -3,7 +3,7 @@ import { Sound, SoundLibrary } from "@pixi/sound";
 import AudioChannelInterface from "./AudioChannelInterface";
 import IMediaInstance from "./IMediaInstance";
 import SoundGameState from "./SoundGameState";
-import { SoundPlayOptions } from "./SoundOptions";
+import SoundOptions, { SoundPlayOptions } from "./SoundOptions";
 
 export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "close" | "add" | "play"> {
     /**
@@ -19,6 +19,11 @@ export default interface SoundManagerInterface extends Omit<SoundLibrary, "init"
      *        has not yet loaded.
      */
     play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    /**
+     * Edits the options of an existing sound (asset).
+     * If the asset is not yet loaded, it will be loaded with the new options.
+     */
+    edit(alias: string, options: SoundOptions): Promise<void>;
     backgroundLoad(alias: string | string[]): Promise<void>;
     backgroundLoadBundle(alias: string): Promise<void>;
     clear(): void;
