@@ -284,9 +284,6 @@ export default class SoundManager implements SoundManagerInterface {
                     });
                     await Promise.all(promises);
                 }
-            } else {
-                logger.error("The data does not have the properties soundsPlaying");
-                return;
             }
         } catch (e) {
             logger.error("Error importing data", e);
