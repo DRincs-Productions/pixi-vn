@@ -20,7 +20,6 @@ export interface ExportedSoundPlay extends SoundPlay {
  * Interface exported sounds
  */
 export default interface SoundGameState {
-    soundAliasesOrder: string[];
     filters?: SoundFilterMemory[];
     /**
      * @deprecated

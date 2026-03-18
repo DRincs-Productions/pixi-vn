@@ -1,17 +1,15 @@
-import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { Filter, filters, IMediaContext, sound } from "@pixi/sound";
+import { Filter, filters, IMediaContext, Sound, sound } from "@pixi/sound";
 import { GENERAL_CHANNEL } from "../";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import AudioChannel from "./classes/AudioChannel";
-import Sound from "./classes/Sound";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
 import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import IMediaInstance from "./interfaces/IMediaInstance";
 import SoundGameState from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import SoundOptions, { SoundPlayOptions, SoundPlayOptionsWithChannel } from "./interfaces/SoundOptions";
+import SoundOptions, { ChannelOptions, SoundPlayOptions, SoundPlayOptionsWithChannel } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager implements SoundManagerInterface {
@@ -57,9 +55,6 @@ export default class SoundManager implements SoundManagerInterface {
     set disableAutoPause(autoPause: boolean) {
         sound.disableAutoPause = autoPause;
     }
-    remove(alias: string) {
-        return sound.remove(alias);
-    }
     get volumeAll(): number {
         return sound.volumeAll;
     }
@@ -94,14 +89,8 @@ export default class SoundManager implements SoundManagerInterface {
         return sound.removeAll();
     }
     stopAll() {
-        for (let alias in SoundManagerStatic.sounds) {
-            SoundManagerStatic.sounds[alias].stop();
-        }
-        SoundManagerStatic.soundsPlaying = {};
+        SoundManagerStatic.mediaInstances = {};
         return sound.stopAll();
-    }
-    exists(alias: string): boolean {
-        return PIXI.Assets.resolver.hasKey(alias);
     }
     isPlaying(): boolean {
         return sound.isPlaying();
@@ -126,38 +115,35 @@ export default class SoundManager implements SoundManagerInterface {
         const channelAlias = options?.channel || GENERAL_CHANNEL;
         return await this.findChannel(channelAlias).play(mediaAlias, soundAlias, options);
     }
-    stop(alias: string): Sound {
-        delete SoundManagerStatic.soundsPlaying[alias];
-        return sound.stop(alias);
+    find(alias: string): IMediaInstance | undefined {
+        return SoundManagerStatic.mediaInstances[alias]?.instance;
     }
-    pause(alias: string): Sound {
-        let item = SoundManagerStatic.soundsPlaying[alias];
-        if (!item) {
-            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
+    stop(alias: string): void {
+        const mediaInstance = this.find(alias);
+        if (mediaInstance) {
+            mediaInstance.stop();
+            delete SoundManagerStatic.mediaInstances[alias];
+        } else {
+            logger.warn(`No media instance found with alias ${alias} to stop.`);
         }
-        SoundManagerStatic.soundsPlaying[alias] = {
-            ...item,
-            paused: true,
-        };
-        return sound.pause(alias);
     }
-    resume(alias: string): Sound {
-        let item = SoundManagerStatic.soundsPlaying[alias];
-        if (!item) {
-            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
+    pause(alias: string): IMediaInstance | undefined {
+        const mediaInstance = this.find(alias);
+        if (!mediaInstance) {
+            logger.warn(`No media instance found with alias ${alias} to pause.`);
+            return;
         }
-        SoundManagerStatic.soundsPlaying[alias] = {
-            options: item.options,
-            stepIndex: GameUnifier.stepCounter,
-            paused: false,
-        };
-        return sound.resume(alias);
+        mediaInstance.paused = true;
+        return mediaInstance;
     }
-    volume(alias: string, volume?: number): number {
-        return sound.volume(alias, volume);
-    }
-    speed(alias: string, speed?: number): number {
-        return sound.speed(alias, speed);
+    resume(alias: string): IMediaInstance | undefined {
+        const mediaInstance = this.find(alias);
+        if (!mediaInstance) {
+            logger.warn(`No media instance found with alias ${alias} to resume.`);
+            return;
+        }
+        mediaInstance.paused = false;
+        return mediaInstance;
     }
     duration(alias: string): number {
         return sound.duration(alias);
@@ -205,15 +191,16 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     clear() {
+        SoundManagerStatic.channels = {};
         this.stopAll();
     }
 
     /* Channel Methods */
 
-    addChannel(alias: string | string[]): AudioChannelInterface | undefined {
+    addChannel(alias: string | string[], options: ChannelOptions = {}): AudioChannelInterface | undefined {
         if (typeof alias !== "string") {
             alias.forEach((a) => {
-                this.addChannel(a);
+                this.addChannel(a, options);
             });
             return;
         }
@@ -221,7 +208,7 @@ export default class SoundManager implements SoundManagerInterface {
             logger.warn(`Channel with alias ${alias} already exists.`);
             return;
         }
-        const channel = new AudioChannel(alias);
+        const channel = new AudioChannel(alias, options);
         SoundManagerStatic.channels[alias] = channel;
         return channel;
     }
@@ -266,21 +253,12 @@ export default class SoundManager implements SoundManagerInterface {
         );
         return {
             mediaInstances: createExportableElement(mediaInstances),
-            soundAliasesOrder: createExportableElement(SoundManagerStatic.soundAliasesOrder),
             filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
     }
     async restore(data: object) {
-        const stepCounter = GameUnifier.stepCounter - 1;
         this.clear();
         try {
-            if (data.hasOwnProperty("soundAliasesOrder")) {
-                SoundManagerStatic.soundAliasesOrder = (data as SoundGameState)["soundAliasesOrder"];
-            } else {
-                logger.error("The data does not have the properties soundAliasesOrder");
-                return;
-            }
-
             if (data.hasOwnProperty("filters")) {
                 let f = (data as SoundGameState)["filters"];
                 if (f) {
@@ -292,15 +270,6 @@ export default class SoundManager implements SoundManagerInterface {
                 let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
                 if (soundsPlaying) {
                     const promises = Object.keys(soundsPlaying).map(async (alias) => {
-                        let op = soundsPlaying[alias];
-                        SoundManagerStatic.soundsPlaying[alias] = {
-                            paused: op.paused,
-                            stepIndex: op.stepIndex,
-                            options: op.options,
-                        };
-
-                        let item = soundsPlaying[alias].sound;
-                        let autoPlay = false;
                         await this.load(alias);
 
                         this.play(alias);
