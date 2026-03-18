@@ -4,13 +4,23 @@ import { SoundPlayOptions } from "./SoundOptions";
 export default interface AudioChannelInterface {
     /**
      * Plays a sound.
-     * @param alias - The sound alias reference.
-     * @param options - The options or callback when done.
+     * @param alias The media and sound (asset) alias reference.
+     * @param options The options
      * @return The sound instance,
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
     play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    /**
+     * Plays a sound.
+     * @param mediaAlias The media alias reference.
+     * @param soundAlias The sound (asset) alias reference.
+     * @param options The options
+     * @return The sound instance,
+     *        this cannot be reused after it is done playing. Returns a Promise if the sound
+     *        has not yet loaded.
+     */
+    play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
     /**
      * The volume of the audio channel, between 0 and 1. This is multiplied with the volume of each sound played through this channel.
      */

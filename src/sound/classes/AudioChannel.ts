@@ -11,9 +11,33 @@ export default class AudioChannel implements AudioChannelInterface {
         readonly alias: string,
         readonly channelOptions: ChannelOptions = {},
     ) {}
-    async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
+    async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    async play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    async play(
+        aliasOrMediaAlias: string,
+        soundAliasOrOptions?: string | SoundPlayOptions,
+        options?: SoundPlayOptions,
+    ): Promise<IMediaInstance> {
+        let mediaAlias: string;
+        let soundAlias: string;
+        if (typeof soundAliasOrOptions === "string") {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = soundAliasOrOptions;
+        } else {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = aliasOrMediaAlias;
+            options = soundAliasOrOptions;
+        }
+        if (mediaAlias in SoundManagerStatic.mediaInstances) {
+            const oldMedia = SoundManagerStatic.mediaInstances[mediaAlias];
+            oldMedia.instance.stop();
+            options = {
+                ...oldMedia.options,
+                ...options,
+            };
+        }
         const media = proxyMedia(
-            await sound.play(alias, {
+            await sound.play(soundAlias, {
                 ...(options || {}),
                 filters: [...(this.channelOptions.filters || []), ...(options?.filters || [])],
                 muted: this.channelOptions.muted ?? options?.muted,
@@ -21,9 +45,9 @@ export default class AudioChannel implements AudioChannelInterface {
             }),
             this,
         );
-        SoundManagerStatic.mediaInstances[media.id] = {
+        SoundManagerStatic.mediaInstances[mediaAlias] = {
             channelAlias: this.alias,
-            soundAlias: alias,
+            soundAlias: soundAlias,
             instance: media,
             options: {
                 volume: options?.volume || 1,
