@@ -154,18 +154,15 @@ export default class SoundManager implements SoundManagerInterface {
     duration(alias: string): number {
         return sound.duration(alias);
     }
-    load(alias: string | string[]): Promise<void> {
-        const promise = PIXI.Assets.load(alias);
-        promise.then(() => {
-            if (typeof alias === "string") {
-                alias = [alias];
-            }
-            alias.forEach((alias) => {
-                const item = PIXI.Assets.get<Sound>(alias);
-                sound.add(alias, item);
-            });
+    async load(alias: string | string[]): Promise<void> {
+        await PIXI.Assets.load(alias);
+        if (typeof alias === "string") {
+            alias = [alias];
+        }
+        alias.forEach((alias) => {
+            const item = PIXI.Assets.get<Sound>(alias);
+            sound.add(alias, item);
         });
-        return promise;
     }
     backgroundLoad(alias: string | string[]): Promise<void> {
         const promise = PIXI.Assets.backgroundLoad(alias);
@@ -295,9 +292,10 @@ export default class SoundManager implements SoundManagerInterface {
 
                     let item = soundsPlaying[alias].sound;
                     let autoPlay = false;
+                    await this.load(alias);
                     let s: Sound;
                     if (this.exists(alias)) {
-                        s = this.find(alias);
+                        s = sound.find(alias);
                         item.options.url = s.options.url;
                         item.options.volume = s.options.volume;
                         s.options = item.options;
