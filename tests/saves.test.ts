@@ -37,7 +37,7 @@ function exportGameState() {
 
 export async function restoreGameState(
     data: Omit<GameState, "canvasData">,
-    navigate: (path: string) => void | Promise<void>
+    navigate: (path: string) => void | Promise<void>,
 ) {
     if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
         data.historyData.stepsHistory = data.stepData.stepsHistory;
@@ -52,7 +52,7 @@ export async function restoreGameState(
         await narration.restore(data.stepData, historyItem);
     }
     storage.restore(data.storageData);
-    sound.restore(data.soundData);
+    await sound.restore(data.soundData);
     navigate(data.path);
 }
 

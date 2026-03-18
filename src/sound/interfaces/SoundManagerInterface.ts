@@ -47,5 +47,5 @@ export default interface SoundManagerInterface extends Omit<SoundLibrary, "init"
     readonly channels: AudioChannelInterface[];
     /* Export and Import Methods */
     export(): SoundGameState;
-    restore(data: object): void;
+    restore(data: object): Promise<void>;
 }

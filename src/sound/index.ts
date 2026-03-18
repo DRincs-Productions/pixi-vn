@@ -1,3 +1,4 @@
+import SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundManager from "./SoundManager";
 
 export { default as AudioChannel } from "./classes/AudioChannel";
@@ -16,4 +17,4 @@ export { default as SoundManagerStatic } from "./SoundManagerStatic";
 export type { default as SoundFilterMemory } from "./types/SoundFilterMemory";
 export { sound };
 
-const sound = new SoundManager();
+const sound: SoundManagerInterface = new SoundManager();

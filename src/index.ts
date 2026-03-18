@@ -139,8 +139,8 @@ export namespace Game {
                 storageUtils.storage.restore(state.storage);
                 try {
                     await canvasUtils.canvas.restore(state.canvas);
+                    await soundUtils.sound.restore(state.sound);
                 } catch (e) {}
-                soundUtils.sound.restore(state.sound);
                 navigate(state.path);
             },
             // narration
@@ -279,8 +279,8 @@ export namespace Game {
         storageUtils.storage.restore(data.storageData);
         try {
             await canvasUtils.canvas.restore(data.canvasData);
+            await soundUtils.sound.restore(data.soundData);
         } catch (e) {}
-        soundUtils.sound.restore(data.soundData);
         await navigate(data.path);
     }
 

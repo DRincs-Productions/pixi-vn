@@ -262,7 +262,7 @@ export default class SoundManager implements SoundManagerInterface {
             filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
     }
-    public restore(data: object) {
+    async restore(data: object) {
         const stepCounter = GameUnifier.stepCounter - 1;
         this.clear();
         try {
@@ -282,51 +282,22 @@ export default class SoundManager implements SoundManagerInterface {
 
             if (data.hasOwnProperty("soundsPlaying")) {
                 let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
-                for (let alias in soundsPlaying) {
-                    let op = soundsPlaying[alias];
-                    SoundManagerStatic.soundsPlaying[alias] = {
-                        paused: op.paused,
-                        stepIndex: op.stepIndex,
-                        options: op.options,
-                    };
+                if (soundsPlaying) {
+                    const promises = Object.keys(soundsPlaying).map(async (alias) => {
+                        let op = soundsPlaying[alias];
+                        SoundManagerStatic.soundsPlaying[alias] = {
+                            paused: op.paused,
+                            stepIndex: op.stepIndex,
+                            options: op.options,
+                        };
 
-                    let item = soundsPlaying[alias].sound;
-                    let autoPlay = false;
-                    await this.load(alias);
-                    let s: Sound;
-                    if (this.exists(alias)) {
-                        s = sound.find(alias);
-                        item.options.url = s.options.url;
-                        item.options.volume = s.options.volume;
-                        s.options = item.options;
-                        s.autoPlay = false;
-                        s.filters = item.filters ? FilterMemoryToFilter(item.filters) : [];
-                    } else {
-                        s = this.add(alias, {
-                            ...item.options,
-                            autoPlay: false,
-                        });
-                    }
+                        let item = soundsPlaying[alias].sound;
+                        let autoPlay = false;
+                        await this.load(alias);
 
-                    if (alias in SoundManagerStatic.soundsPlaying) {
-                        let step = SoundManagerStatic.soundsPlaying[alias];
-                        if (
-                            item.options.loop ||
-                            (step.options && typeof step.options === "object" && step.options.loop)
-                        ) {
-                            autoPlay = true;
-                        } else if (step.stepIndex === stepCounter) {
-                            autoPlay = true;
-                        }
-
-                        if (item.filters) {
-                            s.filters = FilterMemoryToFilter(item.filters);
-                        }
-
-                        if (autoPlay) {
-                            s.play();
-                        }
-                    }
+                        this.play(alias);
+                    });
+                    await Promise.all(promises);
                 }
             } else {
                 logger.error("The data does not have the properties soundsPlaying");
