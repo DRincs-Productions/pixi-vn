@@ -2,7 +2,6 @@ import SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundManager from "./SoundManager";
 
 export { default as AudioChannel } from "./classes/AudioChannel";
-export { default as Sound } from "./classes/Sound";
 export { filters } from "./constants";
 export type { default as AudioChannelInterface } from "./interfaces/AudioChannelInterface";
 export type { default as IMediaInstance } from "./interfaces/IMediaInstance";
