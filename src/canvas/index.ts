@@ -1,5 +1,5 @@
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { GameUnifier } from "../core";
 import CanvasManager from "./CanvasManager";
 import { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
