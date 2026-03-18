@@ -1,5 +1,6 @@
 import type { Assets } from "@drincs/pixi-vn/pixi.js";
 import { Sound, SoundLibrary } from "@pixi/sound";
+import { GENERAL_CHANNEL } from "../..";
 import AudioChannelInterface from "./AudioChannelInterface";
 import IMediaInstance from "./IMediaInstance";
 import SoundGameState from "./SoundGameState";
@@ -72,6 +73,11 @@ export default interface SoundManagerInterface extends Omit<
      * Returns an array of all existing audio channels.
      */
     readonly channels: AudioChannelInterface[];
+    /**
+     * The default channel alias to use when playing a sound without specifying a channel.
+     * By default, this is set to {@link GENERAL_CHANNEL}, but it can be changed to any alias of an existing channel.
+     */
+    defaultChannelAlias: string;
     /* Export and Import Methods */
     export(): SoundGameState;
     restore(data: object): Promise<void>;

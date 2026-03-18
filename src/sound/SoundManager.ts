@@ -28,6 +28,14 @@ export default class SoundManager implements SoundManagerInterface {
         return sound.supported;
     }
 
+    _defaultChannelAlias = GENERAL_CHANNEL;
+    get defaultChannelAlias(): string {
+        return this._defaultChannelAlias;
+    }
+    set defaultChannelAlias(alias: string) {
+        this._defaultChannelAlias = alias;
+    }
+
     add(alias: string, sourceOptions: string) {
         return sound.add(alias, sourceOptions);
     }
