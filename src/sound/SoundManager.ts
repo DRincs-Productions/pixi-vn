@@ -1,6 +1,7 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Filter, filters, IMediaContext, sound } from "@pixi/sound";
+import { GENERAL_CHANNEL } from "../";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import AudioChannel from "./classes/AudioChannel";
@@ -10,7 +11,7 @@ import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import IMediaInstance from "./interfaces/IMediaInstance";
 import SoundGameState from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
+import SoundOptions, { SoundPlayOptions, SoundPlayOptionsWithChannel } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 
 export default class SoundManager implements SoundManagerInterface {
@@ -105,18 +106,25 @@ export default class SoundManager implements SoundManagerInterface {
     isPlaying(): boolean {
         return sound.isPlaying();
     }
-    async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
-        if (!this.exists(alias)) {
-            throw new PixiError("unknown_element", "The alias is not found in the sound library.");
+    async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    async play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    async play(
+        aliasOrMediaAlias: string,
+        soundAliasOrOptions?: string | SoundPlayOptionsWithChannel,
+        options?: SoundPlayOptionsWithChannel,
+    ): Promise<IMediaInstance> {
+        let mediaAlias: string;
+        let soundAlias: string;
+        if (typeof soundAliasOrOptions === "string") {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = soundAliasOrOptions;
+        } else {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = aliasOrMediaAlias;
+            options = soundAliasOrOptions;
         }
-        try {
-            const item = await PIXI.Assets.load<Sound>(alias);
-            sound.add(alias, item);
-        } catch (e) {
-            logger.error("Error loading sound", e);
-            throw new PixiError("unknown_element", "The sound file could not be loaded.");
-        }
-        return sound.play(alias, options);
+        const channelAlias = options?.channel || GENERAL_CHANNEL;
+        return await this.findChannel(channelAlias).play(mediaAlias, soundAlias, options);
     }
     stop(alias: string): Sound {
         delete SoundManagerStatic.soundsPlaying[alias];

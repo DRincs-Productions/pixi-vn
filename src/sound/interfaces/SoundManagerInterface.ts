@@ -3,7 +3,7 @@ import { Sound, SoundLibrary } from "@pixi/sound";
 import AudioChannelInterface from "./AudioChannelInterface";
 import IMediaInstance from "./IMediaInstance";
 import SoundGameState from "./SoundGameState";
-import SoundOptions, { SoundPlayOptions } from "./SoundOptions";
+import SoundOptions, { SoundPlayOptionsWithChannel } from "./SoundOptions";
 
 export default interface SoundManagerInterface extends Omit<SoundLibrary, "init" | "close" | "add" | "play" | "find"> {
     /**
@@ -12,13 +12,14 @@ export default interface SoundManagerInterface extends Omit<SoundLibrary, "init"
     add(alias: string, options?: string): Sound;
     /**
      * Plays a sound.
-     * @param alias The sound alias reference.
+     * @param alias The media and sound (asset) alias reference.
      * @param options The options
      * @return The sound instance,
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
-    play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
     /**
      * Edits the options of an existing sound (asset).
      * If the asset is not yet loaded, it will be loaded with the new options.
