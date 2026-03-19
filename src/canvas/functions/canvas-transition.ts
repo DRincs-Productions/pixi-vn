@@ -143,9 +143,10 @@ export async function showWithDissolve(
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
-    if (oldComponent) oldComponent.zIndex -= 0.001;
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
@@ -257,7 +258,7 @@ export async function showWithFade(
     aliasToRemoveAfter.push(oldComponentAlias);
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
@@ -373,7 +374,7 @@ export async function moveIn(
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
@@ -544,7 +545,7 @@ export async function zoomIn(
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
@@ -747,7 +748,7 @@ export async function pushIn(
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
