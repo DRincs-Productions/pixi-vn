@@ -28,9 +28,10 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
             throw new PixiError("unregistered_element", `The image ${alias} does not exist in the cache.`);
         }
     }
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    let oldMemory = canvas.find(alias)?.memory;
     let component = new ImageSprite(options, imageUrl);
     if (oldMemory) {
+        oldMemory = { ...canvas.find(alias)?.memory, ...options };
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
     canvas.add(alias, component, { ignoreOldStyle: true, zIndex: options?.zIndex });
