@@ -389,9 +389,6 @@ export async function moveIn(
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
-        // set a temporary position for hiding the new component before the animation starts
-        x: canvas.height,
-        y: canvas.width,
     });
     oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
@@ -415,27 +412,34 @@ export async function moveIn(
             aliasToRemoveAfter.push(oldComponentAlias);
         }
     }
+    // hide the component before loading the image, to prevent the image from flashing on the screen when the image is loaded
+    switch (direction) {
+        case "up":
+        case "down":
+            component.y = canvas.height;
+            break;
+        case "left":
+        case "right":
+            component.x = canvas.width;
+            break;
+    }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
         await component.load();
     }
-    // special
+    // edit the properties of the new component
     switch (direction) {
         case "up":
             component.y = canvas.height + component.height;
-            component.x = destination.x;
             break;
         case "down":
             component.y = -component.height;
-            component.x = destination.x;
             break;
         case "left":
             component.x = canvas.width + component.width;
-            component.y = destination.y;
             break;
         case "right":
             component.x = -component.width;
-            component.y = destination.y;
             break;
     }
     let ids = canvas.pauseTicker({ canvasAlias: alias });
