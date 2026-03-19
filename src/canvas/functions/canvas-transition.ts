@@ -350,6 +350,7 @@ export async function moveIn(
         ...options
     } = props;
     let res: string[] = [];
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
     if (!component) {
         component = alias;
     }
@@ -365,6 +366,11 @@ export async function moveIn(
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_movein";
         canvas.editAlias(alias, oldComponentAlias);
+        if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
+            destination = oldComponent.positionInfo;
+        } else {
+            destination = { x: oldComponent.x, y: oldComponent.y, type: "pixel" };
+        }
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
@@ -374,11 +380,12 @@ export async function moveIn(
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
-    if (component instanceof ImageSprite || component instanceof ImageContainer) {
-        destination = component.positionInfo;
-    } else {
-        destination = { x: component.x, y: component.y, type: "pixel" };
+    if (!destination) {
+        if (component instanceof ImageSprite || component instanceof ImageContainer) {
+            destination = component.positionInfo;
+        } else {
+            destination = { x: component.x, y: component.y, type: "pixel" };
+        }
     }
     // remove the old component
     if (oldComponentAlias) {
@@ -533,6 +540,7 @@ export async function zoomIn(
         ...options
     } = props;
     let res: string[] = [];
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
     if (!component) {
         component = alias;
     }
@@ -548,6 +556,11 @@ export async function zoomIn(
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_zoom";
         canvas.editAlias(alias, oldComponentAlias);
+        if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
+            destination = oldComponent.positionInfo;
+        } else {
+            destination = { x: oldComponent.x, y: oldComponent.y, type: "pixel" };
+        }
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
@@ -557,11 +570,12 @@ export async function zoomIn(
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
-    if (component instanceof ImageSprite || component instanceof ImageContainer) {
-        destination = component.positionInfo;
-    } else {
-        destination = { x: component.x, y: component.y, type: "pixel" };
+    if (!destination) {
+        if (component instanceof ImageSprite || component instanceof ImageContainer) {
+            destination = component.positionInfo;
+        } else {
+            destination = { x: component.x, y: component.y, type: "pixel" };
+        }
     }
     const pivot: { x: number; y: number } = {
         x: component.pivot.x,
@@ -740,6 +754,7 @@ export async function pushIn(
         ...options
     } = props;
     let res: string[] = [];
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
     if (!component) {
         component = alias;
     }
@@ -752,6 +767,11 @@ export async function pushIn(
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_push";
         canvas.editAlias(alias, oldComponentAlias);
+        if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
+            destination = oldComponent.positionInfo;
+        } else {
+            destination = { x: oldComponent.x, y: oldComponent.y, type: "pixel" };
+        }
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
@@ -761,11 +781,12 @@ export async function pushIn(
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        destination = component.positionInfo;
-    } else {
-        destination = { x: component.x, y: component.y, type: "pixel" };
+    if (!destination) {
+        if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+            destination = component.positionInfo;
+        } else {
+            destination = { x: component.x, y: component.y, type: "pixel" };
+        }
     }
     switch (direction) {
         case "up":

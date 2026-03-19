@@ -266,12 +266,14 @@ export default class Container<
         return "pixel";
     }
     get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align" } {
-        if (this._align) {
-            return { x: this._align.x || 0, y: this._align.y || 0, type: "align" };
-        } else if (this._percentagePosition) {
-            return { x: this._percentagePosition.x || 0, y: this._percentagePosition.y || 0, type: "percentage" };
+        switch (this.positionType) {
+            case "align":
+                return { x: this.xAlign || 0, y: this.yAlign || 0, type: "align" };
+            case "percentage":
+                return { x: this.percentageX || 0, y: this.percentageY || 0, type: "percentage" };
+            default:
+                return { x: this.x, y: this.y, type: "pixel" };
         }
-        return { x: this.x, y: this.y, type: "pixel" };
     }
     set positionInfo(value: { x: number; y: number; type?: "pixel" | "percentage" | "align" }) {
         if (value.type === "align") {
