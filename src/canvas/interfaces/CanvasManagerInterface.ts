@@ -95,11 +95,20 @@ export default interface CanvasManagerInterface {
      * Copy the properties of an old canvas element to a new canvas element.
      * @param oldAlias Old alias
      * @param newAlias New alias
+     * @param options The options of the copy.
      * @returns
      */
     copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseInterface<T> | string,
         newAlias: CanvasBaseInterface<T> | string,
+        options?: {
+            /**
+             * If provided, the properties returned by this function will not be copied from the old canvas element to the new canvas element.
+             * @param defaultProperties The default properties that will be ignored.
+             * @returns The properties that will be ignored.
+             */
+            ignoreProperties?: (defaultProperties: string[]) => string[];
+        },
     ): Promise<void>;
 
     /**

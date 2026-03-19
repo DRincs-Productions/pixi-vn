@@ -83,7 +83,22 @@ export default class CanvasManager implements CanvasManagerInterface {
     async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseInterface<T> | string,
         newAlias: CanvasBaseInterface<T> | string,
+        options: {
+            ignoreProperties?: (defaultProperties: string[]) => string[];
+        } = {},
     ) {
+        const defaultPropertiesWhichCanBeIgnored = [
+            "isRenderGroup",
+            "scale",
+            "visible",
+            "boundsArea",
+            "text",
+            "resolution",
+            "style",
+            "height",
+            "width",
+        ];
+        const { ignoreProperties = (defaultProperties) => defaultProperties } = options;
         if (typeof newAlias === "string") {
             let element = this.find(newAlias);
             if (element) {
@@ -105,15 +120,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (oldAlias instanceof PIXI.Container) {
             oldAlias = oldAlias.memory;
         }
-        "isRenderGroup" in oldAlias && delete oldAlias.isRenderGroup;
-        "scale" in oldAlias && delete oldAlias.scale;
-        "visible" in oldAlias && delete oldAlias.visible;
-        "boundsArea" in oldAlias && delete oldAlias.boundsArea;
-        "text" in oldAlias && delete oldAlias.text;
-        "resolution" in oldAlias && delete oldAlias.resolution;
-        "style" in oldAlias && delete oldAlias.style;
-        "height" in oldAlias && delete oldAlias.height;
-        "width" in oldAlias && delete oldAlias.width;
+        ignoreProperties(defaultPropertiesWhichCanBeIgnored).forEach((property) => {
+            if (property in oldAlias) {
+                delete oldAlias[property as keyof T];
+            }
+        });
         await RegisteredCanvasComponents.copyProperty(newAlias.pixivnId, newAlias, oldAlias);
     }
     public add(
