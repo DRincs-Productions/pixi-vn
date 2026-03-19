@@ -260,6 +260,8 @@ export async function showWithFade(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
@@ -376,6 +378,8 @@ export async function moveIn(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
@@ -547,6 +551,8 @@ export async function zoomIn(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
@@ -750,6 +756,8 @@ export async function pushIn(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent &&
+        oldComponent.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
