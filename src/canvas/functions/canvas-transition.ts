@@ -79,6 +79,8 @@ function addComponent(
     canvasElement: TComponent,
     options: {
         zIndex?: number;
+        x?: number;
+        y?: number;
     },
 ): CanvasBaseInterface<any> {
     if (typeof canvasElement === "string") {
@@ -92,14 +94,26 @@ function addComponent(
     } else if (typeof canvasElement === "object" && "value" in canvasElement && "options" in canvasElement) {
         if (typeof canvasElement.value === "string") {
             if (checkIfVideo(canvasElement.value)) {
-                return addVideo(alias, canvasElement.value, { ...canvasElement.options, zIndex: options.zIndex });
+                return addVideo(alias, canvasElement.value, {
+                    ...canvasElement.options,
+                    zIndex: options.zIndex,
+                    x: options.x,
+                    y: options.y,
+                });
             } else {
-                return addImage(alias, canvasElement.value, { ...canvasElement.options, zIndex: options.zIndex });
+                return addImage(alias, canvasElement.value, {
+                    ...canvasElement.options,
+                    zIndex: options.zIndex,
+                    x: options.x,
+                    y: options.y,
+                });
             }
         } else if (Array.isArray(canvasElement.value)) {
             return addImageCointainer(alias, canvasElement.value, {
                 ...canvasElement.options,
                 zIndex: options.zIndex,
+                x: options.x,
+                y: options.y,
             } as any);
         }
     }
@@ -375,6 +389,9 @@ export async function moveIn(
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
+        // set a temporary position for hiding the new component before the animation starts
+        x: canvas.height,
+        y: canvas.width,
     });
     oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
@@ -406,15 +423,19 @@ export async function moveIn(
     switch (direction) {
         case "up":
             component.y = canvas.height + component.height;
+            component.x = destination.x;
             break;
         case "down":
             component.y = -component.height;
+            component.x = destination.x;
             break;
         case "left":
             component.x = canvas.width + component.width;
+            component.y = destination.y;
             break;
         case "right":
             component.x = -component.width;
+            component.y = destination.y;
             break;
     }
     let ids = canvas.pauseTicker({ canvasAlias: alias });
