@@ -99,4 +99,16 @@ export default class AudioChannel implements AudioChannelInterface {
             return instances;
         }, []);
     }
+    get background(): boolean {
+        return this.channelOptions.background || false;
+    }
+    stopAll(): void {
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (mediaInstance.channelAlias === this.alias) {
+                mediaInstance.instance.stop();
+                delete SoundManagerStatic.mediaInstances[mediaId];
+            }
+        }
+    }
 }

@@ -1,4 +1,4 @@
-import AudioChannel from "./classes/AudioChannel";
+import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import IMediaInstance from "./interfaces/IMediaInstance";
 import { SoundPlayOptions } from "./interfaces/SoundOptions";
 
@@ -12,5 +12,5 @@ export default class SoundManagerStatic {
             options: SoundPlayOptions;
         };
     } = {};
-    static channels: { [alias: string]: AudioChannel } = {};
+    static channels: { [alias: string]: AudioChannelInterface } = {};
 }

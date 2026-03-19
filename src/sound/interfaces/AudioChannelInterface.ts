@@ -33,4 +33,13 @@ export default interface AudioChannelInterface {
      * The MediaInstances currently playing through this channel. This is read-only and cannot be modified directly. Use the play method to add new MediaInstances to this channel.
      */
     readonly mediaInstances: IMediaInstance[];
+    /**
+     * Whether this channel is a background channel.
+     * Background channels are special channels. Unlike normal channels, media connected to a background channel does not stop when a scene changes, but continues to play in the background.
+     */
+    readonly background: boolean;
+    /**
+     * Stops all media currently playing through this channel.
+     */
+    stopAll(): void;
 }
