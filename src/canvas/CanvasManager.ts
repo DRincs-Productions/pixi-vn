@@ -843,19 +843,32 @@ export default class CanvasManager implements CanvasManagerInterface {
     public async restore(data: object) {
         this.clear();
         try {
-            if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
-                let elementAliasesOrder = (data as CanvasGameState)["elementAliasesOrder"];
-                let elements: {
-                    [alias: string]: CanvasBaseInterface<any>;
-                } = {};
-                const promises = Object.entries((data as CanvasGameState)["elements"]).map(async ([alias, element]) => {
-                    elements[alias] = await importCanvasElement(element);
-                });
-                await Promise.all(promises);
-                elementAliasesOrder.forEach((alias) => {
-                    let element = elements[alias];
-                    element && this.add(alias, element);
-                });
+            if (data.hasOwnProperty("elementAliasesOrder")) {
+                if (data.hasOwnProperty("elements")) {
+                    let elementAliasesOrder = (data as CanvasGameState)["elementAliasesOrder"];
+                    let elements: {
+                        [alias: string]: CanvasBaseInterface<any>;
+                    } = {};
+                    const promises = Object.entries((data as CanvasGameState)["elements"]).map(
+                        async ([alias, element]) => {
+                            elements[alias] = await importCanvasElement(element);
+                        },
+                    );
+                    await Promise.all(promises);
+                    elementAliasesOrder.forEach((alias) => {
+                        let element = elements[alias];
+                        element && this.add(alias, element);
+                    });
+                } else {
+                    const promises = Object.entries((data as CanvasGameState)["elements"]).map(
+                        async ([alias, element]) => {
+                            const component = await importCanvasElement(element);
+                            // TODO: When elementAliasOrder will be removed:
+                            // this.add(alias, component, { zIndex: element.zIndex });
+                        },
+                    );
+                    await Promise.all(promises);
+                }
             } else {
                 logger.error("The data does not have the properties elementAliasesOrder and elements");
                 return;

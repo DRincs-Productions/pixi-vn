@@ -9,6 +9,9 @@ export default interface CanvasGameState {
     tickersSteps: { [alias: string]: { [tickerId: string]: TickersSequence } };
     elements: { [alias: string]: CanvasBaseItemMemory };
     stage: Partial<ContainerMemory>;
+    /**
+     * @deprecated
+     */
     elementAliasesOrder: string[];
     /**
      * @deprecated
