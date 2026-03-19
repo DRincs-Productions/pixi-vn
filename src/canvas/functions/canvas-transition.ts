@@ -1,5 +1,4 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, CanvasBaseInterface, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";
@@ -18,48 +17,29 @@ import { addImageCointainer } from "./image-container-utility";
 import { addImage } from "./image-utility";
 import { addVideo } from "./video-utility";
 
-function calculateDestination(
-    destination: {
-        type?: "pixel" | "percentage" | "align";
-        y: number;
-        x: number;
-    },
-    component: CanvasBaseInterface<any>,
-) {
-    if (destination.type === "align") {
-        let anchorx = undefined;
-        let anchory = undefined;
-        if (component instanceof PIXI.Sprite) {
-            anchorx = component.anchor.x;
-            anchory = component.anchor.y;
-        }
-        let superPivot = PropsUtils.getSuperPoint(component.pivot, component.angle);
-        let superScale = PropsUtils.getSuperPoint(component.scale, component.angle);
-        destination.x = PropsUtils.calculatePositionByAlign(
-            "width",
-            destination.x,
-            PropsUtils.getSuperWidth(component),
-            superPivot.x,
-            superScale.x < 0,
-            anchorx,
-        );
-        destination.y = PropsUtils.calculatePositionByAlign(
-            "height",
-            destination.y,
-            PropsUtils.getSuperHeight(component),
-            superPivot.y,
-            superScale.y < 0,
-            anchory,
-        );
+function mapDestination(destination: {
+    type?: "pixel" | "percentage" | "align";
+    y: number;
+    x: number;
+}): Partial<ImageSpriteOptions> {
+    switch (destination.type) {
+        case "align":
+            return {
+                xAlign: destination.x,
+                yAlign: destination.y,
+            };
+        case "percentage":
+            return {
+                percentageX: destination.x,
+                percentageY: destination.y,
+            };
+        case "pixel":
+        default:
+            return {
+                x: destination.x,
+                y: destination.y,
+            };
     }
-    if (destination.type === "percentage") {
-        destination.x = PropsUtils.calculatePositionByPercentagePosition("width", destination.x);
-        destination.y = PropsUtils.calculatePositionByPercentagePosition("height", destination.y);
-    }
-    return {
-        x: destination.x,
-        y: destination.y,
-    };
 }
 
 type TComponent =
@@ -447,7 +427,7 @@ export async function moveIn(
     // create the ticker and play it
     let idShow = canvas.animate(
         alias,
-        calculateDestination(destination, component),
+        mapDestination(destination) as any,
         {
             ...options,
             tickerIdToResume,
@@ -638,7 +618,7 @@ export async function zoomIn(
     let idShow = canvas.animate(
         alias,
         {
-            ...calculateDestination(destination, component),
+            ...(mapDestination(destination) as any),
             pivotX: pivot.x,
             pivotY: pivot.y,
             scaleX: scale.x,
@@ -817,7 +797,7 @@ export async function pushIn(
     // create the ticker and play it
     let idShow = canvas.animate(
         alias,
-        calculateDestination(destination, component),
+        mapDestination(destination) as any,
         {
             ...options,
             tickerIdToResume,
