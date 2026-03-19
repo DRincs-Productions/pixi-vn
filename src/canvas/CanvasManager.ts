@@ -144,13 +144,12 @@ export default class CanvasManager implements CanvasManagerInterface {
             this.copyCanvasElementProperty(oldCanvasElement, canvasComponent);
         }
 
-        let zIndex = options.zIndex;
-        if (oldCanvasElement && !this.gameLayer.children.includes(oldCanvasElement)) {
+        const { zIndex = oldCanvasElement?.parent?.getChildIndex(oldCanvasElement) } = options;
+        if (oldCanvasElement && !this.canvasElementIsOnCanvas(oldCanvasElement)) {
             logger.error(
                 `The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`,
             );
         } else if (oldCanvasElement) {
-            zIndex === undefined && (zIndex = this.gameLayer.getChildIndex(oldCanvasElement));
             this.remove(alias, { ignoreTickers: true });
         }
 
