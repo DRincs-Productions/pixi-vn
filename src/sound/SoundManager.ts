@@ -199,7 +199,6 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     clear() {
-        SoundManagerStatic.channels = {};
         this.stopAll();
     }
 
