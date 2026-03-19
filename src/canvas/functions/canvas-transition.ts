@@ -145,6 +145,7 @@ export async function showWithDissolve(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
     });
+    if (oldComponent) oldComponent.zIndex -= 0.001;
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
