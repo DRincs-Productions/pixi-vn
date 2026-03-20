@@ -268,9 +268,9 @@ export default class Container<
     get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align" } {
         switch (this.positionType) {
             case "align":
-                return { x: this.xAlign || 0, y: this.yAlign || 0, type: "align" };
+                return { x: this.xAlign, y: this.yAlign, type: "align" };
             case "percentage":
-                return { x: this.percentageX || 0, y: this.percentageY || 0, type: "percentage" };
+                return { x: this.percentageX, y: this.percentageY, type: "percentage" };
             default:
                 return { x: this.x, y: this.y, type: "pixel" };
         }
