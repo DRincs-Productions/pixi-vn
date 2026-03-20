@@ -788,6 +788,22 @@ export async function pushIn(
             destination = { x: component.x, y: component.y, type: "pixel" };
         }
     }
+    // hide the component before loading the image, to prevent the image from flashing on the screen when the image is loaded
+    switch (direction) {
+        case "up":
+        case "down":
+            component.y = canvas.height;
+            break;
+        case "left":
+        case "right":
+            component.x = canvas.width;
+            break;
+    }
+    // load the image if the image is not loaded
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load();
+    }
+    // edit the properties of the new component
     switch (direction) {
         case "up":
             component.y = canvas.height + component.height;
@@ -827,10 +843,6 @@ export async function pushIn(
         priority,
     );
     idShow && res.push(idShow);
-    // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load();
-    }
     // return the ids of the tickers
     if (res.length > 0) {
         return res;
