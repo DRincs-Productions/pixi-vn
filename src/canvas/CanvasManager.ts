@@ -120,12 +120,14 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (oldAlias instanceof PIXI.Container) {
             oldAlias = oldAlias.memory;
         }
-        ignoreProperties(defaultPropertiesWhichCanBeIgnored).forEach((property) => {
-            if (property in oldAlias) {
-                delete oldAlias[property as keyof T];
+        const propertiesToIgnore = ignoreProperties(defaultPropertiesWhichCanBeIgnored);
+        const clonedOldAlias = { ...(oldAlias as T) };
+        propertiesToIgnore.forEach((property) => {
+            if (property in clonedOldAlias) {
+                delete clonedOldAlias[property as keyof T];
             }
         });
-        await RegisteredCanvasComponents.copyProperty(newAlias.pixivnId, newAlias, oldAlias);
+        await RegisteredCanvasComponents.copyProperty(newAlias.pixivnId, newAlias, clonedOldAlias);
     }
     public add(
         alias: string,
