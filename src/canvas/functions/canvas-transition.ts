@@ -399,17 +399,6 @@ export async function moveIn(
             aliasToRemoveAfter.push(oldComponentAlias);
         }
     }
-    // hide the component before loading the image, to prevent the image from flashing on the screen when the image is loaded
-    switch (direction) {
-        case "up":
-        case "down":
-            component.y = canvas.height;
-            break;
-        case "left":
-        case "right":
-            component.x = canvas.width;
-            break;
-    }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
         await component.load();
@@ -787,17 +776,6 @@ export async function pushIn(
         } else {
             destination = { x: component.x, y: component.y, type: "pixel" };
         }
-    }
-    // hide the component before loading the image, to prevent the image from flashing on the screen when the image is loaded
-    switch (direction) {
-        case "up":
-        case "down":
-            component.y = canvas.height;
-            break;
-        case "left":
-        case "right":
-            component.x = canvas.width;
-            break;
     }
     // load the image if the image is not loaded
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
