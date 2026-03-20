@@ -61,7 +61,7 @@ export default defineConfig([
         format: ["cjs", "esm"],
         dts: true,
         treeshake: true,
-        sourcemap: true,
+        sourcemap: "inline",
         clean: false,
         minify: true,
         bundle: true,
