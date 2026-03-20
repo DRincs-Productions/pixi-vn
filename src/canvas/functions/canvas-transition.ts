@@ -59,8 +59,6 @@ function addComponent(
     canvasElement: TComponent,
     options: {
         zIndex?: number;
-        x?: number;
-        y?: number;
     },
 ): CanvasBaseInterface<any> {
     if (typeof canvasElement === "string") {
@@ -77,23 +75,17 @@ function addComponent(
                 return addVideo(alias, canvasElement.value, {
                     ...canvasElement.options,
                     zIndex: options.zIndex,
-                    x: options.x,
-                    y: options.y,
                 });
             } else {
                 return addImage(alias, canvasElement.value, {
                     ...canvasElement.options,
                     zIndex: options.zIndex,
-                    x: options.x,
-                    y: options.y,
                 });
             }
         } else if (Array.isArray(canvasElement.value)) {
             return addImageCointainer(alias, canvasElement.value, {
                 ...canvasElement.options,
                 zIndex: options.zIndex,
-                x: options.x,
-                y: options.y,
             } as any);
         }
     }
