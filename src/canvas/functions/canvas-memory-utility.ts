@@ -67,6 +67,7 @@ function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Par
         interactive: element.interactive,
         interactiveChildren: element.interactiveChildren,
         hitArea: element.hitArea,
+        index: element.parent?.getChildIndex(element),
     };
 }
 

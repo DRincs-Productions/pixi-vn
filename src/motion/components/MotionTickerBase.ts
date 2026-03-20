@@ -62,6 +62,16 @@ export default abstract class MotionTickerBase<
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/issues/3336)
      */
     private stopped = false;
+    /**
+     * Tracks the paused state independently of the underlying `motion` playback controls.
+     *
+     * This is a workaround for state desynchronization issues where the animation's internal
+     * paused/stopped state can become inconsistent with the PIXI ticker lifecycle, which may
+     * cause animations to resume unexpectedly when the ticker is restarted.
+     *
+     * See: https://github.com/motiondivision/motion/issues/3336
+     */
+    private _paused: boolean = false;
     canvasElementAliases: string[] = [];
     protected getItemByAlias(alias: string): CanvasBaseInterface<any> | undefined {
         if (!this.canvasElementAliases.includes(alias)) {
@@ -96,6 +106,7 @@ export default abstract class MotionTickerBase<
         if (this.args.options?.autoplay === false) {
             return;
         }
+        this._paused = false;
         this.animation.play();
     }
     protected onComplete = () => {
@@ -124,7 +135,7 @@ export default abstract class MotionTickerBase<
             { alias: alias },
             {
                 set: ({ alias }, p, newValue) => {
-                    if (this.stopped) {
+                    if (this.stopped || this._paused) {
                         return true;
                     }
                     if (this._args.startState && (this._args.startState as any)[p] === newValue) {
@@ -220,9 +231,11 @@ export default abstract class MotionTickerBase<
         if (!this.animation) {
             return;
         }
+        this._paused = true;
         this.animation.pause();
     }
     play() {
+        this._paused = false;
         this.animation.play();
     }
     get paused(): boolean {

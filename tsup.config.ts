@@ -9,6 +9,7 @@ export default defineConfig([
         format: ["cjs", "esm"],
         dts: true,
         treeshake: true,
+        sourcemap: false,
         clean: true,
         minify: true,
         bundle: true,
@@ -26,6 +27,7 @@ export default defineConfig([
         },
         format: ["esm"],
         dts: true,
+        sourcemap: false,
         splitting: false,
         clean: false,
         minify: true,
@@ -39,6 +41,7 @@ export default defineConfig([
         },
         format: ["esm"],
         dts: false,
+        sourcemap: false,
         splitting: false,
         clean: false,
         minify: true,
@@ -58,6 +61,7 @@ export default defineConfig([
         format: ["cjs", "esm"],
         dts: true,
         treeshake: true,
+        sourcemap: "inline",
         clean: false,
         minify: true,
         bundle: true,
@@ -83,6 +87,7 @@ export default defineConfig([
         format: ["cjs", "esm"],
         dts: true,
         treeshake: true,
+        sourcemap: true,
         clean: false,
         minify: true,
         bundle: true,
@@ -116,7 +121,7 @@ export default defineConfig([
         format: ["cjs", "esm"], // Build for commonJS and ESmodules
         dts: true, // Generate declaration file (.d.ts)
         treeshake: true,
-        // sourcemap: true, // Generate sourcemap, it was removed because otherwise it would explode
+        sourcemap: true,
         clean: false,
         minify: true,
         bundle: true,
