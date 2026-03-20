@@ -63,7 +63,13 @@ export default abstract class MotionTickerBase<
      */
     private stopped = false;
     /**
-     * This is a hack to fix
+     * Tracks the paused state independently of the underlying `motion` playback controls.
+     *
+     * This is a workaround for state desynchronization issues where the animation's internal
+     * paused/stopped state can become inconsistent with the PIXI ticker lifecycle, which may
+     * cause animations to resume unexpectedly when the ticker is restarted.
+     *
+     * See: https://github.com/motiondivision/motion/issues/3336
      */
     private _paused: boolean = false;
     canvasElementAliases: string[] = [];
