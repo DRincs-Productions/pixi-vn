@@ -44,6 +44,7 @@ export function exportCanvasElement<T extends PixiContainer>(canvasComponent: T)
  * Extract common properties for memory objects
  */
 function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Partial<ContainerMemory> {
+    const parent = element.parent;
     return {
         width: element.width,
         height: element.height,
@@ -67,7 +68,8 @@ function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Par
         interactive: element.interactive,
         interactiveChildren: element.interactiveChildren,
         hitArea: element.hitArea,
-        index: element.parent?.getChildIndex(element),
+        index: parent?.getChildIndex(element),
+        parentLabel: parent?.label,
     };
 }
 
