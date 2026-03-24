@@ -164,7 +164,6 @@ export default class Container<
                 PropsUtils.getSuperWidth(this),
                 superPivot.x,
                 superScale.x < 0,
-                this.anchor.x,
             ),
             y: PropsUtils.calculateAlignByPosition(
                 "height",
@@ -172,7 +171,6 @@ export default class Container<
                 PropsUtils.getSuperHeight(this),
                 superPivot.y,
                 superScale.y < 0,
-                this.anchor.y,
             ),
         };
     }
@@ -193,7 +191,6 @@ export default class Container<
             PropsUtils.getSuperWidth(this),
             superPivot.x,
             superScale.x < 0,
-            this.anchor.x,
         );
     }
     set yAlign(value: number) {
@@ -213,7 +210,6 @@ export default class Container<
             PropsUtils.getSuperHeight(this),
             superPivot.y,
             superScale.y < 0,
-            this.anchor.y,
         );
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined;
