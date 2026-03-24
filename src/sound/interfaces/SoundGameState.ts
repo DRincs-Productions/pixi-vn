@@ -29,7 +29,7 @@ export default interface SoundGameState {
         [key: string]: {
             channelAlias: string;
             soundAlias: string;
-            options: SoundPlayOptions;
+            options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
         };
     };
 }

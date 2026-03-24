@@ -1,6 +1,6 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Filter, filters, IMediaContext, Sound, sound } from "@pixi/sound";
-import { GENERAL_CHANNEL } from "../";
+import { GENERAL_CHANNEL } from "../constants";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import AudioChannel from "./classes/AudioChannel";
@@ -11,6 +11,7 @@ import SoundGameState from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundOptions, { ChannelOptions, SoundPlayOptions, SoundPlayOptionsWithChannel } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
+import SoundFilterMemory from "./types/SoundFilterMemory";
 
 export default class SoundManager implements SoundManagerInterface {
     get context(): IMediaContext {
@@ -239,14 +240,14 @@ export default class SoundManager implements SoundManagerInterface {
             [key: string]: {
                 channelAlias: string;
                 soundAlias: string;
-                options: SoundPlayOptions;
+                options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
             };
         } = Object.values(SoundManagerStatic.mediaInstances).reduce(
             (acc, mediaInstance) => {
                 acc[mediaInstance.soundAlias] = {
                     channelAlias: mediaInstance.channelAlias,
                     soundAlias: mediaInstance.soundAlias,
-                    options: mediaInstance.options,
+                    options: { ...mediaInstance.options, filters: FilterToFilterMemory(mediaInstance.options.filters) },
                 };
                 return acc;
             },
@@ -254,7 +255,7 @@ export default class SoundManager implements SoundManagerInterface {
                 [key: string]: {
                     channelAlias: string;
                     soundAlias: string;
-                    options: SoundPlayOptions;
+                    options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
                 };
             },
         );
@@ -297,6 +298,7 @@ export default class SoundManager implements SoundManagerInterface {
                         const mediaInstanceData = mediaInstances[alias];
                         this.findChannel(mediaInstanceData.channelAlias).play(mediaInstanceData.soundAlias, {
                             ...mediaInstanceData.options,
+                            filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
                         });
                     });
                 }
