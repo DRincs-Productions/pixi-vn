@@ -284,6 +284,23 @@ export default class SoundManager implements SoundManagerInterface {
                     await Promise.all(promises);
                 }
             }
+
+            if (data.hasOwnProperty("mediaInstances")) {
+                let mediaInstances = (data as SoundGameState)["mediaInstances"];
+                if (mediaInstances) {
+                    // load all media first
+                    const promises = Object.values(mediaInstances).map(async ({ soundAlias }) => {
+                        return await this.load(soundAlias);
+                    });
+                    await Promise.all(promises);
+                    Object.keys(mediaInstances).map(async (alias) => {
+                        const mediaInstanceData = mediaInstances[alias];
+                        this.findChannel(mediaInstanceData.channelAlias).play(mediaInstanceData.soundAlias, {
+                            ...mediaInstanceData.options,
+                        });
+                    });
+                }
+            }
         } catch (e) {
             logger.error("Error importing data", e);
         }
