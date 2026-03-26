@@ -265,7 +265,11 @@ export default class SoundManager implements SoundManagerInterface {
         };
     }
     async restore(data: object) {
-        this.clear();
+        this.channels.forEach((channel) => {
+            if (!channel.background) {
+                channel.stopAll();
+            }
+        });
         try {
             if (data.hasOwnProperty("filters")) {
                 let f = (data as SoundGameState)["filters"];
@@ -296,10 +300,15 @@ export default class SoundManager implements SoundManagerInterface {
                     await Promise.all(promises);
                     Object.keys(mediaInstances).map(async (alias) => {
                         const mediaInstanceData = mediaInstances[alias];
-                        this.findChannel(mediaInstanceData.channelAlias).play(mediaInstanceData.soundAlias, {
-                            ...mediaInstanceData.options,
-                            filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
-                        });
+                        const channel = this.findChannel(mediaInstanceData.channelAlias);
+                        if (!channel.background) {
+                            this.findChannel(mediaInstanceData.channelAlias).play(mediaInstanceData.soundAlias, {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                            });
+                        } else {
+                            // TODO
+                        }
                     });
                 }
             }
