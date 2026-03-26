@@ -6,6 +6,7 @@ export default class CharacterStoredClass extends StoredClassModel {
     constructor(id: string, emotion: string = "") {
         super(SYSTEM_RESERVED_STORAGE_KEYS.CHARACTER_CATEGORY_KEY, id + (emotion ? EMOTION_SEPARATOR + emotion : ""));
         this.sourceId = id;
+        this.migrateOldStorage("___character___");
     }
 
     override getStorageProperty<T extends StorageElementType>(propertyName: string): T | undefined {

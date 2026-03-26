@@ -40,8 +40,8 @@ export default class StoredClassModel {
         this.id = id;
         this.migrateOldStorage();
     }
-    private migrateOldStorage() {
-        const oldStorage = StorageManagerStatic.getVariable<any>(MAIN_STORAGE_KEY, this.categoryId);
+    protected migrateOldStorage(oldCategoryId: string = this.categoryId) {
+        const oldStorage = StorageManagerStatic.getVariable<any>(MAIN_STORAGE_KEY, oldCategoryId);
         if (oldStorage) {
             Object.entries(oldStorage).forEach(([id, value]) => {
                 if (typeof value === "object" && value !== null) {
@@ -50,7 +50,7 @@ export default class StoredClassModel {
                     });
                 }
             });
-            StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, this.categoryId);
+            StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, oldCategoryId);
         }
     }
     /**

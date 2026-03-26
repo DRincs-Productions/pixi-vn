@@ -63,7 +63,7 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
     /**
      * The key of the characters memory
      */
-    CHARACTER_CATEGORY_KEY: "___character___",
+    CHARACTER_CATEGORY_KEY: "character",
     /**
      * This variable is used to add the next dialog text into the current dialog memory.
      * This value was added to introduce Ink Glue functionality https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#glue
