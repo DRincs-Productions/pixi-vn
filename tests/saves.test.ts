@@ -587,10 +587,8 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             stepCounter: 0,
         },
         storageData: {
-            base: [],
-            temp: [],
+            main: [],
             tempDeadlines: [],
-            flags: [],
         },
         soundData: {
             soundsPlaying: {},
