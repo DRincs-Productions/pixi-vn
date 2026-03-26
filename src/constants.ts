@@ -51,7 +51,7 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
     /**
      * The key of the input memory. This value can be read by pixi-vn json importer
      */
-    CURRENT_INPUT_VALUE_MEMORY_KEY: "_input_value_",
+    CURRENT_INPUT_VALUE_MEMORY_KEY: "input",
     /**
      * The key of the last input added in the step memory
      */
