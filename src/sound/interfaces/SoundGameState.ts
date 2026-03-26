@@ -29,6 +29,7 @@ export default interface SoundGameState {
         [key: string]: {
             channelAlias: string;
             soundAlias: string;
+            stepCounter: number;
             options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
         };
     };

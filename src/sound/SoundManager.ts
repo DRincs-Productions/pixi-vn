@@ -1,3 +1,4 @@
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { Filter, filters, IMediaContext, Sound, sound } from "@pixi/sound";
 import { GENERAL_CHANNEL } from "../constants";
@@ -240,6 +241,7 @@ export default class SoundManager implements SoundManagerInterface {
             [key: string]: {
                 channelAlias: string;
                 soundAlias: string;
+                stepCounter: number;
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
             };
         } = Object.values(SoundManagerStatic.mediaInstances).reduce(
@@ -247,6 +249,7 @@ export default class SoundManager implements SoundManagerInterface {
                 acc[mediaInstance.soundAlias] = {
                     channelAlias: mediaInstance.channelAlias,
                     soundAlias: mediaInstance.soundAlias,
+                    stepCounter: GameUnifier.stepCounter,
                     options: { ...mediaInstance.options, filters: FilterToFilterMemory(mediaInstance.options.filters) },
                 };
                 return acc;
@@ -255,6 +258,7 @@ export default class SoundManager implements SoundManagerInterface {
                 [key: string]: {
                     channelAlias: string;
                     soundAlias: string;
+                    stepCounter: number;
                     options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
                 };
             },
@@ -302,12 +306,16 @@ export default class SoundManager implements SoundManagerInterface {
                         const mediaInstanceData = mediaInstances[alias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
                         if (!channel.background) {
-                            this.findChannel(mediaInstanceData.channelAlias).play(mediaInstanceData.soundAlias, {
+                            channel.play(mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
                             });
-                        } else {
-                            // TODO
+                        } else if (mediaInstanceData.stepCounter === GameUnifier.stepCounter) {
+                            // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
+                            channel.play(mediaInstanceData.soundAlias, {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                            });
                         }
                     });
                 }

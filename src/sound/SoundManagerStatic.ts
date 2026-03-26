@@ -9,6 +9,7 @@ export default class SoundManagerStatic {
             channelAlias: string;
             soundAlias: string;
             instance: IMediaInstance;
+            stepCounter: number;
             options: SoundPlayOptions;
         };
     } = {};
