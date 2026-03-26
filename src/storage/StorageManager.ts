@@ -127,6 +127,13 @@ export default class StorageManager implements StorageManagerInterface {
                                 item.value,
                             );
                             break;
+                        case "___last_input_added_in_step_memory___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY,
+                                item.value,
+                            );
+                            break;
                         default:
                             StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, item.key, item.value);
                     }

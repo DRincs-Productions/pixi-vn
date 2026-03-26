@@ -55,7 +55,7 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
     /**
      * The key of the last input added in the step memory
      */
-    LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY: "___last_input_added_in_step_memory___",
+    LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY: "input.step_counter",
     /**
      * The key of the current input info
      */
