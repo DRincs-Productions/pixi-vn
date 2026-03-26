@@ -206,8 +206,8 @@ export namespace Game {
                 return motion.animate(components, keyframes, options, priority);
             },
             // storage
-            getVariable: (key) => storageUtils.storage.get(key),
-            setVariable: (key, value) => storageUtils.storage.set(key, value),
+            getVariable: (prefix, key) => storageUtils.StorageManagerStatic.getVariable(prefix, key),
+            setVariable: (prefix, key, value) => storageUtils.StorageManagerStatic.setVariable(prefix, key, value),
             removeVariable: (key) => storageUtils.storage.remove(key),
             getFlag: (key) => storageUtils.storage.getFlag(key),
             setFlag: (name, value) => storageUtils.storage.setFlag(name, value),
