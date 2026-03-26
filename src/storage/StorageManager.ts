@@ -19,7 +19,7 @@ export default class StorageManager implements StorageManagerInterface {
     }
     set default(value: { [key: string]: StorageElementType }) {
         Object.entries(value).forEach(([key, value]) => {
-            StorageManagerStatic.default.set(key, value);
+            StorageManagerStatic.default.map.set(key, value);
         });
     }
     public set(key: string, value: StorageElementType) {

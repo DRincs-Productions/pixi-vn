@@ -4,8 +4,8 @@ import { createExportableElement } from "../utils/export-utility";
 import { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {
-    static storage = new CachedMap<string, any>({ cacheSize: 100 });
-    static default = new CachedMap<string, any>({ cacheSize: 20 });
+    static storage = new CachedMap<string, any>({ cacheSize: 50 });
+    static default = new CachedMap<string, any>({ cacheSize: 10 });
     static tempStorageDeadlines = new Map<string, number>();
 
     private constructor() {}
