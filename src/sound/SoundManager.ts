@@ -269,19 +269,7 @@ export default class SoundManager implements SoundManagerInterface {
         };
     }
     async restore(data: object) {
-        this.channels.forEach((channel) => {
-            if (!channel.background) {
-                channel.stopAll();
-            }
-        });
         try {
-            if (data.hasOwnProperty("filters")) {
-                let f = (data as SoundGameState)["filters"];
-                if (f) {
-                    this.filtersAll = FilterMemoryToFilter(f);
-                }
-            }
-
             if (data.hasOwnProperty("soundsPlaying")) {
                 let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
                 if (soundsPlaying) {
@@ -298,10 +286,17 @@ export default class SoundManager implements SoundManagerInterface {
                 let mediaInstances = (data as SoundGameState)["mediaInstances"];
                 if (mediaInstances) {
                     // load all media first
-                    const promises = Object.values(mediaInstances).map(async ({ soundAlias }) => {
+                    const usedChannels = new Set<string>();
+                    const promises = Object.values(mediaInstances).map(async ({ soundAlias, channelAlias }) => {
+                        usedChannels.add(channelAlias);
                         return await this.load(soundAlias);
                     });
                     await Promise.all(promises);
+                    this.channels.forEach((channel) => {
+                        if (!channel.background || !usedChannels.has(channel.alias)) {
+                            channel.stopAll();
+                        }
+                    });
                     Object.keys(mediaInstances).map(async (alias) => {
                         const mediaInstanceData = mediaInstances[alias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
@@ -318,6 +313,13 @@ export default class SoundManager implements SoundManagerInterface {
                             });
                         }
                     });
+                }
+            }
+
+            if (data.hasOwnProperty("filters")) {
+                let f = (data as SoundGameState)["filters"];
+                if (f) {
+                    this.filtersAll = FilterMemoryToFilter(f);
                 }
             }
         } catch (e) {
