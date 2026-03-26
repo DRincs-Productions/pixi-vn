@@ -1,5 +1,5 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import { MAIN_STORAGE_KEY, TEMP_STORAGE_KEY } from "../constants";
+import { MAIN_STORAGE_KEY, NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS, TEMP_STORAGE_KEY } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import StorageGameState, { StorageGameStateItem } from "./interfaces/StorageGameState";
@@ -91,7 +91,38 @@ export default class StorageManager implements StorageManagerInterface {
         try {
             if (data) {
                 (data.base as any)?.forEach((item: StorageGameStateItem) => {
-                    StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, item.key, item.value);
+                    switch (item.key) {
+                        case "___current_dialogue_memory___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
+                                item.value,
+                            );
+                            break;
+                        case "___last_dialogue_added_in_step_memory___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
+                                item.value,
+                            );
+                            break;
+                        case "___current_menu_options_memory___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
+                                item.value,
+                            );
+                            break;
+                        case "___last_menu_options_added_in_step_memory___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
+                                item.value,
+                            );
+                            break;
+                        default:
+                            StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, item.key, item.value);
+                    }
                 });
                 (data.temp as any)?.forEach((item: StorageGameStateItem) => {
                     StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, item.key, item.value);
