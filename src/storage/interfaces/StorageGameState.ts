@@ -22,6 +22,6 @@ type StorageGameState = {
      * @deprecated
      */
     flags?: string[];
-    storage: StorageGameStateItem[];
+    main: StorageGameStateItem[];
 };
 export default StorageGameState;

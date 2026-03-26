@@ -73,16 +73,16 @@ export default class StorageManager implements StorageManagerInterface {
         this.tempStorageDeadlines.clear();
     }
     public export(): StorageGameState {
-        let storage: StorageGameStateItem[] = [];
+        let main: StorageGameStateItem[] = [];
         [...this.base.keys()].forEach((key) => {
-            storage.push({ key, value: this.base.get(key) });
+            main.push({ key, value: this.base.get(key) });
         });
         let tempDeadlines: StorageGameStateItem<number>[] = [];
         [...StorageManagerStatic.tempStorageDeadlines.keys()].forEach((key) => {
             tempDeadlines.push({ key, value: this.tempStorageDeadlines.get(key)! });
         });
         return createExportableElement({
-            storage,
+            main,
             tempDeadlines,
         });
     }
@@ -179,7 +179,7 @@ export default class StorageManager implements StorageManagerInterface {
                 (data.flags as any)?.forEach((flag: string) => {
                     StorageManagerStatic.setFlag(flag, true);
                 });
-                (data.storage as any)?.forEach((item: StorageGameStateItem) => {
+                (data.main as any)?.forEach((item: StorageGameStateItem) => {
                     this.base.set(item.key, item.value);
                 });
                 (data.tempDeadlines as any)?.forEach((item: StorageGameStateItem<number>) => {
