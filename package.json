@@ -1,6 +1,6 @@
 {
   "name": "@drincs/pixi-vn",
-  "version": "1.5.17",
+  "version": "1.5.19",
   "type": "module",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.cjs",
@@ -162,6 +162,7 @@
     "ts-node": "^10.9.2",
     "tsup": "^8.5.1",
     "typescript": "^5.9.3",
+    "vite": "^7.3.1",
     "vite-tsconfig-paths": "^6.0.3",
     "vitest": "^4.0.16"
   },

@@ -10,21 +10,18 @@ export namespace CanvasPropertyUtility {
         negativeScale: boolean,
         anchor: number = 0,
     ): number {
-        pivot = pivot * (negativeScale ? -1 : 1);
-        if (type === "width") {
-            return (
-                align * (CanvasUtilitiesStatic.screen.width - value) +
-                pivot +
-                anchor * value +
-                (negativeScale ? value : 0)
-            );
+        if (negativeScale) {
+            if (type === "width") {
+                return align * (CanvasUtilitiesStatic.screen.width - value) + value - pivot - anchor * value;
+            } else {
+                return align * (CanvasUtilitiesStatic.screen.height - value) + value - pivot - anchor * value;
+            }
         } else {
-            return (
-                align * (CanvasUtilitiesStatic.screen.height - value) +
-                pivot +
-                anchor * value +
-                (negativeScale ? value : 0)
-            );
+            if (type === "width") {
+                return align * (CanvasUtilitiesStatic.screen.width - value) + pivot + anchor * value;
+            } else {
+                return align * (CanvasUtilitiesStatic.screen.height - value) + pivot + anchor * value;
+            }
         }
     }
 
@@ -36,17 +33,18 @@ export namespace CanvasPropertyUtility {
         negativeScale: boolean,
         anchor: number = 0,
     ): number {
-        pivot = pivot * (negativeScale ? -1 : 1);
-        if (type === "width") {
-            return (
-                (position - pivot - anchor * value - (negativeScale ? value : 0)) /
-                (CanvasUtilitiesStatic.screen.width - value)
-            );
+        if (negativeScale) {
+            if (type === "width") {
+                return (position - value + pivot + anchor * value) / (CanvasUtilitiesStatic.screen.width - value);
+            } else {
+                return (position - value + pivot + anchor * value) / (CanvasUtilitiesStatic.screen.height - value);
+            }
         } else {
-            return (
-                (position - pivot - anchor * value - (negativeScale ? value : 0)) /
-                (CanvasUtilitiesStatic.screen.height - value)
-            );
+            if (type === "width") {
+                return (position - pivot - anchor * value) / (CanvasUtilitiesStatic.screen.width - value);
+            } else {
+                return (position - pivot - anchor * value) / (CanvasUtilitiesStatic.screen.height - value);
+            }
         }
     }
 

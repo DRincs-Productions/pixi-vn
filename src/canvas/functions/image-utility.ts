@@ -6,7 +6,7 @@ import ImageSprite from "../components/ImageSprite";
 /**
  * Add a image in the canvas.
  * Is the same that {@link showImage}, but the image is not shown.
- * If you want to show the image, then you need to use the function {@link ImageSprite.load()}.
+ * If you want to show the image, then you need to use the function {@link ImageSprite.load}.
  * @param alias is the unique alias of the image. You can use this alias to refer to this image
  * @param imageUrl is the url of the image. If you don't provide the url, then the alias is used as the url.
  * @param options The options of the image.

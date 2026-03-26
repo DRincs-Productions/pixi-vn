@@ -164,7 +164,6 @@ export default class Container<
                 PropsUtils.getSuperWidth(this),
                 superPivot.x,
                 superScale.x < 0,
-                this.anchor.x,
             ),
             y: PropsUtils.calculateAlignByPosition(
                 "height",
@@ -172,7 +171,6 @@ export default class Container<
                 PropsUtils.getSuperHeight(this),
                 superPivot.y,
                 superScale.y < 0,
-                this.anchor.y,
             ),
         };
     }
@@ -193,7 +191,6 @@ export default class Container<
             PropsUtils.getSuperWidth(this),
             superPivot.x,
             superScale.x < 0,
-            this.anchor.x,
         );
     }
     set yAlign(value: number) {
@@ -213,7 +210,6 @@ export default class Container<
             PropsUtils.getSuperHeight(this),
             superPivot.y,
             superScale.y < 0,
-            this.anchor.y,
         );
     }
     private _percentagePosition: Partial<PointData> | undefined = undefined;
@@ -266,12 +262,14 @@ export default class Container<
         return "pixel";
     }
     get positionInfo(): { x: number; y: number; type: "pixel" | "percentage" | "align" } {
-        if (this._align) {
-            return { x: this._align.x || 0, y: this._align.y || 0, type: "align" };
-        } else if (this._percentagePosition) {
-            return { x: this._percentagePosition.x || 0, y: this._percentagePosition.y || 0, type: "percentage" };
+        switch (this.positionType) {
+            case "align":
+                return { x: this.xAlign, y: this.yAlign, type: "align" };
+            case "percentage":
+                return { x: this.percentageX, y: this.percentageY, type: "percentage" };
+            default:
+                return { x: this.x, y: this.y, type: "pixel" };
         }
-        return { x: this.x, y: this.y, type: "pixel" };
     }
     set positionInfo(value: { x: number; y: number; type?: "pixel" | "percentage" | "align" }) {
         if (value.type === "align") {

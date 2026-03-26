@@ -83,7 +83,22 @@ export default class CanvasManager implements CanvasManagerInterface {
     async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseInterface<T> | string,
         newAlias: CanvasBaseInterface<T> | string,
+        options: {
+            ignoreProperties?: (defaultProperties: string[]) => string[];
+        } = {},
     ) {
+        const defaultPropertiesWhichCanBeIgnored = [
+            "isRenderGroup",
+            "scale",
+            "visible",
+            "boundsArea",
+            "text",
+            "resolution",
+            "style",
+            "height",
+            "width",
+        ];
+        const { ignoreProperties = (defaultProperties) => defaultProperties } = options;
         if (typeof newAlias === "string") {
             let element = this.find(newAlias);
             if (element) {
@@ -105,16 +120,14 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (oldAlias instanceof PIXI.Container) {
             oldAlias = oldAlias.memory;
         }
-        "isRenderGroup" in oldAlias && delete oldAlias.isRenderGroup;
-        "scale" in oldAlias && delete oldAlias.scale;
-        "visible" in oldAlias && delete oldAlias.visible;
-        "boundsArea" in oldAlias && delete oldAlias.boundsArea;
-        "text" in oldAlias && delete oldAlias.text;
-        "resolution" in oldAlias && delete oldAlias.resolution;
-        "style" in oldAlias && delete oldAlias.style;
-        "height" in oldAlias && delete oldAlias.height;
-        "width" in oldAlias && delete oldAlias.width;
-        await RegisteredCanvasComponents.copyProperty(newAlias.pixivnId, newAlias, oldAlias);
+        const propertiesToIgnore = ignoreProperties(defaultPropertiesWhichCanBeIgnored);
+        const clonedOldAlias = { ...(oldAlias as T) };
+        propertiesToIgnore.forEach((property) => {
+            if (property in clonedOldAlias) {
+                delete clonedOldAlias[property as keyof T];
+            }
+        });
+        await RegisteredCanvasComponents.copyProperty(newAlias.pixivnId, newAlias, clonedOldAlias);
     }
     public add(
         alias: string,
@@ -144,13 +157,12 @@ export default class CanvasManager implements CanvasManagerInterface {
             this.copyCanvasElementProperty(oldCanvasElement, canvasComponent);
         }
 
-        let zIndex = options.zIndex;
-        if (oldCanvasElement && !this.gameLayer.children.includes(oldCanvasElement)) {
+        const { zIndex = oldCanvasElement?.parent?.getChildIndex(oldCanvasElement) } = options;
+        if (oldCanvasElement && !this.canvasElementIsOnCanvas(oldCanvasElement)) {
             logger.error(
                 `The canvas element ${alias} exist in the memory but it is not on the canvas, so the zIndex is not set`,
             );
         } else if (oldCanvasElement) {
-            zIndex === undefined && (zIndex = this.gameLayer.getChildIndex(oldCanvasElement));
             this.remove(alias, { ignoreTickers: true });
         }
 
@@ -844,7 +856,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     public async restore(data: object) {
         this.clear();
         try {
-            if (data.hasOwnProperty("elementAliasesOrder") && data.hasOwnProperty("elements")) {
+            if (data.hasOwnProperty("elements") && data.hasOwnProperty("elementAliasesOrder")) {
                 let elementAliasesOrder = (data as CanvasGameState)["elementAliasesOrder"];
                 let elements: {
                     [alias: string]: CanvasBaseInterface<any>;

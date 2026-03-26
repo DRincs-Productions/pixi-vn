@@ -1,5 +1,4 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, CanvasBaseInterface, ImageContainerOptions, ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";
@@ -18,48 +17,29 @@ import { addImageCointainer } from "./image-container-utility";
 import { addImage } from "./image-utility";
 import { addVideo } from "./video-utility";
 
-function calculateDestination(
-    destination: {
-        type?: "pixel" | "percentage" | "align";
-        y: number;
-        x: number;
-    },
-    component: CanvasBaseInterface<any>,
-) {
-    if (destination.type === "align") {
-        let anchorx = undefined;
-        let anchory = undefined;
-        if (component instanceof PIXI.Sprite) {
-            anchorx = component.anchor.x;
-            anchory = component.anchor.y;
-        }
-        let superPivot = PropsUtils.getSuperPoint(component.pivot, component.angle);
-        let superScale = PropsUtils.getSuperPoint(component.scale, component.angle);
-        destination.x = PropsUtils.calculatePositionByAlign(
-            "width",
-            destination.x,
-            PropsUtils.getSuperWidth(component),
-            superPivot.x,
-            superScale.x < 0,
-            anchorx,
-        );
-        destination.y = PropsUtils.calculatePositionByAlign(
-            "height",
-            destination.y,
-            PropsUtils.getSuperHeight(component),
-            superPivot.y,
-            superScale.y < 0,
-            anchory,
-        );
+function mapDestination(destination: {
+    type?: "pixel" | "percentage" | "align";
+    y: number;
+    x: number;
+}): Partial<ImageSpriteOptions> {
+    switch (destination.type) {
+        case "align":
+            return {
+                xAlign: destination.x,
+                yAlign: destination.y,
+            };
+        case "percentage":
+            return {
+                percentageX: destination.x,
+                percentageY: destination.y,
+            };
+        case "pixel":
+        default:
+            return {
+                x: destination.x,
+                y: destination.y,
+            };
     }
-    if (destination.type === "percentage") {
-        destination.x = PropsUtils.calculatePositionByPercentagePosition("width", destination.x);
-        destination.y = PropsUtils.calculatePositionByPercentagePosition("height", destination.y);
-    }
-    return {
-        x: destination.x,
-        y: destination.y,
-    };
 }
 
 type TComponent =
@@ -92,9 +72,15 @@ function addComponent(
     } else if (typeof canvasElement === "object" && "value" in canvasElement && "options" in canvasElement) {
         if (typeof canvasElement.value === "string") {
             if (checkIfVideo(canvasElement.value)) {
-                return addVideo(alias, canvasElement.value, { ...canvasElement.options, zIndex: options.zIndex });
+                return addVideo(alias, canvasElement.value, {
+                    ...canvasElement.options,
+                    zIndex: options.zIndex,
+                });
             } else {
-                return addImage(alias, canvasElement.value, { ...canvasElement.options, zIndex: options.zIndex });
+                return addImage(alias, canvasElement.value, {
+                    ...canvasElement.options,
+                    zIndex: options.zIndex,
+                });
             }
         } else if (Array.isArray(canvasElement.value)) {
             return addImageCointainer(alias, canvasElement.value, {
@@ -143,8 +129,9 @@ export async function showWithDissolve(
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
@@ -256,8 +243,9 @@ export async function showWithFade(
     aliasToRemoveAfter.push(oldComponentAlias);
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
@@ -354,6 +342,7 @@ export async function moveIn(
         ...options
     } = props;
     let res: string[] = [];
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
     if (!component) {
         component = alias;
     }
@@ -369,19 +358,26 @@ export async function moveIn(
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_movein";
         canvas.editAlias(alias, oldComponentAlias);
+        if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
+            destination = oldComponent.positionInfo;
+        } else {
+            destination = { x: oldComponent.x, y: oldComponent.y, type: "pixel" };
+        }
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
-    if (component instanceof ImageSprite || component instanceof ImageContainer) {
-        destination = component.positionInfo;
-    } else {
-        destination = { x: component.x, y: component.y, type: "pixel" };
+    if (!destination) {
+        if (component instanceof ImageSprite || component instanceof ImageContainer) {
+            destination = component.positionInfo;
+        } else {
+            destination = { x: component.x, y: component.y, type: "pixel" };
+        }
     }
     // remove the old component
     if (oldComponentAlias) {
@@ -399,7 +395,7 @@ export async function moveIn(
     if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
         await component.load();
     }
-    // special
+    // edit the properties of the new component
     switch (direction) {
         case "up":
             component.y = canvas.height + component.height;
@@ -419,7 +415,7 @@ export async function moveIn(
     // create the ticker and play it
     let idShow = canvas.animate(
         alias,
-        calculateDestination(destination, component),
+        mapDestination(destination) as any,
         {
             ...options,
             tickerIdToResume,
@@ -525,6 +521,7 @@ export async function zoomIn(
         ...options
     } = props;
     let res: string[] = [];
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
     if (!component) {
         component = alias;
     }
@@ -540,19 +537,26 @@ export async function zoomIn(
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_zoom";
         canvas.editAlias(alias, oldComponentAlias);
+        if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
+            destination = oldComponent.positionInfo;
+        } else {
+            destination = { x: oldComponent.x, y: oldComponent.y, type: "pixel" };
+        }
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
-    if (component instanceof ImageSprite || component instanceof ImageContainer) {
-        destination = component.positionInfo;
-    } else {
-        destination = { x: component.x, y: component.y, type: "pixel" };
+    if (!destination) {
+        if (component instanceof ImageSprite || component instanceof ImageContainer) {
+            destination = component.positionInfo;
+        } else {
+            destination = { x: component.x, y: component.y, type: "pixel" };
+        }
     }
     const pivot: { x: number; y: number } = {
         x: component.pivot.x,
@@ -609,7 +613,7 @@ export async function zoomIn(
     let idShow = canvas.animate(
         alias,
         {
-            ...calculateDestination(destination, component),
+            ...(mapDestination(destination) as any),
             pivotX: pivot.x,
             pivotY: pivot.y,
             scaleX: scale.x,
@@ -731,6 +735,7 @@ export async function pushIn(
         ...options
     } = props;
     let res: string[] = [];
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
     if (!component) {
         component = alias;
     }
@@ -743,20 +748,32 @@ export async function pushIn(
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_push";
         canvas.editAlias(alias, oldComponentAlias);
+        if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
+            destination = oldComponent.positionInfo;
+        } else {
+            destination = { x: oldComponent.x, y: oldComponent.y, type: "pixel" };
+        }
     }
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
-        zIndex: oldComponent ? canvas.gameLayer.getChildIndex(oldComponent) : undefined,
+        zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
+    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
-    let destination: { x: number; y: number; type: "pixel" | "percentage" | "align" };
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        destination = component.positionInfo;
-    } else {
-        destination = { x: component.x, y: component.y, type: "pixel" };
+    if (!destination) {
+        if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+            destination = component.positionInfo;
+        } else {
+            destination = { x: component.x, y: component.y, type: "pixel" };
+        }
     }
+    // load the image if the image is not loaded
+    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        await component.load();
+    }
+    // edit the properties of the new component
     switch (direction) {
         case "up":
             component.y = canvas.height + component.height;
@@ -787,7 +804,7 @@ export async function pushIn(
     // create the ticker and play it
     let idShow = canvas.animate(
         alias,
-        calculateDestination(destination, component),
+        mapDestination(destination) as any,
         {
             ...options,
             tickerIdToResume,
@@ -796,10 +813,6 @@ export async function pushIn(
         priority,
     );
     idShow && res.push(idShow);
-    // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
-        await component.load();
-    }
     // return the ids of the tickers
     if (res.length > 0) {
         return res;
