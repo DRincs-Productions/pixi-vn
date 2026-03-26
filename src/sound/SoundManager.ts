@@ -190,7 +190,7 @@ export default class SoundManager implements SoundManagerInterface {
                 for (let key in assets) {
                     const item = assets[key];
                     if (item instanceof Sound) {
-                        if (!sound.find(alias)) sound.add(key, item);
+                        if (!sound.find(key)) sound.add(key, item);
                     }
                 }
             } catch (e) {
