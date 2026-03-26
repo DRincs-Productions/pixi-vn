@@ -21,19 +21,19 @@ export default class StorageManagerStatic {
 
     static setVariable(prefix: string, key: string, value: StorageElementType) {
         if (value === undefined || value === null) {
-            StorageManagerStatic.storage.delete(`${prefix}${key}`);
+            StorageManagerStatic.storage.delete(`${prefix}:${key}`);
         } else {
-            StorageManagerStatic.storage.set(`${prefix}${key}`, value);
+            StorageManagerStatic.storage.set(`${prefix}:${key}`, value);
         }
     }
 
     static getVariable<T extends StorageElementType>(prefix: string, key: string): T | undefined {
-        let result = StorageManagerStatic.storage.get(`${prefix}${key}`);
+        let result = StorageManagerStatic.storage.get(`${prefix}:${key}`);
         return createExportableElement(result) as T;
     }
 
     static removeVariable(prefix: string, key: string) {
-        StorageManagerStatic.storage.delete(`${prefix}${key}`);
+        StorageManagerStatic.storage.delete(`${prefix}:${key}`);
     }
 
     static setFlag(key: string, value: boolean) {

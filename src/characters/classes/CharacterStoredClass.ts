@@ -1,4 +1,4 @@
-import { StoredClassModel, SYSTEM_RESERVED_STORAGE_KEYS } from "../../storage";
+import { StorageElementType, StoredClassModel, SYSTEM_RESERVED_STORAGE_KEYS } from "../../storage";
 
 const EMOTION_SEPARATOR = "@";
 export default class CharacterStoredClass extends StoredClassModel {
@@ -8,7 +8,7 @@ export default class CharacterStoredClass extends StoredClassModel {
         this.sourceId = id;
     }
 
-    override getStorageProperty<T>(propertyName: string): T | undefined {
+    override getStorageProperty<T extends StorageElementType>(propertyName: string): T | undefined {
         let value = super.getStorageProperty<T>(propertyName);
         if (value === undefined) {
             value = super.getStorageProperty<T>(propertyName, this.sourceId);

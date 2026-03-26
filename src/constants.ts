@@ -26,9 +26,9 @@ export const CANVAS_SPRITE_ID = "Sprite";
 export const CANVAS_TEXT_ID = "Text";
 export const CANVAS_VIDEO_ID = "Video";
 
-export const MAIN_STORAGE_KEY = "storage:";
-export const TEMP_STORAGE_KEY = "temp:";
-export const NARRATION_STORAGE_KEY = "narration:";
+export const MAIN_STORAGE_KEY = "storage";
+export const TEMP_STORAGE_KEY = "temp";
+export const NARRATION_STORAGE_KEY = "narration";
 export const FLAGS_KEY = "flags";
 
 export const SYSTEM_RESERVED_STORAGE_KEYS = {
@@ -39,27 +39,27 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
     /**
      * The key of step counter of the current dialogue memory
      */
-    LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "dialogue.step_counter",
+    LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY: "dialogue:step_counter",
     /**
      * The key of the current menu options memory
      */
-    CURRENT_MENU_OPTIONS_MEMORY_KEY: "choice.options",
+    CURRENT_MENU_OPTIONS_MEMORY_KEY: "choice:options",
     /**
      * The key of the last menu options added in the step memory
      */
-    LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "choice.step_counter",
+    LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY: "choice:step_counter",
     /**
      * The key of the input memory. This value can be read by pixi-vn json importer
      */
-    CURRENT_INPUT_VALUE_MEMORY_KEY: "input.value",
+    CURRENT_INPUT_VALUE_MEMORY_KEY: "input:value",
     /**
      * The key of the last input added in the step memory
      */
-    LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY: "input.step_counter",
+    LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY: "input:step_counter",
     /**
      * The key of the current input info
      */
-    CURRENT_INPUT_INFO_MEMORY_KEY: "input.info",
+    CURRENT_INPUT_INFO_MEMORY_KEY: "input:info",
     /**
      * The key of the characters memory
      */
