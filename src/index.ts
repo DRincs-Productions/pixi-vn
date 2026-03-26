@@ -18,7 +18,7 @@ export type {
 export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
 export * from "./classes";
-export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
+export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
 export * from "./interfaces";
 export * from "./utils";
 
