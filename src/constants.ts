@@ -25,3 +25,7 @@ export const CANVAS_IMAGE_ID = "Image";
 export const CANVAS_SPRITE_ID = "Sprite";
 export const CANVAS_TEXT_ID = "Text";
 export const CANVAS_VIDEO_ID = "Video";
+
+export const MAIN_STORAGE_KEY = "storage:";
+export const TEMP_STORAGE_KEY = "temp_storage:";
+export const FLAGS_KEY = "flags";

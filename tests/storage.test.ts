@@ -63,8 +63,8 @@ test("clear & default", async () => {
 
     storage.clear();
     let items: StorageGameStateItem[] = [];
-    [...storage.storage.keys()].forEach((key) => {
-        items.push({ key, value: storage.storage.get(key) });
+    [...storage.base.keys()].forEach((key) => {
+        items.push({ key, value: storage.base.get(key) });
     });
     expect(items.length).toBe(0);
     expect(storage.get("variable1")).toEqual(1);
@@ -91,8 +91,8 @@ test("clear & default", async () => {
     expect(storage.get("variable7")).toEqual(7);
 
     let items2: StorageGameStateItem[] = [];
-    [...storage.storage.keys()].forEach((key) => {
-        items2.push({ key, value: storage.storage.get(key) });
+    [...storage.base.keys()].forEach((key) => {
+        items2.push({ key, value: storage.base.get(key) });
     });
     expect(items2.length).toBe(4);
     storage.clear();
@@ -218,7 +218,7 @@ test("import & exoprt", async () => {
 });
 
 test("Keyv", async () => {
-    const keyvStorage = new Keyv({ store: storage.storage });
+    const keyvStorage = new Keyv({ store: storage.base });
     await keyvStorage.set("a", 1);
     await keyvStorage.set("b", "test");
     await keyvStorage.set("c", true);

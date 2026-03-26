@@ -20,7 +20,7 @@ export default interface StorageManagerInterface {
      * });
      * ```
      */
-    readonly storage: Map<string, StorageElementType>;
+    readonly base: Map<string, StorageElementType>;
     /**
      * The internal cache. **Do not modify this directly.**
      */
