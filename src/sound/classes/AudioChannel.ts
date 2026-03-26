@@ -41,7 +41,7 @@ export default class AudioChannel implements AudioChannelInterface {
             await sound.play(soundAlias, {
                 ...(options || {}),
                 filters: [...(this.channelOptions.filters || []), ...(options?.filters || [])],
-                muted: this.channelOptions.muted ?? options?.muted,
+                muted: Boolean(this.channelOptions.muted) || Boolean(options?.muted),
                 volume: calculateVolume(options?.volume, this.channelOptions.volume),
             }),
             this,
