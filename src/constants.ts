@@ -72,18 +72,18 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
     /**
      * The key of a list of all labels that have been opened during the progression of the steps.
      */
-    OPENED_LABELS_COUNTER_KEY: "___opened_labels_counter___",
+    OPENED_LABELS_COUNTER_KEY: "label:opened",
     /**
      * The key of a list of all choices that have been made during the progression of the steps.
      */
-    ALL_CHOICES_MADE_KEY: "___all_choices_made___",
+    ALL_CHOICES_MADE_KEY: "choices:made",
     /**
      * The key of the current step times counter.
      * This value was added to introduce Ink Sequences, cycles and other alternatives https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#sequences-cycles-and-other-alternatives
      */
-    CURRENT_STEP_TIMES_COUNTER_KEY: "___current_step_times_counter___",
+    CURRENT_STEP_TIMES_COUNTER_KEY: "label:hystory",
     /**
      * The key of the last dialogue step glued in the step memory
      */
-    LAST_STEP_GLUED: "___last_step_glued___",
+    LAST_STEP_GLUED: "glue:last_step",
 };

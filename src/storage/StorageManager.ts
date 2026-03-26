@@ -141,6 +141,34 @@ export default class StorageManager implements StorageManagerInterface {
                                 item.value,
                             );
                             break;
+                        case "___opened_labels_counter___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY,
+                                item.value,
+                            );
+                            break;
+                        case "___all_choices_made___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY,
+                                item.value,
+                            );
+                            break;
+                        case "___current_step_times_counter___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
+                                item.value,
+                            );
+                            break;
+                        case "___last_step_glued___":
+                            StorageManagerStatic.setVariable(
+                                NARRATION_STORAGE_KEY,
+                                SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED,
+                                item.value,
+                            );
+                            break;
                         default:
                             StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, item.key, item.value);
                     }
