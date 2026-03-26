@@ -8,6 +8,7 @@ import {
     storage,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "../src";
+import { NARRATION_STORAGE_KEY } from "../src/constants";
 import { getGamePath } from "../src/utils/path-utility";
 
 // Test timeout constants for async operations
@@ -133,7 +134,12 @@ test("stepCounter & currentStepTimesCounter test", async () => {
     });
     expect(narration.stepCounter).toBe(7);
     expect(
-        (storage.get(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY) as any).stepCounter["1"].stepCounters
+        (
+            GameUnifier.getVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
+            ) as any
+        ).stepCounter["1"].stepCounters,
     ).toEqual([2, 5]);
 });
 
