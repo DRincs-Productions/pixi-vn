@@ -165,7 +165,7 @@ export default class SoundManager implements SoundManagerInterface {
         }
         alias.forEach((alias) => {
             const item = PIXI.Assets.get<Sound>(alias);
-            sound.add(alias, item);
+            if (!sound.find(alias)) sound.add(alias, item);
         });
     }
     backgroundLoad(alias: string | string[]): Promise<void> {
@@ -177,7 +177,7 @@ export default class SoundManager implements SoundManagerInterface {
             }
             alias.forEach((alias) => {
                 const item = PIXI.Assets.get<Sound>(alias);
-                sound.add(alias, item);
+                if (!sound.find(alias)) sound.add(alias, item);
             });
         });
         return promise;
@@ -190,7 +190,7 @@ export default class SoundManager implements SoundManagerInterface {
                 for (let key in assets) {
                     const item = assets[key];
                     if (item instanceof Sound) {
-                        sound.add(key, item);
+                        if (!sound.find(alias)) sound.add(key, item);
                     }
                 }
             } catch (e) {

@@ -1,3 +1,4 @@
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import { sound } from "@pixi/sound";
 import { calculateVolume } from "../functions/channel-utility";
 import { proxyMedia } from "../functions/proxy-utility";
@@ -49,6 +50,7 @@ export default class AudioChannel implements AudioChannelInterface {
             channelAlias: this.alias,
             soundAlias: soundAlias,
             instance: media,
+            stepCounter: GameUnifier.stepCounter,
             options: {
                 volume: options?.volume || 1,
                 muted: options?.muted || false,
