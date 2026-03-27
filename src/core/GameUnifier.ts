@@ -442,8 +442,7 @@ export default class GameUnifier {
     }
 
     static removeOnError(handler: OnErrorHandler) {
-        const idx = GameUnifier._onErrorHandlers.indexOf(handler);
-        if (idx >= 0) GameUnifier._onErrorHandlers.splice(idx, 1);
+        GameUnifier._onErrorHandlers = GameUnifier._onErrorHandlers.filter(h => h !== handler);
     }
 
     static clearOnErrorHandlers() {
