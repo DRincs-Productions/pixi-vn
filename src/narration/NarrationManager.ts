@@ -567,7 +567,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         // Always return a runner that calls GameUnifier.runOnError so that
         // all registered handlers (including the legacy single `onError`)
         // are executed in order.
-        return async (error: any, props: StepLabelPropsType) => {
+        return async (error: unknown, props: StepLabelPropsType) => {
             try {
                 await GameUnifier.runOnError(error, props);
             } catch (e) {
