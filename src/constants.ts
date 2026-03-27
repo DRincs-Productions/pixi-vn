@@ -81,7 +81,11 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
      * The key of the current step times counter.
      * This value was added to introduce Ink Sequences, cycles and other alternatives https://github.com/inkle/ink/blob/master/Documentation/WritingWithInk.md#sequences-cycles-and-other-alternatives
      */
-    CURRENT_STEP_TIMES_COUNTER_KEY: "label:hystory",
+    CURRENT_STEP_TIMES_COUNTER_KEY: "label:history",
+    /**
+     * Legacy key for the current step times counter, kept for backward compatibility / migration.
+     */
+    LEGACY_CURRENT_STEP_TIMES_COUNTER_KEY: "label:hystory",
     /**
      * The key of the last dialogue step glued in the step memory
      */
