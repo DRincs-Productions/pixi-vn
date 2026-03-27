@@ -25,7 +25,7 @@ const sound: SoundManagerInterface = new SoundManager();
 
 GameUnifier.addOnPreContinue(async () => {
     try {
-        Object.values(SoundManagerStatic.channels).map((channel) => {
+        Object.values(SoundManagerStatic.channels).forEach((channel) => {
             if (!channel.background) {
                 channel.stopAll();
             }
