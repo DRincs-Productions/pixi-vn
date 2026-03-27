@@ -13,7 +13,7 @@ export default interface SoundManagerInterface extends Omit<
     /**
      * @deprecated You can define sound assets directly in {@link Assets}
      */
-    add(alias: string, options?: string): Sound;
+    add(alias: string, options: string): Sound;
     /**
      * Plays a sound.
      * @param alias The media and sound (asset) alias reference.

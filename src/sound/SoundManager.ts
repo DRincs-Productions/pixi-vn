@@ -38,7 +38,7 @@ export default class SoundManager implements SoundManagerInterface {
         this._defaultChannelAlias = alias;
     }
 
-    add(alias: string, sourceOptions?: string) {
+    add(alias: string, sourceOptions: string) {
         return sound.add(alias, sourceOptions);
     }
     async edit(alias: string, options: SoundOptions): Promise<void> {
@@ -208,8 +208,8 @@ export default class SoundManager implements SoundManagerInterface {
 
     addChannel(alias: string | string[], options: ChannelOptions = {}): AudioChannelInterface | undefined {
         if (typeof alias !== "string") {
-            alias.forEach((a) => {
-                this.addChannel(a, options);
+            alias.forEach((alias) => {
+                this.addChannel(alias, options);
             });
             return;
         }
