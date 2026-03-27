@@ -122,7 +122,7 @@ export default class SoundManager implements SoundManagerInterface {
             soundAlias = aliasOrMediaAlias;
             options = soundAliasOrOptions;
         }
-        const channelAlias = options?.channel || GENERAL_CHANNEL;
+        const channelAlias = options?.channel || this.defaultChannelAlias;
         return await this.findChannel(channelAlias).play(mediaAlias, soundAlias, options);
     }
     find(alias: string): IMediaInstance | undefined {
