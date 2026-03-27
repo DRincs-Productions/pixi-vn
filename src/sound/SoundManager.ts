@@ -105,12 +105,12 @@ export default class SoundManager implements SoundManagerInterface {
     isPlaying(): boolean {
         return sound.isPlaying();
     }
-    async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
-    async play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    async play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptionsWithChannel,
-        options?: SoundPlayOptionsWithChannel,
+        paramOptions?: SoundPlayOptionsWithChannel,
     ): Promise<IMediaInstance> {
         let mediaAlias: string;
         let soundAlias: string;
@@ -120,10 +120,10 @@ export default class SoundManager implements SoundManagerInterface {
         } else {
             mediaAlias = aliasOrMediaAlias;
             soundAlias = aliasOrMediaAlias;
-            options = soundAliasOrOptions;
+            paramOptions = soundAliasOrOptions;
         }
-        const channelAlias = options?.channel || this.defaultChannelAlias;
-        return await this.findChannel(channelAlias).play(mediaAlias, soundAlias, options);
+        const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
+        return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
     }
     find(alias: string): IMediaInstance | undefined {
         return SoundManagerStatic.mediaInstances[alias]?.instance;
