@@ -13,7 +13,12 @@ export async function importCanvasElement<M extends CanvasBaseItemMemory, T exte
 ): Promise<T> {
     let element = await RegisteredCanvasComponents.getInstance<M, T>(memory.pixivnId, memory);
     if (!element) {
-        throw new PixiError("unregistered_element", `The element ${memory.pixivnId} could not be created`);
+        throw new PixiError(
+            "unregistered_element",
+            `The element ${memory.pixivnId} could not be created`,
+            "canvas",
+            memory,
+        );
     }
 
     return element;
