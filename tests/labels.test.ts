@@ -336,11 +336,10 @@ test("error in navigation step", async () => {
 
     // Set up error handler to capture errors
     let errorCaught = false;
-    const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = (type, error, props) => {
+        GameUnifier.addOnError((error, props) => {
             errorCaught = true;
-        };
+        });
 
         await narration.call(errorLabel, {});
         expect(narration.stepCounter).toBe(1);
@@ -357,7 +356,7 @@ test("error in navigation step", async () => {
         expect(narration.stepCounter).toBe(3);
     } finally {
         // Restore original error handler
-        GameUnifier.onError = originalOnStepError;
+        GameUnifier.clearOnErrorHandlers();
     }
 });
 
@@ -368,12 +367,11 @@ test("restore after error in navigation step", async () => {
 
     // Set up error handler to capture errors
     let errorCaught = false;
-    const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = async (type, error, props) => {
+        GameUnifier.addOnError(async (error, props) => {
             errorCaught = true;
             await stepHistory.back(props);
-        };
+        });
 
         await narration.call(errorLabel, {});
         expect(narration.stepCounter).toBe(1);
@@ -390,7 +388,7 @@ test("restore after error in navigation step", async () => {
         expect(narration.stepCounter).toBe(2);
     } finally {
         // Restore original error handler
-        GameUnifier.onError = originalOnStepError;
+        GameUnifier.clearOnErrorHandlers();
     }
 });
 
@@ -400,11 +398,10 @@ test("queue with errors during rapid navigation", async () => {
     stepHistory.clear();
 
     let errorCount = 0;
-    const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = (type, error, props) => {
+        GameUnifier.addOnError((error, props) => {
             errorCount++;
-        };
+        });
 
         await narration.call(errorLabel, {});
         expect(narration.stepCounter).toBe(1);
@@ -420,7 +417,7 @@ test("queue with errors during rapid navigation", async () => {
         expect(errorCount).toBeGreaterThan(0);
     } finally {
         // Restore original error handler
-        GameUnifier.onError = originalOnStepError;
+        GameUnifier.clearOnErrorHandlers();
     }
 });
 
@@ -448,11 +445,10 @@ test("error recovery with mixed sync and async steps", async () => {
     stepHistory.clear();
 
     let errorCaught = false;
-    const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = (type, error, props) => {
+        GameUnifier.addOnError((error, props) => {
             errorCaught = true;
-        };
+        });
 
         await narration.call(mixedErrorLabel, {});
         expect(narration.stepCounter).toBe(1);
@@ -476,7 +472,7 @@ test("error recovery with mixed sync and async steps", async () => {
         expect(narration.stepCounter).toBe(3);
     } finally {
         // Restore original error handler
-        GameUnifier.onError = originalOnStepError;
+        GameUnifier.clearOnErrorHandlers();
     }
 });
 
@@ -486,11 +482,10 @@ test("queue inconsistent state with back and continue during errors", async () =
     stepHistory.clear();
 
     let errorCount = 0;
-    const originalOnStepError = GameUnifier.onError;
     try {
-        GameUnifier.onError = (type, error, props) => {
+        GameUnifier.addOnError((error, props) => {
             errorCount++;
-        };
+        });
 
         await narration.call(mixedErrorLabel, {});
         expect(narration.stepCounter).toBe(1);
@@ -511,7 +506,7 @@ test("queue inconsistent state with back and continue during errors", async () =
         expect(errorCount).toBeGreaterThan(0);
     } finally {
         // Restore original error handler
-        GameUnifier.onError = originalOnStepError;
+        GameUnifier.clearOnErrorHandlers();
     }
 });
 
