@@ -1,9 +1,10 @@
 import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../narration/types/StepLabelType";
+import type { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../narration/types/StepLabelType";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { logger } from "../utils/log-utility";
+import OnErrorHandler from "./OnErrorHandler";
 import PixiError from "./PixiError";
 
 export default class GameUnifier {
@@ -430,7 +431,33 @@ export default class GameUnifier {
     }
 
     static onEnd?: StepLabelType;
-    static onError?: (type: "step", error: any, props: StepLabelPropsType) => void | Promise<void>;
+
+    // New: list of registered error handlers. Handlers are executed in
+    // registration order and may be async.
+    private static _onErrorHandlers: Array<OnErrorHandler> = [];
+
+    static addOnError(handler: OnErrorHandler) {
+        GameUnifier._onErrorHandlers.push(handler);
+        return () => GameUnifier.removeOnError(handler);
+    }
+
+    static removeOnError(handler: OnErrorHandler) {
+        GameUnifier._onErrorHandlers = GameUnifier._onErrorHandlers.filter((h) => h !== handler);
+    }
+
+    static clearOnErrorHandlers() {
+        GameUnifier._onErrorHandlers.length = 0;
+    }
+
+    static async runOnError(error: unknown, props: StepLabelPropsType<any>) {
+        for (const h of GameUnifier._onErrorHandlers.slice()) {
+            try {
+                await h(error, props);
+            } catch (e) {
+                logger.error("Error in onError handler", e as any);
+            }
+        }
+    }
     private static _animate: <T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: any,
