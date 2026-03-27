@@ -343,14 +343,14 @@ export namespace Game {
      * ```
      */
     export function addOnError(handler: OnErrorHandler) {
-        return GameUnifier.addOnError(handler as any);
+        return GameUnifier.addOnError(handler);
     }
 
     /**
      * Remove a previously registered error handler.
      */
     export function removeOnError(handler: OnErrorHandler) {
-        return GameUnifier.removeOnError(handler as any);
+        return GameUnifier.removeOnError(handler);
     }
     /**
      * Is a function that will be executed before any step is executed.
