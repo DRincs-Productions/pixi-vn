@@ -3,34 +3,34 @@ import SoundManagerStatic from "../SoundManagerStatic";
 import type AudioChannel from "../classes/AudioChannel";
 import { calculateVolume } from "./channel-utility";
 
-export function proxyMedia(soundAlias: string, media: IMediaInstance, channel: AudioChannel): IMediaInstance {
+export function proxyMedia(mediaAlias: string, media: IMediaInstance, channel: AudioChannel): IMediaInstance {
     return new Proxy(media, {
         get(target, prop, receiver) {
             switch (prop) {
                 case "volume":
                 case "muted":
-                    return SoundManagerStatic.mediaInstances[soundAlias]?.options[prop];
+                    return SoundManagerStatic.mediaInstances[mediaAlias]?.options[prop];
                 case "paused":
                 default:
                     return Reflect.get(target, prop, receiver);
             }
         },
         set(target, prop, value, receiver) {
-            if (soundAlias in SoundManagerStatic.mediaInstances) {
+            if (mediaAlias in SoundManagerStatic.mediaInstances) {
                 switch (prop) {
                     case "volume":
-                        SoundManagerStatic.mediaInstances[soundAlias].options[prop] = value;
+                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
                         value = calculateVolume(value, channel.channelOptions.volume);
                         return Reflect.set(target, prop, value, receiver);
                     case "muted":
-                        SoundManagerStatic.mediaInstances[soundAlias].options[prop] = value;
+                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
                         if (channel.channelOptions.muted) {
                             return Reflect.set(target, prop, true, receiver);
                         } else {
                             return Reflect.set(target, prop, value, receiver);
                         }
                     case "loop":
-                        SoundManagerStatic.mediaInstances[soundAlias].options[prop] = value;
+                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
                     default:
                         return Reflect.set(target, prop, value, receiver);
                 }

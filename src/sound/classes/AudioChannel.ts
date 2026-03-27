@@ -38,7 +38,7 @@ export default class AudioChannel implements AudioChannelInterface {
             };
         }
         const media = proxyMedia(
-            soundAlias,
+            mediaAlias,
             await sound.play(soundAlias, {
                 ...(options ?? {}),
                 filters: [...(this.channelOptions.filters || []), ...(options?.filters || [])],
