@@ -563,7 +563,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Go Back & Refresh Methods */
 
-    private get onStepError(): ((error: any, props: StepLabelPropsType) => void | Promise<void>) | undefined {
+    private get onStepError() {
         // Always return a runner that calls GameUnifier.runOnError so that
         // all registered handlers (including the legacy single `onError`)
         // are executed in order.
