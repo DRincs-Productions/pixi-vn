@@ -83,10 +83,6 @@ export const SYSTEM_RESERVED_STORAGE_KEYS = {
      */
     CURRENT_STEP_TIMES_COUNTER_KEY: "label:history",
     /**
-     * Legacy key for the current step times counter, kept for backward compatibility / migration.
-     */
-    LEGACY_CURRENT_STEP_TIMES_COUNTER_KEY: "label:hystory",
-    /**
      * The key of the last dialogue step glued in the step memory
      */
     LAST_STEP_GLUED: "glue:last_step",
