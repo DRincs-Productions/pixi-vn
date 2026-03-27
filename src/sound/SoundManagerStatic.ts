@@ -5,7 +5,7 @@ import { SoundPlayOptions } from "./interfaces/SoundOptions";
 export default class SoundManagerStatic {
     private constructor() {}
     static mediaInstances: {
-        [key: string]: {
+        [alias: string]: {
             channelAlias: string;
             soundAlias: string;
             instance: IMediaInstance;
