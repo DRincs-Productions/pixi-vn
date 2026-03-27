@@ -24,6 +24,7 @@ export * from "./utils";
 
 import * as canvasUtils from "@drincs/pixi-vn/canvas";
 import * as characterUtils from "@drincs/pixi-vn/characters";
+import type { OnErrorHandler } from "@drincs/pixi-vn/core";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import { motion } from "@drincs/pixi-vn/motion";
@@ -306,49 +307,50 @@ export namespace Game {
         GameUnifier.onEnd = value;
     }
     /**
-     * Function to be executed when an error occurs in the step.
-     * Supports both synchronous and asynchronous error handlers.
+     * @deprecated Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.
+     */
+    export function onError(value: OnErrorHandler) {
+        logger.warn(
+            "Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.",
+        );
+        // Maintain backwards compatibility by setting the single onError handler.
+        GameUnifier.addOnError(value);
+    }
+
+    /**
+     * Register an error handler. Multiple handlers can be registered; they
+     * will be executed in registration order.
      * @example
      * ```typescript
-     * // Synchronous error handler
-     * Game.onError((type, error, props) => {
+     * // Register a synchronous error handler
+     * Game.addOnError((type, error, props) => {
      *    props.notify("An error occurred")
      *    // send a notification to GlitchTip, Sentry, etc...
      * })
      *
-     * // Asynchronous error handler
-     * Game.onError(async (type, error, props) => {
+     * // Register an asynchronous error handler
+     * Game.addOnError(async (type, error, props) => {
      *    await logErrorToServer(error)
      *    props.notify("An error occurred")
      * })
      *
-     * // Error handler with step restoration/rollback
-     * Game.onError(async (type, error, props) => {
+     * // Register an error handler with step restoration/rollback
+     * Game.addOnError(async (type, error, props) => {
      *    // Restore the game state to the previous step
      *    await stepHistory.back(props)
      *    props.notify("An error occurred, returning to previous step")
      * })
      * ```
      */
-    export function onError(
-        value: (
-            /**
-             * The type of error. Currently, only "step" type is supported.
-             */
-            type: "step",
-            /**
-             * The error object
-             */
-            error: any,
-            /**
-             * The step label properties
-             */
-            props: narrationUtils.StepLabelPropsType,
-        ) => void | Promise<void>,
-    ) {
-        GameUnifier.onError = async (type, error, props) => {
-            return value(type, error, props);
-        };
+    export function addOnError(handler: OnErrorHandler) {
+        return GameUnifier.addOnError(handler as any);
+    }
+
+    /**
+     * Remove a previously registered error handler.
+     */
+    export function removeOnError(handler: OnErrorHandler) {
+        return GameUnifier.removeOnError(handler as any);
     }
     /**
      * Is a function that will be executed before any step is executed.
