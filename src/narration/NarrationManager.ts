@@ -569,7 +569,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         // are executed in order.
         return async (error: any, props: StepLabelPropsType) => {
             try {
-                await GameUnifier.runOnError("step", error, props);
+                await GameUnifier.runOnError(error, props);
             } catch (e) {
                 logger.error("Error in onError handler", e);
             }

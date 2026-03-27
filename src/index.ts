@@ -342,8 +342,10 @@ export namespace Game {
      * })
      * ```
      */
-    export function addOnError(handler: OnErrorHandler) {
-        return GameUnifier.addOnError(handler);
+    export function addOnError(
+        handler: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void | Promise<void>,
+    ) {
+        return GameUnifier.addOnError((error, props) => handler("step", error, props));
     }
 
     /**

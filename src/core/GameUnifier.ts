@@ -442,17 +442,17 @@ export default class GameUnifier {
     }
 
     static removeOnError(handler: OnErrorHandler) {
-        GameUnifier._onErrorHandlers = GameUnifier._onErrorHandlers.filter(h => h !== handler);
+        GameUnifier._onErrorHandlers = GameUnifier._onErrorHandlers.filter((h) => h !== handler);
     }
 
     static clearOnErrorHandlers() {
         GameUnifier._onErrorHandlers.length = 0;
     }
 
-    static async runOnError(type: "step", error: Error | PixiError, props: StepLabelPropsType<any>) {
+    static async runOnError(error: Error | PixiError, props: StepLabelPropsType<any>) {
         for (const h of GameUnifier._onErrorHandlers.slice()) {
             try {
-                await h(type, error, props);
+                await h(error, props);
             } catch (e) {
                 logger.error("Error in onError handler", e as any);
             }
