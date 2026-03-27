@@ -23,17 +23,12 @@ export default class StorageManager implements StorageManagerInterface {
         });
     }
     public set(key: string, value: StorageElementType) {
-        const isInTempStorage = StorageManagerStatic.getVariable(TEMP_STORAGE_KEY, key);
-        if (isInTempStorage) {
-            StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, key, value);
-            return;
-        }
         return StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, key, value);
     }
     public get<T extends StorageElementType>(key: string): T | undefined {
-        let result = StorageManagerStatic.getVariable<T>(MAIN_STORAGE_KEY, key);
+        let result = StorageManagerStatic.getVariable<T>(TEMP_STORAGE_KEY, key);
         if (result === undefined) {
-            result = StorageManagerStatic.getVariable<T>(TEMP_STORAGE_KEY, key);
+            result = StorageManagerStatic.getVariable<T>(MAIN_STORAGE_KEY, key);
         }
         if (result === undefined) {
             result = createExportableElement(StorageManagerStatic.default.get(key));
