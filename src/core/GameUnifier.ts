@@ -67,13 +67,13 @@ export default class GameUnifier {
          * @param key The key of the variable.
          * @returns The value of the variable.
          */
-        getVariable: <T extends StorageElementType>(key: string) => T | undefined;
+        getVariable: <T extends StorageElementType>(prefix: string, key: string) => T | undefined;
         /**
          * This function sets the value of a variable.
          * @param key The key of the variable.
          * @param value The value of the variable.
          */
-        setVariable: (key: string, value: StorageElementType) => void;
+        setVariable: (prefix: string, key: string, value: StorageElementType) => void;
         /**
          * This function removes a variable.
          * @param key The key of the variable.
@@ -324,7 +324,7 @@ export default class GameUnifier {
         const result = await processResult.result;
         return result;
     }
-    private static _getVariable: <T extends StorageElementType>(key: string) => T | undefined = () => {
+    private static _getVariable: <T extends StorageElementType>(prefix: string, key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
     };
@@ -336,7 +336,7 @@ export default class GameUnifier {
     static get getVariable() {
         return GameUnifier._getVariable;
     }
-    private static _setVariable: (key: string, value: StorageElementType) => void = () => {
+    private static _setVariable: (prefix: string, key: string, value: StorageElementType) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
     };

@@ -37,7 +37,7 @@ function exportGameState() {
 
 export async function restoreGameState(
     data: Omit<GameState, "canvasData">,
-    navigate: (path: string) => void | Promise<void>
+    navigate: (path: string) => void | Promise<void>,
 ) {
     if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
         data.historyData.stepsHistory = data.stepData.stepsHistory;
@@ -81,9 +81,9 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             stepCounter: 9,
         },
         storageData: {
-            base: [
+            main: [
                 {
-                    key: "___opened_labels_counter___",
+                    key: "narration:label:opened",
                     value: {
                         stepCounter: {
                             biggestStep: 3,
@@ -92,19 +92,17 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     },
                 },
                 {
-                    key: "___current_dialogue_memory___",
+                    key: "narration:dialogue",
                     value: {
                         text: "This is a test label 3",
                     },
                 },
                 {
-                    key: "___last_dialogue_added_in_step_memory___",
+                    key: "narration:dialogue:step_counter",
                     value: 8,
                 },
             ],
-            temp: [],
             tempDeadlines: [],
-            flags: [],
         },
         soundData: {
             soundsPlaying: {},
@@ -148,19 +146,19 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 0, "value", "stepCounter", "biggestStep"],
+                            path: ["storage", "main", 0, "value", "stepCounter", "biggestStep"],
                             type: "CHANGE",
                             value: 1,
                             oldValue: 0,
                         },
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label 2",
                             oldValue: "This is a test label",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 1,
                             oldValue: 0,
@@ -201,19 +199,19 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 0, "value", "stepCounter", "biggestStep"],
+                            path: ["storage", "main", 0, "value", "stepCounter", "biggestStep"],
                             type: "CHANGE",
                             value: 2,
                             oldValue: 1,
                         },
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label 3",
                             oldValue: "This is a test label 2",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 2,
                             oldValue: 1,
@@ -254,25 +252,25 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 0, "value", "stepCounter", "biggestStep"],
+                            path: ["storage", "main", 0, "value", "stepCounter", "biggestStep"],
                             type: "CHANGE",
                             value: 3,
                             oldValue: 2,
                         },
                         {
-                            path: ["storage", "base", 0, "value", "stepCounter", "openCount"],
+                            path: ["storage", "main", 0, "value", "stepCounter", "openCount"],
                             type: "CHANGE",
                             value: 2,
                             oldValue: 1,
                         },
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label",
                             oldValue: "This is a test label 3",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 3,
                             oldValue: 2,
@@ -313,13 +311,13 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label 2",
                             oldValue: "This is a test label",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 4,
                             oldValue: 3,
@@ -360,13 +358,13 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label 3",
                             oldValue: "This is a test label 2",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 5,
                             oldValue: 4,
@@ -407,19 +405,19 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 0, "value", "stepCounter", "openCount"],
+                            path: ["storage", "main", 0, "value", "stepCounter", "openCount"],
                             type: "CHANGE",
                             value: 3,
                             oldValue: 2,
                         },
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label",
                             oldValue: "This is a test label 3",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 6,
                             oldValue: 5,
@@ -460,13 +458,13 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label 2",
                             oldValue: "This is a test label",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 7,
                             oldValue: 6,
@@ -507,13 +505,13 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     ],
                     diff: [
                         {
-                            path: ["storage", "base", 1, "value", "text"],
+                            path: ["storage", "main", 1, "value", "text"],
                             type: "CHANGE",
                             value: "This is a test label 3",
                             oldValue: "This is a test label 2",
                         },
                         {
-                            path: ["storage", "base", 2, "value"],
+                            path: ["storage", "main", 2, "value"],
                             type: "CHANGE",
                             value: 8,
                             oldValue: 7,
@@ -540,9 +538,9 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             originalStepData: {
                 path: "/",
                 storage: {
-                    base: [
+                    main: [
                         {
-                            key: "___opened_labels_counter___",
+                            key: "narration:label:opened",
                             value: {
                                 stepCounter: {
                                     biggestStep: 3,
@@ -551,19 +549,17 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             },
                         },
                         {
-                            key: "___current_dialogue_memory___",
+                            key: "narration:dialogue",
                             value: {
                                 text: "This is a test label 3",
                             },
                         },
                         {
-                            key: "___last_dialogue_added_in_step_memory___",
+                            key: "narration:dialogue:step_counter",
                             value: 8,
                         },
                     ],
-                    temp: [],
                     tempDeadlines: [],
-                    flags: [],
                 },
                 sound: {
                     soundsPlaying: {},
@@ -591,10 +587,8 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             stepCounter: 0,
         },
         storageData: {
-            base: [],
-            temp: [],
+            main: [],
             tempDeadlines: [],
-            flags: [],
         },
         soundData: {
             soundsPlaying: {},

@@ -1,6 +1,6 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { LabelAbstract } from ".";
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
+import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import Label from "./classes/Label";
@@ -37,11 +37,14 @@ export default class NarrationManagerStatic {
      */
     static get allOpenedLabels() {
         return (
-            GameUnifier.getVariable<AllOpenedLabelsType>(SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY) || {}
+            GameUnifier.getVariable<AllOpenedLabelsType>(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY,
+            ) || {}
         );
     }
     static set allOpenedLabels(value: AllOpenedLabelsType) {
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY, value);
+        GameUnifier.setVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY, value);
     }
     static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
@@ -59,6 +62,7 @@ export default class NarrationManagerStatic {
         let stepSha1 = currentLabel.getStepSha(currentLabelStepIndex) || "error";
         let obj =
             GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
             ) || {};
         if (!obj[labelId]) {
@@ -79,13 +83,18 @@ export default class NarrationManagerStatic {
         }
         let obj =
             GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
             ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
         obj[labelId][currentLabelStepIndexId] = data;
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
+        GameUnifier.setVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
+            obj,
+        );
     }
     static getCurrentStepTimesCounter(nestedId: string = ""): number {
         let lastStep = NarrationManagerStatic._stepCounter;
@@ -149,22 +158,32 @@ export default class NarrationManagerStatic {
         }
         let obj =
             GameUnifier.getVariable<CurrentStepTimesCounterMemoty>(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
             ) || {};
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
         obj[labelId][currentLabelStepIndexId] = { stepCounters: [], stepSha1: "" };
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY, obj);
+        GameUnifier.setVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
+            obj,
+        );
     }
     /**
      * is a list of all choices made by the player during the progression of the steps.
      */
     static get allChoicesMade() {
-        return GameUnifier.getVariable<ChoicesMadeType[]>(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY) || [];
+        return (
+            GameUnifier.getVariable<ChoicesMadeType[]>(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY,
+            ) || []
+        );
     }
     static set allChoicesMade(value: ChoicesMadeType[]) {
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY, value);
+        GameUnifier.setVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY, value);
     }
     static _stepCounter: number = 0;
     /**

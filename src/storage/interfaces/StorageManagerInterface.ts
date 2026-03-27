@@ -13,14 +13,14 @@ export default interface StorageManagerInterface {
      * import { storage } from '@drincs/pixi-vn'
      * import Keyv from 'keyv';
      *
-     * const keyvStorage = new Keyv({ store: storage.storage });
+     * const keyvStorage = new Keyv({ store: storage.base });
      *
      * keyvStorage.get<string>("myValue").then((value) => {
      *     console.log(value);
      * });
      * ```
      */
-    readonly storage: Map<string, StorageElementType>;
+    readonly base: Map<string, StorageElementType>;
     /**
      * The internal cache. **Do not modify this directly.**
      */
