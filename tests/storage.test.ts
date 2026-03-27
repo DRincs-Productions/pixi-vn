@@ -1,6 +1,7 @@
 import { Keyv } from "keyv";
 import { expect, test } from "vitest";
 import { narration, newLabel, storage } from "../src";
+import { MAIN_STORAGE_KEY } from "../src/constants";
 import { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
 
 const temTestLabel = newLabel<{
@@ -171,12 +172,33 @@ test("setFlag & getFlag", async () => {
 
 test("import & exoprt", async () => {
     storage.restore({
-        a: 1,
-        b: "test",
-        c: true,
-        d: false,
-        e: null,
-        f: undefined,
+        main: [
+            {
+                key: `${MAIN_STORAGE_KEY}:a`,
+                value: 1,
+            },
+            {
+                key: `${MAIN_STORAGE_KEY}:b`,
+                value: "test",
+            },
+            {
+                key: `${MAIN_STORAGE_KEY}:c`,
+                value: true,
+            },
+            {
+                key: `${MAIN_STORAGE_KEY}:d`,
+                value: false,
+            },
+            {
+                key: `${MAIN_STORAGE_KEY}:e`,
+                value: null,
+            },
+            {
+                key: `${MAIN_STORAGE_KEY}:f`,
+                value: undefined,
+            },
+        ],
+        tempDeadlines: [],
     });
     expect(storage.get("a")).toBe(1);
     expect(storage.get("b")).toBe("test");
@@ -186,34 +208,32 @@ test("import & exoprt", async () => {
     expect(storage.get("f")).toBe(undefined);
     let exported = storage.export();
     expect(exported).toEqual({
-        base: [
+        main: [
             {
-                key: "a",
+                key: "storage:a",
                 value: 1,
             },
             {
-                key: "b",
+                key: "storage:b",
                 value: "test",
             },
             {
-                key: "c",
+                key: "storage:c",
                 value: true,
             },
             {
-                key: "d",
+                key: "storage:d",
                 value: false,
             },
             {
-                key: "e",
+                key: "storage:e",
                 value: null,
             },
             {
-                key: "f",
+                key: "storage:f",
             },
         ],
-        temp: [],
         tempDeadlines: [],
-        flags: [],
     });
 });
 

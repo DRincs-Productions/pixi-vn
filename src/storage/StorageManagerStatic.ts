@@ -13,7 +13,7 @@ export default class StorageManagerStatic {
     static clearOldTempVariables(openedLabelsNumber: number) {
         StorageManagerStatic.tempStorageDeadlines.forEach((deadline, key) => {
             if (deadline > openedLabelsNumber) {
-                StorageManagerStatic.storage.delete(`${TEMP_STORAGE_KEY}${key}`);
+                StorageManagerStatic.removeVariable(TEMP_STORAGE_KEY, key);
                 StorageManagerStatic.tempStorageDeadlines.delete(key);
             }
         });
