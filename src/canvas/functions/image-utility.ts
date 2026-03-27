@@ -29,6 +29,7 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
             throw new PixiError("unregistered_asset", `The image ${alias} does not exist in the cache.`, "canvas", {
                 pixivnId: CANVAS_IMAGE_ID,
                 ...options,
+                label: alias,
             });
         }
     }
@@ -62,6 +63,7 @@ export async function showImage(alias: string, imageUrl?: string, options?: Imag
             throw new PixiError("unregistered_asset", `The image ${alias} does not exist in the cache.`, "canvas", {
                 pixivnId: CANVAS_IMAGE_ID,
                 ...options,
+                label: alias,
             });
         }
     }

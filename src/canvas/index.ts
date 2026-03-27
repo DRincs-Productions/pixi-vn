@@ -10,7 +10,6 @@ export { default as VideoSprite } from "./components/VideoSprite";
 
 export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export { default as ImageContainer } from "../canvas/components/ImageContainer";
-export {} from "../canvas/functions/error-handler";
 export { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 export { default as CanvasBaseItem } from "./classes/CanvasBaseItem";
 export { analizePositionsExtensionProps } from "./components/AdditionalPositionsExtension";
@@ -50,6 +49,7 @@ export {
     zoomIn,
     zoomOut,
 } from "./functions/canvas-transition";
+export { errorHandler } from "./functions/error-handler";
 export { addImageCointainer, showImageContainer } from "./functions/image-container-utility";
 export { addImage, showImage } from "./functions/image-utility";
 export { showText } from "./functions/text-utility";

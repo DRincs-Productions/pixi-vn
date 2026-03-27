@@ -29,6 +29,7 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
             throw new PixiError("unregistered_asset", `The video ${alias} does not exist in the cache.`, "canvas", {
                 pixivnId: CANVAS_VIDEO_ID,
                 ...options,
+                label: alias,
             });
         }
     }
@@ -62,6 +63,7 @@ export async function showVideo(alias: string, videoUrl?: string, options?: Vide
             throw new PixiError("unregistered_asset", `The video ${alias} does not exist in the cache.`, "canvas", {
                 pixivnId: CANVAS_VIDEO_ID,
                 ...options,
+                label: alias,
             });
         }
     }
