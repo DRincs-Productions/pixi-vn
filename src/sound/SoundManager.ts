@@ -297,22 +297,23 @@ export default class SoundManager implements SoundManagerInterface {
                             channel.stopAll();
                         }
                     });
-                    Object.keys(mediaInstances).map(async (alias) => {
+                    const promises2 = Object.keys(mediaInstances).map(async (alias) => {
                         const mediaInstanceData = mediaInstances[alias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
                         if (!channel.background) {
-                            channel.play(mediaInstanceData.soundAlias, {
+                            await channel.play(mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
                             });
                         } else if (mediaInstanceData.stepCounter === GameUnifier.stepCounter) {
                             // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
-                            channel.play(mediaInstanceData.soundAlias, {
+                            await channel.play(mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
                             });
                         }
                     });
+                    await Promise.all(promises2);
                 }
             }
 
