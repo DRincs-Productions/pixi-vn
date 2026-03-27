@@ -8,17 +8,20 @@ export interface StorageGameStateItem<T = StorageElementType> {
 /**
  * Interface exported storage data
  */
-type StorageGameState =
-    | {
-          base: StorageGameStateItem[];
-          temp: StorageGameStateItem[];
-          tempDeadlines: StorageGameStateItem<number>[];
-          flags: string[];
-      }
-    // deprecated
-    | StorageGameStateItem[]
-    // deprecated
-    | {
-          [key: string]: StorageElementType;
-      };
+type StorageGameState = {
+    /**
+     * @deprecated
+     */
+    base?: StorageGameStateItem[];
+    /**
+     * @deprecated
+     */
+    temp?: StorageGameStateItem[];
+    tempDeadlines: StorageGameStateItem<number>[];
+    /**
+     * @deprecated
+     */
+    flags?: string[];
+    main: StorageGameStateItem[];
+};
 export default StorageGameState;

@@ -61,8 +61,8 @@ GameUnifier.init({
         return { newValue, result };
     },
     // storage
-    getVariable: (key) => storage.get(key),
-    setVariable: (key, value) => storage.set(key, value),
+    getVariable: (prefix, key) => StorageManagerStatic.getVariable(prefix, key),
+    setVariable: (prefix, key, value) => StorageManagerStatic.setVariable(prefix, key, value),
     removeVariable: (key) => storage.remove(key),
     getFlag: (key) => storage.getFlag(key),
     setFlag: (name, value) => storage.setFlag(name, value),

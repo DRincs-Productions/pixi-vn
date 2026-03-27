@@ -18,7 +18,14 @@ export type {
 export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
 export * from "./classes";
-export { CANVAS_APP_GAME_LAYER_ALIAS, GENERAL_CHANNEL, Pause, PIXIVN_VERSION, Repeat } from "./constants";
+export {
+    CANVAS_APP_GAME_LAYER_ALIAS,
+    GENERAL_CHANNEL,
+    Pause,
+    PIXIVN_VERSION,
+    Repeat,
+    SYSTEM_RESERVED_STORAGE_KEYS,
+} from "./constants";
 export * from "./interfaces";
 export * from "./utils";
 
@@ -175,8 +182,8 @@ export namespace Game {
                 return motion.animate(components, keyframes, options, priority);
             },
             // storage
-            getVariable: (key) => storageUtils.storage.get(key),
-            setVariable: (key, value) => storageUtils.storage.set(key, value),
+            getVariable: (prefix, key) => storageUtils.StorageManagerStatic.getVariable(prefix, key),
+            setVariable: (prefix, key, value) => storageUtils.StorageManagerStatic.setVariable(prefix, key, value),
             removeVariable: (key) => storageUtils.storage.remove(key),
             getFlag: (key) => storageUtils.storage.getFlag(key),
             setFlag: (name, value) => storageUtils.storage.setFlag(name, value),

@@ -1,7 +1,7 @@
 import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
+import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import type { StorageElementType } from "../storage";
-import { SYSTEM_RESERVED_STORAGE_KEYS } from "../storage/constants";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import LabelAbstract from "./classes/LabelAbstract";
@@ -58,29 +58,41 @@ export default class NarrationManager implements NarrationManagerInterface {
         let dialogue: StoredDialogue | undefined = undefined;
         let choices: StoredChoiceInterface[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
-        let isGlued = GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED) === this.stepCounter;
+        let isGlued =
+            GameUnifier.getVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED) ===
+            this.stepCounter;
         if (
-            GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY) ===
-            this.stepCounter
+            GameUnifier.getVariable<number>(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
+            ) === this.stepCounter
         ) {
             dialogue = GameUnifier.getVariable<StoredDialogue>(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
             );
         }
         if (
-            GameUnifier.getVariable<number>(SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY) ===
-            this.stepCounter
+            GameUnifier.getVariable<number>(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
+            ) === this.stepCounter
         ) {
             choices = GameUnifier.getVariable<any>(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
             ) as StoredChoiceInterface[];
         }
         if (
             GameUnifier.getVariable<StorageElementType>(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY,
             ) === this.stepCounter
         ) {
-            inputValue = GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
+            inputValue = GameUnifier.getVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+            );
         }
         const openedLabels = NarrationManagerStatic.openedLabels;
         let historyInfo: Omit<HistoryStep, "diff"> = {
@@ -577,6 +589,7 @@ export default class NarrationManager implements NarrationManagerInterface {
           })
         | undefined {
         const dialogue = GameUnifier.getVariable<StoredDialogue>(
+            NARRATION_STORAGE_KEY,
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
         );
         if (!dialogue) {
@@ -591,7 +604,11 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {
         if (dialogue === undefined) {
-            GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY, undefined);
+            GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
+                undefined,
+            );
             return;
         }
 
@@ -601,6 +618,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
         if (this.dialogGlue) {
             let glueDialogue = GameUnifier.getVariable<StoredDialogue>(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
             );
             if (glueDialogue) {
@@ -618,11 +636,16 @@ export default class NarrationManager implements NarrationManagerInterface {
                 dialogue.text = newText;
                 dialogue.character = dialogue.character || glueDialogue.character;
             }
-            GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED, this.stepCounter);
+            GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED,
+                this.stepCounter,
+            );
             this.dialogGlue = false;
         }
         try {
             GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
                 createExportableElement({
                     ...dialogue,
@@ -630,6 +653,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }),
             );
             GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
                 this.stepCounter,
             );
@@ -640,6 +664,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public get choices(): StoredIndexedChoiceInterface[] | undefined {
         let d = GameUnifier.getVariable<any>(
+            NARRATION_STORAGE_KEY,
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
         ) as StoredChoiceInterface[];
         if (d) {
@@ -674,15 +699,21 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
     public set choices(options: StoredChoiceInterface[] | undefined) {
         if (!options || options.length === 0) {
-            GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY, undefined);
+            GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
+                undefined,
+            );
             return;
         }
         try {
             GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
                 createExportableElement(options) as any,
             );
             GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
                 this.stepCounter,
             );
@@ -698,27 +729,51 @@ export default class NarrationManager implements NarrationManagerInterface {
         GameUnifier.setFlag(SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, value);
     }
     public get inputValue(): StorageElementType {
-        return GameUnifier.getVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
+        return GameUnifier.getVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+        );
     }
     public set inputValue(value: StorageElementType) {
         this.removeInputRequest();
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY, value);
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY, this.stepCounter);
+        GameUnifier.setVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+            value,
+        );
+        GameUnifier.setVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY,
+            this.stepCounter,
+        );
     }
     public get isRequiredInput(): boolean {
         return (
-            GameUnifier.getVariable<InputInfo>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY)
-                ?.isRequired || false
+            GameUnifier.getVariable<InputInfo>(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY,
+            )?.isRequired || false
         );
     }
     public get inputType(): string | undefined {
-        return GameUnifier.getVariable<InputInfo>(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY)?.type;
+        return GameUnifier.getVariable<InputInfo>(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY,
+        )?.type;
     }
     public requestInput(info: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType) {
         (info as InputInfo).isRequired = true;
-        GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY, info);
+        GameUnifier.setVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY,
+            info,
+        );
         if (defaultValue !== undefined) {
-            GameUnifier.setVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY, defaultValue);
+            GameUnifier.setVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+                defaultValue,
+            );
         } else {
             GameUnifier.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
         }
