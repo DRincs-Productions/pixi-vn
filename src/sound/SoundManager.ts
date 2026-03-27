@@ -276,7 +276,7 @@ export default class SoundManager implements SoundManagerInterface {
                     const promises = Object.keys(soundsPlaying).map(async (alias) => {
                         await this.load(alias);
 
-                        this.play(alias);
+                        await this.play(alias);
                     });
                     await Promise.all(promises);
                 }
