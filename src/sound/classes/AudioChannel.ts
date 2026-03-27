@@ -59,7 +59,7 @@ export default class AudioChannel implements AudioChannelInterface {
             },
         };
         media.on("end", () => {
-            delete SoundManagerStatic.mediaInstances[media.id];
+            delete SoundManagerStatic.mediaInstances[mediaAlias];
         });
         return media;
     }
