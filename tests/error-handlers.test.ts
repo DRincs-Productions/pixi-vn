@@ -1,5 +1,7 @@
 import { expect, test, vi } from "vitest";
-import { GameUnifier } from "../src";
+import { GameUnifier, StepLabelPropsType } from "../src";
+
+const emptyProps: StepLabelPropsType = {};
 
 test("addOnError: handlers run in registration order", async () => {
     GameUnifier.clearOnErrorHandlers();
@@ -12,7 +14,7 @@ test("addOnError: handlers run in registration order", async () => {
     };
     GameUnifier.addOnError(handler1);
     GameUnifier.addOnError(handler2);
-    await GameUnifier.runOnError(new Error("test"), {} as any);
+    await GameUnifier.runOnError(new Error("test"), emptyProps);
     expect(order).toEqual([1, 2]);
     GameUnifier.clearOnErrorHandlers();
 });
@@ -28,7 +30,7 @@ test("runOnError: a throwing handler does not prevent later handlers from runnin
     };
     GameUnifier.addOnError(throwingHandler);
     GameUnifier.addOnError(safeHandler);
-    await GameUnifier.runOnError(new Error("test"), {} as any);
+    await GameUnifier.runOnError(new Error("test"), emptyProps);
     expect(spy).toHaveBeenCalledOnce();
     GameUnifier.clearOnErrorHandlers();
 });
@@ -41,7 +43,7 @@ test("removeOnError: stops a handler from running", async () => {
     };
     GameUnifier.addOnError(handler);
     GameUnifier.removeOnError(handler);
-    await GameUnifier.runOnError(new Error("test"), {} as any);
+    await GameUnifier.runOnError(new Error("test"), emptyProps);
     expect(spy).not.toHaveBeenCalled();
     GameUnifier.clearOnErrorHandlers();
 });
