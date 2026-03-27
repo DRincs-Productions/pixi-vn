@@ -39,7 +39,7 @@ export default class AudioChannel implements AudioChannelInterface {
         }
         const media = proxyMedia(
             await sound.play(soundAlias, {
-                ...(options || {}),
+                ...(options ?? {}),
                 filters: [...(this.channelOptions.filters || []), ...(options?.filters || [])],
                 muted: Boolean(this.channelOptions.muted) || Boolean(options?.muted),
                 volume: calculateVolume(options?.volume, this.channelOptions.volume),
@@ -52,10 +52,10 @@ export default class AudioChannel implements AudioChannelInterface {
             instance: media,
             stepCounter: GameUnifier.stepCounter,
             options: {
-                volume: options?.volume || 1,
-                muted: options?.muted || false,
-                loop: options?.loop || false,
-                ...(options || {}),
+                volume: options?.volume ?? 1,
+                muted: options?.muted ?? false,
+                loop: options?.loop ?? false,
+                ...(options ?? {}),
             },
         };
         media.on("end", () => {
@@ -67,12 +67,12 @@ export default class AudioChannel implements AudioChannelInterface {
         for (const mediaId in SoundManagerStatic.mediaInstances) {
             const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
             if (mediaInstance.channelAlias === this.alias) {
-                mediaInstance.instance.volume = mediaInstance.options.volume || 1;
+                mediaInstance.instance.volume = mediaInstance.options.volume ?? 1;
             }
         }
     }
     get volume(): number {
-        return this.channelOptions.volume || 1;
+        return this.channelOptions.volume ?? 1;
     }
     set volume(value: number) {
         this.channelOptions.volume = value;
@@ -82,12 +82,12 @@ export default class AudioChannel implements AudioChannelInterface {
         for (const mediaId in SoundManagerStatic.mediaInstances) {
             const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
             if (mediaInstance.channelAlias === this.alias) {
-                mediaInstance.instance.muted = mediaInstance.options.muted || false;
+                mediaInstance.instance.muted = mediaInstance.options.muted ?? false;
             }
         }
     }
     get muted(): boolean {
-        return this.channelOptions.muted || false;
+        return this.channelOptions.muted ?? false;
     }
     set muted(value: boolean) {
         this.channelOptions.muted = value;
