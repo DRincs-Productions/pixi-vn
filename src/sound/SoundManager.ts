@@ -38,7 +38,7 @@ export default class SoundManager implements SoundManagerInterface {
         this._defaultChannelAlias = alias;
     }
 
-    add(alias: string, sourceOptions: string) {
+    add(alias: string, sourceOptions?: string) {
         return sound.add(alias, sourceOptions);
     }
     async edit(alias: string, options: SoundOptions): Promise<void> {
