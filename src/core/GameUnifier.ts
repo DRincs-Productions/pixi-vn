@@ -453,7 +453,7 @@ export default class GameUnifier {
     static async runOnError(type: "step", error: Error | PixiError, props: StepLabelPropsType<any>) {
         for (const h of GameUnifier._onErrorHandlers.slice()) {
             try {
-                await h(type, error, props as any);
+                await h(type, error, props);
             } catch (e) {
                 logger.error("Error in onError handler", e as any);
             }
