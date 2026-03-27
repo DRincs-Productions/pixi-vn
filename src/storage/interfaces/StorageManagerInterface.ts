@@ -13,7 +13,7 @@ export default interface StorageManagerInterface {
      * import { storage } from '@drincs/pixi-vn'
      * import Keyv from 'keyv';
      *
-     * const keyvStorage = new Keyv({ store: storage.storage });
+     * const keyvStorage = new Keyv({ store: storage.base });
      *
      * keyvStorage.get<string>("myValue").then((value) => {
      *     console.log(value);
