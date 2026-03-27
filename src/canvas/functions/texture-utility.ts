@@ -27,9 +27,9 @@ export async function getTexture(textureAlias?: string): Promise<Texture | void>
                 logger.error("Texture not found", textureAlias);
                 return;
             }
-            // if texture not is a Texture, then it is a TextureResource
+            // if texture is not a Texture, then it is a TextureResource
             if (!(texture instanceof PIXI.Texture)) {
-                logger.error("File not is a Texture", textureAlias);
+                logger.error("File is not a Texture", textureAlias);
                 return;
             }
 
