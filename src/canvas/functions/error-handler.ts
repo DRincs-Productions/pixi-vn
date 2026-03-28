@@ -23,15 +23,24 @@ export function drawCanvasErrorHandler(): OnErrorHandler {
                 container.addChild(placeholder);
                 const text = new PIXI.Text({ text: `Error: ${info.label}`, x: 10, y: 10 });
                 container.addChild(text);
-                const parent = info.parentLabel ? canvas.find(info.parentLabel) : undefined;
-                if (parent) {
+                const ppparent = (error as PixiError).parent;
+                if (ppparent && "addChild" in ppparent) {
                     if (zIndex) {
-                        parent.addChildAt(container, zIndex);
+                        (ppparent as any).addChildAt(container, zIndex);
                     } else {
-                        parent.addChild(container);
+                        (ppparent as any).addChild(container);
                     }
                 } else {
-                    canvas.add(info.label!, container, { zIndex });
+                    const parent = info.parentLabel ? canvas.find(info.parentLabel) : undefined;
+                    if (parent) {
+                        if (zIndex) {
+                            parent.addChildAt(container, zIndex);
+                        } else {
+                            parent.addChild(container);
+                        }
+                    } else {
+                        canvas.add(info.label!, container, { zIndex });
+                    }
                 }
             }
         } catch (e) {}

@@ -101,7 +101,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             })
             .catch((e) => {
                 this._loadIsStarted = false;
-                logger.error("Error into ImageContainer.load()", e);
+                logger.error("Error into ImageContainer.load()");
             });
     }
 
