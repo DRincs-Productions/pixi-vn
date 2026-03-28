@@ -78,10 +78,8 @@ export default class AudioChannel implements AudioChannelInterface {
         for (const mediaId in SoundManagerStatic.mediaInstances) {
             const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
             if (mediaInstance.channelAlias === this.alias) {
-                mediaInstance.instance.volume = calculateVolume(
-                    mediaInstance.options.volume,
-                    this.channelOptions.volume,
-                );
+                const mediaVolume = mediaInstance.options.volume ?? 1;
+                mediaInstance.instance.volume = mediaVolume;
             }
         }
     }
