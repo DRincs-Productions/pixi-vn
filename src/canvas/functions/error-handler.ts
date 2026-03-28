@@ -2,7 +2,7 @@ import { PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import type OnErrorHandler from "../../core/OnErrorHandler";
-import ErrorContainer from "../components/ErrorGraphics";
+import ErrorContainer from "../components/ErrorContainer";
 
 /**
  * Canvas error handler: when a `PixiError` contains `canvasElementInfo`,

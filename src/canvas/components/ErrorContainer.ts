@@ -7,12 +7,13 @@ export default class ErrorContainer<Memory extends CanvasBaseItemMemory> extends
         super(_memory);
         this.pixivnId = _memory.pixivnId;
     }
-    readonly pixivnId: string;
+    override pixivnId: string;
     override get memory(): any {
         return {
             ...this._memory,
             ...super.memory,
             elements: [],
+            pixivnId: this.pixivnId,
         };
     }
 }
