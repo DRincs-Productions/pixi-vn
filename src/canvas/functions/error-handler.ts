@@ -1,4 +1,5 @@
 import { PixiError } from "@drincs/pixi-vn/core";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import type OnErrorHandler from "../../core/OnErrorHandler";
 import ErrorGraphics from "../components/ErrorGraphics";
@@ -14,12 +15,16 @@ export function drawCanvasErrorHandler(): OnErrorHandler {
             if (error instanceof PixiError) {
                 const info = (error as any).canvasElementInfo;
                 if (info && info.pixivnId && "label" in info && typeof info.label === "string") {
-                    const graphics = new ErrorGraphics(info);
+                    const container = new ErrorGraphics(info);
                     // try to reuse zIndex if provided
                     const zIndex = (info as any).zIndex;
-                    canvas.add(info.label, graphics, { zIndex });
-                    graphics.fill(0xff3300);
-                    graphics.stroke({ width: 4, color: 0xffd900 });
+                    container.groupColor = 0xff0000;
+                    const placeholder = new PIXI.Graphics();
+                    placeholder.rect(-50, -200, 100, 200).fill({ color: 0xff0000, alpha: 0.5 });
+                    container.addChild(placeholder);
+                    const text = new PIXI.Text({ text: "error" });
+                    container.addChild(text);
+                    canvas.add(info.label, container, { zIndex });
                 }
             }
         } catch (e) {}
