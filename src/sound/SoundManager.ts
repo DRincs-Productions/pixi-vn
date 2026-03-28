@@ -80,27 +80,33 @@ export default class SoundManager implements SoundManagerInterface {
     togglePauseAll(): boolean {
         return sound.togglePauseAll();
     }
-    pauseAll() {
-        return sound.pauseAll();
+    pauseAll(): this {
+        sound.pauseAll();
+        return this;
     }
-    resumeAll() {
-        return sound.resumeAll();
+    resumeAll(): this {
+        sound.resumeAll();
+        return this;
     }
     toggleMuteAll(): boolean {
         return sound.toggleMuteAll();
     }
-    muteAll() {
-        return sound.muteAll();
+    muteAll(): this {
+        sound.muteAll();
+        return this;
     }
-    unmuteAll() {
-        return sound.unmuteAll();
+    unmuteAll(): this {
+        sound.unmuteAll();
+        return this;
     }
-    removeAll() {
-        return sound.removeAll();
+    removeAll(): this {
+        sound.removeAll();
+        return this;
     }
-    stopAll() {
+    stopAll(): this {
         SoundManagerStatic.mediaInstances = {};
-        return sound.stopAll();
+        sound.stopAll();
+        return this;
     }
     isPlaying(): boolean {
         return sound.isPlaying();

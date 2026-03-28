@@ -8,7 +8,24 @@ import SoundOptions, { ChannelOptions, SoundPlayOptionsWithChannel } from "./Sou
 
 export default interface SoundManagerInterface extends Omit<
     SoundLibrary,
-    "init" | "close" | "add" | "play" | "volume" | "speed" | "remove" | "exists" | "find" | "stop" | "pause" | "resume"
+    | "init"
+    | "close"
+    | "add"
+    | "play"
+    | "volume"
+    | "speed"
+    | "remove"
+    | "exists"
+    | "find"
+    | "stop"
+    | "pause"
+    | "resume"
+    | "pauseAll"
+    | "resumeAll"
+    | "muteAll"
+    | "unmuteAll"
+    | "stopAll"
+    | "removeAll"
 > {
     /**
      * @deprecated You can define sound assets directly in {@link Assets}
@@ -52,6 +69,36 @@ export default interface SoundManagerInterface extends Omit<
      * If the asset is not yet loaded, it will be loaded with the new options.
      */
     edit(alias: string, options: SoundOptions): Promise<void>;
+    /**
+     * Pauses any playing sounds.
+     * @return Instance for chaining.
+     */
+    pauseAll(): this;
+    /**
+     * Resumes any sounds.
+     * @return Instance for chaining.
+     */
+    resumeAll(): this;
+    /**
+     * Mutes all playing sounds.
+     * @return Instance for chaining.
+     */
+    muteAll(): this;
+    /**
+     * Unmutes all playing sounds.
+     * @return Instance for chaining.
+     */
+    unmuteAll(): this;
+    /**
+     * Stops and removes all sounds. They cannot be used after this.
+     * @return Instance for chaining.
+     */
+    removeAll(): this;
+    /**
+     * Stops all sounds.
+     * @return Instance for chaining.
+     */
+    stopAll(): this;
     load(alias: string | string[]): Promise<void>;
     backgroundLoad(alias: string | string[]): Promise<void>;
     backgroundLoadBundle(alias: string): Promise<void>;
