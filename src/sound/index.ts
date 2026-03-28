@@ -25,14 +25,14 @@ const sound: SoundManagerInterface = new SoundManager();
 
 GameUnifier.addOnPreContinue(async () => {
     try {
-        SoundManagerStatic.deplayTimeoutInstances.forEach((id) => {
+        SoundManagerStatic.delayTimeoutInstances.forEach((id) => {
             clearTimeout(id[0]);
             const instance = SoundManagerStatic.mediaInstances[id[1]];
             if (instance) {
                 instance.instance.paused = false;
             }
         });
-        SoundManagerStatic.deplayTimeoutInstances = [];
+        SoundManagerStatic.delayTimeoutInstances = [];
         Object.values(SoundManagerStatic.channels).forEach((channel) => {
             if (!channel.background) {
                 channel.stopAll();
