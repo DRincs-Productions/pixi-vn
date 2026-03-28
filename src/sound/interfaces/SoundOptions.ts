@@ -4,7 +4,7 @@ export default interface SoundOptions extends Omit<Options, "complete" | "loaded
 
 export interface SoundPlayOptions extends Omit<PlayOptions, "complete" | "loaded"> {
     /**
-     * The delay in seconds before the sound starts playing. If specified, the sound will be played after the delay, and the returned media instance will be a proxy media instance that will play the sound after the delay. If not specified, the sound will be played immediately.
+     * The delay in seconds before playback becomes audible or resumes. If specified, the sound will be started immediately but delayed (for example, via pause/unpause) so that it is effectively heard only after the delay. If not specified, the sound will play without any additional delay.
      */
     delay?: number;
 }
