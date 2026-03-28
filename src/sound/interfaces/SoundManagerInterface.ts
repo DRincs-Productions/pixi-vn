@@ -121,7 +121,7 @@ export default interface SoundManagerInterface extends Omit<
     readonly channels: AudioChannelInterface[];
     /**
      * The default channel alias to use when playing a sound without specifying a channel.
-     * By default, this is set to `GENERAL_CHANNEL` ("general"), but it can be changed to any alias of an existing channel.
+     * By default, this is set to `GENERAL_CHANNEL` ("general"), but it can be changed to any string; if the channel does not yet exist, it will be created on demand when used.
      */
     defaultChannelAlias: string;
     /* Export and Import Methods */
