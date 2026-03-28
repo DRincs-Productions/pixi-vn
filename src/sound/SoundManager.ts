@@ -1,286 +1,347 @@
-import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import {
-    Filter,
-    filters,
-    IMediaContext,
-    IMediaInstance,
-    Sound as PixiSound,
-    sound,
-    SoundLibrary,
-    SoundMap,
-} from "@pixi/sound";
+import { GameUnifier } from "@drincs/pixi-vn/core";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { Filter, filters, IMediaContext, Sound, sound } from "@pixi/sound";
+import { GENERAL_CHANNEL } from "../constants";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
-import Sound from "./classes/Sound";
+import AudioChannel from "./classes/AudioChannel";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
-import SoundGameState, { ExportedSoundPlay } from "./interfaces/SoundGameState";
-import SoundOptions, { SoundPlayOptions } from "./interfaces/SoundOptions";
+import AudioChannelInterface from "./interfaces/AudioChannelInterface";
+import IMediaInstance from "./interfaces/IMediaInstance";
+import SoundGameState from "./interfaces/SoundGameState";
+import SoundManagerInterface from "./interfaces/SoundManagerInterface";
+import SoundOptions, { ChannelOptions, SoundPlayOptions, SoundPlayOptionsWithChannel } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
+import SoundFilterMemory from "./types/SoundFilterMemory";
 
-export default class SoundManager extends SoundLibrary {
-    constructor() {
-        super();
-    }
-    override get context(): IMediaContext {
+export default class SoundManager implements SoundManagerInterface {
+    get context(): IMediaContext {
         return sound.context;
     }
-    override get filtersAll(): Filter[] {
+    get filtersAll(): Filter[] {
         return sound.filtersAll;
     }
-    override set filtersAll(filtersAll: Filter[]) {
+    set filtersAll(filtersAll: Filter[]) {
         sound.filtersAll = filtersAll.filter((f) => {
             return !(f instanceof filters.Filter);
         });
     }
-    override get supported(): boolean {
+    get supported(): boolean {
         return sound.supported;
     }
 
-    /**
-     * https://github.com/pixijs/sound/blob/main/src/SoundLibrary.ts#L187
-     */
-    private getOptions(
-        source: string | ArrayBuffer | AudioBuffer | HTMLAudioElement | SoundOptions,
-        overrides?: SoundOptions,
-    ): SoundOptions {
-        let options: SoundOptions;
-
-        if (typeof source === "string") {
-            options = { url: source };
-        } else if (Array.isArray(source)) {
-            options = { url: source };
-        } else if (
-            source instanceof ArrayBuffer ||
-            source instanceof AudioBuffer ||
-            source instanceof HTMLAudioElement
-        ) {
-            options = { source } as any;
-        } else {
-            options = source as SoundOptions;
-        }
-        options = { ...options, ...(overrides || {}) };
-
-        return options;
+    _defaultChannelAlias = GENERAL_CHANNEL;
+    get defaultChannelAlias(): string {
+        return this._defaultChannelAlias;
     }
-    override add(alias: string, options: SoundOptions | string): Sound;
-    /**
-     * @deprecated: Use `add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound;` instead.
-     */
-    override add(map: any, globalOptions?: SoundOptions): SoundMap;
-    public override add(alias: string, sourceOptions?: SoundOptions | string): Sound | SoundMap {
-        if (typeof alias === "object") {
-            throw new PixiError(
-                "invalid_usage",
-                "The method add(map: SoundSourceMap, globalOptions?: Options) is deprecated. Use add(alias: string, options: Options | string | ArrayBuffer | AudioBuffer | HTMLAudioElement | Sound): Sound; instead.",
-            );
-        }
-        if (this.exists(alias)) {
-            this.remove(alias);
-        }
-
-        if (sourceOptions instanceof PixiSound) {
-            sourceOptions = sourceOptions.options;
-        }
-        let s: Sound;
-        if (sourceOptions instanceof Sound) {
-            s = sourceOptions;
-        } else {
-            let options: SoundOptions = this.getOptions(sourceOptions || {});
-            s = Sound.from(options);
-        }
-        s.alias = alias;
-
-        !SoundManagerStatic.soundAliasesOrder.includes(alias) && SoundManagerStatic.soundAliasesOrder.push(alias);
-        SoundManagerStatic.sounds[alias] = s;
-        sound.add(alias, s);
-        return s;
+    set defaultChannelAlias(alias: string) {
+        this._defaultChannelAlias = alias;
     }
-    override get useLegacy(): boolean {
+
+    add(alias: string, sourceOptions: string) {
+        return sound.add(alias, sourceOptions);
+    }
+    async edit(alias: string, options: SoundOptions): Promise<void> {
+        let s = sound.find(alias);
+        if (!s) {
+            await this.load(alias);
+            s = sound.find(alias);
+            if (!s) {
+                logger.error(`Sound with alias ${alias} not found after loading.`);
+                return;
+            }
+        }
+        s.options = options;
+    }
+    get useLegacy(): boolean {
         return sound.useLegacy;
     }
-    override set useLegacy(legacy: boolean) {
+    set useLegacy(legacy: boolean) {
         sound.useLegacy = legacy;
     }
-    override get disableAutoPause(): boolean {
+    get disableAutoPause(): boolean {
         return sound.disableAutoPause;
     }
-    override set disableAutoPause(autoPause: boolean) {
+    set disableAutoPause(autoPause: boolean) {
         sound.disableAutoPause = autoPause;
     }
-    override remove(alias: string): this {
-        SoundManagerStatic.soundAliasesOrder = SoundManagerStatic.soundAliasesOrder.filter((t) => t !== alias);
-        delete SoundManagerStatic.soundsPlaying[alias];
-        delete SoundManagerStatic.sounds[alias];
-        return sound.remove(alias) as this;
-    }
-    override get volumeAll(): number {
+    get volumeAll(): number {
         return sound.volumeAll;
     }
-    override set volumeAll(volume: number) {
+    set volumeAll(volume: number) {
         sound.volumeAll = volume;
     }
-    override get speedAll(): number {
+    get speedAll(): number {
         return sound.speedAll;
     }
-    override set speedAll(speed: number) {
+    set speedAll(speed: number) {
         sound.speedAll = speed;
     }
-    override togglePauseAll(): boolean {
-        return sound.togglePauseAll();
+    pauseAll(): this {
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (!mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = true;
+            }
+        }
+        return this;
     }
-    override pauseAll(): this {
-        return sound.pauseAll() as this;
+    resumeAll(): this {
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = false;
+            }
+        }
+        return this;
     }
-    override resumeAll(): this {
-        return sound.resumeAll() as this;
-    }
-    override toggleMuteAll(): boolean {
+    toggleMuteAll(): boolean {
         return sound.toggleMuteAll();
     }
-    override muteAll(): this {
-        return sound.muteAll() as this;
+    muteAll(): this {
+        sound.muteAll();
+        return this;
     }
-    override unmuteAll(): this {
-        return sound.unmuteAll() as this;
+    unmuteAll(): this {
+        sound.unmuteAll();
+        return this;
     }
-    override removeAll(): this {
-        SoundManagerStatic.soundAliasesOrder = [];
-        SoundManagerStatic.soundsPlaying = {};
-        SoundManagerStatic.sounds = {};
-        return sound.removeAll() as this;
+    stopAll(): this {
+        SoundManagerStatic.mediaInstances = {};
+        sound.stopAll();
+        return this;
     }
-    override stopAll(): this {
-        for (let alias in SoundManagerStatic.sounds) {
-            SoundManagerStatic.sounds[alias].stop();
-        }
-        SoundManagerStatic.soundsPlaying = {};
-        return sound.stopAll() as this;
-    }
-    override exists(alias: string, assert?: boolean): boolean {
-        return sound.exists(alias, assert) || alias in SoundManagerStatic.sounds;
-    }
-    override isPlaying(): boolean {
+    isPlaying(): boolean {
         return sound.isPlaying();
     }
-    override find(alias: string): Sound {
-        let item = SoundManagerStatic.sounds[alias];
-        if (item) {
-            return item;
+    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    async play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    async play(
+        aliasOrMediaAlias: string,
+        soundAliasOrOptions?: string | SoundPlayOptionsWithChannel,
+        paramOptions?: SoundPlayOptionsWithChannel,
+    ): Promise<IMediaInstance> {
+        let mediaAlias: string;
+        let soundAlias: string;
+        if (typeof soundAliasOrOptions === "string") {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = soundAliasOrOptions;
+        } else {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = aliasOrMediaAlias;
+            paramOptions = soundAliasOrOptions;
         }
-        item = sound.find(alias);
-        if (item) {
-            SoundManagerStatic.sounds[alias] = item;
+        const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
+        return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
+    }
+    find(alias: string): IMediaInstance | undefined {
+        return SoundManagerStatic.mediaInstances[alias]?.instance;
+    }
+    stop(alias: string): void {
+        const mediaInstance = this.find(alias);
+        if (mediaInstance) {
+            mediaInstance.stop();
+            delete SoundManagerStatic.mediaInstances[alias];
+        } else {
+            logger.warn(`No media instance found with alias ${alias} to stop.`);
         }
-        return item;
     }
-    override play(alias: string, options?: SoundPlayOptions | string): IMediaInstance | Promise<IMediaInstance> {
-        if (!this.exists(alias)) {
-            throw new PixiError("unknown_element", "The alias is not found in the sound library.");
+    pause(alias: string): IMediaInstance | undefined {
+        const mediaInstance = this.find(alias);
+        if (!mediaInstance) {
+            logger.warn(`No media instance found with alias ${alias} to pause.`);
+            return;
         }
-        SoundManagerStatic.soundsPlaying[alias] = {
-            stepIndex: GameUnifier.stepCounter,
-            options: options,
-            paused: false,
-        };
-        return sound.play(alias, options);
+        mediaInstance.paused = true;
+        return mediaInstance;
     }
-    override stop(alias: string): Sound {
-        delete SoundManagerStatic.soundsPlaying[alias];
-        return sound.stop(alias);
-    }
-    override pause(alias: string): Sound {
-        let item = SoundManagerStatic.soundsPlaying[alias];
-        if (!item) {
-            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
+    resume(alias: string): IMediaInstance | undefined {
+        const mediaInstance = this.find(alias);
+        if (!mediaInstance) {
+            logger.warn(`No media instance found with alias ${alias} to resume.`);
+            return;
         }
-        SoundManagerStatic.soundsPlaying[alias] = {
-            ...item,
-            paused: true,
-        };
-        return sound.pause(alias);
+        mediaInstance.paused = false;
+        return mediaInstance;
     }
-    override resume(alias: string): Sound {
-        let item = SoundManagerStatic.soundsPlaying[alias];
-        if (!item) {
-            throw new PixiError("unknown_element", "The alias is not found in the playInStepIndex.");
-        }
-        SoundManagerStatic.soundsPlaying[alias] = {
-            options: item.options,
-            stepIndex: GameUnifier.stepCounter,
-            paused: false,
-        };
-        return sound.resume(alias);
-    }
-    override volume(alias: string, volume?: number): number {
-        return sound.volume(alias, volume);
-    }
-    override speed(alias: string, speed?: number): number {
-        return sound.speed(alias, speed);
-    }
-    override duration(alias: string): number {
+    duration(alias: string): number {
         return sound.duration(alias);
     }
-    override close(): this {
-        return sound.close() as this;
+    async load(alias: string | string[]): Promise<void> {
+        await PIXI.Assets.load(alias);
+        if (typeof alias === "string") {
+            alias = [alias];
+        }
+        alias.forEach((alias) => {
+            const item = PIXI.Assets.get<Sound>(alias);
+            if (!sound.exists(alias)) sound.add(alias, item);
+        });
+    }
+    backgroundLoad(alias: string | string[]): Promise<void> {
+        const promise = PIXI.Assets.backgroundLoad(alias);
+
+        promise.then(() => {
+            if (typeof alias === "string") {
+                alias = [alias];
+            }
+            alias.forEach((alias) => {
+                const item = PIXI.Assets.get<Sound>(alias);
+                if (!sound.exists(alias)) sound.add(alias, item);
+            });
+        });
+        return promise;
+    }
+    backgroundLoadBundle(alias: string): Promise<void> {
+        const promise = PIXI.Assets.backgroundLoadBundle(alias);
+        promise.then(async () => {
+            try {
+                const assets = await PIXI.Assets.loadBundle(alias);
+                for (let key in assets) {
+                    const item = assets[key];
+                    if (item instanceof Sound) {
+                        if (!sound.exists(key)) sound.add(key, item);
+                    }
+                }
+            } catch (e) {
+                logger.error("Error loading sound bundle", e);
+            }
+        });
+        return promise;
     }
 
     clear() {
         this.stopAll();
     }
 
+    /* Channel Methods */
+
+    addChannel(alias: string | string[], options: ChannelOptions = {}): AudioChannelInterface | undefined {
+        if (typeof alias !== "string") {
+            alias.forEach((a) => {
+                const perChannelOptions: ChannelOptions = {
+                    ...options,
+                    filters: options.filters ? [...options.filters] : options.filters,
+                };
+                this.addChannel(a, perChannelOptions);
+            });
+            return;
+        }
+        if (SoundManagerStatic.channels[alias]) {
+            logger.warn(`Channel with alias ${alias} already exists.`);
+            return;
+        }
+        const channel = new AudioChannel(alias, options);
+        SoundManagerStatic.channels[alias] = channel;
+        return channel;
+    }
+
+    findChannel(alias: string): AudioChannelInterface {
+        const channel = SoundManagerStatic.channels[alias];
+        if (!channel) {
+            return this.addChannel(alias) as AudioChannelInterface;
+        }
+        return channel;
+    }
+
+    get channels(): AudioChannelInterface[] {
+        return Object.values(SoundManagerStatic.channels);
+    }
+
     /* Export and Import Methods */
 
     public export(): SoundGameState {
-        let soundElements: { [key: string]: ExportedSoundPlay } = {};
-        for (let alias in SoundManagerStatic.soundsPlaying) {
-            let sound = SoundManagerStatic.soundsPlaying[alias];
-            let item = this.find(alias);
-            if (item) {
-                soundElements[alias] = {
-                    ...sound,
-                    sound: {
-                        options: {
-                            ...item.options,
-                            autoPlay: item.autoPlay,
-                            loop: item.loop,
-                            preload: item.preload,
-                            singleInstance: item.singleInstance,
-                            url: item.options.url,
-                            volume: item.options.volume,
-                        },
-                        filters: FilterToFilterMemory(item.media.filters),
-                    },
+        let mediaInstances: {
+            [key: string]: {
+                channelAlias: string;
+                soundAlias: string;
+                stepCounter: number;
+                options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                paused: boolean;
+            };
+        } = Object.entries(SoundManagerStatic.mediaInstances).reduce(
+            (result, [mediaAlias, mediaInstance]) => {
+                result[mediaAlias] = {
+                    channelAlias: mediaInstance.channelAlias,
+                    soundAlias: mediaInstance.soundAlias,
+                    stepCounter: mediaInstance.stepCounter,
+                    options: { ...mediaInstance.options, filters: FilterToFilterMemory(mediaInstance.options.filters) },
+                    paused: mediaInstance.instance.paused,
                 };
-            }
-        }
+                return result;
+            },
+            {} as {
+                [key: string]: {
+                    channelAlias: string;
+                    soundAlias: string;
+                    stepCounter: number;
+                    options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                    paused: boolean;
+                };
+            },
+        );
         return {
-            soundsPlaying: createExportableElement(soundElements),
-            soundAliasesOrder: createExportableElement(SoundManagerStatic.soundAliasesOrder),
+            mediaInstances: createExportableElement(mediaInstances),
             filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
     }
-    public removeOldSoundAndExport(): SoundGameState {
-        // let soundAliasesOrder = []
-        // for (let alias of GameSoundManager.soundAliasesOrder) {
-        //     if (sound.exists(alias)) {
-        //         let s = sound.find(alias)
-        //         if (s.loop) {
-        //             soundAliasesOrder.push(alias)
-        //         }
-        //     }
-        // }
-        // GameSoundManager.soundAliasesOrder = soundAliasesOrder
-        return this.export();
-    }
-    public restore(data: object) {
-        const stepCounter = GameUnifier.stepCounter - 1;
-        this.clear();
+    async restore(data: object) {
         try {
-            if (data.hasOwnProperty("soundAliasesOrder")) {
-                SoundManagerStatic.soundAliasesOrder = (data as SoundGameState)["soundAliasesOrder"];
-            } else {
-                logger.error("The data does not have the properties soundAliasesOrder");
-                return;
+            if (data.hasOwnProperty("soundsPlaying")) {
+                let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
+                if (soundsPlaying) {
+                    const promises = Object.keys(soundsPlaying).map(async (alias) => {
+                        await this.load(alias);
+
+                        await this.play(alias);
+                    });
+                    await Promise.all(promises);
+                }
+            }
+
+            if (data.hasOwnProperty("mediaInstances")) {
+                let mediaInstances = (data as SoundGameState)["mediaInstances"];
+                if (mediaInstances) {
+                    // load all media first
+                    const usedChannels = new Set<string>();
+                    const promises = Object.values(mediaInstances).map(async ({ soundAlias, channelAlias }) => {
+                        usedChannels.add(channelAlias);
+                        return await this.load(soundAlias);
+                    });
+                    await Promise.all(promises);
+                    this.channels.forEach((channel) => {
+                        if (!channel.background || !usedChannels.has(channel.alias)) {
+                            channel.stopAll();
+                        }
+                    });
+                    const promises2 = Object.keys(mediaInstances).map(async (mediaAlias) => {
+                        const mediaInstanceData = mediaInstances[mediaAlias];
+                        const channel = this.findChannel(mediaInstanceData.channelAlias);
+                        if (!channel.background) {
+                            const instance = await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                            });
+                            if (mediaInstanceData.paused) {
+                                instance.paused = mediaInstanceData.paused;
+                            }
+                        } else if (mediaInstanceData.stepCounter === GameUnifier.stepCounter) {
+                            // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
+                            const instance = await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                            });
+                            if (mediaInstanceData.paused) {
+                                instance.paused = mediaInstanceData.paused;
+                            }
+                        } else {
+                            const instance = this.find(mediaAlias);
+                            if (instance && instance.paused !== mediaInstanceData.paused) {
+                                instance.paused = mediaInstanceData.paused;
+                            }
+                        }
+                    });
+                    await Promise.all(promises2);
+                }
             }
 
             if (data.hasOwnProperty("filters")) {
@@ -288,97 +349,6 @@ export default class SoundManager extends SoundLibrary {
                 if (f) {
                     this.filtersAll = FilterMemoryToFilter(f);
                 }
-            }
-
-            if (data.hasOwnProperty("playInStepIndex")) {
-                let playInStepIndex = (data as SoundGameState)["playInStepIndex"];
-                if (playInStepIndex) {
-                    SoundManagerStatic.soundsPlaying = playInStepIndex;
-                }
-            }
-
-            if (data.hasOwnProperty("sounds")) {
-                let sounds = (data as SoundGameState)["sounds"];
-                for (let alias in sounds) {
-                    let item = sounds[alias];
-                    let autoPlay = false;
-                    let s = this.add(alias, {
-                        ...item.options,
-                        autoPlay: false,
-                    });
-
-                    if (alias in SoundManagerStatic.soundsPlaying) {
-                        let step = SoundManagerStatic.soundsPlaying[alias];
-                        if (
-                            item.options.loop ||
-                            (step.options && typeof step.options === "object" && step.options.loop)
-                        ) {
-                            autoPlay = true;
-                        } else if (step.stepIndex === stepCounter) {
-                            autoPlay = true;
-                        }
-
-                        if (item.filters) {
-                            s.filters = FilterMemoryToFilter(item.filters);
-                        }
-
-                        if (autoPlay) {
-                            s.play();
-                        }
-                    }
-                }
-            }
-
-            if (data.hasOwnProperty("soundsPlaying")) {
-                let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
-                for (let alias in soundsPlaying) {
-                    let op = soundsPlaying[alias];
-                    SoundManagerStatic.soundsPlaying[alias] = {
-                        paused: op.paused,
-                        stepIndex: op.stepIndex,
-                        options: op.options,
-                    };
-
-                    let item = soundsPlaying[alias].sound;
-                    let autoPlay = false;
-                    let s: Sound;
-                    if (this.exists(alias)) {
-                        s = this.find(alias);
-                        item.options.url = s.options.url;
-                        item.options.volume = s.options.volume;
-                        s.options = item.options;
-                        s.autoPlay = false;
-                        s.filters = item.filters ? FilterMemoryToFilter(item.filters) : [];
-                    } else {
-                        s = this.add(alias, {
-                            ...item.options,
-                            autoPlay: false,
-                        });
-                    }
-
-                    if (alias in SoundManagerStatic.soundsPlaying) {
-                        let step = SoundManagerStatic.soundsPlaying[alias];
-                        if (
-                            item.options.loop ||
-                            (step.options && typeof step.options === "object" && step.options.loop)
-                        ) {
-                            autoPlay = true;
-                        } else if (step.stepIndex === stepCounter) {
-                            autoPlay = true;
-                        }
-
-                        if (item.filters) {
-                            s.filters = FilterMemoryToFilter(item.filters);
-                        }
-
-                        if (autoPlay) {
-                            s.play();
-                        }
-                    }
-                }
-            } else {
-                logger.error("The data does not have the properties soundsPlaying");
-                return;
             }
         } catch (e) {
             logger.error("Error importing data", e);

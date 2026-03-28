@@ -33,7 +33,7 @@ GameUnifier.init({
         NarrationManagerStatic.openedLabels = state.openedLabels;
         storage.restore(state.storage);
         // await canvas.restore(state.canvas);
-        sound.restore(state.sound);
+        await sound.restore(state.sound);
         navigate(state.path);
     },
     // narration
@@ -63,7 +63,7 @@ GameUnifier.init({
     // storage
     getVariable: (prefix, key) => StorageManagerStatic.getVariable(prefix, key),
     setVariable: (prefix, key, value) => StorageManagerStatic.setVariable(prefix, key, value),
-    removeVariable: (key) => storage.remove(key),
+    removeVariable: (prefix, key) => StorageManagerStatic.removeVariable(prefix, key),
     getFlag: (key) => storage.getFlag(key),
     setFlag: (name, value) => storage.setFlag(name, value),
     onLabelClosing: (openedLabelsNumber) => StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),

@@ -49,11 +49,6 @@ export default class GameUnifier {
          */
         getOpenedLabels: () => number;
         /**
-         * This function is called after the narration.continue() method is executed.
-         * It can be used to force the completion of the ticker in the game engine.
-         */
-        onPreContinue?: () => Promise<void> | void;
-        /**
          * This function is called to process the pending navigation requests (continue/back).
          */
         processNavigationRequests: (
@@ -79,7 +74,7 @@ export default class GameUnifier {
          * This function removes a variable.
          * @param key The key of the variable.
          */
-        removeVariable: (key: string) => void;
+        removeVariable: (prefix: string, key: string) => void;
         /**
          * This function returns the value of a flag.
          * @param name The name of the flag.
@@ -144,7 +139,6 @@ export default class GameUnifier {
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
         GameUnifier._restoreGameStepState = options.restoreGameStepState;
         GameUnifier._getOpenedLabels = options.getOpenedLabels;
-        options.onPreContinue && GameUnifier.addOnPreContinue(options.onPreContinue);
         GameUnifier._processNavigationRequests = options.processNavigationRequests;
         GameUnifier._getVariable = options.getVariable;
         GameUnifier._setVariable = options.setVariable;
@@ -242,15 +236,16 @@ export default class GameUnifier {
     static clearOnPreContinueHandlers() {
         GameUnifier._onPreContinueHandlers = [];
     }
-    static async runOnPreContinue() {
+    private static async runOnPreContinue() {
         // Execute handlers concurrently using a shallow copy to avoid
         // mutation during iteration. All handlers are started immediately
         // and we wait for all to complete.
         const handlers = GameUnifier._onPreContinueHandlers.slice();
         await Promise.all(handlers.map((h) => h()));
     }
-    // Backwards-compatible getter: returns the runner function so existing callers
-    // using `GameUnifier.onPreContinue()` continue to work.
+    /**
+     * This function is called immediately before a narration "continue" operation.
+     */
     static get onPreContinue() {
         return GameUnifier.runOnPreContinue;
     }
@@ -349,7 +344,7 @@ export default class GameUnifier {
     static get setVariable() {
         return GameUnifier._setVariable;
     }
-    private static _removeVariable: (key: string) => void = () => {
+    private static _removeVariable: (prefix: string, key: string) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
     };

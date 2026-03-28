@@ -20,17 +20,20 @@ export interface ExportedSoundPlay extends SoundPlay {
  * Interface exported sounds
  */
 export default interface SoundGameState {
-    soundAliasesOrder: string[];
     filters?: SoundFilterMemory[];
-    soundsPlaying: { [key: string]: ExportedSoundPlay };
     /**
      * @deprecated
      */
-    playInStepIndex?: { [key: string]: SoundPlay };
-    /**
-     * @deprecated
-     */
-    sounds?: ExportedSoundOld;
+    soundsPlaying?: { [key: string]: ExportedSoundPlay };
+    mediaInstances: {
+        [key: string]: {
+            channelAlias: string;
+            soundAlias: string;
+            stepCounter: number;
+            options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+            paused: boolean;
+        };
+    };
 }
 
 interface ExportedSoundOld {

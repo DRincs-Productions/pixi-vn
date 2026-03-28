@@ -769,12 +769,15 @@ export default class NarrationManager implements NarrationManagerInterface {
                 defaultValue,
             );
         } else {
-            GameUnifier.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
+            GameUnifier.removeVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+            );
         }
     }
     public removeInputRequest() {
-        GameUnifier.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY);
-        GameUnifier.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
+        GameUnifier.removeVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY);
+        GameUnifier.removeVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
     }
 
     public clear() {

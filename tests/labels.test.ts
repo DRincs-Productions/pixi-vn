@@ -568,4 +568,7 @@ test("runNow input request", async () => {
     await narration.continue({});
     expect(narration.dialogue).toEqual({ text: "What is your name?" });
     expect(narration.isRequiredInput).toBe(true);
+    narration.inputValue = "Alice";
+    expect(narration.inputValue).toBe("Alice");
+    expect(narration.isRequiredInput).toBe(false);
 });

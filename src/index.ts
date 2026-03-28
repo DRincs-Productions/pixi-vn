@@ -18,7 +18,14 @@ export type {
 export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
 export * from "./classes";
-export { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat, SYSTEM_RESERVED_STORAGE_KEYS } from "./constants";
+export {
+    CANVAS_APP_GAME_LAYER_ALIAS,
+    GENERAL_CHANNEL,
+    Pause,
+    PIXIVN_VERSION,
+    Repeat,
+    SYSTEM_RESERVED_STORAGE_KEYS,
+} from "./constants";
 export * from "./interfaces";
 export * from "./utils";
 
@@ -140,8 +147,8 @@ export namespace Game {
                 storageUtils.storage.restore(state.storage);
                 try {
                     await canvasUtils.canvas.restore(state.canvas);
+                    await soundUtils.sound.restore(state.sound);
                 } catch (e) {}
-                soundUtils.sound.restore(state.sound);
                 navigate(state.path);
             },
             // narration
@@ -171,37 +178,6 @@ export namespace Game {
                 }
                 return { newValue, result };
             },
-            // canvas
-            onPreContinue: async () => {
-                try {
-                    // `reverse()` was previously used to ensure the most recently added
-                    // tickers are completed first (LIFO). Keep that semantic: process
-                    // newest tickers before older ones. Using `pop()` is more
-                    // performant and avoids creating/ mutating a reversed array.
-                    const tikers = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds;
-                    const stepAliases = canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias;
-
-                    // Process `tikersIds` and `stepAlias` in parallel (separate async flows)
-                    // and wait for both to finish before clearing `_tickersToCompleteOnStepEnd`.
-                    const p1 = (async () => {
-                        while (tikers.length) {
-                            const { id } = tikers.pop() || {};
-                            id && (await canvasUtils.canvas.forceCompletionOfTicker(id));
-                        }
-                    })();
-
-                    const p2 = (async () => {
-                        while (stepAliases.length) {
-                            const { alias, id } = stepAliases.pop() || {};
-                            alias && id && (await canvasUtils.canvas.forceCompletionOfTicker(id, alias));
-                        }
-                    })();
-
-                    await Promise.all([p1, p2]);
-
-                    canvasUtils.CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
-                } catch (e) {}
-            },
             // animate function
             animate: (components, keyframes, options, priority) => {
                 return motion.animate(components, keyframes, options, priority);
@@ -209,7 +185,7 @@ export namespace Game {
             // storage
             getVariable: (prefix, key) => storageUtils.StorageManagerStatic.getVariable(prefix, key),
             setVariable: (prefix, key, value) => storageUtils.StorageManagerStatic.setVariable(prefix, key, value),
-            removeVariable: (key) => storageUtils.storage.remove(key),
+            removeVariable: (prefix, key) => storageUtils.StorageManagerStatic.removeVariable(prefix, key),
             getFlag: (key) => storageUtils.storage.getFlag(key),
             setFlag: (name, value) => storageUtils.storage.setFlag(name, value),
             onLabelClosing: (openedLabelsNumber) =>
@@ -280,9 +256,25 @@ export namespace Game {
         storageUtils.storage.restore(data.storageData);
         try {
             await canvasUtils.canvas.restore(data.canvasData);
+            await soundUtils.sound.restore(data.soundData);
         } catch (e) {}
-        soundUtils.sound.restore(data.soundData);
         await navigate(data.path);
+    }
+
+    /**
+     * Start the game with a label. This function will clear the canvas, stop all sounds and start the narration with the given label.
+     * @param label The label to start the game with. It can be a string or a LabelAbstract instance. If it is a string, it will be used as the id of the label to start. If it is a LabelAbstract instance, it will be used directly. If the label is not found, an error will be thrown.
+     * @param props The properties to pass to the label. It will be passed to the {@link StepLabelType} of the label when it is executed.
+     * @returns The result of the label execution. It can be a {@link StepLabelResultType} or a Promise that resolves to a {@link StepLabelResultType}.
+     */
+    export async function start<T extends {} = {}>(
+        label: narrationUtils.LabelAbstract<any, T> | string,
+        props: narrationUtils.StepLabelPropsType<T>,
+    ) {
+        canvasUtils.canvas.removeAll();
+        canvasUtils.canvas.clear();
+        soundUtils.sound.stopAll();
+        return await narrationUtils.narration.call(label, props);
     }
 
     /**
