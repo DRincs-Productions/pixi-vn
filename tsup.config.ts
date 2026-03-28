@@ -61,7 +61,7 @@ export default defineConfig([
         format: ["cjs", "esm"],
         dts: true,
         treeshake: true,
-        sourcemap: "inline",
+        sourcemap: true,
         clean: false,
         minify: true,
         bundle: true,
@@ -87,7 +87,7 @@ export default defineConfig([
         format: ["cjs", "esm"],
         dts: true,
         treeshake: true,
-        sourcemap: "inline",
+        sourcemap: true,
         clean: false,
         minify: true,
         bundle: true,
@@ -121,7 +121,7 @@ export default defineConfig([
         format: ["cjs", "esm"], // Build for commonJS and ESmodules
         dts: true, // Generate declaration file (.d.ts)
         treeshake: true,
-        sourcemap: "inline",
+        sourcemap: true,
         clean: false,
         minify: true,
         bundle: true,
