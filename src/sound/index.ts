@@ -32,6 +32,7 @@ GameUnifier.addOnPreContinue(async () => {
                 instance.instance.paused = false;
             }
         });
+        SoundManagerStatic.deplayTimeoutInstances = [];
         Object.values(SoundManagerStatic.channels).forEach((channel) => {
             if (!channel.background) {
                 channel.stopAll();
