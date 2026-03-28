@@ -47,6 +47,16 @@ export default class AudioChannel implements AudioChannelInterface {
             }),
             this,
         );
+        if (options?.delay) {
+            media.paused = true;
+            const timeoutId = setTimeout(() => {
+                media.paused = false;
+                SoundManagerStatic.deplayTimeoutInstances = SoundManagerStatic.deplayTimeoutInstances.filter(
+                    (item) => item[0] !== timeoutId,
+                );
+            }, options.delay * 1000);
+            SoundManagerStatic.deplayTimeoutInstances.push([timeoutId, this.alias]);
+        }
         SoundManagerStatic.mediaInstances[mediaAlias] = {
             channelAlias: this.alias,
             soundAlias: soundAlias,
