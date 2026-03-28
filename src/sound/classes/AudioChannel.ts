@@ -93,12 +93,13 @@ export default class AudioChannel implements AudioChannelInterface {
         this.updateMediaVolume();
     }
     private updateMediaMuted() {
-        const channelMuted = this.channelOptions.muted ?? false;
         for (const mediaId in SoundManagerStatic.mediaInstances) {
             const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
             if (mediaInstance.channelAlias === this.alias) {
                 const mediaMuted = mediaInstance.options.muted ?? false;
-                mediaInstance.instance.muted = channelMuted || mediaMuted;
+                // Apply only the per-media muted state; the proxy is responsible for
+                // enforcing channel-level muting without overwriting per-media options.
+                mediaInstance.instance.muted = mediaMuted;
             }
         }
     }
