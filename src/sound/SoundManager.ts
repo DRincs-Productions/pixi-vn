@@ -258,12 +258,12 @@ export default class SoundManager implements SoundManagerInterface {
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
                 paused: boolean;
             };
-        } = Object.values(SoundManagerStatic.mediaInstances).reduce(
-            (acc, mediaInstance) => {
-                acc[mediaInstance.soundAlias] = {
+        } = Object.entries(SoundManagerStatic.mediaInstances).reduce(
+            (acc, [mediaAlias, mediaInstance]) => {
+                acc[mediaAlias] = {
                     channelAlias: mediaInstance.channelAlias,
                     soundAlias: mediaInstance.soundAlias,
-                    stepCounter: GameUnifier.stepCounter,
+                    stepCounter: mediaInstance.stepCounter,
                     options: { ...mediaInstance.options, filters: FilterToFilterMemory(mediaInstance.options.filters) },
                     paused: mediaInstance.instance.paused,
                 };
