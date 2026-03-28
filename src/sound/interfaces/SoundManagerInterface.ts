@@ -89,11 +89,6 @@ export default interface SoundManagerInterface extends Omit<
      */
     unmuteAll(): this;
     /**
-     * Stops and removes all sounds. They cannot be used after this.
-     * @return Instance for chaining.
-     */
-    removeAll(): this;
-    /**
      * Stops all sounds.
      * @return Instance for chaining.
      */

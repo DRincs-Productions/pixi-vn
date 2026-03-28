@@ -106,10 +106,6 @@ export default class SoundManager implements SoundManagerInterface {
         sound.unmuteAll();
         return this;
     }
-    removeAll(): this {
-        sound.removeAll();
-        return this;
-    }
     stopAll(): this {
         SoundManagerStatic.mediaInstances = {};
         sound.stopAll();
