@@ -19,7 +19,7 @@ import ImageSprite from "../components/ImageSprite";
 export function addImageCointainer(
     alias: string,
     imageUrls: string[],
-    options?: ImageContainerOptions<ImageSprite>
+    options?: ImageContainerOptions<ImageSprite>,
 ): ImageContainer {
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
     let component = new ImageContainer(options, imageUrls);
@@ -44,10 +44,11 @@ export function addImageCointainer(
 export async function showImageContainer(
     alias: string,
     imageUrls: string[],
-    options?: ImageContainerOptions<ImageSprite>
+    options?: ImageContainerOptions<ImageSprite>,
 ): Promise<ImageContainer> {
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
     let component = new ImageContainer(options, imageUrls);
+    component.label = alias;
     await component.load();
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);

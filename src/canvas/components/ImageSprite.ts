@@ -107,7 +107,7 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
                     "unregistered_asset",
                     `Error loading image ${this.textureAlias}`,
                     "canvas",
-                    this.memory,
+                    { ...this.memory, label: this.textureAlias },
                     this,
                 );
                 GameUnifier.runOnError(e, {});

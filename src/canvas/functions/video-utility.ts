@@ -69,6 +69,7 @@ export async function showVideo(alias: string, videoUrl?: string, options?: Vide
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
     let component = new VideoSprite(options, videoUrl);
+    component.label = alias;
     await component.load();
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);

@@ -69,6 +69,7 @@ export async function showImage(alias: string, imageUrl?: string, options?: Imag
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
     let component = new ImageSprite(options, imageUrl);
+    component.label = alias;
     await component.load();
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
