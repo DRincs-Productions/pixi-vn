@@ -13,12 +13,4 @@ export default interface ContainerMemory<C extends ContainerChild = ContainerChi
      * The elements contained in this container
      */
     elements: CanvasBaseItemMemory[];
-    /**
-     * The index of the container in its parent, if it has one
-     */
-    index?: number;
-    /**
-     * The label of the parent container, if it has one
-     */
-    parentLabel?: string;
 }

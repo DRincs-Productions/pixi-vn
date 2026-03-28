@@ -19,11 +19,20 @@ export function drawCanvasErrorHandler(): OnErrorHandler {
                 const zIndex = (info as any).zIndex;
                 container.groupColor = 0xff0000;
                 const placeholder = new PIXI.Graphics();
-                placeholder.rect(-50, -200, 100, 200).fill({ color: 0xff0000, alpha: 0.5 });
+                placeholder.rect(0, 0, 300, 100).fill({ color: 0xff0000, alpha: 0.5 });
                 container.addChild(placeholder);
-                const text = new PIXI.Text({ text: "error" });
+                const text = new PIXI.Text({ text: `Error: ${info.label}`, x: 10, y: 10 });
                 container.addChild(text);
-                canvas.add(info.label!, container, { zIndex });
+                const parent = info.parentLabel ? canvas.find(info.parentLabel) : undefined;
+                if (parent) {
+                    if (zIndex) {
+                        parent.addChildAt(container, zIndex);
+                    } else {
+                        parent.addChild(container);
+                    }
+                } else {
+                    canvas.add(info.label!, container, { zIndex });
+                }
             }
         } catch (e) {}
     };
