@@ -221,8 +221,12 @@ export default class SoundManager implements SoundManagerInterface {
 
     addChannel(alias: string | string[], options: ChannelOptions = {}): AudioChannelInterface | undefined {
         if (typeof alias !== "string") {
-            alias.forEach((alias) => {
-                this.addChannel(alias, options);
+            alias.forEach((a) => {
+                const perChannelOptions: ChannelOptions = {
+                    ...options,
+                    filters: options.filters ? [...options.filters] : options.filters,
+                };
+                this.addChannel(a, perChannelOptions);
             });
             return;
         }

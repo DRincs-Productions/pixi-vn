@@ -105,8 +105,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             tempDeadlines: [],
         },
         soundData: {
-            soundsPlaying: {},
-            soundAliasesOrder: [],
+            mediaInstances: {},
             filters: [],
         },
         historyData: {
@@ -562,8 +561,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     tempDeadlines: [],
                 },
                 sound: {
-                    soundsPlaying: {},
-                    soundAliasesOrder: [],
+                    mediaInstances: {},
                     filters: [],
                 },
                 labelIndex: 2,
@@ -591,8 +589,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
             tempDeadlines: [],
         },
         soundData: {
-            soundsPlaying: {},
-            soundAliasesOrder: [],
+            mediaInstances: {},
             filters: [],
         },
         historyData: {

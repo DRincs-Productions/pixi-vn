@@ -8,8 +8,13 @@ export function proxyMedia(mediaAlias: string, media: IMediaInstance, channel: A
         get(target, prop, receiver) {
             switch (prop) {
                 case "volume":
-                case "muted":
-                    return SoundManagerStatic.mediaInstances[mediaAlias]?.options[prop];
+                case "muted": {
+                    const entry = SoundManagerStatic.mediaInstances[mediaAlias];
+                    if (entry) {
+                        return entry.options[prop as keyof typeof entry.options];
+                    }
+                    return Reflect.get(target, prop, receiver);
+                }
                 case "paused":
                 default:
                     return Reflect.get(target, prop, receiver);
