@@ -11,11 +11,16 @@ import IMediaInstance from "../src/sound/interfaces/IMediaInstance";
 
 let _idCounter = 0;
 
+/** Minimal test double for IMediaInstance, extended with a test-only emit helper. */
+interface FakeMediaInstance extends IMediaInstance {
+    emit(event: string): void;
+}
+
 /** Creates a minimal fake IMediaInstance that satisfies what SoundManager needs. */
-function makeFakeMediaInstance() {
+function makeFakeMediaInstance(): FakeMediaInstance {
     let _paused = false;
     const listeners: Record<string, Array<() => void>> = {};
-    const inst = {
+    return {
         id: ++_idCounter,
         get paused() {
             return _paused;
@@ -30,12 +35,11 @@ function makeFakeMediaInstance() {
         on: vi.fn((event: string, cb: () => void) => {
             if (!listeners[event]) listeners[event] = [];
             listeners[event].push(cb);
-        }),
+        }) as unknown as IMediaInstance["on"],
         emit(event: string) {
             listeners[event]?.forEach((cb) => cb());
         },
-    } as unknown as IMediaInstance & { emit(e: string): void };
-    return inst;
+    } as FakeMediaInstance;
 }
 
 /**

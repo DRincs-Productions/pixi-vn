@@ -263,15 +263,15 @@ export default class SoundManager implements SoundManagerInterface {
                 paused: boolean;
             };
         } = Object.entries(SoundManagerStatic.mediaInstances).reduce(
-            (acc, [mediaAlias, mediaInstance]) => {
-                acc[mediaAlias] = {
+            (result, [mediaAlias, mediaInstance]) => {
+                result[mediaAlias] = {
                     channelAlias: mediaInstance.channelAlias,
                     soundAlias: mediaInstance.soundAlias,
                     stepCounter: mediaInstance.stepCounter,
                     options: { ...mediaInstance.options, filters: FilterToFilterMemory(mediaInstance.options.filters) },
                     paused: mediaInstance.instance.paused,
                 };
-                return acc;
+                return result;
             },
             {} as {
                 [key: string]: {
