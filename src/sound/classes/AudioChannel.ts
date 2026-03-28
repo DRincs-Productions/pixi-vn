@@ -110,7 +110,7 @@ export default class AudioChannel implements AudioChannelInterface {
     get background(): boolean {
         return this.channelOptions.background || false;
     }
-    stopAll(): void {
+    stopAll() {
         for (const mediaAlias in SoundManagerStatic.mediaInstances) {
             const mediaInstance = SoundManagerStatic.mediaInstances[mediaAlias];
             if (mediaInstance.channelAlias === this.alias) {
@@ -118,5 +118,24 @@ export default class AudioChannel implements AudioChannelInterface {
                 delete SoundManagerStatic.mediaInstances[mediaAlias];
             }
         }
+        return this;
+    }
+    pauseAll() {
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (mediaInstance.channelAlias === this.alias && !mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = true;
+            }
+        }
+        return this;
+    }
+    resumeAll(): this {
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (mediaInstance.channelAlias === this.alias && mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = false;
+            }
+        }
+        return this;
     }
 }

@@ -44,6 +44,17 @@ export default interface AudioChannelInterface {
     readonly background: boolean;
     /**
      * Stops all media currently playing through this channel.
+     * @return Instance for chaining.
      */
-    stopAll(): void;
+    stopAll(): this;
+    /**
+     * Pauses any playing sounds.
+     * @return Instance for chaining.
+     */
+    pauseAll(): this;
+    /**
+     * Resumes any sounds.
+     * @return Instance for chaining.
+     */
+    resumeAll(): this;
 }

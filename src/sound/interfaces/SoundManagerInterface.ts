@@ -26,6 +26,7 @@ export default interface SoundManagerInterface extends Omit<
     | "unmuteAll"
     | "stopAll"
     | "removeAll"
+    | "togglePauseAll"
 > {
     /**
      * @deprecated You can define sound assets directly in {@link Assets}

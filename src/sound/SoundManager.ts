@@ -77,15 +77,22 @@ export default class SoundManager implements SoundManagerInterface {
     set speedAll(speed: number) {
         sound.speedAll = speed;
     }
-    togglePauseAll(): boolean {
-        return sound.togglePauseAll();
-    }
     pauseAll(): this {
-        sound.pauseAll();
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (!mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = true;
+            }
+        }
         return this;
     }
     resumeAll(): this {
-        sound.resumeAll();
+        for (const mediaId in SoundManagerStatic.mediaInstances) {
+            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+            if (mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = false;
+            }
+        }
         return this;
     }
     toggleMuteAll(): boolean {
@@ -249,6 +256,7 @@ export default class SoundManager implements SoundManagerInterface {
                 soundAlias: string;
                 stepCounter: number;
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                paused: boolean;
             };
         } = Object.values(SoundManagerStatic.mediaInstances).reduce(
             (acc, mediaInstance) => {
@@ -257,6 +265,7 @@ export default class SoundManager implements SoundManagerInterface {
                     soundAlias: mediaInstance.soundAlias,
                     stepCounter: GameUnifier.stepCounter,
                     options: { ...mediaInstance.options, filters: FilterToFilterMemory(mediaInstance.options.filters) },
+                    paused: mediaInstance.instance.paused,
                 };
                 return acc;
             },
@@ -266,6 +275,7 @@ export default class SoundManager implements SoundManagerInterface {
                     soundAlias: string;
                     stepCounter: number;
                     options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                    paused: boolean;
                 };
             },
         );
@@ -307,16 +317,22 @@ export default class SoundManager implements SoundManagerInterface {
                         const mediaInstanceData = mediaInstances[mediaAlias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
                         if (!channel.background) {
-                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
+                            const instance = await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
                             });
+                            if (mediaInstanceData.paused) {
+                                instance.paused = true;
+                            }
                         } else if (mediaInstanceData.stepCounter === GameUnifier.stepCounter) {
                             // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
-                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
+                            const instance = await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
                             });
+                            if (mediaInstanceData.paused) {
+                                instance.paused = true;
+                            }
                         }
                     });
                     await Promise.all(promises2);
