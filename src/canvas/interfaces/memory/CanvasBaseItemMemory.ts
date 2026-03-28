@@ -3,5 +3,6 @@
  */
 export default interface CanvasBaseItemMemory {
     pixivnId: string;
+    label?: string;
     zIndex?: number;
 }

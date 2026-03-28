@@ -1,3 +1,4 @@
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import type {
     ContainerChild,
     ContainerEvents,
@@ -10,6 +11,7 @@ import type {
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
+import { logger } from "../../utils/log-utility";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
 import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
 import { getMemorySprite } from "../functions/canvas-memory-utility";
@@ -338,9 +340,20 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
                 if (textureData.alias && PIXI.Assets.resolver.hasKey(textureData.alias)) {
                     textureUrl = textureData.alias;
                 }
-                let texture = await getTexture(textureUrl);
-                if (texture) {
-                    element.texture = texture;
+                try {
+                    let texture = await getTexture(textureUrl);
+                    if (texture) {
+                        element.texture = texture;
+                    }
+                } catch (e) {
+                    logger.error("Error into ImageSprite.load()");
+                    e = new PixiError(
+                        "unregistered_asset",
+                        `Error loading image ${textureUrl}`,
+                        "canvas",
+                        memory as any,
+                    );
+                    GameUnifier.runOnError(e, {});
                 }
             }
         }

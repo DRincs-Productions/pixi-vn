@@ -1,3 +1,4 @@
+import { PixiError } from "@drincs/pixi-vn/core";
 import type { Texture } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { logger } from "../../utils/log-utility";
@@ -13,7 +14,7 @@ export async function getTexture(textureAlias?: string): Promise<Texture | void>
     }
     if (!textureAlias) {
         logger.error("Texture not found", textureAlias);
-        return;
+        throw new PixiError("unregistered_asset", "Texture not found");
     }
     if (PIXI.Assets.cache.has(textureAlias)) {
         let texture = PIXI.Assets.get(textureAlias);
@@ -25,18 +26,18 @@ export async function getTexture(textureAlias?: string): Promise<Texture | void>
         .then((texture) => {
             if (!texture) {
                 logger.error("Texture not found", textureAlias);
-                return;
+                throw new PixiError("unregistered_asset", "Texture not found");
             }
             // if texture not is a Texture, then it is a TextureResource
             if (!(texture instanceof PIXI.Texture)) {
                 logger.error("File not is a file", textureAlias);
-                return;
+                throw new PixiError("unregistered_asset", "File not is a file");
             }
 
             return texture;
         })
         .catch((e) => {
             logger.error("Error loading file", e);
-            return;
+            throw new PixiError("unknown_element", "Error loading file");
         });
 }
