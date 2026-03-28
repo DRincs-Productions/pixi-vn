@@ -563,22 +563,16 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     /* Go Back & Refresh Methods */
 
-    private get onStepError(): ((error: any, props: StepLabelPropsType) => void | Promise<void>) | undefined {
-        const onError = GameUnifier.onError;
-        if (!onError) {
-            return undefined;
-        }
-        return async (error: any, props: StepLabelPropsType) => {
+    private get onStepError() {
+        // Always return a runner that calls GameUnifier.runOnError so that
+        // all registered handlers (including the legacy single `onError`)
+        // are executed in order.
+        return async (error: unknown, props: StepLabelPropsType) => {
             try {
-                return await onError("step", error, props);
+                await GameUnifier.runOnError(error, props);
             } catch (e) {
                 logger.error("Error in onError handler", e);
             }
-        };
-    }
-    private set onStepError(value: (error: any, props: StepLabelPropsType) => void) {
-        GameUnifier.onError = (type: string, error: any, props: StepLabelPropsType) => {
-            return value(error, props);
         };
     }
 
@@ -775,12 +769,15 @@ export default class NarrationManager implements NarrationManagerInterface {
                 defaultValue,
             );
         } else {
-            GameUnifier.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
+            GameUnifier.removeVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+            );
         }
     }
     public removeInputRequest() {
-        GameUnifier.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY);
-        GameUnifier.removeVariable(SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
+        GameUnifier.removeVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY);
+        GameUnifier.removeVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
     }
 
     public clear() {
