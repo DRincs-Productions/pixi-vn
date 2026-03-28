@@ -49,7 +49,7 @@ export {
     zoomIn,
     zoomOut,
 } from "./functions/canvas-transition";
-export { errorHandler } from "./functions/error-handler";
+export { drawCanvasErrorHandler } from "./functions/error-handler";
 export { addImageCointainer, showImageContainer } from "./functions/image-container-utility";
 export { addImage, showImage } from "./functions/image-utility";
 export { showText } from "./functions/text-utility";

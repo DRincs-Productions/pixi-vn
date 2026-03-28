@@ -9,25 +9,15 @@ export default class ErrorGraphics<Memory extends CanvasBaseItemMemory>
     constructor(private readonly _memory: Memory | (Memory & ContainerOptions)) {
         super();
         this.pixivnId = _memory.pixivnId;
-        if ("x" in _memory && typeof _memory.x === "number") {
-            this.x = _memory.x;
-        }
-        if ("y" in _memory && typeof _memory.y === "number") {
-            this.y = _memory.y;
-        }
+        const x = "x" in _memory && typeof _memory.x === "number" ? _memory.x : 0;
+        const y = "y" in _memory && typeof _memory.y === "number" ? _memory.y : 0;
+        const height = "height" in _memory && typeof _memory.height === "number" ? _memory.height : 100;
+        const width = "width" in _memory && typeof _memory.width === "number" ? _memory.width : 100;
+        this.rect(0, 0, width - x, height - y);
         if ("rotation" in _memory && typeof _memory.rotation === "number") {
             this.rotation = _memory.rotation;
         }
-        if ("height" in _memory && typeof _memory.height === "number") {
-            this.height = _memory.height;
-        } else {
-            this.height = 100;
-        }
-        if ("width" in _memory && typeof _memory.width === "number") {
-            this.width = _memory.width;
-        } else {
-            this.width = 100;
-        }
+        this.position.set(x, y);
     }
     readonly pixivnId: string;
     get memory(): Memory {
