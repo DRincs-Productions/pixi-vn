@@ -209,7 +209,7 @@ export namespace Game {
             // storage
             getVariable: (prefix, key) => storageUtils.StorageManagerStatic.getVariable(prefix, key),
             setVariable: (prefix, key, value) => storageUtils.StorageManagerStatic.setVariable(prefix, key, value),
-            removeVariable: (key) => storageUtils.storage.remove(key),
+            removeVariable: (prefix, key) => storageUtils.StorageManagerStatic.removeVariable(prefix, key),
             getFlag: (key) => storageUtils.storage.getFlag(key),
             setFlag: (name, value) => storageUtils.storage.setFlag(name, value),
             onLabelClosing: (openedLabelsNumber) =>

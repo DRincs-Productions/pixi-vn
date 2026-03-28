@@ -79,7 +79,7 @@ export default class GameUnifier {
          * This function removes a variable.
          * @param key The key of the variable.
          */
-        removeVariable: (key: string) => void;
+        removeVariable: (prefix: string, key: string) => void;
         /**
          * This function returns the value of a flag.
          * @param name The name of the flag.
@@ -349,7 +349,7 @@ export default class GameUnifier {
     static get setVariable() {
         return GameUnifier._setVariable;
     }
-    private static _removeVariable: (key: string) => void = () => {
+    private static _removeVariable: (prefix: string, key: string) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
     };
