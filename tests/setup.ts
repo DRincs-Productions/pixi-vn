@@ -33,7 +33,7 @@ GameUnifier.init({
         NarrationManagerStatic.openedLabels = state.openedLabels;
         storage.restore(state.storage);
         // await canvas.restore(state.canvas);
-        sound.restore(state.sound);
+        await sound.restore(state.sound);
         navigate(state.path);
     },
     // narration

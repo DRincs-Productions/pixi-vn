@@ -1,7 +1,10 @@
+import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import CanvasManager from "./CanvasManager";
+import { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
+
 export const { Assets, Color, Rectangle, TextStyle, Texture, UPDATE_PRIORITY } = PIXI;
 export type { TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";
 
@@ -91,6 +94,37 @@ CanvasUtilitiesStatic.init({
     getScreen: () => {
         return canvas.screen;
     },
+});
+
+GameUnifier.addOnPreContinue(async () => {
+    try {
+        // `reverse()` was previously used to ensure the most recently added
+        // tickers are completed first (LIFO). Keep that semantic: process
+        // newest tickers before older ones. Using `pop()` is more
+        // performant and avoids creating/ mutating a reversed array.
+        const tikers = CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds;
+        const stepAliases = CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias;
+
+        // Process `tikersIds` and `stepAlias` in parallel (separate async flows)
+        // and wait for both to finish before clearing `_tickersToCompleteOnStepEnd`.
+        const p1 = (async () => {
+            while (tikers.length) {
+                const { id } = tikers.pop() || {};
+                id && (await canvas.forceCompletionOfTicker(id));
+            }
+        })();
+
+        const p2 = (async () => {
+            while (stepAliases.length) {
+                const { alias, id } = stepAliases.pop() || {};
+                alias && id && (await canvas.forceCompletionOfTicker(id, alias));
+            }
+        })();
+
+        await Promise.all([p1, p2]);
+
+        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+    } catch (e) {}
 });
 
 export { canvas };
