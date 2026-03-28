@@ -301,12 +301,14 @@ export namespace Game {
     /**
      * @deprecated Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.
      */
-    export function onError(value: OnErrorHandler) {
+    export function onError(
+        handler: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void | Promise<void>,
+    ) {
         logger.warn(
             "Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.",
         );
         // Maintain backwards compatibility by setting the single onError handler.
-        GameUnifier.addOnError(value);
+        return GameUnifier.addOnError((error, props) => handler("step", error, props));
     }
 
     /**
@@ -334,10 +336,8 @@ export namespace Game {
      * })
      * ```
      */
-    export function addOnError(
-        handler: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void | Promise<void>,
-    ) {
-        return GameUnifier.addOnError((error, props) => handler("step", error, props));
+    export function addOnError(value: OnErrorHandler) {
+        return GameUnifier.addOnError(value);
     }
 
     /**
