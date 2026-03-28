@@ -14,5 +14,5 @@ export default class SoundManagerStatic {
         };
     } = {};
     static channels: { [alias: string]: AudioChannelInterface } = {};
-    static deplayTimeoutInstances: [number | NodeJS.Timeout, string][] = [];
+    static delayTimeoutInstances: [number | NodeJS.Timeout, string][] = [];
 }
