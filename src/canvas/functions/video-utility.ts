@@ -12,6 +12,7 @@ import VideoSprite from "../components/VideoSprite";
  * @param videoUrl is the url of the video. If you don't provide the url, then the alias is used as the url.
  * @param options The options of the video.
  * @returns the container of the video.
+ * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```typescript
  * let video1 = addVideo("video1", "https://pixijs.com/assets/video1.mp4")
@@ -48,6 +49,7 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
  * @param videoUrl The url of the video.
  * @param options The options of the video.
  * @returns A promise that is resolved when the video is loaded.
+ * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```typescript
  * let video1 = showVideo("video1", "https://pixijs.com/assets/video1.mp4")

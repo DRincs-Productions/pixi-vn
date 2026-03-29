@@ -5,6 +5,7 @@ import { logger } from "./log-utility";
  * This function is used to create a deep copy of the element
  * @param element The element to be copied
  * @returns The copied element
+ * @throws {PixiError} when the element is not JSON serializable (e.g. contains functions or class instances).
  */
 export function createExportableElement<T>(element: T): T {
     try {

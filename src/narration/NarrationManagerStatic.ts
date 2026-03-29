@@ -265,6 +265,7 @@ export default class NarrationManagerStatic {
     /**
      * Add a label to the history.
      * @param label The label to add to the history.
+     * @throws {PixiError} when the label is not found in the registered labels.
      */
     static pushNewLabel(label: LabelIdType) {
         let currentLabel = RegisteredLabels.get(label);

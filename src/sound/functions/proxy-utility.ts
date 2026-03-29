@@ -35,6 +35,14 @@ export function proxyMedia(mediaAlias: string, media: IMediaInstance, channel: A
                             return Reflect.set(target, prop, value, receiver);
                         }
                     case "loop":
+                    case "delay":
+                    case "end":
+                    case "filters":
+                    case "loop":
+                    case "singleInstance":
+                    case "speed":
+                    case "sprite":
+                    case "start":
                         SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
                     default:
                         return Reflect.set(target, prop, value, receiver);
