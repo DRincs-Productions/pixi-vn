@@ -2,7 +2,7 @@ import { PixiError } from "@drincs/pixi-vn/core";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import sha1 from "crypto-js/sha1";
-import { canvas, CanvasManagerStatic, Ticker } from "../..";
+import { canvas, Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { tickerDecorator } from "../decorators/RegisteredTickers";
 import TickerArgs from "../interfaces/TickerArgs";
@@ -117,18 +117,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
     }
     start() {
         const id = this.id;
-        const fnValue = () => {
-            const { createdByTicketSteps } = CanvasManagerStatic._currentTickers[id];
-            let canvasElementAliases = this.canvasElementAliases;
-            if (createdByTicketSteps) {
-                if (canvas.isTickerPaused(createdByTicketSteps.canvasElementAlias, createdByTicketSteps.id)) {
-                    return;
-                }
-            } else {
-                canvasElementAliases = canvasElementAliases.filter((alias) => !canvas.isTickerPaused(alias, id));
-            }
-            return this.fn(this.ticker, this.args, canvasElementAliases, id);
-        };
+        const fnValue = () => this.fn(this.ticker, this.args, this.canvasElementAliases, id);
         this.fnValue = fnValue;
         this.ticker.add(fnValue, null, this.priority);
         this.ticker.start();

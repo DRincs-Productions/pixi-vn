@@ -190,7 +190,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         previousItem?: { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean },
     ): NarrationHistory {
         const { step, choiceIndexMade, inputValue, removeDialogue } = item;
-        let dialogue = step.dialogue || step.dialoge;
+        let dialogue = step.dialogue;
         if (previousItem && step.isGlued) {
             previousItem.removeDialogue = true;
         }

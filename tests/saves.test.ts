@@ -39,12 +39,6 @@ export async function restoreGameState(
     data: Omit<GameState, "canvasData">,
     navigate: (path: string) => void | Promise<void>,
 ) {
-    if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
-        data.historyData.stepsHistory = data.stepData.stepsHistory;
-    }
-    if (data.stepData.hasOwnProperty("originalStepData") && data.stepData.originalStepData) {
-        data.historyData.originalStepData = data.stepData.originalStepData;
-    }
     stepHistory.restore(data.historyData);
     const lastHistoryKey = stepHistory.lastKey;
     if (typeof lastHistoryKey === "number") {

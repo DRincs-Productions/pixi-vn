@@ -99,10 +99,6 @@ declare module "@drincs/pixi-vn" {
          */
         labelStepIndex: number | null;
         /**
-         * @deprecated
-         */
-        dialoge?: StoredDialogue;
-        /**
          * Dialogue to be shown in the game
          */
         dialogue?: StoredDialogue;

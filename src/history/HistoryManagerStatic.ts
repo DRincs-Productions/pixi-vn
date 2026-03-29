@@ -1,12 +1,11 @@
 import { GameStepState } from "@drincs/pixi-vn";
-import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
 import { CachedMap } from "../classes";
 import { HistoryStep, NarrationHistory } from "../narration";
 import { createExportableElement } from "../utils";
 
 export default class HistoryManagerStatic {
-    static _diffHistory = new CachedMap<number, deepDiff.Diff<GameStepState, GameStepState>[] | Difference[]>({
+    static _diffHistory = new CachedMap<number, Difference[]>({
         cacheSize: 5,
     });
     static _stepsInfoHistory = new CachedMap<number, Omit<HistoryStep, "diff">>({ cacheSize: 5 });

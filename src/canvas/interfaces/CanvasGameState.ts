@@ -1,5 +1,4 @@
 import { CanvasBaseItemMemory, ContainerMemory, TickerHistory, TickersSequence } from "..";
-import PauseTickerType from "../types/PauseTickerType";
 
 /**
  * Interface exported canvas
@@ -13,10 +12,6 @@ export default interface CanvasGameState {
      * @deprecated
      */
     elementAliasesOrder: string[];
-    /**
-     * @deprecated
-     */
-    tickersOnPause: { [alias: string]: PauseTickerType };
     tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];

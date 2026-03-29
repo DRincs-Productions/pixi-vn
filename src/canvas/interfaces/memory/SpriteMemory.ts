@@ -6,10 +6,6 @@ import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
 export interface SpriteBaseMemory
     extends SpriteOptions, CanvasBaseItemMemory, ListenerExtensionMemory, AdditionalPositionsExtensionProps {
-    /**
-     * @deprecated
-     */
-    textureImage?: AssetMemory;
     textureData?: AssetMemory;
 }
 

@@ -332,6 +332,7 @@ export default interface CanvasManagerInterface {
               },
     ): void;
     /**
+     * @deprecated Use {@link findTicker}(id).paused
      * Check if a ticker is paused.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param tickerId The ticker that will be checked.
