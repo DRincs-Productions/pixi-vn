@@ -295,12 +295,14 @@ export namespace Game {
     /**
      * @deprecated Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.
      */
-    export function onError(value: OnErrorHandler) {
+    export function onError(
+        handler: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void | Promise<void>,
+    ) {
         logger.warn(
             "Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.",
         );
         // Maintain backwards compatibility by setting the single onError handler.
-        GameUnifier.addOnError(value);
+        return GameUnifier.addOnError((error, props) => handler("step", error, props));
     }
 
     /**
@@ -309,29 +311,27 @@ export namespace Game {
      * @example
      * ```typescript
      * // Register a synchronous error handler
-     * Game.addOnError((type, error, props) => {
+     * Game.addOnError((error, props) => {
      *    props.notify("An error occurred")
      *    // send a notification to GlitchTip, Sentry, etc...
      * })
      *
      * // Register an asynchronous error handler
-     * Game.addOnError(async (type, error, props) => {
+     * Game.addOnError(async (error, props) => {
      *    await logErrorToServer(error)
      *    props.notify("An error occurred")
      * })
      *
      * // Register an error handler with step restoration/rollback
-     * Game.addOnError(async (type, error, props) => {
+     * Game.addOnError(async (error, props) => {
      *    // Restore the game state to the previous step
      *    await stepHistory.back(props)
      *    props.notify("An error occurred, returning to previous step")
      * })
      * ```
      */
-    export function addOnError(
-        handler: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void | Promise<void>,
-    ) {
-        return GameUnifier.addOnError((error, props) => handler("step", error, props));
+    export function addOnError(value: OnErrorHandler) {
+        return GameUnifier.addOnError(value);
     }
 
     /**

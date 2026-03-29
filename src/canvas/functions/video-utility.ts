@@ -1,6 +1,7 @@
 import { PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas, VideoSpriteOptions } from "..";
+import { CANVAS_VIDEO_ID } from "../../constants";
 import VideoSprite from "../components/VideoSprite";
 
 /**
@@ -25,7 +26,11 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
         if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;
         } else {
-            throw new PixiError("unregistered_element", `The video ${alias} does not exist in the cache.`);
+            throw new PixiError("unregistered_asset", `The video ${alias} does not exist in the cache.`, "canvas", {
+                pixivnId: CANVAS_VIDEO_ID,
+                ...options,
+                label: alias,
+            });
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
@@ -55,11 +60,16 @@ export async function showVideo(alias: string, videoUrl?: string, options?: Vide
         if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;
         } else {
-            throw new PixiError("unregistered_element", `The video ${alias} does not exist in the cache.`);
+            throw new PixiError("unregistered_asset", `The video ${alias} does not exist in the cache.`, "canvas", {
+                pixivnId: CANVAS_VIDEO_ID,
+                ...options,
+                label: alias,
+            });
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
     let component = new VideoSprite(options, videoUrl);
+    component.label = alias;
     await component.load();
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);

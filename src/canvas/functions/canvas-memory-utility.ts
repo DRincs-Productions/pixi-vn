@@ -70,6 +70,7 @@ function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Par
         hitArea: element.hitArea,
         index: parent?.getChildIndex(element),
         parentLabel: parent?.label,
+        label: element.label,
     };
 }
 

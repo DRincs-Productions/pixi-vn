@@ -1,3 +1,4 @@
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import type { Texture, TextureSource, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { SpriteMemory } from "..";
@@ -101,7 +102,15 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
             })
             .catch((e) => {
                 this._loadIsStarted = false;
-                logger.error("Error into ImageSprite.load()", e);
+                logger.error("Error into ImageSprite.load()");
+                e = new PixiError(
+                    "unregistered_asset",
+                    `Error loading image ${this.textureAlias}`,
+                    "canvas",
+                    { ...this.memory, label: this.textureAlias },
+                    this,
+                );
+                GameUnifier.runOnError(e, {});
             });
     }
 

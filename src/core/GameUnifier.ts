@@ -444,7 +444,7 @@ export default class GameUnifier {
         GameUnifier._onErrorHandlers.length = 0;
     }
 
-    static async runOnError(error: unknown, props: StepLabelPropsType<any>) {
+    static async runOnError(error: unknown, props: StepLabelPropsType<any> | {}) {
         for (const h of GameUnifier._onErrorHandlers.slice()) {
             try {
                 await h(error, props);
