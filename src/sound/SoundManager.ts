@@ -335,8 +335,13 @@ export default class SoundManager implements SoundManagerInterface {
                             }
                         } else {
                             const instance = this.find(mediaAlias);
-                            if (instance && instance.paused !== mediaInstanceData.paused) {
-                                instance.paused = mediaInstanceData.paused;
+                            if (instance) {
+                                if (instance.paused !== mediaInstanceData.paused) {
+                                    instance.paused = mediaInstanceData.paused;
+                                }
+                                if (instance.loop !== (mediaInstanceData.options.loop || false)) {
+                                    instance.loop = mediaInstanceData.options.loop || false;
+                                }
                             }
                         }
                     });
