@@ -6,9 +6,10 @@ import { logger } from "../../utils/log-utility";
 /**
  * Get a texture from a url.
  * @param textureAlias is the url of the file.
- * @returns the texture of the image or video, or a text with the error.
+ * @returns the texture of the image or video, or `undefined` when `textureAlias` is the `"EMPTY"` sentinel value.
+ * @throws {PixiError} when the alias is missing, the asset is not found in the cache/network, or the loaded resource is not a `Texture`.
  */
-export async function getTexture(textureAlias?: string): Promise<Texture | void> {
+export async function getTexture(textureAlias?: string): Promise<Texture | undefined> {
     if (textureAlias === "EMPTY") {
         return;
     }
