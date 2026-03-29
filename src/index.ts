@@ -241,12 +241,6 @@ export namespace Game {
         data: pixivninterface.GameState,
         navigate: (path: string) => void | Promise<void>,
     ) {
-        if (data.stepData.hasOwnProperty("stepsHistory") && data.stepData.stepsHistory) {
-            data.historyData.stepsHistory = data.stepData.stepsHistory;
-        }
-        if (data.stepData.hasOwnProperty("originalStepData") && data.stepData.originalStepData) {
-            data.historyData.originalStepData = data.stepData.originalStepData;
-        }
         historyUtils.stepHistory.restore(data.historyData);
         const lastHistoryKey = historyUtils.stepHistory.lastKey;
         if (typeof lastHistoryKey === "number") {

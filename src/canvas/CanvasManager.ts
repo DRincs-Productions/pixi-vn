@@ -523,7 +523,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             CanvasManagerStatic.removeTickerTimeout(timeout);
         }
         CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
-        CanvasManagerStatic._tickersOnPause = {};
     }
     removeTicker(
         tickerId: string | string[],
@@ -601,8 +600,6 @@ export default class CanvasManager implements CanvasManagerInterface {
                     info.ticker.play();
                 }
             });
-            // TODO: to remove in the future
-            delete CanvasManagerStatic._tickersOnPause[canvasAlias];
         } else if ("id" in filters) {
             let { id } = filters;
             if (typeof id === "string") {
@@ -619,18 +616,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
     isTickerPaused(alias: string, tickerId?: string): boolean {
-        let tickersOnPauseData = CanvasManagerStatic._tickersOnPause[alias];
-        if (tickersOnPauseData) {
-            if (tickerId) {
-                if ("tickerIdsIncluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsIncluded) {
-                    return tickersOnPauseData.tickerIdsIncluded.includes(tickerId);
-                }
-                if ("tickerIdsExcluded" in tickersOnPauseData && tickersOnPauseData.tickerIdsExcluded) {
-                    return !tickersOnPauseData.tickerIdsExcluded.includes(tickerId);
-                }
-            }
-            return true;
-        }
         return false;
     }
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
@@ -849,7 +834,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             elements: createExportableElement(currentElements),
             stage: createExportableElement(getMemoryContainer(this.gameLayer)),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
-            tickersOnPause: createExportableElement(CanvasManagerStatic._tickersOnPause),
             tickersToCompleteOnStepEnd: createExportableElement(CanvasManagerStatic._tickersToCompleteOnStepEnd),
         };
     }
@@ -911,19 +895,6 @@ export default class CanvasManager implements CanvasManagerInterface {
                         this.runTickersSequence(alias, key);
                     });
                 });
-            }
-            if (data.hasOwnProperty("tickersOnPause")) {
-                let tickersOnPause = (data as CanvasGameState)["tickersOnPause"];
-                Object.keys(tickersOnPause).forEach((alias) => {
-                    let data = tickersOnPause[alias];
-                    if ("tickerIdsExcluded" in data && data.tickerIdsExcluded) {
-                        tickersOnPause[alias].tickerIdsExcluded = data.tickerIdsExcluded;
-                    }
-                    if ("tickerIdsIncluded" in data && data.tickerIdsIncluded) {
-                        tickersOnPause[alias].tickerIdsIncluded = data.tickerIdsIncluded;
-                    }
-                });
-                CanvasManagerStatic._tickersOnPause = tickersOnPause;
             }
             if (data.hasOwnProperty("tickersToCompleteOnStepEnd")) {
                 let tickersToCompleteOnStepEnd = (data as CanvasGameState)["tickersToCompleteOnStepEnd"];

@@ -822,8 +822,6 @@ export default class NarrationManager implements NarrationManagerInterface {
             }
             if (data.hasOwnProperty("stepCounter")) {
                 NarrationManagerStatic._stepCounter = (data as NarrationGameState)["stepCounter"];
-            } else if (data.hasOwnProperty("lastStepIndex")) {
-                NarrationManagerStatic._stepCounter = (data as NarrationGameState)["lastStepIndex"] as number;
             } else {
                 logger.warn("Could not import stepCounter data, so will be ignored");
             }
