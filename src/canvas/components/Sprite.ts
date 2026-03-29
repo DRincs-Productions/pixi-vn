@@ -331,7 +331,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
                     element.texture = texture;
                 }
             } catch (e) {
-                logger.error("Error into ImageSprite.load()");
+                logger.error("Error in Sprite.setMemorySprite() while loading texture");
                 e = new PixiError(
                     "unregistered_asset",
                     `Error loading image ${memory.textureImage.image}`,
@@ -357,7 +357,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
                         element.texture = texture;
                     }
                 } catch (e) {
-                    logger.error("Error into ImageSprite.load()");
+                    logger.error("Error in Sprite.setMemorySprite() while loading texture");
                     e = new PixiError(
                         "unregistered_asset",
                         `Error loading image ${textureUrl}`,
