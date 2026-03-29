@@ -176,12 +176,14 @@ export default class GameUnifier {
     };
     /**
      * Returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
+     * @throws {PixiError} when `Game.init()` has not been called yet.
      */
     static get stepCounter() {
         return GameUnifier._getStepCounter();
     }
     /**
      * Returns the current state of the game step.
+     * @throws {PixiError} when `Game.init()` has not been called yet.
      */
     static set stepCounter(value: number) {
         GameUnifier._setStepCounter(value);
@@ -192,6 +194,7 @@ export default class GameUnifier {
     };
     /**
      * Returns the current state of the game step.
+     * @throws {PixiError} when `Game.init()` has not been called yet.
      */
     static get currentGameStepState() {
         return GameUnifier._getCurrentGameStepState();
@@ -217,6 +220,7 @@ export default class GameUnifier {
     };
     /**
      * Returns the number of opened labels.
+     * @throws {PixiError} when `Game.init()` has not been called yet.
      */
     static get openedLabels() {
         return GameUnifier._getOpenedLabels();
@@ -311,6 +315,7 @@ export default class GameUnifier {
     };
     /**
      * This function processes the pending navigation requests (continue/back).
+     * @throws {PixiError} when `Game.init()` has not been called yet.
      */
     static async processNavigationRequests(props: StepLabelPropsType<any>) {
         const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount, props);

@@ -423,6 +423,14 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabelId not found");
         }
     }
+    /**
+     * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
+     * @param label The label to execute or the id of the label.
+     * @param props The props to pass to the label.
+     * @param options Additional options.
+     * @returns StepLabelResultType or undefined.
+     * @throws {PixiError} when the label is not found in the registered labels.
+     */
     public async call<T extends {} = {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
@@ -459,6 +467,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return result;
     }
+    /**
+     * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
+     * @param label The label to execute or the id of the label.
+     * @param props The props to pass to the label.
+     * @param options Additional options.
+     * @returns StepLabelResultType or undefined.
+     * @throws {PixiError} when the label is not found in the registered labels.
+     */
     public async jump<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
         props: StepLabelPropsType<T>,
@@ -499,6 +515,13 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return result;
     }
+    /**
+     * Select a choice from the choice menu and close the choice menu.
+     * @param item The choice item selected by the player.
+     * @param props The props to pass to the label.
+     * @returns StepLabelResultType or undefined.
+     * @throws {PixiError} when the choice type is not `"call"`, `"jump"`, or `"close"`.
+     */
     public async selectChoice<T extends {}>(
         item: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>,
@@ -534,6 +557,7 @@ export default class NarrationManager implements NarrationManagerInterface {
      * @param choice
      * @param props
      * @returns StepLabelResultType or undefined.
+     * @throws {PixiError} when `choice.type` is not `"close"`.
      * @example
      * ```typescript
      * narration.closeChoiceMenu(yourParams).then((result) => {
@@ -596,6 +620,10 @@ export default class NarrationManager implements NarrationManagerInterface {
                 : undefined,
         };
     }
+    /**
+     * Dialogue to be shown in the game.
+     * @throws {PixiError} when the dialogue contains functions or class instances that cannot be serialized to JSON.
+     */
     public set dialogue(dialogue: DialogueInterface | string | string[] | undefined) {
         if (dialogue === undefined) {
             GameUnifier.setVariable(
@@ -691,6 +719,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return undefined;
     }
+    /**
+     * The options to be shown in the game.
+     * @throws {PixiError} when a choice contains functions or class instances that cannot be serialized to JSON.
+     */
     public set choices(options: StoredChoiceInterface[] | undefined) {
         if (!options || options.length === 0) {
             GameUnifier.setVariable(

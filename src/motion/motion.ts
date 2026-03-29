@@ -13,12 +13,30 @@ import AnimationOptions, {
 } from "./interfaces/AnimationOptions";
 
 namespace motion {
+    /**
+     * Animate a canvas element.
+     * @param components The canvas element(s) or their alias(es) to animate.
+     * @param keyframes The keyframes to animate to.
+     * @param options The animation options.
+     * @param priority The update priority of the ticker.
+     * @returns The id of the ticker, or `undefined` if the ticker was not added.
+     * @throws {PixiError} when `keyframes` or `options` contain functions or class instances that cannot be serialized to JSON.
+     */
     export function animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: KeyframesType<T>,
         options?: AnimationOptions,
         priority?: UPDATE_PRIORITY,
     ): string | undefined;
+    /**
+     * Animate a canvas element using a sequence.
+     * @param components The canvas element(s) or their alias(es) to animate.
+     * @param sequence The sequence of animation segments.
+     * @param options The sequence options.
+     * @param priority The update priority of the ticker.
+     * @returns The id of the ticker, or `undefined` if the ticker was not added.
+     * @throws {PixiError} when `sequence` or `options` contain functions or class instances that cannot be serialized to JSON.
+     */
     export function animate<T extends CanvasBaseInterface<any>>(
         components: T | string,
         sequence: (ObjectSegment<T> | ObjectSegmentWithTransition<T>)[],

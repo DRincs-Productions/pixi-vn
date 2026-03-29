@@ -7,6 +7,7 @@ import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
  * Import a Canvas element from a memory object
  * @param memory Memory object of the canvas
  * @returns Canvas element
+ * @throws {PixiError} when the canvas element identified by `memory.pixivnId` is not registered.
  */
 export async function importCanvasElement<M extends CanvasBaseItemMemory, T extends CanvasBaseItem<M>>(
     memory: M,
