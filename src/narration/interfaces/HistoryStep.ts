@@ -1,5 +1,3 @@
-import { GameStepState } from "@drincs/pixi-vn";
-import deepDiff from "deep-diff";
 import { Difference } from "microdiff";
 import { OpenedLabel, StorageElementType, StoredChoiceInterface } from "../..";
 import { LabelIdType } from "../types/LabelIdType";
@@ -23,7 +21,7 @@ export default interface HistoryStep {
     /**
      * The difference between the previous step and the current step.
      */
-    diff?: deepDiff.Diff<GameStepState, GameStepState>[] | Difference[];
+    diff?: Difference[];
     /**
      * The label id of the current step.
      */

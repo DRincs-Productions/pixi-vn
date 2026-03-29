@@ -150,10 +150,8 @@
   },
   "devDependencies": {
     "@types/crypto-js": "^4.2.2",
-    "@types/deep-diff": "^1.0.5",
     "@types/mime-db": "^1.43.6",
     "crypto-js": "^4.2.0",
-    "deep-diff": "^1.0.2",
     "jsdom": "^27.3.0",
     "keyv": "^5.5.5",
     "lru-cache": "^11.2.4",

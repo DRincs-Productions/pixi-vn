@@ -1,5 +1,4 @@
-import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
-import deepDiff from "deep-diff";
+import { HistoryInfo } from "@drincs/pixi-vn";
 import { Difference } from "microdiff";
 import { CachedMap } from "../../classes";
 import { HistoryStep, NarrationHistory, StepLabelPropsType, StepLabelResultType } from "../../narration";
@@ -46,7 +45,7 @@ export default interface HistoryManagerInterface {
              * The number of steps to go back. Must be greater than 0. @default 1
              */
             steps?: number;
-        }
+        },
     ) => Promise<StepLabelResultType>;
     /**
      * Block the go back function.
@@ -71,7 +70,7 @@ export default interface HistoryManagerInterface {
              * If true, the step will not be added to the history if the current step is the same as the last step.
              */
             ignoreSameStep?: boolean;
-        }
+        },
     ): void;
     /**
      * Clear the history.
@@ -115,7 +114,7 @@ export default interface HistoryManagerInterface {
      *
      * **Don't edit unless you're sure what you're doing.**
      */
-    readonly diffMap: CachedMap<number, deepDiff.Diff<GameStepState, GameStepState>[] | Difference[]>;
+    readonly diffMap: CachedMap<number, Difference[]>;
     /**
      * Map that contains all the narration history.
      *
