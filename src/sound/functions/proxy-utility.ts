@@ -1,7 +1,6 @@
 import { IMediaInstance } from "@pixi/sound";
 import SoundManagerStatic from "../SoundManagerStatic";
 import type AudioChannel from "../classes/AudioChannel";
-import { SoundPlayOptions } from "../interfaces/SoundOptions";
 import { calculateVolume } from "./channel-utility";
 
 export function proxyMedia(mediaAlias: string, media: IMediaInstance, channel: AudioChannel): IMediaInstance {
@@ -36,8 +35,16 @@ export function proxyMedia(mediaAlias: string, media: IMediaInstance, channel: A
                             return Reflect.set(target, prop, value, receiver);
                         }
                     case "loop":
+                    case "delay":
+                    case "end":
+                    case "filters":
+                    case "loop":
+                    case "singleInstance":
+                    case "speed":
+                    case "sprite":
+                    case "start":
+                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
                     default:
-                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop as keyof SoundPlayOptions] = value;
                         return Reflect.set(target, prop, value, receiver);
                 }
             }
