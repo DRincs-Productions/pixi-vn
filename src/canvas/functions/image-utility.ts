@@ -12,6 +12,7 @@ import ImageSprite from "../components/ImageSprite";
  * @param imageUrl is the url of the image. If you don't provide the url, then the alias is used as the url.
  * @param options The options of the image.
  * @returns the container of the image.
+ * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```typescript
  * let bunny1 = addImage("bunny1", "https://pixijs.com/assets/bunny1.png")
@@ -48,6 +49,7 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
  * @param imageUrl The url of the image.
  * @param options The options of the image.
  * @returns A promise that is resolved when the image is loaded.
+ * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```typescript
  * let bunny1 = showImage("bunny1", "https://pixijs.com/assets/bunny1.png")

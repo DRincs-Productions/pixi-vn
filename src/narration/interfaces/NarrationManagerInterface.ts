@@ -153,6 +153,7 @@ export default interface NarrationManagerInterface {
      * @param label The label to execute or the id of the label
      * @param props The props to pass to the label.
      * @returns StepLabelResultType or undefined.
+     * @throws {PixiError} when the label is not found in the registered labels.
      * @example
      * ```typescript
      * narration.call(startLabel, yourParams).then((result) => {
@@ -178,6 +179,7 @@ export default interface NarrationManagerInterface {
      * @param label The label to execute.
      * @param props The props to pass to the label or the id of the label
      * @returns StepLabelResultType or undefined.
+     * @throws {PixiError} when the label is not found in the registered labels.
      * @example
      * ```typescript
      * narration.jump(startLabel, yourParams).then((result) => {
@@ -203,6 +205,7 @@ export default interface NarrationManagerInterface {
      * @param item
      * @param props
      * @returns
+     * @throws {PixiError} when the choice type is not `"call"`, `"jump"`, or `"close"`.
      * @example
      * ```typescript
      * narration.selectChoice(item, {
@@ -233,6 +236,7 @@ export default interface NarrationManagerInterface {
     get dialogue(): DialogueInterface | undefined;
     /**
      * Dialogue to be shown in the game
+     * @throws {PixiError} when the dialogue contains functions or class instances that cannot be serialized to JSON.
      */
     set dialogue(props: DialogueInterface | string | string[] | undefined);
     /**
@@ -251,6 +255,7 @@ export default interface NarrationManagerInterface {
     get choices(): StoredIndexedChoiceInterface[] | undefined;
     /**
      * The options to be shown in the game
+     * @throws {PixiError} when a choice contains functions or class instances that cannot be serialized to JSON.
      * @example
      * ```typescript
      * narration.choices = [

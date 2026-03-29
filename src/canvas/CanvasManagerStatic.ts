@@ -16,6 +16,10 @@ export default class CanvasManagerStatic {
     private constructor() {}
 
     private static _app: Application | undefined = undefined;
+    /**
+     * The Pixi.js application instance.
+     * @throws {PixiError} when the canvas has not been initialized yet (i.e. before calling `Game.init()`).
+     */
     static get app() {
         if (!CanvasManagerStatic._app) {
             logger.error("The canvas is not initialized");
