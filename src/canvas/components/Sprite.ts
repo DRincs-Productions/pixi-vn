@@ -325,9 +325,20 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     await setMemoryContainer(element, memory);
     if (!ignoreTexture) {
         if ("textureImage" in memory && memory.textureImage && memory.textureImage.image) {
-            let texture = await getTexture(memory.textureImage.image);
-            if (texture) {
-                element.texture = texture;
+            try {
+                let texture = await getTexture(memory.textureImage.image);
+                if (texture) {
+                    element.texture = texture;
+                }
+            } catch (e) {
+                logger.error("Error into ImageSprite.load()");
+                e = new PixiError(
+                    "unregistered_asset",
+                    `Error loading image ${memory.textureImage.image}`,
+                    "canvas",
+                    memory as any,
+                );
+                GameUnifier.runOnError(e, {});
             }
         }
         let textureData: AssetMemory | undefined = undefined;
