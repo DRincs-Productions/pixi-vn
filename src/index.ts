@@ -317,19 +317,19 @@ export namespace Game {
      * @example
      * ```typescript
      * // Register a synchronous error handler
-     * Game.addOnError((type, error, props) => {
+     * Game.addOnError((error, props) => {
      *    props.notify("An error occurred")
      *    // send a notification to GlitchTip, Sentry, etc...
      * })
      *
      * // Register an asynchronous error handler
-     * Game.addOnError(async (type, error, props) => {
+     * Game.addOnError(async (error, props) => {
      *    await logErrorToServer(error)
      *    props.notify("An error occurred")
      * })
      *
      * // Register an error handler with step restoration/rollback
-     * Game.addOnError(async (type, error, props) => {
+     * Game.addOnError(async (error, props) => {
      *    // Restore the game state to the previous step
      *    await stepHistory.back(props)
      *    props.notify("An error occurred, returning to previous step")

@@ -1,5 +1,6 @@
 import { expect, test, vi } from "vitest";
-import { GameUnifier, StepLabelPropsType } from "../src";
+import { canvas, drawCanvasErrorHandler, GameUnifier, StepLabelPropsType } from "../src";
+import { PixiError } from "@drincs/pixi-vn/core";
 
 const emptyProps: StepLabelPropsType = {};
 
@@ -46,4 +47,43 @@ test("removeOnError: stops a handler from running", async () => {
     await GameUnifier.runOnError(new Error("test"), emptyProps);
     expect(spy).not.toHaveBeenCalled();
     GameUnifier.clearOnErrorHandlers();
+});
+
+test("drawCanvasErrorHandler: adds placeholder element when PixiError has canvasElementInfo with label", async () => {
+    const addSpy = vi.spyOn(canvas, "add").mockImplementation(() => {});
+    const handler = drawCanvasErrorHandler();
+    const error = new PixiError("unregistered_asset", "Test error", "canvas", {
+        pixivnId: "test-container",
+        label: "mySprite",
+    });
+
+    await handler(error, {});
+
+    expect(addSpy).toHaveBeenCalledOnce();
+    expect(addSpy.mock.calls[0][0]).toBe("mySprite");
+    addSpy.mockRestore();
+});
+
+test("drawCanvasErrorHandler: falls back to pixivnId when label is absent", async () => {
+    const addSpy = vi.spyOn(canvas, "add").mockImplementation(() => {});
+    const handler = drawCanvasErrorHandler();
+    const error = new PixiError("unregistered_asset", "Test error", "canvas", {
+        pixivnId: "fallback-id",
+    });
+
+    await handler(error, {});
+
+    expect(addSpy).toHaveBeenCalledOnce();
+    expect(addSpy.mock.calls[0][0]).toBe("fallback-id");
+    addSpy.mockRestore();
+});
+
+test("drawCanvasErrorHandler: does not add placeholder when error has no canvasElementInfo", async () => {
+    const addSpy = vi.spyOn(canvas, "add").mockImplementation(() => {});
+    const handler = drawCanvasErrorHandler();
+
+    await handler(new Error("generic error"), {});
+
+    expect(addSpy).not.toHaveBeenCalled();
+    addSpy.mockRestore();
 });

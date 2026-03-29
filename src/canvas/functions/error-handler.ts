@@ -25,7 +25,7 @@ export function drawCanvasErrorHandler(): OnErrorHandler {
                 container.addChild(text);
                 const ppparent = (error as PixiError).parent;
                 if (ppparent && "addChild" in ppparent) {
-                    if (zIndex) {
+                    if (zIndex !== undefined) {
                         (ppparent as any).addChildAt(container, zIndex);
                     } else {
                         (ppparent as any).addChild(container);
@@ -33,13 +33,14 @@ export function drawCanvasErrorHandler(): OnErrorHandler {
                 } else {
                     const parent = info.parentLabel ? canvas.find(info.parentLabel) : undefined;
                     if (parent) {
-                        if (zIndex) {
+                        if (zIndex !== undefined) {
                             parent.addChildAt(container, zIndex);
                         } else {
                             parent.addChild(container);
                         }
                     } else {
-                        canvas.add(info.label!, container, { zIndex });
+                        const alias = info.label ?? info.pixivnId;
+                        canvas.add(alias, container, { zIndex });
                     }
                 }
             }
