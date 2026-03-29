@@ -335,8 +335,22 @@ export default class SoundManager implements SoundManagerInterface {
                             }
                         } else {
                             const instance = this.find(mediaAlias);
-                            if (instance && instance.paused !== mediaInstanceData.paused) {
-                                instance.paused = mediaInstanceData.paused;
+                            if (instance) {
+                                if (instance.paused !== mediaInstanceData.paused) {
+                                    instance.paused = mediaInstanceData.paused;
+                                }
+                                if (instance.loop !== (mediaInstanceData.options.loop || false)) {
+                                    instance.loop = mediaInstanceData.options.loop || false;
+                                }
+                                if (instance.volume !== (mediaInstanceData.options.volume ?? 1)) {
+                                    instance.volume = mediaInstanceData.options.volume ?? 1;
+                                }
+                                if (instance.muted !== (mediaInstanceData.options.muted || false)) {
+                                    instance.muted = mediaInstanceData.options.muted || false;
+                                }
+                                if (instance.speed !== (mediaInstanceData.options.speed ?? 1)) {
+                                    instance.speed = mediaInstanceData.options.speed ?? 1;
+                                }
                             }
                         }
                     });

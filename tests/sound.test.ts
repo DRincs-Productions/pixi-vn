@@ -31,6 +31,7 @@ function makeFakeMediaInstance(): FakeMediaInstance {
         volume: 1,
         muted: false,
         loop: false,
+        speed: 1,
         stop: vi.fn(),
         on: vi.fn((event: string, cb: () => void) => {
             if (!listeners[event]) listeners[event] = [];
@@ -369,6 +370,208 @@ describe("sound restore", () => {
 
     test("restore() with legacy soundsPlaying does not throw", async () => {
         await expect(sound.restore({ soundsPlaying: {}, filters: [] })).resolves.not.toThrow();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: background channel settings restoration (goBack)
+// ---------------------------------------------------------------------------
+
+describe("background channel settings restoration", () => {
+    let loadSpy: ReturnType<typeof vi.spyOn>;
+
+    beforeEach(() => {
+        clearSound();
+        loadSpy = vi.spyOn(sound as any, "load").mockResolvedValue(undefined);
+    });
+
+    afterEach(() => {
+        loadSpy.mockRestore();
+    });
+
+    /**
+     * For background channels where the media is already playing (stepCounter ≠ current step),
+     * restore() must update the instance's settings instead of replaying it.
+     */
+    function makeBackgroundState(opts: {
+        paused?: boolean;
+        loop?: boolean;
+        volume?: number;
+        muted?: boolean;
+        speed?: number;
+        filters?: any[];
+        delay?: number;
+        end?: number;
+        singleInstance?: boolean;
+        start?: number;
+        stepCounter?: number;
+    }) {
+        return {
+            mediaInstances: {
+                "bg-music": {
+                    channelAlias: "bgm",
+                    soundAlias: "bg-music",
+                    stepCounter: opts.stepCounter ?? 99,
+                    paused: opts.paused ?? false,
+                    options: {
+                        loop: opts.loop ?? false,
+                        volume: opts.volume ?? 1,
+                        muted: opts.muted ?? false,
+                        speed: opts.speed ?? 1,
+                        ...(opts.filters !== undefined && { filters: opts.filters }),
+                        ...(opts.delay !== undefined && { delay: opts.delay }),
+                        ...(opts.end !== undefined && { end: opts.end }),
+                        ...(opts.singleInstance !== undefined && { singleInstance: opts.singleInstance }),
+                        ...(opts.start !== undefined && { start: opts.start }),
+                    },
+                },
+            },
+            filters: [],
+        };
+    }
+
+    test("restore() updates loop on a running background instance", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        inst.loop = false;
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: false, volume: 1, muted: false, speed: 1 },
+        };
+
+        // stepCounter=99 in state differs from GameUnifier.stepCounter (0), so falls into the else branch
+        await sound.restore(makeBackgroundState({ loop: true }));
+
+        expect(inst.loop).toBe(true);
+    });
+
+    test("restore() updates volume on a running background instance", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        inst.volume = 1;
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: false, volume: 1, muted: false, speed: 1 },
+        };
+
+        await sound.restore(makeBackgroundState({ volume: 0.5 }));
+
+        expect(inst.volume).toBe(0.5);
+    });
+
+    test("restore() updates muted on a running background instance", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        inst.muted = false;
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: false, volume: 1, muted: false, speed: 1 },
+        };
+
+        await sound.restore(makeBackgroundState({ muted: true }));
+
+        expect(inst.muted).toBe(true);
+    });
+
+    test("restore() updates speed on a running background instance", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        inst.speed = 1;
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: false, volume: 1, muted: false, speed: 1 },
+        };
+
+        await sound.restore(makeBackgroundState({ speed: 0.75 }));
+
+        expect(inst.speed).toBe(0.75);
+    });
+
+    test("restore() updates paused on a running background instance", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: false, volume: 1, muted: false, speed: 1 },
+        };
+
+        await sound.restore(makeBackgroundState({ paused: true }));
+
+        expect(inst.paused).toBe(true);
+    });
+
+    test("restore() does not change settings when they already match", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        inst.loop = true;
+        inst.volume = 0.5;
+        inst.muted = false;
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: true, volume: 0.5, muted: false, speed: 1 },
+        };
+
+        await sound.restore(makeBackgroundState({ loop: true, volume: 0.5, muted: false }));
+
+        // No changes expected
+        expect(inst.loop).toBe(true);
+        expect(inst.volume).toBe(0.5);
+        expect(inst.muted).toBe(false);
+    });
+
+    test("restore() updates filters on a running background instance", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: false, volume: 1, muted: false, speed: 1 },
+        };
+
+        await sound.restore(makeBackgroundState({ filters: [] }));
+
+        // Filters are applied to the instance (even if empty array)
+        expect((inst as any).filters).toBeDefined();
+    });
+
+    test("restore() syncs delay, end, singleInstance, start into stored options", async () => {
+        sound.addChannel("bgm", { background: true });
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances["bg-music"] = {
+            channelAlias: "bgm",
+            soundAlias: "bg-music",
+            instance: inst,
+            stepCounter: 0,
+            options: { loop: false, volume: 1, muted: false, speed: 1 },
+        };
+
+        await sound.restore(makeBackgroundState({ delay: 2, end: 10, singleInstance: true, start: 1 }));
+
+        const storedOptions = SoundManagerStatic.mediaInstances["bg-music"].options;
+        expect(storedOptions.delay).toBe(2);
+        expect(storedOptions.end).toBe(10);
+        expect(storedOptions.singleInstance).toBe(true);
+        expect(storedOptions.start).toBe(1);
     });
 });
 
