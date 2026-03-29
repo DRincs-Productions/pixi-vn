@@ -351,6 +351,22 @@ export default class SoundManager implements SoundManagerInterface {
                                 if (instance.speed !== (mediaInstanceData.options.speed ?? 1)) {
                                     instance.speed = mediaInstanceData.options.speed ?? 1;
                                 }
+                                // Apply filters to the running instance.
+                                // IMediaInstance does not expose filters in its interface,
+                                // but WebAudioInstance supports setting them directly.
+                                (instance as any).filters = FilterMemoryToFilter(
+                                    mediaInstanceData.options.filters || [],
+                                );
+                                // Sync play-only options that cannot be applied to a running instance.
+                                // Unconditionally assign (including undefined) so the stored options
+                                // exactly match the saved state for correct subsequent exports.
+                                const mediaEntry = SoundManagerStatic.mediaInstances[mediaAlias];
+                                if (mediaEntry) {
+                                    mediaEntry.options.delay = mediaInstanceData.options.delay;
+                                    mediaEntry.options.end = mediaInstanceData.options.end;
+                                    mediaEntry.options.singleInstance = mediaInstanceData.options.singleInstance;
+                                    mediaEntry.options.start = mediaInstanceData.options.start;
+                                }
                             }
                         }
                     });
