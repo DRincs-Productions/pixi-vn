@@ -8,7 +8,6 @@ import { logger } from "../utils/log-utility";
 import { throttle } from "../utils/time-utility";
 import additionalPositionsProperties from "./pixi-devtools/additionalPositionsProperties";
 import { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
-import PauseTickerType from "./types/PauseTickerType";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -244,10 +243,6 @@ export default class CanvasManagerStatic {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
     } = { tikersIds: [], stepAlias: [] };
-    /**
-     * @deprecated
-     */
-    static _tickersOnPause: { [aliasOrId: string]: PauseTickerType } = {};
     static generateTickerId(...args: any[]): string {
         try {
             return sha1(JSON.stringify(args)).toString() + "_" + Math.random().toString(36).substring(7);
