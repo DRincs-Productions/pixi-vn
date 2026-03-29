@@ -322,12 +322,6 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     let ignoreTexture = options?.ignoreTexture || false;
     await setMemoryContainer(element, memory);
     if (!ignoreTexture) {
-        if ("textureImage" in memory && memory.textureImage && memory.textureImage.image) {
-            let texture = await getTexture(memory.textureImage.image);
-            if (texture) {
-                element.texture = texture;
-            }
-        }
         let textureData: AssetMemory | undefined = undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
