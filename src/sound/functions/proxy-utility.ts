@@ -38,7 +38,6 @@ export function proxyMedia(mediaAlias: string, media: IMediaInstance, channel: A
                     case "delay":
                     case "end":
                     case "filters":
-                    case "loop":
                     case "singleInstance":
                     case "speed":
                     case "sprite":
