@@ -57,4 +57,9 @@ export default interface AudioChannelInterface {
      * @return Instance for chaining.
      */
     resumeAll(): this;
+    /**
+     * Toggle muted property for all sounds.
+     * @return `true` if all sounds are muted.
+     */
+    toggleMuteAll(): boolean;
 }

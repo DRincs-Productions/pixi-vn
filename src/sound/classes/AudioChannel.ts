@@ -108,6 +108,10 @@ export default class AudioChannel implements AudioChannelInterface {
         this.channelOptions.muted = value;
         this.updateMediaMuted();
     }
+    toggleMuteAll(): boolean {
+        this.muted = !this.muted;
+        return this.muted;
+    }
     get mediaInstances(): IMediaInstance[] {
         return Object.values(SoundManagerStatic.mediaInstances).reduce((instances: IMediaInstance[], mediaInstance) => {
             if (mediaInstance.channelAlias === this.alias) {
