@@ -1,9 +1,9 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { sound } from "../src";
+import { sound, SoundGameState } from "../src";
 import AudioChannel from "../src/sound/classes/AudioChannel";
-import SoundManagerStatic from "../src/sound/SoundManagerStatic";
-import { SoundPlayOptions } from "../src/sound/interfaces/SoundOptions";
 import IMediaInstance from "../src/sound/interfaces/IMediaInstance";
+import { SoundPlayOptions } from "../src/sound/interfaces/SoundOptions";
+import SoundManagerStatic from "../src/sound/SoundManagerStatic";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -14,6 +14,7 @@ let _idCounter = 0;
 /** Minimal test double for IMediaInstance, extended with a test-only emit helper. */
 interface FakeMediaInstance extends IMediaInstance {
     emit(event: string): void;
+    filters?: any[];
 }
 
 /** Creates a minimal fake IMediaInstance that satisfies what SoundManager needs. */
@@ -32,6 +33,7 @@ function makeFakeMediaInstance(): FakeMediaInstance {
         muted: false,
         loop: false,
         speed: 1,
+        filters: [],
         stop: vi.fn(),
         on: vi.fn((event: string, cb: () => void) => {
             if (!listeners[event]) listeners[event] = [];
@@ -49,41 +51,39 @@ function makeFakeMediaInstance(): FakeMediaInstance {
  * SoundManagerStatic.mediaInstances so that export/restore helpers still work.
  */
 function stubChannelPlay() {
-    return vi
-        .spyOn(AudioChannel.prototype as any, "play")
-        .mockImplementation(async function (
-            this: AudioChannel,
-            aliasOrMediaAlias: string,
-            soundAliasOrOptions?: string | SoundPlayOptions,
-            options?: SoundPlayOptions,
-        ): Promise<IMediaInstance> {
-            let mediaAlias: string;
-            let soundAlias: string;
-            if (typeof soundAliasOrOptions === "string") {
-                mediaAlias = aliasOrMediaAlias;
-                soundAlias = soundAliasOrOptions;
-            } else {
-                mediaAlias = aliasOrMediaAlias;
-                soundAlias = aliasOrMediaAlias;
-                options = soundAliasOrOptions;
-            }
-            const inst = makeFakeMediaInstance();
-            SoundManagerStatic.mediaInstances[mediaAlias] = {
-                channelAlias: this.alias,
-                soundAlias,
-                instance: inst,
-                stepCounter: 0,
-                options: {
-                    volume: options?.volume ?? 1,
-                    muted: options?.muted ?? false,
-                    loop: options?.loop ?? false,
-                },
-            };
-            inst.on("end", () => {
-                delete SoundManagerStatic.mediaInstances[mediaAlias];
-            });
-            return inst;
+    return vi.spyOn(AudioChannel.prototype as any, "play").mockImplementation(async function (
+        this: AudioChannel,
+        aliasOrMediaAlias: string,
+        soundAliasOrOptions?: string | SoundPlayOptions,
+        options?: SoundPlayOptions,
+    ): Promise<IMediaInstance> {
+        let mediaAlias: string;
+        let soundAlias: string;
+        if (typeof soundAliasOrOptions === "string") {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = soundAliasOrOptions;
+        } else {
+            mediaAlias = aliasOrMediaAlias;
+            soundAlias = aliasOrMediaAlias;
+            options = soundAliasOrOptions;
+        }
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances[mediaAlias] = {
+            channelAlias: this.alias,
+            soundAlias,
+            instance: inst,
+            stepCounter: 0,
+            options: {
+                volume: options?.volume ?? 1,
+                muted: options?.muted ?? false,
+                loop: options?.loop ?? false,
+            },
+        };
+        inst.on("end", () => {
+            delete SoundManagerStatic.mediaInstances[mediaAlias];
         });
+        return inst;
+    });
 }
 
 /** Reset all sound-related state between tests. */
@@ -405,7 +405,7 @@ describe("background channel settings restoration", () => {
         singleInstance?: boolean;
         start?: number;
         stepCounter?: number;
-    }) {
+    }): SoundGameState {
         return {
             mediaInstances: {
                 "bg-music": {
@@ -551,7 +551,7 @@ describe("background channel settings restoration", () => {
         await sound.restore(makeBackgroundState({ filters: [] }));
 
         // Filters are applied to the instance (even if empty array)
-        expect((inst as any).filters).toBeDefined();
+        expect(inst.filters).toBeDefined();
     });
 
     test("restore() syncs delay, end, singleInstance, start into stored options", async () => {

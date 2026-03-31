@@ -339,6 +339,10 @@ export default class SoundManager implements SoundManagerInterface {
                         } else {
                             const instance = this.find(mediaAlias);
                             if (instance) {
+                                SoundManagerStatic.mediaInstances[mediaAlias].options = {
+                                    ...mediaInstanceData.options,
+                                    filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                                };
                                 if (instance.paused !== mediaInstanceData.paused) {
                                     instance.paused = mediaInstanceData.paused;
                                 }
