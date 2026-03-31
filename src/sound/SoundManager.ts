@@ -324,7 +324,10 @@ export default class SoundManager implements SoundManagerInterface {
                             if (mediaInstanceData.paused) {
                                 instance.paused = mediaInstanceData.paused;
                             }
-                        } else if (mediaInstanceData.stepCounter === GameUnifier.stepCounter) {
+                        } else if (
+                            mediaInstanceData.stepCounter === GameUnifier.stepCounter ||
+                            !this.find(mediaAlias)
+                        ) {
                             // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
                             const instance = await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
