@@ -1,4 +1,5 @@
-import { OnErrorHandler, PixiError } from "@drincs/pixi-vn/core";
+import type { OnErrorHandler } from "@drincs/pixi-vn/core";
+import { PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import ErrorContainer from "../components/ErrorContainer";
