@@ -131,6 +131,9 @@ export default class SoundManager implements SoundManagerInterface {
             soundAlias = aliasOrMediaAlias;
             paramOptions = soundAliasOrOptions;
         }
+        if (!sound.exists(soundAlias)) {
+            await this.load(soundAlias);
+        }
         const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
         return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
     }
