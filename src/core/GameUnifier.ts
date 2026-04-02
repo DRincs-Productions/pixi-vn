@@ -63,7 +63,7 @@ export default class GameUnifier {
          * @param key The key of the variable.
          * @returns The value of the variable.
          */
-        getVariable: <T extends StorageElementType>(prefix: string, key: string) => T | undefined;
+        getVariable: <T = StorageElementType>(prefix: string, key: string) => T | undefined;
         /**
          * This function sets the value of a variable.
          * @param key The key of the variable.
@@ -325,7 +325,7 @@ export default class GameUnifier {
         const result = await processResult.result;
         return result;
     }
-    private static _getVariable: <T extends StorageElementType>(prefix: string, key: string) => T | undefined = () => {
+    private static _getVariable: <T = StorageElementType>(prefix: string, key: string) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
     };

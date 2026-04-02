@@ -59,6 +59,10 @@ export default class StoredClassModel {
     readonly id: string;
     private categoryId: string;
     /**
+     * @deprecated Remove the type parameter, it is not needed and it is not used in the implementation.
+     */
+    protected setStorageProperty<T>(propertyName: string, value: StorageElementType): void;
+    /**
      * Update a property in the storage.
      * @param propertyName The name of the property to set.
      * @param value The value to set. If is undefined, the property will be removed from the storage.
@@ -72,7 +76,7 @@ export default class StoredClassModel {
      * @param idToUse The id of the instance to get the property. @default this.id
      * @returns The value of the property. If the property is not found, returns undefined.
      */
-    protected getStorageProperty<T>(
+    protected getStorageProperty<T = StorageElementType>(
         propertyName: string,
         idToUse: string = this.id,
     ): T | undefined {

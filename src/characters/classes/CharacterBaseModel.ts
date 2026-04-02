@@ -69,7 +69,7 @@ export default class CharacterBaseModel extends CharacterStoredClass {
         return this.getStorageProperty<number>("age") || this.defaultAge;
     }
     set age(value: number | undefined) {
-        this.setStorageProperty<number>("age", value);
+        this.setStorageProperty("age", value);
     }
     private _icon?: string;
     /**
