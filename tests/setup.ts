@@ -1,4 +1,36 @@
+// Polyfill minimal WebAudio API for Node/jsdom environment used by Vitest
+if (typeof (globalThis as any).AudioBuffer === "undefined") {
+    class _AudioBuffer {
+        length = 0;
+        duration = 0;
+        sampleRate = 44100;
+        numberOfChannels = 1;
+        constructor() {}
+    }
+    (globalThis as any).AudioBuffer = _AudioBuffer;
+}
+
+if (typeof (globalThis as any).AudioContext === "undefined") {
+    class _AudioContext {
+        sampleRate = 44100;
+        constructor() {}
+        decodeAudioData(_buffer: ArrayBuffer) {
+            // simple stub
+            return Promise.resolve(new (globalThis as any).AudioBuffer());
+        }
+        createBufferSource() {
+            return { connect: () => {}, start: () => {}, stop: () => {} };
+        }
+        createGain() {
+            return { connect: () => {}, gain: { value: 1 } };
+        }
+    }
+    (globalThis as any).AudioContext = _AudioContext;
+}
+
 import { motion } from "@drincs/pixi-vn/motion";
+// Avoid real network/file loading in tests: stub PIXI.Assets.load to a no-op
+import PIXI from "@drincs/pixi-vn/pixi.js";
 import {
     GameUnifier,
     HistoryManagerStatic,
@@ -13,6 +45,20 @@ import {
     StorageManagerStatic,
 } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
+try {
+    if (!PIXI.Assets || typeof PIXI.Assets.load !== "function") {
+        (PIXI as any).Assets = (PIXI as any).Assets || {};
+        (PIXI as any).Assets.load = async (_: any) => {
+            return {} as any;
+        };
+    } else {
+        (PIXI as any).Assets.load = async (_: any) => {
+            return {} as any;
+        };
+    }
+} catch (e) {
+    // best-effort stub; tests can proceed without real asset loading
+}
 
 GameUnifier.init({
     navigate: (path: string) => window.history.pushState({}, "test", path),
