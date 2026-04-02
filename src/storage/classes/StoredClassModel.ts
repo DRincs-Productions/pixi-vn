@@ -63,7 +63,7 @@ export default class StoredClassModel {
      * @param propertyName The name of the property to set.
      * @param value The value to set. If is undefined, the property will be removed from the storage.
      */
-    protected setStorageProperty<T extends StorageElementType>(propertyName: string, value: T | undefined): void {
+    protected setStorageProperty(propertyName: string, value: StorageElementType): void {
         StorageManagerStatic.setVariable(this.categoryId, `${this.id}:${propertyName}`, value);
     }
     /**
