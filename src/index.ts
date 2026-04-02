@@ -256,7 +256,7 @@ export namespace Game {
     }
 
     /**
-     * Start the game with a label. This function will clear the canvas, stop all sounds and start the narration with the given label.
+     * Start the game with a label. This function will clear all the game data and start the narration from the specified label.
      * @param label The label to start the game with. It can be a string or a LabelAbstract instance. If it is a string, it will be used as the id of the label to start. If it is a LabelAbstract instance, it will be used directly. If the label is not found, an error will be thrown.
      * @param props The properties to pass to the label. It will be passed to the {@link StepLabelType} of the label when it is executed.
      * @returns The result of the label execution. It can be a {@link StepLabelResultType} or a Promise that resolves to a {@link StepLabelResultType}.
@@ -265,9 +265,7 @@ export namespace Game {
         label: narrationUtils.LabelAbstract<any, T> | string,
         props: narrationUtils.StepLabelPropsType<T>,
     ) {
-        canvasUtils.canvas.removeAll();
-        canvasUtils.canvas.clear();
-        soundUtils.sound.stopAll();
+        Game.clear();
         return await narrationUtils.narration.call(label, props);
     }
 
