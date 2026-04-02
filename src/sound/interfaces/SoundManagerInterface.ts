@@ -93,7 +93,7 @@ export default interface SoundManagerInterface extends Omit<
      * @return Instance for chaining.
      */
     stopAll(): this;
-    load(alias: string | string[]): Promise<void>;
+    load(alias: string | string[]): Promise<Sound[]>;
     backgroundLoad(alias: string | string[]): Promise<void>;
     backgroundLoadBundle(alias: string): Promise<void>;
     clear(): void;
