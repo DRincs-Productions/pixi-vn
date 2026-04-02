@@ -25,7 +25,7 @@ export default class StorageManager implements StorageManagerInterface {
     public set(key: string, value: StorageElementType) {
         return StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, key, value);
     }
-    public get<T extends StorageElementType>(key: string): T | undefined {
+    public get<T>(key: string): T | undefined {
         let result = StorageManagerStatic.getVariable<T>(TEMP_STORAGE_KEY, key);
         if (result === undefined) {
             result = StorageManagerStatic.getVariable<T>(MAIN_STORAGE_KEY, key);

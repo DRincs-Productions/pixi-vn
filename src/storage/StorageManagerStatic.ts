@@ -27,7 +27,7 @@ export default class StorageManagerStatic {
         }
     }
 
-    static getVariable<T extends StorageElementType>(prefix: string, key: string): T | undefined {
+    static getVariable<T = StorageElementType>(prefix: string, key: string): T | undefined {
         let result = StorageManagerStatic.storage.get(`${prefix}:${key}`);
         return createExportableElement(result) as T;
     }

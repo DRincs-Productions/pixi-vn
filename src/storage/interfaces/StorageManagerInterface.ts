@@ -43,7 +43,7 @@ export default interface StorageManagerInterface {
      * @param key The key of the variable
      * @returns The value of the variable. If the variable does not exist, it will return undefined
      */
-    get<T extends StorageElementType>(key: string): T | undefined;
+    get<T = StorageElementType>(key: string): T | undefined;
     /**
      * Remove a variable from the storage
      * @param key The key of the variable

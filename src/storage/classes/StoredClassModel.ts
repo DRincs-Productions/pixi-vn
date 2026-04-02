@@ -72,7 +72,7 @@ export default class StoredClassModel {
      * @param idToUse The id of the instance to get the property. @default this.id
      * @returns The value of the property. If the property is not found, returns undefined.
      */
-    protected getStorageProperty<T extends StorageElementType>(
+    protected getStorageProperty<T>(
         propertyName: string,
         idToUse: string = this.id,
     ): T | undefined {
