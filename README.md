@@ -123,7 +123,6 @@ This function has the following parameters:
 ```ts title="src/main.tsx"
 import { Game } from "@drincs/pixi-vn";
 
-// Canvas setup with PIXI
 const body = document.body
 if (!body) {
     throw new Error('body element not found')
@@ -133,19 +132,19 @@ Game.init(body, {
     height: 1080,
     width: 1920,
     backgroundColor: "#303030",
-    resizeMode: "contain",
 }).then(() => {
     // ...
+    Game.start("start", {})
 });
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
 Game.onEnd(async (props) => {
     Game.clear();
-    props.navigate("/");
+    // navigate to main menu
 });
 
-Game.onError((type, error, { notify }) => {
-    notify("allert_error_occurred");
+Game.addOnError((error, props) => {
+    console.error(`Error occurred`, error);
 });
 ```
 
