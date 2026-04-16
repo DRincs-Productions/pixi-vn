@@ -68,7 +68,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (diff) {
             try {
                 const result = restoreDiffChanges(restoredStep, diff);
-                GameUnifier.stepCounter = lastKey;
+                GameUnifier.setStepCounter(lastKey);
                 this.delete(lastKey);
                 return this.getOldGameState(steps - 1, result);
             } catch (e) {
@@ -103,11 +103,11 @@ export default class HistoryManager implements HistoryManagerInterface {
         GameUnifier.runningStepsCount++;
         try {
             const restoredStep = createExportableElement(
-                this.getOldGameState(steps, HistoryManagerStatic.originalStepData),
+                this.getOldGameState(steps, HistoryManagerStatic.getOriginalStepData()),
             );
             if (restoredStep) {
                 await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
-                const stepCounter = GameUnifier.stepCounter - 1;
+                const stepCounter = GameUnifier.stepCounter() - 1;
                 const item = HistoryManagerStatic._narrationHistory.get(stepCounter);
                 if (item && Object.keys(item).length === 1 && item.stepIndex !== undefined) {
                     const historyInfo = HistoryManagerStatic._stepsInfoHistory.get(stepCounter);
@@ -124,12 +124,12 @@ export default class HistoryManager implements HistoryManagerInterface {
             } else {
                 logger.error("Error going back");
             }
-            HistoryManagerStatic.originalStepData = restoredStep;
+            HistoryManagerStatic.setOriginalStepData(restoredStep);
         } catch (e) {
             logger.error("Error going back", e);
         } finally {
             GameUnifier.runningStepsCount--;
-            if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
+            if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount() !== 0) {
                 return await GameUnifier.processNavigationRequests(props);
             }
         }
@@ -140,9 +140,9 @@ export default class HistoryManager implements HistoryManagerInterface {
             ignoreSameStep?: boolean;
         } = {},
     ) {
-        const originalStepData = HistoryManagerStatic.originalStepData;
+        const originalStepData = HistoryManagerStatic.getOriginalStepData();
         const { ignoreSameStep } = options;
-        const currentStepData: GameStepState = GameUnifier.currentGameStepState;
+        const currentStepData: GameStepState = GameUnifier.currentGameStepState();
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
         }
@@ -190,7 +190,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             }
         };
         asyncFunction();
-        HistoryManagerStatic.originalStepData = currentStepData;
+        HistoryManagerStatic.setOriginalStepData(currentStepData);
     }
     itemMapper(
         item: {

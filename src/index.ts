@@ -139,13 +139,13 @@ export namespace Game {
                     storage: storageUtils.storage.export(),
                     canvas: canvasData,
                     sound: soundUtils.sound.export(),
-                    labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0,
+                    labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex() || 0,
                     openedLabels: narrationUtils.narration.openedLabels,
                 };
             },
             restoreGameStepState: async (state, navigate) => {
                 historyUtils.HistoryManagerStatic._originalStepData = state;
-                narrationUtils.NarrationManagerStatic.openedLabels = state.openedLabels;
+                narrationUtils.NarrationManagerStatic.setOpenedLabels(state.openedLabels);
                 storageUtils.storage.restore(state.storage);
                 try {
                     await canvasUtils.canvas.restore(state.canvas);

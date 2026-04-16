@@ -13,14 +13,14 @@ export namespace CanvasPropertyUtility {
         if (negativeScale) {
             if (type === "width") {
                 return (
-                    align * (CanvasUtilitiesStatic.screen.width - value) +
+                    align * (CanvasUtilitiesStatic.screen().width - value) +
                     value -
                     pivot -
                     anchor * value
                 );
             } else {
                 return (
-                    align * (CanvasUtilitiesStatic.screen.height - value) +
+                    align * (CanvasUtilitiesStatic.screen().height - value) +
                     value -
                     pivot -
                     anchor * value
@@ -29,11 +29,11 @@ export namespace CanvasPropertyUtility {
         } else {
             if (type === "width") {
                 return (
-                    align * (CanvasUtilitiesStatic.screen.width - value) + pivot + anchor * value
+                    align * (CanvasUtilitiesStatic.screen().width - value) + pivot + anchor * value
                 );
             } else {
                 return (
-                    align * (CanvasUtilitiesStatic.screen.height - value) + pivot + anchor * value
+                    align * (CanvasUtilitiesStatic.screen().height - value) + pivot + anchor * value
                 );
             }
         }
@@ -51,24 +51,24 @@ export namespace CanvasPropertyUtility {
             if (type === "width") {
                 return (
                     (position - value + pivot + anchor * value) /
-                    (CanvasUtilitiesStatic.screen.width - value)
+                    (CanvasUtilitiesStatic.screen().width - value)
                 );
             } else {
                 return (
                     (position - value + pivot + anchor * value) /
-                    (CanvasUtilitiesStatic.screen.height - value)
+                    (CanvasUtilitiesStatic.screen().height - value)
                 );
             }
         } else {
             if (type === "width") {
                 return (
                     (position - pivot - anchor * value) /
-                    (CanvasUtilitiesStatic.screen.width - value)
+                    (CanvasUtilitiesStatic.screen().width - value)
                 );
             } else {
                 return (
                     (position - pivot - anchor * value) /
-                    (CanvasUtilitiesStatic.screen.height - value)
+                    (CanvasUtilitiesStatic.screen().height - value)
                 );
             }
         }
@@ -79,9 +79,9 @@ export namespace CanvasPropertyUtility {
         percentage: number,
     ) {
         if (type === "width") {
-            return percentage * CanvasUtilitiesStatic.screen.width;
+            return percentage * CanvasUtilitiesStatic.screen().width;
         } else {
-            return percentage * CanvasUtilitiesStatic.screen.height;
+            return percentage * CanvasUtilitiesStatic.screen().height;
         }
     }
 
@@ -90,9 +90,9 @@ export namespace CanvasPropertyUtility {
         position: number,
     ) {
         if (type === "width") {
-            return position / CanvasUtilitiesStatic.screen.width;
+            return position / CanvasUtilitiesStatic.screen().width;
         } else {
-            return position / CanvasUtilitiesStatic.screen.height;
+            return position / CanvasUtilitiesStatic.screen().height;
         }
     }
 

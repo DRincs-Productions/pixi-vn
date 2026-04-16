@@ -11,8 +11,54 @@ import { logger } from "../utils/log-utility";
 import type OnErrorHandler from "./OnErrorHandler";
 import PixiError from "./PixiError";
 
-export default class GameUnifier {
-    static init(options: {
+let _getStepCounter: () => number = () => {
+    logger.error("Method not implemented, you should initialize the Game: Game.init()");
+    throw new PixiError(
+        "not_implemented",
+        "Method not implemented, you should initialize the Game: Game.init()",
+    );
+};
+let _setStepCounter: (value: number) => void = () => {
+    logger.error("Method not implemented, you should initialize the Game: Game.init()");
+    throw new PixiError(
+        "not_implemented",
+        "Method not implemented, you should initialize the Game: Game.init()",
+    );
+};
+let _getCurrentGameStepState: () => GameStepState = () => {
+    logger.error("Method not implemented, you should initialize the Game: Game.init()");
+    throw new PixiError(
+        "not_implemented",
+        "Method not implemented, you should initialize the Game: Game.init()",
+    );
+};
+let _getOpenedLabels: () => number = () => {
+    logger.error("Method not implemented, you should initialize the Game: Game.init()");
+    throw new PixiError(
+        "not_implemented",
+        "Method not implemented, you should initialize the Game: Game.init()",
+    );
+};
+let _processNavigationRequests: (
+    navigationRequestsCount: number,
+    props: StepLabelPropsType<any>,
+) => {
+    newValue: number;
+    result: Promise<StepLabelResultType>;
+} = () => {
+    logger.error("Method not implemented, you should initialize the Game: Game.init()");
+    throw new PixiError(
+        "not_implemented",
+        "Method not implemented, you should initialize the Game: Game.init()",
+    );
+};
+let navigationRequestsCount: number = 0;
+let processNavigationLock: Promise<void> = Promise.resolve();
+let _onPreContinueHandlers: Array<() => Promise<void> | void> = [];
+let _onErrorHandlers: Array<OnErrorHandler> = [];
+
+namespace GameUnifier {
+    export function init(options: {
         /**
          * The navigate function.
          * @param path The path to navigate to.
@@ -131,7 +177,7 @@ export default class GameUnifier {
          * @param options - Additional options for the animation, including duration, easing, and ticker.
          * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
          * @returns The id of tickers.
-         * @template T - The type of Pixi’VN component(s) being animated.
+         * @template T - The type of Pixi'VN component(s) being animated.
          */
         animate: <T extends CanvasBaseInterface<any>>(
             components: T | string | (string | T)[],
@@ -140,82 +186,57 @@ export default class GameUnifier {
             priority?: UPDATE_PRIORITY,
         ) => string | undefined;
     }) {
-        options.navigate && (GameUnifier._navigate = options.navigate);
-        GameUnifier._getStepCounter = options.getStepCounter;
-        GameUnifier._setStepCounter = options.setStepCounter;
-        GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
-        GameUnifier._restoreGameStepState = options.restoreGameStepState;
-        GameUnifier._getOpenedLabels = options.getOpenedLabels;
-        GameUnifier._processNavigationRequests = options.processNavigationRequests;
-        GameUnifier._getVariable = options.getVariable;
-        GameUnifier._setVariable = options.setVariable;
-        GameUnifier._removeVariable = options.removeVariable;
-        GameUnifier._getFlag = options.getFlag;
-        GameUnifier._setFlag = options.setFlag;
-        options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
-        GameUnifier._addHistoryItem = options.addHistoryItem;
-        GameUnifier._getCharacter = options.getCharacter;
-        GameUnifier._animate = options.animate;
+        options.navigate && (navigate = options.navigate);
+        _getStepCounter = options.getStepCounter;
+        _setStepCounter = options.setStepCounter;
+        _getCurrentGameStepState = options.getCurrentGameStepState;
+        restoreGameStepState = options.restoreGameStepState;
+        _getOpenedLabels = options.getOpenedLabels;
+        _processNavigationRequests = options.processNavigationRequests;
+        getVariable = options.getVariable;
+        setVariable = options.setVariable;
+        removeVariable = options.removeVariable;
+        getFlag = options.getFlag;
+        setFlag = options.setFlag;
+        options.onLabelClosing && (onLabelClosing = options.onLabelClosing);
+        addHistoryItem = options.addHistoryItem;
+        getCharacter = options.getCharacter;
+        animate = options.animate;
     }
-    private static _navigate: (path: string) => void | Promise<void> = () => {
+
+    export let navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
             "Navigate function not initialized. You should add the navigate function in the Game.init() method.",
         );
     };
-    /**
-     * The navigate function.
-     * @param path The path to navigate to.
-     * @returns
-     */
-    static get navigate() {
-        return GameUnifier._navigate;
-    }
-    static set navigate(value: (path: string) => void | Promise<void>) {
-        GameUnifier._navigate = value;
-    }
-    private static _getStepCounter: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError(
-            "not_implemented",
-            "Method not implemented, you should initialize the Game: Game.init()",
-        );
-    };
-    private static _setStepCounter: (value: number) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError(
-            "not_implemented",
-            "Method not implemented, you should initialize the Game: Game.init()",
-        );
-    };
+
     /**
      * Returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
      * @throws {PixiError} when `Game.init()` has not been called yet.
      */
-    static get stepCounter() {
-        return GameUnifier._getStepCounter();
+    export function stepCounter(): number {
+        return _getStepCounter();
+    }
+    /**
+     * Sets the current step counter.
+     * @throws {PixiError} when `Game.init()` has not been called yet.
+     */
+    export function setStepCounter(value: number): void {
+        _setStepCounter(value);
     }
     /**
      * Returns the current state of the game step.
      * @throws {PixiError} when `Game.init()` has not been called yet.
      */
-    static set stepCounter(value: number) {
-        GameUnifier._setStepCounter(value);
+    export function currentGameStepState(): GameStepState {
+        return _getCurrentGameStepState();
     }
-    private static _getCurrentGameStepState: () => GameStepState = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError(
-            "not_implemented",
-            "Method not implemented, you should initialize the Game: Game.init()",
-        );
-    };
     /**
-     * Returns the current state of the game step.
-     * @throws {PixiError} when `Game.init()` has not been called yet.
+     * Restores the game step state.
+     * @param state The state to restore.
+     * @param navigate The function to navigate to the restored path.
      */
-    static get currentGameStepState() {
-        return GameUnifier._getCurrentGameStepState();
-    }
-    private static _restoreGameStepState: (
+    export let restoreGameStepState: (
         state: GameStepState,
         navigate: (path: string) => void | Promise<void>,
     ) => Promise<void> = () => {
@@ -226,136 +247,82 @@ export default class GameUnifier {
         );
     };
     /**
-     * Restores the game step state.
-     * @param state The state to restore.
-     * @param navigate The function to navigate to the restored path.
-     */
-    static get restoreGameStepState() {
-        return GameUnifier._restoreGameStepState;
-    }
-    private static _getOpenedLabels: () => number = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError(
-            "not_implemented",
-            "Method not implemented, you should initialize the Game: Game.init()",
-        );
-    };
-    /**
      * Returns the number of opened labels.
      * @throws {PixiError} when `Game.init()` has not been called yet.
      */
-    static get openedLabels() {
-        return GameUnifier._getOpenedLabels();
+    export function openedLabels(): number {
+        return _getOpenedLabels();
     }
-    private static _onPreContinueHandlers: Array<() => Promise<void> | void> = [];
+
     /**
      * Register a handler to run immediately before a narration "continue" operation.
      * Handlers are executed in registration order and may be async. Use
      * `{@link addOnPreContinue}` / `{@link removeOnPreContinue}` to manage them programmatically.
      */
-    static addOnPreContinue(handler: () => Promise<void> | void) {
-        GameUnifier._onPreContinueHandlers.push(handler);
+    export function addOnPreContinue(handler: () => Promise<void> | void) {
+        _onPreContinueHandlers.push(handler);
     }
-    static removeOnPreContinue(handler: () => Promise<void> | void) {
-        GameUnifier._onPreContinueHandlers = GameUnifier._onPreContinueHandlers.filter(
-            (h) => h !== handler,
-        );
+    export function removeOnPreContinue(handler: () => Promise<void> | void) {
+        _onPreContinueHandlers = _onPreContinueHandlers.filter((h) => h !== handler);
     }
-    static clearOnPreContinueHandlers() {
-        GameUnifier._onPreContinueHandlers = [];
-    }
-    private static async runOnPreContinue() {
-        // Execute handlers concurrently using a shallow copy to avoid
-        // mutation during iteration. All handlers are started immediately
-        // and we wait for all to complete.
-        const handlers = GameUnifier._onPreContinueHandlers.slice();
-        await Promise.all(handlers.map((h) => h()));
+    export function clearOnPreContinueHandlers() {
+        _onPreContinueHandlers = [];
     }
     /**
      * This function is called immediately before a narration "continue" operation.
      */
-    static get onPreContinue() {
-        return GameUnifier.runOnPreContinue;
+    export async function onPreContinue() {
+        const handlers = _onPreContinueHandlers.slice();
+        await Promise.all(handlers.map((h) => h()));
     }
-    /**
-     * Number of pending navigation requests (continue/back).
-     * Positive values indicate pending continue requests,
-     * negative values indicate pending back requests.
-     */
-    private static navigationRequestsCount: number = 0;
-    /**
-     * Promise-based lock to ensure only one processNavigationRequests executes at a time.
-     * This prevents race conditions in the read-modify-write operation.
-     */
-    private static processNavigationLock: Promise<void> = Promise.resolve();
+
     /**
      * This function is called to get the number of pending continue requests.
      * Returns a positive count of pending continue requests when navigationRequestsCount is positive.
      * If it is > 0, after the stepsRunning is 0, the next step will be executed.
      */
-    static get continueRequestsCount() {
-        return GameUnifier.navigationRequestsCount;
+    export function continueRequestsCount(): number {
+        return navigationRequestsCount;
     }
     /**
      * This function is called to increase the number of pending continue requests.
-     * Note: While the increment operation itself is atomic, the overall navigation
-     * processing uses a lock in processNavigationRequests to ensure atomicity of
-     * read-modify-write operations across async boundaries.
      * @param amount The number of steps to increase. Default is 1.
      */
-    static increaseContinueRequest(amount: number = 1) {
-        GameUnifier.navigationRequestsCount += amount;
+    export function increaseContinueRequest(amount: number = 1) {
+        navigationRequestsCount += amount;
     }
     /**
      * This function is called to get the number of pending back requests.
-     * Returns the negation of navigationRequestsCount:
-     * - Positive value (absolute value of navigationRequestsCount) when navigationRequestsCount is negative (back requests pending)
-     * - Negative value when navigationRequestsCount is positive (continue requests pending)
-     * - Zero when navigationRequestsCount is zero (no requests pending)
+     * Returns the negation of navigationRequestsCount.
      * If it is > 0, after the stepsRunning is 0, the previous step will be executed.
      */
-    static get backRequestsCount() {
-        return -1 * GameUnifier.navigationRequestsCount;
+    export function backRequestsCount(): number {
+        return -1 * navigationRequestsCount;
     }
     /**
      * This function is called to increase the number of pending back requests.
-     * Note: While the decrement operation itself is atomic, the overall navigation
-     * processing uses a lock in processNavigationRequests to ensure atomicity of
-     * read-modify-write operations across async boundaries.
      * @param amount The number of steps to increase. Default is 1.
      */
-    static increaseBackRequest(amount: number = 1) {
-        GameUnifier.navigationRequestsCount -= amount;
+    export function increaseBackRequest(amount: number = 1) {
+        navigationRequestsCount -= amount;
     }
-    private static _processNavigationRequests: (
-        navigationRequestsCount: number,
-        props: StepLabelPropsType<any>,
-    ) => {
-        newValue: number;
-        result: Promise<StepLabelResultType>;
-    } = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError(
-            "not_implemented",
-            "Method not implemented, you should initialize the Game: Game.init()",
-        );
-    };
     /**
      * This function processes the pending navigation requests (continue/back).
      * @throws {PixiError} when `Game.init()` has not been called yet.
      */
-    static async processNavigationRequests(props: StepLabelPropsType<any>) {
-        const processResult = GameUnifier._processNavigationRequests(
-            GameUnifier.navigationRequestsCount,
-            props,
-        );
-        GameUnifier.navigationRequestsCount = processResult.newValue;
-
-        // Hold the lock until the async navigation operation completes
+    export async function processNavigationRequests(props: StepLabelPropsType<any>) {
+        const processResult = _processNavigationRequests(navigationRequestsCount, props);
+        navigationRequestsCount = processResult.newValue;
         const result = await processResult.result;
         return result;
     }
-    private static _getVariable: <T = StorageElementType>(
+
+    /**
+     * This function returns the value of a variable.
+     * @param key The key of the variable.
+     * @returns The value of the variable.
+     */
+    export let getVariable: <T = StorageElementType>(
         prefix: string,
         key: string,
     ) => T | undefined = () => {
@@ -366,14 +333,11 @@ export default class GameUnifier {
         );
     };
     /**
-     * This function returns the value of a variable.
+     * This function sets the value of a variable.
      * @param key The key of the variable.
-     * @returns The value of the variable.
+     * @param value The value of the variable.
      */
-    static get getVariable() {
-        return GameUnifier._getVariable;
-    }
-    private static _setVariable: (prefix: string, key: string, value: StorageElementType) => void =
+    export let setVariable: (prefix: string, key: string, value: StorageElementType) => void =
         () => {
             logger.error("Method not implemented, you should initialize the Game: Game.init()");
             throw new PixiError(
@@ -382,28 +346,10 @@ export default class GameUnifier {
             );
         };
     /**
-     * This function sets the value of a variable.
-     * @param key The key of the variable.
-     * @param value The value of the variable.
-     */
-    static get setVariable() {
-        return GameUnifier._setVariable;
-    }
-    private static _removeVariable: (prefix: string, key: string) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError(
-            "not_implemented",
-            "Method not implemented, you should initialize the Game: Game.init()",
-        );
-    };
-    /**
      * This function removes a variable.
      * @param key The key of the variable.
      */
-    static get removeVariable() {
-        return GameUnifier._removeVariable;
-    }
-    private static _getFlag: (name: string) => boolean = () => {
+    export let removeVariable: (prefix: string, key: string) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError(
             "not_implemented",
@@ -414,10 +360,7 @@ export default class GameUnifier {
      * This function returns the value of a flag.
      * @param name The name of the flag.
      */
-    static get getFlag() {
-        return GameUnifier._getFlag;
-    }
-    private static _setFlag: (name: string, value: boolean) => void = () => {
+    export let getFlag: (name: string) => boolean = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError(
             "not_implemented",
@@ -429,19 +372,25 @@ export default class GameUnifier {
      * @param name The name of the flag.
      * @param value The value of the flag.
      */
-    static get setFlag() {
-        return GameUnifier._setFlag;
-    }
-    private static _onLabelClosing: (openedLabelsNumber: number) => void = () => {};
+    export let setFlag: (name: string, value: boolean) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
+    };
     /**
      * This function is called after the narration.continue() method is executed
      * It can be used to clear old temporary variables.
      * @param openedLabelsNumber The number of opened labels.
      */
-    static get onLabelClosing() {
-        return GameUnifier._onLabelClosing;
-    }
-    private static _addHistoryItem: (
+    export let onLabelClosing: (openedLabelsNumber: number) => void = () => {};
+    /**
+     * Add a history step to the history.
+     * @param historyInfo The history information.
+     * @param opstions Options to add the step.
+     */
+    export let addHistoryItem: (
         historyInfo?: HistoryInfo,
         opstions?: {
             /**
@@ -456,53 +405,42 @@ export default class GameUnifier {
             "Method not implemented, you should initialize the Game: Game.init()",
         );
     };
-    /**
-     * Add a history step to the history.
-     * @param historyInfo The history information.
-     * @param opstions Options to add the step.
-     */
-    static get addHistoryItem() {
-        return GameUnifier._addHistoryItem;
-    }
+
     /**
      * Count of currently executing steps.
      * If a step triggers a narration.continue(), this number is greater than 1.
      */
-    static runningStepsCount: number = 0;
-    private static _getCharacter: (id: string) => CharacterInterface | undefined = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented.");
-    };
+    export let runningStepsCount: number = 0;
+
     /**
      * This function returns the character by its id.
      * @param id The id of the character.
      * @returns The character or undefined if it does not exist.
      */
-    static get getCharacter() {
-        return GameUnifier._getCharacter;
-    }
+    export let getCharacter: (id: string) => CharacterInterface | undefined = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError("not_implemented", "Method not implemented.");
+    };
 
-    static onEnd?: StepLabelType;
+    export let onEnd: StepLabelType | undefined = undefined;
 
     // New: list of registered error handlers. Handlers are executed in
     // registration order and may be async.
-    private static _onErrorHandlers: Array<OnErrorHandler> = [];
-
-    static addOnError(handler: OnErrorHandler) {
-        GameUnifier._onErrorHandlers.push(handler);
-        return () => GameUnifier.removeOnError(handler);
+    export function addOnError(handler: OnErrorHandler) {
+        _onErrorHandlers.push(handler);
+        return () => removeOnError(handler);
     }
 
-    static removeOnError(handler: OnErrorHandler) {
-        GameUnifier._onErrorHandlers = GameUnifier._onErrorHandlers.filter((h) => h !== handler);
+    export function removeOnError(handler: OnErrorHandler) {
+        _onErrorHandlers = _onErrorHandlers.filter((h) => h !== handler);
     }
 
-    static clearOnErrorHandlers() {
-        GameUnifier._onErrorHandlers.length = 0;
+    export function clearOnErrorHandlers() {
+        _onErrorHandlers.length = 0;
     }
 
-    static async runOnError(error: unknown, props: StepLabelPropsType<any> | {}) {
-        for (const h of GameUnifier._onErrorHandlers.slice()) {
+    export async function runOnError(error: unknown, props: StepLabelPropsType<any> | {}) {
+        for (const h of _onErrorHandlers.slice()) {
             try {
                 await h(error, props);
             } catch (e) {
@@ -510,7 +448,17 @@ export default class GameUnifier {
             }
         }
     }
-    private static _animate: <T extends CanvasBaseInterface<any>>(
+
+    /**
+     * This function is called to animate a component.
+     * @param components - The PixiJS component(s) to animate.
+     * @param keyframes - The keyframes to animate the component(s) with.
+     * @param options - Additional options for the animation, including duration, easing, and ticker.
+     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+     * @returns The id of tickers.
+     * @template T - The type of Pixi'VN component(s) being animated.
+     */
+    export let animate: <T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: any,
         options?: any,
@@ -522,16 +470,6 @@ export default class GameUnifier {
             "Method not implemented, you should initialize the Game: Game.init()",
         );
     };
-    /**
-     * This function is called to animate a component.
-     * @param components - The PixiJS component(s) to animate.
-     * @param keyframes - The keyframes to animate the component(s) with.
-     * @param options - Additional options for the animation, including duration, easing, and ticker.
-     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
-     * @returns The id of tickers.
-     * @template T - The type of Pixi’VN component(s) being animated.
-     */
-    static get animate() {
-        return GameUnifier._animate;
-    }
 }
+
+export default GameUnifier;

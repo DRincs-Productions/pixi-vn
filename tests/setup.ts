@@ -70,13 +70,13 @@ GameUnifier.init({
                 return {} as any;
             },
             sound: sound.export(),
-            labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
+            labelIndex: NarrationManagerStatic.currentLabelStepIndex() || 0,
             openedLabels: narration.openedLabels,
         };
     },
     restoreGameStepState: async (state, navigate) => {
         HistoryManagerStatic._originalStepData = state;
-        NarrationManagerStatic.openedLabels = state.openedLabels;
+        NarrationManagerStatic.setOpenedLabels(state.openedLabels);
         storage.restore(state.storage);
         // await canvas.restore(state.canvas);
         await sound.restore(state.sound);

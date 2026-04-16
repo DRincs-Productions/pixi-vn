@@ -25,7 +25,7 @@ export default class StorageManager implements StorageManagerInterface {
     }
     set default(value: { [key: string]: StorageElementType }) {
         Object.entries(value).forEach(([key, value]) => {
-            StorageManagerStatic.default.map.set(key, value);
+            StorageManagerStatic.defaultValues.map.set(key, value);
         });
     }
     public set(key: string, value: StorageElementType) {
@@ -37,7 +37,7 @@ export default class StorageManager implements StorageManagerInterface {
             result = StorageManagerStatic.getVariable<T>(MAIN_STORAGE_KEY, key);
         }
         if (result === undefined) {
-            result = createExportableElement(StorageManagerStatic.default.get(key));
+            result = createExportableElement(StorageManagerStatic.defaultValues.get(key));
         }
         return result;
     }
@@ -52,7 +52,7 @@ export default class StorageManager implements StorageManagerInterface {
         } else {
             StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, key, value);
             if (!this.tempStorageDeadlines.has(key)) {
-                this.tempStorageDeadlines.set(key, GameUnifier.openedLabels);
+                this.tempStorageDeadlines.set(key, GameUnifier.openedLabels());
             }
         }
     }

@@ -42,10 +42,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         return NarrationManagerStatic._stepCounter;
     }
     get openedLabels() {
-        return NarrationManagerStatic.openedLabels;
+        return NarrationManagerStatic.openedLabels();
     }
     get currentLabel(): LabelAbstract<any> | undefined {
-        return NarrationManagerStatic._currentLabel;
+        return NarrationManagerStatic.currentLabel();
     }
 
     /* Edit History Methods */
@@ -104,27 +104,27 @@ export default class NarrationManager implements NarrationManagerInterface {
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
             );
         }
-        const openedLabels = NarrationManagerStatic.openedLabels;
+        const openedLabels = NarrationManagerStatic.openedLabels();
         const historyInfo: Omit<HistoryStep, "diff"> = {
-            currentLabel: NarrationManagerStatic.currentLabelId,
+            currentLabel: NarrationManagerStatic.currentLabelId(),
             dialogue: dialogue,
             choices: choices,
             stepSha1: stepSha,
             index: this.stepCounter,
-            labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
+            labelStepIndex: NarrationManagerStatic.currentLabelStepIndex(),
             choiceIndexMade: choiceMade,
             inputValue: inputValue,
             alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
             isGlued: isGlued,
             openedLabels: openedLabels,
         };
-        NarrationManagerStatic.originalOpenedLabels = openedLabels;
+        NarrationManagerStatic.setOriginalOpenedLabels(openedLabels);
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();
     }
     closeCurrentLabel() {
-        if (!NarrationManagerStatic.currentLabelId) {
+        if (!NarrationManagerStatic.currentLabelId()) {
             logger.warn("No label to close");
             return;
         }
@@ -132,13 +132,13 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabel not found");
             return;
         }
-        const openedLabels = NarrationManagerStatic.openedLabels;
+        const openedLabels = NarrationManagerStatic.openedLabels();
         openedLabels.pop();
-        NarrationManagerStatic.openedLabels = openedLabels;
+        NarrationManagerStatic.setOpenedLabels(openedLabels);
         GameUnifier.onLabelClosing(this.openedLabels.length);
     }
     closeAllLabels() {
-        while (NarrationManagerStatic.openedLabels.length > 0) {
+        while (NarrationManagerStatic.openedLabels().length > 0) {
             this.closeCurrentLabel();
             GameUnifier.onLabelClosing(this.openedLabels.length);
         }
@@ -150,7 +150,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        const allOpenedLabels = NarrationManagerStatic.allOpenedLabels;
+        const allOpenedLabels = NarrationManagerStatic.allOpenedLabels();
         const lastStep = allOpenedLabels[labelId]?.biggestStep || 0;
         if (lastStep) {
             const currentLabel = RegisteredLabels.get(labelId);
@@ -161,7 +161,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return false;
     }
     private get alreadyCurrentStepMadeChoicesObj(): ChoicesMadeType[] | undefined {
-        const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
+        const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex();
         const currentLabel = this.currentLabel;
         if (currentLabelStepIndex === null || !currentLabel) {
             return;
@@ -171,7 +171,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.warn("stepSha not found, setting to ERROR");
             stepSha = AdditionalShaSpetsEnum.ERROR;
         }
-        return NarrationManagerStatic.allChoicesMade.filter((choice) => {
+        return NarrationManagerStatic.allChoicesMade().filter((choice) => {
             return (
                 choice.labelId === currentLabel?.id &&
                 choice.stepIndex === currentLabelStepIndex &&
@@ -183,12 +183,12 @@ export default class NarrationManager implements NarrationManagerInterface {
         return this.alreadyCurrentStepMadeChoicesObj?.map((choice) => choice.choiceIndex);
     }
     get isCurrentStepAlreadyOpened(): boolean {
-        const currentLabel = NarrationManagerStatic.currentLabelId;
+        const currentLabel = NarrationManagerStatic.currentLabelId();
         if (currentLabel) {
-            const lastStep = NarrationManagerStatic.allOpenedLabels[currentLabel]?.openCount || 0;
+            const lastStep = NarrationManagerStatic.allOpenedLabels()[currentLabel]?.openCount || 0;
             if (
-                NarrationManagerStatic.currentLabelStepIndex &&
-                lastStep >= NarrationManagerStatic.currentLabelStepIndex
+                NarrationManagerStatic.currentLabelStepIndex() !== null &&
+                lastStep >= NarrationManagerStatic.currentLabelStepIndex()!
             ) {
                 return true;
             }
@@ -196,7 +196,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return false;
     }
     public getTimesLabelOpened(label: LabelIdType): number {
-        return NarrationManagerStatic.allOpenedLabels[label]?.openCount || 0;
+        return NarrationManagerStatic.allOpenedLabels()[label]?.openCount || 0;
     }
     public getTimesChoiceMade(index: number): number {
         return (
@@ -239,6 +239,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         const res: (void | Promise<void> | Promise<void[]>)[] = [];
         if (label.onStepStart) {
             res.push(label.onStepStart(stepId, label));
+        }
+        if (NarrationManagerStatic.onLoadingLabel && stepId === 0) {
+            res.push(NarrationManagerStatic.onLoadingLabel(stepId, label));
         }
         if (NarrationManagerStatic.onStepStart) {
             res.push(NarrationManagerStatic.onStepStart(stepId, label));
@@ -300,7 +303,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return result;
     }
     private async afterRunCurrentStep(props: StepLabelPropsType<any>) {
-        if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
+        if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount() !== 0) {
             return await GameUnifier.processNavigationRequests(props);
         }
         if (this.openedLabels.length === 0) {
@@ -329,13 +332,13 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {},
     ): Promise<StepLabelResultType> {
         const { choiceMade } = options;
-        if (NarrationManagerStatic.currentLabelId) {
-            const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
+        if (NarrationManagerStatic.currentLabelId()) {
+            const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex();
             if (currentLabelStepIndex === null) {
                 logger.error("currentLabelStepIndex is null");
                 return;
             }
-            const currentLabel = NarrationManagerStatic._currentLabel as
+            const currentLabel = NarrationManagerStatic.currentLabel() as
                 | LabelAbstract<any, T>
                 | undefined;
             if (!currentLabel) {
@@ -427,7 +430,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     this.currentLabel &&
                         (await this.onStepEnd(
                             this.currentLabel,
-                            NarrationManagerStatic.currentLabelStepIndex || 0,
+                            NarrationManagerStatic.currentLabelStepIndex() || 0,
                         ));
                 } catch (e) {
                     logger.warn("Error running onStepEnd", e);
@@ -441,7 +444,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 this.closeCurrentLabel();
                 return await this.continue(props, options);
             } else if (this.openedLabels.length === 1) {
-                NarrationManagerStatic.openedLabels = [];
+                NarrationManagerStatic.setOpenedLabels([]);
                 return;
             }
         } else if (this.openedLabels.length === 0) {
@@ -860,7 +863,7 @@ export default class NarrationManager implements NarrationManagerInterface {
     }
 
     public clear() {
-        NarrationManagerStatic.openedLabels = [];
+        NarrationManagerStatic.setOpenedLabels([]);
         NarrationManagerStatic._stepCounter = 0;
     }
 
@@ -868,7 +871,7 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     public export(): NarrationGameState {
         return {
-            openedLabels: createExportableElement(NarrationManagerStatic.openedLabels),
+            openedLabels: createExportableElement(NarrationManagerStatic.openedLabels()),
             stepCounter: this.stepCounter,
         };
     }
@@ -894,8 +897,8 @@ export default class NarrationManager implements NarrationManagerInterface {
         try {
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
             if (data.hasOwnProperty("openedLabels")) {
-                NarrationManagerStatic.openedLabels = (data as NarrationGameState)["openedLabels"];
-                NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
+                NarrationManagerStatic.setOpenedLabels((data as NarrationGameState)["openedLabels"]);
+                NarrationManagerStatic.setOriginalOpenedLabels(NarrationManagerStatic.openedLabels());
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }
@@ -906,7 +909,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             }
 
             try {
-                await this.onLoadingLabel(NarrationManagerStatic.currentLabelStepIndex || 0);
+                await this.onLoadingLabel(NarrationManagerStatic.currentLabelStepIndex() || 0);
             } catch (e) {
                 logger.error("Error running onLoadingLabel", e);
             }

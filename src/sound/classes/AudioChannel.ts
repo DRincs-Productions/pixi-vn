@@ -66,7 +66,7 @@ export default class AudioChannel implements AudioChannelInterface {
             channelAlias: this.alias,
             soundAlias: soundAlias,
             instance: media,
-            stepCounter: GameUnifier.stepCounter,
+            stepCounter: GameUnifier.stepCounter(),
             options: {
                 volume: options?.volume ?? 1,
                 muted: options?.muted ?? false,

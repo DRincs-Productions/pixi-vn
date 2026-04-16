@@ -39,10 +39,10 @@ import type { RepeatType } from "./types/RepeatType";
  */
 export default class CanvasManager implements CanvasManagerInterface {
     get app() {
-        return CanvasManagerStatic.app;
+        return CanvasManagerStatic.app();
     }
     get gameLayer() {
-        return CanvasManagerStatic.gameLayer;
+        return CanvasManagerStatic.gameLayer();
     }
     get isInitialized() {
         return CanvasManagerStatic._isInitialized;
@@ -85,7 +85,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     /* Edit Canvas Elements Methods */
 
     get children() {
-        return CanvasManagerStatic.gameLayer.children;
+        return CanvasManagerStatic.gameLayer().children;
     }
     async copyCanvasElementProperty<T extends CanvasBaseItemMemory>(
         oldAlias: T | CanvasBaseInterface<T> | string,
@@ -838,17 +838,17 @@ export default class CanvasManager implements CanvasManagerInterface {
             return;
         }
         layer.label = label;
-        return CanvasManagerStatic.app.stage.addChild(layer);
+        return CanvasManagerStatic.app().stage.addChild(layer);
     }
 
     getLayer(label: string) {
-        return CanvasManagerStatic.app.stage.getChildByLabel(label);
+        return CanvasManagerStatic.app().stage.getChildByLabel(label);
     }
 
     removeLayer(label: string) {
-        const child = CanvasManagerStatic.app.stage.getChildByLabel(label);
+        const child = CanvasManagerStatic.app().stage.getChildByLabel(label);
         if (child) {
-            CanvasManagerStatic.app.stage.removeChild(child);
+            CanvasManagerStatic.app().stage.removeChild(child);
         }
     }
 
@@ -889,12 +889,12 @@ export default class CanvasManager implements CanvasManagerInterface {
         });
         return {
             tickers: createExportableElement(
-                CanvasManagerStatic.currentTickersWithoutCreatedBySteps,
+                CanvasManagerStatic.currentTickersWithoutCreatedBySteps(),
             ),
             tickersSteps: createExportableElement(CanvasManagerStatic._currentTickersSequence),
             elements: createExportableElement(currentElements),
             stage: createExportableElement(getMemoryContainer(this.gameLayer)),
-            elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
+            elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder()),
             tickersToCompleteOnStepEnd: createExportableElement(
                 CanvasManagerStatic._tickersToCompleteOnStepEnd,
             ),

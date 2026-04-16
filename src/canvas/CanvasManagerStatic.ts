@@ -14,55 +14,87 @@ import { logger } from "@utils/log-utility";
 import { throttle } from "@utils/time-utility";
 import sha1 from "crypto-js/sha1";
 
-/**
- * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
- */
-export default class CanvasManagerStatic {
-    private constructor() {}
+let _app: Application | undefined = undefined;
 
-    private static _app: Application | undefined = undefined;
-    /**
-     * The Pixi.js application instance.
-     * @throws {PixiError} when the canvas has not been initialized yet (i.e. before calling `Game.init()`).
-     */
-    static get app() {
-        if (!CanvasManagerStatic._app) {
+function addCanvasIntoHTMLElement(element: HTMLElement, id: string) {
+    if (CanvasManagerStatic._isInitialized) {
+        element.appendChild(CanvasManagerStatic.app().canvas as HTMLCanvasElement);
+        CanvasManagerStatic.app().canvas.id = id;
+    } else {
+        logger.error("GameWindowManager is not initialized");
+    }
+}
+
+async function resize(): Promise<void> {
+    const canvasWidth = CanvasManagerStatic.canvasWidth;
+    const canvasHeight = CanvasManagerStatic.canvasHeight;
+    let container = CanvasManagerStatic.app().resizeTo;
+    const style = CanvasManagerStatic.app().canvas.style;
+    if (!(container instanceof HTMLElement)) {
+        container = document.documentElement;
+    }
+    let containerWidth: number;
+    let containerHeight: number;
+    if (container === document.body || container === document.documentElement) {
+        containerWidth = document.documentElement.clientWidth || window.innerWidth;
+        containerHeight = document.documentElement.clientHeight || window.innerHeight;
+    } else {
+        const rect = container.getBoundingClientRect();
+        containerWidth = rect.width || container.clientWidth;
+        containerHeight = rect.height || container.clientHeight;
+    }
+    const scale = Math.min(containerWidth / canvasWidth, containerHeight / canvasHeight);
+    const screenWidth = Math.floor(scale * canvasWidth);
+    const screenHeight = Math.floor(scale * canvasHeight);
+    style.width = `${screenWidth}px`;
+    style.height = `${screenHeight}px`;
+    const horizontalMargin = (containerWidth - screenWidth) / 2;
+    const verticalMargin = (containerHeight - screenHeight) / 2;
+    style.marginLeft = `${horizontalMargin}px`;
+    style.marginRight = `${horizontalMargin}px`;
+    style.marginTop = `${verticalMargin}px`;
+    style.marginBottom = `${verticalMargin}px`;
+
+    CanvasManagerStatic.htmlLayers.forEach((layer) => {
+        layer.style.width = `${screenWidth}px`;
+        layer.style.height = `${screenHeight}px`;
+        layer.style.marginLeft = `${horizontalMargin}px`;
+        layer.style.marginRight = `${horizontalMargin}px`;
+        layer.style.marginTop = `${verticalMargin}px`;
+        layer.style.marginBottom = `${verticalMargin}px`;
+    });
+}
+
+/**
+ * This namespace is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
+ */
+namespace CanvasManagerStatic {
+    export let htmlLayers: HTMLElement[] = [];
+    export let canvasWidth: number = 300;
+    export let canvasHeight: number = 300;
+    export let _isInitialized: boolean = false;
+
+    export function app(): Application {
+        if (!_app) {
             logger.error("The canvas is not initialized");
             throw new PixiError("invalid_usage", "CanvasManagerStatic.app is undefined");
         }
-        return CanvasManagerStatic._app;
+        return _app;
     }
-    static get gameLayer() {
-        let layer = CanvasManagerStatic.app.stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
+    export function gameLayer() {
+        let layer = app().stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
         if (!layer) {
             layer = new PIXI.Container();
             layer.label = CANVAS_APP_GAME_LAYER_ALIAS;
-            CanvasManagerStatic.app.stage.addChild(layer);
+            app().stage.addChild(layer);
         }
         return layer;
     }
-    /**
-     * This is the div that have same size of the canvas.
-     * This is useful to put interface elements.
-     * You can use React or other framework to put elements in this div.
-     */
-    static htmlLayers: HTMLElement[] = [];
-    static canvasWidth: number = 300;
-    static canvasHeight: number = 300;
-    static _isInitialized: boolean = false;
 
-    static async init(
+    export async function init(
         element: HTMLElement,
         options?: Partial<ApplicationOptions> & {
-            /**
-             * The id of the canvas element.
-             * @default "pixi-vn-canvas"
-             */
             id?: string;
-            /**
-             * The resize mode of the canvas.
-             * @default "contain"
-             */
             resizeMode?: "contain" | "none";
         },
         devtoolsOptions?: Devtools,
@@ -76,10 +108,10 @@ export default class CanvasManagerStatic {
             resizeMode = "contain",
             ...rest
         } = options || {};
-        CanvasManagerStatic.canvasWidth = width;
-        CanvasManagerStatic.canvasHeight = height;
-        CanvasManagerStatic._app = new PIXI.Application();
-        return CanvasManagerStatic.app
+        canvasWidth = width;
+        canvasHeight = height;
+        _app = new PIXI.Application();
+        return app()
             .init({
                 width,
                 height,
@@ -89,49 +121,33 @@ export default class CanvasManagerStatic {
             })
             .then(() => {
                 const {
-                    app = CanvasManagerStatic.app,
+                    app: devApp = app(),
                     extensions = [],
                     ...devtoolsOptionsRest
                 } = devtoolsOptions || {};
                 initDevtools({
-                    app: app,
+                    app: devApp,
                     extensions: [additionalPositionsProperties, ...extensions],
                     ...devtoolsOptionsRest,
                 });
 
-                CanvasManagerStatic._isInitialized = true;
-                // Manager.app.ticker.add(Manager.update)
-                CanvasManagerStatic.addCanvasIntoHTMLElement(element, id);
-                // listen for the browser telling us that the screen size changed
+                _isInitialized = true;
+                addCanvasIntoHTMLElement(element, id);
                 switch (resizeMode) {
                     case "contain": {
-                        const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
+                        const throttledResize = throttle(() => resize(), 10);
                         new ResizeObserver(throttledResize).observe(element);
-                        // call it manually once so we are sure we are the correct size after starting
-                        CanvasManagerStatic.resize();
+                        resize();
                         break;
                     }
                     default:
                         break;
                 }
-                // add the game layer
-                CanvasManagerStatic.gameLayer;
+                gameLayer();
             });
     }
-    /**
-     * Add the canvas into a html element.
-     * @param element it is the html element where I will put the canvas. Example: document.body
-     * @param id it is the id of the canvas element.
-     */
-    private static addCanvasIntoHTMLElement(element: HTMLElement, id: string) {
-        if (CanvasManagerStatic._isInitialized) {
-            element.appendChild(CanvasManagerStatic.app.canvas as HTMLCanvasElement);
-            CanvasManagerStatic.app.canvas.id = id;
-        } else {
-            logger.error("GameWindowManager is not initialized");
-        }
-    }
-    static addHtmlLayer(
+
+    export function addHtmlLayer(
         id: string,
         element: HTMLElement,
         style: Pick<CSSStyleDeclaration, "position" | "pointerEvents"> = {
@@ -144,95 +160,36 @@ export default class CanvasManagerStatic {
         div.style.position = style.position;
         div.style.pointerEvents = style.pointerEvents;
         const res = element.appendChild(div);
-        CanvasManagerStatic.htmlLayers.push(div);
-        CanvasManagerStatic.resize();
+        htmlLayers.push(div);
+        resize();
         return res;
     }
-    static removeHtmlLayer(id: string) {
-        const div = CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
+    export function removeHtmlLayer(id: string) {
+        const div = htmlLayers.find((layer) => layer.id === id);
         if (div) {
             div.remove();
-            CanvasManagerStatic.htmlLayers = CanvasManagerStatic.htmlLayers.filter(
-                (layer) => layer.id !== id,
-            );
+            htmlLayers = htmlLayers.filter((layer) => layer.id !== id);
         }
     }
-    static getHtmlLayer(id: string): HTMLElement | undefined {
-        return CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
+    export function getHtmlLayer(id: string): HTMLElement | undefined {
+        return htmlLayers.find((layer) => layer.id === id);
     }
 
-    /* Resize Metods */
-
-    /**
-     * This method is called when the screen is resized.
-     */
-    private static async resize(): Promise<void> {
-        const canvasWidth = CanvasManagerStatic.canvasWidth;
-        const canvasHeight = CanvasManagerStatic.canvasHeight;
-        let container = CanvasManagerStatic.app.resizeTo;
-        const style = CanvasManagerStatic.app.canvas.style;
-        if (!(container instanceof HTMLElement)) {
-            container = document.documentElement;
-        }
-        let containerWidth: number;
-        let containerHeight: number;
-        // If the container is the document body or the documentElement,
-        // use the viewport size (documentElement or window) because
-        // body.clientHeight can be affected by CSS/content and not
-        // reflect the visible viewport height.
-        if (container === document.body || container === document.documentElement) {
-            containerWidth = document.documentElement.clientWidth || window.innerWidth;
-            containerHeight = document.documentElement.clientHeight || window.innerHeight;
-        } else {
-            const rect = container.getBoundingClientRect();
-            containerWidth = rect.width || container.clientWidth;
-            containerHeight = rect.height || container.clientHeight;
-        }
-        const scale = Math.min(containerWidth / canvasWidth, containerHeight / canvasHeight);
-        const screenWidth = Math.floor(scale * canvasWidth);
-        const screenHeight = Math.floor(scale * canvasHeight);
-        style.width = `${screenWidth}px`;
-        style.height = `${screenHeight}px`;
-        const horizontalMargin = (containerWidth - screenWidth) / 2;
-        const verticalMargin = (containerHeight - screenHeight) / 2;
-        style.marginLeft = `${horizontalMargin}px`;
-        style.marginRight = `${horizontalMargin}px`;
-        style.marginTop = `${verticalMargin}px`;
-        style.marginBottom = `${verticalMargin}px`;
-
-        CanvasManagerStatic.htmlLayers.forEach((layer) => {
-            layer.style.width = `${screenWidth}px`;
-            layer.style.height = `${screenHeight}px`;
-            layer.style.marginLeft = `${horizontalMargin}px`;
-            layer.style.marginRight = `${horizontalMargin}px`;
-            layer.style.marginTop = `${verticalMargin}px`;
-            layer.style.marginBottom = `${verticalMargin}px`;
-        });
-    }
-
-    /* Edit Canvas Elements Methods */
-
-    /**
-     * The order of the elements in the canvas, is determined by the zIndex.
-     */
-    static get childrenAliasesOrder(): string[] {
-        return CanvasManagerStatic.gameLayer.children
-            .filter((child) => child.label)
+    export function childrenAliasesOrder(): string[] {
+        return gameLayer()
+            .children.filter((child) => child.label)
             .sort(
                 (a, b) =>
-                    CanvasManagerStatic.gameLayer.getChildIndex(a) -
-                    CanvasManagerStatic.gameLayer.getChildIndex(b),
+                    gameLayer().getChildIndex(a) - gameLayer().getChildIndex(b),
             )
             .map((item) => item.label);
     }
 
-    /** Edit Tickers Methods */
-
-    static get currentTickersWithoutCreatedBySteps(): {
+    export function currentTickersWithoutCreatedBySteps(): {
         [k: string]: TickerHistory<any>;
     } {
         return Object.fromEntries(
-            Object.entries(CanvasManagerStatic._currentTickers)
+            Object.entries(_currentTickers)
                 .filter(([_, info]) => !info.createdByTicketSteps)
                 .map(([id, info]) => [
                     id,
@@ -247,15 +204,16 @@ export default class CanvasManagerStatic {
                 ]),
         );
     }
-    static _currentTickers: { [id: string]: TickerInfo<any> } = {};
-    static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } =
-        {};
-    static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
-    static _tickersToCompleteOnStepEnd: {
+
+    export let _currentTickers: { [id: string]: TickerInfo<any> } = {};
+    export let _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } = {};
+    export const _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
+    export let _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
     } = { tikersIds: [], stepAlias: [] };
-    static generateTickerId(...args: any[]): string {
+
+    export function generateTickerId(...args: any[]): string {
         try {
             return (
                 sha1(JSON.stringify(args)).toString() +
@@ -266,7 +224,7 @@ export default class CanvasManagerStatic {
             throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }
     }
-    static addTickerTimeoutInfo(
+    export function addTickerTimeoutInfo(
         aliases: string | string[],
         ticker: string,
         timeout: string,
@@ -275,44 +233,39 @@ export default class CanvasManagerStatic {
         if (typeof aliases === "string") {
             aliases = [aliases];
         }
-        CanvasManagerStatic._currentTickersTimeouts[timeout] = {
+        _currentTickersTimeouts[timeout] = {
             aliases: aliases,
             ticker: ticker,
             canBeDeletedBeforeEnd: canBeDeletedBeforeEnd,
         };
     }
-    static removeTickerTimeoutInfo(timeout: NodeJS.Timeout | string) {
+    export function removeTickerTimeoutInfo(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
             timeout = timeout.toString();
         }
-        if (CanvasManagerStatic._currentTickersTimeouts[timeout]) {
-            delete CanvasManagerStatic._currentTickersTimeouts[timeout];
+        if (_currentTickersTimeouts[timeout]) {
+            delete _currentTickersTimeouts[timeout];
         }
     }
-    static removeTickerTimeout(timeout: NodeJS.Timeout | string) {
+    export function removeTickerTimeout(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
             timeout = timeout.toString();
         }
         clearTimeout(Number(timeout));
-        CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
+        removeTickerTimeoutInfo(timeout);
     }
-    static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
-        // todo
-        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(
-            ([timeout, tickerTimeout]) => {
-                const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter(
-                    (t) => t !== alias,
-                );
-                if (aliasesWithoutAliasToRemove.length === 0) {
-                    const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
-                    if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
-                        CanvasManagerStatic.removeTickerTimeout(timeout);
-                    }
-                } else {
-                    CanvasManagerStatic._currentTickersTimeouts[timeout].aliases =
-                        aliasesWithoutAliasToRemove;
+    export function removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
+        Object.entries(_currentTickersTimeouts).forEach(([timeout, tickerTimeout]) => {
+            const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
+            if (aliasesWithoutAliasToRemove.length === 0) {
+                const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
+                if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
+                    removeTickerTimeout(timeout);
                 }
-            },
-        );
+            } else {
+                _currentTickersTimeouts[timeout].aliases = aliasesWithoutAliasToRemove;
+            }
+        });
     }
 }
+export default CanvasManagerStatic;

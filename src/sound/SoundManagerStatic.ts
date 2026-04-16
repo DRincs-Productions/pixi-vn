@@ -2,9 +2,8 @@ import type AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import type IMediaInstance from "./interfaces/IMediaInstance";
 import type { SoundPlayOptions } from "./interfaces/SoundOptions";
 
-export default class SoundManagerStatic {
-    private constructor() {}
-    static mediaInstances: {
+namespace SoundManagerStatic {
+    export let mediaInstances: {
         [alias: string]: {
             channelAlias: string;
             soundAlias: string;
@@ -13,6 +12,7 @@ export default class SoundManagerStatic {
             options: SoundPlayOptions;
         };
     } = {};
-    static channels: { [alias: string]: AudioChannelInterface } = {};
-    static delayTimeoutInstances: [number | NodeJS.Timeout, string][] = [];
+    export let channels: { [alias: string]: AudioChannelInterface } = {};
+    export let delayTimeoutInstances: [number | NodeJS.Timeout, string][] = [];
 }
+export default SoundManagerStatic;

@@ -219,7 +219,7 @@ test("currentLabelStepIndex", async () => {
     expect(narration.stepCounter).toBe(1);
     await narration.continue({});
     expect(narration.stepCounter).toBe(2);
-    expect(NarrationManagerStatic.currentLabelStepIndex).toBe(1);
+    expect(NarrationManagerStatic.currentLabelStepIndex()).toBe(1);
 });
 
 const asyncLabel = newLabel("asyncLabel", [
