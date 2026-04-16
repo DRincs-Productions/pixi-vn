@@ -1,13 +1,13 @@
+import ImageSprite, { setMemoryImageSprite } from "@canvas/components/ImageSprite";
+import RegisteredCanvasComponents from "@canvas/decorators/canvas-element-decorator";
+import type { showWithDissolve } from "@canvas/functions/canvas-transition";
+import type { addVideo } from "@canvas/functions/video-utility";
+import type AssetMemory from "@canvas/interfaces/AssetMemory";
+import type { VideoSpriteOptions } from "@canvas/interfaces/canvas-options";
+import type VideoSpriteMemory from "@canvas/interfaces/memory/VideoSpriteMemory";
+import { CANVAS_VIDEO_ID } from "@constants";
 import type { Texture, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { CANVAS_VIDEO_ID } from "../../constants";
-import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
-import { showWithDissolve } from "../functions/canvas-transition";
-import { addVideo } from "../functions/video-utility";
-import type AssetMemory from "../interfaces/AssetMemory";
-import type { VideoSpriteOptions } from "../interfaces/canvas-options";
-import type VideoSpriteMemory from "../interfaces/memory/VideoSpriteMemory";
-import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
 
 /**
  * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,
@@ -32,22 +32,12 @@ import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
  */
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
     constructor(options?: VideoSpriteOptions | Texture | undefined, textureAlias?: string) {
-        let loop = undefined;
-        let paused = undefined;
-        let currentTime = undefined;
-        if (options && "loop" in options && options?.loop !== undefined) {
-            loop = options.loop;
-            delete options.loop;
+        if (options instanceof PIXI.Texture) {
+            super(options, textureAlias);
+            return;
         }
-        if (options && "paused" in options && options?.paused !== undefined) {
-            paused = options.paused;
-            delete options.paused;
-        }
-        if (options && "currentTime" in options && options?.currentTime !== undefined) {
-            currentTime = options.currentTime;
-            delete options.currentTime;
-        }
-        super(options, textureAlias);
+        const { loop, paused, currentTime, ...restOptions } = options || {};
+        super(restOptions, textureAlias);
         if (loop) {
             this.loop = loop;
         }
@@ -168,12 +158,13 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         if (this.texture?.source?.resource) {
             return this.texture.source.resource.duration || 0;
         }
+        return undefined;
     }
 }
 RegisteredCanvasComponents.add<VideoSpriteMemory, typeof VideoSprite>(VideoSprite, {
     name: CANVAS_VIDEO_ID,
     getInstance: async (type, memory) => {
-        let textureData: AssetMemory | undefined = undefined;
+        let textureData: AssetMemory | undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
         }
