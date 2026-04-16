@@ -179,7 +179,7 @@ RegisteredCanvasComponents.add<VideoSpriteMemory, typeof VideoSprite>(VideoSprit
 
 export async function setMemoryVideoSprite(
     element: VideoSprite,
-    memory: VideoSpriteMemory | {},
+    memory: Partial<VideoSpriteMemory>,
     options?: {
         ignoreTexture?: boolean;
     },
