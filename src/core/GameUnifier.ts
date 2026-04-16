@@ -12,6 +12,7 @@ import type OnErrorHandler from "./OnErrorHandler";
 import PixiError from "./PixiError";
 
 export default class GameUnifier {
+    private constructor() {}
     static init(options: {
         /**
          * The navigate function.

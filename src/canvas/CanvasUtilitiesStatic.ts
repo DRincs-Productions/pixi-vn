@@ -1,6 +1,7 @@
 import type { Rectangle } from "@drincs/pixi-vn/pixi.js";
 
 export default class CanvasUtilitiesStatic {
+    private constructor() {}
     static init(options: { getScreen: () => Rectangle }) {
         CanvasUtilitiesStatic._getScreen = options.getScreen;
     }

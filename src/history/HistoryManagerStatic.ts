@@ -5,6 +5,7 @@ import type { HistoryStep, NarrationHistory } from "../narration";
 import { createExportableElement } from "../utils";
 
 export default class HistoryManagerStatic {
+    private constructor() {}
     static _diffHistory = new CachedMap<number, Difference[]>({
         cacheSize: 5,
     });
