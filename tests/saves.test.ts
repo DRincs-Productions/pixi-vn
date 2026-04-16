@@ -1,5 +1,13 @@
 import { expect, test } from "vitest";
-import { GameState, narration, newLabel, PIXIVN_VERSION, sound, stepHistory, storage } from "../src";
+import {
+    GameState,
+    narration,
+    newLabel,
+    PIXIVN_VERSION,
+    sound,
+    stepHistory,
+    storage,
+} from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 
 const testLabel = newLabel("stepCounter", [

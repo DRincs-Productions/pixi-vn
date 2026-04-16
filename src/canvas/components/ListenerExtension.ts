@@ -44,7 +44,9 @@ export async function setListenerMemory(
     }
 }
 
-export function getListenerMemory<T extends ListenerExtension>(element: T | {}): Record<string, any> {
+export function getListenerMemory<T extends ListenerExtension>(
+    element: T | {},
+): Record<string, any> {
     return "onEventsHandlers" in element ? element.onEventsHandlers : {};
 }
 

@@ -32,7 +32,10 @@ const startLabel = newLabel("choiceshistory", [
         narration.dialogue = ` and returns with a HUGE tinfoil-covered platter.`;
     },
     async () => {
-        narration.dialogue = { character: "james", text: `Looks like you baked way too much again.` };
+        narration.dialogue = {
+            character: "james",
+            text: `Looks like you baked way too much again.`,
+        };
     },
     async () => {
         narration.dialogue = { character: "steph", text: `He doesn't have to know that!!!` };
@@ -84,7 +87,10 @@ const secondPart = newLabel("choiceshistory2", [
         narration.dialogue = { character: "sly", text: `*We're* the reason he got expelled!` };
     },
     async () => {
-        narration.dialogue = { character: "steph", text: `sly.name! If word gets out about that...` };
+        narration.dialogue = {
+            character: "steph",
+            text: `sly.name! If word gets out about that...`,
+        };
     },
     async () => {
         narration.dialogGlue = true;

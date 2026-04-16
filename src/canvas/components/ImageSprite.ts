@@ -37,7 +37,9 @@ import Sprite, { setMemorySprite } from "./Sprite";
  * await alien.load()
  * ```
  */
-export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteMemory> extends Sprite<Memory> {
+export default class ImageSprite<
+    Memory extends ImageSpriteMemory = ImageSpriteMemory,
+> extends Sprite<Memory> {
     private _textureAlias?: string;
     protected get textureAlias() {
         if (this._textureAlias) {
@@ -46,7 +48,10 @@ export default class ImageSprite<Memory extends ImageSpriteMemory = ImageSpriteM
         return this.texture.source.label;
     }
     readonly pixivnId: string = CANVAS_IMAGE_ID;
-    constructor(options?: ImageSpriteOptions | Omit<Texture, "on"> | undefined, textureAlias?: string) {
+    constructor(
+        options?: ImageSpriteOptions | Omit<Texture, "on"> | undefined,
+        textureAlias?: string,
+    ) {
         super(options);
         if (textureAlias) {
             this._textureAlias = textureAlias;

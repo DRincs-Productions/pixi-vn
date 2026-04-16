@@ -12,15 +12,29 @@ export namespace CanvasPropertyUtility {
     ): number {
         if (negativeScale) {
             if (type === "width") {
-                return align * (CanvasUtilitiesStatic.screen.width - value) + value - pivot - anchor * value;
+                return (
+                    align * (CanvasUtilitiesStatic.screen.width - value) +
+                    value -
+                    pivot -
+                    anchor * value
+                );
             } else {
-                return align * (CanvasUtilitiesStatic.screen.height - value) + value - pivot - anchor * value;
+                return (
+                    align * (CanvasUtilitiesStatic.screen.height - value) +
+                    value -
+                    pivot -
+                    anchor * value
+                );
             }
         } else {
             if (type === "width") {
-                return align * (CanvasUtilitiesStatic.screen.width - value) + pivot + anchor * value;
+                return (
+                    align * (CanvasUtilitiesStatic.screen.width - value) + pivot + anchor * value
+                );
             } else {
-                return align * (CanvasUtilitiesStatic.screen.height - value) + pivot + anchor * value;
+                return (
+                    align * (CanvasUtilitiesStatic.screen.height - value) + pivot + anchor * value
+                );
             }
         }
     }
@@ -35,20 +49,35 @@ export namespace CanvasPropertyUtility {
     ): number {
         if (negativeScale) {
             if (type === "width") {
-                return (position - value + pivot + anchor * value) / (CanvasUtilitiesStatic.screen.width - value);
+                return (
+                    (position - value + pivot + anchor * value) /
+                    (CanvasUtilitiesStatic.screen.width - value)
+                );
             } else {
-                return (position - value + pivot + anchor * value) / (CanvasUtilitiesStatic.screen.height - value);
+                return (
+                    (position - value + pivot + anchor * value) /
+                    (CanvasUtilitiesStatic.screen.height - value)
+                );
             }
         } else {
             if (type === "width") {
-                return (position - pivot - anchor * value) / (CanvasUtilitiesStatic.screen.width - value);
+                return (
+                    (position - pivot - anchor * value) /
+                    (CanvasUtilitiesStatic.screen.width - value)
+                );
             } else {
-                return (position - pivot - anchor * value) / (CanvasUtilitiesStatic.screen.height - value);
+                return (
+                    (position - pivot - anchor * value) /
+                    (CanvasUtilitiesStatic.screen.height - value)
+                );
             }
         }
     }
 
-    export function calculatePositionByPercentagePosition(type: "width" | "height", percentage: number) {
+    export function calculatePositionByPercentagePosition(
+        type: "width" | "height",
+        percentage: number,
+    ) {
         if (type === "width") {
             return percentage * CanvasUtilitiesStatic.screen.width;
         } else {
@@ -56,7 +85,10 @@ export namespace CanvasPropertyUtility {
         }
     }
 
-    export function calculatePercentagePositionByPosition(type: "width" | "height", position: number) {
+    export function calculatePercentagePositionByPosition(
+        type: "width" | "height",
+        position: number,
+    ) {
         if (type === "width") {
             return position / CanvasUtilitiesStatic.screen.width;
         } else {
@@ -64,7 +96,10 @@ export namespace CanvasPropertyUtility {
         }
     }
 
-    export function getSuperPoint(point: { x: number; y: number }, angle: number): { x: number; y: number } {
+    export function getSuperPoint(
+        point: { x: number; y: number },
+        angle: number,
+    ): { x: number; y: number } {
         angle = angle % 360;
         if (angle < 0) {
             angle += 360;

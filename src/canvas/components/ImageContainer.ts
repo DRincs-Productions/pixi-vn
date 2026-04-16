@@ -2,7 +2,10 @@ import type { Texture } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
+import {
+    default as RegisteredCanvasComponents,
+    setMemoryContainer,
+} from "../decorators/canvas-element-decorator";
 import { checkIfVideo } from "../functions/canvas-utility";
 import { ImageContainerOptions } from "../interfaces/canvas-options";
 import ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
@@ -37,7 +40,11 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             align = options.align;
             delete options.align;
         }
-        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+        if (
+            options &&
+            "percentagePosition" in options &&
+            options?.percentagePosition !== undefined
+        ) {
             percentagePosition = options.percentagePosition;
             delete options.percentagePosition;
         }
@@ -131,7 +138,10 @@ RegisteredCanvasComponents.add<ImageContainerMemory, typeof ImageContainer>(Imag
     },
 });
 
-export async function setMemoryImageContainer(element: ImageContainer, memory: ImageContainerOptions | {}) {
+export async function setMemoryImageContainer(
+    element: ImageContainer,
+    memory: ImageContainerOptions | {},
+) {
     memory = analizePositionsExtensionProps(memory)!;
     setMemoryContainer(element, memory, {
         end: async () => {

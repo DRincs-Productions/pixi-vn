@@ -2,7 +2,10 @@ import { Difference } from "microdiff";
 import { createExportableElement } from "./export-utility";
 import { logger } from "./log-utility";
 
-export function restoreDiffChanges<T extends object = object>(data: T, differences: Difference[]): T {
+export function restoreDiffChanges<T extends object = object>(
+    data: T,
+    differences: Difference[],
+): T {
     let result = createExportableElement(data);
     if (differences.length > 1 && "type" in differences[0]) {
         differences = differences.slice().reverse();

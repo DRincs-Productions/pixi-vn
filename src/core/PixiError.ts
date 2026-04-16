@@ -12,7 +12,13 @@ export default class PixiError extends Error {
         data: CanvasBaseItemMemory | (CanvasBaseItemMemory & ContainerOptions),
         parent?: CanvasBaseItem<any>,
     );
-    constructor(code: ErrorCodeType, message: string, type?: "canvas", data?: any, parent?: CanvasBaseItem<any>) {
+    constructor(
+        code: ErrorCodeType,
+        message: string,
+        type?: "canvas",
+        data?: any,
+        parent?: CanvasBaseItem<any>,
+    ) {
         super(`[Pixi’VN] ${message}`);
         this.code = code;
         switch (type) {

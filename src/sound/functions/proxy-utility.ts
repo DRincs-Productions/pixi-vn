@@ -3,7 +3,11 @@ import SoundManagerStatic from "../SoundManagerStatic";
 import type AudioChannel from "../classes/AudioChannel";
 import { calculateVolume } from "./channel-utility";
 
-export function proxyMedia(mediaAlias: string, media: IMediaInstance, channel: AudioChannel): IMediaInstance {
+export function proxyMedia(
+    mediaAlias: string,
+    media: IMediaInstance,
+    channel: AudioChannel,
+): IMediaInstance {
     return new Proxy(media, {
         get(target, prop, receiver) {
             switch (prop) {

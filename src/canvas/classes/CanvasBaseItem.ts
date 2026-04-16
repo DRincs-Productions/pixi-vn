@@ -35,14 +35,20 @@ export default class CanvasBaseItem<T2 extends CanvasBaseItemMemory> {
      * @throws {PixiError} when the method is not overridden in the subclass.
      */
     get memory(): T2 {
-        throw new PixiError("not_implemented", "The method CanvasBaseItem.memory must be overridden");
+        throw new PixiError(
+            "not_implemented",
+            "The method CanvasBaseItem.memory must be overridden",
+        );
     }
     /**
      * This method set the memory of the canvas element.
      * @throws {PixiError} when the method is not overridden in the subclass.
      */
     setMemory(_value: T2): Promise<void> | void {
-        throw new PixiError("not_implemented", "The method CanvasBaseItem.setMemory must be overridden");
+        throw new PixiError(
+            "not_implemented",
+            "The method CanvasBaseItem.setMemory must be overridden",
+        );
     }
     /**
      * Get the id of the canvas element. This variable is used in the system to get the canvas element by id

@@ -1,2 +1,2 @@
-export type CloseType = "close"
-export const Close: CloseType = "close"
+export type CloseType = "close";
+export const Close: CloseType = "close";

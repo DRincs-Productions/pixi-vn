@@ -56,7 +56,9 @@ namespace RegisteredEvents {
         try {
             let eventType = registeredEvents.get(name);
             if (!eventType) {
-                logger.error(`Event "${name}" not found, did you forget to register it with the eventDecorator?`);
+                logger.error(
+                    `Event "${name}" not found, did you forget to register it with the eventDecorator?`,
+                );
                 return;
             }
             return eventType;

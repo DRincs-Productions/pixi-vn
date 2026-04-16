@@ -8,7 +8,9 @@ import { LabelIdType } from "../types/LabelIdType";
  * A Map that contains all labels registered and available to be used.
  * The key is the id of the label and the value is the label itself.
  */
-const registeredLabels = new CachedMap<LabelIdType, LabelAbstract<any> | Label<any>>({ cacheSize: 10 });
+const registeredLabels = new CachedMap<LabelIdType, LabelAbstract<any> | Label<any>>({
+    cacheSize: 10,
+});
 
 namespace RegisteredLabels {
     /**

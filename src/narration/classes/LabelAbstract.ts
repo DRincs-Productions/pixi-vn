@@ -42,7 +42,9 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
     public abstract getStepById(stepId: StepIdType): StepLabelType<TProps> | undefined;
 
     private _onStepStart: ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined;
-    public get onStepStart(): ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined {
+    public get onStepStart():
+        | ((stepId: StepIdType, label: TLabel) => void | Promise<void>)
+        | undefined {
         return async (stepId: StepIdType, label: TLabel) => {
             if (this._onLoadingLabel && stepId === 0) {
                 await this._onLoadingLabel(stepId, label);
@@ -53,13 +55,19 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
         };
     }
 
-    private _onLoadingLabel: ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined;
-    public get onLoadingLabel(): ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined {
+    private _onLoadingLabel:
+        | ((stepId: StepIdType, label: TLabel) => void | Promise<void>)
+        | undefined;
+    public get onLoadingLabel():
+        | ((stepId: StepIdType, label: TLabel) => void | Promise<void>)
+        | undefined {
         return this._onLoadingLabel;
     }
 
     private _onStepEnd: ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined;
-    public get onStepEnd(): ((stepId: StepIdType, label: TLabel) => void | Promise<void>) | undefined {
+    public get onStepEnd():
+        | ((stepId: StepIdType, label: TLabel) => void | Promise<void>)
+        | undefined {
         return this._onStepEnd;
     }
 }

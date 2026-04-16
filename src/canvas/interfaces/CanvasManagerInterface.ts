@@ -276,7 +276,10 @@ export default interface CanvasManagerInterface {
      * ```
      * @deprecated
      */
-    unlinkComponentFromTicker(alias: string | string[], ticker?: { new (): Ticker<any> } | string): void;
+    unlinkComponentFromTicker(
+        alias: string | string[],
+        ticker?: { new (): Ticker<any> } | string,
+    ): void;
     /**
      * Remove all tickers from the canvas.
      */

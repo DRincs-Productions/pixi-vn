@@ -26,17 +26,18 @@ type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, Segme
  * const animation = animate(mySprite, { x: 100 }, { duration: 1, driver });
  * animation.start();
  */
-export const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] = (ticker) => (update) => {
-    const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
-    return {
-        start: (_keepAlive = true) => {
-            ticker.add(passTimestamp);
-            ticker.start();
-        },
-        stop: () => ticker.remove(passTimestamp),
-        now: () => ticker.lastTime,
+export const motionDriver: (ticker: PixiTicker) => AnimationOptions["driver"] =
+    (ticker) => (update) => {
+        const passTimestamp = ({ lastTime }: PixiTicker) => update(lastTime);
+        return {
+            start: (_keepAlive = true) => {
+                ticker.add(passTimestamp);
+                ticker.start();
+            },
+            stop: () => ticker.remove(passTimestamp),
+            now: () => ticker.lastTime,
+        };
     };
-};
 
 /**
  * Animate a PixiJS component or components using [motion's animate](https://motion.dev/docs/animate) function.
@@ -75,13 +76,18 @@ export function animate<T extends {}>(
     options?: SequenceOptions & { ticker?: PixiTicker; driver?: any },
 ): AnimationPlaybackControlsWithThen;
 
-export function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): AnimationPlaybackControlsWithThen {
+export function animate<T extends {}>(
+    arg1: any,
+    arg2: any,
+    arg3?: any,
+): AnimationPlaybackControlsWithThen {
     if (Array.isArray(arg1) && Array.isArray(arg1[0])) {
         if (arg2 && "repeat" in arg2 && arg2?.repeat === null) arg2.repeat = Infinity;
         arg1.forEach((segment) => {
             if (Array.isArray(segment) && segment.length === 3) {
                 const [_, __, options] = segment as ObjectSegmentWithTransition<T>;
-                if (options && "repeat" in options && options?.repeat === null) options.repeat = Infinity;
+                if (options && "repeat" in options && options?.repeat === null)
+                    options.repeat = Infinity;
             }
         });
         const {
@@ -114,12 +120,16 @@ export function animate<T extends {}>(arg1: any, arg2: any, arg3?: any): Animati
  * @param options
  * @returns
  */
-export function timeline(times: SegmentOptions[], options?: SequenceOptions & { ticker?: PixiTicker; driver?: any }) {
+export function timeline(
+    times: SegmentOptions[],
+    options?: SequenceOptions & { ticker?: PixiTicker; driver?: any },
+) {
     const n = { x: 0 };
     // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
     //     return [n, {x: index + 1}, option];
     // });
-    const sequence: ObjectSegmentWithTransition<number | MotionValue<number> | { x: number }>[] = [];
+    const sequence: ObjectSegmentWithTransition<number | MotionValue<number> | { x: number }>[] =
+        [];
     times.forEach((option, index) => {
         const { onComplete, onPlay, ...rest } = option;
         if (onPlay) {

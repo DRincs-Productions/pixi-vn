@@ -1,35 +1,62 @@
 {
-    // Formatter
-    "[typescript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-    },
-    "[javascript]": {
-        "editor.defaultFormatter": "esbenp.prettier-vscode",
-        "editor.formatOnSave": true
-    },
-    "prettier.jsxSingleQuote": true,
-    "prettier.printWidth": 120,
-    "prettier.useTabs": false,
-    "prettier.singleAttributePerLine": false,
-    "prettier.tabWidth": 4,
-    // reorganise imports
-    "editor.codeActionsOnSave": {
-        "source.organizeImports": "explicit"
-    },
-    // references
-    "javascript.referencesCodeLens.enabled": true,
-    "javascript.referencesCodeLens.showOnAllFunctions": true,
-    "typescript.referencesCodeLens.enabled": true,
-    "typescript.referencesCodeLens.showOnAllFunctions": true,
-    // move file
-    "javascript.updateImportsOnFileMove.enabled": "always",
-    "typescript.updateImportsOnFileMove.enabled": "always",
-	// debug
-	"terminal.integrated.defaultProfile.linux": "JavaScript Debug Terminal",
-	"terminal.integrated.defaultProfile.windows": "JavaScript Debug Terminal",
-	"terminal.integrated.defaultProfile.osx": "JavaScript Debug Terminal",
-    // olther
-    "extensions.ignoreRecommendations": false,
-    "git.fetchOnPull": true
+  "files.watcherExclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "search.exclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "files.readonlyInclude": {
+    "**/routeTree.gen.ts": true
+  },
+  "extensions.ignoreRecommendations": false,
+  "workbench.editor.enablePreview": true,
+  "workbench.editorAssociations": {
+    "*.md": "vscode.markdown.preview.editor"
+  },
+  "[javascript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[typescript]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[typescriptreact]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[json]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[jsonc]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[css]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  "[html]": {
+    "editor.defaultFormatter": "biomejs.biome",
+    "editor.formatOnSave": true
+  },
+  // reorganise imports
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "explicit",
+    "source.fixAll": "explicit"
+  },
+  "js/ts.preferences.importModuleSpecifier": "non-relative",
+  "js/ts.preferences.importModuleSpecifierEnding": "minimal",
+  // references
+  "js/ts.referencesCodeLens.enabled": true,
+  "js/ts.referencesCodeLens.showOnAllFunctions": true,
+  // does fetch when he does Pull
+  "git.fetchOnPull": true,
+  // move file
+  "js/ts.updateImportsOnFileMove.enabled": "always"
 }

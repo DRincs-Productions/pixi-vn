@@ -5,7 +5,10 @@ import AssetMemory from "../AssetMemory";
 import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
 export interface SpriteBaseMemory
-    extends SpriteOptions, CanvasBaseItemMemory, ListenerExtensionMemory, AdditionalPositionsExtensionProps {
+    extends SpriteOptions,
+        CanvasBaseItemMemory,
+        ListenerExtensionMemory,
+        AdditionalPositionsExtensionProps {
     textureData?: AssetMemory;
 }
 

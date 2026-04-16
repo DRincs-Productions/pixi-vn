@@ -1,4 +1,9 @@
-import type { CanvasBaseInterface, CommonTickerProps, Ticker, TickerArgs } from "@drincs/pixi-vn/canvas";
+import type {
+    CanvasBaseInterface,
+    CommonTickerProps,
+    Ticker,
+    TickerArgs,
+} from "@drincs/pixi-vn/canvas";
 import { canvas } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
@@ -14,7 +19,8 @@ export default abstract class MotionTickerBase<
             autoplay?: boolean;
         };
     },
-> implements Ticker<TArgs> {
+> implements Ticker<TArgs>
+{
     /**
      * @param args The arguments that you want to pass to the ticker.
      * @param options The options of the ticker.
@@ -40,7 +46,12 @@ export default abstract class MotionTickerBase<
             canvasElementAliases?: string[];
         },
     ) {
-        const { duration, priority, id = this.generateTickerId(options), canvasElementAliases = [] } = options || {};
+        const {
+            duration,
+            priority,
+            id = this.generateTickerId(options),
+            canvasElementAliases = [],
+        } = options || {};
         this._args = args;
         this.duration = duration;
         this.priority = priority;
@@ -85,7 +96,11 @@ export default abstract class MotionTickerBase<
     }
     private generateTickerId(...args: any[]): string {
         try {
-            return sha1(JSON.stringify(args)).toString() + "_motion_" + Math.random().toString(36).substring(7);
+            return (
+                sha1(JSON.stringify(args)).toString() +
+                "_motion_" +
+                Math.random().toString(36).substring(7)
+            );
         } catch (e) {
             throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }

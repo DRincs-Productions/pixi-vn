@@ -5,7 +5,10 @@
  * @param channelVolume The volume of the audio channel, which can be undefined.
  * @returns The final volume of the sound, or 1 if both mediaVolume and channelVolume are undefined.
  */
-export function calculateVolume(mediaVolume: number | undefined, channelVolume: number | undefined): number {
+export function calculateVolume(
+    mediaVolume: number | undefined,
+    channelVolume: number | undefined,
+): number {
     if (mediaVolume === undefined && channelVolume === undefined) {
         return 1;
     } else if (channelVolume === undefined) {

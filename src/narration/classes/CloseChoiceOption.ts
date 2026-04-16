@@ -19,7 +19,7 @@ interface ChoiceMenuOptionCloseOptions
  */
 export function newCloseChoiceOption(
     text: ChoiceInterface["text"],
-    options?: ChoiceMenuOptionCloseOptions
+    options?: ChoiceMenuOptionCloseOptions,
 ): CloseChoiceOptionInterface {
     return {
         ...options,

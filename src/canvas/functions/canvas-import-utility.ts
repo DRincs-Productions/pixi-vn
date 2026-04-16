@@ -9,9 +9,10 @@ import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
  * @returns Canvas element
  * @throws {PixiError} when the canvas element identified by `memory.pixivnId` is not registered.
  */
-export async function importCanvasElement<M extends CanvasBaseItemMemory, T extends CanvasBaseItem<M>>(
-    memory: M,
-): Promise<T> {
+export async function importCanvasElement<
+    M extends CanvasBaseItemMemory,
+    T extends CanvasBaseItem<M>,
+>(memory: M): Promise<T> {
     let element = await RegisteredCanvasComponents.getInstance<M, T>(memory.pixivnId, memory);
     if (!element) {
         throw new PixiError(

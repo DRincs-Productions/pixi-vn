@@ -174,7 +174,9 @@ export namespace Game {
                     result = narrationUtils.narration.continue(props);
                 } else if (navigationRequestsCount < 0) {
                     newValue = 0;
-                    result = historyUtils.stepHistory.back(props, { steps: navigationRequestsCount * -1 });
+                    result = historyUtils.stepHistory.back(props, {
+                        steps: navigationRequestsCount * -1,
+                    });
                 }
                 return { newValue, result };
             },
@@ -183,9 +185,12 @@ export namespace Game {
                 return motion.animate(components, keyframes, options, priority);
             },
             // storage
-            getVariable: (prefix, key) => storageUtils.StorageManagerStatic.getVariable(prefix, key),
-            setVariable: (prefix, key, value) => storageUtils.StorageManagerStatic.setVariable(prefix, key, value),
-            removeVariable: (prefix, key) => storageUtils.StorageManagerStatic.removeVariable(prefix, key),
+            getVariable: (prefix, key) =>
+                storageUtils.StorageManagerStatic.getVariable(prefix, key),
+            setVariable: (prefix, key, value) =>
+                storageUtils.StorageManagerStatic.setVariable(prefix, key, value),
+            removeVariable: (prefix, key) =>
+                storageUtils.StorageManagerStatic.removeVariable(prefix, key),
             getFlag: (key) => storageUtils.storage.getFlag(key),
             setFlag: (name, value) => storageUtils.storage.setFlag(name, value),
             onLabelClosing: (openedLabelsNumber) =>
@@ -193,7 +198,9 @@ export namespace Game {
         });
         asciiArtLog();
         if (!element || !options) {
-            logger.warn("The canvas element or options are not defined. The canvas will not be initialized.");
+            logger.warn(
+                "The canvas element or options are not defined. The canvas will not be initialized.",
+            );
             return;
         }
         return await canvasUtils.canvas.init(element, options, devtoolsOptions);
@@ -294,7 +301,11 @@ export namespace Game {
      * @deprecated Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.
      */
     export function onError(
-        handler: (type: "step", error: any, props: narrationUtils.StepLabelPropsType) => void | Promise<void>,
+        handler: (
+            type: "step",
+            error: any,
+            props: narrationUtils.StepLabelPropsType,
+        ) => void | Promise<void>,
     ) {
         logger.warn(
             "Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.",

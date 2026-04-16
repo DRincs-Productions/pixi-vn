@@ -1,7 +1,12 @@
 import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import diff from "microdiff";
-import { HistoryChoiceMenuOption, HistoryStep, NarrationHistory, StepLabelPropsType } from "../narration";
+import {
+    HistoryChoiceMenuOption,
+    HistoryStep,
+    NarrationHistory,
+    StepLabelPropsType,
+} from "../narration";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { createExportableElement } from "../utils";
 import { restoreDiffChanges } from "../utils/diff-utility";
@@ -78,7 +83,9 @@ export default class HistoryManager implements HistoryManagerInterface {
     public async back(props: StepLabelPropsType, options: { steps?: number } = {}) {
         const { steps = 1 } = options;
         if (!Number.isFinite(steps)) {
-            logger.warn(`[back] The parameter steps must be a valid finite number, received: ${steps}`);
+            logger.warn(
+                `[back] The parameter steps must be a valid finite number, received: ${steps}`,
+            );
             return;
         }
         if (steps <= 0) {
@@ -108,7 +115,10 @@ export default class HistoryManager implements HistoryManagerInterface {
                         const narrativeHistory = this.itemMapper({
                             step: historyInfo,
                         });
-                        HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
+                        HistoryManagerStatic._narrationHistory.set(
+                            historyInfo.index,
+                            narrativeHistory,
+                        );
                     }
                 }
             } else {
@@ -152,7 +162,9 @@ export default class HistoryManager implements HistoryManagerInterface {
                     if (data) {
                         HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
                     } else {
-                        logger.warn("It was not possible to create the difference between the two steps");
+                        logger.warn(
+                            "It was not possible to create the difference between the two steps",
+                        );
                     }
                 }
                 let previousItem = {};
@@ -187,7 +199,11 @@ export default class HistoryManager implements HistoryManagerInterface {
             inputValue?: StorageElementType;
             removeDialogue?: boolean;
         },
-        previousItem?: { choiceIndexMade?: number; inputValue?: StorageElementType; removeDialogue?: boolean },
+        previousItem?: {
+            choiceIndexMade?: number;
+            inputValue?: StorageElementType;
+            removeDialogue?: boolean;
+        },
     ): NarrationHistory {
         const { step, choiceIndexMade, inputValue, removeDialogue } = item;
         let dialogue = step.dialogue;
@@ -207,18 +223,24 @@ export default class HistoryManager implements HistoryManagerInterface {
             previousItem.inputValue = step.inputValue;
         }
         if (dialogue || requiredChoices || inputValue) {
-            let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map((choice, index) => {
-                let hidden: boolean = false;
-                if (choice.oneTime && step.alreadyMadeChoices && step.alreadyMadeChoices.includes(index)) {
-                    hidden = true;
-                }
-                return {
-                    text: choice.text,
-                    type: choice.type,
-                    isResponse: false,
-                    hidden: hidden,
-                };
-            });
+            let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map(
+                (choice, index) => {
+                    let hidden: boolean = false;
+                    if (
+                        choice.oneTime &&
+                        step.alreadyMadeChoices &&
+                        step.alreadyMadeChoices.includes(index)
+                    ) {
+                        hidden = true;
+                    }
+                    return {
+                        text: choice.text,
+                        type: choice.type,
+                        isResponse: false,
+                        hidden: hidden,
+                    };
+                },
+            );
             if (choices) {
                 // if all choices are hidden find onlyHaveNoChoice
                 if (choices.every((choice) => choice.hidden)) {
@@ -294,10 +316,17 @@ export default class HistoryManager implements HistoryManagerInterface {
                     return true;
                 }
                 const openedLabelsTemp = info.openedLabels;
-                if (!openedLabelsTemp || !Array.isArray(openedLabelsTemp) || openedLabelsTemp.length === 0) {
+                if (
+                    !openedLabelsTemp ||
+                    !Array.isArray(openedLabelsTemp) ||
+                    openedLabelsTemp.length === 0
+                ) {
                     return false;
                 }
-                if (openedLabelsTemp[0].label !== label || openedLabelsTemp[0].currentStepIndex >= currentStepIndex) {
+                if (
+                    openedLabelsTemp[0].label !== label ||
+                    openedLabelsTemp[0].currentStepIndex >= currentStepIndex
+                ) {
                     return false;
                 }
                 currentStepIndex = openedLabelsTemp[0].currentStepIndex;
@@ -444,7 +473,9 @@ export default class HistoryManager implements HistoryManagerInterface {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
             }
             if (data.hasOwnProperty("originalStepData")) {
-                HistoryManagerStatic._originalStepData = (data as HistoryGameState)["originalStepData"];
+                HistoryManagerStatic._originalStepData = (data as HistoryGameState)[
+                    "originalStepData"
+                ];
             } else {
                 logger.warn("Could not import originalStepData data, so will be ignored");
             }

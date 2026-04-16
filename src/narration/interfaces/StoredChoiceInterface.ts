@@ -3,7 +3,8 @@ import { CloseType } from "../types/CloseType";
 import { LabelIdType } from "../types/LabelIdType";
 import LabelRunModeType from "../types/LabelRunModeType";
 
-export interface ChoiceOptionInterface extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
+export interface ChoiceOptionInterface
+    extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
     /**
      * Label Id to be opened when the option is selected
      */
@@ -14,7 +15,8 @@ export interface ChoiceOptionInterface extends Omit<ChoiceInterface, "label" | "
     type: LabelRunModeType;
 }
 
-export interface CloseChoiceOptionInterface extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
+export interface CloseChoiceOptionInterface
+    extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
     /**
      * Type of the label to be opened
      */

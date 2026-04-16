@@ -1,7 +1,12 @@
 import { HistoryInfo } from "@drincs/pixi-vn";
 import { Difference } from "microdiff";
 import { CachedMap } from "../../classes";
-import { HistoryStep, NarrationHistory, StepLabelPropsType, StepLabelResultType } from "../../narration";
+import {
+    HistoryStep,
+    NarrationHistory,
+    StepLabelPropsType,
+    StepLabelResultType,
+} from "../../narration";
 import HistoryGameState from "./HistoryGameState";
 
 export default interface HistoryManagerInterface {

@@ -42,7 +42,11 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
      * @param steps is the list of steps that the label will perform
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, steps: StepLabelType<T>[] | (() => StepLabelType<T>[]), props?: LabelProps<Label<T>>) {
+    constructor(
+        id: LabelIdType,
+        steps: StepLabelType<T>[] | (() => StepLabelType<T>[]),
+        props?: LabelProps<Label<T>>,
+    ) {
         super(id, props);
         this._steps = steps;
     }

@@ -128,7 +128,9 @@ export default interface AdditionalPositionsExtension {
     readonly positionInfo: { x: number; y: number; type: "pixel" | "percentage" | "align" };
 }
 
-export function analizePositionsExtensionProps<T extends AdditionalPositionsExtensionProps>(props?: T): T | undefined {
+export function analizePositionsExtensionProps<T extends AdditionalPositionsExtensionProps>(
+    props?: T,
+): T | undefined {
     if (!props) {
         return props;
     }

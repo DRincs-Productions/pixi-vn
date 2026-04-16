@@ -94,7 +94,10 @@ GameUnifier.init({
     getCharacter: (id: string) => {
         return RegisteredCharacters.get(id);
     },
-    processNavigationRequests: (navigationRequestsCount: number, props: StepLabelPropsType<any>) => {
+    processNavigationRequests: (
+        navigationRequestsCount: number,
+        props: StepLabelPropsType<any>,
+    ) => {
         let newValue = navigationRequestsCount;
         let result: Promise<void | StepLabelResultType> = Promise.resolve();
         if (navigationRequestsCount > 0) {
@@ -112,7 +115,8 @@ GameUnifier.init({
     removeVariable: (prefix, key) => StorageManagerStatic.removeVariable(prefix, key),
     getFlag: (key) => storage.getFlag(key),
     setFlag: (name, value) => storage.setFlag(name, value),
-    onLabelClosing: (openedLabelsNumber) => StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
+    onLabelClosing: (openedLabelsNumber) =>
+        StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
     // animations
     animate: (target, animationProps, options, priority) => {
         motion.animate(target, animationProps, options, priority);

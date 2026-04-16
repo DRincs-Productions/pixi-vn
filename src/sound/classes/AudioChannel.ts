@@ -13,7 +13,11 @@ export default class AudioChannel implements AudioChannelInterface {
         readonly channelOptions: ChannelOptions = {},
     ) {}
     async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
-    async play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    async play(
+        mediaAlias: string,
+        soundAlias: string,
+        options?: SoundPlayOptions,
+    ): Promise<IMediaInstance>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptions,
@@ -51,9 +55,10 @@ export default class AudioChannel implements AudioChannelInterface {
             media.paused = true;
             const timeoutId = setTimeout(() => {
                 media.paused = false;
-                SoundManagerStatic.delayTimeoutInstances = SoundManagerStatic.delayTimeoutInstances.filter(
-                    (item) => item[0] !== timeoutId,
-                );
+                SoundManagerStatic.delayTimeoutInstances =
+                    SoundManagerStatic.delayTimeoutInstances.filter(
+                        (item) => item[0] !== timeoutId,
+                    );
             }, options.delay * 1000);
             SoundManagerStatic.delayTimeoutInstances.push([timeoutId, mediaAlias]);
         }
@@ -113,12 +118,15 @@ export default class AudioChannel implements AudioChannelInterface {
         return this.muted;
     }
     get mediaInstances(): IMediaInstance[] {
-        return Object.values(SoundManagerStatic.mediaInstances).reduce((instances: IMediaInstance[], mediaInstance) => {
-            if (mediaInstance.channelAlias === this.alias) {
-                instances.push(mediaInstance.instance);
-            }
-            return instances;
-        }, []);
+        return Object.values(SoundManagerStatic.mediaInstances).reduce(
+            (instances: IMediaInstance[], mediaInstance) => {
+                if (mediaInstance.channelAlias === this.alias) {
+                    instances.push(mediaInstance.instance);
+                }
+                return instances;
+            },
+            [],
+        );
     }
     get background(): boolean {
         return this.channelOptions.background || false;

@@ -128,7 +128,10 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
      */
     play() {
         this._paused = false;
-        if (this.texture?.source?.resource?.play && typeof this.texture.source.resource.play === "function") {
+        if (
+            this.texture?.source?.resource?.play &&
+            typeof this.texture.source.resource.play === "function"
+        ) {
             this.texture.source.resource.play();
         }
     }
@@ -192,6 +195,8 @@ export async function setMemoryVideoSprite(
 ) {
     await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture });
     "loop" in memory && memory.loop !== undefined && (element.loop = memory.loop);
-    "currentTime" in memory && memory.currentTime !== undefined && (element.currentTime = memory.currentTime);
+    "currentTime" in memory &&
+        memory.currentTime !== undefined &&
+        (element.currentTime = memory.currentTime);
     "paused" in memory && memory.paused !== undefined && (element.paused = memory.paused);
 }

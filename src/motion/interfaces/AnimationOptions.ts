@@ -19,8 +19,11 @@ export type AnimationSequenceOptions = Omit<
     MotionAnimationOptions,
     "onComplete" | "onPlay" | "onStop" | "onUpdate" | "onRepeat"
 >;
-export type SequenceOptions = MotionSequenceOptions & Omit<CommonTickerProps, "startOnlyIfHaveTexture">;
-export type ObjectSegment<O extends CanvasBaseInterface<any>> = [ObjectTarget<O> & MotionComponentExtension];
+export type SequenceOptions = MotionSequenceOptions &
+    Omit<CommonTickerProps, "startOnlyIfHaveTexture">;
+export type ObjectSegment<O extends CanvasBaseInterface<any>> = [
+    ObjectTarget<O> & MotionComponentExtension,
+];
 export type ObjectSegmentWithTransition<O extends CanvasBaseInterface<any>> = [
     ObjectTarget<O> & MotionComponentExtension,
     AnimationOptions & At,

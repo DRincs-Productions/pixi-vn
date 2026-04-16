@@ -4,28 +4,29 @@ import IMediaInstance from "./IMediaInstance";
 import SoundGameState from "./SoundGameState";
 import SoundOptions, { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
 
-export default interface SoundManagerInterface extends Omit<
-    SoundLibrary,
-    | "init"
-    | "close"
-    | "add"
-    | "play"
-    | "volume"
-    | "speed"
-    | "remove"
-    | "exists"
-    | "find"
-    | "stop"
-    | "pause"
-    | "resume"
-    | "pauseAll"
-    | "resumeAll"
-    | "muteAll"
-    | "unmuteAll"
-    | "stopAll"
-    | "removeAll"
-    | "togglePauseAll"
-> {
+export default interface SoundManagerInterface
+    extends Omit<
+        SoundLibrary,
+        | "init"
+        | "close"
+        | "add"
+        | "play"
+        | "volume"
+        | "speed"
+        | "remove"
+        | "exists"
+        | "find"
+        | "stop"
+        | "pause"
+        | "resume"
+        | "pauseAll"
+        | "resumeAll"
+        | "muteAll"
+        | "unmuteAll"
+        | "stopAll"
+        | "removeAll"
+        | "togglePauseAll"
+    > {
     /**
      * @deprecated You can define sound assets directly in `PIXI.Assets`
      */
@@ -39,7 +40,11 @@ export default interface SoundManagerInterface extends Omit<
      *        has not yet loaded.
      */
     play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
-    play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    play(
+        mediaAlias: string,
+        soundAlias: string,
+        options?: SoundPlayOptionsWithChannel,
+    ): Promise<IMediaInstance>;
     /**
      * Find a media by alias.
      * @param alias - The media alias reference.
@@ -103,7 +108,10 @@ export default interface SoundManagerInterface extends Omit<
      * @param alias The alias or aliases for the new channel.
      * @returns The created AudioChannelInterface instance, or undefined if a channel with the alias already exists.
      */
-    addChannel(alias: string | string[], options?: ChannelOptions): AudioChannelInterface | undefined;
+    addChannel(
+        alias: string | string[],
+        options?: ChannelOptions,
+    ): AudioChannelInterface | undefined;
     /**
      * Finds and returns the audio channel associated with the given alias. If the channel does not exist, it will be created.
      * @param alias The alias of the audio channel to find.

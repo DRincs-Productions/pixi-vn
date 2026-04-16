@@ -46,7 +46,11 @@ export default class StoredClassModel {
             Object.entries(oldStorage).forEach(([id, value]) => {
                 if (typeof value === "object" && value !== null) {
                     Object.entries(value).forEach(([propertyName, propertyValue]) => {
-                        StorageManagerStatic.setVariable(this.categoryId, `${id}:${propertyName}`, propertyValue);
+                        StorageManagerStatic.setVariable(
+                            this.categoryId,
+                            `${id}:${propertyName}`,
+                            propertyValue,
+                        );
                     });
                 }
             });

@@ -89,7 +89,11 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
     canvasElementAliases: string[] = [];
     private generateTickerId(...args: any[]): string {
         try {
-            return sha1(JSON.stringify(args)).toString() + "_" + Math.random().toString(36).substring(7);
+            return (
+                sha1(JSON.stringify(args)).toString() +
+                "_" +
+                Math.random().toString(36).substring(7)
+            );
         } catch (e) {
             throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }
@@ -102,7 +106,12 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
      * @param _alias The alias of the canvas elements that are connected to this ticker
      * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
      */
-    abstract fn(_ticker: TickerValue, _args: TArgs, _alias: string | string[], _tickerId: string): void;
+    abstract fn(
+        _ticker: TickerValue,
+        _args: TArgs,
+        _alias: string | string[],
+        _tickerId: string,
+    ): void;
     protected fnValue?: () => void;
     complete(_options?: { ignoreTickerSteps?: boolean }) {
         this.stop();

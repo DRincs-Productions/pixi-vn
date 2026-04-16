@@ -7,7 +7,9 @@ import { setListenerMemory } from "../components/ListenerExtension";
 import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
-const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof CanvasBaseItem<any>>({ cacheSize: 5 });
+const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof CanvasBaseItem<any>>(
+    { cacheSize: 5 },
+);
 const registeredCanvasInstanceGetters = new CachedMap<
     CanvasElementAliasType,
     (
@@ -17,14 +19,20 @@ const registeredCanvasInstanceGetters = new CachedMap<
 >({ cacheSize: 2 });
 const registeredCanvasComponentCopyProperties = new CachedMap<
     CanvasElementAliasType,
-    (component: CanvasBaseItem<CanvasBaseItemMemory>, source: CanvasBaseItemMemory) => void | Promise<void>
+    (
+        component: CanvasBaseItem<CanvasBaseItemMemory>,
+        source: CanvasBaseItemMemory,
+    ) => void | Promise<void>
 >({ cacheSize: 2 });
 /**
  * Is a decorator that register a canvas component in the game.
  * @param options Options for the canvas component.
  * @returns
  */
-export function canvasComponentDecorator<M extends CanvasBaseItemMemory, T extends typeof CanvasBaseItem<M>>(
+export function canvasComponentDecorator<
+    M extends CanvasBaseItemMemory,
+    T extends typeof CanvasBaseItem<M>,
+>(
     options: {
         /**
          * Name of the canvas component. If the name is already registered, it will show a warning
@@ -64,12 +72,18 @@ export async function setMemoryContainer<T extends PixiContainer>(
 ) {
     let ignoreScale = options?.ignoreScale || false;
     let end = options?.end;
-    "isRenderGroup" in memory && memory.isRenderGroup !== undefined && (element.isRenderGroup = memory.isRenderGroup);
-    "blendMode" in memory && memory.blendMode !== undefined && (element.blendMode = memory.blendMode);
+    "isRenderGroup" in memory &&
+        memory.isRenderGroup !== undefined &&
+        (element.isRenderGroup = memory.isRenderGroup);
+    "blendMode" in memory &&
+        memory.blendMode !== undefined &&
+        (element.blendMode = memory.blendMode);
     "tint" in memory && memory.tint !== undefined && (element.tint = memory.tint);
     "alpha" in memory && memory.alpha !== undefined && (element.alpha = memory.alpha);
     "angle" in memory && memory.angle !== undefined && (element.angle = memory.angle);
-    "renderable" in memory && memory.renderable !== undefined && (element.renderable = memory.renderable);
+    "renderable" in memory &&
+        memory.renderable !== undefined &&
+        (element.renderable = memory.renderable);
     "rotation" in memory && memory.rotation !== undefined && (element.rotation = memory.rotation);
     if (!ignoreScale && "scale" in memory && memory.scale !== undefined) {
         if (typeof memory.scale === "number") {
@@ -85,16 +99,24 @@ export async function setMemoryContainer<T extends PixiContainer>(
             element.pivot.set(memory.pivot.x, memory.pivot.y);
         }
     }
-    "position" in memory && memory.position !== undefined && element.position.set(memory.position.x, memory.position.y);
+    "position" in memory &&
+        memory.position !== undefined &&
+        element.position.set(memory.position.x, memory.position.y);
     "skew" in memory && memory.skew !== undefined && element.skew.set(memory.skew.x, memory.skew.y);
     "visible" in memory && memory.visible !== undefined && (element.visible = memory.visible);
     "x" in memory && memory.x !== undefined && (element.x = memory.x);
     "y" in memory && memory.y !== undefined && (element.y = memory.y);
-    "boundsArea" in memory && memory.boundsArea !== undefined && (element.boundsArea = memory.boundsArea);
+    "boundsArea" in memory &&
+        memory.boundsArea !== undefined &&
+        (element.boundsArea = memory.boundsArea);
 
     "cursor" in memory && memory.cursor !== undefined && (element.cursor = memory.cursor);
-    "eventMode" in memory && memory.eventMode !== undefined && (element.eventMode = memory.eventMode);
-    "interactive" in memory && memory.interactive !== undefined && (element.interactive = memory.interactive);
+    "eventMode" in memory &&
+        memory.eventMode !== undefined &&
+        (element.eventMode = memory.eventMode);
+    "interactive" in memory &&
+        memory.interactive !== undefined &&
+        (element.interactive = memory.interactive);
     "interactiveChildren" in memory &&
         memory.interactiveChildren !== undefined &&
         (element.interactiveChildren = memory.interactiveChildren);
@@ -143,7 +165,10 @@ namespace RegisteredCanvasComponents {
              * @param memory Memory of the canvas component.
              * @returns The instance of the canvas component.
              */
-            getInstance?: (canvasClass: T, memory: M) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
+            getInstance?: (
+                canvasClass: T,
+                memory: M,
+            ) => CanvasBaseItem<M> | Promise<CanvasBaseItem<M>>;
             /**
              * Function to copy the properties of the canvas component. This function is used when to copy the properties of the canvas component into another instance of the same canvas component.
              * This function is used into {@link canvas.copyCanvasElementProperty} to copy the properties of the canvas component.
@@ -179,7 +204,9 @@ namespace RegisteredCanvasComponents {
      * @param canvasId The id of the canvas component.
      * @returns The canvas component type.
      */
-    export function get<T extends typeof CanvasBaseItem<any>>(canvasId: CanvasElementAliasType): T | undefined {
+    export function get<T extends typeof CanvasBaseItem<any>>(
+        canvasId: CanvasElementAliasType,
+    ): T | undefined {
         let eventType = registeredCanvasComponent.get(canvasId);
         if (!eventType) {
             logger.error(

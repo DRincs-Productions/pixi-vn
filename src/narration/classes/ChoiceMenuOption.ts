@@ -25,7 +25,7 @@ export function newChoiceOption<T extends StorageObjectType>(
     text: ChoiceInterface["text"],
     label: Label<T> | LabelAbstract<any, T> | LabelIdType,
     props: T,
-    options?: ChoiceMenuOptionOptions
+    options?: ChoiceMenuOptionOptions,
 ): ChoiceOptionInterface {
     const labelId = typeof label === "string" ? label : label.id;
     return {

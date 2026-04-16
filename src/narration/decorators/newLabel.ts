@@ -15,7 +15,7 @@ import RegisteredLabels from "./RegisteredLabels";
 export default function newLabel<T extends {} = {}>(
     id: LabelIdType,
     steps: LabelSteps<T> | (() => LabelSteps<T>),
-    props?: LabelProps<Label<T>>
+    props?: LabelProps<Label<T>>,
 ): Label<T> {
     let label = new Label<T>(id, steps, props);
     RegisteredLabels.add(label);

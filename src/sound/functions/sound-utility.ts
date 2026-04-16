@@ -17,7 +17,18 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): Filter[] {
             res.push(new filters.MonoFilter());
         } else if (f.type === "EqualizerFilter") {
             res.push(
-                new filters.EqualizerFilter(f.f32, f.f64, f.f125, f.f250, f.f500, f.f1k, f.f2k, f.f4k, f.f8k, f.f16k)
+                new filters.EqualizerFilter(
+                    f.f32,
+                    f.f64,
+                    f.f125,
+                    f.f250,
+                    f.f500,
+                    f.f1k,
+                    f.f2k,
+                    f.f4k,
+                    f.f8k,
+                    f.f16k,
+                ),
             );
         } else if (f.type === "DistortionFilter") {
             res.push(new filters.DistortionFilter(f.amount));

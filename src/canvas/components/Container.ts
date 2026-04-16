@@ -2,14 +2,19 @@ import type { ObservablePoint, PointData } from "@drincs/pixi-vn/pixi.js";
 import { ContainerEvents, EventEmitter, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
-import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
+import {
+    default as RegisteredCanvasComponents,
+    setMemoryContainer,
+} from "../decorators/canvas-element-decorator";
 import { importCanvasElement } from "../functions/canvas-import-utility";
 import { getMemoryContainer } from "../functions/canvas-memory-utility";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import { ContainerOptions } from "../interfaces/canvas-options";
 import ContainerMemory from "../interfaces/memory/ContainerMemory";
 import ContainerChild from "../types/ContainerChild";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
+import AdditionalPositionsExtension, {
+    analizePositionsExtensionProps,
+} from "./AdditionalPositionsExtension";
 import AnchorExtension from "./AnchorExtension";
 import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
 
@@ -31,11 +36,15 @@ import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./Liste
  * ```
  */
 export default class Container<
-    C extends ContainerChild = ContainerChild,
-    Memory extends ContainerMemory = ContainerMemory,
->
+        C extends ContainerChild = ContainerChild,
+        Memory extends ContainerMemory = ContainerMemory,
+    >
     extends PixiContainer<C>
-    implements CanvasBaseItem<Memory>, ListenerExtension, AnchorExtension, AdditionalPositionsExtension
+    implements
+        CanvasBaseItem<Memory>,
+        ListenerExtension,
+        AnchorExtension,
+        AdditionalPositionsExtension
 {
     constructor(options?: ContainerOptions<C>) {
         options = analizePositionsExtensionProps(options as any);
@@ -50,7 +59,11 @@ export default class Container<
             align = options.align;
             delete options.align;
         }
-        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+        if (
+            options &&
+            "percentagePosition" in options &&
+            options?.percentagePosition !== undefined
+        ) {
             percentagePosition = options.percentagePosition;
             delete options.percentagePosition;
         }
@@ -92,11 +105,15 @@ export default class Container<
     /** ListenerExtension */
 
     readonly onEventsHandlers: OnEventsHandlers = {};
-    override on<T extends keyof ContainerEvents<C> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
+    override on<
+        T extends keyof ContainerEvents<C> | keyof { [K: symbol]: any; [K: {} & string]: any },
+    >(
         event: T,
         fn: (
             ...args: [
-                ...EventEmitter.ArgumentMap<ContainerEvents<C> & { [K: symbol]: any; [K: {} & string]: any }>[Extract<
+                ...EventEmitter.ArgumentMap<
+                    ContainerEvents<C> & { [K: symbol]: any; [K: {} & string]: any }
+                >[Extract<
                     T,
                     keyof ContainerEvents<C> | keyof { [K: symbol]: any; [K: {} & string]: any }
                 >],
@@ -304,10 +321,16 @@ export default class Container<
             }
         } else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = PropsUtils.calculatePositionByPercentagePosition("width", this._percentagePosition.x);
+                super.x = PropsUtils.calculatePositionByPercentagePosition(
+                    "width",
+                    this._percentagePosition.x,
+                );
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = PropsUtils.calculatePositionByPercentagePosition("height", this._percentagePosition.y);
+                super.y = PropsUtils.calculatePositionByPercentagePosition(
+                    "height",
+                    this._percentagePosition.y,
+                );
             }
         }
     }

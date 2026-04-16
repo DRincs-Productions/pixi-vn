@@ -1,5 +1,10 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import { MAIN_STORAGE_KEY, NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS, TEMP_STORAGE_KEY } from "../constants";
+import {
+    MAIN_STORAGE_KEY,
+    NARRATION_STORAGE_KEY,
+    SYSTEM_RESERVED_STORAGE_KEYS,
+    TEMP_STORAGE_KEY,
+} from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import StorageGameState, { StorageGameStateItem } from "./interfaces/StorageGameState";
@@ -165,7 +170,11 @@ export default class StorageManager implements StorageManagerInterface {
                             );
                             break;
                         default:
-                            StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, item.key, item.value);
+                            StorageManagerStatic.setVariable(
+                                MAIN_STORAGE_KEY,
+                                item.key,
+                                item.value,
+                            );
                     }
                 });
                 (data.temp as any)?.forEach((item: StorageGameStateItem) => {

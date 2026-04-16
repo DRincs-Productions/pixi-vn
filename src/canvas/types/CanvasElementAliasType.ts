@@ -1,1 +1,1 @@
-export type CanvasElementAliasType = string
+export type CanvasElementAliasType = string;

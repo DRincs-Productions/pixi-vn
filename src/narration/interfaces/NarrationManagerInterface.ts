@@ -41,7 +41,7 @@ export default interface NarrationManagerInterface {
              * @default false
              */
             onceOnly?: boolean;
-        }
+        },
     ): number | undefined;
     /**
      * This counter corresponds to the total number of steps that have been executed so far.
@@ -146,7 +146,7 @@ export default interface NarrationManagerInterface {
              * If true, ignore the running step, ignore the choice menu/required input and run the next step immediately.
              */
             runNow?: boolean;
-        }
+        },
     ) => Promise<StepLabelResultType>;
     /**
      * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
@@ -172,7 +172,7 @@ export default interface NarrationManagerInterface {
      */
     call<T extends {} = {}>(
         label: LabelAbstract<any, T> | LabelIdType,
-        props: StepLabelPropsType<T>
+        props: StepLabelPropsType<T>,
     ): Promise<StepLabelResultType>;
     /**
      * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
@@ -198,7 +198,7 @@ export default interface NarrationManagerInterface {
      */
     jump<T extends {}>(
         label: LabelAbstract<any, T> | LabelIdType,
-        props: StepLabelPropsType<T>
+        props: StepLabelPropsType<T>,
     ): Promise<StepLabelResultType>;
     /**
      * Select a choice from the choice menu. and close the choice menu.
@@ -223,7 +223,7 @@ export default interface NarrationManagerInterface {
      */
     selectChoice<T extends {}>(
         item: StoredIndexedChoiceInterface,
-        props: StepLabelPropsType<T>
+        props: StepLabelPropsType<T>,
     ): Promise<StepLabelResultType>;
 
     /** Old Step Methods */

@@ -69,7 +69,11 @@ function addComponent(
         }
     } else if (Array.isArray(canvasElement)) {
         return addImageCointainer(alias, canvasElement, options);
-    } else if (typeof canvasElement === "object" && "value" in canvasElement && "options" in canvasElement) {
+    } else if (
+        typeof canvasElement === "object" &&
+        "value" in canvasElement &&
+        "options" in canvasElement
+    ) {
         if (typeof canvasElement.value === "string") {
             if (checkIfVideo(canvasElement.value)) {
                 return addVideo(alias, canvasElement.value, {
@@ -131,14 +135,21 @@ export async function showWithDissolve(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
-    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+    oldComponent?.parent?.setChildIndex(
+        oldComponent,
+        oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+    );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
     component.alpha = 0;
     // remove the old component
     if (oldComponentAlias) {
-        let ids = removeWithDissolve(oldComponentAlias, { ...props, autoplay: false, completeOnContinue }, priority);
+        let ids = removeWithDissolve(
+            oldComponentAlias,
+            { ...props, autoplay: false, completeOnContinue },
+            priority,
+        );
         if (ids) {
             res.push(...ids);
             tickerIdToResume.push(...ids);
@@ -159,7 +170,10 @@ export async function showWithDissolve(
     );
     idShow && res.push(idShow);
     // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+    if (
+        (component instanceof ImageSprite || component instanceof ImageContainer) &&
+        component.haveEmptyTexture
+    ) {
         await component.load();
     }
     // return the ids of the tickers
@@ -183,7 +197,11 @@ export function removeWithDissolve(
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
     let { forceCompleteBeforeNext = true } = props;
-    let { completeOnContinue = forceCompleteBeforeNext, aliasToRemoveAfter = [], ...options } = props;
+    let {
+        completeOnContinue = forceCompleteBeforeNext,
+        aliasToRemoveAfter = [],
+        ...options
+    } = props;
     if (typeof aliasToRemoveAfter === "string") {
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
@@ -225,7 +243,11 @@ export async function showWithFade(
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
     let { forceCompleteBeforeNext = true } = props;
-    let { completeOnContinue = forceCompleteBeforeNext, aliasToRemoveAfter = [], ...options } = props;
+    let {
+        completeOnContinue = forceCompleteBeforeNext,
+        aliasToRemoveAfter = [],
+        ...options
+    } = props;
     let res: string[] = [];
     if (!component) {
         component = alias;
@@ -245,7 +267,10 @@ export async function showWithFade(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
-    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+    oldComponent?.parent?.setChildIndex(
+        oldComponent,
+        oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+    );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
@@ -283,7 +308,10 @@ export async function showWithFade(
         canvas.pauseTicker({ id: idShow });
     }
     // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+    if (
+        (component instanceof ImageSprite || component instanceof ImageContainer) &&
+        component.haveEmptyTexture
+    ) {
         await component.load();
     }
     // return the ids of the tickers
@@ -342,7 +370,8 @@ export async function moveIn(
         ...options
     } = props;
     let res: string[] = [];
-    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
+        undefined;
     if (!component) {
         component = alias;
     }
@@ -368,7 +397,10 @@ export async function moveIn(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
-    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+    oldComponent?.parent?.setChildIndex(
+        oldComponent,
+        oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+    );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
@@ -382,7 +414,11 @@ export async function moveIn(
     // remove the old component
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            let ids = moveOut(oldComponentAlias, { ...props, autoplay: false, completeOnContinue }, priority);
+            let ids = moveOut(
+                oldComponentAlias,
+                { ...props, autoplay: false, completeOnContinue },
+                priority,
+            );
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
@@ -392,7 +428,10 @@ export async function moveIn(
         }
     }
     // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+    if (
+        (component instanceof ImageSprite || component instanceof ImageContainer) &&
+        component.haveEmptyTexture
+    ) {
         await component.load();
     }
     // edit the properties of the new component
@@ -439,7 +478,11 @@ export async function moveIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function moveOut(alias: string, props: MoveInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
+export function moveOut(
+    alias: string,
+    props: MoveInOutProps = {},
+    priority?: UPDATE_PRIORITY,
+): string[] | undefined {
     let { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
@@ -521,7 +564,8 @@ export async function zoomIn(
         ...options
     } = props;
     let res: string[] = [];
-    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
+        undefined;
     if (!component) {
         component = alias;
     }
@@ -547,7 +591,10 @@ export async function zoomIn(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
-    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+    oldComponent?.parent?.setChildIndex(
+        oldComponent,
+        oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+    );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
@@ -569,7 +616,11 @@ export async function zoomIn(
     // remove the old component
     if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            let ids = zoomOut(oldComponentAlias, { ...props, autoplay: false, completeOnContinue }, priority);
+            let ids = zoomOut(
+                oldComponentAlias,
+                { ...props, autoplay: false, completeOnContinue },
+                priority,
+            );
             if (ids) {
                 res.push(...ids);
                 tickerIdToResume.push(...ids);
@@ -579,7 +630,10 @@ export async function zoomIn(
         }
     }
     // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+    if (
+        (component instanceof ImageSprite || component instanceof ImageContainer) &&
+        component.haveEmptyTexture
+    ) {
         await component.load();
     }
     // edit the properties of the new component
@@ -642,7 +696,11 @@ export async function zoomIn(
  * @param priority The priority of the effect
  * @returns The ids of the tickers that are used in the effect.
  */
-export function zoomOut(alias: string, props: ZoomInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
+export function zoomOut(
+    alias: string,
+    props: ZoomInOutProps = {},
+    priority?: UPDATE_PRIORITY,
+): string[] | undefined {
     let { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
@@ -735,7 +793,8 @@ export async function pushIn(
         ...options
     } = props;
     let res: string[] = [];
-    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } = undefined;
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
+        undefined;
     if (!component) {
         component = alias;
     }
@@ -758,19 +817,28 @@ export async function pushIn(
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
     });
-    oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+    oldComponent?.parent?.setChildIndex(
+        oldComponent,
+        oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+    );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
     // edit the properties of the new component
     if (!destination) {
-        if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+        if (
+            (component instanceof ImageSprite || component instanceof ImageContainer) &&
+            component.haveEmptyTexture
+        ) {
             destination = component.positionInfo;
         } else {
             destination = { x: component.x, y: component.y, type: "pixel" };
         }
     }
     // load the image if the image is not loaded
-    if ((component instanceof ImageSprite || component instanceof ImageContainer) && component.haveEmptyTexture) {
+    if (
+        (component instanceof ImageSprite || component instanceof ImageContainer) &&
+        component.haveEmptyTexture
+    ) {
         await component.load();
     }
     // edit the properties of the new component

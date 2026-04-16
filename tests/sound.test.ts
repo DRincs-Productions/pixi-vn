@@ -352,7 +352,9 @@ describe("sound play routing and mediaInstances tracking", () => {
         sound.addChannel("explicit-channel");
         sound.defaultChannelAlias = "other-default";
         await sound.play("my-sound", { channel: "explicit-channel" });
-        expect(SoundManagerStatic.mediaInstances["my-sound"]?.channelAlias).toBe("explicit-channel");
+        expect(SoundManagerStatic.mediaInstances["my-sound"]?.channelAlias).toBe(
+            "explicit-channel",
+        );
     });
 });
 
@@ -421,7 +423,9 @@ describe("background channel settings restoration", () => {
                         ...(opts.filters !== undefined && { filters: opts.filters }),
                         ...(opts.delay !== undefined && { delay: opts.delay }),
                         ...(opts.end !== undefined && { end: opts.end }),
-                        ...(opts.singleInstance !== undefined && { singleInstance: opts.singleInstance }),
+                        ...(opts.singleInstance !== undefined && {
+                            singleInstance: opts.singleInstance,
+                        }),
                         ...(opts.start !== undefined && { start: opts.start }),
                     },
                 },
@@ -565,7 +569,9 @@ describe("background channel settings restoration", () => {
             options: { loop: false, volume: 1, muted: false, speed: 1 },
         };
 
-        await sound.restore(makeBackgroundState({ delay: 2, end: 10, singleInstance: true, start: 1 }));
+        await sound.restore(
+            makeBackgroundState({ delay: 2, end: 10, singleInstance: true, start: 1 }),
+        );
 
         const storedOptions = SoundManagerStatic.mediaInstances["bg-music"].options;
         expect(storedOptions.delay).toBe(2);

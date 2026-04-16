@@ -2,9 +2,9 @@ export type PauseType = {
     /**
      * The type of the value
      */
-    type: "pause",
+    type: "pause";
     /**
      * Duration in seconds
      */
-    duration: number,
-}
+    duration: number;
+};

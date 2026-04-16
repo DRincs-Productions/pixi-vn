@@ -2,7 +2,9 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import db from "mime-db";
 
 export function checkIfVideo(textureAlias: string): boolean {
-    const cachedTexture = PIXI.Assets.cache.has(textureAlias) ? PIXI.Assets.get(textureAlias) : null;
+    const cachedTexture = PIXI.Assets.cache.has(textureAlias)
+        ? PIXI.Assets.get(textureAlias)
+        : null;
 
     if (cachedTexture instanceof PIXI.Texture) {
         textureAlias = cachedTexture.source?.label || textureAlias;

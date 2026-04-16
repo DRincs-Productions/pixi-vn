@@ -10,4 +10,6 @@ export default interface DialogueInterface {
      */
     character?: CharacterInterface | string;
 }
-export type StoredDialogue = Omit<DialogueInterface, "character"> & { character: string | undefined };
+export type StoredDialogue = Omit<DialogueInterface, "character"> & {
+    character: string | undefined;
+};

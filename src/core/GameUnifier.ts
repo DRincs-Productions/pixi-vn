@@ -1,7 +1,11 @@
 import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import type { StepLabelPropsType, StepLabelResultType, StepLabelType } from "../narration/types/StepLabelType";
+import type {
+    StepLabelPropsType,
+    StepLabelResultType,
+    StepLabelType,
+} from "../narration/types/StepLabelType";
 import { StorageElementType } from "../storage/types/StorageElementType";
 import { logger } from "../utils/log-utility";
 import OnErrorHandler from "./OnErrorHandler";
@@ -41,7 +45,10 @@ export default class GameUnifier {
          * @param state The state to restore.
          * @param navigate The function to navigate to the restored path.
          */
-        restoreGameStepState: (state: GameStepState, navigate: (path: string) => void | Promise<void>) => Promise<void>;
+        restoreGameStepState: (
+            state: GameStepState,
+            navigate: (path: string) => void | Promise<void>,
+        ) => Promise<void>;
         /**
          * This function returns the number of opened labels.
          *
@@ -168,11 +175,17 @@ export default class GameUnifier {
     }
     private static _getStepCounter: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     private static _setStepCounter: (value: number) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * Returns the current step counter. This counter corresponds to the total number of steps that have been executed so far.
@@ -190,7 +203,10 @@ export default class GameUnifier {
     }
     private static _getCurrentGameStepState: () => GameStepState = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * Returns the current state of the game step.
@@ -204,7 +220,10 @@ export default class GameUnifier {
         navigate: (path: string) => void | Promise<void>,
     ) => Promise<void> = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * Restores the game step state.
@@ -216,7 +235,10 @@ export default class GameUnifier {
     }
     private static _getOpenedLabels: () => number = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * Returns the number of opened labels.
@@ -235,7 +257,9 @@ export default class GameUnifier {
         GameUnifier._onPreContinueHandlers.push(handler);
     }
     static removeOnPreContinue(handler: () => Promise<void> | void) {
-        GameUnifier._onPreContinueHandlers = GameUnifier._onPreContinueHandlers.filter((h) => h !== handler);
+        GameUnifier._onPreContinueHandlers = GameUnifier._onPreContinueHandlers.filter(
+            (h) => h !== handler,
+        );
     }
     static clearOnPreContinueHandlers() {
         GameUnifier._onPreContinueHandlers = [];
@@ -311,23 +335,35 @@ export default class GameUnifier {
         result: Promise<StepLabelResultType>;
     } = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * This function processes the pending navigation requests (continue/back).
      * @throws {PixiError} when `Game.init()` has not been called yet.
      */
     static async processNavigationRequests(props: StepLabelPropsType<any>) {
-        const processResult = GameUnifier._processNavigationRequests(GameUnifier.navigationRequestsCount, props);
+        const processResult = GameUnifier._processNavigationRequests(
+            GameUnifier.navigationRequestsCount,
+            props,
+        );
         GameUnifier.navigationRequestsCount = processResult.newValue;
 
         // Hold the lock until the async navigation operation completes
         const result = await processResult.result;
         return result;
     }
-    private static _getVariable: <T = StorageElementType>(prefix: string, key: string) => T | undefined = () => {
+    private static _getVariable: <T = StorageElementType>(
+        prefix: string,
+        key: string,
+    ) => T | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * This function returns the value of a variable.
@@ -337,10 +373,14 @@ export default class GameUnifier {
     static get getVariable() {
         return GameUnifier._getVariable;
     }
-    private static _setVariable: (prefix: string, key: string, value: StorageElementType) => void = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
-    };
+    private static _setVariable: (prefix: string, key: string, value: StorageElementType) => void =
+        () => {
+            logger.error("Method not implemented, you should initialize the Game: Game.init()");
+            throw new PixiError(
+                "not_implemented",
+                "Method not implemented, you should initialize the Game: Game.init()",
+            );
+        };
     /**
      * This function sets the value of a variable.
      * @param key The key of the variable.
@@ -351,7 +391,10 @@ export default class GameUnifier {
     }
     private static _removeVariable: (prefix: string, key: string) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * This function removes a variable.
@@ -362,7 +405,10 @@ export default class GameUnifier {
     }
     private static _getFlag: (name: string) => boolean = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * This function returns the value of a flag.
@@ -373,7 +419,10 @@ export default class GameUnifier {
     }
     private static _setFlag: (name: string, value: boolean) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * This function sets the value of a flag.
@@ -402,7 +451,10 @@ export default class GameUnifier {
         },
     ) => void = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * Add a history step to the history.
@@ -465,7 +517,10 @@ export default class GameUnifier {
         priority?: UPDATE_PRIORITY,
     ) => string | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError("not_implemented", "Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
     };
     /**
      * This function is called to animate a component.

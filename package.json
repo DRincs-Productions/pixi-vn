@@ -12,6 +12,9 @@
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup --config tsup.config.ts",
+    "lint": "biome lint",
+    "check": "biome check",
+    "format": "biome format --write",
     "test": "vitest"
   },
   "exports": {
@@ -149,6 +152,7 @@
     "pixi.js": "^8.17.0"
   },
   "devDependencies": {
+    "@biomejs/biome": "^2.4.12",
     "@types/crypto-js": "^4.2.2",
     "@types/mime-db": "^1.43.6",
     "crypto-js": "^4.2.0",

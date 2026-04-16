@@ -1,2 +1,2 @@
-type LabelRunModeType = "call" | "jump"
-export default LabelRunModeType
+type LabelRunModeType = "call" | "jump";
+export default LabelRunModeType;

@@ -20,7 +20,10 @@ export type {
     default as AdditionalPositionsExtension,
     AdditionalPositionsExtensionProps,
 } from "./components/AdditionalPositionsExtension";
-export type { default as AnchorExtension, AnchorExtensionProps } from "./components/AnchorExtension";
+export type {
+    default as AnchorExtension,
+    AnchorExtensionProps,
+} from "./components/AnchorExtension";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";

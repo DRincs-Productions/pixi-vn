@@ -16,7 +16,7 @@ const ChoiseLabel = newLabel("choice", [
                 {},
                 {
                     type: "call",
-                }
+                },
             ),
             newChoiceOption(
                 "B",
@@ -24,7 +24,7 @@ const ChoiseLabel = newLabel("choice", [
                 {},
                 {
                     type: "jump",
-                }
+                },
             ),
             newCloseChoiceOption("Close"),
         ];

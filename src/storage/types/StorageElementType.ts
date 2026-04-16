@@ -1,4 +1,10 @@
-type StorageElementPrimaryType = string | number | boolean | undefined | null | StorageElementPrimaryType[];
+type StorageElementPrimaryType =
+    | string
+    | number
+    | boolean
+    | undefined
+    | null
+    | StorageElementPrimaryType[];
 type StorageElementInternalType =
     | StorageElementPrimaryType
     | Record<string | number | symbol, StorageElementPrimaryType>

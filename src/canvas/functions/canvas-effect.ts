@@ -17,11 +17,18 @@ export async function shakeEffect(
 ): Promise<string[] | undefined> {
     let elemet = canvas.find(alias);
     if (!elemet) {
-        logger.error(`The element with the alias ${alias} does not exist. So the shake effect can't be applied.`);
+        logger.error(
+            `The element with the alias ${alias} does not exist. So the shake effect can't be applied.`,
+        );
         return;
     }
     let position = { x: elemet.position.x, y: elemet.position.y };
-    const { shakeType = "horizontal", maxShockSize = 10, shocksNumber: shocksNumberTemp = 10, ...rest } = options;
+    const {
+        shakeType = "horizontal",
+        maxShockSize = 10,
+        shocksNumber: shocksNumberTemp = 10,
+        ...rest
+    } = options;
     let shocksNumber = shocksNumberTemp - 1;
     if (shocksNumber < 2) {
         logger.error("The number of shocks must be at least 3.");

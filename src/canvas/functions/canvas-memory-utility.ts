@@ -28,7 +28,9 @@ import TextMemory from "../interfaces/memory/TextMemory";
  * @param canvasComponent Canvas element
  * @returns Memory object of the canvas
  */
-export function exportCanvasElement<T extends PixiContainer>(canvasComponent: T): CanvasBaseItemMemory {
+export function exportCanvasElement<T extends PixiContainer>(
+    canvasComponent: T,
+): CanvasBaseItemMemory {
     if ("memory" in canvasComponent) {
         return canvasComponent.memory as CanvasBaseItemMemory;
     } else if (canvasComponent instanceof PIXI.Text) {
@@ -43,7 +45,9 @@ export function exportCanvasElement<T extends PixiContainer>(canvasComponent: T)
 /**
  * Extract common properties for memory objects
  */
-function extractCommonMemoryProperties<T extends PixiContainer>(element: T): Partial<ContainerMemory> {
+function extractCommonMemoryProperties<T extends PixiContainer>(
+    element: T,
+): Partial<ContainerMemory> {
     const parent = element.parent;
     return {
         width: element.width,
@@ -202,7 +206,9 @@ function gradientToOptions(prop: FillGradient): GradientOptions {
  * @param prop Fill property
  * @returns Processed fill property
  */
-function getFill(prop: FillInput | undefined | null): GradientOptions | undefined | string | number[] | number {
+function getFill(
+    prop: FillInput | undefined | null,
+): GradientOptions | undefined | string | number[] | number {
     if (prop === undefined || prop === null) {
         return undefined;
     } else if (typeof prop === "number") {
@@ -240,7 +246,9 @@ function convertColor(color?: ColorSource): string | number | number[] | undefin
  * @param prop Stroke property
  * @returns Processed stroke property
  */
-function getStroke(prop: StrokeInput | undefined | null): GradientOptions | undefined | string | number[] | number {
+function getStroke(
+    prop: StrokeInput | undefined | null,
+): GradientOptions | undefined | string | number[] | number {
     if (prop === undefined || prop === null) {
         return undefined;
     } else if (typeof prop === "number") {

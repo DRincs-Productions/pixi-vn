@@ -22,16 +22,25 @@ import ImageSprite from "../components/ImageSprite";
  * await bunny2.load()
  * ```
  */
-export function addImage(alias: string, imageUrl?: string, options?: ImageSpriteOptions): ImageSprite {
+export function addImage(
+    alias: string,
+    imageUrl?: string,
+    options?: ImageSpriteOptions,
+): ImageSprite {
     if (!imageUrl) {
         if (PIXI.Assets.resolver.hasKey(alias)) {
             imageUrl = alias;
         } else {
-            throw new PixiError("unregistered_asset", `The image ${alias} does not exist in the cache.`, "canvas", {
-                pixivnId: CANVAS_IMAGE_ID,
-                ...options,
-                label: alias,
-            });
+            throw new PixiError(
+                "unregistered_asset",
+                `The image ${alias} does not exist in the cache.`,
+                "canvas",
+                {
+                    pixivnId: CANVAS_IMAGE_ID,
+                    ...options,
+                    label: alias,
+                },
+            );
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
@@ -57,16 +66,25 @@ export function addImage(alias: string, imageUrl?: string, options?: ImageSprite
  * let bunny2 = showImage("bunny2")
  * ```
  */
-export async function showImage(alias: string, imageUrl?: string, options?: ImageSpriteOptions): Promise<ImageSprite> {
+export async function showImage(
+    alias: string,
+    imageUrl?: string,
+    options?: ImageSpriteOptions,
+): Promise<ImageSprite> {
     if (!imageUrl) {
         if (PIXI.Assets.resolver.hasKey(alias)) {
             imageUrl = alias;
         } else {
-            throw new PixiError("unregistered_asset", `The image ${alias} does not exist in the cache.`, "canvas", {
-                pixivnId: CANVAS_IMAGE_ID,
-                ...options,
-                label: alias,
-            });
+            throw new PixiError(
+                "unregistered_asset",
+                `The image ${alias} does not exist in the cache.`,
+                "canvas",
+                {
+                    pixivnId: CANVAS_IMAGE_ID,
+                    ...options,
+                    label: alias,
+                },
+            );
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };

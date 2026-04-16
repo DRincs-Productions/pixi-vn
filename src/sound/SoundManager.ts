@@ -10,7 +10,11 @@ import AudioChannelInterface from "./interfaces/AudioChannelInterface";
 import IMediaInstance from "./interfaces/IMediaInstance";
 import SoundGameState from "./interfaces/SoundGameState";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import SoundOptions, { ChannelOptions, SoundPlayOptions, SoundPlayOptionsWithChannel } from "./interfaces/SoundOptions";
+import SoundOptions, {
+    ChannelOptions,
+    SoundPlayOptions,
+    SoundPlayOptionsWithChannel,
+} from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
 import SoundFilterMemory from "./types/SoundFilterMemory";
 
@@ -115,7 +119,11 @@ export default class SoundManager implements SoundManagerInterface {
         return sound.isPlaying();
     }
     async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
-    async play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    async play(
+        mediaAlias: string,
+        soundAlias: string,
+        options?: SoundPlayOptionsWithChannel,
+    ): Promise<IMediaInstance>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptionsWithChannel,
@@ -219,7 +227,10 @@ export default class SoundManager implements SoundManagerInterface {
 
     /* Channel Methods */
 
-    addChannel(alias: string | string[], options: ChannelOptions = {}): AudioChannelInterface | undefined {
+    addChannel(
+        alias: string | string[],
+        options: ChannelOptions = {},
+    ): AudioChannelInterface | undefined {
         if (typeof alias !== "string") {
             alias.forEach((a) => {
                 const perChannelOptions: ChannelOptions = {
@@ -268,7 +279,10 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: mediaInstance.channelAlias,
                     soundAlias: mediaInstance.soundAlias,
                     stepCounter: mediaInstance.stepCounter,
-                    options: { ...mediaInstance.options, filters: FilterToFilterMemory(mediaInstance.options.filters) },
+                    options: {
+                        ...mediaInstance.options,
+                        filters: FilterToFilterMemory(mediaInstance.options.filters),
+                    },
                     paused: mediaInstance.instance.paused,
                 };
                 return result;
@@ -307,10 +321,12 @@ export default class SoundManager implements SoundManagerInterface {
                 if (mediaInstances) {
                     // load all media first
                     const usedChannels = new Set<string>();
-                    const promises = Object.values(mediaInstances).map(async ({ soundAlias, channelAlias }) => {
-                        usedChannels.add(channelAlias);
-                        return await this.load(soundAlias);
-                    });
+                    const promises = Object.values(mediaInstances).map(
+                        async ({ soundAlias, channelAlias }) => {
+                            usedChannels.add(channelAlias);
+                            return await this.load(soundAlias);
+                        },
+                    );
                     await Promise.all(promises);
                     this.channels.forEach((channel) => {
                         if (!channel.background || !usedChannels.has(channel.alias)) {
@@ -321,10 +337,16 @@ export default class SoundManager implements SoundManagerInterface {
                         const mediaInstanceData = mediaInstances[mediaAlias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
                         if (!channel.background) {
-                            const instance = await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
-                                ...mediaInstanceData.options,
-                                filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
-                            });
+                            const instance = await channel.play(
+                                mediaAlias,
+                                mediaInstanceData.soundAlias,
+                                {
+                                    ...mediaInstanceData.options,
+                                    filters: FilterMemoryToFilter(
+                                        mediaInstanceData.options.filters || [],
+                                    ),
+                                },
+                            );
                             if (mediaInstanceData.paused) {
                                 instance.paused = mediaInstanceData.paused;
                             }
@@ -333,10 +355,16 @@ export default class SoundManager implements SoundManagerInterface {
                             !this.find(mediaAlias)
                         ) {
                             // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
-                            const instance = await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
-                                ...mediaInstanceData.options,
-                                filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
-                            });
+                            const instance = await channel.play(
+                                mediaAlias,
+                                mediaInstanceData.soundAlias,
+                                {
+                                    ...mediaInstanceData.options,
+                                    filters: FilterMemoryToFilter(
+                                        mediaInstanceData.options.filters || [],
+                                    ),
+                                },
+                            );
                             if (mediaInstanceData.paused) {
                                 instance.paused = mediaInstanceData.paused;
                             }
@@ -345,7 +373,9 @@ export default class SoundManager implements SoundManagerInterface {
                             if (instance) {
                                 SoundManagerStatic.mediaInstances[mediaAlias].options = {
                                     ...mediaInstanceData.options,
-                                    filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                                    filters: FilterMemoryToFilter(
+                                        mediaInstanceData.options.filters || [],
+                                    ),
                                 };
                                 if (instance.paused !== mediaInstanceData.paused) {
                                     instance.paused = mediaInstanceData.paused;

@@ -2,11 +2,11 @@ type PauseTickerType = {
     /**
      * Ticker ids excluded
      */
-    tickerIdsExcluded?: string[]
+    tickerIdsExcluded?: string[];
     /**
      * Ticker ids included
      */
-    tickerIdsIncluded?: string[]
-}
+    tickerIdsIncluded?: string[];
+};
 
-export default PauseTickerType
+export default PauseTickerType;

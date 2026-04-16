@@ -1,1 +1,1 @@
-export default interface TickerArgs { }
+export default interface TickerArgs {}

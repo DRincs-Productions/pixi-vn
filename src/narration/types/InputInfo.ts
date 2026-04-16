@@ -1,4 +1,4 @@
 export type InputInfo = {
-    isRequired?: boolean
-    type?: string
-}
+    isRequired?: boolean;
+    type?: string;
+};

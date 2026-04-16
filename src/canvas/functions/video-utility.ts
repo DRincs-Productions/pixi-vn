@@ -22,16 +22,25 @@ import VideoSprite from "../components/VideoSprite";
  * await video2.load()
  * ```
  */
-export function addVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): VideoSprite {
+export function addVideo(
+    alias: string,
+    videoUrl?: string,
+    options?: VideoSpriteOptions,
+): VideoSprite {
     if (!videoUrl) {
         if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;
         } else {
-            throw new PixiError("unregistered_asset", `The video ${alias} does not exist in the cache.`, "canvas", {
-                pixivnId: CANVAS_VIDEO_ID,
-                ...options,
-                label: alias,
-            });
+            throw new PixiError(
+                "unregistered_asset",
+                `The video ${alias} does not exist in the cache.`,
+                "canvas",
+                {
+                    pixivnId: CANVAS_VIDEO_ID,
+                    ...options,
+                    label: alias,
+                },
+            );
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };
@@ -57,16 +66,25 @@ export function addVideo(alias: string, videoUrl?: string, options?: VideoSprite
  * let video2 = showVideo("video2")
  * ```
  */
-export async function showVideo(alias: string, videoUrl?: string, options?: VideoSpriteOptions): Promise<VideoSprite> {
+export async function showVideo(
+    alias: string,
+    videoUrl?: string,
+    options?: VideoSpriteOptions,
+): Promise<VideoSprite> {
     if (!videoUrl) {
         if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;
         } else {
-            throw new PixiError("unregistered_asset", `The video ${alias} does not exist in the cache.`, "canvas", {
-                pixivnId: CANVAS_VIDEO_ID,
-                ...options,
-                label: alias,
-            });
+            throw new PixiError(
+                "unregistered_asset",
+                `The video ${alias} does not exist in the cache.`,
+                "canvas",
+                {
+                    pixivnId: CANVAS_VIDEO_ID,
+                    ...options,
+                    label: alias,
+                },
+            );
         }
     }
     let oldMemory = { ...canvas.find(alias)?.memory, ...options };

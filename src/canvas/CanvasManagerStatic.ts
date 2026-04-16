@@ -147,7 +147,9 @@ export default class CanvasManagerStatic {
         let div = CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
         if (div) {
             div.remove();
-            CanvasManagerStatic.htmlLayers = CanvasManagerStatic.htmlLayers.filter((layer) => layer.id !== id);
+            CanvasManagerStatic.htmlLayers = CanvasManagerStatic.htmlLayers.filter(
+                (layer) => layer.id !== id,
+            );
         }
     }
     static getHtmlLayer(id: string): HTMLElement | undefined {
@@ -214,7 +216,8 @@ export default class CanvasManagerStatic {
             .filter((child) => child.label)
             .sort(
                 (a, b) =>
-                    CanvasManagerStatic.gameLayer.getChildIndex(a) - CanvasManagerStatic.gameLayer.getChildIndex(b),
+                    CanvasManagerStatic.gameLayer.getChildIndex(a) -
+                    CanvasManagerStatic.gameLayer.getChildIndex(b),
             )
             .map((item) => item.label);
     }
@@ -241,7 +244,8 @@ export default class CanvasManagerStatic {
         );
     }
     static _currentTickers: { [id: string]: TickerInfo<any> } = {};
-    static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } = {};
+    static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } =
+        {};
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
     static _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
@@ -249,7 +253,11 @@ export default class CanvasManagerStatic {
     } = { tikersIds: [], stepAlias: [] };
     static generateTickerId(...args: any[]): string {
         try {
-            return sha1(JSON.stringify(args)).toString() + "_" + Math.random().toString(36).substring(7);
+            return (
+                sha1(JSON.stringify(args)).toString() +
+                "_" +
+                Math.random().toString(36).substring(7)
+            );
         } catch (e) {
             throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }
@@ -286,16 +294,19 @@ export default class CanvasManagerStatic {
     }
     static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
         // todo
-        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(([timeout, tickerTimeout]) => {
-            let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
-            if (aliasesWithoutAliasToRemove.length === 0) {
-                let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
-                if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
-                    CanvasManagerStatic.removeTickerTimeout(timeout);
+        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(
+            ([timeout, tickerTimeout]) => {
+                let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
+                if (aliasesWithoutAliasToRemove.length === 0) {
+                    let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
+                    if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
+                        CanvasManagerStatic.removeTickerTimeout(timeout);
+                    }
+                } else {
+                    CanvasManagerStatic._currentTickersTimeouts[timeout].aliases =
+                        aliasesWithoutAliasToRemove;
                 }
-            } else {
-                CanvasManagerStatic._currentTickersTimeouts[timeout].aliases = aliasesWithoutAliasToRemove;
-            }
-        });
+            },
+        );
     }
 }

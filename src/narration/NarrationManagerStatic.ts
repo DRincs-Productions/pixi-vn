@@ -40,9 +40,15 @@ export default class NarrationManagerStatic {
         );
     }
     static set allOpenedLabels(value: AllOpenedLabelsType) {
-        GameUnifier.setVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY, value);
+        GameUnifier.setVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY,
+            value,
+        );
     }
-    static getCurrentStepTimesCounterData(nestedId: string = ""): CurrentStepTimesCounterMemotyData | null {
+    static getCurrentStepTimesCounterData(
+        nestedId: string = "",
+    ): CurrentStepTimesCounterMemotyData | null {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
         if (currentLabelStepIndex === null) {
             logger.error("currentLabelStepIndex is null");
@@ -52,7 +58,9 @@ export default class NarrationManagerStatic {
         let labelId = NarrationManagerStatic.currentLabelId;
         let currentLabel = NarrationManagerStatic._currentLabel;
         if (!labelId || currentLabelStepIndex === null || !currentLabel) {
-            logger.error("currentLabelId or currentLabelStepIndex is null or currentLabel not found");
+            logger.error(
+                "currentLabelId or currentLabelStepIndex is null or currentLabel not found",
+            );
             return null;
         }
         let stepSha1 = currentLabel.getStepSha(currentLabelStepIndex) || "error";
@@ -64,12 +72,18 @@ export default class NarrationManagerStatic {
         if (!obj[labelId]) {
             obj[labelId] = {};
         }
-        if (!obj[labelId][currentLabelStepIndexId] || obj[labelId][currentLabelStepIndexId].stepSha1 != stepSha1) {
+        if (
+            !obj[labelId][currentLabelStepIndexId] ||
+            obj[labelId][currentLabelStepIndexId].stepSha1 != stepSha1
+        ) {
             obj[labelId][currentLabelStepIndexId] = { stepSha1: stepSha1 };
         }
         return obj[labelId][currentLabelStepIndexId];
     }
-    private static setCurrentStepTimesCounterData(nestedId: string = "", data: CurrentStepTimesCounterMemotyData) {
+    private static setCurrentStepTimesCounterData(
+        nestedId: string = "",
+        data: CurrentStepTimesCounterMemotyData,
+    ) {
         let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
         let currentLabelStepIndexId = currentLabelStepIndex + nestedId;
         let labelId = NarrationManagerStatic.currentLabelId;
@@ -178,7 +192,11 @@ export default class NarrationManagerStatic {
         );
     }
     static set allChoicesMade(value: ChoicesMadeType[]) {
-        GameUnifier.setVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY, value);
+        GameUnifier.setVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY,
+            value,
+        );
     }
     static _stepCounter: number = 0;
     /**
@@ -211,14 +229,20 @@ export default class NarrationManagerStatic {
      */
     static get currentLabelId(): LabelIdType | undefined {
         if (NarrationManagerStatic._openedLabels.length > 0) {
-            let item = NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1];
+            let item =
+                NarrationManagerStatic._openedLabels[
+                    NarrationManagerStatic._openedLabels.length - 1
+                ];
             return item.label;
         }
         return undefined;
     }
     static get currentLabelStepIndex(): number | null {
         if (NarrationManagerStatic._openedLabels.length > 0) {
-            let item = NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1];
+            let item =
+                NarrationManagerStatic._openedLabels[
+                    NarrationManagerStatic._openedLabels.length - 1
+                ];
             return item.currentStepIndex;
         }
         return null;
@@ -240,7 +264,12 @@ export default class NarrationManagerStatic {
             NarrationManagerStatic.allOpenedLabels = allOpenedLabels;
         }
     }
-    static addChoicesMade(label: LabelIdType, stepIndex: number, stepSha: string, choiceMade: number) {
+    static addChoicesMade(
+        label: LabelIdType,
+        stepIndex: number,
+        stepSha: string,
+        choiceMade: number,
+    ) {
         let allChoicesMade = NarrationManagerStatic.allChoicesMade;
         let alredyMade = allChoicesMade.findIndex(
             (item) =>
@@ -287,19 +316,31 @@ export default class NarrationManagerStatic {
      */
     static increaseCurrentStepIndex() {
         if (NarrationManagerStatic._openedLabels.length > 0) {
-            let item = NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1];
-            NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1] = {
-                ...item,
-                currentStepIndex: item.currentStepIndex + 1,
-            };
+            let item =
+                NarrationManagerStatic._openedLabels[
+                    NarrationManagerStatic._openedLabels.length - 1
+                ];
+            NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1] =
+                {
+                    ...item,
+                    currentStepIndex: item.currentStepIndex + 1,
+                };
         }
     }
 
-    private static _onStepStart?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
-    static set onStepStart(value: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>) {
+    private static _onStepStart?: (
+        stepId: number,
+        label: LabelAbstract<any>,
+    ) => void | Promise<void>;
+    static set onStepStart(value: (
+        stepId: number,
+        label: LabelAbstract<any>,
+    ) => void | Promise<void>) {
         NarrationManagerStatic._onStepStart = value;
     }
-    static get onStepStart(): ((stepId: number, label: LabelAbstract<any>) => Promise<void[]>) | undefined {
+    static get onStepStart():
+        | ((stepId: number, label: LabelAbstract<any>) => Promise<void[]>)
+        | undefined {
         return async (stepId: number, label: LabelAbstract<any>) => {
             let res: (Promise<void> | void)[] = [];
             if (NarrationManagerStatic.onLoadingLabel && stepId === 0) {

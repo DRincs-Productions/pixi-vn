@@ -8,7 +8,10 @@ import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
  * Interface for the canvas container memory
  */
 export default interface ContainerMemory<C extends ContainerChild = ContainerChild>
-    extends ContainerOptions<C>, CanvasBaseItemMemory, ListenerExtensionMemory, AdditionalPositionsExtensionProps {
+    extends ContainerOptions<C>,
+        CanvasBaseItemMemory,
+        ListenerExtensionMemory,
+        AdditionalPositionsExtensionProps {
     /**
      * The elements contained in this container
      */

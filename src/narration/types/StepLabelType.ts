@@ -25,5 +25,5 @@ export type StepLabelType<T extends {} = {}> = (
          * The id of the label.
          */
         labelId: string;
-    }
+    },
 ) => StepLabelResultType | Promise<StepLabelResultType>;

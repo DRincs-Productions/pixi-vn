@@ -1,1 +1,1 @@
-export type RepeatType = "repeat"
+export type RepeatType = "repeat";

@@ -10,7 +10,9 @@ import { StoredDialogue } from "./interfaces/DialogueInterface";
 import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
 import NarrationGameState from "./interfaces/NarrationGameState";
 import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
-import StoredChoiceInterface, { StoredIndexedChoiceInterface } from "./interfaces/StoredChoiceInterface";
+import StoredChoiceInterface, {
+    StoredIndexedChoiceInterface,
+} from "./interfaces/StoredChoiceInterface";
 import NarrationManagerStatic from "./NarrationManagerStatic";
 import ChoicesMadeType from "./types/ChoicesMadeType";
 import { InputInfo } from "./types/InputInfo";
@@ -27,7 +29,11 @@ export default class NarrationManager implements NarrationManagerInterface {
     set currentStepTimesCounter(_: 0) {
         NarrationManagerStatic.resetCurrentStepTimesCounter();
     }
-    getRandomNumber(min: number, max: number, options: { onceOnly?: boolean } = {}): number | undefined {
+    getRandomNumber(
+        min: number,
+        max: number,
+        options: { onceOnly?: boolean } = {},
+    ): number | undefined {
         return NarrationManagerStatic.getRandomNumber(min, max, options);
     }
     get stepCounter() {
@@ -59,8 +65,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         let choices: StoredChoiceInterface[] | undefined = undefined;
         let inputValue: StorageElementType | undefined = undefined;
         let isGlued =
-            GameUnifier.getVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED) ===
-            this.stepCounter;
+            GameUnifier.getVariable(
+                NARRATION_STORAGE_KEY,
+                SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED,
+            ) === this.stepCounter;
         if (
             GameUnifier.getVariable<number>(
                 NARRATION_STORAGE_KEY,
@@ -189,7 +197,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         return NarrationManagerStatic.allOpenedLabels[label]?.openCount || 0;
     }
     public getTimesChoiceMade(index: number): number {
-        return this.alreadyCurrentStepMadeChoicesObj?.find((choice) => choice.choiceIndex === index)?.madeTimes || 0;
+        return (
+            this.alreadyCurrentStepMadeChoicesObj?.find((choice) => choice.choiceIndex === index)
+                ?.madeTimes || 0
+        );
     }
     addCurrentStepToHistory(): void {
         this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
@@ -248,11 +259,15 @@ export default class NarrationManager implements NarrationManagerInterface {
     ) {
         const { runNow = false, steps = 1 } = options;
         if (!Number.isFinite(steps)) {
-            logger.warn(`[continue] The parameter steps must be a valid finite number, received: ${steps}`);
+            logger.warn(
+                `[continue] The parameter steps must be a valid finite number, received: ${steps}`,
+            );
             return;
         }
         if (steps <= 0) {
-            logger.warn(`[continue] The parameter steps must be greater than 0, received: ${steps}`);
+            logger.warn(
+                `[continue] The parameter steps must be greater than 0, received: ${steps}`,
+            );
             return;
         }
         if (!runNow && !this.getCanContinue({ showWarn: true })) {
@@ -318,7 +333,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                 logger.error("currentLabelStepIndex is null");
                 return;
             }
-            let currentLabel = NarrationManagerStatic._currentLabel as LabelAbstract<any, T> | undefined;
+            let currentLabel = NarrationManagerStatic._currentLabel as
+                | LabelAbstract<any, T>
+                | undefined;
             if (!currentLabel) {
                 logger.error("currentLabel not found");
                 return;
@@ -375,7 +392,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                         }
                         NarrationManagerStatic.addChoicesMade(
                             lastHistoryStep.currentLabel || "error",
-                            typeof lastHistoryStep.labelStepIndex === "number" ? lastHistoryStep.labelStepIndex : -1,
+                            typeof lastHistoryStep.labelStepIndex === "number"
+                                ? lastHistoryStep.labelStepIndex
+                                : -1,
                             lastHistoryStep.stepSha1 || AdditionalShaSpetsEnum.ERROR,
                             choiceMade,
                         );
@@ -388,7 +407,10 @@ export default class NarrationManager implements NarrationManagerInterface {
                 try {
                     // Only add to history if is the main step (not a nested call/jump)
                     if (GameUnifier.runningStepsCount === 1) {
-                        NarrationManagerStatic.addLabelHistory(currentLabel.id, currentLabelStepIndex);
+                        NarrationManagerStatic.addLabelHistory(
+                            currentLabel.id,
+                            currentLabelStepIndex,
+                        );
                         this.addStepHistory(stepSha, {
                             ...options,
                             choiceMade: NarrationManagerStatic.choiceMadeTemp,
@@ -401,7 +423,10 @@ export default class NarrationManager implements NarrationManagerInterface {
 
                 try {
                     this.currentLabel &&
-                        (await this.onStepEnd(this.currentLabel, NarrationManagerStatic.currentLabelStepIndex || 0));
+                        (await this.onStepEnd(
+                            this.currentLabel,
+                            NarrationManagerStatic.currentLabelStepIndex || 0,
+                        ));
                 } catch (e) {
                     logger.warn("Error running onStepEnd", e);
                 }
@@ -671,7 +696,10 @@ export default class NarrationManager implements NarrationManagerInterface {
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
                 createExportableElement({
                     ...dialogue,
-                    character: typeof dialogue.character === "string" ? dialogue.character : dialogue.character?.id,
+                    character:
+                        typeof dialogue.character === "string"
+                            ? dialogue.character
+                            : dialogue.character?.id,
                 }),
             );
             GameUnifier.setVariable(
@@ -681,7 +709,10 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         } catch (e) {
             logger.error("DialogueInterface cannot contain functions or classes");
-            throw new PixiError("not_json_serializable", "ChoiceInterface cannot contain functions or classes");
+            throw new PixiError(
+                "not_json_serializable",
+                "ChoiceInterface cannot contain functions or classes",
+            );
         }
     }
     public get choices(): StoredIndexedChoiceInterface[] | undefined {
@@ -745,14 +776,22 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         } catch (e) {
             logger.error("ChoiceInterface cannot contain functions or classes");
-            throw new PixiError("not_json_serializable", "ChoiceInterface cannot contain functions or classes");
+            throw new PixiError(
+                "not_json_serializable",
+                "ChoiceInterface cannot contain functions or classes",
+            );
         }
     }
     public get dialogGlue(): boolean {
-        return GameUnifier.getFlag(SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY);
+        return GameUnifier.getFlag(
+            SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY,
+        );
     }
     public set dialogGlue(value: boolean) {
-        GameUnifier.setFlag(SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY, value);
+        GameUnifier.setFlag(
+            SYSTEM_RESERVED_STORAGE_KEYS.ADD_NEXT_DIALOG_TEXT_INTO_THE_CURRENT_DIALOG_FLAG_KEY,
+            value,
+        );
     }
     public get inputValue(): StorageElementType {
         return GameUnifier.getVariable(
@@ -808,8 +847,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     public removeInputRequest() {
-        GameUnifier.removeVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY);
-        GameUnifier.removeVariable(NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY);
+        GameUnifier.removeVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY,
+        );
+        GameUnifier.removeVariable(
+            NARRATION_STORAGE_KEY,
+            SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+        );
     }
 
     public clear() {

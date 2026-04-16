@@ -84,7 +84,9 @@ namespace RegisteredTickers {
         try {
             let tickerType = registeredTickers.get(tickerId);
             if (!tickerType) {
-                logger.error(`Event "${tickerId}" not found, did you forget to register it with the tickerDecorator?`);
+                logger.error(
+                    `Event "${tickerId}" not found, did you forget to register it with the tickerDecorator?`,
+                );
                 return;
             }
             return tickerType as T;
@@ -115,7 +117,9 @@ namespace RegisteredTickers {
         try {
             let ticker = registeredTickers.get(tickerId);
             if (!ticker) {
-                logger.error(`Ticker "${tickerId}" not found, did you forget to register it with the tickerDecorator?`);
+                logger.error(
+                    `Ticker "${tickerId}" not found, did you forget to register it with the tickerDecorator?`,
+                );
                 return;
             }
             return new ticker(args, options);

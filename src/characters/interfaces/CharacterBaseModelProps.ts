@@ -5,21 +5,21 @@ export default interface CharacterBaseModelProps {
     /**
      * The name of the character.
      */
-    name?: string
+    name?: string;
     /**
      * The surname of the character.
      */
-    surname?: string
+    surname?: string;
     /**
      * The age of the character.
      */
-    age?: number
+    age?: number;
     /**
      * The icon of the character.
      */
-    icon?: string
+    icon?: string;
     /**
      * The color of the character.
      */
-    color?: string
+    color?: string;
 }

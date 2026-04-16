@@ -8,12 +8,17 @@ import type {
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
 import CanvasBaseItem from "../classes/CanvasBaseItem";
-import { default as RegisteredCanvasComponents, setMemoryContainer } from "../decorators/canvas-element-decorator";
+import {
+    default as RegisteredCanvasComponents,
+    setMemoryContainer,
+} from "../decorators/canvas-element-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import { TextOptions } from "../interfaces/canvas-options";
 import TextMemory from "../interfaces/memory/TextMemory";
-import AdditionalPositionsExtension, { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
+import AdditionalPositionsExtension, {
+    analizePositionsExtensionProps,
+} from "./AdditionalPositionsExtension";
 import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
 
 /**
@@ -38,7 +43,11 @@ export default class Text
             align = options.align;
             delete options.align;
         }
-        if (options && "percentagePosition" in options && options?.percentagePosition !== undefined) {
+        if (
+            options &&
+            "percentagePosition" in options &&
+            options?.percentagePosition !== undefined
+        ) {
             percentagePosition = options.percentagePosition;
             delete options.percentagePosition;
         }
@@ -65,7 +74,11 @@ export default class Text
         this.reloadPosition();
     }
     readonly onEventsHandlers: OnEventsHandlers = {};
-    override on<T extends keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }>(
+    override on<
+        T extends
+            | keyof ContainerEvents<ContainerChild>
+            | keyof { [K: symbol]: any; [K: {} & string]: any },
+    >(
         event: T,
         fn: (
             ...args: [
@@ -73,7 +86,8 @@ export default class Text
                     ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
                 >[Extract<
                     T,
-                    keyof ContainerEvents<ContainerChild> | keyof { [K: symbol]: any; [K: {} & string]: any }
+                    | keyof ContainerEvents<ContainerChild>
+                    | keyof { [K: symbol]: any; [K: {} & string]: any }
                 >],
                 typeof this,
             ]
@@ -247,10 +261,16 @@ export default class Text
             }
         } else if (this._percentagePosition) {
             if (this._percentagePosition.x !== undefined) {
-                super.x = PropsUtils.calculatePositionByPercentagePosition("width", this._percentagePosition.x);
+                super.x = PropsUtils.calculatePositionByPercentagePosition(
+                    "width",
+                    this._percentagePosition.x,
+                );
             }
             if (this._percentagePosition.y !== undefined) {
-                super.y = PropsUtils.calculatePositionByPercentagePosition("height", this._percentagePosition.y);
+                super.y = PropsUtils.calculatePositionByPercentagePosition(
+                    "height",
+                    this._percentagePosition.y,
+                );
             }
         }
     }
@@ -297,7 +317,9 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
             element.anchor.set(memory.anchor.x, memory.anchor.y);
         }
     }
-    "resolution" in memory && memory.resolution !== undefined && (element.resolution = memory.resolution);
+    "resolution" in memory &&
+        memory.resolution !== undefined &&
+        (element.resolution = memory.resolution);
     if ("anchor" in memory && memory.anchor !== undefined) {
         if (typeof memory.anchor === "number") {
             element.anchor.set(memory.anchor, memory.anchor);
@@ -309,5 +331,7 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
     "percentagePosition" in memory &&
         memory.percentagePosition !== undefined &&
         (element.percentagePosition = memory.percentagePosition);
-    "roundPixels" in memory && memory.roundPixels !== undefined && (element.roundPixels = memory.roundPixels);
+    "roundPixels" in memory &&
+        memory.roundPixels !== undefined &&
+        (element.roundPixels = memory.roundPixels);
 }

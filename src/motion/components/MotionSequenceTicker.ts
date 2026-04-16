@@ -4,12 +4,19 @@ import {
     ObjectSegment as MotionObjectSegment,
     ObjectSegmentWithTransition as MotionObjectSegmentWithTransition,
 } from "motion";
-import { ObjectSegment, ObjectSegmentWithTransition, SequenceOptions } from "../interfaces/AnimationOptions";
+import {
+    ObjectSegment,
+    ObjectSegmentWithTransition,
+    SequenceOptions,
+} from "../interfaces/AnimationOptions";
 import { animate } from "../utils";
 import MotionTickerBase from "./MotionTickerBase";
 
 interface TArgs {
-    sequence: (ObjectSegment<CanvasBaseInterface<any>> | ObjectSegmentWithTransition<CanvasBaseInterface<any>>)[];
+    sequence: (
+        | ObjectSegment<CanvasBaseInterface<any>>
+        | ObjectSegmentWithTransition<CanvasBaseInterface<any>>
+    )[];
     options: SequenceOptions;
     /**
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/discussions/3330)
@@ -39,7 +46,10 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
                 {
                     ...(segment[1] || {}),
                     ticker: this.ticker,
-                    onComplete: index === this._args.sequence.length - 1 ? () => this.onComplete() : undefined,
+                    onComplete:
+                        index === this._args.sequence.length - 1
+                            ? () => this.onComplete()
+                            : undefined,
                 },
             ];
         });

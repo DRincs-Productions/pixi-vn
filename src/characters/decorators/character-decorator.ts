@@ -19,7 +19,7 @@ namespace RegisteredCharacters {
             let character = registeredCharacters.get(id);
             if (!character) {
                 logger.warn(
-                    `Character "${id}" not found, did you forget to register it with the RegisteredCharacters.add?`
+                    `Character "${id}" not found, did you forget to register it with the RegisteredCharacters.add?`,
                 );
                 return;
             }

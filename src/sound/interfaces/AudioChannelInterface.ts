@@ -24,7 +24,11 @@ export default interface AudioChannelInterface {
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
-    play(mediaAlias: string, soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    play(
+        mediaAlias: string,
+        soundAlias: string,
+        options?: SoundPlayOptions,
+    ): Promise<IMediaInstance>;
     /**
      * The volume of the audio channel, between 0 and 1. This is multiplied with the volume of each sound played through this channel.
      */
