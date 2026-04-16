@@ -16,12 +16,12 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID, CANVAS_SPRITE_ID, CANVAS_TEXT_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { getListenerMemory } from "../components/ListenerExtension";
-import AssetMemory from "../interfaces/AssetMemory";
-import { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
-import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
-import ContainerMemory from "../interfaces/memory/ContainerMemory";
-import SpriteMemory from "../interfaces/memory/SpriteMemory";
-import TextMemory from "../interfaces/memory/TextMemory";
+import type AssetMemory from "../interfaces/AssetMemory";
+import type { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
+import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import type ContainerMemory from "../interfaces/memory/ContainerMemory";
+import type SpriteMemory from "../interfaces/memory/SpriteMemory";
+import type TextMemory from "../interfaces/memory/TextMemory";
 
 /**
  * Export a Canvas element to a memory object
@@ -169,7 +169,7 @@ export function getMemoryText<T extends PixiText>(element: T | PixiText): TextMe
  * @returns Pixivn ID
  */
 function getPixivnId(element: any, defaultId: string): string {
-    return Object.prototype.hasOwnProperty.call(element, "pixivnId") ? element.pixivnId : defaultId;
+    return Object.hasOwn(element, "pixivnId") ? element.pixivnId : defaultId;
 }
 
 function gradientToOptions(prop: FillGradient): GradientOptions {

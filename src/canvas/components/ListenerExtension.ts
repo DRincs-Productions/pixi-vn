@@ -1,6 +1,6 @@
+import RegisteredEvents, { SERIALIZABLE_EVENT } from "@/canvas/decorators/event-decorator";
+import { logger } from "@/utils/log-utility";
 import type { Container } from "@drincs/pixi-vn/pixi.js";
-import { logger } from "../../utils/log-utility";
-import RegisteredEvents, { SERIALIZABLE_EVENT } from "../decorators/event-decorator";
 
 export interface ListenerExtensionMemory {
     onEvents?: OnEventsHandlers;
@@ -34,20 +34,19 @@ export async function setListenerMemory(
     memory: ListenerExtensionMemory | {},
 ) {
     if ("onEvents" in memory) {
-        for (let event in memory.onEvents) {
-            let id = memory.onEvents[event];
-            let instance = RegisteredEvents.get(id);
+        for (const event in memory.onEvents) {
+            const id = memory.onEvents[event];
+            const instance = RegisteredEvents.get(id);
             if (instance) {
-                element.on(event, instance as (event: any, component: typeof element) => void);
+                element.on(event, instance as (event: unknown, component: typeof element) => void);
             }
         }
     }
 }
 
-export function getListenerMemory<T extends ListenerExtension>(
-    element: T | {},
-): Record<string, any> {
-    return "onEventsHandlers" in element ? element.onEventsHandlers : {};
+export function getListenerMemory<T extends ListenerExtension>(element: Partial<T>) {
+    const { onEventsHandlers = {} } = element;
+    return onEventsHandlers;
 }
 
 export function addListenerHandler<T extends ListenerExtension>(
