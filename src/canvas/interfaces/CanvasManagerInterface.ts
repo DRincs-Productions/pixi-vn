@@ -491,6 +491,7 @@ export default interface CanvasManagerInterface {
     /**
      * Export the canvas and the tickers to an object.
      * @returns The object.
+     * @throws {PixiError} when the canvas state is not exportable (e.g. contains non-serializable properties).
      */
     export(): CanvasGameState;
     /**

@@ -131,7 +131,9 @@ export namespace Game {
                 let canvasData = {};
                 try {
                     canvasData = canvasUtils.canvas.export();
-                } catch (e) {}
+                } catch (e) {
+                    logger.error("Error exporting canvas data", e);
+                }
                 return {
                     path: getGamePath(),
                     storage: storageUtils.storage.export(),
