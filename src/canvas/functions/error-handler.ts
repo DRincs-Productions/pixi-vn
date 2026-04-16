@@ -1,7 +1,7 @@
+import ErrorContainer from "@canvas/components/ErrorContainer";
+import { canvas } from "@drincs/pixi-vn/canvas";
 import type { OnErrorHandler, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { canvas } from "..";
-import ErrorContainer from "../components/ErrorContainer";
 
 /**
  * Canvas error handler: when a `PixiError` contains `canvasElementInfo`,
@@ -9,13 +9,13 @@ import ErrorContainer from "../components/ErrorContainer";
  * remains visible and debuggable.
  */
 export function drawCanvasErrorHandler(): OnErrorHandler {
-    const errorHandler: OnErrorHandler = async (error, props) => {
+    const errorHandler: OnErrorHandler = async (error, _props) => {
         try {
             const info = (error as PixiError).canvasElementInfo;
             if (info) {
                 const container = new ErrorContainer(info);
                 // try to reuse zIndex if provided
-                const zIndex = (info as any).zIndex;
+                const zIndex = info.zIndex;
                 container.groupColor = 0xff0000;
                 const placeholder = new PIXI.Graphics();
                 placeholder.rect(0, 0, 300, 100).fill({ color: 0xff0000, alpha: 0.5 });
@@ -43,7 +43,7 @@ export function drawCanvasErrorHandler(): OnErrorHandler {
                     }
                 }
             }
-        } catch (e) {}
+        } catch (_e) {}
     };
     return errorHandler;
 }
