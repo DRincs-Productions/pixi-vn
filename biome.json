@@ -30,9 +30,6 @@
         "useImportType": "info",
         "useConst": "warn"
       }
-    },
-    "domains": {
-      "react": "recommended"
     }
   },
   "javascript": {
