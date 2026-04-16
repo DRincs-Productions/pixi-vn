@@ -144,7 +144,7 @@ RegisteredCanvasComponents.add<ImageSpriteMemory, typeof ImageSprite>(ImageSprit
 
 export async function setMemoryImageSprite(
     element: ImageSprite,
-    memory: ImageSpriteMemory | {},
+    memory: Partial<ImageSpriteMemory>,
     options?: {
         ignoreTexture?: boolean;
     },
