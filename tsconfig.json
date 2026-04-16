@@ -31,6 +31,7 @@
     "paths": {
       "@utils/*": ["./src/utils/*"],
       "@canvas/*": ["./src/canvas/*"],
+      "@constants": ["./src/constants"],
       /* Specify a set of entries that re-map imports to additional lookup locations. */
       "@drincs/pixi-vn/core": ["./src/core/index.ts"],
       "@drincs/pixi-vn/narration": ["./src/narration/index.ts"],
