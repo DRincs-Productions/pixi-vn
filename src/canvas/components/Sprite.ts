@@ -124,13 +124,13 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     private _align: Partial<PointData> | undefined = undefined;
     set align(value: Partial<PointData> | number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         if (typeof value === "number") {
             this._align.x = value;
             this._align.y = value;
         } else {
-            value.x !== undefined && (this._align.x = value.x);
-            value.y !== undefined && (this._align.y = value.y);
+            if (value.x !== undefined) this._align.x = value.x;
+            if (value.y !== undefined) this._align.y = value.y;
         }
         this.reloadPosition();
     }
@@ -158,7 +158,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set xAlign(value: number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.x = value;
         this.reloadPosition();
     }
@@ -176,7 +176,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set yAlign(value: number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.y = value;
         this.reloadPosition();
     }
@@ -195,13 +195,13 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     private _percentagePosition: Partial<PointData> | undefined = undefined;
     set percentagePosition(value: Partial<PointData> | number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         if (typeof value === "number") {
             this._percentagePosition.x = value;
             this._percentagePosition.y = value;
         } else {
-            value.x !== undefined && (this._percentagePosition.x = value.x);
-            value.y !== undefined && (this._percentagePosition.y = value.y);
+            if (value.x !== undefined) this._percentagePosition.x = value.x;
+            if (value.y !== undefined) this._percentagePosition.y = value.y;
         }
         this.reloadPosition();
     }
@@ -216,7 +216,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set percentageX(_value: number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.x = _value;
         this.reloadPosition();
     }
@@ -225,7 +225,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set percentageY(_value: number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.y = _value;
         this.reloadPosition();
     }
@@ -378,11 +378,9 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
             element.anchor.set(memory.anchor.x, memory.anchor.y);
         }
     }
-    "align" in memory && memory.align !== undefined && (element.align = memory.align);
-    "percentagePosition" in memory &&
-        memory.percentagePosition !== undefined &&
-        (element.percentagePosition = memory.percentagePosition);
-    "roundPixels" in memory &&
-        memory.roundPixels !== undefined &&
-        (element.roundPixels = memory.roundPixels);
+    if ("align" in memory && memory.align !== undefined) element.align = memory.align;
+    if ("percentagePosition" in memory && memory.percentagePosition !== undefined)
+        element.percentagePosition = memory.percentagePosition;
+    if ("roundPixels" in memory && memory.roundPixels !== undefined)
+        element.roundPixels = memory.roundPixels;
 }
