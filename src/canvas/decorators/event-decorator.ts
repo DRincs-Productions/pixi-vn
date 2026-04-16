@@ -26,7 +26,7 @@ const registeredEvents = new CachedMap<string, (...args: unknown[]) => unknown>(
  * @returns
  */
 export function eventDecorator(name?: string) {
-    return (_target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
+    return (_target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
         const fn = descriptor.value;
 
         RegisteredEvents.add(fn, name || `${propertyKey as string}`);
