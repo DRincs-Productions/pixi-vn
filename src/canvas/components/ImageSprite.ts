@@ -1,16 +1,16 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import type { Texture, TextureSource, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { SpriteMemory } from "..";
+import type { SpriteMemory } from "..";
 import { CANVAS_IMAGE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { showWithDissolve } from "../functions/canvas-transition";
 import { addImage } from "../functions/image-utility";
 import { getTexture } from "../functions/texture-utility";
-import AssetMemory from "../interfaces/AssetMemory";
-import { ImageSpriteOptions } from "../interfaces/canvas-options";
-import ImageSpriteMemory from "../interfaces/memory/ImageSpriteMemory";
+import type AssetMemory from "../interfaces/AssetMemory";
+import type { ImageSpriteOptions } from "../interfaces/canvas-options";
+import type ImageSpriteMemory from "../interfaces/memory/ImageSpriteMemory";
 import Sprite, { setMemorySprite } from "./Sprite";
 
 /**
@@ -65,7 +65,7 @@ export default class ImageSprite<
         };
     }
     override async setMemory(memory: Memory | SpriteMemory): Promise<void> {
-        let textureData: AssetMemory | undefined = undefined;
+        let textureData: AssetMemory | undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
         }
