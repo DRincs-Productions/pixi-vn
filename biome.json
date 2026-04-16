@@ -26,7 +26,6 @@
       },
       "a11y": "info",
       "style": {
-        "noDefaultExport": "off",
         "useImportType": "info",
         "useConst": "warn"
       }
