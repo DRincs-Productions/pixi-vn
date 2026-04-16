@@ -1,5 +1,5 @@
-import { CachedMap } from "../../classes";
-import { logger } from "../../utils/log-utility";
+import CachedMap from "@classes/CachedMap";
+import { logger } from "@utils/log-utility";
 
 export const SERIALIZABLE_EVENT = Symbol("SerializableEvent");
 
@@ -26,7 +26,7 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  * @returns
  */
 export function eventDecorator(name?: string) {
-    return function (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+    return (_target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) => {
         const fn = descriptor.value;
 
         RegisteredEvents.add(fn, name || `${propertyKey as string}`);
