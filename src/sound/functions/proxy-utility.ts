@@ -19,7 +19,6 @@ export function proxyMedia(
                     }
                     return Reflect.get(target, prop, receiver);
                 }
-                case "paused":
                 default:
                     return Reflect.get(target, prop, receiver);
             }

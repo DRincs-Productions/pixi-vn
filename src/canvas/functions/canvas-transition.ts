@@ -33,7 +33,6 @@ function mapDestination(destination: {
                 percentageX: destination.x,
                 percentageY: destination.y,
             };
-        case "pixel":
         default:
             return {
                 x: destination.x,

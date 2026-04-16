@@ -105,7 +105,6 @@ export default class CanvasManagerStatic {
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
                         break;
-                    case "none":
                     default:
                         break;
                 }
