@@ -30,8 +30,15 @@
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
     "paths": {
       "@utils/*": ["./src/utils/*"],
-      "@canvas/*": ["./src/canvas/*"],
       "@constants": ["./src/constants"],
+      "@core": ["./src/core/*"],
+      "@narration": ["./src/narration/*"],
+      "@history": ["./src/history/*"],
+      "@storage": ["./src/storage/*"],
+      "@canvas": ["./src/canvas/*"],
+      "@sound": ["./src/sound/*"],
+      "@characters": ["./src/characters/*"],
+      "@motion": ["./src/motion/*"],
       /* Specify a set of entries that re-map imports to additional lookup locations. */
       "@drincs/pixi-vn/core": ["./src/core/index.ts"],
       "@drincs/pixi-vn/narration": ["./src/narration/index.ts"],
