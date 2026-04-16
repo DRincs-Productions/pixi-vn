@@ -1,3 +1,17 @@
+import type CanvasBaseItem from "@canvas/classes/CanvasBaseItem";
+import type AdditionalPositionsExtension from "@canvas/components/AdditionalPositionsExtension";
+import { analizePositionsExtensionProps } from "@canvas/components/AdditionalPositionsExtension";
+import type ListenerExtension from "@canvas/components/ListenerExtension";
+import { addListenerHandler, type OnEventsHandlers } from "@canvas/components/ListenerExtension";
+import {
+    default as RegisteredCanvasComponents,
+    setMemoryContainer,
+} from "@canvas/decorators/canvas-element-decorator";
+import { getMemoryText } from "@canvas/functions/canvas-memory-utility";
+import { CanvasPropertyUtility as PropsUtils } from "@canvas/functions/canvas-property-utility";
+import type { TextOptions } from "@canvas/interfaces/canvas-options";
+import type TextMemory from "@canvas/interfaces/memory/TextMemory";
+import { CANVAS_TEXT_ID } from "@constants";
 import type {
     ContainerChild,
     ContainerEvents,
@@ -6,20 +20,6 @@ import type {
     PointData,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { CANVAS_TEXT_ID } from "../../constants";
-import type CanvasBaseItem from "../classes/CanvasBaseItem";
-import {
-    default as RegisteredCanvasComponents,
-    setMemoryContainer,
-} from "../decorators/canvas-element-decorator";
-import { getMemoryText } from "../functions/canvas-memory-utility";
-import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
-import type { TextOptions } from "../interfaces/canvas-options";
-import type TextMemory from "../interfaces/memory/TextMemory";
-import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
-import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
-import type ListenerExtension from "./ListenerExtension";
-import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
@@ -90,13 +90,13 @@ export default class Text
     private _align: Partial<PointData> | undefined = undefined;
     set align(value: Partial<PointData> | number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         if (typeof value === "number") {
             this._align.x = value;
             this._align.y = value;
         } else {
-            value.x !== undefined && (this._align.x = value.x);
-            value.y !== undefined && (this._align.y = value.y);
+            if (value.x !== undefined) this._align.x = value.x;
+            if (value.y !== undefined) this._align.y = value.y;
         }
         this.reloadPosition();
     }
@@ -124,7 +124,7 @@ export default class Text
     }
     set xAlign(value: number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.x = value;
         this.reloadPosition();
     }
@@ -142,7 +142,7 @@ export default class Text
     }
     set yAlign(value: number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.y = value;
         this.reloadPosition();
     }
@@ -161,13 +161,13 @@ export default class Text
     private _percentagePosition: Partial<PointData> | undefined = undefined;
     set percentagePosition(value: Partial<PointData> | number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         if (typeof value === "number") {
             this._percentagePosition.x = value;
             this._percentagePosition.y = value;
         } else {
-            value.x !== undefined && (this._percentagePosition.x = value.x);
-            value.y !== undefined && (this._percentagePosition.y = value.y);
+            if (value.x !== undefined) this._percentagePosition.x = value.x;
+            if (value.y !== undefined) this._percentagePosition.y = value.y;
         }
         this.reloadPosition();
     }
@@ -182,7 +182,7 @@ export default class Text
     }
     set percentageX(_value: number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.x = _value;
         this.reloadPosition();
     }
@@ -191,7 +191,7 @@ export default class Text
     }
     set percentageY(_value: number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.y = _value;
         this.reloadPosition();
     }
@@ -290,11 +290,11 @@ RegisteredCanvasComponents.add<TextMemory, typeof Text>(Text, {
     name: CANVAS_TEXT_ID,
 });
 
-export async function setMemoryText(element: Text, memory: TextMemory | {}) {
-    "text" in memory && memory.text !== undefined && (element.text = memory.text);
+export async function setMemoryText(element: Text, memory: Partial<TextMemory>) {
+    if ("text" in memory && memory.text !== undefined) element.text = memory.text;
     await setMemoryContainer(element, memory, {
         end: () => {
-            "style" in memory && memory.style !== undefined && (element.style = memory.style);
+            if ("style" in memory && memory.style !== undefined) element.style = memory.style;
         },
     });
     if ("anchor" in memory && memory.anchor !== undefined) {
@@ -304,9 +304,8 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
             element.anchor.set(memory.anchor.x, memory.anchor.y);
         }
     }
-    "resolution" in memory &&
-        memory.resolution !== undefined &&
-        (element.resolution = memory.resolution);
+    if ("resolution" in memory && memory.resolution !== undefined)
+        element.resolution = memory.resolution;
     if ("anchor" in memory && memory.anchor !== undefined) {
         if (typeof memory.anchor === "number") {
             element.anchor.set(memory.anchor, memory.anchor);
@@ -314,11 +313,9 @@ export async function setMemoryText(element: Text, memory: TextMemory | {}) {
             element.anchor.set(memory.anchor.x, memory.anchor.y);
         }
     }
-    "align" in memory && memory.align !== undefined && (element.align = memory.align);
-    "percentagePosition" in memory &&
-        memory.percentagePosition !== undefined &&
-        (element.percentagePosition = memory.percentagePosition);
-    "roundPixels" in memory &&
-        memory.roundPixels !== undefined &&
-        (element.roundPixels = memory.roundPixels);
+    if ("align" in memory && memory.align !== undefined) element.align = memory.align;
+    if ("percentagePosition" in memory && memory.percentagePosition !== undefined)
+        element.percentagePosition = memory.percentagePosition;
+    if ("roundPixels" in memory && memory.roundPixels !== undefined)
+        element.roundPixels = memory.roundPixels;
 }
