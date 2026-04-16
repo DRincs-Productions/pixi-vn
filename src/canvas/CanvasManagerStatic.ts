@@ -1,13 +1,18 @@
+import additionalPositionsProperties from "@canvas/pixi-devtools/additionalPositionsProperties";
+import type {
+    TickerHistory,
+    TickerInfo,
+    TickersSequence,
+    TickerTimeoutHistory,
+} from "@canvas/tickers";
+import { CANVAS_APP_GAME_LAYER_ALIAS } from "@constants";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { Application, ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { type Devtools, initDevtools } from "@pixi/devtools";
+import { logger } from "@utils/log-utility";
+import { throttle } from "@utils/time-utility";
 import sha1 from "crypto-js/sha1";
-import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
-import { logger } from "../utils/log-utility";
-import { throttle } from "../utils/time-utility";
-import additionalPositionsProperties from "./pixi-devtools/additionalPositionsProperties";
-import type { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
@@ -28,11 +33,11 @@ export default class CanvasManagerStatic {
         return CanvasManagerStatic._app;
     }
     static get gameLayer() {
-        let layer = this.app.stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
+        let layer = CanvasManagerStatic.app.stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
         if (!layer) {
             layer = new PIXI.Container();
             layer.label = CANVAS_APP_GAME_LAYER_ALIAS;
-            this.app.stage.addChild(layer);
+            CanvasManagerStatic.app.stage.addChild(layer);
         }
         return layer;
     }
@@ -99,12 +104,13 @@ export default class CanvasManagerStatic {
                 CanvasManagerStatic.addCanvasIntoHTMLElement(element, id);
                 // listen for the browser telling us that the screen size changed
                 switch (resizeMode) {
-                    case "contain":
+                    case "contain": {
                         const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
                         new ResizeObserver(throttledResize).observe(element);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
                         break;
+                    }
                     default:
                         break;
                 }
@@ -189,12 +195,12 @@ export default class CanvasManagerStatic {
         style.height = `${screenHeight}px`;
         const horizontalMargin = (containerWidth - screenWidth) / 2;
         const verticalMargin = (containerHeight - screenHeight) / 2;
-        (style as any).marginLeft = `${horizontalMargin}px`;
-        (style as any).marginRight = `${horizontalMargin}px`;
-        (style as any).marginTop = `${verticalMargin}px`;
-        (style as any).marginBottom = `${verticalMargin}px`;
+        style.marginLeft = `${horizontalMargin}px`;
+        style.marginRight = `${horizontalMargin}px`;
+        style.marginTop = `${verticalMargin}px`;
+        style.marginBottom = `${verticalMargin}px`;
 
-        const promises = CanvasManagerStatic.htmlLayers.map((layer) => {
+        CanvasManagerStatic.htmlLayers.forEach((layer) => {
             layer.style.width = `${screenWidth}px`;
             layer.style.height = `${screenHeight}px`;
             layer.style.marginLeft = `${horizontalMargin}px`;
@@ -202,7 +208,6 @@ export default class CanvasManagerStatic {
             layer.style.marginTop = `${verticalMargin}px`;
             layer.style.marginBottom = `${verticalMargin}px`;
         });
-        await Promise.all(promises);
     }
 
     /* Edit Canvas Elements Methods */
@@ -295,7 +300,9 @@ export default class CanvasManagerStatic {
         // todo
         Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(
             ([timeout, tickerTimeout]) => {
-                const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
+                const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter(
+                    (t) => t !== alias,
+                );
                 if (aliasesWithoutAliasToRemove.length === 0) {
                     const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
                     if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
