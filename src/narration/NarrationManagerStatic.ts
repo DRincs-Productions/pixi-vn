@@ -74,7 +74,7 @@ export default class NarrationManagerStatic {
         }
         if (
             !obj[labelId][currentLabelStepIndexId] ||
-            obj[labelId][currentLabelStepIndexId].stepSha1 != stepSha1
+            obj[labelId][currentLabelStepIndexId].stepSha1 !== stepSha1
         ) {
             obj[labelId][currentLabelStepIndexId] = { stepSha1: stepSha1 };
         }

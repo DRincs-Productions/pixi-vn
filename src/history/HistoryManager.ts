@@ -56,7 +56,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (steps <= 0) {
             return restoredStep;
         }
-        if (this.size == 0) {
+        if (this.size === 0) {
             return restoredStep;
         }
         const lastKey = this.lastKey;

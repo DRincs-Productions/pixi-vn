@@ -297,7 +297,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         steps: (Ticker<any> | RepeatType | PauseType)[],
         currentStepNumber = 0,
     ) {
-        if (steps.length == 0) {
+        if (steps.length === 0) {
             logger.warn("The steps of the tickers is empty");
             return;
         }
@@ -457,7 +457,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             });
             if (
                 !ignoreTickerSteps &&
-                info.ticker.duration == undefined &&
+                info.ticker.duration === undefined &&
                 info.createdByTicketSteps
             ) {
                 this.nextTickerStep(

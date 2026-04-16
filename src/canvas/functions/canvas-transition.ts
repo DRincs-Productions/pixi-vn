@@ -637,22 +637,22 @@ export async function zoomIn(
         await component.load();
     }
     // edit the properties of the new component
-    if (direction == "up") {
+    if (direction === "up") {
         component.pivot.y = canvas.height - component.y;
         component.pivot.x = canvas.width / 2 - component.x;
         component.y = canvas.height;
         component.x = canvas.width / 2;
-    } else if (direction == "down") {
+    } else if (direction === "down") {
         component.pivot.y = 0 - component.y;
         component.pivot.x = canvas.width / 2 - component.x;
         component.y = 0;
         component.x = canvas.width / 2;
-    } else if (direction == "left") {
+    } else if (direction === "left") {
         component.pivot.x = canvas.width - component.x;
         component.pivot.y = canvas.height / 2 - component.y;
         component.x = canvas.width;
         component.y = canvas.height / 2;
-    } else if (direction == "right") {
+    } else if (direction === "right") {
         component.pivot.x = 0 - component.x;
         component.pivot.y = canvas.height / 2 - component.y;
         component.x = 0;
@@ -723,22 +723,22 @@ export function zoomOut(
         x: component.pivot.x,
         y: component.pivot.y,
     };
-    if (direction == "down") {
+    if (direction === "down") {
         destination.y = canvas.height;
         destination.x = canvas.width / 2;
         pivot.y = canvas.height - destination.y;
         pivot.x = canvas.width / 2 - destination.x;
-    } else if (direction == "up") {
+    } else if (direction === "up") {
         destination.y = 0;
         destination.x = canvas.width / 2;
         pivot.y = 0 - destination.y;
         pivot.x = canvas.width / 2 - destination.x;
-    } else if (direction == "right") {
+    } else if (direction === "right") {
         destination.x = canvas.width;
         destination.y = canvas.height / 2;
         pivot.x = canvas.width - destination.x;
         pivot.y = canvas.height / 2 - destination.y;
-    } else if (direction == "left") {
+    } else if (direction === "left") {
         destination.x = 0;
         destination.y = canvas.height / 2;
         pivot.x = 0 - destination.x;
