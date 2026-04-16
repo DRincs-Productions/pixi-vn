@@ -18,7 +18,7 @@ import {
 } from "./AdditionalPositionsExtension";
 import type AnchorExtension from "./AnchorExtension";
 import type ListenerExtension from "./ListenerExtension";
-import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension"
+import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods,

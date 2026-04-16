@@ -30,7 +30,7 @@ import {
     analizePositionsExtensionProps,
 } from "./AdditionalPositionsExtension";
 import type ListenerExtension from "./ListenerExtension";
-import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension"
+import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
