@@ -1,17 +1,17 @@
+import Sprite, { setMemorySprite } from "@canvas/components/Sprite";
+import { default as RegisteredCanvasComponents } from "@canvas/decorators/canvas-element-decorator";
+import { showWithDissolve } from "@canvas/functions/canvas-transition";
+import { addImage } from "@canvas/functions/image-utility";
+import { getTexture } from "@canvas/functions/texture-utility";
+import type AssetMemory from "@canvas/interfaces/AssetMemory";
+import type { ImageSpriteOptions } from "@canvas/interfaces/canvas-options";
+import type ImageSpriteMemory from "@canvas/interfaces/memory/ImageSpriteMemory";
+import type SpriteMemory from "@canvas/interfaces/memory/SpriteMemory";
+import { CANVAS_IMAGE_ID } from "@constants";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import type { Texture, TextureSource, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import type { SpriteMemory } from "..";
-import { CANVAS_IMAGE_ID } from "../../constants";
-import { logger } from "../../utils/log-utility";
-import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
-import { showWithDissolve } from "../functions/canvas-transition";
-import { addImage } from "../functions/image-utility";
-import { getTexture } from "../functions/texture-utility";
-import type AssetMemory from "../interfaces/AssetMemory";
-import type { ImageSpriteOptions } from "../interfaces/canvas-options";
-import type ImageSpriteMemory from "../interfaces/memory/ImageSpriteMemory";
-import Sprite, { setMemorySprite } from "./Sprite";
+import { logger } from "@utils/log-utility";
 
 /**
  * This class is a extension of the {@link Sprite} class, it has the same properties and methods,
