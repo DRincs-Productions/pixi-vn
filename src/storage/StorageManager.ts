@@ -7,10 +7,11 @@ import {
 } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
-import StorageGameState, { StorageGameStateItem } from "./interfaces/StorageGameState";
-import StorageManagerInterface from "./interfaces/StorageManagerInterface";
+import type StorageGameState from "./interfaces/StorageGameState";
+import type { StorageGameStateItem } from "./interfaces/StorageGameState";
+import type StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManagerStatic from "./StorageManagerStatic";
-import { StorageElementType } from "./types/StorageElementType";
+import type { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManager implements StorageManagerInterface {
     get base() {

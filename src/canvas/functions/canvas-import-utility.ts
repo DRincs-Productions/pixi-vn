@@ -1,7 +1,7 @@
 import { PixiError } from "@drincs/pixi-vn/core";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
-import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 
 /**
  * Import a Canvas element from a memory object

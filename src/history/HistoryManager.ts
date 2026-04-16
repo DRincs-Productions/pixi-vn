@@ -1,19 +1,19 @@
-import { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
+import type { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import diff from "microdiff";
-import {
+import type {
     HistoryChoiceMenuOption,
     HistoryStep,
     NarrationHistory,
     StepLabelPropsType,
 } from "../narration";
-import { StorageElementType } from "../storage/types/StorageElementType";
+import type { StorageElementType } from "../storage/types/StorageElementType";
 import { createExportableElement } from "../utils";
 import { restoreDiffChanges } from "../utils/diff-utility";
 import { logger } from "../utils/log-utility";
 import HistoryManagerStatic from "./HistoryManagerStatic";
-import HistoryGameState from "./interfaces/HistoryGameState";
-import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
+import type HistoryGameState from "./interfaces/HistoryGameState";
+import type HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
 
 /**
  * This class is a class that manages the steps and labels of the game.

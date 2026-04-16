@@ -1,9 +1,9 @@
 import sha1 from "crypto-js/sha1";
-import { LabelProps } from "../..";
+import type { LabelProps } from "../..";
 import { logger } from "../../utils/log-utility";
 import { AdditionalShaSpetsEnum } from "../interfaces/HistoryStep";
-import { LabelIdType } from "../types/LabelIdType";
-import { StepLabelType } from "../types/StepLabelType";
+import type { LabelIdType } from "../types/LabelIdType";
+import type { StepLabelType } from "../types/StepLabelType";
 import LabelAbstract from "./LabelAbstract";
 
 /**

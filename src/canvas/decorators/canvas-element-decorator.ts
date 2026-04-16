@@ -1,11 +1,11 @@
-import { ContainerOptions, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
+import type { ContainerOptions, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import { setListenerMemory } from "../components/ListenerExtension";
-import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
-import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
+import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import type { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
 const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof CanvasBaseItem<any>>(
     { cacheSize: 5 },

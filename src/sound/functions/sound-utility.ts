@@ -1,6 +1,6 @@
-import { Filter, filters } from "@pixi/sound";
+import { type Filter, filters } from "@pixi/sound";
 import { logger } from "../../utils/log-utility";
-import SoundFilterMemory from "../types/SoundFilterMemory";
+import type SoundFilterMemory from "../types/SoundFilterMemory";
 
 export function FilterMemoryToFilter(filter: SoundFilterMemory[]): Filter[] {
     const res: Filter[] = [];

@@ -1,14 +1,14 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import { LabelAbstract } from ".";
+import type { LabelAbstract } from ".";
 import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
-import Label from "./classes/Label";
+import type Label from "./classes/Label";
 import RegisteredLabels from "./decorators/RegisteredLabels";
-import HistoryStep from "./interfaces/HistoryStep";
-import OpenedLabel from "./interfaces/OpenedLabel";
-import ChoicesMadeType from "./types/ChoicesMadeType";
-import { LabelIdType } from "./types/LabelIdType";
+import type HistoryStep from "./interfaces/HistoryStep";
+import type OpenedLabel from "./interfaces/OpenedLabel";
+import type ChoicesMadeType from "./types/ChoicesMadeType";
+import type { LabelIdType } from "./types/LabelIdType";
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number; openCount: number } };
 

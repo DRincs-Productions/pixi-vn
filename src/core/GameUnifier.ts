@@ -6,9 +6,9 @@ import type {
     StepLabelResultType,
     StepLabelType,
 } from "../narration/types/StepLabelType";
-import { StorageElementType } from "../storage/types/StorageElementType";
+import type { StorageElementType } from "../storage/types/StorageElementType";
 import { logger } from "../utils/log-utility";
-import OnErrorHandler from "./OnErrorHandler";
+import type OnErrorHandler from "./OnErrorHandler";
 import PixiError from "./PixiError";
 
 export default class GameUnifier {

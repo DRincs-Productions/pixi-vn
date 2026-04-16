@@ -1,8 +1,8 @@
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
-import Label from "../classes/Label";
-import LabelAbstract from "../classes/LabelAbstract";
-import { LabelIdType } from "../types/LabelIdType";
+import type Label from "../classes/Label";
+import type LabelAbstract from "../classes/LabelAbstract";
+import type { LabelIdType } from "../types/LabelIdType";
 
 /**
  * A Map that contains all labels registered and available to be used.

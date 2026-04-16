@@ -4,9 +4,9 @@ import { CANVAS_VIDEO_ID } from "../../constants";
 import { default as RegisteredCanvasComponents } from "../decorators/canvas-element-decorator";
 import { showWithDissolve } from "../functions/canvas-transition";
 import { addVideo } from "../functions/video-utility";
-import AssetMemory from "../interfaces/AssetMemory";
-import { VideoSpriteOptions } from "../interfaces/canvas-options";
-import VideoSpriteMemory from "../interfaces/memory/VideoSpriteMemory";
+import type AssetMemory from "../interfaces/AssetMemory";
+import type { VideoSpriteOptions } from "../interfaces/canvas-options";
+import type VideoSpriteMemory from "../interfaces/memory/VideoSpriteMemory";
 import ImageSprite, { setMemoryImageSprite } from "./ImageSprite";
 
 /**

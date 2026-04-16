@@ -1,6 +1,6 @@
 import { MAIN_STORAGE_KEY } from "../../constants";
 import StorageManagerStatic from "../StorageManagerStatic";
-import { StorageElementType } from "../types/StorageElementType";
+import type { StorageElementType } from "../types/StorageElementType";
 
 /**
  * StoredClassModel is a abstract class that contains the methods to store a class in the game.

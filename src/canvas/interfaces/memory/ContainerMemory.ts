@@ -1,8 +1,8 @@
 import type { ContainerOptions } from "@drincs/pixi-vn/pixi.js";
-import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositionsExtension";
-import { ListenerExtensionMemory } from "../../components/ListenerExtension";
-import ContainerChild from "../../types/ContainerChild";
-import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
+import type { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositionsExtension";
+import type { ListenerExtensionMemory } from "../../components/ListenerExtension";
+import type ContainerChild from "../../types/ContainerChild";
+import type CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
 /**
  * Interface for the canvas container memory

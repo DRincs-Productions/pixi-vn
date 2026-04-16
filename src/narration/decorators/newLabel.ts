@@ -1,7 +1,7 @@
 import Label from "../classes/Label";
-import LabelProps from "../interfaces/LabelProps";
-import { LabelIdType } from "../types/LabelIdType";
-import LabelSteps from "../types/LabelSteps";
+import type LabelProps from "../interfaces/LabelProps";
+import type { LabelIdType } from "../types/LabelIdType";
+import type LabelSteps from "../types/LabelSteps";
 import RegisteredLabels from "./RegisteredLabels";
 
 /**

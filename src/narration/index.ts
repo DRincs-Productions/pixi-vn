@@ -1,4 +1,4 @@
-import { NarrationManagerInterface } from "..";
+import type { NarrationManagerInterface } from "..";
 import NarrationManager from "./NarrationManager";
 
 export { newChoiceOption } from "./classes/ChoiceMenuOption";

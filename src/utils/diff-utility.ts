@@ -1,4 +1,4 @@
-import { Difference } from "microdiff";
+import type { Difference } from "microdiff";
 import { createExportableElement } from "./export-utility";
 import { logger } from "./log-utility";
 

@@ -1,6 +1,6 @@
-import { canvas, ImageContainerOptions } from "..";
+import { canvas, type ImageContainerOptions } from "..";
 import ImageContainer from "../components/ImageContainer";
-import ImageSprite from "../components/ImageSprite";
+import type ImageSprite from "../components/ImageSprite";
 
 /**
  * Add a list of images in the container, after that, the images are added to the canvas.

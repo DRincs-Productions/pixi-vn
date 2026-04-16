@@ -1,4 +1,4 @@
-import { IMediaInstance as PixiMediaInstance } from "@pixi/sound";
+import type { IMediaInstance as PixiMediaInstance } from "@pixi/sound";
 
 type IMediaInstance = Omit<
     PixiMediaInstance,

@@ -12,7 +12,7 @@ import type {
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import {
     default as RegisteredCanvasComponents,
     setMemoryContainer,
@@ -20,14 +20,17 @@ import {
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import { getTexture } from "../functions/texture-utility";
-import AssetMemory from "../interfaces/AssetMemory";
-import { SpriteOptions } from "../interfaces/canvas-options";
-import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
-import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
-import AdditionalPositionsExtension, {
+import type AssetMemory from "../interfaces/AssetMemory";
+import type { SpriteOptions } from "../interfaces/canvas-options";
+import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import type SpriteMemory from "../interfaces/memory/SpriteMemory";
+import type { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
+import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
+import {
     analizePositionsExtensionProps,
 } from "./AdditionalPositionsExtension";
-import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
+import type ListenerExtension from "./ListenerExtension";
+import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension"
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,

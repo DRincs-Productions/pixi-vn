@@ -3,7 +3,7 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import CanvasManager from "./CanvasManager";
 import { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
-import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
+import type CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 
 export const { Assets, Color, Rectangle, TextStyle, Texture, UPDATE_PRIORITY } = PIXI;
 export type { TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/pixi.js";

@@ -1,6 +1,6 @@
 import { PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { canvas, VideoSpriteOptions } from "..";
+import { canvas, type VideoSpriteOptions } from "..";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import VideoSprite from "../components/VideoSprite";
 

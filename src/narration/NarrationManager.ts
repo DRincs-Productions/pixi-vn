@@ -1,23 +1,25 @@
-import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
+import type { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
 import type { StorageElementType } from "../storage";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
-import LabelAbstract from "./classes/LabelAbstract";
+import type LabelAbstract from "./classes/LabelAbstract";
 import RegisteredLabels from "./decorators/RegisteredLabels";
-import { StoredDialogue } from "./interfaces/DialogueInterface";
-import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
-import NarrationGameState from "./interfaces/NarrationGameState";
-import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
-import StoredChoiceInterface, {
+import type { StoredDialogue } from "./interfaces/DialogueInterface";
+import type HistoryStep from "./interfaces/HistoryStep";
+import { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
+import type NarrationGameState from "./interfaces/NarrationGameState";
+import type NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
+import type StoredChoiceInterface from "./interfaces/StoredChoiceInterface";
+import type {
     StoredIndexedChoiceInterface,
 } from "./interfaces/StoredChoiceInterface";
 import NarrationManagerStatic from "./NarrationManagerStatic";
-import ChoicesMadeType from "./types/ChoicesMadeType";
-import { InputInfo } from "./types/InputInfo";
-import { LabelIdType } from "./types/LabelIdType";
-import { StepLabelPropsType, StepLabelResultType } from "./types/StepLabelType";
+import type ChoicesMadeType from "./types/ChoicesMadeType";
+import type { InputInfo } from "./types/InputInfo";
+import type { LabelIdType } from "./types/LabelIdType";
+import type { StepLabelPropsType, StepLabelResultType } from "./types/StepLabelType";
 
 /**
  * This class is a class that manages the steps and labels of the game.

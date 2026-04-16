@@ -1,6 +1,6 @@
 import { expect, test } from "vitest";
 import {
-    GameState,
+    type GameState,
     narration,
     newLabel,
     PIXIVN_VERSION,

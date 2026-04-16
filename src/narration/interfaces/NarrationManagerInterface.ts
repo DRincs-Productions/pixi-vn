@@ -1,4 +1,4 @@
-import {
+import type {
     DialogueInterface,
     InputInfo,
     LabelAbstract,
@@ -9,9 +9,9 @@ import {
     StoredChoiceInterface,
     StoredIndexedChoiceInterface,
 } from "..";
-import { StorageElementType } from "../../storage";
-import { LabelIdType } from "../types/LabelIdType";
-import HistoryStep from "./HistoryStep";
+import type { StorageElementType } from "../../storage";
+import type { LabelIdType } from "../types/LabelIdType";
+import type HistoryStep from "./HistoryStep";
 
 export default interface NarrationManagerInterface {
     /**

@@ -7,8 +7,8 @@ import {
     setMemoryContainer,
 } from "../decorators/canvas-element-decorator";
 import { checkIfVideo } from "../functions/canvas-utility";
-import { ImageContainerOptions } from "../interfaces/canvas-options";
-import ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
+import type { ImageContainerOptions } from "../interfaces/canvas-options";
+import type ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
 import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import Container from "./Container";
 import ImageSprite from "./ImageSprite";

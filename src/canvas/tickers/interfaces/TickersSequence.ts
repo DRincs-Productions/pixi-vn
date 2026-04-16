@@ -1,7 +1,7 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { PauseType } from "../../types/PauseType";
-import { RepeatType } from "../../types/RepeatType";
-import TickerArgs from "./TickerArgs";
+import type { PauseType } from "../../types/PauseType";
+import type { RepeatType } from "../../types/RepeatType";
+import type TickerArgs from "./TickerArgs";
 
 export interface TickersStep<TArgs extends TickerArgs> {
     /**

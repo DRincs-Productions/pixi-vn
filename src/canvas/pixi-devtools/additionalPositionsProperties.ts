@@ -1,5 +1,5 @@
-import { PropertiesExtension } from "@pixi/devtools";
-import { AdditionalPositionsExtension, Container } from "..";
+import type { PropertiesExtension } from "@pixi/devtools";
+import type { AdditionalPositionsExtension, Container } from "..";
 
 const additionalPositionsProperties: PropertiesExtension = {
     extension: {

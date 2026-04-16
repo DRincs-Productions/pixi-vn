@@ -1,11 +1,11 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { canvas, CanvasBaseInterface, ImageContainerOptions, ImageSpriteOptions } from "..";
+import { canvas, type CanvasBaseInterface, type ImageContainerOptions, type ImageSpriteOptions } from "..";
 import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";
 import ImageSprite from "../components/ImageSprite";
 import VideoSprite from "../components/VideoSprite";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
-import {
+import type {
     MoveInOutProps,
     PushInOutProps,
     ShowWithDissolveTransitionProps,

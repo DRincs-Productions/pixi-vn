@@ -1,4 +1,4 @@
-import { SpriteBaseMemory } from "./SpriteMemory";
+import type { SpriteBaseMemory } from "./SpriteMemory";
 
 /**
  * The memory of the image. It uses for save the state of the image.

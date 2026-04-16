@@ -7,19 +7,21 @@ import type {
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_TEXT_ID } from "../../constants";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import {
     default as RegisteredCanvasComponents,
     setMemoryContainer,
 } from "../decorators/canvas-element-decorator";
 import { getMemoryText } from "../functions/canvas-memory-utility";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
-import { TextOptions } from "../interfaces/canvas-options";
-import TextMemory from "../interfaces/memory/TextMemory";
-import AdditionalPositionsExtension, {
+import type { TextOptions } from "../interfaces/canvas-options";
+import type TextMemory from "../interfaces/memory/TextMemory";
+import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
+import {
     analizePositionsExtensionProps,
 } from "./AdditionalPositionsExtension";
-import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
+import type ListenerExtension from "./ListenerExtension";
+import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension"
 
 /**
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,

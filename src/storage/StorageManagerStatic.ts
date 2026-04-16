@@ -1,7 +1,7 @@
 import { CachedMap } from "../classes";
 import { FLAGS_KEY, TEMP_STORAGE_KEY } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
-import { StorageElementType } from "./types/StorageElementType";
+import type { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {
     static storage = new CachedMap<string, any>({ cacheSize: 50 });

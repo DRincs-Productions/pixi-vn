@@ -1,4 +1,4 @@
-import { IMediaInstance } from "@pixi/sound";
+import type { IMediaInstance } from "@pixi/sound";
 import SoundManagerStatic from "../SoundManagerStatic";
 import type AudioChannel from "../classes/AudioChannel";
 import { calculateVolume } from "./channel-utility";

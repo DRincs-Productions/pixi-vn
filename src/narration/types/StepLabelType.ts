@@ -1,4 +1,4 @@
-import { StepLabelProps, StepLabelResult } from "@drincs/pixi-vn";
+import type { StepLabelProps, StepLabelResult } from "@drincs/pixi-vn";
 
 /**
  * Result of a {@link StepLabelType} execution.

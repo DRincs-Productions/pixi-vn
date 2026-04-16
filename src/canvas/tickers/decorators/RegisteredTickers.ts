@@ -1,8 +1,8 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
-import Ticker from "../interfaces/Ticker";
-import TickerArgs from "../interfaces/TickerArgs";
+import type Ticker from "../interfaces/Ticker";
+import type TickerArgs from "../interfaces/TickerArgs";
 
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.

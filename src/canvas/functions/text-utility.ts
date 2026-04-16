@@ -1,4 +1,4 @@
-import { canvas, Text, TextOptions } from "..";
+import { canvas, Text, type TextOptions } from "..";
 
 /**
  * Add and show a text in the canvas.

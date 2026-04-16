@@ -1,8 +1,8 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
-import { sound, SoundGameState } from "../src";
+import { sound, type SoundGameState } from "../src";
 import AudioChannel from "../src/sound/classes/AudioChannel";
-import IMediaInstance from "../src/sound/interfaces/IMediaInstance";
-import { SoundPlayOptions } from "../src/sound/interfaces/SoundOptions";
+import type IMediaInstance from "../src/sound/interfaces/IMediaInstance";
+import type { SoundPlayOptions } from "../src/sound/interfaces/SoundOptions";
 import SoundManagerStatic from "../src/sound/SoundManagerStatic";
 
 // ---------------------------------------------------------------------------

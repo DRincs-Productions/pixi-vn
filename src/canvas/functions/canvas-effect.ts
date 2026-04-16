@@ -1,5 +1,5 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import { canvas, ShakeEffectProps } from "..";
+import { canvas, type ShakeEffectProps } from "..";
 import { logger } from "../../utils/log-utility";
 
 /**

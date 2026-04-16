@@ -1,6 +1,6 @@
 import type { CharacterInterface } from "@drincs/pixi-vn";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
-import { Plugin } from "vite";
+import type { Plugin } from "vite";
 
 let characters: CharacterInterface[] | null = null;
 let labels: string[] | null = null;

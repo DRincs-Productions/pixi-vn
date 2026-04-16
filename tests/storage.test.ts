@@ -2,7 +2,7 @@ import { Keyv } from "keyv";
 import { expect, test } from "vitest";
 import { narration, newLabel, storage } from "../src";
 import { MAIN_STORAGE_KEY } from "../src/constants";
-import { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
+import type { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
 
 const temTestLabel = newLabel<{
     counter: number;

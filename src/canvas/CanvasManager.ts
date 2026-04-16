@@ -12,7 +12,7 @@ import type {
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { Devtools } from "@pixi/devtools";
+import type { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
@@ -22,16 +22,17 @@ import RegisteredCanvasComponents, {
 } from "./decorators/canvas-element-decorator";
 import { importCanvasElement } from "./functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "./functions/canvas-memory-utility";
-import { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
-import CanvasGameState from "./interfaces/CanvasGameState";
-import CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
-import CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
-import { Ticker, TickerArgs, TickerInfo } from "./tickers";
+import type { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
+import type CanvasGameState from "./interfaces/CanvasGameState";
+import type CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
+import type CanvasBaseItemMemory from "./interfaces/memory/CanvasBaseItemMemory";
+import type { Ticker, TickerArgs, TickerInfo } from "./tickers";
 import RegisteredTickers from "./tickers/decorators/RegisteredTickers";
-import TickersSequence, { TickersStep } from "./tickers/interfaces/TickersSequence";
+import type TickersSequence from "./tickers/interfaces/TickersSequence";
+import type { TickersStep } from "./tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "./tickers/types/AliasToRemoveAfterType";
-import { PauseType } from "./types/PauseType";
-import { RepeatType } from "./types/RepeatType";
+import type { PauseType } from "./types/PauseType";
+import type { RepeatType } from "./types/RepeatType";
 
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.

@@ -1,7 +1,7 @@
 import type { ObservablePoint, PointData } from "@drincs/pixi-vn/pixi.js";
-import { ContainerEvents, EventEmitter, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
+import { type ContainerEvents, type EventEmitter, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import {
     default as RegisteredCanvasComponents,
     setMemoryContainer,
@@ -9,14 +9,16 @@ import {
 import { importCanvasElement } from "../functions/canvas-import-utility";
 import { getMemoryContainer } from "../functions/canvas-memory-utility";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
-import { ContainerOptions } from "../interfaces/canvas-options";
-import ContainerMemory from "../interfaces/memory/ContainerMemory";
-import ContainerChild from "../types/ContainerChild";
-import AdditionalPositionsExtension, {
+import type { ContainerOptions } from "../interfaces/canvas-options";
+import type ContainerMemory from "../interfaces/memory/ContainerMemory";
+import type ContainerChild from "../types/ContainerChild";
+import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
+import {
     analizePositionsExtensionProps,
 } from "./AdditionalPositionsExtension";
-import AnchorExtension from "./AnchorExtension";
-import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
+import type AnchorExtension from "./AnchorExtension";
+import type ListenerExtension from "./ListenerExtension";
+import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension"
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods,

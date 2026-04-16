@@ -1,4 +1,4 @@
-import { StorageElementType } from "../types/StorageElementType";
+import type { StorageElementType } from "../types/StorageElementType";
 
 export interface StorageGameStateItem<T = StorageElementType> {
     key: string;

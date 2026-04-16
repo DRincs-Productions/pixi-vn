@@ -1,22 +1,23 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { Filter, filters, IMediaContext, Sound, sound } from "@pixi/sound";
+import { type Filter, filters, type IMediaContext, Sound, sound } from "@pixi/sound";
 import { GENERAL_CHANNEL } from "../constants";
 import { createExportableElement } from "../utils";
 import { logger } from "../utils/log-utility";
 import AudioChannel from "./classes/AudioChannel";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
-import AudioChannelInterface from "./interfaces/AudioChannelInterface";
-import IMediaInstance from "./interfaces/IMediaInstance";
-import SoundGameState from "./interfaces/SoundGameState";
-import SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import SoundOptions, {
+import type AudioChannelInterface from "./interfaces/AudioChannelInterface";
+import type IMediaInstance from "./interfaces/IMediaInstance";
+import type SoundGameState from "./interfaces/SoundGameState";
+import type SoundManagerInterface from "./interfaces/SoundManagerInterface";
+import type SoundOptions from "./interfaces/SoundOptions";
+import type {
     ChannelOptions,
     SoundPlayOptions,
     SoundPlayOptionsWithChannel,
 } from "./interfaces/SoundOptions";
 import SoundManagerStatic from "./SoundManagerStatic";
-import SoundFilterMemory from "./types/SoundFilterMemory";
+import type SoundFilterMemory from "./types/SoundFilterMemory";
 
 export default class SoundManager implements SoundManagerInterface {
     get context(): IMediaContext {

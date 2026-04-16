@@ -1,10 +1,10 @@
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
-import {
+import type {
     AnimationPlaybackControlsWithThen,
     ObjectSegment as MotionObjectSegment,
     ObjectSegmentWithTransition as MotionObjectSegmentWithTransition,
 } from "motion";
-import {
+import type {
     ObjectSegment,
     ObjectSegmentWithTransition,
     SequenceOptions,

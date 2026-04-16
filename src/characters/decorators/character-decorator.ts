@@ -1,4 +1,4 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
+import type { CharacterInterface } from "@drincs/pixi-vn";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 

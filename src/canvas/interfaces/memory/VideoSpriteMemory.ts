@@ -1,4 +1,4 @@
-import ImageSpriteMemory from "./ImageSpriteMemory";
+import type ImageSpriteMemory from "./ImageSpriteMemory";
 
 /**
  * The memory of the video. It uses for save the state of the video.

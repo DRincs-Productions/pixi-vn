@@ -1,4 +1,4 @@
-import { Difference } from "microdiff";
+import type { Difference } from "microdiff";
 import { expect, test } from "vitest";
 import { restoreDiffChanges } from "../src/utils/diff-utility";
 

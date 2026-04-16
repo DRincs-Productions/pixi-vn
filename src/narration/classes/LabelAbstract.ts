@@ -1,7 +1,7 @@
 import RegisteredLabels from "../decorators/RegisteredLabels";
-import LabelProps from "../interfaces/LabelProps";
-import { LabelIdType } from "../types/LabelIdType";
-import { StepLabelType } from "../types/StepLabelType";
+import type LabelProps from "../interfaces/LabelProps";
+import type { LabelIdType } from "../types/LabelIdType";
+import type { StepLabelType } from "../types/StepLabelType";
 
 export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, StepIdType = number>
     implements LabelProps<TLabel, StepIdType>

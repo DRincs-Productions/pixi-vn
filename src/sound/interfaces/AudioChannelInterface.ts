@@ -1,5 +1,5 @@
-import IMediaInstance from "./IMediaInstance";
-import { SoundPlayOptions } from "./SoundOptions";
+import type IMediaInstance from "./IMediaInstance";
+import type { SoundPlayOptions } from "./SoundOptions";
 
 export default interface AudioChannelInterface {
     /**

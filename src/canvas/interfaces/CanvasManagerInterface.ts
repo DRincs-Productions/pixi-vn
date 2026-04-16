@@ -13,14 +13,14 @@ import type {
     Rectangle,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
-import { Devtools } from "@pixi/devtools";
-import Layer from "../components/Layer";
-import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import { PauseType } from "../types/PauseType";
-import { RepeatType } from "../types/RepeatType";
-import { CanvasBaseInterface } from "./CanvasBaseInterface";
-import CanvasGameState from "./CanvasGameState";
-import CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
+import type { Devtools } from "@pixi/devtools";
+import type Layer from "../components/Layer";
+import type { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
+import type { PauseType } from "../types/PauseType";
+import type { RepeatType } from "../types/RepeatType";
+import type { CanvasBaseInterface } from "./CanvasBaseInterface";
+import type CanvasGameState from "./CanvasGameState";
+import type CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 
 export default interface CanvasManagerInterface {
     /**
