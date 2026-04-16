@@ -30,8 +30,8 @@ export default interface ListenerExtension {
 }
 
 export async function setListenerMemory(
-    element: (ListenerExtension | {}) & Container,
-    memory: ListenerExtensionMemory | {},
+    element: Partial<ListenerExtension> & Container,
+    memory: Partial<ListenerExtensionMemory>,
 ) {
     if ("onEvents" in memory) {
         for (const event in memory.onEvents) {

@@ -1,11 +1,18 @@
-import type { ContainerOptions, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
-import { canvas } from "..";
-import { CachedMap } from "../../classes";
-import { logger } from "../../utils/log-utility";
-import type CanvasBaseItem from "../classes/CanvasBaseItem";
-import { setListenerMemory } from "../components/ListenerExtension";
-import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
-import type { CanvasElementAliasType } from "../types/CanvasElementAliasType";
+import type CanvasBaseItem from "@canvas/classes/CanvasBaseItem";
+import {
+    type ListenerExtensionMemory,
+    setListenerMemory,
+} from "@canvas/components/ListenerExtension";
+import type CanvasBaseItemMemory from "@canvas/interfaces/memory/CanvasBaseItemMemory";
+import type { CanvasElementAliasType } from "@canvas/types/CanvasElementAliasType";
+import CachedMap from "@classes/CachedMap";
+import type { canvas } from "@drincs/pixi-vn/canvas";
+import type {
+    ContainerOptions,
+    Container as PixiContainer,
+    PointData,
+} from "@drincs/pixi-vn/pixi.js";
+import { logger } from "@utils/log-utility";
 
 const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof CanvasBaseItem<any>>(
     { cacheSize: 5 },
@@ -57,14 +64,14 @@ export function canvasComponentDecorator<
         copyProperty?: (component: CanvasBaseItem<M>, memory: M) => void | Promise<void>;
     } = {},
 ) {
-    return function (target: T) {
+    return (target: T) => {
         RegisteredCanvasComponents.add(target, options);
     };
 }
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,
-    memory: ContainerOptions | {},
+    memory: Partial<ContainerOptions> & Partial<ListenerExtensionMemory>,
     options?: {
         ignoreScale?: boolean;
         end?: () => Promise<void> | void;
@@ -72,19 +79,16 @@ export async function setMemoryContainer<T extends PixiContainer>(
 ) {
     const ignoreScale = options?.ignoreScale || false;
     const end = options?.end;
-    "isRenderGroup" in memory &&
-        memory.isRenderGroup !== undefined &&
-        (element.isRenderGroup = memory.isRenderGroup);
-    "blendMode" in memory &&
-        memory.blendMode !== undefined &&
-        (element.blendMode = memory.blendMode);
-    "tint" in memory && memory.tint !== undefined && (element.tint = memory.tint);
-    "alpha" in memory && memory.alpha !== undefined && (element.alpha = memory.alpha);
-    "angle" in memory && memory.angle !== undefined && (element.angle = memory.angle);
-    "renderable" in memory &&
-        memory.renderable !== undefined &&
-        (element.renderable = memory.renderable);
-    "rotation" in memory && memory.rotation !== undefined && (element.rotation = memory.rotation);
+    if ("isRenderGroup" in memory && memory.isRenderGroup !== undefined)
+        element.isRenderGroup = memory.isRenderGroup;
+    if ("blendMode" in memory && memory.blendMode !== undefined)
+        element.blendMode = memory.blendMode;
+    if ("tint" in memory && memory.tint !== undefined) element.tint = memory.tint;
+    if ("alpha" in memory && memory.alpha !== undefined) element.alpha = memory.alpha;
+    if ("angle" in memory && memory.angle !== undefined) element.angle = memory.angle;
+    if ("renderable" in memory && memory.renderable !== undefined)
+        element.renderable = memory.renderable;
+    if ("rotation" in memory && memory.rotation !== undefined) element.rotation = memory.rotation;
     if (!ignoreScale && "scale" in memory && memory.scale !== undefined) {
         if (typeof memory.scale === "number") {
             element.scale.set(memory.scale, memory.scale);
@@ -103,35 +107,31 @@ export async function setMemoryContainer<T extends PixiContainer>(
         memory.position !== undefined &&
         element.position.set(memory.position.x, memory.position.y);
     "skew" in memory && memory.skew !== undefined && element.skew.set(memory.skew.x, memory.skew.y);
-    "visible" in memory && memory.visible !== undefined && (element.visible = memory.visible);
-    "x" in memory && memory.x !== undefined && (element.x = memory.x);
-    "y" in memory && memory.y !== undefined && (element.y = memory.y);
-    "boundsArea" in memory &&
-        memory.boundsArea !== undefined &&
-        (element.boundsArea = memory.boundsArea);
+    if ("visible" in memory && memory.visible !== undefined) element.visible = memory.visible;
+    if ("x" in memory && memory.x !== undefined) element.x = memory.x;
+    if ("y" in memory && memory.y !== undefined) element.y = memory.y;
+    if ("boundsArea" in memory && memory.boundsArea !== undefined)
+        element.boundsArea = memory.boundsArea;
 
-    "cursor" in memory && memory.cursor !== undefined && (element.cursor = memory.cursor);
-    "eventMode" in memory &&
-        memory.eventMode !== undefined &&
-        (element.eventMode = memory.eventMode);
-    "interactive" in memory &&
-        memory.interactive !== undefined &&
-        (element.interactive = memory.interactive);
-    "interactiveChildren" in memory &&
-        memory.interactiveChildren !== undefined &&
-        (element.interactiveChildren = memory.interactiveChildren);
-    "hitArea" in memory && memory.hitArea !== undefined && (element.hitArea = memory.hitArea);
+    if ("cursor" in memory && memory.cursor !== undefined) element.cursor = memory.cursor;
+    if ("eventMode" in memory && memory.eventMode !== undefined)
+        element.eventMode = memory.eventMode;
+    if ("interactive" in memory && memory.interactive !== undefined)
+        element.interactive = memory.interactive;
+    if ("interactiveChildren" in memory && memory.interactiveChildren !== undefined)
+        element.interactiveChildren = memory.interactiveChildren;
+    if ("hitArea" in memory && memory.hitArea !== undefined) element.hitArea = memory.hitArea;
     setListenerMemory(element, memory);
 
     // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
-    "align" in memory &&
-        memory.align !== undefined &&
-        "align" in element &&
-        (element.align = memory.align as Partial<PointData>);
-    "percentagePosition" in memory &&
+    if ("align" in memory && memory.align !== undefined && "align" in element)
+        element.align = memory.align as Partial<PointData>;
+    if (
+        "percentagePosition" in memory &&
         memory.percentagePosition !== undefined &&
-        "percentagePosition" in element &&
-        (element.percentagePosition = memory.percentagePosition as Partial<PointData>);
+        "percentagePosition" in element
+    )
+        element.percentagePosition = memory.percentagePosition as Partial<PointData>;
 
     // end
     if (end) {
@@ -139,8 +139,8 @@ export async function setMemoryContainer<T extends PixiContainer>(
     }
     // width and height must be set after the scale
     if (!ignoreScale) {
-        "width" in memory && memory.width !== undefined && (element.width = memory.width);
-        "height" in memory && memory.height !== undefined && (element.height = memory.height);
+        if ("width" in memory && memory.width !== undefined) element.width = memory.width;
+        if ("height" in memory && memory.height !== undefined) element.height = memory.height;
     }
 }
 
