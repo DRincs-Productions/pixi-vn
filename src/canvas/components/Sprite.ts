@@ -93,8 +93,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         return await setMemorySprite(this, value);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
-        let sprite = PIXI.Sprite.from(source, skipCache);
-        let mySprite = new Sprite();
+        const sprite = PIXI.Sprite.from(source, skipCache);
+        const mySprite = new Sprite();
         mySprite.texture = sprite.texture;
         return mySprite;
     }
@@ -143,8 +143,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         this.reloadPosition();
     }
     get align() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return {
             x: PropsUtils.calculateAlignByPosition(
                 "width",
@@ -171,8 +171,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         this.reloadPosition();
     }
     get xAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "width",
             this.x,
@@ -189,8 +189,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         this.reloadPosition();
     }
     get yAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "height",
             this.y,
@@ -266,8 +266,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     protected reloadPosition() {
         if (this._align) {
-            let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-            let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+            const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+            const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
             if (this._align.x !== undefined) {
                 super.x = PropsUtils.calculatePositionByAlign(
                     "width",
@@ -344,7 +344,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     },
 ) {
     memory = analizePositionsExtensionProps(memory)!;
-    let ignoreTexture = options?.ignoreTexture || false;
+    const ignoreTexture = options?.ignoreTexture || false;
     await setMemoryContainer(element, memory);
     if (!ignoreTexture) {
         let textureData: AssetMemory | undefined = undefined;
@@ -358,7 +358,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
                     textureUrl = textureData.alias;
                 }
                 try {
-                    let texture = await getTexture(textureUrl);
+                    const texture = await getTexture(textureUrl);
                     if (texture) {
                         element.texture = texture;
                     }
@@ -375,7 +375,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
             }
         }
     }
-    let half = options?.half;
+    const half = options?.half;
     if (half) {
         await half();
     }

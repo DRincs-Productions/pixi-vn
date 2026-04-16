@@ -43,8 +43,8 @@ export function addVideo(
             );
         }
     }
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new VideoSprite(options, videoUrl);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new VideoSprite(options, videoUrl);
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
@@ -87,8 +87,8 @@ export async function showVideo(
             );
         }
     }
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new VideoSprite(options, videoUrl);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new VideoSprite(options, videoUrl);
     component.label = alias;
     await component.load();
     if (oldMemory) {

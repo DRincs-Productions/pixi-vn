@@ -12,8 +12,8 @@ import { canvas, Text, TextOptions } from "..";
  * ```
  */
 export function showText(alias: string, text: string, options?: Omit<TextOptions, "text">): Text {
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new Text({
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new Text({
         text,
         ...options,
     });

@@ -19,7 +19,7 @@ namespace RegisteredLabels {
      * @returns The label or undefined if it does not exist
      */
     export function get<T = LabelAbstract<any>>(id: LabelIdType): T | undefined {
-        let label = registeredLabels.get(id);
+        const label = registeredLabels.get(id);
         if (!label) {
             logger.error(`Label "${id}" not found`);
             return;

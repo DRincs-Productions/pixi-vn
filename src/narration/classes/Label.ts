@@ -68,8 +68,8 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
             return AdditionalShaSpetsEnum.ERROR;
         }
         try {
-            let step = this.steps[index];
-            let sha1String = sha1(step.toString().toLocaleLowerCase());
+            const step = this.steps[index];
+            const sha1String = sha1(step.toString().toLocaleLowerCase());
             return sha1String.toString();
         } catch (e) {
             logger.warn("stepSha not found, setting to ERROR", e);

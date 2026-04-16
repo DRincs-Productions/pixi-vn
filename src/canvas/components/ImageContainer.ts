@@ -95,7 +95,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
      */
     async load() {
         this._loadIsStarted = true;
-        let promises: Promise<void>[] = Array<Promise<void>>(this.children.length);
+        const promises: Promise<void>[] = Array<Promise<void>>(this.children.length);
         for (let i = 0; i < this.children.length; i++) {
             promises[i] = this.children[i].load();
         }

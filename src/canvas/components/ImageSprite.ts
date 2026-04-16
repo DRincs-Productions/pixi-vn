@@ -83,8 +83,8 @@ export default class ImageSprite<
         this.reloadPosition();
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = PIXI.Sprite.from(source, skipCache);
-        let mySprite = new ImageSprite();
+        const sprite = PIXI.Sprite.from(source, skipCache);
+        const mySprite = new ImageSprite();
         mySprite.texture = sprite.texture;
         return mySprite;
     }

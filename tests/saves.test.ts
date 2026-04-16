@@ -70,7 +70,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
     await narration.continue({});
     await narration.continue({});
 
-    let data = exportGameState();
+    const data = exportGameState();
     expect(data).toEqual({
         pixivn_version: PIXIVN_VERSION,
         stepData: {
@@ -579,7 +579,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
     });
 
     clear();
-    let tempdata = exportGameState();
+    const tempdata = exportGameState();
     expect(tempdata).toEqual({
         pixivn_version: PIXIVN_VERSION,
         stepData: {

@@ -21,8 +21,8 @@ export function addImageCointainer(
     imageUrls: string[],
     options?: ImageContainerOptions<ImageSprite>,
 ): ImageContainer {
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new ImageContainer(options, imageUrls);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new ImageContainer(options, imageUrls);
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
@@ -46,8 +46,8 @@ export async function showImageContainer(
     imageUrls: string[],
     options?: ImageContainerOptions<ImageSprite>,
 ): Promise<ImageContainer> {
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new ImageContainer(options, imageUrls);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new ImageContainer(options, imageUrls);
     component.label = alias;
     await component.load();
     if (oldMemory) {

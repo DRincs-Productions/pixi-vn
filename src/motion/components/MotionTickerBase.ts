@@ -88,7 +88,7 @@ export default abstract class MotionTickerBase<
         if (!this.canvasElementAliases.includes(alias)) {
             return;
         }
-        let element = canvas.find(alias);
+        const element = canvas.find(alias);
         if (!element) {
             return;
         }
@@ -156,7 +156,7 @@ export default abstract class MotionTickerBase<
                     if (this._args.startState && (this._args.startState as any)[p] === newValue) {
                         return true;
                     }
-                    let target = this.getItemByAlias(alias);
+                    const target = this.getItemByAlias(alias);
                     if (!target) {
                         return true;
                     }
@@ -186,7 +186,7 @@ export default abstract class MotionTickerBase<
                     if (p in this._args.startState) {
                         return (this._args.startState as any)[p];
                     }
-                    let target = this.getItemByAlias(alias);
+                    const target = this.getItemByAlias(alias);
                     if (!target) {
                         return;
                     }
@@ -215,7 +215,7 @@ export default abstract class MotionTickerBase<
                     return res;
                 },
                 has: ({ alias }, p) => {
-                    let target = this.getItemByAlias(alias);
+                    const target = this.getItemByAlias(alias);
                     if (!target) {
                         return false;
                     }
@@ -233,7 +233,7 @@ export default abstract class MotionTickerBase<
                     }
                 },
                 ownKeys: ({ alias }) => {
-                    let target = this.getItemByAlias(alias);
+                    const target = this.getItemByAlias(alias);
                     if (!target) {
                         return [];
                     }

@@ -67,7 +67,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         const diff = HistoryManagerStatic._diffHistory.get(lastKey);
         if (diff) {
             try {
-                let result = restoreDiffChanges(restoredStep, diff);
+                const result = restoreDiffChanges(restoredStep, diff);
                 GameUnifier.stepCounter = lastKey;
                 this.delete(lastKey);
                 return this.getOldGameState(steps - 1, result);
@@ -102,7 +102,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         GameUnifier.runningStepsCount++;
         try {
-            let restoredStep = createExportableElement(
+            const restoredStep = createExportableElement(
                 this.getOldGameState(steps, HistoryManagerStatic.originalStepData),
             );
             if (restoredStep) {
@@ -158,7 +158,7 @@ export default class HistoryManager implements HistoryManagerInterface {
 
                 HistoryManagerStatic._stepsInfoHistory.set(historyInfo.index, historyInfo);
                 if (historyInfo.index !== 0) {
-                    let data = diff(originalStepData, currentStepData);
+                    const data = diff(originalStepData, currentStepData);
                     if (data) {
                         HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
                     } else {
@@ -167,7 +167,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                         );
                     }
                 }
-                let previousItem = {};
+                const previousItem = {};
                 const narrativeHistory = this.itemMapper(
                     {
                         step: historyInfo,
@@ -213,7 +213,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (removeDialogue) {
             dialogue = undefined;
         }
-        let requiredChoices = step.choices;
+        const requiredChoices = step.choices;
         if (previousItem && step.currentLabel) {
             if (step.choiceIndexMade !== undefined) {
                 previousItem.choiceIndexMade = step.choiceIndexMade;
@@ -223,7 +223,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             previousItem.inputValue = step.inputValue;
         }
         if (dialogue || requiredChoices || inputValue) {
-            let choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map(
+            const choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map(
                 (choice, index) => {
                     let hidden: boolean = false;
                     if (
@@ -244,7 +244,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             if (choices) {
                 // if all choices are hidden find onlyHaveNoChoice
                 if (choices.every((choice) => choice.hidden)) {
-                    let onlyHaveNoChoice = choices.find((choice) => choice.hidden === false);
+                    const onlyHaveNoChoice = choices.find((choice) => choice.hidden === false);
                     if (onlyHaveNoChoice) {
                         onlyHaveNoChoice.hidden = false;
                     }
@@ -370,8 +370,8 @@ export default class HistoryManager implements HistoryManagerInterface {
     private isSameStep(originalState: GameStepState, newState: GameStepState) {
         if (originalState.openedLabels.length === newState.openedLabels.length) {
             try {
-                let lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
-                let historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
+                const lastStepDataOpenedLabelsString = JSON.stringify(originalState.openedLabels);
+                const historyStepOpenedLabelsString = JSON.stringify(newState.openedLabels);
                 if (
                     lastStepDataOpenedLabelsString === historyStepOpenedLabelsString &&
                     originalState.path === newState.path &&
@@ -409,11 +409,11 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (keys.length > this.stepLimitSaved) {
             keys = keys.slice(keys.length - this.stepLimitSaved);
         }
-        let stepsHistory: HistoryStep[] = [];
+        const stepsHistory: HistoryStep[] = [];
         keys.forEach((key) => {
             const step = HistoryManagerStatic._stepsInfoHistory.get(key);
             if (step) {
-                let diff = HistoryManagerStatic._diffHistory.get(key);
+                const diff = HistoryManagerStatic._diffHistory.get(key);
                 stepsHistory.push({
                     ...step,
                     diff: diff,
@@ -437,11 +437,11 @@ export default class HistoryManager implements HistoryManagerInterface {
         keys.forEach((key) => {
             const step = HistoryManagerStatic._stepsInfoHistory.get(key);
             if (step) {
-                let moreInfo = {
+                const moreInfo = {
                     ...previousItem,
                 };
                 previousItem = {};
-                let res = this.itemMapper(
+                const res = this.itemMapper(
                     {
                         step: step,
                         choiceIndexMade: moreInfo.choiceIndexMade,
@@ -465,7 +465,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                     if (step.diff) {
                         HistoryManagerStatic._diffHistory.set(step.index, step.diff);
                     }
-                    let info = { ...step, diff: undefined };
+                    const info = { ...step, diff: undefined };
                     HistoryManagerStatic._stepsInfoHistory.set(step.index, info);
                 });
                 this.restoreNarrativeHistory();

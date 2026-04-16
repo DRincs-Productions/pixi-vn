@@ -54,7 +54,7 @@ namespace RegisteredEvents {
      */
     export function get(name: string): Function | undefined {
         try {
-            let eventType = registeredEvents.get(name);
+            const eventType = registeredEvents.get(name);
             if (!eventType) {
                 logger.error(
                     `Event "${name}" not found, did you forget to register it with the eventDecorator?`,

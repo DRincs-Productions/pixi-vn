@@ -18,7 +18,7 @@ export async function getTexture(textureAlias?: string): Promise<Texture | undef
         throw new PixiError("unregistered_asset", "Texture not found");
     }
     if (PIXI.Assets.cache.has(textureAlias)) {
-        let texture = PIXI.Assets.get(textureAlias);
+        const texture = PIXI.Assets.get(textureAlias);
         if (texture) {
             return texture;
         }

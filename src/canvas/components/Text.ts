@@ -114,8 +114,8 @@ export default class Text
         this.reloadPosition();
     }
     get align() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return {
             x: PropsUtils.calculateAlignByPosition(
                 "width",
@@ -142,8 +142,8 @@ export default class Text
         this.reloadPosition();
     }
     get xAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "width",
             this.x,
@@ -160,8 +160,8 @@ export default class Text
         this.reloadPosition();
     }
     get yAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "height",
             this.y,
@@ -237,8 +237,8 @@ export default class Text
     }
     protected reloadPosition() {
         if (this._align) {
-            let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-            let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+            const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+            const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
             if (this._align.x !== undefined) {
                 super.x = PropsUtils.calculatePositionByAlign(
                     "width",

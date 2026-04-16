@@ -113,9 +113,9 @@ export namespace CanvasPropertyUtility {
         } else if (angle === 270) {
             return { x: point.y, y: -point.x };
         } else if (angle > 0 && angle < 90) {
-            let angleRad = (angle * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = (angle * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             let x = point.x * cos - point.y * sin;
             let y = point.x * sin + point.y * cos;
             // Ensure the sign of x matches point.x, and the sign of y matches point.y
@@ -127,9 +127,9 @@ export namespace CanvasPropertyUtility {
             }
             return { x, y };
         } else if (angle > 90 && angle < 180) {
-            let angleRad = ((angle - 90) * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = ((angle - 90) * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             let x = -point.y * sin - point.x * cos;
             let y = point.y * cos - point.x * sin;
             // Ensure the sign of x matches point.x, and the sign of y matches point.y
@@ -141,9 +141,9 @@ export namespace CanvasPropertyUtility {
             }
             return { x, y };
         } else if (angle > 180 && angle < 270) {
-            let angleRad = ((angle - 180) * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = ((angle - 180) * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             let x = -point.x * cos + point.y * sin;
             let y = -point.x * sin - point.y * cos;
             // Ensure the sign of x matches point.x, and the sign of y matches point.y
@@ -155,9 +155,9 @@ export namespace CanvasPropertyUtility {
             }
             return { x, y };
         } else if (angle > 270 && angle < 360) {
-            let angleRad = ((angle - 270) * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = ((angle - 270) * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             let x = point.y * sin - point.x * cos;
             let y = -point.y * cos - point.x * sin;
             // Ensure the sign of x matches point.x, and the sign of y matches point.y
@@ -189,33 +189,33 @@ export namespace CanvasPropertyUtility {
         } else if (angle === 270) {
             return { x: -superPoint.y, y: superPoint.x };
         } else if (angle > 0 && angle < 90) {
-            let angleRad = (angle * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = (angle * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             return {
                 x: superPoint.x * cos + superPoint.y * sin,
                 y: -superPoint.x * sin + superPoint.y * cos,
             };
         } else if (angle > 90 && angle < 180) {
-            let angleRad = ((angle - 90) * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = ((angle - 90) * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             return {
                 x: superPoint.y * cos - superPoint.x * sin,
                 y: -superPoint.y * sin - superPoint.x * cos,
             };
         } else if (angle > 180 && angle < 270) {
-            let angleRad = ((angle - 180) * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = ((angle - 180) * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             return {
                 x: -superPoint.x * cos - superPoint.y * sin,
                 y: superPoint.x * sin - superPoint.y * cos,
             };
         } else if (angle > 270 && angle < 360) {
-            let angleRad = ((angle - 270) * Math.PI) / 180;
-            let cos = Math.cos(angleRad);
-            let sin = Math.sin(angleRad);
+            const angleRad = ((angle - 270) * Math.PI) / 180;
+            const cos = Math.cos(angleRad);
+            const sin = Math.sin(angleRad);
             return {
                 x: -superPoint.y * cos + superPoint.x * sin,
                 y: superPoint.y * sin + superPoint.x * cos,
@@ -225,8 +225,8 @@ export namespace CanvasPropertyUtility {
     }
 
     export function getSuperWidth(canvasElement: PixiContainer): number {
-        let width = canvasElement.width;
-        let height = canvasElement.height;
+        const width = canvasElement.width;
+        const height = canvasElement.height;
         let angle = canvasElement.angle % 360;
         if (angle < 0) {
             angle += 360;
@@ -244,8 +244,8 @@ export namespace CanvasPropertyUtility {
     }
 
     export function getSuperHeight(canvasElement: PixiContainer): number {
-        let width = canvasElement.width;
-        let height = canvasElement.height;
+        const width = canvasElement.width;
+        const height = canvasElement.height;
         let angle = canvasElement.angle % 360;
         if (angle < 0) {
             angle += 360;

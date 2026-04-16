@@ -6,7 +6,7 @@ export function restoreDiffChanges<T extends object = object>(
     data: T,
     differences: Difference[],
 ): T {
-    let result = createExportableElement(data);
+    const result = createExportableElement(data);
     if (differences.length > 1 && "type" in differences[0]) {
         differences = differences.slice().reverse();
     }

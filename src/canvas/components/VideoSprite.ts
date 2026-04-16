@@ -73,8 +73,8 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         this.reloadPosition();
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
-        let sprite = PIXI.Sprite.from(source, skipCache);
-        let mySprite = new VideoSprite();
+        const sprite = PIXI.Sprite.from(source, skipCache);
+        const mySprite = new VideoSprite();
         mySprite.texture = sprite.texture;
         return mySprite;
     }
@@ -144,7 +144,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         return this.texture?.source?.resource?.currentTime || 0;
     }
     set currentTime(value: number) {
-        let duration = this.duration;
+        const duration = this.duration;
         if (duration && value >= duration) {
             value = 0;
         }

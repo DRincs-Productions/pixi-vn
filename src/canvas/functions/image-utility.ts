@@ -43,8 +43,8 @@ export function addImage(
             );
         }
     }
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new ImageSprite(options, imageUrl);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new ImageSprite(options, imageUrl);
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
@@ -87,8 +87,8 @@ export async function showImage(
             );
         }
     }
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new ImageSprite(options, imageUrl);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new ImageSprite(options, imageUrl);
     component.label = alias;
     await component.load();
     if (oldMemory) {

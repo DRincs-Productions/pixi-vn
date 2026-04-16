@@ -134,17 +134,17 @@ export default class CanvasManagerStatic {
             pointerEvents: "none",
         },
     ) {
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.setAttribute("id", id);
         div.style.position = style.position;
         div.style.pointerEvents = style.pointerEvents;
-        let res = element.appendChild(div);
+        const res = element.appendChild(div);
         CanvasManagerStatic.htmlLayers.push(div);
         CanvasManagerStatic.resize();
         return res;
     }
     static removeHtmlLayer(id: string) {
-        let div = CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
+        const div = CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
         if (div) {
             div.remove();
             CanvasManagerStatic.htmlLayers = CanvasManagerStatic.htmlLayers.filter(
@@ -165,7 +165,7 @@ export default class CanvasManagerStatic {
         const canvasWidth = CanvasManagerStatic.canvasWidth;
         const canvasHeight = CanvasManagerStatic.canvasHeight;
         let container = CanvasManagerStatic.app.resizeTo;
-        let style = CanvasManagerStatic.app.canvas.style;
+        const style = CanvasManagerStatic.app.canvas.style;
         if (!(container instanceof HTMLElement)) {
             container = document.documentElement;
         }
@@ -296,9 +296,9 @@ export default class CanvasManagerStatic {
         // todo
         Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(
             ([timeout, tickerTimeout]) => {
-                let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
+                const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
                 if (aliasesWithoutAliasToRemove.length === 0) {
-                    let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
+                    const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
                     if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
                         CanvasManagerStatic.removeTickerTimeout(timeout);
                     }

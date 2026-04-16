@@ -115,9 +115,9 @@ export async function showWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let { completeOnContinue = forceCompleteBeforeNext, tickerIdToResume = [], ...options } = props;
-    let res: string[] = [];
+    const res: string[] = [];
     if (!component) {
         component = alias;
     }
@@ -126,7 +126,7 @@ export async function showWithDissolve(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    let oldComponent = canvas.find(alias);
+    const oldComponent = canvas.find(alias);
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_disolve";
         canvas.editAlias(alias, oldComponentAlias);
@@ -145,7 +145,7 @@ export async function showWithDissolve(
     component.alpha = 0;
     // remove the old component
     if (oldComponentAlias) {
-        let ids = removeWithDissolve(
+        const ids = removeWithDissolve(
             oldComponentAlias,
             { ...props, autoplay: false, completeOnContinue },
             priority,
@@ -156,7 +156,7 @@ export async function showWithDissolve(
         }
     }
     // create the ticker and play it
-    let idShow = canvas.animate(
+    const idShow = canvas.animate(
         alias,
         {
             alpha: 1,
@@ -196,7 +196,7 @@ export function removeWithDissolve(
     props: ShowWithDissolveTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let {
         completeOnContinue = forceCompleteBeforeNext,
         aliasToRemoveAfter = [],
@@ -207,7 +207,7 @@ export function removeWithDissolve(
     }
     aliasToRemoveAfter.push(alias);
     // create the ticker and play it
-    let id = canvas.animate(
+    const id = canvas.animate(
         alias,
         {
             alpha: 0,
@@ -242,13 +242,13 @@ export async function showWithFade(
     props: ShowWithFadeTransitionProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let {
         completeOnContinue = forceCompleteBeforeNext,
         aliasToRemoveAfter = [],
         ...options
     } = props;
-    let res: string[] = [];
+    const res: string[] = [];
     if (!component) {
         component = alias;
     }
@@ -256,11 +256,11 @@ export async function showWithFade(
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
-    let oldComponent = canvas.find(alias);
+    const oldComponent = canvas.find(alias);
     if (!oldComponent) {
         return showWithDissolve(alias, component, props, priority);
     }
-    let oldComponentAlias = alias + "_temp_fade";
+    const oldComponentAlias = alias + "_temp_fade";
     canvas.editAlias(alias, oldComponentAlias);
     aliasToRemoveAfter.push(oldComponentAlias);
     // add the new component and transfer the properties of the old component to the new component
@@ -276,7 +276,7 @@ export async function showWithFade(
     // edit the properties of the new component
     component.alpha = 0;
     // create the ticker and play it
-    let idShow = canvas.animate(
+    const idShow = canvas.animate(
         alias,
         {
             alpha: 1,
@@ -290,7 +290,7 @@ export async function showWithFade(
     );
     if (idShow) {
         // remove the old component
-        let idHide = removeWithDissolve(
+        const idHide = removeWithDissolve(
             oldComponentAlias,
             {
                 ...props,
@@ -360,7 +360,7 @@ export async function moveIn(
     } = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
         completeOnContinue = forceCompleteBeforeNext,
@@ -369,7 +369,7 @@ export async function moveIn(
         removeOldComponentWithMoveOut,
         ...options
     } = props;
-    let res: string[] = [];
+    const res: string[] = [];
     let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
         undefined;
     if (!component) {
@@ -383,7 +383,7 @@ export async function moveIn(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    let oldComponent = canvas.find(alias);
+    const oldComponent = canvas.find(alias);
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_movein";
         canvas.editAlias(alias, oldComponentAlias);
@@ -414,7 +414,7 @@ export async function moveIn(
     // remove the old component
     if (oldComponentAlias) {
         if (removeOldComponentWithMoveOut) {
-            let ids = moveOut(
+            const ids = moveOut(
                 oldComponentAlias,
                 { ...props, autoplay: false, completeOnContinue },
                 priority,
@@ -449,10 +449,10 @@ export async function moveIn(
             component.x = -component.width;
             break;
     }
-    let ids = canvas.pauseTicker({ canvasAlias: alias });
+    const ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     // create the ticker and play it
-    let idShow = canvas.animate(
+    const idShow = canvas.animate(
         alias,
         mapDestination(destination) as any,
         {
@@ -483,7 +483,7 @@ export function moveOut(
     props: MoveInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
         completeOnContinue = forceCompleteBeforeNext,
@@ -495,12 +495,12 @@ export function moveOut(
     }
     aliasToRemoveAfter.push(alias);
     // get the destination
-    let component = canvas.find(alias);
+    const component = canvas.find(alias);
     if (!component) {
         logger.warn(`The canvas component "${alias}" is not found.`);
         return;
     }
-    let destination = { x: component.x, y: component.y };
+    const destination = { x: component.x, y: component.y };
     switch (direction) {
         case "up":
             destination.y = -component.height;
@@ -517,7 +517,7 @@ export function moveOut(
     }
     // create the ticker and play it
     canvas.pauseTicker({ canvasAlias: alias });
-    let id = canvas.animate(
+    const id = canvas.animate(
         alias,
         destination,
         {
@@ -555,7 +555,7 @@ export async function zoomIn(
     } = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
         completeOnContinue = forceCompleteBeforeNext,
@@ -563,7 +563,7 @@ export async function zoomIn(
         aliasToRemoveAfter = [],
         ...options
     } = props;
-    let res: string[] = [];
+    const res: string[] = [];
     let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
         undefined;
     if (!component) {
@@ -577,7 +577,7 @@ export async function zoomIn(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    let oldComponent = canvas.find(alias);
+    const oldComponent = canvas.find(alias);
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_zoom";
         canvas.editAlias(alias, oldComponentAlias);
@@ -616,7 +616,7 @@ export async function zoomIn(
     // remove the old component
     if (oldComponentAlias) {
         if (props.removeOldComponentWithZoomOut) {
-            let ids = zoomOut(
+            const ids = zoomOut(
                 oldComponentAlias,
                 { ...props, autoplay: false, completeOnContinue },
                 priority,
@@ -661,10 +661,10 @@ export async function zoomIn(
     component.pivot = PropsUtils.getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
     // pause the ticker
-    let ids = canvas.pauseTicker({ canvasAlias: alias });
+    const ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     // create the ticker and play it
-    let idShow = canvas.animate(
+    const idShow = canvas.animate(
         alias,
         {
             ...(mapDestination(destination) as any),
@@ -701,7 +701,7 @@ export function zoomOut(
     props: ZoomInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
         completeOnContinue = forceCompleteBeforeNext,
@@ -713,12 +713,12 @@ export function zoomOut(
     }
     aliasToRemoveAfter.push(alias);
     // get the destination
-    let component = canvas.find(alias);
+    const component = canvas.find(alias);
     if (!component) {
         logger.warn(`The canvas component "${alias}" is not found.`);
         return;
     }
-    let destination = { x: component.x, y: component.y };
+    const destination = { x: component.x, y: component.y };
     let pivot: { x: number; y: number } = {
         x: component.pivot.x,
         y: component.pivot.y,
@@ -747,7 +747,7 @@ export function zoomOut(
     pivot = PropsUtils.getPointBySuperPoint(pivot, component.angle);
     // create the ticker and play it
     canvas.pauseTicker({ canvasAlias: alias });
-    let id = canvas.animate(
+    const id = canvas.animate(
         alias,
         {
             ...destination,
@@ -785,14 +785,14 @@ export async function pushIn(
     props: PushInOutProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    let { forceCompleteBeforeNext = true } = props;
+    const { forceCompleteBeforeNext = true } = props;
     let {
         direction = "right",
         completeOnContinue = forceCompleteBeforeNext,
         tickerIdToResume = [],
         ...options
     } = props;
-    let res: string[] = [];
+    const res: string[] = [];
     let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
         undefined;
     if (!component) {
@@ -803,7 +803,7 @@ export async function pushIn(
     }
     // check if the alias is already exist
     let oldComponentAlias: string | undefined = undefined;
-    let oldComponent = canvas.find(alias);
+    const oldComponent = canvas.find(alias);
     if (oldComponent) {
         oldComponentAlias = alias + "_temp_push";
         canvas.editAlias(alias, oldComponentAlias);
@@ -856,11 +856,11 @@ export async function pushIn(
             component.x = -component.width;
             break;
     }
-    let ids = canvas.pauseTicker({ canvasAlias: alias });
+    const ids = canvas.pauseTicker({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     // remove the old component
     if (oldComponentAlias) {
-        let ids = pushOut(oldComponentAlias, {
+        const ids = pushOut(oldComponentAlias, {
             ...props,
             direction: direction, //== "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
             completeOnContinue,
@@ -870,7 +870,7 @@ export async function pushIn(
         }
     }
     // create the ticker and play it
-    let idShow = canvas.animate(
+    const idShow = canvas.animate(
         alias,
         mapDestination(destination) as any,
         {

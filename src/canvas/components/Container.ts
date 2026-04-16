@@ -96,8 +96,8 @@ export default class Container<
     }
     protected async importChildren(value: Memory) {
         for (let i = 0; i < value.elements.length; i++) {
-            let child = value.elements[i];
-            let element = await importCanvasElement<any, C>(child);
+            const child = value.elements[i];
+            const element = await importCanvasElement<any, C>(child);
             this.addChild(element);
         }
     }
@@ -131,8 +131,8 @@ export default class Container<
 
     private _anchor?: PointData;
     get anchor(): PointData {
-        let x = super.pivot.x / this.width;
-        let y = super.pivot.y / this.height;
+        const x = super.pivot.x / this.width;
+        const y = super.pivot.y / this.height;
         return { x, y };
     }
     set anchor(value: PointData | number) {
@@ -172,8 +172,8 @@ export default class Container<
         this.reloadPosition();
     }
     get align() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return {
             x: PropsUtils.calculateAlignByPosition(
                 "width",
@@ -200,8 +200,8 @@ export default class Container<
         this.reloadPosition();
     }
     get xAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "width",
             this.x,
@@ -219,8 +219,8 @@ export default class Container<
         this.reloadPosition();
     }
     get yAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "height",
             this.y,
@@ -299,8 +299,8 @@ export default class Container<
     }
     protected reloadPosition() {
         if (this._align) {
-            let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-            let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+            const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+            const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
             if (this._align.x !== undefined) {
                 super.x = PropsUtils.calculatePositionByAlign(
                     "width",

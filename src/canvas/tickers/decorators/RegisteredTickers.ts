@@ -82,7 +82,7 @@ namespace RegisteredTickers {
      */
     export function get<T = Ticker<any>>(tickerId: string): T | undefined {
         try {
-            let tickerType = registeredTickers.get(tickerId);
+            const tickerType = registeredTickers.get(tickerId);
             if (!tickerType) {
                 logger.error(
                     `Event "${tickerId}" not found, did you forget to register it with the tickerDecorator?`,
@@ -115,7 +115,7 @@ namespace RegisteredTickers {
         },
     ): Ticker<TArgs> | undefined {
         try {
-            let ticker = registeredTickers.get(tickerId);
+            const ticker = registeredTickers.get(tickerId);
             if (!ticker) {
                 logger.error(
                     `Ticker "${tickerId}" not found, did you forget to register it with the tickerDecorator?`,

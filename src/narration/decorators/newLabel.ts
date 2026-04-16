@@ -17,7 +17,7 @@ export default function newLabel<T extends {} = {}>(
     steps: LabelSteps<T> | (() => LabelSteps<T>),
     props?: LabelProps<Label<T>>,
 ): Label<T> {
-    let label = new Label<T>(id, steps, props);
+    const label = new Label<T>(id, steps, props);
     RegisteredLabels.add(label);
     return label;
 }

@@ -208,7 +208,7 @@ export default class SoundManager implements SoundManagerInterface {
         promise.then(async () => {
             try {
                 const assets = await PIXI.Assets.loadBundle(alias);
-                for (let key in assets) {
+                for (const key in assets) {
                     const item = assets[key];
                     if (item instanceof Sound) {
                         if (!sound.exists(key)) sound.add(key, item);
@@ -265,7 +265,7 @@ export default class SoundManager implements SoundManagerInterface {
     /* Export and Import Methods */
 
     public export(): SoundGameState {
-        let mediaInstances: {
+        const mediaInstances: {
             [key: string]: {
                 channelAlias: string;
                 soundAlias: string;
@@ -305,7 +305,7 @@ export default class SoundManager implements SoundManagerInterface {
     async restore(data: object) {
         try {
             if (data.hasOwnProperty("soundsPlaying")) {
-                let soundsPlaying = (data as SoundGameState)["soundsPlaying"];
+                const soundsPlaying = (data as SoundGameState)["soundsPlaying"];
                 if (soundsPlaying) {
                     const promises = Object.keys(soundsPlaying).map(async (alias) => {
                         await this.load(alias);
@@ -317,7 +317,7 @@ export default class SoundManager implements SoundManagerInterface {
             }
 
             if (data.hasOwnProperty("mediaInstances")) {
-                let mediaInstances = (data as SoundGameState)["mediaInstances"];
+                const mediaInstances = (data as SoundGameState)["mediaInstances"];
                 if (mediaInstances) {
                     // load all media first
                     const usedChannels = new Set<string>();
@@ -400,7 +400,7 @@ export default class SoundManager implements SoundManagerInterface {
             }
 
             if (data.hasOwnProperty("filters")) {
-                let f = (data as SoundGameState)["filters"];
+                const f = (data as SoundGameState)["filters"];
                 if (f) {
                     this.filtersAll = FilterMemoryToFilter(f);
                 }
