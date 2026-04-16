@@ -115,7 +115,7 @@ RegisteredCanvasComponents.add<ImageContainerMemory, typeof ImageContainer>(Imag
 
 export async function setMemoryImageContainer(
     element: ImageContainer,
-    memory: ImageContainerOptions | {},
+    memory: Partial<ImageContainerOptions>,
 ) {
     memory = analizePositionsExtensionProps(memory)!;
     setMemoryContainer(element, memory, {
