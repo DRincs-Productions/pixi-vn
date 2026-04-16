@@ -1,6 +1,6 @@
-import RegisteredEvents, { SERIALIZABLE_EVENT } from "@/canvas/decorators/event-decorator";
-import { logger } from "@/utils/log-utility";
+import RegisteredEvents, { SERIALIZABLE_EVENT } from "@canvas/decorators/event-decorator";
 import type { Container } from "@drincs/pixi-vn/pixi.js";
+import { logger } from "@utils/log-utility";
 
 export interface ListenerExtensionMemory {
     onEvents?: OnEventsHandlers;
