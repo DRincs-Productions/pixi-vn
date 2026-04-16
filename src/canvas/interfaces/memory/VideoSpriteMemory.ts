@@ -1,4 +1,4 @@
-import type ImageSpriteMemory from "./ImageSpriteMemory";
+import type ImageSpriteMemory from "@canvas/interfaces/memory/ImageSpriteMemory";
 
 /**
  * The memory of the video. It uses for save the state of the video.
