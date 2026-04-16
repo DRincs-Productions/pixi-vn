@@ -1,26 +1,26 @@
+import type CanvasBaseItem from "@canvas/classes/CanvasBaseItem";
+import type AdditionalPositionsExtension from "@canvas/components/AdditionalPositionsExtension";
+import { analizePositionsExtensionProps } from "@canvas/components/AdditionalPositionsExtension";
+import type AnchorExtension from "@canvas/components/AnchorExtension";
+import type ListenerExtension from "@canvas/components/ListenerExtension";
+import { addListenerHandler, type OnEventsHandlers } from "@canvas/components/ListenerExtension";
+import {
+    default as RegisteredCanvasComponents,
+    setMemoryContainer,
+} from "@canvas/decorators/canvas-element-decorator";
+import { importCanvasElement } from "@canvas/functions/canvas-import-utility";
+import { getMemoryContainer } from "@canvas/functions/canvas-memory-utility";
+import { CanvasPropertyUtility as PropsUtils } from "@canvas/functions/canvas-property-utility";
+import type { ContainerOptions } from "@canvas/interfaces/canvas-options";
+import type ContainerMemory from "@canvas/interfaces/memory/ContainerMemory";
+import type ContainerChild from "@canvas/types/ContainerChild";
+import { CANVAS_CONTAINER_ID } from "@constants";
 import type { ObservablePoint, PointData } from "@drincs/pixi-vn/pixi.js";
 import {
     type ContainerEvents,
     type EventEmitter,
     Container as PixiContainer,
 } from "@drincs/pixi-vn/pixi.js";
-import { CANVAS_CONTAINER_ID } from "../../constants";
-import type CanvasBaseItem from "../classes/CanvasBaseItem";
-import {
-    default as RegisteredCanvasComponents,
-    setMemoryContainer,
-} from "../decorators/canvas-element-decorator";
-import { importCanvasElement } from "../functions/canvas-import-utility";
-import { getMemoryContainer } from "../functions/canvas-memory-utility";
-import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
-import type { ContainerOptions } from "../interfaces/canvas-options";
-import type ContainerMemory from "../interfaces/memory/ContainerMemory";
-import type ContainerChild from "../types/ContainerChild";
-import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
-import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
-import type AnchorExtension from "./AnchorExtension";
-import type ListenerExtension from "./ListenerExtension";
-import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods,
@@ -147,13 +147,13 @@ export default class Container<
     private _align: Partial<PointData> | undefined = undefined;
     set align(value: Partial<PointData> | number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         if (typeof value === "number") {
             this._align.x = value;
             this._align.y = value;
         } else {
-            value.x !== undefined && (this._align.x = value.x);
-            value.y !== undefined && (this._align.y = value.y);
+            if (value.x !== undefined) this._align.x = value.x;
+            if (value.y !== undefined) this._align.y = value.y;
         }
         this.reloadPosition();
     }
@@ -181,7 +181,7 @@ export default class Container<
         if (this._percentagePosition) {
             this._percentagePosition = undefined;
         }
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.x = value;
         this.reloadPosition();
     }
@@ -200,7 +200,7 @@ export default class Container<
         if (this._percentagePosition) {
             this._percentagePosition = undefined;
         }
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.y = value;
         this.reloadPosition();
     }
@@ -218,13 +218,13 @@ export default class Container<
     private _percentagePosition: Partial<PointData> | undefined = undefined;
     set percentagePosition(value: Partial<PointData> | number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         if (typeof value === "number") {
             this._percentagePosition.x = value;
             this._percentagePosition.y = value;
         } else {
-            value.x !== undefined && (this._percentagePosition.x = value.x);
-            value.y !== undefined && (this._percentagePosition.y = value.y);
+            if (value.x !== undefined) this._percentagePosition.x = value.x;
+            if (value.y !== undefined) this._percentagePosition.y = value.y;
         }
         this.reloadPosition();
     }
@@ -238,7 +238,7 @@ export default class Container<
         if (this._align) {
             this._align = undefined;
         }
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.x = _value;
         this.reloadPosition();
     }
@@ -249,7 +249,7 @@ export default class Container<
         if (this._align) {
             this._align = undefined;
         }
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.y = _value;
         this.reloadPosition();
     }
