@@ -1,6 +1,9 @@
+import type {
+    canvas,
+    CanvasBaseItemMemory,
+    canvasComponentDecorator,
+} from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/core";
-import { canvas, type CanvasBaseItemMemory } from "..";
-import canvasComponentDecorator from "../decorators/canvas-element-decorator";
 
 /**
  * This class is used to create a canvas element to add into a Pixi Application.
