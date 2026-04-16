@@ -6,7 +6,7 @@ export const SERIALIZABLE_EVENT = Symbol("SerializableEvent");
 /**
  * Canvas Event Register
  */
-const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
+const registeredEvents = new CachedMap<string, (...args: unknown[]) => unknown>({ cacheSize: 5 });
 /**
  * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
@@ -39,8 +39,8 @@ namespace RegisteredEvents {
      * @param fn The class of the event.
      * @param name Name of the event, by default it will use the class name. If the name is already registered, it will show a warning
      */
-    export function add(fn: Function, name: string) {
-        (fn as any)[SERIALIZABLE_EVENT] = name;
+    export function add(fn: (...args: unknown[]) => unknown, name: string) {
+        (fn as unknown as Record<symbol, unknown>)[SERIALIZABLE_EVENT] = name;
         if (registeredEvents.get(name)) {
             logger.info(`Event "${name}" already exists, it will be overwritten`);
         }
@@ -52,7 +52,7 @@ namespace RegisteredEvents {
      * @param canvasId The id of the event.
      * @returns The event type.
      */
-    export function get(name: string): Function | undefined {
+    export function get(name: string): ((...args: unknown[]) => unknown) | undefined {
         try {
             const eventType = registeredEvents.get(name);
             if (!eventType) {
@@ -72,7 +72,7 @@ namespace RegisteredEvents {
      * Get a list of all events registered.
      * @returns An array of events.
      */
-    export function values(): Function[] {
+    export function values(): ((...args: unknown[]) => unknown)[] {
         return Array.from(registeredEvents.values());
     }
 
