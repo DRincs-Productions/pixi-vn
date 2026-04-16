@@ -17,9 +17,7 @@ import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-propert
 import type { TextOptions } from "../interfaces/canvas-options";
 import type TextMemory from "../interfaces/memory/TextMemory";
 import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
-import {
-    analizePositionsExtensionProps,
-} from "./AdditionalPositionsExtension";
+import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import type ListenerExtension from "./ListenerExtension";
 import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
 
@@ -38,22 +36,9 @@ export default class Text
     implements CanvasBaseItem<TextMemory>, AdditionalPositionsExtension, ListenerExtension
 {
     constructor(options?: TextOptions) {
-        options = analizePositionsExtensionProps(options as any);
-        let align = undefined;
-        let percentagePosition = undefined;
-        if (options && "align" in options && options?.align !== undefined) {
-            align = options.align;
-            delete options.align;
-        }
-        if (
-            options &&
-            "percentagePosition" in options &&
-            options?.percentagePosition !== undefined
-        ) {
-            percentagePosition = options.percentagePosition;
-            delete options.percentagePosition;
-        }
-        super(options);
+        const { align, percentagePosition, ...restOptions } =
+            analizePositionsExtensionProps(options) || {};
+        super(restOptions);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_TEXT_ID;
         if (align) {
             this.align = align;

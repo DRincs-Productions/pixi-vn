@@ -26,9 +26,7 @@ import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory
 import type SpriteMemory from "../interfaces/memory/SpriteMemory";
 import type { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
 import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
-import {
-    analizePositionsExtensionProps,
-} from "./AdditionalPositionsExtension";
+import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import type ListenerExtension from "./ListenerExtension";
 import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
 
@@ -58,30 +56,21 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         ListenerExtension,
         AdditionalPositionsExtension
 {
-    constructor(options?: SpriteOptions | Omit<Texture, "on">) {
-        options = analizePositionsExtensionProps(options as any);
-        let align = undefined;
-        let percentagePosition = undefined;
-        if (options && "align" in options && options?.align !== undefined) {
-            align = options.align;
-            delete options.align;
+    constructor(options?: SpriteOptions | Texture) {
+        if (options instanceof PIXI.Texture) {
+            super(options);
+        } else {
+            const { align, percentagePosition, ...restOptions } =
+                analizePositionsExtensionProps(options) || {};
+            super(restOptions);
+            if (align) {
+                this.align = align;
+            }
+            if (percentagePosition) {
+                this.percentagePosition = percentagePosition;
+            }
         }
-        if (
-            options &&
-            "percentagePosition" in options &&
-            options?.percentagePosition !== undefined
-        ) {
-            percentagePosition = options.percentagePosition;
-            delete options.percentagePosition;
-        }
-        super(options);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID;
-        if (align) {
-            this.align = align;
-        }
-        if (percentagePosition) {
-            this.percentagePosition = percentagePosition;
-        }
     }
     readonly pixivnId: string = CANVAS_SPRITE_ID;
     get memory(): Memory | SpriteMemory {
@@ -350,7 +339,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     const ignoreTexture = options?.ignoreTexture || false;
     await setMemoryContainer(element, memory);
     if (!ignoreTexture) {
-        let textureData: AssetMemory | undefined = undefined;
+        let textureData: AssetMemory | undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
         }

@@ -27,8 +27,8 @@ import { logger } from "@utils/log-utility";
  */
 export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
     constructor(options?: ImageContainerOptions<ImageSprite>, textureAliases: string[] = []) {
-        options = analizePositionsExtensionProps(options);
-        const { anchor, align, percentagePosition, ...restOptions } = options || {};
+        const { anchor, align, percentagePosition, ...restOptions } =
+            analizePositionsExtensionProps(options) || {};
         super(restOptions);
         if (textureAliases) {
             textureAliases.forEach((textureAlias) => {

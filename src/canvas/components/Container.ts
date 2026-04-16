@@ -1,5 +1,9 @@
 import type { ObservablePoint, PointData } from "@drincs/pixi-vn/pixi.js";
-import { type ContainerEvents, type EventEmitter, Container as PixiContainer } from "@drincs/pixi-vn/pixi.js";
+import {
+    type ContainerEvents,
+    type EventEmitter,
+    Container as PixiContainer,
+} from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_CONTAINER_ID } from "../../constants";
 import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import {
@@ -13,9 +17,7 @@ import type { ContainerOptions } from "../interfaces/canvas-options";
 import type ContainerMemory from "../interfaces/memory/ContainerMemory";
 import type ContainerChild from "../types/ContainerChild";
 import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
-import {
-    analizePositionsExtensionProps,
-} from "./AdditionalPositionsExtension";
+import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
 import type AnchorExtension from "./AnchorExtension";
 import type ListenerExtension from "./ListenerExtension";
 import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
@@ -49,27 +51,9 @@ export default class Container<
         AdditionalPositionsExtension
 {
     constructor(options?: ContainerOptions<C>) {
-        options = analizePositionsExtensionProps(options as any);
-        let align = undefined;
-        let percentagePosition = undefined;
-        let anchor = undefined;
-        if (options && "anchor" in options && options?.anchor !== undefined) {
-            anchor = options.anchor;
-            delete options.anchor;
-        }
-        if (options && "align" in options && options?.align !== undefined) {
-            align = options.align;
-            delete options.align;
-        }
-        if (
-            options &&
-            "percentagePosition" in options &&
-            options?.percentagePosition !== undefined
-        ) {
-            percentagePosition = options.percentagePosition;
-            delete options.percentagePosition;
-        }
-        super(options);
+        const { anchor, align, percentagePosition, ...restOptions } =
+            analizePositionsExtensionProps(options) || {};
+        super(restOptions);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_CONTAINER_ID;
         if (anchor) {
             this.anchor = anchor;
