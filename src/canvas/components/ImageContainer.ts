@@ -117,7 +117,7 @@ export async function setMemoryImageContainer(
     element: ImageContainer,
     memory: Partial<ImageContainerOptions>,
 ) {
-    memory = analizePositionsExtensionProps(memory)!;
+    memory = analizePositionsExtensionProps(memory) || {};
     setMemoryContainer(element, memory, {
         end: async () => {
             if ("loadIsStarted" in memory && memory.loadIsStarted) {
