@@ -1,23 +1,23 @@
+import { GENERAL_CHANNEL } from "@constants";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { type Filter, filters, type IMediaContext, Sound, sound } from "@pixi/sound";
-import { GENERAL_CHANNEL } from "../constants";
-import { createExportableElement } from "../utils";
-import { logger } from "../utils/log-utility";
-import AudioChannel from "./classes/AudioChannel";
-import { FilterMemoryToFilter, FilterToFilterMemory } from "./functions/sound-utility";
-import type AudioChannelInterface from "./interfaces/AudioChannelInterface";
-import type IMediaInstance from "./interfaces/IMediaInstance";
-import type SoundGameState from "./interfaces/SoundGameState";
-import type SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import type SoundOptions from "./interfaces/SoundOptions";
+import AudioChannel from "@sound/classes/AudioChannel";
+import { FilterMemoryToFilter, FilterToFilterMemory } from "@sound/functions/sound-utility";
+import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type SoundGameState from "@sound/interfaces/SoundGameState";
+import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
+import type SoundOptions from "@sound/interfaces/SoundOptions";
 import type {
     ChannelOptions,
     SoundPlayOptions,
     SoundPlayOptionsWithChannel,
-} from "./interfaces/SoundOptions";
-import SoundManagerStatic from "./SoundManagerStatic";
-import type SoundFilterMemory from "./types/SoundFilterMemory";
+} from "@sound/interfaces/SoundOptions";
+import SoundManagerStatic from "@sound/SoundManagerStatic";
+import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
+import { createExportableElement } from "@utils/export-utility";
+import { logger } from "@utils/log-utility";
 
 export default class SoundManager implements SoundManagerInterface {
     get context(): IMediaContext {
@@ -112,7 +112,9 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     stopAll(): this {
-        SoundManagerStatic.mediaInstances = {};
+        Object.keys(SoundManagerStatic.mediaInstances).forEach((k) => {
+            delete SoundManagerStatic.mediaInstances[k];
+        });
         sound.stopAll();
         return this;
     }
@@ -305,8 +307,8 @@ export default class SoundManager implements SoundManagerInterface {
     }
     async restore(data: object) {
         try {
-            if (data.hasOwnProperty("soundsPlaying")) {
-                const soundsPlaying = (data as SoundGameState)["soundsPlaying"];
+            if (Object.hasOwn(data, "soundsPlaying")) {
+                const soundsPlaying = (data as SoundGameState).soundsPlaying;
                 if (soundsPlaying) {
                     const promises = Object.keys(soundsPlaying).map(async (alias) => {
                         await this.load(alias);
@@ -317,8 +319,8 @@ export default class SoundManager implements SoundManagerInterface {
                 }
             }
 
-            if (data.hasOwnProperty("mediaInstances")) {
-                const mediaInstances = (data as SoundGameState)["mediaInstances"];
+            if (Object.hasOwn(data, "mediaInstances")) {
+                const mediaInstances = (data as SoundGameState).mediaInstances;
                 if (mediaInstances) {
                     // load all media first
                     const usedChannels = new Set<string>();
@@ -400,8 +402,8 @@ export default class SoundManager implements SoundManagerInterface {
                 }
             }
 
-            if (data.hasOwnProperty("filters")) {
-                const f = (data as SoundGameState)["filters"];
+            if (Object.hasOwn(data, "filters")) {
+                const f = (data as SoundGameState).filters;
                 if (f) {
                     this.filtersAll = FilterMemoryToFilter(f);
                 }
