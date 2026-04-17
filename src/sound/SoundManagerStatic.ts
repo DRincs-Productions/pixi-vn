@@ -1,6 +1,6 @@
-import type AudioChannelInterface from "./interfaces/AudioChannelInterface";
-import type IMediaInstance from "./interfaces/IMediaInstance";
-import type { SoundPlayOptions } from "./interfaces/SoundOptions";
+import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 
 namespace SoundManagerStatic {
     export const mediaInstances: {

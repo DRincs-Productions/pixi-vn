@@ -1,15 +1,15 @@
+import PixiError from "@core/PixiError";
 import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
-import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { OnErrorHandler } from "@drincs/pixi-vn/core";
 import type {
     StepLabelPropsType,
     StepLabelResultType,
     StepLabelType,
-} from "../narration/types/StepLabelType";
-import type { StorageElementType } from "../storage/types/StorageElementType";
-import { logger } from "../utils/log-utility";
-import type OnErrorHandler from "./OnErrorHandler";
-import PixiError from "./PixiError";
+} from "@drincs/pixi-vn/narration";
+import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { StorageElementType } from "@drincs/pixi-vn/storage";
+import { logger } from "@utils/log-utility";
 
 export default class GameUnifier {
     private constructor() {}
@@ -141,7 +141,7 @@ export default class GameUnifier {
             priority?: UPDATE_PRIORITY,
         ) => string | undefined;
     }) {
-        options.navigate && (GameUnifier._navigate = options.navigate);
+        if (options.navigate) GameUnifier._navigate = options.navigate;
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
@@ -153,7 +153,7 @@ export default class GameUnifier {
         GameUnifier._removeVariable = options.removeVariable;
         GameUnifier._getFlag = options.getFlag;
         GameUnifier._setFlag = options.setFlag;
-        options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
+        if (options.onLabelClosing) GameUnifier._onLabelClosing = options.onLabelClosing;
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._getCharacter = options.getCharacter;
         GameUnifier._animate = options.animate;
@@ -502,7 +502,7 @@ export default class GameUnifier {
         GameUnifier._onErrorHandlers.length = 0;
     }
 
-    static async runOnError(error: unknown, props: StepLabelPropsType<any> | {}) {
+    static async runOnError(error: unknown, props: Partial<StepLabelPropsType<any>>) {
         for (const h of GameUnifier._onErrorHandlers.slice()) {
             try {
                 await h(error, props);
