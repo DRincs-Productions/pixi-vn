@@ -80,7 +80,8 @@ export default class StorageManager implements StorageManagerInterface {
         });
         const tempDeadlines: StorageGameStateItem<number>[] = [];
         [...StorageManagerStatic.tempStorageDeadlines.keys()].forEach((key) => {
-            tempDeadlines.push({ key, value: this.tempStorageDeadlines.get(key)! });
+            const value = StorageManagerStatic.tempStorageDeadlines.get(key);
+            value && tempDeadlines.push({ key, value });
         });
         return createExportableElement({
             main,
