@@ -1,7 +1,7 @@
-import { CachedMap } from "../classes";
-import { FLAGS_KEY, TEMP_STORAGE_KEY } from "../constants";
-import { createExportableElement } from "../utils/export-utility";
-import type { StorageElementType } from "./types/StorageElementType";
+import CachedMap from "@classes/CachedMap";
+import { FLAGS_KEY, TEMP_STORAGE_KEY } from "@constants";
+import type { StorageElementType } from "@drincs/pixi-vn/storage";
+import { createExportableElement } from "@utils/export-utility";
 
 namespace StorageManagerStatic {
     export const storage = new CachedMap<string, any>({ cacheSize: 50 });
