@@ -83,21 +83,19 @@ export default class SoundManager implements SoundManagerInterface {
         sound.speedAll = speed;
     }
     pauseAll(): this {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances.get(mediaId);
+        SoundManagerStatic.mediaInstances.forEach((mediaInstance) => {
             if (mediaInstance && !mediaInstance.instance.paused) {
                 mediaInstance.instance.paused = true;
             }
-        }
+        });
         return this;
     }
     resumeAll(): this {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances.get(mediaId);
+        SoundManagerStatic.mediaInstances.forEach((mediaInstance) => {
             if (mediaInstance?.instance.paused) {
                 mediaInstance.instance.paused = false;
             }
-        }
+        });
         return this;
     }
     toggleMuteAll(): boolean {
