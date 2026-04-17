@@ -1,24 +1,25 @@
-import { GameUnifier } from "@drincs/pixi-vn/core";
 import {
     MAIN_STORAGE_KEY,
     NARRATION_STORAGE_KEY,
     SYSTEM_RESERVED_STORAGE_KEYS,
     TEMP_STORAGE_KEY,
-} from "../constants";
-import { createExportableElement } from "../utils/export-utility";
-import { logger } from "../utils/log-utility";
-import type StorageGameState from "./interfaces/StorageGameState";
-import type { StorageGameStateItem } from "./interfaces/StorageGameState";
-import type StorageManagerInterface from "./interfaces/StorageManagerInterface";
-import StorageManagerStatic from "./StorageManagerStatic";
-import type { StorageElementType } from "./types/StorageElementType";
+} from "@constants";
+import { GameUnifier } from "@drincs/pixi-vn/core";
+import type StorageGameState from "@storage/interfaces/StorageGameState";
+import type { StorageGameStateItem } from "@storage/interfaces/StorageGameState";
+import type StorageManagerInterface from "@storage/interfaces/StorageManagerInterface";
+import StorageManagerStatic from "@storage/StorageManagerStatic";
+import type { StorageElementType } from "@storage/types/StorageElementType";
+import { createExportableElement } from "@utils/export-utility";
+import { logger } from "@utils/log-utility";
+import type { LRUCache } from "lru-cache";
 
 export default class StorageManager implements StorageManagerInterface {
     get base() {
         return StorageManagerStatic.storage.map;
     }
     get cache() {
-        return StorageManagerStatic.storage.cache as any;
+        return StorageManagerStatic.storage.cache as LRUCache<string, any, unknown>;
     }
     get tempStorageDeadlines() {
         return StorageManagerStatic.tempStorageDeadlines;
@@ -92,7 +93,7 @@ export default class StorageManager implements StorageManagerInterface {
         this.clear();
         try {
             if (data) {
-                (data.base as any)?.forEach((item: StorageGameStateItem) => {
+                data.base?.forEach((item: StorageGameStateItem) => {
                     switch (item.key) {
                         case "___current_dialogue_memory___":
                             StorageManagerStatic.setVariable(
@@ -179,16 +180,16 @@ export default class StorageManager implements StorageManagerInterface {
                             );
                     }
                 });
-                (data.temp as any)?.forEach((item: StorageGameStateItem) => {
+                data.temp?.forEach((item: StorageGameStateItem) => {
                     StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, item.key, item.value);
                 });
-                (data.flags as any)?.forEach((flag: string) => {
+                data.flags?.forEach((flag: string) => {
                     StorageManagerStatic.setFlag(flag, true);
                 });
-                (data.main as any)?.forEach((item: StorageGameStateItem) => {
+                data.main?.forEach((item: StorageGameStateItem) => {
                     this.base.set(item.key, item.value);
                 });
-                (data.tempDeadlines as any)?.forEach((item: StorageGameStateItem<number>) => {
+                data.tempDeadlines?.forEach((item: StorageGameStateItem<number>) => {
                     this.tempStorageDeadlines.set(item.key, item.value);
                 });
             } else {
