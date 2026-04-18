@@ -245,6 +245,13 @@ export default class CanvasManagerStatic {
     }
     static readonly _currentTickers: Map<string, TickerInfo<any>> = new Map();
     static readonly _currentTickersSequence: Map<string, Map<string, TickersSequence>> = new Map();
+    static get currentTickersSequence(): { [alias: string]: { [tickerId: string]: TickersSequence } } {
+        return Object.fromEntries(
+            Array.from(CanvasManagerStatic._currentTickersSequence.entries()).map(
+                ([alias, stepsMap]) => [alias, Object.fromEntries(stepsMap)],
+            ),
+        );
+    }
     static readonly _currentTickersTimeouts: Map<string, TickerTimeoutHistory> = new Map();
     static readonly _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];

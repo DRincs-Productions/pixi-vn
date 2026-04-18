@@ -875,13 +875,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             tickers: createExportableElement(
                 CanvasManagerStatic.currentTickersWithoutCreatedBySteps,
             ),
-            tickersSteps: createExportableElement(
-                Object.fromEntries(
-                    Array.from(CanvasManagerStatic._currentTickersSequence.entries()).map(
-                        ([alias, stepsMap]) => [alias, Object.fromEntries(stepsMap)],
-                    ),
-                ),
-            ),
+            tickersSteps: createExportableElement(CanvasManagerStatic.currentTickersSequence),
             elements: createExportableElement(currentElements),
             stage: createExportableElement(getMemoryContainer(this.gameLayer)),
             elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
