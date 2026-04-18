@@ -13,7 +13,7 @@ export function proxyMedia(
             switch (prop) {
                 case "volume":
                 case "muted": {
-                    const entry = SoundManagerStatic.mediaInstances[mediaAlias];
+                    const entry = SoundManagerStatic.mediaInstances.get(mediaAlias);
                     if (entry) {
                         return entry.options[prop as keyof typeof entry.options];
                     }
@@ -24,14 +24,15 @@ export function proxyMedia(
             }
         },
         set(target, prop, value, receiver) {
-            if (mediaAlias in SoundManagerStatic.mediaInstances) {
+            const entry = SoundManagerStatic.mediaInstances.get(mediaAlias);
+            if (entry) {
                 switch (prop) {
                     case "volume":
-                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
+                        entry.options[prop] = value;
                         value = calculateVolume(value, channel.channelOptions.volume);
                         return Reflect.set(target, prop, value, receiver);
                     case "muted":
-                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
+                        entry.options[prop] = value;
                         if (channel.channelOptions.muted) {
                             return Reflect.set(target, prop, true, receiver);
                         } else {
@@ -45,7 +46,7 @@ export function proxyMedia(
                     case "speed":
                     case "sprite":
                     case "start":
-                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
+                        entry.options[prop] = value;
                     default:
                         return Reflect.set(target, prop, value, receiver);
                 }

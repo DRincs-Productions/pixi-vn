@@ -272,30 +272,19 @@ export default class SoundManager implements SoundManagerInterface {
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
                 paused: boolean;
             };
-        } = Object.entries(SoundManagerStatic.mediaInstances).reduce(
-            (result, [mediaAlias, mediaInstance]) => {
-                result[mediaAlias] = {
-                    channelAlias: mediaInstance.channelAlias,
-                    soundAlias: mediaInstance.soundAlias,
-                    stepCounter: mediaInstance.stepCounter,
-                    options: {
-                        ...mediaInstance.options,
-                        filters: FilterToFilterMemory(mediaInstance.options.filters),
-                    },
-                    paused: mediaInstance.instance.paused,
-                };
-                return result;
-            },
-            {} as {
-                [key: string]: {
-                    channelAlias: string;
-                    soundAlias: string;
-                    stepCounter: number;
-                    options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
-                    paused: boolean;
-                };
-            },
-        );
+        } = {};
+        for (const [mediaAlias, mediaInstance] of SoundManagerStatic.mediaInstances) {
+            mediaInstances[mediaAlias] = {
+                channelAlias: mediaInstance.channelAlias,
+                soundAlias: mediaInstance.soundAlias,
+                stepCounter: mediaInstance.stepCounter,
+                options: {
+                    ...mediaInstance.options,
+                    filters: FilterToFilterMemory(mediaInstance.options.filters),
+                },
+                paused: mediaInstance.instance.paused,
+            };
+        }
         return {
             mediaInstances: createExportableElement(mediaInstances),
             filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),

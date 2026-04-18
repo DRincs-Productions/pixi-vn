@@ -33,8 +33,8 @@ export default class AudioChannel implements AudioChannelInterface {
             soundAlias = aliasOrMediaAlias;
             options = soundAliasOrOptions;
         }
-        if (mediaAlias in SoundManagerStatic.mediaInstances) {
-            const oldMedia = SoundManagerStatic.mediaInstances[mediaAlias];
+        if (SoundManagerStatic.mediaInstances.has(mediaAlias)) {
+            const oldMedia = SoundManagerStatic.mediaInstances.get(mediaAlias)!;
             oldMedia.instance.stop();
             options = {
                 ...oldMedia.options,
@@ -62,7 +62,7 @@ export default class AudioChannel implements AudioChannelInterface {
             }, options.delay * 1000);
             SoundManagerStatic.delayTimeoutInstances.push([timeoutId, mediaAlias]);
         }
-        SoundManagerStatic.mediaInstances[mediaAlias] = {
+        SoundManagerStatic.mediaInstances.set(mediaAlias, {
             channelAlias: this.alias,
             soundAlias: soundAlias,
             instance: media,
@@ -73,15 +73,14 @@ export default class AudioChannel implements AudioChannelInterface {
                 loop: options?.loop ?? false,
                 ...(options ?? {}),
             },
-        };
+        });
         media.on("end", () => {
-            delete SoundManagerStatic.mediaInstances[mediaAlias];
+            SoundManagerStatic.mediaInstances.delete(mediaAlias);
         });
         return media;
     }
     private updateMediaVolume() {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+        for (const [, mediaInstance] of SoundManagerStatic.mediaInstances) {
             if (mediaInstance.channelAlias === this.alias) {
                 const mediaVolume = mediaInstance.options.volume ?? 1;
                 mediaInstance.instance.volume = mediaVolume;
@@ -96,8 +95,7 @@ export default class AudioChannel implements AudioChannelInterface {
         this.updateMediaVolume();
     }
     private updateMediaMuted() {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+        for (const [, mediaInstance] of SoundManagerStatic.mediaInstances) {
             if (mediaInstance.channelAlias === this.alias) {
                 const mediaMuted = mediaInstance.options.muted ?? false;
                 // Apply only the per-media muted state; the proxy is responsible for
@@ -118,7 +116,7 @@ export default class AudioChannel implements AudioChannelInterface {
         return this.muted;
     }
     get mediaInstances(): IMediaInstance[] {
-        return Object.values(SoundManagerStatic.mediaInstances).reduce(
+        return [...SoundManagerStatic.mediaInstances.values()].reduce(
             (instances: IMediaInstance[], mediaInstance) => {
                 if (mediaInstance.channelAlias === this.alias) {
                     instances.push(mediaInstance.instance);
@@ -132,18 +130,16 @@ export default class AudioChannel implements AudioChannelInterface {
         return this.channelOptions.background || false;
     }
     stopAll() {
-        for (const mediaAlias in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances[mediaAlias];
+        for (const [mediaAlias, mediaInstance] of SoundManagerStatic.mediaInstances) {
             if (mediaInstance.channelAlias === this.alias) {
                 mediaInstance.instance.stop();
-                delete SoundManagerStatic.mediaInstances[mediaAlias];
+                SoundManagerStatic.mediaInstances.delete(mediaAlias);
             }
         }
         return this;
     }
     pauseAll() {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+        for (const [, mediaInstance] of SoundManagerStatic.mediaInstances) {
             if (mediaInstance.channelAlias === this.alias && !mediaInstance.instance.paused) {
                 mediaInstance.instance.paused = true;
             }
@@ -151,8 +147,7 @@ export default class AudioChannel implements AudioChannelInterface {
         return this;
     }
     resumeAll(): this {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+        for (const [, mediaInstance] of SoundManagerStatic.mediaInstances) {
             if (mediaInstance.channelAlias === this.alias && mediaInstance.instance.paused) {
                 mediaInstance.instance.paused = false;
             }
