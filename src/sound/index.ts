@@ -27,12 +27,12 @@ GameUnifier.addOnPreContinue(async () => {
     try {
         SoundManagerStatic.delayTimeoutInstances.forEach((id) => {
             clearTimeout(id[0]);
-            const instance = SoundManagerStatic.mediaInstances[id[1]];
+            const instance = SoundManagerStatic.mediaInstances.get(id[1]);
             if (instance) {
                 instance.instance.paused = false;
             }
         });
-        SoundManagerStatic.delayTimeoutInstances = [];
+        SoundManagerStatic.delayTimeoutInstances.length = 0;
         Object.values(SoundManagerStatic.channels).forEach((channel) => {
             if (!channel.background) {
                 channel.stopAll();

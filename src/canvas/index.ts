@@ -70,7 +70,7 @@ export type {
     TextOptions,
     VideoSpriteOptions,
 } from "./interfaces/canvas-options";
-export { type CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
+export type { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
 export type { default as CanvasGameState } from "./interfaces/CanvasGameState";
 export type { default as CanvasManagerInterface } from "./interfaces/CanvasManagerInterface";
 export type { ShakeEffectProps } from "./interfaces/effect-props";
@@ -127,7 +127,8 @@ GameUnifier.addOnPreContinue(async () => {
 
         await Promise.all([p1, p2]);
 
-        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+        CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds = [];
+        CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias = [];
     } catch (e) {}
 });
 

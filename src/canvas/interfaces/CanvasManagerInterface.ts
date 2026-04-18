@@ -1,3 +1,10 @@
+import type Layer from "@canvas/components/Layer";
+import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
+import type CanvasGameState from "@canvas/interfaces/CanvasGameState";
+import type CanvasBaseItemMemory from "@canvas/interfaces/memory/CanvasBaseItemMemory";
+import type { Ticker, TickerArgs, TickerInfo, TickersSequence } from "@canvas/tickers";
+import type { PauseType } from "@canvas/types/PauseType";
+import type { RepeatType } from "@canvas/types/RepeatType";
 import type {
     AnimationOptions,
     KeyframesType,
@@ -14,13 +21,6 @@ import type {
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import type { Devtools } from "@pixi/devtools";
-import type Layer from "../components/Layer";
-import type { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import type { PauseType } from "../types/PauseType";
-import type { RepeatType } from "../types/RepeatType";
-import type { CanvasBaseInterface } from "./CanvasBaseInterface";
-import type CanvasGameState from "./CanvasGameState";
-import type CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 
 export default interface CanvasManagerInterface {
     /**
@@ -47,7 +47,7 @@ export default interface CanvasManagerInterface {
      */
     height: number;
     /**
-     * The screen of the canvas ({@link Application.screen}).
+     * The screen of the canvas ({@link app}.screen).
      */
     readonly screen: Rectangle;
     /**
@@ -212,15 +212,11 @@ export default interface CanvasManagerInterface {
     /**
      * Currently tickers that are running.
      */
-    readonly currentTickers: { [id: string]: TickerInfo<any> };
+    readonly currentTickers: Map<string, TickerInfo<any>>;
     /**
      * The steps of the tickers
      */
-    readonly currentTickersSteps: {
-        [alias: string]: {
-            [tickerId: string]: TickersSequence;
-        };
-    };
+    readonly currentTickersSteps: Map<string, { [tickerId: string]: TickersSequence }>;
     /**
      * Find a ticker by its id.
      * @param tickerId The id of the ticker.

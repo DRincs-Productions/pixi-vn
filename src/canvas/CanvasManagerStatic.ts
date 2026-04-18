@@ -241,11 +241,10 @@ namespace CanvasManagerStatic {
                 ]),
         );
     }
-    export const _currentTickers: { [id: string]: TickerInfo<any> } = {};
-    export const _currentTickersSequence: {
-        [alias: string]: { [tickerId: string]: TickersSequence };
-    } = {};
-    export const _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
+    export const _currentTickers: Map<string, TickerInfo<any>> = new Map();
+    export const _currentTickersSequence: Map<string, { [tickerId: string]: TickersSequence }> =
+        new Map();
+    export const _currentTickersTimeouts: Map<string, TickerTimeoutHistory> = new Map();
     export const _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
@@ -266,19 +265,17 @@ namespace CanvasManagerStatic {
         if (typeof aliases === "string") {
             aliases = [aliases];
         }
-        CanvasManagerStatic._currentTickersTimeouts[timeout] = {
+        CanvasManagerStatic._currentTickersTimeouts.set(timeout, {
             aliases: aliases,
             ticker: ticker,
             canBeDeletedBeforeEnd: canBeDeletedBeforeEnd,
-        };
+        });
     }
     export function removeTickerTimeoutInfo(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
             timeout = timeout.toString();
         }
-        if (CanvasManagerStatic._currentTickersTimeouts[timeout]) {
-            delete CanvasManagerStatic._currentTickersTimeouts[timeout];
-        }
+        CanvasManagerStatic._currentTickersTimeouts.delete(timeout);
     }
     export function removeTickerTimeout(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
@@ -292,22 +289,18 @@ namespace CanvasManagerStatic {
         checkCanBeDeletedBeforeEnd: boolean,
     ) {
         // todo
-        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(
-            ([timeout, tickerTimeout]) => {
-                const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter(
-                    (t) => t !== alias,
-                );
-                if (aliasesWithoutAliasToRemove.length === 0) {
-                    const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
-                    if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
-                        CanvasManagerStatic.removeTickerTimeout(timeout);
-                    }
-                } else {
-                    CanvasManagerStatic._currentTickersTimeouts[timeout].aliases =
-                        aliasesWithoutAliasToRemove;
+        CanvasManagerStatic._currentTickersTimeouts.forEach((tickerTimeout, timeout) => {
+            const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
+            if (aliasesWithoutAliasToRemove.length === 0) {
+                const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
+                if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
+                    CanvasManagerStatic.removeTickerTimeout(timeout);
                 }
-            },
-        );
+            } else {
+                // aggiorna direttamente l'oggetto memorizzato nella Map
+                tickerTimeout.aliases = aliasesWithoutAliasToRemove;
+            }
+        });
     }
 }
 export default CanvasManagerStatic;
