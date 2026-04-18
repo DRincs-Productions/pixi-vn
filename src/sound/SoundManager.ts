@@ -371,6 +371,9 @@ export default class SoundManager implements SoundManagerInterface {
                             if (instance) {
                                 const mediaInstance = mediaInstancesMap.get(mediaAlias);
                                 if (!mediaInstance) {
+                                    logger.warn(
+                                        `No media instance found with alias ${mediaAlias} while restoring background state.`,
+                                    );
                                     return;
                                 }
                                 mediaInstance.options = {
