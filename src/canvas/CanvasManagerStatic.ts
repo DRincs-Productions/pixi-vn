@@ -228,7 +228,7 @@ export default class CanvasManagerStatic {
         [k: string]: TickerHistory<any>;
     } {
         return Object.fromEntries(
-            Object.entries(CanvasManagerStatic._currentTickers)
+            Array.from(CanvasManagerStatic._currentTickers.entries())
                 .filter(([_, info]) => !info.createdByTicketSteps)
                 .map(([id, info]) => [
                     id,
@@ -243,7 +243,7 @@ export default class CanvasManagerStatic {
                 ]),
         );
     }
-    static _currentTickers: { [id: string]: TickerInfo<any> } = {};
+    static _currentTickers: Map<string, TickerInfo<any>> = new Map();
     static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } =
         {};
     static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
