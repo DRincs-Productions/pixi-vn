@@ -1,18 +1,17 @@
+import { analizePositionsExtensionProps } from "@canvas/components/AdditionalPositionsExtension";
+import Container from "@canvas/components/Container";
+import ImageSprite from "@canvas/components/ImageSprite";
+import VideoSprite from "@canvas/components/VideoSprite";
+import RegisteredCanvasComponents, {
+    setMemoryContainer,
+} from "@canvas/decorators/canvas-element-decorator";
+import { checkIfVideo } from "@canvas/functions/canvas-utility";
+import type { ImageContainerOptions } from "@canvas/interfaces/canvas-options";
+import type ImageContainerMemory from "@canvas/interfaces/memory/ImageContainerMemory";
+import { CANVAS_IMAGE_CONTAINER_ID } from "@constants";
 import type { Texture } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { CANVAS_IMAGE_CONTAINER_ID } from "../../constants";
-import { logger } from "../../utils/log-utility";
-import {
-    default as RegisteredCanvasComponents,
-    setMemoryContainer,
-} from "../decorators/canvas-element-decorator";
-import { checkIfVideo } from "../functions/canvas-utility";
-import { ImageContainerOptions } from "../interfaces/canvas-options";
-import ImageContainerMemory from "../interfaces/memory/ImageContainerMemory";
-import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
-import Container from "./Container";
-import ImageSprite from "./ImageSprite";
-import VideoSprite from "./VideoSprite";
+import { logger } from "@utils/log-utility";
 
 /**
  * This class is a extension of the {@link Container}, it has the same properties and methods,
@@ -28,37 +27,16 @@ import VideoSprite from "./VideoSprite";
  */
 export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
     constructor(options?: ImageContainerOptions<ImageSprite>, textureAliases: string[] = []) {
-        options = analizePositionsExtensionProps(options as any);
-        let align = undefined;
-        let percentagePosition = undefined;
-        let anchor = undefined;
-        if (options && "anchor" in options && options?.anchor !== undefined) {
-            anchor = options.anchor;
-            delete options.anchor;
-        }
-        if (options && "align" in options && options?.align !== undefined) {
-            align = options.align;
-            delete options.align;
-        }
-        if (
-            options &&
-            "percentagePosition" in options &&
-            options?.percentagePosition !== undefined
-        ) {
-            percentagePosition = options.percentagePosition;
-            delete options.percentagePosition;
-        }
-        super(options);
-        options = analizePositionsExtensionProps(options);
+        const { anchor, align, percentagePosition, ...restOptions } =
+            analizePositionsExtensionProps(options) || {};
+        super(restOptions);
         if (textureAliases) {
             textureAliases.forEach((textureAlias) => {
-                let component;
                 if (checkIfVideo(textureAlias)) {
-                    component = new VideoSprite(undefined, textureAlias);
+                    this.addChild(new VideoSprite(undefined, textureAlias));
                 } else {
-                    component = new ImageSprite(undefined, textureAlias);
+                    this.addChild(new ImageSprite(undefined, textureAlias));
                 }
-                this.addChild(component);
             });
         }
         if (anchor) {
@@ -95,10 +73,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
      */
     async load() {
         this._loadIsStarted = true;
-        let promises: Promise<void>[] = Array<Promise<void>>(this.children.length);
-        for (let i = 0; i < this.children.length; i++) {
-            promises[i] = this.children[i].load();
-        }
+        const promises = this.children.map((child) => child.load());
         // wait for all promises
         return Promise.all(promises)
             .then(() => {
@@ -108,7 +83,7 @@ export default class ImageContainer extends Container<ImageSprite, ImageContaine
             })
             .catch((e) => {
                 this._loadIsStarted = false;
-                logger.error("Error into ImageContainer.load()");
+                logger.error("Error into ImageContainer.load()", e);
             });
     }
 
@@ -140,9 +115,9 @@ RegisteredCanvasComponents.add<ImageContainerMemory, typeof ImageContainer>(Imag
 
 export async function setMemoryImageContainer(
     element: ImageContainer,
-    memory: ImageContainerOptions | {},
+    memory: Partial<ImageContainerOptions>,
 ) {
-    memory = analizePositionsExtensionProps(memory)!;
+    memory = analizePositionsExtensionProps(memory) || {};
     setMemoryContainer(element, memory, {
         end: async () => {
             if ("loadIsStarted" in memory && memory.loadIsStarted) {
