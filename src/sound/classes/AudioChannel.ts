@@ -132,12 +132,14 @@ export default class AudioChannel implements AudioChannelInterface {
         return this.channelOptions.background || false;
     }
     stopAll() {
-        for (const [mediaAlias, mediaInstance] of Array.from(mediaInstancesMap.entries())) {
+        const aliasesToDelete: string[] = [];
+        for (const [mediaAlias, mediaInstance] of mediaInstancesMap.entries()) {
             if (mediaInstance.channelAlias === this.alias) {
                 mediaInstance.instance.stop();
-                mediaInstancesMap.delete(mediaAlias);
+                aliasesToDelete.push(mediaAlias);
             }
         }
+        aliasesToDelete.forEach((mediaAlias) => mediaInstancesMap.delete(mediaAlias));
         return this;
     }
     pauseAll() {

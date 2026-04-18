@@ -48,6 +48,7 @@ export function proxyMedia(
                     case "sprite":
                     case "start":
                         mediaEntry.options[prop] = value;
+                        return Reflect.set(target, prop, value, receiver);
                     default:
                         return Reflect.set(target, prop, value, receiver);
                 }
