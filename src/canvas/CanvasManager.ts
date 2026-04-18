@@ -926,7 +926,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 );
                 return;
             }
-            if (Object.hasOwn(data, "stage") && Object.hasOwn(data, "stage")) {
+            if (Object.hasOwn(data, "stage")) {
                 setMemoryContainer(this.gameLayer, (data as CanvasGameState).stage, {
                     ignoreScale: true,
                 });
