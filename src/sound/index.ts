@@ -1,7 +1,7 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundManager from "./SoundManager";
-import SoundManagerStatic, { mediaInstances as mediaInstancesMap } from "./SoundManagerStatic";
+import SoundManagerStatic from "./SoundManagerStatic";
 
 export { filters } from "./constants";
 export type { default as AudioChannelInterface } from "./interfaces/AudioChannelInterface";
@@ -27,7 +27,7 @@ GameUnifier.addOnPreContinue(async () => {
     try {
         SoundManagerStatic.delayTimeoutInstances.forEach((id) => {
             clearTimeout(id[0]);
-            const instance = mediaInstancesMap.get(id[1]);
+            const instance = SoundManagerStatic.mediaInstances.get(id[1]);
             if (instance) {
                 instance.instance.paused = false;
             }

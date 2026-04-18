@@ -3,7 +3,7 @@ import { sound, SoundGameState } from "../src";
 import AudioChannel from "../src/sound/classes/AudioChannel";
 import IMediaInstance from "../src/sound/interfaces/IMediaInstance";
 import { SoundPlayOptions } from "../src/sound/interfaces/SoundOptions";
-import SoundManagerStatic, { mediaInstances as mediaInstancesMap } from "../src/sound/SoundManagerStatic";
+import SoundManagerStatic from "../src/sound/SoundManagerStatic";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -48,7 +48,7 @@ function makeFakeMediaInstance(): FakeMediaInstance {
 /**
  * Spy on AudioChannel.prototype.play so tests exercise SoundManager's routing
  * logic without requiring a real audio context.  The spy correctly populates
- * mediaInstancesMap so that export/restore helpers still work.
+ * SoundManagerStatic.mediaInstances so that export/restore helpers still work.
  */
 function stubChannelPlay() {
     return vi.spyOn(AudioChannel.prototype as any, "play").mockImplementation(async function (
@@ -68,7 +68,7 @@ function stubChannelPlay() {
             options = soundAliasOrOptions;
         }
         const inst = makeFakeMediaInstance();
-        mediaInstancesMap.set(mediaAlias, {
+        SoundManagerStatic.mediaInstances.set(mediaAlias, {
             channelAlias: this.alias,
             soundAlias,
             instance: inst,
@@ -80,7 +80,7 @@ function stubChannelPlay() {
             },
         });
         inst.on("end", () => {
-            mediaInstancesMap.delete(mediaAlias);
+            SoundManagerStatic.mediaInstances.delete(mediaAlias);
         });
         return inst;
     });
@@ -88,7 +88,7 @@ function stubChannelPlay() {
 
 /** Reset all sound-related state between tests. */
 function clearSound() {
-    mediaInstancesMap.clear();
+    SoundManagerStatic.mediaInstances.clear();
     SoundManagerStatic.channels = {};
     sound.defaultChannelAlias = "general";
 }
@@ -116,7 +116,7 @@ describe("sound export format", () => {
 
     test("export() uses mediaAlias (not soundAlias) as the map key", () => {
         // Directly insert a fake entry where mediaAlias ≠ soundAlias
-        mediaInstancesMap.set("the-media-alias", {
+        SoundManagerStatic.mediaInstances.set("the-media-alias", {
             channelAlias: "general",
             soundAlias: "the-sound-alias",
             instance: makeFakeMediaInstance(),
@@ -131,14 +131,14 @@ describe("sound export format", () => {
     });
 
     test("two media aliases pointing to the same soundAlias both appear in export()", () => {
-        mediaInstancesMap.set("media1", {
+        SoundManagerStatic.mediaInstances.set("media1", {
             channelAlias: "general",
             soundAlias: "shared-sound",
             instance: makeFakeMediaInstance(),
             stepCounter: 1,
             options: { volume: 1, muted: false, loop: false },
         });
-        mediaInstancesMap.set("media2", {
+        SoundManagerStatic.mediaInstances.set("media2", {
             channelAlias: "general",
             soundAlias: "shared-sound",
             instance: makeFakeMediaInstance(),
@@ -154,14 +154,14 @@ describe("sound export format", () => {
     });
 
     test("export() preserves the per-instance stepCounter (not a global value)", () => {
-        mediaInstancesMap.set("early", {
+        SoundManagerStatic.mediaInstances.set("early", {
             channelAlias: "general",
             soundAlias: "s1",
             instance: makeFakeMediaInstance(),
             stepCounter: 3,
             options: { volume: 1, muted: false, loop: false },
         });
-        mediaInstancesMap.set("late", {
+        SoundManagerStatic.mediaInstances.set("late", {
             channelAlias: "general",
             soundAlias: "s2",
             instance: makeFakeMediaInstance(),
@@ -176,7 +176,7 @@ describe("sound export format", () => {
 
     test("export() records paused state as true when sound is paused", () => {
         const inst = makeFakeMediaInstance();
-        mediaInstancesMap.set("pausable", {
+        SoundManagerStatic.mediaInstances.set("pausable", {
             channelAlias: "general",
             soundAlias: "s",
             instance: inst,
@@ -191,7 +191,7 @@ describe("sound export format", () => {
 
     test("export() records paused state as false when sound is playing", () => {
         const inst = makeFakeMediaInstance();
-        mediaInstancesMap.set("playing", {
+        SoundManagerStatic.mediaInstances.set("playing", {
             channelAlias: "general",
             soundAlias: "s",
             instance: inst,
@@ -205,7 +205,7 @@ describe("sound export format", () => {
 
     test("export() includes the channelAlias for each media instance", () => {
         sound.addChannel("bgm");
-        mediaInstancesMap.set("bgm-track", {
+        SoundManagerStatic.mediaInstances.set("bgm-track", {
             channelAlias: "bgm",
             soundAlias: "music",
             instance: makeFakeMediaInstance(),
@@ -308,51 +308,51 @@ describe("sound play routing and mediaInstances tracking", () => {
 
     test("play() registers media instance keyed by mediaAlias", async () => {
         await sound.play("my-media");
-        expect(mediaInstancesMap.get("my-media")).toBeDefined();
+        expect(SoundManagerStatic.mediaInstances.get("my-media")).toBeDefined();
     });
 
     test("play() with separate mediaAlias and soundAlias stores the correct soundAlias", async () => {
         await sound.play("media-alias", "sound-asset");
-        expect(mediaInstancesMap.get("media-alias")?.soundAlias).toBe("sound-asset");
+        expect(SoundManagerStatic.mediaInstances.get("media-alias")?.soundAlias).toBe("sound-asset");
     });
 
     test("stop() removes the media instance from tracking", async () => {
         await sound.play("stopper");
-        expect(mediaInstancesMap.get("stopper")).toBeDefined();
+        expect(SoundManagerStatic.mediaInstances.get("stopper")).toBeDefined();
         sound.stop("stopper");
-        expect(mediaInstancesMap.get("stopper")).toBeUndefined();
+        expect(SoundManagerStatic.mediaInstances.get("stopper")).toBeUndefined();
     });
 
     test("clear() removes all tracked media instances", async () => {
         await sound.play("s1");
         await sound.play("s2");
         sound.clear();
-        expect(Array.from(mediaInstancesMap.keys())).toHaveLength(0);
+        expect(Array.from(SoundManagerStatic.mediaInstances.keys())).toHaveLength(0);
     });
 
     test("play() without channel option uses the general channel by default", async () => {
         await sound.play("my-sound");
-        expect(mediaInstancesMap.get("my-sound")?.channelAlias).toBe("general");
+        expect(SoundManagerStatic.mediaInstances.get("my-sound")?.channelAlias).toBe("general");
     });
 
     test("play() with explicit channel option routes to the specified channel", async () => {
         sound.addChannel("bgm");
         await sound.play("my-sound", { channel: "bgm" });
-        expect(mediaInstancesMap.get("my-sound")?.channelAlias).toBe("bgm");
+        expect(SoundManagerStatic.mediaInstances.get("my-sound")?.channelAlias).toBe("bgm");
     });
 
     test("changing defaultChannelAlias routes subsequent play() calls to the new default", async () => {
         sound.addChannel("custom-default");
         sound.defaultChannelAlias = "custom-default";
         await sound.play("my-sound");
-        expect(mediaInstancesMap.get("my-sound")?.channelAlias).toBe("custom-default");
+        expect(SoundManagerStatic.mediaInstances.get("my-sound")?.channelAlias).toBe("custom-default");
     });
 
     test("explicit channel option always overrides defaultChannelAlias", async () => {
         sound.addChannel("explicit-channel");
         sound.defaultChannelAlias = "other-default";
         await sound.play("my-sound", { channel: "explicit-channel" });
-        expect(mediaInstancesMap.get("my-sound")?.channelAlias).toBe(
+        expect(SoundManagerStatic.mediaInstances.get("my-sound")?.channelAlias).toBe(
             "explicit-channel",
         );
     });
@@ -367,7 +367,7 @@ describe("sound restore", () => {
 
     test("restore() with empty mediaInstances leaves no active media", async () => {
         await sound.restore({ mediaInstances: {}, filters: [] });
-        expect(Array.from(mediaInstancesMap.keys())).toHaveLength(0);
+        expect(Array.from(SoundManagerStatic.mediaInstances.keys())).toHaveLength(0);
     });
 
     test("restore() with legacy soundsPlaying does not throw", async () => {
@@ -438,7 +438,7 @@ describe("background channel settings restoration", () => {
         sound.addChannel("bgm", { background: true });
         const inst = makeFakeMediaInstance();
         inst.loop = false;
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -456,7 +456,7 @@ describe("background channel settings restoration", () => {
         sound.addChannel("bgm", { background: true });
         const inst = makeFakeMediaInstance();
         inst.volume = 1;
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -473,7 +473,7 @@ describe("background channel settings restoration", () => {
         sound.addChannel("bgm", { background: true });
         const inst = makeFakeMediaInstance();
         inst.muted = false;
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -490,7 +490,7 @@ describe("background channel settings restoration", () => {
         sound.addChannel("bgm", { background: true });
         const inst = makeFakeMediaInstance();
         inst.speed = 1;
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -506,7 +506,7 @@ describe("background channel settings restoration", () => {
     test("restore() updates paused on a running background instance", async () => {
         sound.addChannel("bgm", { background: true });
         const inst = makeFakeMediaInstance();
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -525,7 +525,7 @@ describe("background channel settings restoration", () => {
         inst.loop = true;
         inst.volume = 0.5;
         inst.muted = false;
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -544,7 +544,7 @@ describe("background channel settings restoration", () => {
     test("restore() updates filters on a running background instance", async () => {
         sound.addChannel("bgm", { background: true });
         const inst = makeFakeMediaInstance();
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -561,7 +561,7 @@ describe("background channel settings restoration", () => {
     test("restore() syncs delay, end, singleInstance, start into stored options", async () => {
         sound.addChannel("bgm", { background: true });
         const inst = makeFakeMediaInstance();
-        mediaInstancesMap.set("bg-music", {
+        SoundManagerStatic.mediaInstances.set("bg-music", {
             channelAlias: "bgm",
             soundAlias: "bg-music",
             instance: inst,
@@ -573,7 +573,7 @@ describe("background channel settings restoration", () => {
             makeBackgroundState({ delay: 2, end: 10, singleInstance: true, start: 1 }),
         );
 
-        const storedOptions = mediaInstancesMap.get("bg-music")?.options;
+        const storedOptions = SoundManagerStatic.mediaInstances.get("bg-music")?.options;
         expect(storedOptions.delay).toBe(2);
         expect(storedOptions.end).toBe(10);
         expect(storedOptions.singleInstance).toBe(true);

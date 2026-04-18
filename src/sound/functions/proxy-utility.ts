@@ -1,5 +1,5 @@
 import { IMediaInstance } from "@pixi/sound";
-import { mediaInstances as mediaInstancesMap } from "../SoundManagerStatic";
+import SoundManagerStatic from "../SoundManagerStatic";
 import type AudioChannel from "../classes/AudioChannel";
 import { calculateVolume } from "./channel-utility";
 
@@ -13,7 +13,7 @@ export function proxyMedia(
             switch (prop) {
                 case "volume":
                 case "muted": {
-                    const entry = mediaInstancesMap.get(mediaAlias);
+                    const entry = SoundManagerStatic.mediaInstances.get(mediaAlias);
                     if (entry) {
                         return entry.options[prop as keyof typeof entry.options];
                     }
@@ -25,7 +25,7 @@ export function proxyMedia(
             }
         },
         set(target, prop, value, receiver) {
-            const mediaEntry = mediaInstancesMap.get(mediaAlias);
+            const mediaEntry = SoundManagerStatic.mediaInstances.get(mediaAlias);
             if (mediaEntry) {
                 let targetValue = value;
                 switch (prop) {
