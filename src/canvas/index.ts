@@ -127,7 +127,8 @@ GameUnifier.addOnPreContinue(async () => {
 
         await Promise.all([p1, p2]);
 
-        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+        CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.length = 0;
+        CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.length = 0;
     } catch (e) {}
 });
 

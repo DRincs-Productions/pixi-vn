@@ -243,10 +243,10 @@ export default class CanvasManagerStatic {
                 ]),
         );
     }
-    static _currentTickers: Map<string, TickerInfo<any>> = new Map();
-    static _currentTickersSequence: Map<string, Map<string, TickersSequence>> = new Map();
-    static _currentTickersTimeouts: Map<string, TickerTimeoutHistory> = new Map();
-    static _tickersToCompleteOnStepEnd: {
+    static readonly _currentTickers: Map<string, TickerInfo<any>> = new Map();
+    static readonly _currentTickersSequence: Map<string, Map<string, TickersSequence>> = new Map();
+    static readonly _currentTickersTimeouts: Map<string, TickerTimeoutHistory> = new Map();
+    static readonly _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
     } = { tikersIds: [], stepAlias: [] };

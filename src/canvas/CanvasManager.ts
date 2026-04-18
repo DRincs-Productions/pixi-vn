@@ -551,7 +551,8 @@ export default class CanvasManager implements CanvasManagerInterface {
         Array.from(CanvasManagerStatic._currentTickersTimeouts.keys()).forEach((timeout) => {
             CanvasManagerStatic.removeTickerTimeout(timeout);
         });
-        CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds: [], stepAlias: [] };
+        CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.length = 0;
+        CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.length = 0;
     }
     removeTicker(
         tickerId: string | string[],
@@ -966,7 +967,10 @@ export default class CanvasManager implements CanvasManagerInterface {
                     id: t.id,
                     alias: t.alias,
                 }));
-                CanvasManagerStatic._tickersToCompleteOnStepEnd = { tikersIds, stepAlias };
+                CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.length = 0;
+                CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.push(...tikersIds);
+                CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.length = 0;
+                CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.push(...stepAlias);
             }
         } catch (e) {
             logger.error("Error importing data", e);
