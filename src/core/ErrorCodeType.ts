@@ -1,4 +1,4 @@
-type ErrorCodeType =
+export type ErrorCodeType =
     | "obsolete_save"
     | "unknown_element"
     | "unregistered_element"
@@ -7,4 +7,3 @@ type ErrorCodeType =
     | "not_implemented"
     | "invalid_usage"
     | "unhandled_error";
-export default ErrorCodeType;
