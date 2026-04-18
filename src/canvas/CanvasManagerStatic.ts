@@ -264,11 +264,7 @@ export default class CanvasManagerStatic {
     } = { tikersIds: [], stepAlias: [] };
     static generateTickerId(...args: any[]): string {
         try {
-            return (
-                sha1(JSON.stringify(args)).toString() +
-                "_" +
-                Math.random().toString(36).substring(7)
-            );
+            return `${sha1(JSON.stringify(args)).toString()}_${Math.random().toString(36).substring(7)}`;
         } catch (e) {
             throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }
