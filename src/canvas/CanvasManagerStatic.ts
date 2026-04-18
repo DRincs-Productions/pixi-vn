@@ -244,9 +244,8 @@ export default class CanvasManagerStatic {
         );
     }
     static _currentTickers: Map<string, TickerInfo<any>> = new Map();
-    static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } =
-        {};
-    static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
+    static _currentTickersSequence: Map<string, Map<string, TickersSequence>> = new Map();
+    static _currentTickersTimeouts: Map<string, TickerTimeoutHistory> = new Map();
     static _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
@@ -271,19 +270,17 @@ export default class CanvasManagerStatic {
         if (typeof aliases === "string") {
             aliases = [aliases];
         }
-        CanvasManagerStatic._currentTickersTimeouts[timeout] = {
+        CanvasManagerStatic._currentTickersTimeouts.set(timeout, {
             aliases: aliases,
             ticker: ticker,
             canBeDeletedBeforeEnd: canBeDeletedBeforeEnd,
-        };
+        });
     }
     static removeTickerTimeoutInfo(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
             timeout = timeout.toString();
         }
-        if (CanvasManagerStatic._currentTickersTimeouts[timeout]) {
-            delete CanvasManagerStatic._currentTickersTimeouts[timeout];
-        }
+        CanvasManagerStatic._currentTickersTimeouts.delete(timeout);
     }
     static removeTickerTimeout(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
@@ -294,19 +291,16 @@ export default class CanvasManagerStatic {
     }
     static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
         // todo
-        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(
-            ([timeout, tickerTimeout]) => {
-                let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
-                if (aliasesWithoutAliasToRemove.length === 0) {
-                    let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
-                    if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
-                        CanvasManagerStatic.removeTickerTimeout(timeout);
-                    }
-                } else {
-                    CanvasManagerStatic._currentTickersTimeouts[timeout].aliases =
-                        aliasesWithoutAliasToRemove;
+        CanvasManagerStatic._currentTickersTimeouts.forEach((tickerTimeout, timeout) => {
+            let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
+            if (aliasesWithoutAliasToRemove.length === 0) {
+                let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
+                if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
+                    CanvasManagerStatic.removeTickerTimeout(timeout);
                 }
-            },
-        );
+            } else {
+                tickerTimeout.aliases = aliasesWithoutAliasToRemove;
+            }
+        });
     }
 }
