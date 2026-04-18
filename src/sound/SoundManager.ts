@@ -15,7 +15,7 @@ import SoundOptions, {
     SoundPlayOptions,
     SoundPlayOptionsWithChannel,
 } from "./interfaces/SoundOptions";
-import SoundManagerStatic from "./SoundManagerStatic";
+import SoundManagerStatic, { mediaInstances as mediaInstancesMap } from "./SoundManagerStatic";
 import SoundFilterMemory from "./types/SoundFilterMemory";
 
 export default class SoundManager implements SoundManagerInterface {
@@ -82,8 +82,7 @@ export default class SoundManager implements SoundManagerInterface {
         sound.speedAll = speed;
     }
     pauseAll(): this {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+        for (const mediaInstance of mediaInstancesMap.values()) {
             if (!mediaInstance.instance.paused) {
                 mediaInstance.instance.paused = true;
             }
@@ -91,8 +90,7 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     resumeAll(): this {
-        for (const mediaId in SoundManagerStatic.mediaInstances) {
-            const mediaInstance = SoundManagerStatic.mediaInstances[mediaId];
+        for (const mediaInstance of mediaInstancesMap.values()) {
             if (mediaInstance.instance.paused) {
                 mediaInstance.instance.paused = false;
             }
@@ -111,7 +109,7 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     stopAll(): this {
-        SoundManagerStatic.mediaInstances = {};
+        mediaInstancesMap.clear();
         sound.stopAll();
         return this;
     }
@@ -146,13 +144,13 @@ export default class SoundManager implements SoundManagerInterface {
         return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
     }
     find(alias: string): IMediaInstance | undefined {
-        return SoundManagerStatic.mediaInstances[alias]?.instance;
+        return mediaInstancesMap.get(alias)?.instance;
     }
     stop(alias: string): void {
         const mediaInstance = this.find(alias);
         if (mediaInstance) {
             mediaInstance.stop();
-            delete SoundManagerStatic.mediaInstances[alias];
+            mediaInstancesMap.delete(alias);
         } else {
             logger.warn(`No media instance found with alias ${alias} to stop.`);
         }
@@ -273,7 +271,7 @@ export default class SoundManager implements SoundManagerInterface {
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
                 paused: boolean;
             };
-        } = Object.entries(SoundManagerStatic.mediaInstances).reduce(
+        } = Array.from(mediaInstancesMap.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
                 result[mediaAlias] = {
                     channelAlias: mediaInstance.channelAlias,
@@ -371,7 +369,11 @@ export default class SoundManager implements SoundManagerInterface {
                         } else {
                             const instance = this.find(mediaAlias);
                             if (instance) {
-                                SoundManagerStatic.mediaInstances[mediaAlias].options = {
+                                const mediaInstance = mediaInstancesMap.get(mediaAlias);
+                                if (!mediaInstance) {
+                                    return;
+                                }
+                                mediaInstance.options = {
                                     ...mediaInstanceData.options,
                                     filters: FilterMemoryToFilter(
                                         mediaInstanceData.options.filters || [],
