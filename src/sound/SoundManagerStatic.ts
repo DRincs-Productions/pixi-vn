@@ -1,6 +1,6 @@
-import AudioChannelInterface from "./interfaces/AudioChannelInterface";
-import IMediaInstance from "./interfaces/IMediaInstance";
-import { SoundPlayOptions } from "./interfaces/SoundOptions";
+import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 
 export default class SoundManagerStatic {
     private constructor() {}
