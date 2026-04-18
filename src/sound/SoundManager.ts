@@ -367,36 +367,32 @@ export default class SoundManager implements SoundManagerInterface {
                                 instance.paused = mediaInstanceData.paused;
                             }
                         } else {
-                            const instance = this.find(mediaAlias);
-                            if (instance) {
-                                const mediaInstance = mediaInstancesMap.get(mediaAlias);
-                                if (!mediaInstance) {
-                                    logger.warn(
-                                        `No media instance found with alias ${mediaAlias} while restoring background state.`,
-                                    );
-                                    return;
-                                }
-                                mediaInstance.options = {
-                                    ...mediaInstanceData.options,
-                                    filters: FilterMemoryToFilter(
-                                        mediaInstanceData.options.filters || [],
-                                    ),
-                                };
-                                if (instance.paused !== mediaInstanceData.paused) {
-                                    instance.paused = mediaInstanceData.paused;
-                                }
-                                if (instance.loop !== (mediaInstanceData.options.loop || false)) {
-                                    instance.loop = mediaInstanceData.options.loop || false;
-                                }
-                                if (instance.volume !== (mediaInstanceData.options.volume ?? 1)) {
-                                    instance.volume = mediaInstanceData.options.volume ?? 1;
-                                }
-                                if (instance.muted !== (mediaInstanceData.options.muted || false)) {
-                                    instance.muted = mediaInstanceData.options.muted || false;
-                                }
-                                if (instance.speed !== (mediaInstanceData.options.speed ?? 1)) {
-                                    instance.speed = mediaInstanceData.options.speed ?? 1;
-                                }
+                            const mediaInstance = mediaInstancesMap.get(mediaAlias);
+                            if (!mediaInstance) {
+                                logger.warn(
+                                    `No media instance found with alias ${mediaAlias} while restoring background state.`,
+                                );
+                                return;
+                            }
+                            const instance = mediaInstance.instance;
+                            mediaInstance.options = {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                            };
+                            if (instance.paused !== mediaInstanceData.paused) {
+                                instance.paused = mediaInstanceData.paused;
+                            }
+                            if (instance.loop !== (mediaInstanceData.options.loop || false)) {
+                                instance.loop = mediaInstanceData.options.loop || false;
+                            }
+                            if (instance.volume !== (mediaInstanceData.options.volume ?? 1)) {
+                                instance.volume = mediaInstanceData.options.volume ?? 1;
+                            }
+                            if (instance.muted !== (mediaInstanceData.options.muted || false)) {
+                                instance.muted = mediaInstanceData.options.muted || false;
+                            }
+                            if (instance.speed !== (mediaInstanceData.options.speed ?? 1)) {
+                                instance.speed = mediaInstanceData.options.speed ?? 1;
                             }
                         }
                     });

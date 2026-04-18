@@ -27,18 +27,18 @@ export function proxyMedia(
         set(target, prop, value, receiver) {
             const mediaEntry = mediaInstancesMap.get(mediaAlias);
             if (mediaEntry) {
+                let targetValue = value;
                 switch (prop) {
                     case "volume":
                         mediaEntry.options[prop] = value;
-                        value = calculateVolume(value, channel.channelOptions.volume);
-                        return Reflect.set(target, prop, value, receiver);
+                        targetValue = calculateVolume(value, channel.channelOptions.volume);
+                        break;
                     case "muted":
                         mediaEntry.options[prop] = value;
                         if (channel.channelOptions.muted) {
-                            return Reflect.set(target, prop, true, receiver);
-                        } else {
-                            return Reflect.set(target, prop, value, receiver);
+                            targetValue = true;
                         }
+                        break;
                     case "loop":
                     case "delay":
                     case "end":
@@ -48,10 +48,11 @@ export function proxyMedia(
                     case "sprite":
                     case "start":
                         mediaEntry.options[prop] = value;
-                        return Reflect.set(target, prop, value, receiver);
+                        break;
                     default:
-                        return Reflect.set(target, prop, value, receiver);
+                        break;
                 }
+                return Reflect.set(target, prop, targetValue, receiver);
             }
             return Reflect.set(target, prop, value, receiver);
         },
