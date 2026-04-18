@@ -89,7 +89,7 @@ function stubChannelPlay() {
 /** Reset all sound-related state between tests. */
 function clearSound() {
     SoundManagerStatic.mediaInstances.clear();
-    SoundManagerStatic.channels = {};
+    SoundManagerStatic.channels.clear();
     sound.defaultChannelAlias = "general";
 }
 

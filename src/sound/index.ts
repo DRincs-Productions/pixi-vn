@@ -33,7 +33,7 @@ GameUnifier.addOnPreContinue(async () => {
             }
         });
         SoundManagerStatic.delayTimeoutInstances = [];
-        Object.values(SoundManagerStatic.channels).forEach((channel) => {
+        SoundManagerStatic.channels.forEach((channel) => {
             if (!channel.background) {
                 channel.stopAll();
             }

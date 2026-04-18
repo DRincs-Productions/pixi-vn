@@ -14,6 +14,6 @@ export default class SoundManagerStatic {
             options: SoundPlayOptions;
         }
     > = new Map();
-    static channels: { [alias: string]: AudioChannelInterface } = {};
+    static readonly channels: Map<string, AudioChannelInterface> = new Map();
     static delayTimeoutInstances: [number | NodeJS.Timeout, string][] = [];
 }

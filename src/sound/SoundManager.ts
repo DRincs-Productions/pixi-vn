@@ -240,17 +240,17 @@ export default class SoundManager implements SoundManagerInterface {
             });
             return;
         }
-        if (SoundManagerStatic.channels[alias]) {
+        if (SoundManagerStatic.channels.has(alias)) {
             logger.warn(`Channel with alias ${alias} already exists.`);
             return;
         }
         const channel = new AudioChannel(alias, options);
-        SoundManagerStatic.channels[alias] = channel;
+        SoundManagerStatic.channels.set(alias, channel);
         return channel;
     }
 
     findChannel(alias: string): AudioChannelInterface {
-        const channel = SoundManagerStatic.channels[alias];
+        const channel = SoundManagerStatic.channels.get(alias);
         if (!channel) {
             return this.addChannel(alias) as AudioChannelInterface;
         }
@@ -258,7 +258,7 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     get channels(): AudioChannelInterface[] {
-        return Object.values(SoundManagerStatic.channels);
+        return Array.from(SoundManagerStatic.channels.values());
     }
 
     /* Export and Import Methods */
