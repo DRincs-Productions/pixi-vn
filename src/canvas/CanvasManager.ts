@@ -444,6 +444,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         } = options;
         const info = CanvasManagerStatic._currentTickers.get(tickerId);
         const ignoreTickerSteps = options.ignoreTickerSteps || false;
+        this.remove(aliasToRemoveAfter);
         tickerAliasToResume.forEach((alias) => {
             this.resumeTicker({ canvasAlias: alias });
         });
