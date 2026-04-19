@@ -131,7 +131,9 @@ export namespace Game {
                 let canvasData = {};
                 try {
                     canvasData = canvasUtils.canvas.export();
-                } catch (e) {}
+                } catch (e) {
+                    logger.error("Error exporting canvas data:", e);
+                }
                 return {
                     path: getGamePath(),
                     storage: storageUtils.storage.export(),
@@ -148,7 +150,9 @@ export namespace Game {
                 try {
                     await canvasUtils.canvas.restore(state.canvas);
                     await soundUtils.sound.restore(state.sound);
-                } catch (e) {}
+                } catch (e) {
+                    logger.error("Error restoring game step state:", e);
+                }
                 navigate(state.path);
             },
             // narration
@@ -213,7 +217,9 @@ export namespace Game {
         storageUtils.storage.clear();
         try {
             canvasUtils.canvas.clear();
-        } catch (e) {}
+        } catch (e) {
+            logger.error("Error clearing canvas:", e);
+        }
         soundUtils.sound.clear();
         narrationUtils.narration.clear();
         historyUtils.stepHistory.clear();
@@ -227,7 +233,9 @@ export namespace Game {
         let canvasData: any = {};
         try {
             canvasData = canvasUtils.canvas.export();
-        } catch (e) {}
+        } catch (e) {
+            logger.error("Error exporting canvas data:", e);
+        }
         return {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
@@ -242,11 +250,14 @@ export namespace Game {
     /**
      * Load the save data
      * @param data The save data
-     * @param navigate The function to navigate to a path
+     */
+    export async function restoreGameState(data: pixivninterface.GameState): Promise<void>;
+    /**
+     * @deprecated Use {@link restoreGameState} instead, and pass a navigate function in the options of {@link Game.init} or using {@link Game.onNavigate}.
      */
     export async function restoreGameState(
         data: pixivninterface.GameState,
-        navigate: (path: string) => void | Promise<void>,
+        navigate?: (path: string) => void | Promise<void>,
     ) {
         historyUtils.stepHistory.restore(data.historyData);
         const lastHistoryKey = historyUtils.stepHistory.lastKey;
@@ -258,8 +269,18 @@ export namespace Game {
         try {
             await canvasUtils.canvas.restore(data.canvasData);
             await soundUtils.sound.restore(data.soundData);
-        } catch (e) {}
-        await navigate(data.path);
+        } catch (e) {
+            logger.error("Error restoring game state:", e);
+        }
+        if (navigate) {
+            await navigate(data.path);
+        } else if (GameUnifier.navigate) {
+            await GameUnifier.navigate(data.path);
+        } else {
+            logger.warn(
+                `No navigate function defined. The game path is ${data.path}, but no navigation function is available to navigate to it.`,
+            );
+        }
     }
 
     /**
