@@ -1,14 +1,14 @@
+import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "@constants";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import type { LabelAbstract } from ".";
-import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import { createExportableElement } from "../utils";
-import { logger } from "../utils/log-utility";
-import type Label from "./classes/Label";
-import RegisteredLabels from "./decorators/RegisteredLabels";
-import type HistoryStep from "./interfaces/HistoryStep";
-import type OpenedLabel from "./interfaces/OpenedLabel";
-import type ChoicesMadeType from "./types/ChoicesMadeType";
-import type { LabelIdType } from "./types/LabelIdType";
+import type Label from "@narration/classes/Label";
+import type LabelAbstract from "@narration/classes/LabelAbstract";
+import RegisteredLabels from "@narration/decorators/RegisteredLabels";
+import type HistoryStep from "@narration/interfaces/HistoryStep";
+import type OpenedLabel from "@narration/interfaces/OpenedLabel";
+import type ChoicesMadeType from "@narration/types/ChoicesMadeType";
+import type { LabelIdType } from "@narration/types/LabelIdType";
+import { createExportableElement } from "@utils/export-utility";
+import { logger } from "@utils/log-utility";
 
 type AllOpenedLabelsType = { [key: LabelIdType]: { biggestStep: number; openCount: number } };
 
@@ -223,6 +223,7 @@ export default class NarrationManagerStatic {
         if (NarrationManagerStatic.currentLabelId) {
             return RegisteredLabels.get(NarrationManagerStatic.currentLabelId);
         }
+        return undefined;
     }
     /**
      * currentLabelId is the current label id that occurred during the progression of the steps.

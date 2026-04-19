@@ -1,8 +1,8 @@
-import { CachedMap } from "../../classes";
-import { logger } from "../../utils/log-utility";
-import type Label from "../classes/Label";
-import type LabelAbstract from "../classes/LabelAbstract";
-import type { LabelIdType } from "../types/LabelIdType";
+import CachedMap from "@classes/CachedMap";
+import type Label from "@narration/classes/Label";
+import type LabelAbstract from "@narration/classes/LabelAbstract";
+import type { LabelIdType } from "@narration/types/LabelIdType";
+import { logger } from "@utils/log-utility";
 
 /**
  * A Map that contains all labels registered and available to be used.
@@ -33,7 +33,9 @@ namespace RegisteredLabels {
      */
     export function add(label: LabelAbstract<any, any> | LabelAbstract<any, any>[]) {
         if (Array.isArray(label)) {
-            label.forEach((l) => add(l));
+            label.forEach((l) => {
+                add(l);
+            });
             return;
         }
         if (registeredLabels.has(label.id)) {
