@@ -133,15 +133,17 @@ export default class CanvasManagerStatic {
     static addHtmlLayer(
         id: string,
         element: HTMLElement,
-        style: Pick<CSSStyleDeclaration, "position" | "pointerEvents"> = {
+        style: Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect"> = {
             position: "absolute",
             pointerEvents: "none",
+            userSelect: "none",
         },
     ) {
         const div = document.createElement("div");
         div.setAttribute("id", id);
         div.style.position = style.position;
         div.style.pointerEvents = style.pointerEvents;
+        div.style.userSelect = style.userSelect;
         const res = element.appendChild(div);
         CanvasManagerStatic.htmlLayers.push(div);
         CanvasManagerStatic.resize();

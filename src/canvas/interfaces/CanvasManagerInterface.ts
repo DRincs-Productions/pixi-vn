@@ -13,14 +13,14 @@ import type {
     Rectangle,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
-import { Devtools } from "@pixi/devtools";
-import Layer from "../components/Layer";
-import { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import { PauseType } from "../types/PauseType";
-import { RepeatType } from "../types/RepeatType";
-import { CanvasBaseInterface } from "./CanvasBaseInterface";
-import CanvasGameState from "./CanvasGameState";
-import CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
+import type { Devtools } from "@pixi/devtools";
+import type Layer from "../components/Layer";
+import type { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
+import type { PauseType } from "../types/PauseType";
+import type { RepeatType } from "../types/RepeatType";
+import type { CanvasBaseInterface } from "./CanvasBaseInterface";
+import type CanvasGameState from "./CanvasGameState";
+import type CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 
 export default interface CanvasManagerInterface {
     /**
@@ -436,7 +436,7 @@ export default interface CanvasManagerInterface {
      * Add a HTML layer to the canvas.
      * @param id The id of the layer.
      * @param element The html element to be added.
-     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none" }.
+     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none", userSelect: "none" }
      * @example
      * ```tsx
      * const root = document.getElementById('root')
@@ -456,7 +456,7 @@ export default interface CanvasManagerInterface {
     addHtmlLayer(
         id: string,
         element: HTMLElement,
-        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">,
+        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">,
     ): HTMLDivElement;
     /**
      * Get a HTML layer from the canvas.
