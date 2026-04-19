@@ -13,7 +13,7 @@ export function proxyMedia(
             switch (prop) {
                 case "volume":
                 case "muted": {
-                    const entry = SoundManagerStatic.mediaInstances[mediaAlias];
+                    const entry = SoundManagerStatic.mediaInstances.get(mediaAlias);
                     if (entry) {
                         return entry.options[prop as keyof typeof entry.options];
                     }
@@ -25,19 +25,20 @@ export function proxyMedia(
             }
         },
         set(target, prop, value, receiver) {
-            if (mediaAlias in SoundManagerStatic.mediaInstances) {
+            const mediaEntry = SoundManagerStatic.mediaInstances.get(mediaAlias);
+            if (mediaEntry) {
+                let targetValue = value;
                 switch (prop) {
                     case "volume":
-                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
-                        value = calculateVolume(value, channel.channelOptions.volume);
-                        return Reflect.set(target, prop, value, receiver);
+                        mediaEntry.options[prop] = value;
+                        targetValue = calculateVolume(value, channel.channelOptions.volume);
+                        break;
                     case "muted":
-                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
+                        mediaEntry.options[prop] = value;
                         if (channel.channelOptions.muted) {
-                            return Reflect.set(target, prop, true, receiver);
-                        } else {
-                            return Reflect.set(target, prop, value, receiver);
+                            targetValue = true;
                         }
+                        break;
                     case "loop":
                     case "delay":
                     case "end":
@@ -46,10 +47,12 @@ export function proxyMedia(
                     case "speed":
                     case "sprite":
                     case "start":
-                        SoundManagerStatic.mediaInstances[mediaAlias].options[prop] = value;
+                        mediaEntry.options[prop] = value;
+                        break;
                     default:
-                        return Reflect.set(target, prop, value, receiver);
+                        break;
                 }
+                return Reflect.set(target, prop, targetValue, receiver);
             }
             return Reflect.set(target, prop, value, receiver);
         },

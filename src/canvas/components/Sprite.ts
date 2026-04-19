@@ -12,7 +12,7 @@ import type {
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { CANVAS_SPRITE_ID } from "../../constants";
 import { logger } from "../../utils/log-utility";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import {
     default as RegisteredCanvasComponents,
     setMemoryContainer,
@@ -20,14 +20,15 @@ import {
 import { getMemorySprite } from "../functions/canvas-memory-utility";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import { getTexture } from "../functions/texture-utility";
-import AssetMemory from "../interfaces/AssetMemory";
-import { SpriteOptions } from "../interfaces/canvas-options";
-import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
-import SpriteMemory, { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
-import AdditionalPositionsExtension, {
-    analizePositionsExtensionProps,
-} from "./AdditionalPositionsExtension";
-import ListenerExtension, { addListenerHandler, OnEventsHandlers } from "./ListenerExtension";
+import type AssetMemory from "../interfaces/AssetMemory";
+import type { SpriteOptions } from "../interfaces/canvas-options";
+import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import type SpriteMemory from "../interfaces/memory/SpriteMemory";
+import type { SpriteBaseMemory } from "../interfaces/memory/SpriteMemory";
+import type AdditionalPositionsExtension from "./AdditionalPositionsExtension";
+import { analizePositionsExtensionProps } from "./AdditionalPositionsExtension";
+import type ListenerExtension from "./ListenerExtension";
+import { addListenerHandler, type OnEventsHandlers } from "./ListenerExtension";
 
 /**
  * This class is a extension of the [PIXI.Sprite class](https://pixijs.com/8.x/examples/sprite/basic), it has the same properties and methods,
@@ -55,30 +56,21 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         ListenerExtension,
         AdditionalPositionsExtension
 {
-    constructor(options?: SpriteOptions | Omit<Texture, "on">) {
-        options = analizePositionsExtensionProps(options as any);
-        let align = undefined;
-        let percentagePosition = undefined;
-        if (options && "align" in options && options?.align !== undefined) {
-            align = options.align;
-            delete options.align;
+    constructor(options?: SpriteOptions | Texture) {
+        if (options instanceof PIXI.Texture) {
+            super(options);
+        } else {
+            const { align, percentagePosition, ...restOptions } =
+                analizePositionsExtensionProps(options) || {};
+            super(restOptions);
+            if (align) {
+                this.align = align;
+            }
+            if (percentagePosition) {
+                this.percentagePosition = percentagePosition;
+            }
         }
-        if (
-            options &&
-            "percentagePosition" in options &&
-            options?.percentagePosition !== undefined
-        ) {
-            percentagePosition = options.percentagePosition;
-            delete options.percentagePosition;
-        }
-        super(options);
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_SPRITE_ID;
-        if (align) {
-            this.align = align;
-        }
-        if (percentagePosition) {
-            this.percentagePosition = percentagePosition;
-        }
     }
     readonly pixivnId: string = CANVAS_SPRITE_ID;
     get memory(): Memory | SpriteMemory {
@@ -93,8 +85,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         return await setMemorySprite(this, value);
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean): Sprite<any> {
-        let sprite = PIXI.Sprite.from(source, skipCache);
-        let mySprite = new Sprite();
+        const sprite = PIXI.Sprite.from(source, skipCache);
+        const mySprite = new Sprite();
         mySprite.texture = sprite.texture;
         return mySprite;
     }
@@ -132,19 +124,19 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     private _align: Partial<PointData> | undefined = undefined;
     set align(value: Partial<PointData> | number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         if (typeof value === "number") {
             this._align.x = value;
             this._align.y = value;
         } else {
-            value.x !== undefined && (this._align.x = value.x);
-            value.y !== undefined && (this._align.y = value.y);
+            if (value.x !== undefined) this._align.x = value.x;
+            if (value.y !== undefined) this._align.y = value.y;
         }
         this.reloadPosition();
     }
     get align() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return {
             x: PropsUtils.calculateAlignByPosition(
                 "width",
@@ -166,13 +158,13 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set xAlign(value: number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.x = value;
         this.reloadPosition();
     }
     get xAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "width",
             this.x,
@@ -184,13 +176,13 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set yAlign(value: number) {
         this._percentagePosition = undefined;
-        this._align === undefined && (this._align = {});
+        if (this._align === undefined) this._align = {};
         this._align.y = value;
         this.reloadPosition();
     }
     get yAlign() {
-        let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-        let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+        const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+        const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
         return PropsUtils.calculateAlignByPosition(
             "height",
             this.y,
@@ -203,13 +195,13 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     private _percentagePosition: Partial<PointData> | undefined = undefined;
     set percentagePosition(value: Partial<PointData> | number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         if (typeof value === "number") {
             this._percentagePosition.x = value;
             this._percentagePosition.y = value;
         } else {
-            value.x !== undefined && (this._percentagePosition.x = value.x);
-            value.y !== undefined && (this._percentagePosition.y = value.y);
+            if (value.x !== undefined) this._percentagePosition.x = value.x;
+            if (value.y !== undefined) this._percentagePosition.y = value.y;
         }
         this.reloadPosition();
     }
@@ -224,7 +216,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set percentageX(_value: number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.x = _value;
         this.reloadPosition();
     }
@@ -233,7 +225,7 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     set percentageY(_value: number) {
         this._align = undefined;
-        this._percentagePosition === undefined && (this._percentagePosition = {});
+        if (this._percentagePosition === undefined) this._percentagePosition = {};
         this._percentagePosition.y = _value;
         this.reloadPosition();
     }
@@ -266,8 +258,8 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
     }
     protected reloadPosition() {
         if (this._align) {
-            let superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
-            let superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
+            const superPivot = PropsUtils.getSuperPoint(this.pivot, this.angle);
+            const superScale = PropsUtils.getSuperPoint(this.scale, this.angle);
             if (this._align.x !== undefined) {
                 super.x = PropsUtils.calculatePositionByAlign(
                     "width",
@@ -344,10 +336,10 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
     },
 ) {
     memory = analizePositionsExtensionProps(memory)!;
-    let ignoreTexture = options?.ignoreTexture || false;
+    const ignoreTexture = options?.ignoreTexture || false;
     await setMemoryContainer(element, memory);
     if (!ignoreTexture) {
-        let textureData: AssetMemory | undefined = undefined;
+        let textureData: AssetMemory | undefined;
         if ("textureData" in memory && memory.textureData) {
             textureData = memory.textureData;
         }
@@ -358,7 +350,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
                     textureUrl = textureData.alias;
                 }
                 try {
-                    let texture = await getTexture(textureUrl);
+                    const texture = await getTexture(textureUrl);
                     if (texture) {
                         element.texture = texture;
                     }
@@ -375,7 +367,7 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
             }
         }
     }
-    let half = options?.half;
+    const half = options?.half;
     if (half) {
         await half();
     }
@@ -386,11 +378,9 @@ export async function setMemorySprite<Memory extends SpriteBaseMemory>(
             element.anchor.set(memory.anchor.x, memory.anchor.y);
         }
     }
-    "align" in memory && memory.align !== undefined && (element.align = memory.align);
-    "percentagePosition" in memory &&
-        memory.percentagePosition !== undefined &&
-        (element.percentagePosition = memory.percentagePosition);
-    "roundPixels" in memory &&
-        memory.roundPixels !== undefined &&
-        (element.roundPixels = memory.roundPixels);
+    if ("align" in memory && memory.align !== undefined) element.align = memory.align;
+    if ("percentagePosition" in memory && memory.percentagePosition !== undefined)
+        element.percentagePosition = memory.percentagePosition;
+    if ("roundPixels" in memory && memory.roundPixels !== undefined)
+        element.roundPixels = memory.roundPixels;
 }

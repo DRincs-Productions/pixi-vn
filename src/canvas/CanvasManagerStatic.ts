@@ -1,14 +1,18 @@
+import additionalPositionsProperties from "@canvas/pixi-devtools/additionalPositionsProperties";
+import type {
+    TickerHistory,
+    TickerInfo,
+    TickersSequence,
+    TickerTimeoutHistory,
+} from "@canvas/tickers";
+import { CANVAS_APP_GAME_LAYER_ALIAS } from "@constants";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { Application, ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { Devtools, initDevtools } from "@pixi/devtools";
+import { type Devtools, initDevtools } from "@pixi/devtools";
+import { logger } from "@utils/log-utility";
+import { throttle } from "@utils/time-utility";
 import sha1 from "crypto-js/sha1";
-import { CANVAS_APP_GAME_LAYER_ALIAS } from "../constants";
-import { logger } from "../utils/log-utility";
-import { throttle } from "../utils/time-utility";
-import additionalPositionsProperties from "./pixi-devtools/additionalPositionsProperties";
-import { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./tickers";
-
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
  */
@@ -28,11 +32,11 @@ export default class CanvasManagerStatic {
         return CanvasManagerStatic._app;
     }
     static get gameLayer() {
-        let layer = this.app.stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
+        let layer = CanvasManagerStatic.app.stage.getChildByLabel(CANVAS_APP_GAME_LAYER_ALIAS);
         if (!layer) {
             layer = new PIXI.Container();
             layer.label = CANVAS_APP_GAME_LAYER_ALIAS;
-            this.app.stage.addChild(layer);
+            CanvasManagerStatic.app.stage.addChild(layer);
         }
         return layer;
     }
@@ -99,13 +103,13 @@ export default class CanvasManagerStatic {
                 CanvasManagerStatic.addCanvasIntoHTMLElement(element, id);
                 // listen for the browser telling us that the screen size changed
                 switch (resizeMode) {
-                    case "contain":
+                    case "contain": {
                         const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
                         new ResizeObserver(throttledResize).observe(element);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
                         break;
-                    case "none":
+                    }
                     default:
                         break;
                 }
@@ -134,17 +138,17 @@ export default class CanvasManagerStatic {
             pointerEvents: "none",
         },
     ) {
-        let div = document.createElement("div");
+        const div = document.createElement("div");
         div.setAttribute("id", id);
         div.style.position = style.position;
         div.style.pointerEvents = style.pointerEvents;
-        let res = element.appendChild(div);
+        const res = element.appendChild(div);
         CanvasManagerStatic.htmlLayers.push(div);
         CanvasManagerStatic.resize();
         return res;
     }
     static removeHtmlLayer(id: string) {
-        let div = CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
+        const div = CanvasManagerStatic.htmlLayers.find((layer) => layer.id === id);
         if (div) {
             div.remove();
             CanvasManagerStatic.htmlLayers = CanvasManagerStatic.htmlLayers.filter(
@@ -165,7 +169,7 @@ export default class CanvasManagerStatic {
         const canvasWidth = CanvasManagerStatic.canvasWidth;
         const canvasHeight = CanvasManagerStatic.canvasHeight;
         let container = CanvasManagerStatic.app.resizeTo;
-        let style = CanvasManagerStatic.app.canvas.style;
+        const style = CanvasManagerStatic.app.canvas.style;
         if (!(container instanceof HTMLElement)) {
             container = document.documentElement;
         }
@@ -190,12 +194,12 @@ export default class CanvasManagerStatic {
         style.height = `${screenHeight}px`;
         const horizontalMargin = (containerWidth - screenWidth) / 2;
         const verticalMargin = (containerHeight - screenHeight) / 2;
-        (style as any).marginLeft = `${horizontalMargin}px`;
-        (style as any).marginRight = `${horizontalMargin}px`;
-        (style as any).marginTop = `${verticalMargin}px`;
-        (style as any).marginBottom = `${verticalMargin}px`;
+        style.marginLeft = `${horizontalMargin}px`;
+        style.marginRight = `${horizontalMargin}px`;
+        style.marginTop = `${verticalMargin}px`;
+        style.marginBottom = `${verticalMargin}px`;
 
-        const promises = CanvasManagerStatic.htmlLayers.map((layer) => {
+        CanvasManagerStatic.htmlLayers.forEach((layer) => {
             layer.style.width = `${screenWidth}px`;
             layer.style.height = `${screenHeight}px`;
             layer.style.marginLeft = `${horizontalMargin}px`;
@@ -203,7 +207,6 @@ export default class CanvasManagerStatic {
             layer.style.marginTop = `${verticalMargin}px`;
             layer.style.marginBottom = `${verticalMargin}px`;
         });
-        await Promise.all(promises);
     }
 
     /* Edit Canvas Elements Methods */
@@ -228,7 +231,7 @@ export default class CanvasManagerStatic {
         [k: string]: TickerHistory<any>;
     } {
         return Object.fromEntries(
-            Object.entries(CanvasManagerStatic._currentTickers)
+            Array.from(CanvasManagerStatic._currentTickers.entries())
                 .filter(([_, info]) => !info.createdByTicketSteps)
                 .map(([id, info]) => [
                     id,
@@ -243,21 +246,25 @@ export default class CanvasManagerStatic {
                 ]),
         );
     }
-    static _currentTickers: { [id: string]: TickerInfo<any> } = {};
-    static _currentTickersSequence: { [alias: string]: { [tickerId: string]: TickersSequence } } =
-        {};
-    static _currentTickersTimeouts: { [timeout: string]: TickerTimeoutHistory } = {};
-    static _tickersToCompleteOnStepEnd: {
+    static readonly _currentTickers: Map<string, TickerInfo<any>> = new Map();
+    static readonly _currentTickersSequence: Map<string, Map<string, TickersSequence>> = new Map();
+    static get currentTickersSequence(): {
+        [alias: string]: { [tickerId: string]: TickersSequence };
+    } {
+        return Object.fromEntries(
+            Array.from(CanvasManagerStatic._currentTickersSequence.entries()).map(
+                ([alias, stepsMap]) => [alias, Object.fromEntries(stepsMap)],
+            ),
+        );
+    }
+    static readonly _currentTickersTimeouts: Map<string, TickerTimeoutHistory> = new Map();
+    static readonly _tickersToCompleteOnStepEnd: {
         tikersIds: { id: string }[];
         stepAlias: { id: string; alias: string }[];
     } = { tikersIds: [], stepAlias: [] };
     static generateTickerId(...args: any[]): string {
         try {
-            return (
-                sha1(JSON.stringify(args)).toString() +
-                "_" +
-                Math.random().toString(36).substring(7)
-            );
+            return `${sha1(JSON.stringify(args)).toString()}_${Math.random().toString(36).substring(7)}`;
         } catch (e) {
             throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
         }
@@ -271,19 +278,17 @@ export default class CanvasManagerStatic {
         if (typeof aliases === "string") {
             aliases = [aliases];
         }
-        CanvasManagerStatic._currentTickersTimeouts[timeout] = {
+        CanvasManagerStatic._currentTickersTimeouts.set(timeout, {
             aliases: aliases,
             ticker: ticker,
             canBeDeletedBeforeEnd: canBeDeletedBeforeEnd,
-        };
+        });
     }
     static removeTickerTimeoutInfo(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
             timeout = timeout.toString();
         }
-        if (CanvasManagerStatic._currentTickersTimeouts[timeout]) {
-            delete CanvasManagerStatic._currentTickersTimeouts[timeout];
-        }
+        CanvasManagerStatic._currentTickersTimeouts.delete(timeout);
     }
     static removeTickerTimeout(timeout: NodeJS.Timeout | string) {
         if (typeof timeout !== "string") {
@@ -294,19 +299,16 @@ export default class CanvasManagerStatic {
     }
     static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
         // todo
-        Object.entries(CanvasManagerStatic._currentTickersTimeouts).forEach(
-            ([timeout, tickerTimeout]) => {
-                let aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
-                if (aliasesWithoutAliasToRemove.length === 0) {
-                    let canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
-                    if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
-                        CanvasManagerStatic.removeTickerTimeout(timeout);
-                    }
-                } else {
-                    CanvasManagerStatic._currentTickersTimeouts[timeout].aliases =
-                        aliasesWithoutAliasToRemove;
+        CanvasManagerStatic._currentTickersTimeouts.forEach((tickerTimeout, timeout) => {
+            const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
+            if (aliasesWithoutAliasToRemove.length === 0) {
+                const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
+                if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
+                    CanvasManagerStatic.removeTickerTimeout(timeout);
                 }
-            },
-        );
+            } else {
+                tickerTimeout.aliases = aliasesWithoutAliasToRemove;
+            }
+        });
     }
 }

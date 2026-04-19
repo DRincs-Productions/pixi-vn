@@ -1,6 +1,7 @@
+import type { CanvasBaseItemMemory } from "@canvas/index";
+import type { ErrorCodeType } from "@core/ErrorCodeType";
+import type { CanvasBaseItem } from "@drincs/pixi-vn/canvas";
 import type { ContainerOptions } from "pixi.js";
-import type { CanvasBaseItem, CanvasBaseItemMemory } from "../canvas";
-import ErrorCodeType from "./ErrorCodeType";
 
 export default class PixiError extends Error {
     public code: ErrorCodeType;

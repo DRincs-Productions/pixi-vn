@@ -1,18 +1,19 @@
-import AudioChannelInterface from "./interfaces/AudioChannelInterface";
-import IMediaInstance from "./interfaces/IMediaInstance";
-import { SoundPlayOptions } from "./interfaces/SoundOptions";
+import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 
 export default class SoundManagerStatic {
     private constructor() {}
-    static mediaInstances: {
-        [alias: string]: {
+    static mediaInstances: Map<
+        string,
+        {
             channelAlias: string;
             soundAlias: string;
             instance: IMediaInstance;
             stepCounter: number;
             options: SoundPlayOptions;
-        };
-    } = {};
-    static channels: { [alias: string]: AudioChannelInterface } = {};
+        }
+    > = new Map();
+    static readonly channels: Map<string, AudioChannelInterface> = new Map();
     static delayTimeoutInstances: [number | NodeJS.Timeout, string][] = [];
 }

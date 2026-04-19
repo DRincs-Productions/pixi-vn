@@ -1,17 +1,17 @@
 import type { Ticker as PixiTicker } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { debounce } from "@utils/time-utility";
 import {
     animate as animateMotion,
-    AnimationOptions,
-    AnimationPlaybackControlsWithThen,
-    At,
-    MotionValue,
+    type AnimationOptions,
+    type AnimationPlaybackControlsWithThen,
+    type At,
+    type MotionValue,
     motionValue,
-    ObjectSegment,
-    ObjectTarget,
-    SequenceOptions,
+    type ObjectSegment,
+    type ObjectTarget,
+    type SequenceOptions,
 } from "motion";
-import { debounce } from "../utils/time-utility";
 
 export type SegmentOptions = AnimationOptions & At;
 type ObjectSegmentWithTransition<O extends {} = {}> = [O, ObjectTarget<O>, SegmentOptions];

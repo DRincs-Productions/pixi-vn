@@ -212,15 +212,11 @@ export default interface CanvasManagerInterface {
     /**
      * Currently tickers that are running.
      */
-    readonly currentTickers: { [id: string]: TickerInfo<any> };
+    readonly currentTickers: Map<string, TickerInfo<any>>;
     /**
      * The steps of the tickers
      */
-    readonly currentTickersSteps: {
-        [alias: string]: {
-            [tickerId: string]: TickersSequence;
-        };
-    };
+    readonly currentTickersSteps: Map<string, Map<string, TickersSequence>>;
     /**
      * Find a ticker by its id.
      * @param tickerId The id of the ticker.
