@@ -1,12 +1,13 @@
-// https://patorjk.com/software/taag/#p=display&f=Varsity&t=Pixi%20'%20VN
-export function asciiArtLog() {
-    console.info(`
- _______   _            _    _   ____   ____  ____  _____  
-|_   __ \\ (_)          (_)  | | |_  _| |_  _||_   \\|_   _| 
-  | |__) |__   _   __  __   \\_|   \\ \\   / /    |   \\ | |   
-  |  ___/[  | [ \\ [  ][  |         \\ \\ / /     | |\\ \\| |   
- _| |_    | |  > '  <  | |          \\ ' /     _| |_\\   |_  
-|_____|  [___][__]\`\\_][___]          \\_/     |_____|\\____| 
+import packageJson from "../../package.json";
 
-`);
+const ascii = `
+  ____  _      _ ___     ___   _ 
+ |  _ \\(_)_  _(_| ) \\   / / \\ | |
+ | |_) | \\ \\/ / |/ \\ \\ / /|  \\| |
+ |  __/| |>  <| |   \\ V / | |\\  |
+ |_|   |_/_/\\_\\_|    \\_/  |_| \\_| v${packageJson.version}
+`;
+
+export function asciiArtLog() {
+    console.log(ascii);
 }
