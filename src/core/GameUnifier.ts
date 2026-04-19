@@ -140,7 +140,7 @@ export default class GameUnifier {
             priority?: UPDATE_PRIORITY,
         ) => string | undefined;
     }) {
-        options.navigate && (GameUnifier._navigate = options.navigate);
+        if (options.navigate) GameUnifier._navigate = options.navigate;
         GameUnifier._getStepCounter = options.getStepCounter;
         GameUnifier._setStepCounter = options.setStepCounter;
         GameUnifier._getCurrentGameStepState = options.getCurrentGameStepState;
@@ -152,7 +152,7 @@ export default class GameUnifier {
         GameUnifier._removeVariable = options.removeVariable;
         GameUnifier._getFlag = options.getFlag;
         GameUnifier._setFlag = options.setFlag;
-        options.onLabelClosing && (GameUnifier._onLabelClosing = options.onLabelClosing);
+        if (options.onLabelClosing) GameUnifier._onLabelClosing = options.onLabelClosing;
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._getCharacter = options.getCharacter;
         GameUnifier._animate = options.animate;
