@@ -1,8 +1,8 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { CachedMap } from "../../../classes";
 import { logger } from "../../../utils/log-utility";
-import Ticker from "../interfaces/Ticker";
-import TickerArgs from "../interfaces/TickerArgs";
+import type Ticker from "../interfaces/Ticker";
+import type TickerArgs from "../interfaces/TickerArgs";
 
 /**
  * A dictionary that contains all tickers registered and avvailable to be used.
@@ -82,7 +82,7 @@ namespace RegisteredTickers {
      */
     export function get<T = Ticker<any>>(tickerId: string): T | undefined {
         try {
-            let tickerType = registeredTickers.get(tickerId);
+            const tickerType = registeredTickers.get(tickerId);
             if (!tickerType) {
                 logger.error(
                     `Event "${tickerId}" not found, did you forget to register it with the tickerDecorator?`,
@@ -115,7 +115,7 @@ namespace RegisteredTickers {
         },
     ): Ticker<TArgs> | undefined {
         try {
-            let ticker = registeredTickers.get(tickerId);
+            const ticker = registeredTickers.get(tickerId);
             if (!ticker) {
                 logger.error(
                     `Ticker "${tickerId}" not found, did you forget to register it with the tickerDecorator?`,

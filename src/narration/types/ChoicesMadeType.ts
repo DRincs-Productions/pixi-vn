@@ -1,4 +1,4 @@
-import { LabelIdType } from "./LabelIdType";
+import type { LabelIdType } from "./LabelIdType";
 
 type ChoicesMadeType = {
     /**

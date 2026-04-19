@@ -1,8 +1,8 @@
-import { NarrationGameState } from "@drincs/pixi-vn/narration";
-import CanvasGameState from "../canvas/interfaces/CanvasGameState";
-import HistoryGameState from "../history/interfaces/HistoryGameState";
-import SoundGameState from "../sound/interfaces/SoundGameState";
-import { StorageGameState } from "../storage";
+import type { NarrationGameState } from "@drincs/pixi-vn/narration";
+import type CanvasGameState from "../canvas/interfaces/CanvasGameState";
+import type HistoryGameState from "../history/interfaces/HistoryGameState";
+import type SoundGameState from "../sound/interfaces/SoundGameState";
+import type { StorageGameState } from "../storage";
 
 export default interface GameState {
     pixivn_version: string;

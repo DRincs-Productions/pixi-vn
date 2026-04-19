@@ -1,10 +1,10 @@
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
-import {
+import type {
     AnimationPlaybackControlsWithThen,
     ObjectSegment as MotionObjectSegment,
     ObjectSegmentWithTransition as MotionObjectSegmentWithTransition,
 } from "motion";
-import {
+import type {
     ObjectSegment,
     ObjectSegmentWithTransition,
     SequenceOptions,
@@ -34,9 +34,9 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
         if (animation) {
             return animation;
         }
-        let alias = this.canvasElementAliases[0];
-        let proxy = this.createItem(alias);
-        let sequence: (
+        const alias = this.canvasElementAliases[0];
+        const proxy = this.createItem(alias);
+        const sequence: (
             | MotionObjectSegment<CanvasBaseInterface<any>>
             | MotionObjectSegmentWithTransition<CanvasBaseInterface<any>>
         )[] = this._args.sequence.map((segment, index) => {

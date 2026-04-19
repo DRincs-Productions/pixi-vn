@@ -2,9 +2,9 @@ import { GameUnifier } from "@drincs/pixi-vn/core";
 import { sound } from "@pixi/sound";
 import { calculateVolume } from "../functions/channel-utility";
 import { proxyMedia } from "../functions/proxy-utility";
-import AudioChannelInterface from "../interfaces/AudioChannelInterface";
-import IMediaInstance from "../interfaces/IMediaInstance";
-import { ChannelOptions, SoundPlayOptions } from "../interfaces/SoundOptions";
+import type AudioChannelInterface from "../interfaces/AudioChannelInterface";
+import type IMediaInstance from "../interfaces/IMediaInstance";
+import type { ChannelOptions, SoundPlayOptions } from "../interfaces/SoundOptions";
 import SoundManagerStatic from "../SoundManagerStatic";
 
 export default class AudioChannel implements AudioChannelInterface {

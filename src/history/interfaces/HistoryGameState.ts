@@ -1,5 +1,5 @@
-import { GameStepState } from "@drincs/pixi-vn";
-import { HistoryStep } from "../../narration";
+import type { GameStepState } from "@drincs/pixi-vn";
+import type { HistoryStep } from "../../narration";
 
 /**
  * Interface exported step data

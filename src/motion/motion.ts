@@ -5,7 +5,8 @@ import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import MotionSequenceTicker from "./components/MotionSequenceTicker";
 import MotionTicker from "./components/MotionTicker";
-import AnimationOptions, {
+import type AnimationOptions from "./interfaces/AnimationOptions";
+import type {
     KeyframesType,
     ObjectSegment,
     ObjectSegmentWithTransition,

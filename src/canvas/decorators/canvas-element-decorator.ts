@@ -1,11 +1,11 @@
-import { ContainerOptions, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
+import type { ContainerOptions, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
-import CanvasBaseItem from "../classes/CanvasBaseItem";
+import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import { setListenerMemory } from "../components/ListenerExtension";
-import CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
-import { CanvasElementAliasType } from "../types/CanvasElementAliasType";
+import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import type { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
 const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof CanvasBaseItem<any>>(
     { cacheSize: 5 },
@@ -70,8 +70,8 @@ export async function setMemoryContainer<T extends PixiContainer>(
         end?: () => Promise<void> | void;
     },
 ) {
-    let ignoreScale = options?.ignoreScale || false;
-    let end = options?.end;
+    const ignoreScale = options?.ignoreScale || false;
+    const end = options?.end;
     "isRenderGroup" in memory &&
         memory.isRenderGroup !== undefined &&
         (element.isRenderGroup = memory.isRenderGroup);
@@ -207,7 +207,7 @@ namespace RegisteredCanvasComponents {
     export function get<T extends typeof CanvasBaseItem<any>>(
         canvasId: CanvasElementAliasType,
     ): T | undefined {
-        let eventType = registeredCanvasComponent.get(canvasId);
+        const eventType = registeredCanvasComponent.get(canvasId);
         if (!eventType) {
             logger.error(
                 `CanvasElement "${canvasId}" not found, did you forget to register it with the canvasComponentDecorator?`,
@@ -230,7 +230,7 @@ namespace RegisteredCanvasComponents {
             return;
         }
         try {
-            let canvasElement = await getInstance(eventType, memory);
+            const canvasElement = await getInstance(eventType, memory);
             return canvasElement as T;
         } catch (e) {
             logger.error(`Error while getting CanvasElement instance "${canvasId}"`, e);

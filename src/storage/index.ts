@@ -1,4 +1,4 @@
-import StorageManagerInterface from "./interfaces/StorageManagerInterface";
+import type StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManager from "./StorageManager";
 
 export { default as StoredClassModel } from "./classes/StoredClassModel";

@@ -7,10 +7,11 @@ import {
 } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
-import StorageGameState, { StorageGameStateItem } from "./interfaces/StorageGameState";
-import StorageManagerInterface from "./interfaces/StorageManagerInterface";
+import type StorageGameState from "./interfaces/StorageGameState";
+import type { StorageGameStateItem } from "./interfaces/StorageGameState";
+import type StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManagerStatic from "./StorageManagerStatic";
-import { StorageElementType } from "./types/StorageElementType";
+import type { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManager implements StorageManagerInterface {
     get base() {
@@ -73,11 +74,11 @@ export default class StorageManager implements StorageManagerInterface {
         this.tempStorageDeadlines.clear();
     }
     public export(): StorageGameState {
-        let main: StorageGameStateItem[] = [];
+        const main: StorageGameStateItem[] = [];
         [...this.base.keys()].forEach((key) => {
             main.push({ key, value: this.base.get(key) });
         });
-        let tempDeadlines: StorageGameStateItem<number>[] = [];
+        const tempDeadlines: StorageGameStateItem<number>[] = [];
         [...StorageManagerStatic.tempStorageDeadlines.keys()].forEach((key) => {
             tempDeadlines.push({ key, value: this.tempStorageDeadlines.get(key)! });
         });

@@ -1,4 +1,4 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
+import type { CharacterInterface } from "@drincs/pixi-vn";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 
@@ -16,7 +16,7 @@ namespace RegisteredCharacters {
      */
     export function get<T = CharacterInterface>(id: string): T | undefined {
         try {
-            let character = registeredCharacters.get(id);
+            const character = registeredCharacters.get(id);
             if (!character) {
                 logger.warn(
                     `Character "${id}" not found, did you forget to register it with the RegisteredCharacters.add?`,

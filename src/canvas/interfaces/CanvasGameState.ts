@@ -1,4 +1,4 @@
-import { CanvasBaseItemMemory, ContainerMemory, TickerHistory, TickersSequence } from "..";
+import type { CanvasBaseItemMemory, ContainerMemory, TickerHistory, TickersSequence } from "..";
 
 /**
  * Interface exported canvas

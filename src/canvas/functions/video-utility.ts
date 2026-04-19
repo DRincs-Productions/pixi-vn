@@ -1,6 +1,6 @@
 import { PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { canvas, VideoSpriteOptions } from "..";
+import { canvas, type VideoSpriteOptions } from "..";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import VideoSprite from "../components/VideoSprite";
 
@@ -43,8 +43,8 @@ export function addVideo(
             );
         }
     }
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new VideoSprite(options, videoUrl);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new VideoSprite(options, videoUrl);
     if (oldMemory) {
         canvas.copyCanvasElementProperty(oldMemory, component);
     }
@@ -87,8 +87,8 @@ export async function showVideo(
             );
         }
     }
-    let oldMemory = { ...canvas.find(alias)?.memory, ...options };
-    let component = new VideoSprite(options, videoUrl);
+    const oldMemory = { ...canvas.find(alias)?.memory, ...options };
+    const component = new VideoSprite(options, videoUrl);
     component.label = alias;
     await component.load();
     if (oldMemory) {

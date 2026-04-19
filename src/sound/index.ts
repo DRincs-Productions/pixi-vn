@@ -1,5 +1,5 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import SoundManagerInterface from "./interfaces/SoundManagerInterface";
+import type SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundManager from "./SoundManager";
 import SoundManagerStatic from "./SoundManagerStatic";
 

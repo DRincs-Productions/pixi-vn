@@ -226,7 +226,7 @@ test("choice test", async () => {
             stepIndex: 12,
         },
     ]);
-    let choice = narration.choices![0];
+    const choice = narration.choices![0];
     await narration.selectChoice(choice, {});
     expect(stepHistory.narrativeHistory).toEqual([
         {

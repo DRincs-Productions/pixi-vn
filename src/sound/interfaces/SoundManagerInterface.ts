@@ -1,8 +1,9 @@
-import { Sound, SoundLibrary } from "@pixi/sound";
-import AudioChannelInterface from "./AudioChannelInterface";
-import IMediaInstance from "./IMediaInstance";
-import SoundGameState from "./SoundGameState";
-import SoundOptions, { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
+import type { Sound, SoundLibrary } from "@pixi/sound";
+import type AudioChannelInterface from "./AudioChannelInterface";
+import type IMediaInstance from "./IMediaInstance";
+import type SoundGameState from "./SoundGameState";
+import type SoundOptions from "./SoundOptions";
+import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
 
 export default interface SoundManagerInterface
     extends Omit<

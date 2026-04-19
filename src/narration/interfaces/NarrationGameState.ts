@@ -1,4 +1,4 @@
-import OpenedLabel from "./OpenedLabel";
+import type OpenedLabel from "./OpenedLabel";
 
 /**
  * Interface exported step data

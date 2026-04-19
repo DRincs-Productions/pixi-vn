@@ -2,11 +2,12 @@ import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 
 export const SERIALIZABLE_EVENT = Symbol("SerializableEvent");
+type SerializableEventHandler = (...args: unknown[]) => unknown;
 
 /**
  * Canvas Event Register
  */
-const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
+const registeredEvents = new CachedMap<string, SerializableEventHandler>({ cacheSize: 5 });
 /**
  * Is a decorator that register a event in the game.
  * Is a required decorator for use the event in the game.
@@ -26,7 +27,7 @@ const registeredEvents = new CachedMap<string, Function>({ cacheSize: 5 });
  * @returns
  */
 export function eventDecorator(name?: string) {
-    return function (target: Object, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
+    return function (_target: object, propertyKey: string | symbol, descriptor: PropertyDescriptor) {
         const fn = descriptor.value;
 
         RegisteredEvents.add(fn, name || `${propertyKey as string}`);
@@ -39,7 +40,7 @@ namespace RegisteredEvents {
      * @param fn The class of the event.
      * @param name Name of the event, by default it will use the class name. If the name is already registered, it will show a warning
      */
-    export function add(fn: Function, name: string) {
+    export function add(fn: SerializableEventHandler, name: string) {
         (fn as any)[SERIALIZABLE_EVENT] = name;
         if (registeredEvents.get(name)) {
             logger.info(`Event "${name}" already exists, it will be overwritten`);
@@ -52,9 +53,9 @@ namespace RegisteredEvents {
      * @param canvasId The id of the event.
      * @returns The event type.
      */
-    export function get(name: string): Function | undefined {
+    export function get(name: string): SerializableEventHandler | undefined {
         try {
-            let eventType = registeredEvents.get(name);
+            const eventType = registeredEvents.get(name);
             if (!eventType) {
                 logger.error(
                     `Event "${name}" not found, did you forget to register it with the eventDecorator?`,
@@ -72,7 +73,7 @@ namespace RegisteredEvents {
      * Get a list of all events registered.
      * @returns An array of events.
      */
-    export function values(): Function[] {
+    export function values(): SerializableEventHandler[] {
         return Array.from(registeredEvents.values());
     }
 

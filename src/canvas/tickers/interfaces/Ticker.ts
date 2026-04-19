@@ -1,6 +1,6 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import RegisteredTickers from "../decorators/RegisteredTickers";
-import TickerArgs from "./TickerArgs";
+import type TickerArgs from "./TickerArgs";
 
 export default interface Ticker<TArgs extends TickerArgs> {
     /**

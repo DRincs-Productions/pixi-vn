@@ -1,7 +1,7 @@
-import { GameStepState } from "@drincs/pixi-vn";
-import { Difference } from "microdiff";
+import type { GameStepState } from "@drincs/pixi-vn";
+import type { Difference } from "microdiff";
 import { CachedMap } from "../classes";
-import { HistoryStep, NarrationHistory } from "../narration";
+import type { HistoryStep, NarrationHistory } from "../narration";
 import { createExportableElement } from "../utils";
 
 export default class HistoryManagerStatic {

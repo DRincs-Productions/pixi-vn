@@ -1,7 +1,7 @@
-import { ChoiceInterface } from "@drincs/pixi-vn";
-import { CloseType } from "../types/CloseType";
-import { LabelIdType } from "../types/LabelIdType";
-import LabelRunModeType from "../types/LabelRunModeType";
+import type { ChoiceInterface } from "@drincs/pixi-vn";
+import type { CloseType } from "../types/CloseType";
+import type { LabelIdType } from "../types/LabelIdType";
+import type LabelRunModeType from "../types/LabelRunModeType";
 
 export interface ChoiceOptionInterface
     extends Omit<ChoiceInterface, "label" | "type" | "closeCurrentLabel"> {
