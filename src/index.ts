@@ -257,6 +257,16 @@ export namespace Game {
      */
     export async function restoreGameState(
         data: pixivninterface.GameState,
+        navigate: (path: string) => void | Promise<void>,
+    ): Promise<void>;
+    /**
+     * Load the save data. If `navigate` is not provided, the function registered with {@link Game.onNavigate}
+     * (or the one passed to {@link Game.init}) will be used.
+     * @param data The save data
+     * @param navigate Optional navigation function.
+     */
+    export async function restoreGameState(
+        data: pixivninterface.GameState,
         navigate?: (path: string) => void | Promise<void>,
     ) {
         historyUtils.stepHistory.restore(data.historyData);
