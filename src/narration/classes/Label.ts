@@ -1,9 +1,9 @@
 import sha1 from "crypto-js/sha1";
-import { LabelProps } from "../..";
+import type { LabelProps } from "../..";
 import { logger } from "../../utils/log-utility";
 import { AdditionalShaSpetsEnum } from "../interfaces/HistoryStep";
-import { LabelIdType } from "../types/LabelIdType";
-import { StepLabelType } from "../types/StepLabelType";
+import type { LabelIdType } from "../types/LabelIdType";
+import type { StepLabelType } from "../types/StepLabelType";
 import LabelAbstract from "./LabelAbstract";
 
 /**
@@ -68,8 +68,8 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
             return AdditionalShaSpetsEnum.ERROR;
         }
         try {
-            let step = this.steps[index];
-            let sha1String = sha1(step.toString().toLocaleLowerCase());
+            const step = this.steps[index];
+            const sha1String = sha1(step.toString().toLocaleLowerCase());
             return sha1String.toString();
         } catch (e) {
             logger.warn("stepSha not found, setting to ERROR", e);

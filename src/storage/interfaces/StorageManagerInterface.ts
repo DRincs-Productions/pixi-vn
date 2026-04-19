@@ -1,6 +1,6 @@
-import { LRUCache } from "lru-cache";
-import { StorageElementType } from "../types/StorageElementType";
-import StorageGameState from "./StorageGameState";
+import type { LRUCache } from "lru-cache";
+import type { StorageElementType } from "../types/StorageElementType";
+import type StorageGameState from "./StorageGameState";
 
 export default interface StorageManagerInterface {
     /**

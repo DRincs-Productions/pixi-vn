@@ -1,23 +1,23 @@
-import { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
+import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "@constants";
+import type { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import type { StorageElementType } from "../storage";
-import { createExportableElement } from "../utils";
-import { logger } from "../utils/log-utility";
-import LabelAbstract from "./classes/LabelAbstract";
-import RegisteredLabels from "./decorators/RegisteredLabels";
-import { StoredDialogue } from "./interfaces/DialogueInterface";
-import HistoryStep, { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
-import NarrationGameState from "./interfaces/NarrationGameState";
-import NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
-import StoredChoiceInterface, {
-    StoredIndexedChoiceInterface,
-} from "./interfaces/StoredChoiceInterface";
-import NarrationManagerStatic from "./NarrationManagerStatic";
-import ChoicesMadeType from "./types/ChoicesMadeType";
-import { InputInfo } from "./types/InputInfo";
-import { LabelIdType } from "./types/LabelIdType";
-import { StepLabelPropsType, StepLabelResultType } from "./types/StepLabelType";
+import type { StorageElementType } from "@drincs/pixi-vn/storage";
+import type LabelAbstract from "@narration/classes/LabelAbstract";
+import RegisteredLabels from "@narration/decorators/RegisteredLabels";
+import type { StoredDialogue } from "@narration/interfaces/DialogueInterface";
+import type HistoryStep from "@narration/interfaces/HistoryStep";
+import { AdditionalShaSpetsEnum } from "@narration/interfaces/HistoryStep";
+import type NarrationGameState from "@narration/interfaces/NarrationGameState";
+import type NarrationManagerInterface from "@narration/interfaces/NarrationManagerInterface";
+import type StoredChoiceInterface from "@narration/interfaces/StoredChoiceInterface";
+import type { StoredIndexedChoiceInterface } from "@narration/interfaces/StoredChoiceInterface";
+import NarrationManagerStatic from "@narration/NarrationManagerStatic";
+import type ChoicesMadeType from "@narration/types/ChoicesMadeType";
+import type { InputInfo } from "@narration/types/InputInfo";
+import type { LabelIdType } from "@narration/types/LabelIdType";
+import type { StepLabelPropsType, StepLabelResultType } from "@narration/types/StepLabelType";
+import { createExportableElement } from "@utils/export-utility";
+import { logger } from "@utils/log-utility";
 
 /**
  * This class is a class that manages the steps and labels of the game.
@@ -61,10 +61,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {},
     ) {
         const { choiceMade, ignoreSameStep } = options;
-        let dialogue: StoredDialogue | undefined = undefined;
-        let choices: StoredChoiceInterface[] | undefined = undefined;
-        let inputValue: StorageElementType | undefined = undefined;
-        let isGlued =
+        let dialogue: StoredDialogue | undefined;
+        let choices: StoredChoiceInterface[] | undefined;
+        let inputValue: StorageElementType | undefined;
+        const isGlued =
             GameUnifier.getVariable(
                 NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED,
@@ -103,7 +103,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         }
         const openedLabels = NarrationManagerStatic.openedLabels;
-        let historyInfo: Omit<HistoryStep, "diff"> = {
+        const historyInfo: Omit<HistoryStep, "diff"> = {
             currentLabel: NarrationManagerStatic.currentLabelId,
             dialogue: dialogue,
             choices: choices,
@@ -130,7 +130,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("currentLabel not found");
             return;
         }
-        let openedLabels = NarrationManagerStatic.openedLabels;
+        const openedLabels = NarrationManagerStatic.openedLabels;
         openedLabels.pop();
         NarrationManagerStatic.openedLabels = openedLabels;
         GameUnifier.onLabelClosing(this.openedLabels.length);
@@ -148,10 +148,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        let allOpenedLabels = NarrationManagerStatic.allOpenedLabels;
-        let lastStep = allOpenedLabels[labelId]?.biggestStep || 0;
+        const allOpenedLabels = NarrationManagerStatic.allOpenedLabels;
+        const lastStep = allOpenedLabels[labelId]?.biggestStep || 0;
         if (lastStep) {
-            let currentLabel = RegisteredLabels.get(labelId);
+            const currentLabel = RegisteredLabels.get(labelId);
             if (currentLabel) {
                 return currentLabel.stepCount <= lastStep;
             }
@@ -159,10 +159,10 @@ export default class NarrationManager implements NarrationManagerInterface {
         return false;
     }
     private get alreadyCurrentStepMadeChoicesObj(): ChoicesMadeType[] | undefined {
-        let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
-        let currentLabel = this.currentLabel;
+        const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
+        const currentLabel = this.currentLabel;
         if (currentLabelStepIndex === null || !currentLabel) {
-            return;
+            return undefined;
         }
         let stepSha = currentLabel.getStepSha(currentLabelStepIndex);
         if (!stepSha) {
@@ -181,9 +181,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         return this.alreadyCurrentStepMadeChoicesObj?.map((choice) => choice.choiceIndex);
     }
     get isCurrentStepAlreadyOpened(): boolean {
-        let currentLabel = NarrationManagerStatic.currentLabelId;
+        const currentLabel = NarrationManagerStatic.currentLabelId;
         if (currentLabel) {
-            let lastStep = NarrationManagerStatic.allOpenedLabels[currentLabel]?.openCount || 0;
+            const lastStep = NarrationManagerStatic.allOpenedLabels[currentLabel]?.openCount || 0;
             if (
                 NarrationManagerStatic.currentLabelStepIndex &&
                 lastStep >= NarrationManagerStatic.currentLabelStepIndex
@@ -215,8 +215,8 @@ export default class NarrationManager implements NarrationManagerInterface {
          */
         showWarn?: boolean;
     }): boolean {
-        let showWarn = options?.showWarn || false;
-        let choiceMenuOptions = this.choices;
+        const showWarn = options?.showWarn || false;
+        const choiceMenuOptions = this.choices;
         if (choiceMenuOptions && choiceMenuOptions.length > 0) {
             showWarn && logger.warn("The player must make a choice");
             return false;
@@ -234,7 +234,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return this.getCanContinue();
     }
     private async onStepStart(label: LabelAbstract<any, any>, stepId: number) {
-        let res: (void | Promise<void> | Promise<void[]>)[] = [];
+        const res: (void | Promise<void> | Promise<void[]>)[] = [];
         if (label.onStepStart) {
             res.push(label.onStepStart(stepId, label));
         }
@@ -244,7 +244,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         return await Promise.all(res);
     }
     private async onStepEnd(label: LabelAbstract<any, any>, stepId: number) {
-        let res: (void | Promise<void>)[] = [];
+        const res: (void | Promise<void>)[] = [];
         if (label.onStepEnd) {
             res.push(label.onStepEnd(stepId, label));
         }
@@ -281,7 +281,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType = undefined;
+        let result: StepLabelResultType;
         try {
             if (GameUnifier.runningStepsCount === 1) {
                 await GameUnifier.onPreContinue();
@@ -291,11 +291,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         } catch (e) {
             logger.error("Error continuing", e);
             throw e;
-        } finally {
-            GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep(props)) || result;
         }
-        return result;
+        GameUnifier.runningStepsCount--;
+        return (await this.afterRunCurrentStep(props)) || result;
     }
     private async afterRunCurrentStep(props: StepLabelPropsType<any>) {
         if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
@@ -328,12 +326,12 @@ export default class NarrationManager implements NarrationManagerInterface {
     ): Promise<StepLabelResultType> {
         const { choiceMade } = options;
         if (NarrationManagerStatic.currentLabelId) {
-            let currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
+            const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
             if (currentLabelStepIndex === null) {
                 logger.error("currentLabelStepIndex is null");
                 return;
             }
-            let currentLabel = NarrationManagerStatic._currentLabel as
+            const currentLabel = NarrationManagerStatic._currentLabel as
                 | LabelAbstract<any, T>
                 | undefined;
             if (!currentLabel) {
@@ -350,7 +348,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                     return;
                 }
-                let step = currentLabel.getStepById(currentLabelStepIndex);
+                const step = currentLabel.getStepById(currentLabelStepIndex);
                 if (!step) {
                     logger.error("step not found");
                     return;
@@ -360,8 +358,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                     logger.warn("stepSha not found, setting to ERROR");
                     stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
-                let result;
-                let err = undefined;
+                let result: StepLabelResultType | undefined;
+                let err: unknown;
                 try {
                     result = await step(props, { labelId: currentLabel.id });
                 } catch (e) {
@@ -370,20 +368,20 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
 
                 try {
-                    let choiceMenuOptions = this.choices;
+                    const choiceMenuOptions = this.choices;
                     if (choiceMenuOptions?.length === 1 && choiceMenuOptions[0].autoSelect) {
-                        let choice = choiceMenuOptions[0];
+                        const choice = choiceMenuOptions[0];
                         result = await this.selectChoice(choice, props);
                     }
                 } catch (e) {
                     logger.error("Error auto-selecting choice", e);
-                    if (err === undefined) {
-                        err = e as any;
+                    if (!err) {
+                        err = e;
                     }
                 }
 
                 try {
-                    let lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
+                    const lastHistoryStep = NarrationManagerStatic.lastHistoryStep;
                     if (choiceMade !== undefined && lastHistoryStep) {
                         stepSha = lastHistoryStep.stepSha1;
                         if (!stepSha) {
@@ -474,9 +472,9 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType = undefined;
+        let result: StepLabelResultType;
         try {
-            let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
+            const tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new PixiError("unregistered_element", `Label ${labelId} not found`);
             }
@@ -486,11 +484,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         } catch (e) {
             logger.error("Error calling label", e);
             throw e;
-        } finally {
-            GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep(props)) || result;
         }
-        return result;
+        GameUnifier.runningStepsCount--;
+        return (await this.afterRunCurrentStep(props)) || result;
     }
     /**
      * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
@@ -522,9 +518,9 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType = undefined;
+        let result: StepLabelResultType;
         try {
-            let tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
+            const tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
                 throw new PixiError("unregistered_element", `Label ${labelId} not found`);
             }
@@ -534,11 +530,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         } catch (e) {
             logger.error("Error jumping to label", e);
             throw e;
-        } finally {
-            GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep(props)) || result;
         }
-        return result;
+        GameUnifier.runningStepsCount--;
+        return (await this.afterRunCurrentStep(props)) || result;
     }
     /**
      * Select a choice from the choice menu and close the choice menu.
@@ -600,7 +594,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("For closeChoiceMenu, the type must be close");
             throw new PixiError("invalid_usage", "For closeChoiceMenu, the type must be close");
         }
-        let choiceMade: number | undefined = undefined;
+        let choiceMade: number | undefined;
         if (typeof choice.choiceIndex === "number") {
             choiceMade = choice.choiceIndex;
         }
@@ -664,7 +658,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
 
         if (this.dialogGlue) {
-            let glueDialogue = GameUnifier.getVariable<StoredDialogue>(
+            const glueDialogue = GameUnifier.getVariable<StoredDialogue>(
                 NARRATION_STORAGE_KEY,
                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
             );
@@ -716,22 +710,22 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     public get choices(): StoredIndexedChoiceInterface[] | undefined {
-        let d = GameUnifier.getVariable<any>(
+        const d = GameUnifier.getVariable<any>(
             NARRATION_STORAGE_KEY,
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
         ) as StoredChoiceInterface[];
         if (d) {
-            let onlyHaveNoChoice: StoredIndexedChoiceInterface[] = [];
+            const onlyHaveNoChoice: StoredIndexedChoiceInterface[] = [];
             let options: StoredIndexedChoiceInterface[] = d.map((option, index) => {
                 return {
                     ...option,
                     choiceIndex: index,
                 };
             });
-            let alreadyChoices = this.alreadyCurrentStepMadeChoices;
+            const alreadyChoices = this.alreadyCurrentStepMadeChoices;
             options = options.filter((option, index) => {
                 if (option.oneTime) {
-                    if (alreadyChoices && alreadyChoices.includes(index)) {
+                    if (alreadyChoices?.includes(index)) {
                         return false;
                     }
                 }
@@ -744,7 +738,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             if (options.length > 0) {
                 return options;
             } else if (onlyHaveNoChoice.length > 0) {
-                let firstOption = onlyHaveNoChoice[0];
+                const firstOption = onlyHaveNoChoice[0];
                 return [firstOption];
             }
         }
@@ -873,8 +867,8 @@ export default class NarrationManager implements NarrationManagerInterface {
 
     private async onLoadingLabel(currentLabelStepIndex: number) {
         const promise = this.openedLabels.map(async (labelInfo) => {
-            let res: (void | Promise<void>)[] = [];
-            let label = RegisteredLabels.get(labelInfo.label);
+            const res: (void | Promise<void>)[] = [];
+            const label = RegisteredLabels.get(labelInfo.label);
             if (label) {
                 if (label.onLoadingLabel) {
                     res.push(label.onLoadingLabel(currentLabelStepIndex, label));
@@ -891,14 +885,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         this.clear();
         try {
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
-            if (data.hasOwnProperty("openedLabels")) {
-                NarrationManagerStatic.openedLabels = (data as NarrationGameState)["openedLabels"];
+            if (Object.hasOwn(data, "openedLabels")) {
+                NarrationManagerStatic.openedLabels = (data as NarrationGameState).openedLabels;
                 NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }
-            if (data.hasOwnProperty("stepCounter")) {
-                NarrationManagerStatic._stepCounter = (data as NarrationGameState)["stepCounter"];
+            if (Object.hasOwn(data, "stepCounter")) {
+                NarrationManagerStatic._stepCounter = (data as NarrationGameState).stepCounter;
             } else {
                 logger.warn("Could not import stepCounter data, so will be ignored");
             }

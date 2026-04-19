@@ -1,7 +1,7 @@
 import type { PointData } from "@drincs/pixi-vn/pixi.js";
-import ImageSprite from "../../components/ImageSprite";
-import ContainerMemory from "./ContainerMemory";
-import ImageSpriteMemory from "./ImageSpriteMemory";
+import type ImageSprite from "../../components/ImageSprite";
+import type ContainerMemory from "./ContainerMemory";
+import type ImageSpriteMemory from "./ImageSpriteMemory";
 
 /**
  * Interface for the canvas container memory

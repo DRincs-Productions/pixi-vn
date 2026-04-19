@@ -1,8 +1,8 @@
 import type { SpriteOptions } from "@drincs/pixi-vn/pixi.js";
-import { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositionsExtension";
-import { ListenerExtensionMemory } from "../../components/ListenerExtension";
-import AssetMemory from "../AssetMemory";
-import CanvasBaseItemMemory from "./CanvasBaseItemMemory";
+import type { AdditionalPositionsExtensionProps } from "../../components/AdditionalPositionsExtension";
+import type { ListenerExtensionMemory } from "../../components/ListenerExtension";
+import type AssetMemory from "../AssetMemory";
+import type CanvasBaseItemMemory from "./CanvasBaseItemMemory";
 
 export interface SpriteBaseMemory
     extends SpriteOptions,

@@ -1,5 +1,5 @@
 import HistoryManager from "./HistoryManager";
-import HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
+import type HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
 
 export { default as HistoryManagerStatic } from "./HistoryManagerStatic";
 export type { default as HistoryGameState } from "./interfaces/HistoryGameState";

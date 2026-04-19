@@ -1,7 +1,7 @@
-import { CanvasGameState } from "../canvas";
-import { OpenedLabel } from "../narration";
-import { SoundGameState } from "../sound";
-import { StorageGameState } from "../storage";
+import type { CanvasGameState } from "../canvas";
+import type { OpenedLabel } from "../narration";
+import type { SoundGameState } from "../sound";
+import type { StorageGameState } from "../storage";
 
 /**
  * It is a interface that contains the information of a step.

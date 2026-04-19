@@ -135,7 +135,7 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
         return props;
     }
     if (typeof props.align !== "number") {
-        if (props.xAlign != undefined) {
+        if (props.xAlign !== undefined) {
             if (props.align === undefined) {
                 props.align = { x: props.xAlign };
                 delete props.xAlign;
@@ -144,7 +144,7 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
                 delete props.xAlign;
             }
         }
-        if (props.yAlign != undefined) {
+        if (props.yAlign !== undefined) {
             if (props.align === undefined) {
                 props.align = { y: props.yAlign };
                 delete props.yAlign;
@@ -155,7 +155,7 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
         }
     }
     if (typeof props.percentagePosition !== "number") {
-        if (props.percentageX != undefined) {
+        if (props.percentageX !== undefined) {
             if (props.percentagePosition === undefined) {
                 props.percentagePosition = { x: props.percentageX };
                 delete props.percentageX;
@@ -164,7 +164,7 @@ export function analizePositionsExtensionProps<T extends AdditionalPositionsExte
                 delete props.percentageX;
             }
         }
-        if (props.percentageY != undefined) {
+        if (props.percentageY !== undefined) {
             if (props.percentagePosition === undefined) {
                 props.percentagePosition = { y: props.percentageY };
                 delete props.percentageY;

@@ -52,7 +52,7 @@ export function getListenerMemory<T extends ListenerExtension>(element: Partial<
 export function addListenerHandler<T extends ListenerExtension>(
     event: symbol | string,
     element: T,
-    fn: Function,
+    fn: (...args: never[]) => unknown,
 ): boolean {
     const handlerId = (fn as any)[SERIALIZABLE_EVENT] as string;
 

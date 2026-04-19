@@ -1,10 +1,10 @@
-import { Filter, filters } from "@pixi/sound";
+import { type Filter, filters } from "@pixi/sound";
 import { logger } from "../../utils/log-utility";
-import SoundFilterMemory from "../types/SoundFilterMemory";
+import type SoundFilterMemory from "../types/SoundFilterMemory";
 
 export function FilterMemoryToFilter(filter: SoundFilterMemory[]): Filter[] {
-    let res: Filter[] = [];
-    for (let f of filter) {
+    const res: Filter[] = [];
+    for (const f of filter) {
         if (f.type === "TelephoneFilter") {
             res.push(new filters.TelephoneFilter());
         } else if (f.type === "StreamFilter") {
@@ -41,8 +41,8 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): Filter[] {
 
 export function FilterToFilterMemory(filter?: Filter[]): SoundFilterMemory[] | undefined {
     if (!filter) return undefined;
-    let res: SoundFilterMemory[] = [];
-    for (let f of filter) {
+    const res: SoundFilterMemory[] = [];
+    for (const f of filter) {
         if (f instanceof filters.TelephoneFilter) {
             res.push({
                 type: "TelephoneFilter",

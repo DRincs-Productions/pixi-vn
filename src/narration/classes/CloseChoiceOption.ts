@@ -1,5 +1,5 @@
-import { ChoiceInterface } from "@drincs/pixi-vn";
-import { CloseChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
+import type { ChoiceInterface } from "@drincs/pixi-vn";
+import type { CloseChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
 import { Close } from "../types/CloseType";
 
 interface ChoiceMenuOptionCloseOptions

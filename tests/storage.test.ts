@@ -2,7 +2,7 @@ import { Keyv } from "keyv";
 import { expect, test } from "vitest";
 import { narration, newLabel, storage } from "../src";
 import { MAIN_STORAGE_KEY } from "../src/constants";
-import { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
+import type { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
 
 const temTestLabel = newLabel<{
     counter: number;
@@ -11,15 +11,15 @@ const temTestLabel = newLabel<{
         storage.setTempVariable("counter", counter + 1);
     },
     () => {
-        let counter = storage.get<number>("counter") || 0;
+        const counter = storage.get<number>("counter") || 0;
         storage.setTempVariable("counter", counter + 1);
     },
     () => {
-        let counter = storage.get<number>("counter") || 0;
+        const counter = storage.get<number>("counter") || 0;
         storage.setTempVariable("counter", counter + 1);
     },
     async (props, { labelId }) => {
-        let counter = storage.get<number>("counter") || 0;
+        const counter = storage.get<number>("counter") || 0;
         return await narration.call(labelId, {
             counter,
             ...props,
@@ -63,7 +63,7 @@ test("clear & default", async () => {
     storage.set("variable7", undefined);
 
     storage.clear();
-    let items: StorageGameStateItem[] = [];
+    const items: StorageGameStateItem[] = [];
     [...storage.base.keys()].forEach((key) => {
         items.push({ key, value: storage.base.get(key) });
     });
@@ -91,7 +91,7 @@ test("clear & default", async () => {
     expect(storage.get("variable6")).toEqual(6);
     expect(storage.get("variable7")).toEqual(7);
 
-    let items2: StorageGameStateItem[] = [];
+    const items2: StorageGameStateItem[] = [];
     [...storage.base.keys()].forEach((key) => {
         items2.push({ key, value: storage.base.get(key) });
     });
@@ -206,7 +206,7 @@ test("import & exoprt", async () => {
     expect(storage.get("d")).toBe(false);
     expect(storage.get("e")).toBe(null);
     expect(storage.get("f")).toBe(undefined);
-    let exported = storage.export();
+    const exported = storage.export();
     expect(exported).toEqual({
         main: [
             {

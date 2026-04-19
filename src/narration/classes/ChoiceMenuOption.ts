@@ -1,10 +1,10 @@
-import { ChoiceInterface } from "@drincs/pixi-vn";
-import { StorageObjectType } from "../../storage";
-import { ChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
-import { LabelIdType } from "../types/LabelIdType";
-import LabelRunModeType from "../types/LabelRunModeType";
-import Label from "./Label";
-import LabelAbstract from "./LabelAbstract";
+import type { ChoiceInterface } from "@drincs/pixi-vn";
+import type { StorageObjectType } from "../../storage";
+import type { ChoiceOptionInterface } from "../interfaces/StoredChoiceInterface";
+import type { LabelIdType } from "../types/LabelIdType";
+import type LabelRunModeType from "../types/LabelRunModeType";
+import type Label from "./Label";
+import type LabelAbstract from "./LabelAbstract";
 
 interface ChoiceMenuOptionOptions
     extends Omit<ChoiceInterface, "text" | "label" | "type" | "props" | "closeCurrentLabel"> {

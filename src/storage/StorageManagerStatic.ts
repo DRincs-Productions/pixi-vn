@@ -1,7 +1,7 @@
 import { CachedMap } from "../classes";
 import { FLAGS_KEY, TEMP_STORAGE_KEY } from "../constants";
 import { createExportableElement } from "../utils/export-utility";
-import { StorageElementType } from "./types/StorageElementType";
+import type { StorageElementType } from "./types/StorageElementType";
 
 export default class StorageManagerStatic {
     static storage = new CachedMap<string, any>({ cacheSize: 50 });
@@ -28,7 +28,7 @@ export default class StorageManagerStatic {
     }
 
     static getVariable<T = StorageElementType>(prefix: string, key: string): T | undefined {
-        let result = StorageManagerStatic.storage.get(`${prefix}:${key}`);
+        const result = StorageManagerStatic.storage.get(`${prefix}:${key}`);
         return createExportableElement(result) as T;
     }
 
@@ -43,7 +43,7 @@ export default class StorageManagerStatic {
                 flags.push(key);
             }
         } else {
-            let index = flags.indexOf(key);
+            const index = flags.indexOf(key);
             if (index > -1) {
                 flags.splice(index, 1);
             }

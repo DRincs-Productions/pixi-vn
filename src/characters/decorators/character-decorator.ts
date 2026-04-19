@@ -1,6 +1,6 @@
-import { CharacterInterface } from "@drincs/pixi-vn";
-import { CachedMap } from "../../classes";
-import { logger } from "../../utils/log-utility";
+import CachedMap from "@classes/CachedMap";
+import type { CharacterInterface } from "@drincs/pixi-vn";
+import { logger } from "@utils/log-utility";
 
 export const registeredCharacters = new CachedMap<string, CharacterInterface>({ cacheSize: 10 });
 
@@ -16,7 +16,7 @@ namespace RegisteredCharacters {
      */
     export function get<T = CharacterInterface>(id: string): T | undefined {
         try {
-            let character = registeredCharacters.get(id);
+            const character = registeredCharacters.get(id);
             if (!character) {
                 logger.warn(
                     `Character "${id}" not found, did you forget to register it with the RegisteredCharacters.add?`,
@@ -43,7 +43,9 @@ namespace RegisteredCharacters {
      */
     export function add(character: CharacterInterface | CharacterInterface[]) {
         if (Array.isArray(character)) {
-            character.forEach((c) => add(c));
+            character.forEach((c) => {
+                add(c);
+            });
             return;
         }
         if (registeredCharacters.get(character.id)) {

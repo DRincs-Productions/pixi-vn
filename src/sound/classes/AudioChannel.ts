@@ -1,11 +1,11 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { sound } from "@pixi/sound";
-import { calculateVolume } from "../functions/channel-utility";
-import { proxyMedia } from "../functions/proxy-utility";
-import AudioChannelInterface from "../interfaces/AudioChannelInterface";
-import IMediaInstance from "../interfaces/IMediaInstance";
-import { ChannelOptions, SoundPlayOptions } from "../interfaces/SoundOptions";
-import SoundManagerStatic from "../SoundManagerStatic";
+import { calculateVolume } from "@sound/functions/channel-utility";
+import { proxyMedia } from "@sound/functions/proxy-utility";
+import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
+import SoundManagerStatic from "@sound/SoundManagerStatic";
 
 export default class AudioChannel implements AudioChannelInterface {
     constructor(
@@ -139,7 +139,9 @@ export default class AudioChannel implements AudioChannelInterface {
                 aliasesToDelete.push(mediaAlias);
             }
         }
-        aliasesToDelete.forEach((mediaAlias) => SoundManagerStatic.mediaInstances.delete(mediaAlias));
+        aliasesToDelete.forEach((mediaAlias) => {
+            SoundManagerStatic.mediaInstances.delete(mediaAlias);
+        });
         return this;
     }
     pauseAll() {

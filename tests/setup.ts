@@ -39,8 +39,8 @@ import {
     RegisteredCharacters,
     sound,
     stepHistory,
-    StepLabelPropsType,
-    StepLabelResultType,
+    type StepLabelPropsType,
+    type StepLabelResultType,
     storage,
     StorageManagerStatic,
 } from "../src";

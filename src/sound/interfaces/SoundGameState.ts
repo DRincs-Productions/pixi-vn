@@ -1,5 +1,6 @@
-import SoundFilterMemory from "../types/SoundFilterMemory";
-import SoundOptions, { SoundPlayOptions } from "./SoundOptions";
+import type SoundFilterMemory from "../types/SoundFilterMemory";
+import type SoundOptions from "./SoundOptions";
+import type { SoundPlayOptions } from "./SoundOptions";
 
 export interface ExportedSound {
     options: SoundOptions;

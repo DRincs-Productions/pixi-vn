@@ -1,9 +1,9 @@
-import { Difference } from "microdiff";
+import type { Difference } from "microdiff";
 import { expect, test } from "vitest";
 import { restoreDiffChanges } from "../src/utils/diff-utility";
 
 test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
-    let data = {
+    const data = {
         path: "/narration",
         storage: [
             {
@@ -742,7 +742,7 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
             },
         ],
     };
-    let differencesNew: Difference[] = [
+    const differencesNew: Difference[] = [
         {
             path: ["storage", 0, "value", "text"],
             type: "CHANGE",
@@ -1248,9 +1248,9 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
             oldValue: 13,
         },
     ];
-    let resNew = restoreDiffChanges(data, differencesNew);
+    const resNew = restoreDiffChanges(data, differencesNew);
 
-    let resExpected = {
+    const resExpected = {
         path: "/narration",
         storage: [
             {
@@ -1588,7 +1588,7 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges", async () => {
 });
 
 test("restoreDeepDiffChanges & restoreMicroDiffChanges 2", async () => {
-    let data = {
+    const data = {
         path: "/narration",
         storage: [
             {
@@ -2288,7 +2288,7 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges 2", async () => {
             },
         ],
     };
-    let differencesNew: Difference[] = [
+    const differencesNew: Difference[] = [
         {
             path: ["storage", 0, "value", "text"],
             type: "CHANGE",
@@ -2465,9 +2465,9 @@ test("restoreDeepDiffChanges & restoreMicroDiffChanges 2", async () => {
             oldValue: 14,
         },
     ];
-    let resNew = restoreDiffChanges(data, differencesNew);
+    const resNew = restoreDiffChanges(data, differencesNew);
 
-    let resExpected = {
+    const resExpected = {
         path: "/narration",
         storage: [
             {

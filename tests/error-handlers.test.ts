@@ -1,5 +1,5 @@
 import { expect, test, vi } from "vitest";
-import { canvas, drawCanvasErrorHandler, GameUnifier, StepLabelPropsType } from "../src";
+import { canvas, drawCanvasErrorHandler, GameUnifier, type StepLabelPropsType } from "../src";
 import { PixiError } from "@drincs/pixi-vn/core";
 
 const emptyProps: StepLabelPropsType = {};

@@ -12,7 +12,7 @@ export function createExportableElement<T>(element: T): T {
         if (typeof element === "undefined") {
             return element;
         }
-        let elementString = JSON.stringify(element);
+        const elementString = JSON.stringify(element);
         return JSON.parse(elementString);
     } catch (e) {
         logger.error("Error creating exportable element", element, e);

@@ -1,5 +1,5 @@
-import { CloseType } from "./CloseType";
-import LabelRunModeType from "./LabelRunModeType";
+import type { CloseType } from "./CloseType";
+import type LabelRunModeType from "./LabelRunModeType";
 
 /**
  * HistoryChoiceMenuOption is a type that contains the history information of a choice menu option.

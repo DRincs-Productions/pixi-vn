@@ -1,5 +1,5 @@
 import { default as RegisteredCharacters } from "../decorators/character-decorator";
-import CharacterBaseModelProps from "../interfaces/CharacterBaseModelProps";
+import type CharacterBaseModelProps from "../interfaces/CharacterBaseModelProps";
 import CharacterStoredClass from "./CharacterStoredClass";
 
 /**

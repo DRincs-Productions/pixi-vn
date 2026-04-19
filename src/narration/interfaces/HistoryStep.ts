@@ -1,7 +1,7 @@
-import { Difference } from "microdiff";
-import { OpenedLabel, StorageElementType, StoredChoiceInterface } from "../..";
-import { LabelIdType } from "../types/LabelIdType";
-import { StoredDialogue } from "./DialogueInterface";
+import type { Difference } from "microdiff";
+import type { OpenedLabel, StorageElementType, StoredChoiceInterface } from "../..";
+import type { LabelIdType } from "../types/LabelIdType";
+import type { StoredDialogue } from "./DialogueInterface";
 
 /**
  * AdditionalShaSpetsEnum is a enum that contains the additional sha1 values that can be inserted in the step sha1.

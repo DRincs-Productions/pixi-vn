@@ -2,11 +2,11 @@ import { PixiError } from "@drincs/pixi-vn/core";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import sha1 from "crypto-js/sha1";
-import { canvas, Ticker } from "../..";
+import { canvas, type Ticker } from "../..";
 import { logger } from "../../../utils/log-utility";
 import { tickerDecorator } from "../decorators/RegisteredTickers";
-import TickerArgs from "../interfaces/TickerArgs";
-import TickerValue from "./TickerValue";
+import type TickerArgs from "../interfaces/TickerArgs";
+import type TickerValue from "./TickerValue";
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.
