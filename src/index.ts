@@ -153,7 +153,7 @@ export namespace Game {
                 } catch (e) {
                     logger.error("Error restoring game step state:", e);
                 }
-                navigate(state.path);
+                await navigate(state.path);
             },
             // narration
             getStepCounter: () => narrationUtils.narration.stepCounter,
