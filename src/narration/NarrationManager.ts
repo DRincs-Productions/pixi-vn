@@ -1,25 +1,23 @@
+import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "@constants";
 import type { CharacterInterface, DialogueInterface } from "@drincs/pixi-vn";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "../constants";
-import type { StorageElementType } from "../storage";
-import { createExportableElement } from "../utils";
-import { logger } from "../utils/log-utility";
-import type LabelAbstract from "./classes/LabelAbstract";
-import RegisteredLabels from "./decorators/RegisteredLabels";
-import type { StoredDialogue } from "./interfaces/DialogueInterface";
-import type HistoryStep from "./interfaces/HistoryStep";
-import { AdditionalShaSpetsEnum } from "./interfaces/HistoryStep";
-import type NarrationGameState from "./interfaces/NarrationGameState";
-import type NarrationManagerInterface from "./interfaces/NarrationManagerInterface";
-import type StoredChoiceInterface from "./interfaces/StoredChoiceInterface";
-import type {
-    StoredIndexedChoiceInterface,
-} from "./interfaces/StoredChoiceInterface";
-import NarrationManagerStatic from "./NarrationManagerStatic";
-import type ChoicesMadeType from "./types/ChoicesMadeType";
-import type { InputInfo } from "./types/InputInfo";
-import type { LabelIdType } from "./types/LabelIdType";
-import type { StepLabelPropsType, StepLabelResultType } from "./types/StepLabelType";
+import type { StorageElementType } from "@drincs/pixi-vn/storage";
+import type LabelAbstract from "@narration/classes/LabelAbstract";
+import RegisteredLabels from "@narration/decorators/RegisteredLabels";
+import type { StoredDialogue } from "@narration/interfaces/DialogueInterface";
+import type HistoryStep from "@narration/interfaces/HistoryStep";
+import { AdditionalShaSpetsEnum } from "@narration/interfaces/HistoryStep";
+import type NarrationGameState from "@narration/interfaces/NarrationGameState";
+import type NarrationManagerInterface from "@narration/interfaces/NarrationManagerInterface";
+import type StoredChoiceInterface from "@narration/interfaces/StoredChoiceInterface";
+import type { StoredIndexedChoiceInterface } from "@narration/interfaces/StoredChoiceInterface";
+import NarrationManagerStatic from "@narration/NarrationManagerStatic";
+import type ChoicesMadeType from "@narration/types/ChoicesMadeType";
+import type { InputInfo } from "@narration/types/InputInfo";
+import type { LabelIdType } from "@narration/types/LabelIdType";
+import type { StepLabelPropsType, StepLabelResultType } from "@narration/types/StepLabelType";
+import { createExportableElement } from "@utils/export-utility";
+import { logger } from "@utils/log-utility";
 
 /**
  * This class is a class that manages the steps and labels of the game.
@@ -63,9 +61,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         } = {},
     ) {
         const { choiceMade, ignoreSameStep } = options;
-        let dialogue: StoredDialogue | undefined = undefined;
-        let choices: StoredChoiceInterface[] | undefined = undefined;
-        let inputValue: StorageElementType | undefined = undefined;
+        let dialogue: StoredDialogue | undefined;
+        let choices: StoredChoiceInterface[] | undefined;
+        let inputValue: StorageElementType | undefined;
         const isGlued =
             GameUnifier.getVariable(
                 NARRATION_STORAGE_KEY,
@@ -164,7 +162,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
         const currentLabel = this.currentLabel;
         if (currentLabelStepIndex === null || !currentLabel) {
-            return;
+            return undefined;
         }
         let stepSha = currentLabel.getStepSha(currentLabelStepIndex);
         if (!stepSha) {
@@ -283,7 +281,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.increaseContinueRequest(steps - 1);
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType = undefined;
+        let result: StepLabelResultType;
         try {
             if (GameUnifier.runningStepsCount === 1) {
                 await GameUnifier.onPreContinue();
@@ -293,11 +291,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         } catch (e) {
             logger.error("Error continuing", e);
             throw e;
-        } finally {
-            GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep(props)) || result;
         }
-        return result;
+        GameUnifier.runningStepsCount--;
+        return (await this.afterRunCurrentStep(props)) || result;
     }
     private async afterRunCurrentStep(props: StepLabelPropsType<any>) {
         if (GameUnifier.runningStepsCount === 0 && GameUnifier.continueRequestsCount !== 0) {
@@ -362,8 +358,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                     logger.warn("stepSha not found, setting to ERROR");
                     stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
-                let result;
-                let err = undefined;
+                let result: StepLabelResultType | undefined;
+                let err: unknown;
                 try {
                     result = await step(props, { labelId: currentLabel.id });
                 } catch (e) {
@@ -379,8 +375,8 @@ export default class NarrationManager implements NarrationManagerInterface {
                     }
                 } catch (e) {
                     logger.error("Error auto-selecting choice", e);
-                    if (err === undefined) {
-                        err = e as any;
+                    if (!err) {
+                        err = e;
                     }
                 }
 
@@ -476,7 +472,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType = undefined;
+        let result: StepLabelResultType;
         try {
             const tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -488,11 +484,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         } catch (e) {
             logger.error("Error calling label", e);
             throw e;
-        } finally {
-            GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep(props)) || result;
         }
-        return result;
+        GameUnifier.runningStepsCount--;
+        return (await this.afterRunCurrentStep(props)) || result;
     }
     /**
      * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
@@ -524,7 +518,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelId = label.id;
         }
         GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType = undefined;
+        let result: StepLabelResultType;
         try {
             const tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
             if (!tempLabel) {
@@ -536,11 +530,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         } catch (e) {
             logger.error("Error jumping to label", e);
             throw e;
-        } finally {
-            GameUnifier.runningStepsCount--;
-            result = (await this.afterRunCurrentStep(props)) || result;
         }
-        return result;
+        GameUnifier.runningStepsCount--;
+        return (await this.afterRunCurrentStep(props)) || result;
     }
     /**
      * Select a choice from the choice menu and close the choice menu.
@@ -602,7 +594,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             logger.error("For closeChoiceMenu, the type must be close");
             throw new PixiError("invalid_usage", "For closeChoiceMenu, the type must be close");
         }
-        let choiceMade: number | undefined = undefined;
+        let choiceMade: number | undefined;
         if (typeof choice.choiceIndex === "number") {
             choiceMade = choice.choiceIndex;
         }
@@ -733,7 +725,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             const alreadyChoices = this.alreadyCurrentStepMadeChoices;
             options = options.filter((option, index) => {
                 if (option.oneTime) {
-                    if (alreadyChoices && alreadyChoices.includes(index)) {
+                    if (alreadyChoices?.includes(index)) {
                         return false;
                     }
                 }
@@ -893,14 +885,14 @@ export default class NarrationManager implements NarrationManagerInterface {
         this.clear();
         try {
             NarrationManagerStatic.lastHistoryStep = lastHistoryStep;
-            if (data.hasOwnProperty("openedLabels")) {
-                NarrationManagerStatic.openedLabels = (data as NarrationGameState)["openedLabels"];
+            if (Object.hasOwn(data, "openedLabels")) {
+                NarrationManagerStatic.openedLabels = (data as NarrationGameState).openedLabels;
                 NarrationManagerStatic.originalOpenedLabels = NarrationManagerStatic.openedLabels;
             } else {
                 logger.warn("Could not import openedLabels data, so will be ignored");
             }
-            if (data.hasOwnProperty("stepCounter")) {
-                NarrationManagerStatic._stepCounter = (data as NarrationGameState)["stepCounter"];
+            if (Object.hasOwn(data, "stepCounter")) {
+                NarrationManagerStatic._stepCounter = (data as NarrationGameState).stepCounter;
             } else {
                 logger.warn("Could not import stepCounter data, so will be ignored");
             }
