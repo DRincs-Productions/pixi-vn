@@ -1,19 +1,19 @@
 import type { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import diff from "microdiff";
 import type {
     HistoryChoiceMenuOption,
     HistoryStep,
     NarrationHistory,
     StepLabelPropsType,
-} from "../narration";
-import type { StorageElementType } from "../storage/types/StorageElementType";
-import { createExportableElement } from "../utils";
-import { restoreDiffChanges } from "../utils/diff-utility";
-import { logger } from "../utils/log-utility";
-import HistoryManagerStatic from "./HistoryManagerStatic";
-import type HistoryGameState from "./interfaces/HistoryGameState";
-import type HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
+} from "@drincs/pixi-vn/narration";
+import type { StorageElementType } from "@drincs/pixi-vn/storage";
+import HistoryManagerStatic from "@history/HistoryManagerStatic";
+import type HistoryGameState from "@history/interfaces/HistoryGameState";
+import type HistoryManagerInterface from "@history/interfaces/HistoryManagerInterface";
+import { restoreDiffChanges } from "@utils/diff-utility";
+import { createExportableElement } from "@utils/export-utility";
+import { logger } from "@utils/log-utility";
+import diff from "microdiff";
 
 /**
  * This class is a class that manages the steps and labels of the game.
@@ -127,11 +127,10 @@ export default class HistoryManager implements HistoryManagerInterface {
             HistoryManagerStatic.originalStepData = restoredStep;
         } catch (e) {
             logger.error("Error going back", e);
-        } finally {
-            GameUnifier.runningStepsCount--;
-            if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
-                return await GameUnifier.processNavigationRequests(props);
-            }
+        }
+        GameUnifier.runningStepsCount--;
+        if (GameUnifier.runningStepsCount === 0 && GameUnifier.backRequestsCount !== 0) {
+            return await GameUnifier.processNavigationRequests(props);
         }
     }
     add(
@@ -149,8 +148,8 @@ export default class HistoryManager implements HistoryManagerInterface {
         const lastKey = this.lastKey;
         const asyncFunction = async () => {
             try {
-                let lastStepHistory: Omit<HistoryStep, "diff"> | undefined = undefined;
-                let lastNarrativeHistory: NarrationHistory | undefined = undefined;
+                let lastStepHistory: Omit<HistoryStep, "diff"> | undefined;
+                let lastNarrativeHistory: NarrationHistory | undefined;
                 if (typeof lastKey === "number") {
                     lastStepHistory = HistoryManagerStatic._stepsInfoHistory.get(lastKey);
                     lastNarrativeHistory = HistoryManagerStatic._narrationHistory.get(lastKey);
@@ -226,11 +225,7 @@ export default class HistoryManager implements HistoryManagerInterface {
             const choices: HistoryChoiceMenuOption[] | undefined = requiredChoices?.map(
                 (choice, index) => {
                     let hidden: boolean = false;
-                    if (
-                        choice.oneTime &&
-                        step.alreadyMadeChoices &&
-                        step.alreadyMadeChoices.includes(index)
-                    ) {
+                    if (choice.oneTime && step.alreadyMadeChoices?.includes(index)) {
                         hidden = true;
                     }
                     return {
@@ -459,8 +454,8 @@ export default class HistoryManager implements HistoryManagerInterface {
     public async restore(data: object) {
         this.clear();
         try {
-            if (data.hasOwnProperty("stepsHistory")) {
-                const stepsHistory = (data as HistoryGameState)["stepsHistory"];
+            if (Object.hasOwn(data, "stepsHistory")) {
+                const stepsHistory = (data as HistoryGameState).stepsHistory;
                 stepsHistory.forEach((step: HistoryStep) => {
                     if (step.diff) {
                         HistoryManagerStatic._diffHistory.set(step.index, step.diff);
@@ -472,10 +467,10 @@ export default class HistoryManager implements HistoryManagerInterface {
             } else {
                 logger.warn("Could not import stepsHistory data, so will be ignored");
             }
-            if (data.hasOwnProperty("originalStepData")) {
-                HistoryManagerStatic._originalStepData = (data as HistoryGameState)[
-                    "originalStepData"
-                ];
+            if (Object.hasOwn(data, "originalStepData")) {
+                HistoryManagerStatic._originalStepData = (
+                    data as HistoryGameState
+                ).originalStepData;
             } else {
                 logger.warn("Could not import originalStepData data, so will be ignored");
             }
