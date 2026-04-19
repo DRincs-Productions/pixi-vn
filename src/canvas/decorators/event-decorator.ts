@@ -2,7 +2,7 @@ import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 
 export const SERIALIZABLE_EVENT = Symbol("SerializableEvent");
-type SerializableEventHandler = (...args: unknown[]) => unknown;
+type SerializableEventHandler = (...args: never[]) => unknown;
 
 /**
  * Canvas Event Register
