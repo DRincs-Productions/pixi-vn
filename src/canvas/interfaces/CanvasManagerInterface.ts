@@ -456,7 +456,7 @@ export default interface CanvasManagerInterface {
     addHtmlLayer(
         id: string,
         element: HTMLElement,
-        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">,
+        style?: Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">>,
     ): HTMLDivElement;
     /**
      * Get a HTML layer from the canvas.

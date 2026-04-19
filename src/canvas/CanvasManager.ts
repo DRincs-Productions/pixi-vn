@@ -851,7 +851,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     addHtmlLayer(
         id: string,
         element: HTMLElement,
-        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">,
+        style?: Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">>,
     ) {
         return CanvasManagerStatic.addHtmlLayer(id, element, style);
     }
