@@ -43,16 +43,20 @@ export default class AudioChannel implements AudioChannelInterface {
                 };
             }
         }
+        const { paused, ...rest } = options || {};
         const media = proxyMedia(
             mediaAlias,
             await sound.play(soundAlias, {
-                ...(options ?? {}),
-                filters: [...(this.channelOptions.filters || []), ...(options?.filters || [])],
-                muted: Boolean(this.channelOptions.muted) || Boolean(options?.muted),
-                volume: calculateVolume(options?.volume, this.channelOptions.volume),
+                ...(rest ?? {}),
+                filters: [...(this.channelOptions.filters || []), ...(rest?.filters || [])],
+                muted: Boolean(this.channelOptions.muted) || Boolean(rest?.muted),
+                volume: calculateVolume(rest?.volume, this.channelOptions.volume),
             }),
             this,
         );
+        if (paused || this.channelOptions.paused) {
+            media.paused = paused ?? false;
+        }
         if (options?.delay) {
             media.paused = true;
             const timeoutId = setTimeout(() => {
@@ -73,6 +77,7 @@ export default class AudioChannel implements AudioChannelInterface {
                 volume: options?.volume ?? 1,
                 muted: options?.muted ?? false,
                 loop: options?.loop ?? false,
+                paused: options?.paused ?? false,
                 ...(options ?? {}),
             },
         });
@@ -144,20 +149,32 @@ export default class AudioChannel implements AudioChannelInterface {
         });
         return this;
     }
-    pauseAll() {
+    private updateMediaPaused() {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias && !mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = true;
+            if (mediaInstance.channelAlias === this.alias) {
+                const mediaPaused = mediaInstance.options.paused ?? false;
+                mediaInstance.instance.paused = mediaPaused;
             }
         }
+    }
+    pauseAll() {
+        this.channelOptions.paused = true;
+        this.updateMediaPaused();
         return this;
     }
     resumeAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias && mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = false;
-            }
-        }
+        this.channelOptions.paused = false;
+        this.updateMediaPaused();
         return this;
+    }
+    get paused(): boolean {
+        return this.channelOptions.paused || false;
+    }
+    set paused(value: boolean) {
+        if (value) {
+            this.pauseAll();
+        } else {
+            this.resumeAll();
+        }
     }
 }

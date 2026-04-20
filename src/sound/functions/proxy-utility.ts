@@ -12,6 +12,7 @@ export function proxyMedia(
         get(target, prop, receiver) {
             switch (prop) {
                 case "volume":
+                case "paused":
                 case "muted": {
                     const entry = SoundManagerStatic.mediaInstances.get(mediaAlias);
                     if (entry) {
@@ -35,6 +36,12 @@ export function proxyMedia(
                     case "muted":
                         mediaEntry.options[prop] = value;
                         if (channel.channelOptions.muted) {
+                            targetValue = true;
+                        }
+                        break;
+                    case "paused":
+                        mediaEntry.options[prop] = value;
+                        if (channel.channelOptions.paused) {
                             targetValue = true;
                         }
                         break;

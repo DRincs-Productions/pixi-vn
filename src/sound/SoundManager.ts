@@ -270,7 +270,6 @@ export default class SoundManager implements SoundManagerInterface {
                 soundAlias: string;
                 stepCounter: number;
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
-                paused: boolean;
             };
         } = Array.from(SoundManagerStatic.mediaInstances.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
@@ -282,7 +281,6 @@ export default class SoundManager implements SoundManagerInterface {
                         ...mediaInstance.options,
                         filters: FilterToFilterMemory(mediaInstance.options.filters),
                     },
-                    paused: mediaInstance.instance.paused,
                 };
                 return result;
             },
@@ -292,7 +290,6 @@ export default class SoundManager implements SoundManagerInterface {
                     soundAlias: string;
                     stepCounter: number;
                     options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
-                    paused: boolean;
                 };
             },
         );
@@ -336,37 +333,23 @@ export default class SoundManager implements SoundManagerInterface {
                         const mediaInstanceData = mediaInstances[mediaAlias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
                         if (!channel.background) {
-                            const instance = await channel.play(
-                                mediaAlias,
-                                mediaInstanceData.soundAlias,
-                                {
-                                    ...mediaInstanceData.options,
-                                    filters: FilterMemoryToFilter(
-                                        mediaInstanceData.options.filters || [],
-                                    ),
-                                },
-                            );
-                            if (mediaInstanceData.paused) {
-                                instance.paused = mediaInstanceData.paused;
-                            }
+                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(
+                                    mediaInstanceData.options.filters || [],
+                                ),
+                            });
                         } else if (
                             mediaInstanceData.stepCounter === GameUnifier.stepCounter ||
                             !this.find(mediaAlias)
                         ) {
                             // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
-                            const instance = await channel.play(
-                                mediaAlias,
-                                mediaInstanceData.soundAlias,
-                                {
-                                    ...mediaInstanceData.options,
-                                    filters: FilterMemoryToFilter(
-                                        mediaInstanceData.options.filters || [],
-                                    ),
-                                },
-                            );
-                            if (mediaInstanceData.paused) {
-                                instance.paused = mediaInstanceData.paused;
-                            }
+                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(
+                                    mediaInstanceData.options.filters || [],
+                                ),
+                            });
                         } else {
                             const mediaInstance = SoundManagerStatic.mediaInstances.get(mediaAlias);
                             if (!mediaInstance) {
@@ -382,8 +365,14 @@ export default class SoundManager implements SoundManagerInterface {
                                     mediaInstanceData.options.filters || [],
                                 ),
                             };
-                            if (instance.paused !== mediaInstanceData.paused) {
-                                instance.paused = mediaInstanceData.paused;
+                            if (
+                                instance.paused !==
+                                (mediaInstanceData.paused || mediaInstanceData.options.paused)
+                            ) {
+                                instance.paused =
+                                    mediaInstanceData.paused ||
+                                    mediaInstanceData.options.paused ||
+                                    false;
                             }
                             if (instance.loop !== (mediaInstanceData.options.loop || false)) {
                                 instance.loop = mediaInstanceData.options.loop || false;

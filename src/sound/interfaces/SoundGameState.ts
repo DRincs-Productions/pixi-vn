@@ -32,14 +32,10 @@ export default interface SoundGameState {
             soundAlias: string;
             stepCounter: number;
             options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
-            paused: boolean;
+            /**
+             * @deprecated Use options.paused instead.
+             */
+            paused?: boolean;
         };
-    };
-}
-
-interface ExportedSoundOld {
-    [key: string]: {
-        options: SoundOptions;
-        filters?: SoundFilterMemory[];
     };
 }
