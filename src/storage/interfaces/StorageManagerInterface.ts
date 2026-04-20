@@ -1,5 +1,6 @@
 import type { LRUCache } from "lru-cache";
 import type { StorageElementType } from "../types/StorageElementType";
+import type StorageExternalStoreHandler from "./StorageExternalStoreHandler";
 import type StorageGameState from "./StorageGameState";
 
 export default interface StorageManagerInterface {
@@ -77,6 +78,39 @@ export default interface StorageManagerInterface {
      */
     getFlag(key: string): boolean;
 
+    /**
+     * Configure the handler used to mirror game storage changes into an external reactive store.
+     * Call this at any time to start/stop mirroring.
+     * @param value The handler to set. If undefined, the handler will be removed.
+     * @example
+     * ```typescript
+     * import { Store } from '@tanstack/store'
+     *
+     * // Create a TanStack store that mirrors the game storage variables
+     * const gameStore = new Store<Record<string, unknown>>({})
+     *
+     * storage.setStorageHandler({
+     *     onSetVariable: (key, value) => {
+     *         gameStore.setState((state) => ({ ...state, [key]: value }))
+     *     },
+     *     onRemoveVariable: (key) => {
+     *         gameStore.setState((state) => {
+     *             const next = { ...state }
+     *             delete next[key]
+     *             return next
+     *         })
+     *     },
+     *     onClearOldTempVariable: (key) => {
+     *         gameStore.setState((state) => {
+     *             const next = { ...state }
+     *             delete next[key]
+     *             return next
+     *         })
+     *     },
+     * })
+     * ```
+     */
+    setStorageHandler(value?: StorageExternalStoreHandler): void;
     /**
      * Clear the storage and the oidsUsed
      * @returns

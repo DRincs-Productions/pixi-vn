@@ -2,19 +2,26 @@ import CachedMap from "@classes/CachedMap";
 import { FLAGS_KEY, TEMP_STORAGE_KEY } from "@constants";
 import type { StorageElementType } from "@storage/types/StorageElementType";
 import { createExportableElement } from "@utils/export-utility";
+import type StorageExternalStoreHandler from "./interfaces/StorageExternalStoreHandler";
 
 namespace StorageManagerStatic {
     export const storage = new CachedMap<string, any>({ cacheSize: 50 });
     export const defaultStorage = new CachedMap<string, any>({ cacheSize: 10 });
     export const tempStorageDeadlines = new Map<string, number>();
+    let externalStoreHandler: StorageExternalStoreHandler | undefined;
 
     export function clearOldTempVariables(openedLabelsNumber: number) {
         StorageManagerStatic.tempStorageDeadlines.forEach((deadline, key) => {
             if (deadline > openedLabelsNumber) {
-                StorageManagerStatic.removeVariable(TEMP_STORAGE_KEY, key);
+                StorageManagerStatic.storage.delete(`${TEMP_STORAGE_KEY}:${key}`);
+                externalStoreHandler?.onClearOldTempVariable?.(key);
                 StorageManagerStatic.tempStorageDeadlines.delete(key);
             }
         });
+    }
+
+    export function setExternalStoreHandler(handler?: StorageExternalStoreHandler) {
+        externalStoreHandler = handler;
     }
 
     export function setVariable(prefix: string, key: string, value: StorageElementType) {
@@ -23,6 +30,7 @@ namespace StorageManagerStatic {
         } else {
             StorageManagerStatic.storage.set(`${prefix}:${key}`, value);
         }
+        externalStoreHandler?.onSetVariable?.(key, value);
     }
 
     export function getVariable<T = StorageElementType>(
@@ -35,6 +43,7 @@ namespace StorageManagerStatic {
 
     export function removeVariable(prefix: string, key: string) {
         StorageManagerStatic.storage.delete(`${prefix}:${key}`);
+        externalStoreHandler?.onRemoveVariable?.(key);
     }
 
     export function setFlag(key: string, value: boolean) {
