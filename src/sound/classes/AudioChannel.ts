@@ -150,10 +150,20 @@ export default class AudioChannel implements AudioChannelInterface {
         return this;
     }
     pauseAll(): this {
-        throw new Error("Method not implemented.");
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+            if (mediaInstance.channelAlias === this.alias && !mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = true;
+            }
+        }
+        return this;
     }
     resumeAll(): this {
-        throw new Error("Method not implemented.");
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+            if (mediaInstance.channelAlias === this.alias && mediaInstance.instance.paused) {
+                mediaInstance.instance.paused = false;
+            }
+        }
+        return this;
     }
     private updateMediaPaused() {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
