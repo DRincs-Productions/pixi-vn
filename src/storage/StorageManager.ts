@@ -25,7 +25,7 @@ export default class StorageManager implements StorageManagerInterface {
     }
     set default(value: { [key: string]: StorageElementType }) {
         Object.entries(value).forEach(([key, value]) => {
-            StorageManagerStatic.default.map.set(key, value);
+            StorageManagerStatic.defaultStorage.map.set(key, value);
         });
     }
     public set(key: string, value: StorageElementType) {
@@ -37,7 +37,7 @@ export default class StorageManager implements StorageManagerInterface {
             result = StorageManagerStatic.getVariable<T>(MAIN_STORAGE_KEY, key);
         }
         if (result === undefined) {
-            result = createExportableElement(StorageManagerStatic.default.get(key));
+            result = createExportableElement(StorageManagerStatic.defaultStorage.get(key));
         }
         return result;
     }
