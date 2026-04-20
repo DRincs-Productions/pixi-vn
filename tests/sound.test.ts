@@ -288,6 +288,43 @@ describe("sound channels", () => {
         // Mutating chA must not affect chB
         expect(chB.volume).toBe(0.5);
     });
+
+    test("pauseUnsavedAll/resumeUnsavedAll pause channel without persisting paused option", () => {
+        const ch = sound.addChannel("music")!;
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances.set("music-track", {
+            channelAlias: "music",
+            soundAlias: "music-track",
+            instance: inst,
+            stepCounter: 1,
+            options: { volume: 1, muted: false, loop: false, paused: false },
+        });
+
+        ch.pauseUnsavedAll();
+        expect(inst.paused).toBe(true);
+        expect(SoundManagerStatic.mediaInstances.get("music-track")?.options.paused).toBe(false);
+
+        ch.resumeUnsavedAll();
+        expect(inst.paused).toBe(false);
+    });
+
+    test("tempPauseAll/tempResumeAll remain supported aliases", () => {
+        const ch = sound.addChannel("music")!;
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances.set("music-track", {
+            channelAlias: "music",
+            soundAlias: "music-track",
+            instance: inst,
+            stepCounter: 1,
+            options: { volume: 1, muted: false, loop: false, paused: false },
+        });
+
+        ch.tempPauseAll();
+        expect(inst.paused).toBe(true);
+
+        ch.tempResumeAll();
+        expect(inst.paused).toBe(false);
+    });
 });
 
 // ---------------------------------------------------------------------------
@@ -355,6 +392,21 @@ describe("sound play routing and mediaInstances tracking", () => {
         expect(SoundManagerStatic.mediaInstances.get("my-sound")?.channelAlias).toBe(
             "explicit-channel",
         );
+    });
+
+    test("playTransient routes to channel without tracking save state", async () => {
+        const transientSpy = vi
+            .spyOn(AudioChannel.prototype as any, "playTransient")
+            .mockImplementation(async () => makeFakeMediaInstance());
+        try {
+            sound.addChannel("pause-menu");
+            await sound.playTransient("ui-click", { channel: "pause-menu", volume: 0.2 });
+            expect(transientSpy).toHaveBeenCalledWith("ui-click", { volume: 0.2 });
+            expect(transientSpy.mock.instances[0]?.alias).toBe("pause-menu");
+            expect(SoundManagerStatic.mediaInstances.has("ui-click")).toBe(false);
+        } finally {
+            transientSpy.mockRestore();
+        }
     });
 });
 

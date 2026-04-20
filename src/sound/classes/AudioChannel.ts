@@ -86,6 +86,24 @@ export default class AudioChannel implements AudioChannelInterface {
         });
         return media;
     }
+    async playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
+        const { paused, ...rest } = options || {};
+        const media = await sound.play(soundAlias, {
+            ...(rest ?? {}),
+            filters: [...(this.channelOptions.filters || []), ...(rest?.filters || [])],
+            muted: Boolean(this.channelOptions.muted) || Boolean(rest?.muted),
+            volume: calculateVolume(rest?.volume, this.channelOptions.volume),
+        });
+        const pausedState = Boolean(paused) || Boolean(this.channelOptions.paused);
+        media.paused = pausedState;
+        if (options?.delay) {
+            media.paused = true;
+            setTimeout(() => {
+                media.paused = pausedState;
+            }, options.delay * 1000);
+        }
+        return media;
+    }
     private updateMediaVolume() {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
             if (mediaInstance.channelAlias === this.alias) {
@@ -173,15 +191,21 @@ export default class AudioChannel implements AudioChannelInterface {
             }
         }
     }
-    tempPauseAll() {
+    pauseUnsavedAll(): this {
         this.channelOptions.paused = true;
         this.updateMediaPaused();
         return this;
     }
-    tempResumeAll(): this {
+    resumeUnsavedAll(): this {
         this.channelOptions.paused = false;
         this.updateMediaPaused();
         return this;
+    }
+    tempPauseAll(): this {
+        return this.pauseUnsavedAll();
+    }
+    tempResumeAll(): this {
+        return this.resumeUnsavedAll();
     }
     get paused(): boolean {
         return this.channelOptions.paused || false;

@@ -144,6 +144,16 @@ export default class SoundManager implements SoundManagerInterface {
         const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
         return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
     }
+    async playTransient(
+        alias: string,
+        options?: SoundPlayOptionsWithChannel,
+    ): Promise<IMediaInstance> {
+        if (!sound.exists(alias)) {
+            await this.load(alias);
+        }
+        const { channel = this.defaultChannelAlias, ...channelOptions } = options ?? {};
+        return await this.findChannel(channel).playTransient(alias, channelOptions);
+    }
     find(alias: string): IMediaInstance | undefined {
         return SoundManagerStatic.mediaInstances.get(alias)?.instance;
     }

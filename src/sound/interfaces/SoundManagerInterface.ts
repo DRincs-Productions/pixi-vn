@@ -47,6 +47,14 @@ export default interface SoundManagerInterface
         options?: SoundPlayOptionsWithChannel,
     ): Promise<IMediaInstance>;
     /**
+     * Plays a non-persistent sound (for example UI/menu sounds).
+     * This playback is not tracked in save/export state.
+     * @param alias The sound (asset) alias reference.
+     * @param options The options.
+     * @return The sound instance.
+     */
+    playTransient(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    /**
      * Find a media by alias.
      * @param alias - The media alias reference.
      * @return Media object.
