@@ -301,11 +301,11 @@ describe("sound channels", () => {
         });
 
         ch.pauseUnsavedAll();
-        expect(inst.paused).toBe(true);
+        expect(ch.paused).toBe(true);
         expect(SoundManagerStatic.mediaInstances.get("music-track")?.options.paused).toBe(false);
 
         ch.resumeUnsavedAll();
-        expect(inst.paused).toBe(false);
+        expect(ch.paused).toBe(false);
     });
 
     test("tempPauseAll/tempResumeAll remain supported aliases", () => {
@@ -320,10 +320,10 @@ describe("sound channels", () => {
         });
 
         ch.tempPauseAll();
-        expect(inst.paused).toBe(true);
+        expect(ch.paused).toBe(true);
 
         ch.tempResumeAll();
-        expect(inst.paused).toBe(false);
+        expect(ch.paused).toBe(false);
     });
 });
 
