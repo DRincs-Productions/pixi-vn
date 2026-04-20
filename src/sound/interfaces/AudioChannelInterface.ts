@@ -56,11 +56,13 @@ export default interface AudioChannelInterface {
      * @return Instance for chaining.
      */
     pauseAll(): this;
+    tempPauseAll(): this;
     /**
      * Resumes any sounds.
      * @return Instance for chaining.
      */
     resumeAll(): this;
+    tempResumeAll(): this;
     /**
      * Toggle paused property for all sounds.
      * @return `true` if all sounds are paused.

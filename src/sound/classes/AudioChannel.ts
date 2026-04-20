@@ -12,6 +12,12 @@ export default class AudioChannel implements AudioChannelInterface {
         readonly alias: string,
         readonly channelOptions: ChannelOptions = {},
     ) {}
+    pauseAll(): this {
+        throw new Error("Method not implemented.");
+    }
+    resumeAll(): this {
+        throw new Error("Method not implemented.");
+    }
     async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
     async play(
         mediaAlias: string,
@@ -157,12 +163,12 @@ export default class AudioChannel implements AudioChannelInterface {
             }
         }
     }
-    pauseAll() {
+    tempPauseAll() {
         this.channelOptions.paused = true;
         this.updateMediaPaused();
         return this;
     }
-    resumeAll(): this {
+    tempResumeAll(): this {
         this.channelOptions.paused = false;
         this.updateMediaPaused();
         return this;
