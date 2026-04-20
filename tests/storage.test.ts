@@ -198,7 +198,7 @@ test("storage external handler is triggered with unprefixed keys", async () => {
     }
 });
 
-test("import & exoprt", async () => {
+test("import & export", async () => {
     storage.restore({
         main: [
             {
