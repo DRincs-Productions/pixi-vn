@@ -2,24 +2,7 @@ import CachedMap from "@classes/CachedMap";
 import { FLAGS_KEY, TEMP_STORAGE_KEY } from "@constants";
 import type { StorageElementType } from "@storage/types/StorageElementType";
 import { createExportableElement } from "@utils/export-utility";
-
-export type StorageExternalStoreHandler = {
-    /**
-     * Triggered when {@link setVariable} is called.
-     * The key is provided without any storage prefix.
-     */
-    onSetVariable?: (key: string, value: StorageElementType) => void;
-    /**
-     * Triggered when a temp variable is removed by {@link clearOldTempVariables}.
-     * The key is provided without any storage prefix.
-     */
-    onClearOldTempVariable?: (key: string) => void;
-    /**
-     * Triggered when {@link removeVariable} is called.
-     * The key is provided without any storage prefix.
-     */
-    onRemoveVariable?: (key: string) => void;
-};
+import type StorageExternalStoreHandler from "./interfaces/StorageExternalStoreHandler";
 
 namespace StorageManagerStatic {
     export const storage = new CachedMap<string, any>({ cacheSize: 50 });
