@@ -339,6 +339,14 @@ export default interface CanvasManagerInterface {
      */
     isTickerPaused(alias: string, tickerId?: string): boolean;
     /**
+     * Stops the render/update loop.
+     */
+    stop(): void;
+    /**
+     * Starts the render/update loop.
+     */
+    start(): void;
+    /**
      * Add a ticker that must be completed before the next step.
      * This method is used for example into a transition between scenes.
      * @param step The step that the ticker must be completed before the next step.

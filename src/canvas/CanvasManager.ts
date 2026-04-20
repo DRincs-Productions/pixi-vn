@@ -659,6 +659,12 @@ export default class CanvasManager implements CanvasManagerInterface {
     isTickerPaused(_alias: string, _tickerId?: string): boolean {
         return false;
     }
+    stop() {
+        this.app.stop();
+    }
+    start() {
+        this.app.start();
+    }
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
         const oldSeq = CanvasManagerStatic._currentTickersSequence.get(oldAlias);
         if (oldSeq) {
