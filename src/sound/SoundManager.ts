@@ -386,6 +386,8 @@ export default class SoundManager implements SoundManagerInterface {
                             }
                             mediaInstance.options = {
                                 ...mediaInstanceData.options,
+                                paused:
+                                    mediaInstanceData.options.paused || mediaInstanceData.paused,
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
