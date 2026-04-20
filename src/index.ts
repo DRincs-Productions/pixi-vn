@@ -131,9 +131,7 @@ export namespace Game {
                 let canvasData = {};
                 try {
                     canvasData = canvasUtils.canvas.export();
-                } catch (e) {
-                    logger.error("Error exporting canvas data:", e);
-                }
+                } catch (_e) {}
                 return {
                     path: getGamePath(),
                     storage: storageUtils.storage.export(),
@@ -217,9 +215,7 @@ export namespace Game {
         storageUtils.storage.clear();
         try {
             canvasUtils.canvas.clear();
-        } catch (e) {
-            logger.error("Error clearing canvas:", e);
-        }
+        } catch (_e) {}
         soundUtils.sound.clear();
         narrationUtils.narration.clear();
         historyUtils.stepHistory.clear();
@@ -233,9 +229,7 @@ export namespace Game {
         let canvasData: any = {};
         try {
             canvasData = canvasUtils.canvas.export();
-        } catch (e) {
-            logger.error("Error exporting canvas data:", e);
-        }
+        } catch (_e) {}
         return {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
@@ -281,9 +275,7 @@ export namespace Game {
         try {
             await canvasUtils.canvas.restore(data.canvasData);
             await soundUtils.sound.restore(data.soundData);
-        } catch (e) {
-            logger.error("Error restoring game state:", e);
-        }
+        } catch (_e) {}
         if (navigate) {
             await navigate(data.path);
         } else {
