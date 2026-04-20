@@ -286,12 +286,8 @@ export namespace Game {
         }
         if (navigate) {
             await navigate(data.path);
-        } else if (GameUnifier.navigate) {
-            await GameUnifier.navigate(data.path);
         } else {
-            logger.warn(
-                `No navigate function defined. The game path is ${data.path}, but no navigation function is available to navigate to it.`,
-            );
+            await GameUnifier.navigate(data.path);
         }
     }
 
