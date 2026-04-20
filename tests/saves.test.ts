@@ -1,5 +1,7 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import {
+    Game,
+    GameUnifier,
     type GameState,
     narration,
     newLabel,
@@ -604,4 +606,23 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
     await restoreGameState(data, () => {});
 
     expect(exportGameState()).toEqual(data);
+});
+
+test("Game.restoreGameState uses configured navigate when navigate argument is omitted", async () => {
+    const previousHandler = GameUnifier.navigate;
+    const navigateSpy = vi.fn();
+    Game.onNavigate(navigateSpy);
+
+    try {
+        Game.clear();
+        const data = Game.exportGameState();
+        data.path = "/restore-fallback";
+
+        await Game.restoreGameState(data);
+
+        expect(navigateSpy).toHaveBeenCalledTimes(1);
+        expect(navigateSpy).toHaveBeenCalledWith("/restore-fallback");
+    } finally {
+        Game.onNavigate(previousHandler);
+    }
 });

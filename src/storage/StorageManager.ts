@@ -9,6 +9,7 @@ import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import type StorageGameState from "./interfaces/StorageGameState";
 import type { StorageGameStateItem } from "./interfaces/StorageGameState";
+import type StorageExternalStoreHandler from "./interfaces/StorageExternalStoreHandler";
 import type StorageManagerInterface from "./interfaces/StorageManagerInterface";
 import StorageManagerStatic from "./StorageManagerStatic";
 import type { StorageElementType } from "./types/StorageElementType";
@@ -25,7 +26,7 @@ export default class StorageManager implements StorageManagerInterface {
     }
     set default(value: { [key: string]: StorageElementType }) {
         Object.entries(value).forEach(([key, value]) => {
-            StorageManagerStatic.default.map.set(key, value);
+            StorageManagerStatic.defaultStorage.map.set(key, value);
         });
     }
     public set(key: string, value: StorageElementType) {
@@ -37,7 +38,7 @@ export default class StorageManager implements StorageManagerInterface {
             result = StorageManagerStatic.getVariable<T>(MAIN_STORAGE_KEY, key);
         }
         if (result === undefined) {
-            result = createExportableElement(StorageManagerStatic.default.get(key));
+            result = createExportableElement(StorageManagerStatic.defaultStorage.get(key));
         }
         return result;
     }
@@ -67,6 +68,9 @@ export default class StorageManager implements StorageManagerInterface {
     }
     getFlag(key: string): boolean {
         return StorageManagerStatic.getFlag(key);
+    }
+    setStorageHandler(value?: StorageExternalStoreHandler) {
+        StorageManagerStatic.setExternalStoreHandler(value);
     }
     public clear() {
         this.base.clear();
