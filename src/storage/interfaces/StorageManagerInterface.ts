@@ -82,6 +82,33 @@ export default interface StorageManagerInterface {
      * Configure the handler used to mirror game storage changes into an external reactive store.
      * Call this at any time to start/stop mirroring.
      * @param value The handler to set. If undefined, the handler will be removed.
+     * @example
+     * ```typescript
+     * import { Store } from '@tanstack/store'
+     *
+     * // Create a TanStack store that mirrors the game storage variables
+     * const gameStore = new Store<Record<string, unknown>>({})
+     *
+     * storage.setStorageHandler({
+     *     onSetVariable: (key, value) => {
+     *         gameStore.setState((state) => ({ ...state, [key]: value }))
+     *     },
+     *     onRemoveVariable: (key) => {
+     *         gameStore.setState((state) => {
+     *             const next = { ...state }
+     *             delete next[key]
+     *             return next
+     *         })
+     *     },
+     *     onClearOldTempVariable: (key) => {
+     *         gameStore.setState((state) => {
+     *             const next = { ...state }
+     *             delete next[key]
+     *             return next
+     *         })
+     *     },
+     * })
+     * ```
      */
     setStorageHandler(value?: StorageExternalStoreHandler): void;
     /**
