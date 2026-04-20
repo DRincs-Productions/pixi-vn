@@ -444,7 +444,7 @@ export default interface CanvasManagerInterface {
      * Add a HTML layer to the canvas.
      * @param id The id of the layer.
      * @param element The html element to be added.
-     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none" }.
+     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none", userSelect: "none" }.
      * @example
      * ```tsx
      * const root = document.getElementById('root')
@@ -464,7 +464,7 @@ export default interface CanvasManagerInterface {
     addHtmlLayer(
         id: string,
         element: HTMLElement,
-        style?: Pick<CSSStyleDeclaration, "position" | "pointerEvents">,
+        style?: Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">>,
     ): HTMLDivElement;
     /**
      * Get a HTML layer from the canvas.
