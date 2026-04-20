@@ -253,7 +253,7 @@ export namespace Game {
      */
     export async function restoreGameState(data: pixivninterface.GameState): Promise<void>;
     /**
-     * @deprecated Use {@link restoreGameState} instead, and pass a navigate function in the options of {@link Game.init} or using {@link Game.onNavigate}.
+     * @deprecated Use `restoreGameState(data)` (without the `navigate` argument) and configure navigation via `Game.init({ navigate })` or `Game.onNavigate(...)`.
      * @param data The save data
      * @param navigate Navigation function to use for this restore call.
      */
