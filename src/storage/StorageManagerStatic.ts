@@ -1,42 +1,52 @@
-import { CachedMap } from "../classes";
-import { FLAGS_KEY, TEMP_STORAGE_KEY } from "../constants";
-import { createExportableElement } from "../utils/export-utility";
-import type { StorageElementType } from "./types/StorageElementType";
+import CachedMap from "@classes/CachedMap";
+import { FLAGS_KEY, TEMP_STORAGE_KEY } from "@constants";
+import type { StorageElementType } from "@storage/types/StorageElementType";
+import { createExportableElement } from "@utils/export-utility";
+import type StorageExternalStoreHandler from "./interfaces/StorageExternalStoreHandler";
 
-export default class StorageManagerStatic {
-    static storage = new CachedMap<string, any>({ cacheSize: 50 });
-    static default = new CachedMap<string, any>({ cacheSize: 10 });
-    static tempStorageDeadlines = new Map<string, number>();
+namespace StorageManagerStatic {
+    export const storage = new CachedMap<string, any>({ cacheSize: 50 });
+    export const defaultStorage = new CachedMap<string, any>({ cacheSize: 10 });
+    export const tempStorageDeadlines = new Map<string, number>();
+    let externalStoreHandler: StorageExternalStoreHandler | undefined;
 
-    private constructor() {}
-
-    static clearOldTempVariables(openedLabelsNumber: number) {
+    export function clearOldTempVariables(openedLabelsNumber: number) {
         StorageManagerStatic.tempStorageDeadlines.forEach((deadline, key) => {
             if (deadline > openedLabelsNumber) {
-                StorageManagerStatic.removeVariable(TEMP_STORAGE_KEY, key);
+                StorageManagerStatic.storage.delete(`${TEMP_STORAGE_KEY}:${key}`);
+                externalStoreHandler?.onClearOldTempVariable?.(key);
                 StorageManagerStatic.tempStorageDeadlines.delete(key);
             }
         });
     }
 
-    static setVariable(prefix: string, key: string, value: StorageElementType) {
+    export function setExternalStoreHandler(handler?: StorageExternalStoreHandler) {
+        externalStoreHandler = handler;
+    }
+
+    export function setVariable(prefix: string, key: string, value: StorageElementType) {
         if (value === undefined || value === null) {
             StorageManagerStatic.storage.delete(`${prefix}:${key}`);
         } else {
             StorageManagerStatic.storage.set(`${prefix}:${key}`, value);
         }
+        externalStoreHandler?.onSetVariable?.(key, value);
     }
 
-    static getVariable<T = StorageElementType>(prefix: string, key: string): T | undefined {
+    export function getVariable<T = StorageElementType>(
+        prefix: string,
+        key: string,
+    ): T | undefined {
         const result = StorageManagerStatic.storage.get(`${prefix}:${key}`);
         return createExportableElement(result) as T;
     }
 
-    static removeVariable(prefix: string, key: string) {
+    export function removeVariable(prefix: string, key: string) {
         StorageManagerStatic.storage.delete(`${prefix}:${key}`);
+        externalStoreHandler?.onRemoveVariable?.(key);
     }
 
-    static setFlag(key: string, value: boolean) {
+    export function setFlag(key: string, value: boolean) {
         const flags = StorageManagerStatic.storage.get(FLAGS_KEY) || [];
         if (value) {
             if (!flags.includes(key)) {
@@ -51,8 +61,9 @@ export default class StorageManagerStatic {
         StorageManagerStatic.storage.set(FLAGS_KEY, flags);
     }
 
-    static getFlag(key: string): boolean {
+    export function getFlag(key: string): boolean {
         const flags = StorageManagerStatic.storage.get(FLAGS_KEY) || [];
         return flags.includes(key);
     }
 }
+export default StorageManagerStatic;

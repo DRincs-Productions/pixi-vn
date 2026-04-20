@@ -1,7 +1,7 @@
 import { Keyv } from "keyv";
 import { expect, test } from "vitest";
-import { narration, newLabel, storage } from "../src";
-import { MAIN_STORAGE_KEY } from "../src/constants";
+import { narration, newLabel, storage, StorageManagerStatic } from "../src";
+import { MAIN_STORAGE_KEY, TEMP_STORAGE_KEY } from "../src/constants";
 import type { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
 
 const temTestLabel = newLabel<{
@@ -170,7 +170,35 @@ test("setFlag & getFlag", async () => {
     storage.setFlag("test", false);
 });
 
-test("import & exoprt", async () => {
+test("storage external handler is triggered with unprefixed keys", async () => {
+    const setEvents: Array<{ key: string; value: unknown }> = [];
+    const removeEvents: string[] = [];
+    const clearEvents: string[] = [];
+    storage.setStorageHandler({
+        onSetVariable: (key, value) => setEvents.push({ key, value }),
+        onRemoveVariable: (key) => removeEvents.push(key),
+        onClearOldTempVariable: (key) => clearEvents.push(key),
+    });
+    try {
+        StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, "ext-main", 42);
+        StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, "ext-main");
+        StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, "ext-temp", "temp-value");
+        StorageManagerStatic.tempStorageDeadlines.set("ext-temp", 10);
+        StorageManagerStatic.clearOldTempVariables(1);
+
+        expect(setEvents).toContainEqual({ key: "ext-main", value: 42 });
+        expect(setEvents).toContainEqual({ key: "ext-temp", value: "temp-value" });
+        expect(removeEvents).toContain("ext-main");
+        expect(clearEvents).toContain("ext-temp");
+    } finally {
+        storage.setStorageHandler(undefined);
+        StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, "ext-main");
+        StorageManagerStatic.removeVariable(TEMP_STORAGE_KEY, "ext-temp");
+        StorageManagerStatic.tempStorageDeadlines.delete("ext-temp");
+    }
+});
+
+test("import & export", async () => {
     storage.restore({
         main: [
             {
