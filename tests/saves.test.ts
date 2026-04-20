@@ -609,7 +609,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
 });
 
 test("Game.restoreGameState uses configured navigate when navigate argument is omitted", async () => {
-    const previousNavigate = GameUnifier.navigate;
+    const previousHandler = GameUnifier.navigate;
     const navigateSpy = vi.fn();
     Game.onNavigate(navigateSpy);
 
@@ -623,6 +623,6 @@ test("Game.restoreGameState uses configured navigate when navigate argument is o
         expect(navigateSpy).toHaveBeenCalledTimes(1);
         expect(navigateSpy).toHaveBeenCalledWith("/restore-fallback");
     } finally {
-        Game.onNavigate(previousNavigate);
+        Game.onNavigate(previousHandler);
     }
 });
