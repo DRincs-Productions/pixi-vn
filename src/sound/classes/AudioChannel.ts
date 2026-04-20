@@ -12,12 +12,6 @@ export default class AudioChannel implements AudioChannelInterface {
         readonly alias: string,
         readonly channelOptions: ChannelOptions = {},
     ) {}
-    pauseAll(): this {
-        throw new Error("Method not implemented.");
-    }
-    resumeAll(): this {
-        throw new Error("Method not implemented.");
-    }
     async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
     async play(
         mediaAlias: string,
@@ -154,6 +148,12 @@ export default class AudioChannel implements AudioChannelInterface {
             SoundManagerStatic.mediaInstances.delete(mediaAlias);
         });
         return this;
+    }
+    pauseAll(): this {
+        throw new Error("Method not implemented.");
+    }
+    resumeAll(): this {
+        throw new Error("Method not implemented.");
     }
     private updateMediaPaused() {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
