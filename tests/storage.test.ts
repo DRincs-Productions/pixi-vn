@@ -1,6 +1,6 @@
 import { Keyv } from "keyv";
 import { expect, test } from "vitest";
-import { Game, narration, newLabel, storage, StorageManagerStatic } from "../src";
+import { narration, newLabel, storage, StorageManagerStatic } from "../src";
 import { MAIN_STORAGE_KEY, TEMP_STORAGE_KEY } from "../src/constants";
 import type { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
 
@@ -174,7 +174,7 @@ test("storage external handler is triggered with unprefixed keys", async () => {
     const setEvents: Array<{ key: string; value: unknown }> = [];
     const removeEvents: string[] = [];
     const clearEvents: string[] = [];
-    Game.setStorageHandler({
+    storage.setStorageHandler({
         onSetVariable: (key, value) => setEvents.push({ key, value }),
         onRemoveVariable: (key) => removeEvents.push(key),
         onClearOldTempVariable: (key) => clearEvents.push(key),
@@ -191,7 +191,7 @@ test("storage external handler is triggered with unprefixed keys", async () => {
         expect(removeEvents).toContain("ext-main");
         expect(clearEvents).toContain("ext-temp");
     } finally {
-        Game.setStorageHandler(undefined);
+        storage.setStorageHandler(undefined);
         StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, "ext-main");
         StorageManagerStatic.removeVariable(TEMP_STORAGE_KEY, "ext-temp");
         StorageManagerStatic.tempStorageDeadlines.delete("ext-temp");

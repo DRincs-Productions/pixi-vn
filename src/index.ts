@@ -429,41 +429,6 @@ export namespace Game {
     }
 
     /**
-     * Configure the handler used to mirror game storage changes into an external reactive store.
-     * Call this after {@link init} (or at any time) to start/stop mirroring.
-     * @example
-     * ```typescript
-     * import { Store } from '@tanstack/store'
-     *
-     * // Create a TanStack store that mirrors the game storage variables
-     * const gameStore = new Store<Record<string, unknown>>({})
-     *
-     * Game.setStorageHandler({
-     *     onSetVariable: (key, value) => {
-     *         gameStore.setState((state) => ({ ...state, [key]: value }))
-     *     },
-     *     onRemoveVariable: (key) => {
-     *         gameStore.setState((state) => {
-     *             const next = { ...state }
-     *             delete next[key]
-     *             return next
-     *         })
-     *     },
-     *     onClearOldTempVariable: (key) => {
-     *         gameStore.setState((state) => {
-     *             const next = { ...state }
-     *             delete next[key]
-     *             return next
-     *         })
-     *     },
-     * })
-     * ```
-     */
-    export function setStorageHandler(value?: storageUtils.StorageExternalStoreHandler) {
-        storageUtils.StorageManagerStatic.setExternalStoreHandler(value);
-    }
-
-    /**
      * Register a handler to run immediately before a narration "continue" operation.
      * Handlers are executed in registration order and may be async. Use
      * `{@link addOnPreContinue}` / `{@link removeOnPreContinue}` to manage them programmatically.
