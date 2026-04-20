@@ -89,7 +89,7 @@ export default class AudioChannel implements AudioChannelInterface {
     async playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
         const { paused, ...rest } = options || {};
         const media = await sound.play(soundAlias, {
-            ...(rest ?? {}),
+            ...rest,
             filters: [...(this.channelOptions.filters || []), ...(rest?.filters || [])],
             muted: Boolean(this.channelOptions.muted) || Boolean(rest?.muted),
             volume: calculateVolume(rest?.volume, this.channelOptions.volume),
