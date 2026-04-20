@@ -308,23 +308,6 @@ describe("sound channels", () => {
         expect(ch.paused).toBe(false);
     });
 
-    test("tempPauseAll/tempResumeAll remain supported aliases", () => {
-        const ch = sound.addChannel("music")!;
-        const inst = makeFakeMediaInstance();
-        SoundManagerStatic.mediaInstances.set("music-track", {
-            channelAlias: "music",
-            soundAlias: "music-track",
-            instance: inst,
-            stepCounter: 1,
-            options: { volume: 1, muted: false, loop: false, paused: false },
-        });
-
-        ch.tempPauseAll();
-        expect(ch.paused).toBe(true);
-
-        ch.tempResumeAll();
-        expect(ch.paused).toBe(false);
-    });
 });
 
 // ---------------------------------------------------------------------------

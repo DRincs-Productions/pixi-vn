@@ -201,12 +201,6 @@ export default class AudioChannel implements AudioChannelInterface {
         this.updateMediaPaused();
         return this;
     }
-    tempPauseAll(): this {
-        return this.pauseUnsavedAll();
-    }
-    tempResumeAll(): this {
-        return this.resumeUnsavedAll();
-    }
     get paused(): boolean {
         return this.channelOptions.paused || false;
     }

@@ -76,18 +76,10 @@ export default interface AudioChannelInterface {
      */
     resumeUnsavedAll(): this;
     /**
-     * @deprecated Use `pauseUnsavedAll()` instead.
-     */
-    tempPauseAll(): this;
-    /**
      * Resumes any sounds.
      * @return Instance for chaining.
      */
     resumeAll(): this;
-    /**
-     * @deprecated Use `resumeUnsavedAll()` instead.
-     */
-    tempResumeAll(): this;
     /**
      * Toggle paused property for all sounds.
      * @return `true` if all sounds are paused.
