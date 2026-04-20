@@ -662,7 +662,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     isTickerPaused(_alias: string, _tickerId?: string): boolean {
         return false;
     }
-    pauseGameLayerRender() {
+    pause() {
         if (this.gameLayer.renderable === false) {
             return;
         }
@@ -671,7 +671,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             id: Array.from(CanvasManagerStatic._currentTickers.keys()),
         });
     }
-    resumeGameLayerRender() {
+    resume() {
         if (this.gameLayer.renderable === true) {
             return;
         }
@@ -683,12 +683,6 @@ export default class CanvasManager implements CanvasManagerInterface {
             this.resumeTicker({ id: tickerIdsToResume });
         }
         this.tickersPausedByGameLayerRender = [];
-    }
-    stop() {
-        this.app.stop();
-    }
-    start() {
-        this.app.start();
     }
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
         const oldSeq = CanvasManagerStatic._currentTickersSequence.get(oldAlias);

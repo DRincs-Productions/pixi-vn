@@ -30,7 +30,7 @@ describe("CanvasManager gameLayer render controls", () => {
         vi.restoreAllMocks();
     });
 
-    test("pauseGameLayerRender/resumeGameLayerRender pause and resume only active tickers", () => {
+    test("pause/resume pause and resume only active tickers", () => {
         const manager = new CanvasManager();
         const gameLayer = { renderable: true };
         vi.spyOn(CanvasManagerStatic, "gameLayer", "get").mockReturnValue(gameLayer as any);
@@ -40,12 +40,12 @@ describe("CanvasManager gameLayer render controls", () => {
         CanvasManagerStatic._currentTickers.set("active", { ticker: activeTicker } as any);
         CanvasManagerStatic._currentTickers.set("paused", { ticker: alreadyPausedTicker } as any);
 
-        manager.pauseGameLayerRender();
+        manager.pause();
         expect(gameLayer.renderable).toBe(false);
         expect(activeTicker.pause).toHaveBeenCalledTimes(1);
         expect(alreadyPausedTicker.pause).not.toHaveBeenCalled();
 
-        manager.resumeGameLayerRender();
+        manager.resume();
         expect(gameLayer.renderable).toBe(true);
         expect(activeTicker.play).toHaveBeenCalledTimes(1);
         expect(alreadyPausedTicker.play).not.toHaveBeenCalled();
