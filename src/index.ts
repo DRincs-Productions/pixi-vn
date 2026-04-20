@@ -93,10 +93,6 @@ export namespace Game {
              * @default "contain"
              */
             resizeMode?: "contain" | "none";
-            /**
-             * Handler used to mirror game storage changes into an external store.
-             */
-            storageHandler?: storageUtils.StorageExternalStoreHandler;
         },
         devtoolsOptions?: Devtools,
     ): Promise<void>;
@@ -126,14 +122,9 @@ export namespace Game {
              * @default "contain"
              */
             resizeMode?: "contain" | "none";
-            /**
-             * Handler used to mirror game storage changes into an external store.
-             */
-            storageHandler?: storageUtils.StorageExternalStoreHandler;
         },
         devtoolsOptions?: Devtools,
     ): Promise<void> {
-        storageUtils.StorageManagerStatic.setExternalStoreHandler(options?.storageHandler);
         GameUnifier.init({
             navigate: options?.navigate,
             getCurrentGameStepState: () => {
@@ -438,7 +429,35 @@ export namespace Game {
     }
 
     /**
-     * Configure the handler used to mirror game storage changes into an external store.
+     * Configure the handler used to mirror game storage changes into an external reactive store.
+     * Call this after {@link init} (or at any time) to start/stop mirroring.
+     * @example
+     * ```typescript
+     * import { Store } from '@tanstack/store'
+     *
+     * // Create a TanStack store that mirrors the game storage variables
+     * const gameStore = new Store<Record<string, unknown>>({})
+     *
+     * Game.setStorageHandler({
+     *     onSetVariable: (key, value) => {
+     *         gameStore.setState((state) => ({ ...state, [key]: value }))
+     *     },
+     *     onRemoveVariable: (key) => {
+     *         gameStore.setState((state) => {
+     *             const next = { ...state }
+     *             delete next[key]
+     *             return next
+     *         })
+     *     },
+     *     onClearOldTempVariable: (key) => {
+     *         gameStore.setState((state) => {
+     *             const next = { ...state }
+     *             delete next[key]
+     *             return next
+     *         })
+     *     },
+     * })
+     * ```
      */
     export function setStorageHandler(value?: storageUtils.StorageExternalStoreHandler) {
         storageUtils.StorageManagerStatic.setExternalStoreHandler(value);
