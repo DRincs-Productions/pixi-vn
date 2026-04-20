@@ -436,7 +436,7 @@ export default interface CanvasManagerInterface {
      * Add a HTML layer to the canvas.
      * @param id The id of the layer.
      * @param element The html element to be added.
-     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none", userSelect: "none" }
+     * @param style The style of the layer. @default { position: "absolute", pointerEvents: "none", userSelect: "none" }.
      * @example
      * ```tsx
      * const root = document.getElementById('root')
