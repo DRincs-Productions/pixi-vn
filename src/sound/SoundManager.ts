@@ -363,14 +363,6 @@ export default class SoundManager implements SoundManagerInterface {
                                 return;
                             }
                             const instance = mediaInstance.instance;
-                            mediaInstance.options = {
-                                ...mediaInstanceData.options,
-                                paused:
-                                    mediaInstanceData.options.paused || mediaInstanceData.paused,
-                                filters: FilterMemoryToFilter(
-                                    mediaInstanceData.options.filters || [],
-                                ),
-                            };
                             if (
                                 instance.paused !==
                                 (mediaInstanceData.paused || mediaInstanceData.options.paused)
@@ -392,6 +384,12 @@ export default class SoundManager implements SoundManagerInterface {
                             if (instance.speed !== (mediaInstanceData.options.speed ?? 1)) {
                                 instance.speed = mediaInstanceData.options.speed ?? 1;
                             }
+                            mediaInstance.options = {
+                                ...mediaInstanceData.options,
+                                filters: FilterMemoryToFilter(
+                                    mediaInstanceData.options.filters || [],
+                                ),
+                            };
                         }
                     });
                     await Promise.all(promises2);
