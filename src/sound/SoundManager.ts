@@ -322,7 +322,6 @@ export default class SoundManager implements SoundManagerInterface {
                     paused,
                     options: {
                         ...mediaInstance.options,
-                        paused,
                         filters: FilterToFilterMemory(mediaInstance.options.filters),
                     },
                 };
