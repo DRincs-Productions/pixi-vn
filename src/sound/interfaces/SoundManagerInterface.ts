@@ -47,6 +47,22 @@ export default interface SoundManagerInterface
         options?: SoundPlayOptionsWithChannel,
     ): Promise<IMediaInstance>;
     /**
+     * Plays a non-persistent sound (for example UI/menu sounds).
+     * This playback is not tracked in save/export state.
+     * @param alias The sound (asset) alias reference.
+     * @param options The options.
+     * @return The sound instance.
+     */
+    playTransient(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    /**
+     * Stops all transient media instances started with {@link playTransient}.
+     * If `channel` is provided only instances on that channel are stopped;
+     * otherwise all channels are affected.
+     * @param channel Optional channel alias to limit the operation to.
+     * @return Instance for chaining.
+     */
+    stopTransientAll(channel?: string): this;
+    /**
      * Find a media by alias.
      * @param alias - The media alias reference.
      * @return Media object.
@@ -84,6 +100,21 @@ export default interface SoundManagerInterface
      * @return Instance for chaining.
      */
     resumeAll(): this;
+    /**
+     * Temporarily pauses all sounds across all channels (or just the given channel) without
+     * mutating each media instance's persisted paused option.
+     * Useful for overlays (for example settings/pause menus) where pause state must not be saved.
+     * @param channel Optional channel alias to limit the operation to.
+     * @return Instance for chaining.
+     */
+    pauseUnsavedAll(channel?: string): this;
+    /**
+     * Restores all channels (or just the given channel) after `pauseUnsavedAll()`,
+     * reapplying each media instance's persisted paused option.
+     * @param channel Optional channel alias to limit the operation to.
+     * @return Instance for chaining.
+     */
+    resumeUnsavedAll(channel?: string): this;
     /**
      * Mutes all playing sounds.
      * @return Instance for chaining.
