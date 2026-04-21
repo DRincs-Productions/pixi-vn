@@ -45,6 +45,7 @@ export default class AudioChannel implements AudioChannelInterface {
             }
         }
         const { paused, ...rest } = options || {};
+        const effectivePaused = Boolean(this.channelOptions.paused) || Boolean(paused);
         const media = proxyMedia(
             mediaAlias,
             await sound.play(soundAlias, {
@@ -55,13 +56,11 @@ export default class AudioChannel implements AudioChannelInterface {
             }),
             this,
         );
-        if (paused || this.channelOptions.paused) {
-            media.paused = paused ?? this.channelOptions.paused ?? false;
-        }
+        media.paused = effectivePaused;
         if (options?.delay) {
             media.paused = true;
             const timeoutId = setTimeout(() => {
-                media.paused = false;
+                media.paused = effectivePaused;
                 SoundManagerStatic.delayTimeoutInstances =
                     SoundManagerStatic.delayTimeoutInstances.filter(
                         (item) => item[0] !== timeoutId,
@@ -78,8 +77,8 @@ export default class AudioChannel implements AudioChannelInterface {
                 volume: options?.volume ?? 1,
                 muted: options?.muted ?? false,
                 loop: options?.loop ?? false,
-                paused: options?.paused ?? false,
                 ...(options ?? {}),
+                paused: effectivePaused,
             },
         });
         media.on("end", () => {
