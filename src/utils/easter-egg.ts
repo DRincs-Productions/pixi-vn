@@ -9,9 +9,9 @@ const asciiRows = [
 ];
 
 const firstSegmentLength = " |_|   |_/_/\\_\\_|".length;
-const firstSegmentStyle = "background:#2f90da;";
-const secondSegmentStyle = "background:#c832bb;";
-const plainStyle = "background:transparent;";
+const firstSegmentStyle = "background:#2f90da;color:#000;font-weight:bold;";
+const secondSegmentStyle = "background:#c832bb;color:#000;font-weight:bold;";
+const plainStyle = "background:transparent;font-weight:bold;";
 const versionSuffix = ` v${packageJson.version}`;
 
 export function asciiArtLog() {
