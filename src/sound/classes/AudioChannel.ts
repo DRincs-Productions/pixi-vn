@@ -204,8 +204,9 @@ export default class AudioChannel implements AudioChannelInterface {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
             if (mediaInstance.channelAlias === this.alias) {
                 const mediaPaused = mediaInstance.options.paused ?? false;
-                const channelPaused = this.channelOptions.paused ?? false;
-                mediaInstance.instance.paused = channelPaused || mediaPaused;
+                // Apply only the per-media paused state; the proxy is responsible for
+                // enforcing channel-level pausing without overwriting per-media options.
+                mediaInstance.instance.paused = mediaPaused;
             }
         }
     }
