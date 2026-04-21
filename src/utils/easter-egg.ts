@@ -15,24 +15,24 @@ const plainStyle = "background:transparent;";
 const versionSuffix = ` v${packageJson.version}`;
 
 export function asciiArtLog() {
-    for (const row of asciiRows) {
+    const formatParts: string[] = [];
+    const values: string[] = [];
+
+    for (let i = 0; i < asciiRows.length; i++) {
+        const row = asciiRows[i];
         const hasVersionSuffix = row.endsWith(versionSuffix);
         const contentRow = hasVersionSuffix ? row.slice(0, -versionSuffix.length) : row;
         const firstSegment = contentRow.slice(0, firstSegmentLength);
         const secondSegment = contentRow.slice(firstSegmentLength);
-        let format = "%c%s%c%s";
-        const values: string[] = [
-            firstSegmentStyle,
-            firstSegment,
-            secondSegmentStyle,
-            secondSegment,
-        ];
+
+        const rowFormat = hasVersionSuffix ? "%c%s%c%s%c%s" : "%c%s%c%s";
+        formatParts.push(rowFormat);
+        values.push(firstSegmentStyle, firstSegment, secondSegmentStyle, secondSegment);
 
         if (hasVersionSuffix) {
-            format += "%c%s";
             values.push(plainStyle, versionSuffix);
         }
-
-        console.info(format, ...values);
     }
+
+    console.info(formatParts.join("\n"), ...values);
 }
