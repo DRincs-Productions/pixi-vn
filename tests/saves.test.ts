@@ -119,7 +119,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label",
                     },
-                    stepSha1: "96be3ba3f3367043b673c02aeded9511deb03ace",
+                    stepSha1: "baebec4b549ebe7469c1e505411d708cd3bda655",
                     index: 0,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
@@ -136,7 +136,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label 2",
                     },
-                    stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
+                    stepSha1: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
                     index: 1,
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
@@ -189,7 +189,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label 3",
                     },
-                    stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
+                    stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                     index: 2,
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
@@ -242,7 +242,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label",
                     },
-                    stepSha1: "e839eeafad10f5e30b2b3ad286ba6797ff9f0588",
+                    stepSha1: "e11fba2677964f0a812a7228a77fc75e23929e23",
                     index: 3,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
@@ -301,7 +301,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label 2",
                     },
-                    stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
+                    stepSha1: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
                     index: 4,
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
@@ -348,7 +348,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label 3",
                     },
-                    stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
+                    stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                     index: 5,
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
@@ -395,7 +395,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label",
                     },
-                    stepSha1: "e839eeafad10f5e30b2b3ad286ba6797ff9f0588",
+                    stepSha1: "e11fba2677964f0a812a7228a77fc75e23929e23",
                     index: 6,
                     labelStepIndex: 0,
                     alreadyMadeChoices: [],
@@ -448,7 +448,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label 2",
                     },
-                    stepSha1: "52f6d974c8653e35f967af2ab007d0d09080c2e9",
+                    stepSha1: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
                     index: 7,
                     labelStepIndex: 1,
                     alreadyMadeChoices: [],
@@ -495,7 +495,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     dialogue: {
                         text: "This is a test label 3",
                     },
-                    stepSha1: "3550ef75636a4f0c17e556298dda28279c7875b6",
+                    stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                     index: 8,
                     labelStepIndex: 2,
                     alreadyMadeChoices: [],
