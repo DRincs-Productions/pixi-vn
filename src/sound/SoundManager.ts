@@ -372,13 +372,12 @@ export default class SoundManager implements SoundManagerInterface {
                     const promises2 = Object.keys(mediaInstances).map(async (mediaAlias) => {
                         const mediaInstanceData = mediaInstances[mediaAlias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
+                        const restoredPaused =
+                            mediaInstanceData.options.paused ?? mediaInstanceData.paused ?? false;
                         if (!channel.background) {
                             await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
-                                paused:
-                                    mediaInstanceData.options.paused ??
-                                    mediaInstanceData.paused ??
-                                    false,
+                                paused: restoredPaused,
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
@@ -390,10 +389,7 @@ export default class SoundManager implements SoundManagerInterface {
                             // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
                             await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
-                                paused:
-                                    mediaInstanceData.options.paused ??
-                                    mediaInstanceData.paused ??
-                                    false,
+                                paused: restoredPaused,
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
@@ -407,18 +403,8 @@ export default class SoundManager implements SoundManagerInterface {
                                 return;
                             }
                             const instance = mediaInstance.instance;
-                            if (
-                                instance.paused !==
-                                (
-                                    mediaInstanceData.options.paused ??
-                                    mediaInstanceData.paused ??
-                                    false
-                                )
-                            ) {
-                                instance.paused =
-                                    mediaInstanceData.options.paused ??
-                                    mediaInstanceData.paused ??
-                                    false;
+                            if (instance.paused !== restoredPaused) {
+                                instance.paused = restoredPaused;
                             }
                             if (instance.loop !== (mediaInstanceData.options.loop || false)) {
                                 instance.loop = mediaInstanceData.options.loop || false;
@@ -434,10 +420,7 @@ export default class SoundManager implements SoundManagerInterface {
                             }
                             mediaInstance.options = {
                                 ...mediaInstanceData.options,
-                                paused:
-                                    mediaInstanceData.options.paused ??
-                                    mediaInstanceData.paused ??
-                                    false,
+                                paused: restoredPaused,
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
