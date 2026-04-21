@@ -12,32 +12,28 @@ const firstSegmentLength = 17;
 const firstSegmentStyle = "background:#2f90da;";
 const secondSegmentStyle = "background:#c832bb;";
 const plainStyle = "background:transparent;";
+const versionSuffix = ` v${packageJson.version}`;
 
 export function asciiArtLog() {
     for (const row of asciiRows) {
-        const versionSuffix = ` v${packageJson.version}`;
         const hasVersionSuffix = row.endsWith(versionSuffix);
         const contentRow = hasVersionSuffix
             ? row.slice(0, -versionSuffix.length)
             : row;
         const firstSegment = contentRow.slice(0, firstSegmentLength);
         const secondSegment = contentRow.slice(firstSegmentLength);
-        const format = hasVersionSuffix ? "%c%s%c%s%c%s" : "%c%s%c%s";
-        const values = hasVersionSuffix
-            ? [
-                  firstSegmentStyle,
-                  firstSegment,
-                  secondSegmentStyle,
-                  secondSegment,
-                  plainStyle,
-                  versionSuffix,
-              ]
-            : [
-                  firstSegmentStyle,
-                  firstSegment,
-                  secondSegmentStyle,
-                  secondSegment,
-              ];
+        let format = "%c%s%c%s";
+        const values: string[] = [
+            firstSegmentStyle,
+            firstSegment,
+            secondSegmentStyle,
+            secondSegment,
+        ];
+
+        if (hasVersionSuffix) {
+            format += "%c%s";
+            values.push(plainStyle, versionSuffix);
+        }
 
         console.log(format, ...values);
     }
