@@ -339,13 +339,16 @@ export default interface CanvasManagerInterface {
      */
     isTickerPaused(alias: string, tickerId?: string): boolean;
     /**
-     * Stops the render/update loop.
+     * Pause the rendering of gameLayer and pause currently running tickers.
+     * Use {@link resume} to restore rendering and resume only
+     * the tickers paused by this method.
      */
-    stop(): void;
+    pause(): void;
     /**
-     * Starts the render/update loop.
+     * Resume the rendering of gameLayer and resume tickers that were paused by
+     * {@link pause}.
      */
-    start(): void;
+    resume(): void;
     /**
      * Add a ticker that must be completed before the next step.
      * This method is used for example into a transition between scenes.

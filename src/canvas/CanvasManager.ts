@@ -42,6 +42,8 @@ import { logger } from "@utils/log-utility";
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
  */
 export default class CanvasManager implements CanvasManagerInterface {
+    private tickersPausedByGameLayerRender: string[] = [];
+
     get app() {
         return CanvasManagerStatic.app;
     }
@@ -554,6 +556,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         });
     }
     public removeAllTickers() {
+        this.tickersPausedByGameLayerRender = [];
         CanvasManagerStatic._currentTickersSequence.clear();
         Array.from(CanvasManagerStatic._currentTickers.keys()).forEach((id) => {
             this.removeTicker(id);
@@ -659,11 +662,27 @@ export default class CanvasManager implements CanvasManagerInterface {
     isTickerPaused(_alias: string, _tickerId?: string): boolean {
         return false;
     }
-    stop() {
-        this.app.stop();
+    pause() {
+        if (this.gameLayer.renderable === false) {
+            return;
+        }
+        this.gameLayer.renderable = false;
+        this.tickersPausedByGameLayerRender = this.pauseTicker({
+            id: Array.from(CanvasManagerStatic._currentTickers.keys()),
+        });
     }
-    start() {
-        this.app.start();
+    resume() {
+        if (this.gameLayer.renderable === true) {
+            return;
+        }
+        this.gameLayer.renderable = true;
+        const tickerIdsToResume = this.tickersPausedByGameLayerRender.filter((id) =>
+            CanvasManagerStatic._currentTickers.has(id),
+        );
+        if (tickerIdsToResume.length > 0) {
+            this.resumeTicker({ id: tickerIdsToResume });
+        }
+        this.tickersPausedByGameLayerRender = [];
     }
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
         const oldSeq = CanvasManagerStatic._currentTickersSequence.get(oldAlias);
