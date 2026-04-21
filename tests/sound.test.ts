@@ -300,12 +300,16 @@ describe("sound channels", () => {
             options: { volume: 1, muted: false, loop: false, paused: false },
         });
 
+        expect(inst.paused).toBe(false);
+
         ch.pauseUnsavedAll();
         expect(ch.paused).toBe(true);
+        expect(inst.paused).toBe(true);
         expect(SoundManagerStatic.mediaInstances.get("music-track")?.options.paused).toBe(false);
 
         ch.resumeUnsavedAll();
         expect(ch.paused).toBe(false);
+        expect(inst.paused).toBe(false);
     });
 
 });
