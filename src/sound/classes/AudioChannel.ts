@@ -97,14 +97,20 @@ export default class AudioChannel implements AudioChannelInterface {
         });
         const pausedState = Boolean(paused) || Boolean(this.channelOptions.paused);
         media.paused = pausedState;
+        let delayTimeout: ReturnType<typeof setTimeout> | undefined;
         if (options?.delay) {
             media.paused = true;
-            setTimeout(() => {
+            delayTimeout = setTimeout(() => {
                 media.paused = pausedState;
+                delayTimeout = undefined;
             }, options.delay * 1000);
         }
         this._transientInstances.add(media);
         media.on("end", () => {
+            if (delayTimeout !== undefined) {
+                clearTimeout(delayTimeout);
+                delayTimeout = undefined;
+            }
             this._transientInstances.delete(media);
         });
         return media;

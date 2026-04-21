@@ -436,7 +436,7 @@ describe("stopTransientAll", () => {
         expect(persistent.stop).not.toHaveBeenCalled();
     });
 
-    test("finished transient is auto-removed and not stopped again by stopTransientAll()", async () => {
+    test("manually removed transient (simulating 'end' event) is not stopped by stopTransientAll()", () => {
         const ch = new AudioChannel("ch1");
         const media = makeFakeMediaInstance();
 
