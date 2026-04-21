@@ -88,11 +88,6 @@ export default interface AudioChannelInterface {
      */
     resumeAll(): this;
     /**
-     * Toggle paused property for all sounds.
-     * @return `true` if all sounds are paused.
-     */
-    paused: boolean;
-    /**
      * Toggle muted property for all sounds.
      * @return `true` if all sounds are muted.
      */
