@@ -549,11 +549,14 @@ describe("sound.pauseUnsavedAll / sound.resumeUnsavedAll", () => {
             stepCounter: 1,
             options: { volume: 1, muted: false, loop: false, paused: false },
         });
+        expect(inst.paused).toBe(false);
         sound.pauseUnsavedAll("music");
         expect(ch.paused).toBe(true);
+        expect(inst.paused).toBe(true);
         expect(SoundManagerStatic.mediaInstances.get("track")?.options.paused).toBe(false);
         sound.resumeUnsavedAll("music");
         expect(ch.paused).toBe(false);
+        expect(inst.paused).toBe(false);
     });
 
     test("pauseUnsavedAll and resumeUnsavedAll are chainable", () => {
