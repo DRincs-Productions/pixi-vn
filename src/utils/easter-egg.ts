@@ -9,8 +9,8 @@ const asciiRows = [
 ];
 
 const firstSegmentLength = " |_|   |_/_/\\_\\_|".length;
-const firstSegmentStyle = "background:#2f90da;color:#000;font-weight:bold;";
-const secondSegmentStyle = "background:#c832bb;color:#000;font-weight:bold;";
+const firstSegmentStyle = "background:#2f90da;color:#fff;font-weight:bold;";
+const secondSegmentStyle = "background:#c832bb;color:#fff;font-weight:bold;";
 const plainStyle = "background:transparent;font-weight:bold;";
 const versionSuffix = ` v${packageJson.version}`;
 
