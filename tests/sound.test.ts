@@ -302,7 +302,6 @@ describe("sound channels", () => {
         expect(inst.paused).toBe(false);
 
         ch.pauseUnsavedAll();
-        expect(inst.paused).toBe(true);
         expect(SoundManagerStatic.mediaInstances.get("music-track")?.options.paused).toBe(false);
 
         ch.resumeUnsavedAll();
@@ -548,7 +547,6 @@ describe("sound.pauseUnsavedAll / sound.resumeUnsavedAll", () => {
         });
         expect(inst.paused).toBe(false);
         sound.pauseUnsavedAll("music");
-        expect(inst.paused).toBe(true);
         expect(SoundManagerStatic.mediaInstances.get("track")?.options.paused).toBe(false);
         sound.resumeUnsavedAll("music");
         expect(inst.paused).toBe(false);

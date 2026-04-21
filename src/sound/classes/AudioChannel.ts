@@ -1,7 +1,7 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { sound } from "@pixi/sound";
 import { calculateVolume } from "@sound/functions/channel-utility";
-import { proxyMedia, setRawPaused } from "@sound/functions/proxy-utility";
+import { proxyMedia } from "@sound/functions/proxy-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
@@ -13,7 +13,6 @@ export default class AudioChannel implements AudioChannelInterface {
         readonly channelOptions: ChannelOptions = {},
     ) {}
     private readonly _transientInstances: Set<IMediaInstance> = new Set();
-    private readonly _savedPausedStates = new Map<string, boolean>();
     async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
     async play(
         mediaAlias: string,
@@ -46,7 +45,7 @@ export default class AudioChannel implements AudioChannelInterface {
             }
         }
         const { paused, ...rest } = options || {};
-        const effectivePaused = Boolean(paused);
+        const effectivePaused = Boolean(this.channelOptions.paused) || Boolean(paused);
         const media = proxyMedia(
             mediaAlias,
             await sound.play(soundAlias, {
@@ -95,7 +94,7 @@ export default class AudioChannel implements AudioChannelInterface {
             muted: Boolean(this.channelOptions.muted) || Boolean(rest?.muted),
             volume: calculateVolume(rest?.volume, this.channelOptions.volume),
         });
-        const pausedState = Boolean(paused);
+        const pausedState = Boolean(paused) || Boolean(this.channelOptions.paused);
         media.paused = pausedState;
         let delayTimeout: ReturnType<typeof setTimeout> | undefined;
         if (options?.delay) {
@@ -201,23 +200,29 @@ export default class AudioChannel implements AudioChannelInterface {
         }
         return this;
     }
-    pauseUnsavedAll(): this {
-        for (const [mediaAlias, mediaInstance] of SoundManagerStatic.mediaInstances.entries()) {
+    private updateMediaPaused() {
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
             if (mediaInstance.channelAlias === this.alias) {
-                this._savedPausedStates.set(mediaAlias, mediaInstance.options.paused ?? false);
-                setRawPaused(mediaInstance.instance, true);
+                const mediaPaused = mediaInstance.options.paused ?? false;
+                // Apply only the per-media paused state; the proxy is responsible for
+                // enforcing channel-level pausing without overwriting per-media options.
+                mediaInstance.instance.paused = mediaPaused;
             }
         }
+    }
+    get paused(): boolean {
+        return this.channelOptions.paused ?? false;
+    }
+    set paused(value: boolean) {
+        this.channelOptions.paused = value;
+        this.updateMediaPaused();
+    }
+    pauseUnsavedAll(): this {
+        this.paused = true;
         return this;
     }
     resumeUnsavedAll(): this {
-        for (const [mediaAlias, mediaInstance] of SoundManagerStatic.mediaInstances.entries()) {
-            if (mediaInstance.channelAlias === this.alias) {
-                const savedPaused = this._savedPausedStates.get(mediaAlias) ?? false;
-                setRawPaused(mediaInstance.instance, savedPaused);
-            }
-        }
-        this._savedPausedStates.clear();
+        this.paused = false;
         return this;
     }
 }

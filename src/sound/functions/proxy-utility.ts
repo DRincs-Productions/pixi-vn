@@ -3,24 +3,12 @@ import SoundManagerStatic from "../SoundManagerStatic";
 import type AudioChannel from "../classes/AudioChannel";
 import { calculateVolume } from "./channel-utility";
 
-const proxyTargetMap = new WeakMap<object, IMediaInstance>();
-
-/**
- * Sets `paused` directly on the underlying media target, bypassing the proxy so that
- * `options.paused` is not mutated. Falls back to setting directly when the instance is
- * not a known proxy (e.g. raw fake instances in tests).
- */
-export function setRawPaused(mediaInstance: IMediaInstance, value: boolean): void {
-    const target = proxyTargetMap.get(mediaInstance) ?? mediaInstance;
-    target.paused = value;
-}
-
 export function proxyMedia(
     mediaAlias: string,
     media: IMediaInstance,
     channel: AudioChannel,
 ): IMediaInstance {
-    const proxy = new Proxy(media, {
+    return new Proxy(media, {
         get(target, prop, receiver) {
             switch (prop) {
                 case "volume":
@@ -53,6 +41,9 @@ export function proxyMedia(
                         break;
                     case "paused":
                         mediaEntry.options[prop] = value;
+                        if (channel.channelOptions.paused) {
+                            targetValue = true;
+                        }
                         break;
                     case "loop":
                     case "delay":
@@ -72,6 +63,4 @@ export function proxyMedia(
             return Reflect.set(target, prop, value, receiver);
         },
     });
-    proxyTargetMap.set(proxy, media);
-    return proxy;
 }

@@ -21,7 +21,7 @@ export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {
     channel?: string;
 }
 export interface ChannelOptions
-    extends Pick<SoundPlayOptions, "filters" | "muted" | "volume"> {
+    extends Pick<SoundPlayOptions, "filters" | "muted" | "volume" | "paused"> {
     /**
      * Whether this channel is a background channel.
      * Background channels are special channels. Unlike normal channels, media connected to a background channel does not stop when a scene changes, but continues to play in the background.
