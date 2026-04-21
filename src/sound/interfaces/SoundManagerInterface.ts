@@ -101,6 +101,21 @@ export default interface SoundManagerInterface
      */
     resumeAll(): this;
     /**
+     * Temporarily pauses all sounds across all channels (or just the given channel) without
+     * mutating each media instance's persisted paused option.
+     * Useful for overlays (for example settings/pause menus) where pause state must not be saved.
+     * @param channel Optional channel alias to limit the operation to.
+     * @return Instance for chaining.
+     */
+    pauseUnsavedAll(channel?: string): this;
+    /**
+     * Restores all channels (or just the given channel) after `pauseUnsavedAll()`,
+     * reapplying each media instance's persisted paused option.
+     * @param channel Optional channel alias to limit the operation to.
+     * @return Instance for chaining.
+     */
+    resumeUnsavedAll(channel?: string): this;
+    /**
      * Mutes all playing sounds.
      * @return Instance for chaining.
      */

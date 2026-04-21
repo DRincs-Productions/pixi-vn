@@ -481,6 +481,85 @@ describe("stopTransientAll", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Tests: pauseUnsavedAll / resumeUnsavedAll on SoundManager
+// ---------------------------------------------------------------------------
+
+describe("sound.pauseUnsavedAll / sound.resumeUnsavedAll", () => {
+    beforeEach(() => clearSound());
+
+    test("sound.pauseUnsavedAll() with a channel alias delegates only to that channel", () => {
+        sound.addChannel("a");
+        sound.addChannel("b");
+        const spyA = vi.spyOn(sound.findChannel("a"), "pauseUnsavedAll");
+        const spyB = vi.spyOn(sound.findChannel("b"), "pauseUnsavedAll");
+        sound.pauseUnsavedAll("a");
+        expect(spyA).toHaveBeenCalledOnce();
+        expect(spyB).not.toHaveBeenCalled();
+        spyA.mockRestore();
+        spyB.mockRestore();
+    });
+
+    test("sound.pauseUnsavedAll() without argument delegates to all channels", () => {
+        sound.addChannel("x");
+        sound.addChannel("y");
+        const spyX = vi.spyOn(sound.findChannel("x"), "pauseUnsavedAll");
+        const spyY = vi.spyOn(sound.findChannel("y"), "pauseUnsavedAll");
+        sound.pauseUnsavedAll();
+        expect(spyX).toHaveBeenCalledOnce();
+        expect(spyY).toHaveBeenCalledOnce();
+        spyX.mockRestore();
+        spyY.mockRestore();
+    });
+
+    test("sound.resumeUnsavedAll() with a channel alias delegates only to that channel", () => {
+        sound.addChannel("a");
+        sound.addChannel("b");
+        const spyA = vi.spyOn(sound.findChannel("a"), "resumeUnsavedAll");
+        const spyB = vi.spyOn(sound.findChannel("b"), "resumeUnsavedAll");
+        sound.resumeUnsavedAll("a");
+        expect(spyA).toHaveBeenCalledOnce();
+        expect(spyB).not.toHaveBeenCalled();
+        spyA.mockRestore();
+        spyB.mockRestore();
+    });
+
+    test("sound.resumeUnsavedAll() without argument delegates to all channels", () => {
+        sound.addChannel("x");
+        sound.addChannel("y");
+        const spyX = vi.spyOn(sound.findChannel("x"), "resumeUnsavedAll");
+        const spyY = vi.spyOn(sound.findChannel("y"), "resumeUnsavedAll");
+        sound.resumeUnsavedAll();
+        expect(spyX).toHaveBeenCalledOnce();
+        expect(spyY).toHaveBeenCalledOnce();
+        spyX.mockRestore();
+        spyY.mockRestore();
+    });
+
+    test("pauseUnsavedAll/resumeUnsavedAll do not mutate per-media paused option", () => {
+        const ch = sound.addChannel("music")!;
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances.set("track", {
+            channelAlias: "music",
+            soundAlias: "track",
+            instance: inst,
+            stepCounter: 1,
+            options: { volume: 1, muted: false, loop: false, paused: false },
+        });
+        sound.pauseUnsavedAll("music");
+        expect(ch.paused).toBe(true);
+        expect(SoundManagerStatic.mediaInstances.get("track")?.options.paused).toBe(false);
+        sound.resumeUnsavedAll("music");
+        expect(ch.paused).toBe(false);
+    });
+
+    test("pauseUnsavedAll and resumeUnsavedAll are chainable", () => {
+        sound.addChannel("ch");
+        expect(sound.pauseUnsavedAll("ch")).toBe(sound);
+        expect(sound.resumeUnsavedAll("ch")).toBe(sound);
+    });
+});
+
+// ---------------------------------------------------------------------------
 // Tests: restore
 // ---------------------------------------------------------------------------
 

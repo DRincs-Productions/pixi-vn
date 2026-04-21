@@ -114,6 +114,26 @@ export default class SoundManager implements SoundManagerInterface {
         sound.stopAll();
         return this;
     }
+    pauseUnsavedAll(channel?: string): this {
+        if (channel !== undefined) {
+            this.findChannel(channel).pauseUnsavedAll();
+        } else {
+            for (const ch of SoundManagerStatic.channels.values()) {
+                ch.pauseUnsavedAll();
+            }
+        }
+        return this;
+    }
+    resumeUnsavedAll(channel?: string): this {
+        if (channel !== undefined) {
+            this.findChannel(channel).resumeUnsavedAll();
+        } else {
+            for (const ch of SoundManagerStatic.channels.values()) {
+                ch.resumeUnsavedAll();
+            }
+        }
+        return this;
+    }
     stopTransientAll(channel?: string): this {
         if (channel !== undefined) {
             this.findChannel(channel).stopTransientAll();
