@@ -10,55 +10,54 @@
   <a target="_blank" href="https://discord.gg/E95FZWakzp" rel="noopener noreferrer nofollow"><img alt="Discord" src="https://img.shields.io/discord/1263071210011496501?color=7289da&label=discord"></a>
 </p>
 
-
 Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
 
 It provides the following features:
 
-* narrative management
-* provides a 2D canvas
-* providing functionality to play sounds and music
-* storage to set and get game variables.
-* saves the current state of the entire game at each "story step" giving the possibility to go back
-* functionality to save and load the current state of the game.
+- narrative management
+- provides a 2D canvas
+- providing functionality to play sounds and music
+- storage to set and get game variables.
+- saves the current state of the entire game at each "story step" giving the possibility to go back
+- functionality to save and load the current state of the game.
 
 For a quick start, various [project templates](#project-initialization) are available. Less experienced developers can use these templates without much knowledge of JavaScript/TypeScript.
 
 You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
 
-* [*ink*](https://pixi-vn.web.app/ink/ink)
-* [Ren'Py](https://pixi-vn.web.app/renpy/renpy)
+- [_ink_](https://pixi-vn.web.app/ink/ink)
+- [Ren'Py](https://pixi-vn.web.app/renpy/renpy)
 
 Pixi’VN does not provide built-in components to create the game UI. Instead, you should use external JavaScript frameworks to build your UI. This allows you to leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
 
-* [React](https://pixi-vn.web.app/start/interface-react)
-* [Vue](https://pixi-vn.web.app/start/interface-vue)
-* [PixiJS](https://pixi-vn.web.app/start/interface-pixijs)
+- [React](https://pixi-vn.web.app/start/interface-react)
+- [Vue](https://pixi-vn.web.app/start/interface-vue)
+- [PixiJS](https://pixi-vn.web.app/start/interface-pixijs)
 
 ## Wiki
 
-* [Why Pixi’VN?](https://pixi-vn.web.app/start/why)
-  * [Ren'Py vs Pixi’VN](https://pixi-vn.web.app/start/versus-renpy)
-* [Quick Start](https://pixi-vn.web.app/start/getting-started)
-  * [Templates](https://pixi-vn.web.app/start/templates)
-* Make your first:
-  * [Visual Novel](https://pixi-vn.web.app/start/make-visual-novel)
-  * [Point & Click Adventure](https://pixi-vn.web.app/nqtr/make-point-and-click)
-  * [RPG game](https://pixi-vn.web.app/start/make-rpg)
-  * [IDE or graphical editor](https://pixi-vn.web.app/start/make-ide)
-  * [Game engine](https://pixi-vn.web.app/start/make-game-engine)
+- [Why Pixi’VN?](https://pixi-vn.web.app/start/why)
+  - [Ren'Py vs Pixi’VN](https://pixi-vn.web.app/start/versus-renpy)
+- [Quick Start](https://pixi-vn.web.app/start/getting-started)
+  - [Templates](https://pixi-vn.web.app/start/templates)
+- Make your first:
+  - [Visual Novel](https://pixi-vn.web.app/start/make-visual-novel)
+  - [Point & Click Adventure](https://pixi-vn.web.app/nqtr/make-point-and-click)
+  - [RPG game](https://pixi-vn.web.app/start/make-rpg)
+  - [IDE or graphical editor](https://pixi-vn.web.app/start/make-ide)
+  - [Game engine](https://pixi-vn.web.app/start/make-game-engine)
 
 ## Prerequisites
 
 Before starting, you must have the following tools installed:
 
-* [Node.js](https://nodejs.org/) version 18 or higher.
-* Text editor with TypeScript support, such as:
-  * [Visual Studio Code](https://code.visualstudio.com/)
-  * [Cursor](https://www.cursor.com/)
-  * [VSCodium](https://vscodium.com/)
-* (Recommended) [Git](https://git-scm.com/)
-  * A [GitHub account](https://github.com/)
+- [Node.js](https://nodejs.org/) version 18 or higher.
+- Text editor with TypeScript support, such as:
+  - [Visual Studio Code](https://code.visualstudio.com/)
+  - [Cursor](https://www.cursor.com/)
+  - [VSCodium](https://vscodium.com/)
+- (Recommended) [Git](https://git-scm.com/)
+  - A [GitHub account](https://github.com/)
 
 ## Project Initialization
 
@@ -114,37 +113,37 @@ Before using the Pixi’VN engine, you must initialize the game. You can do this
 
 This function has the following parameters:
 
-* `element`: The HTML element to append the canvas to.
-* `options`: Equivalent to the options you can use when initializing a [PixiJS Application](https://pixijs.com/8.x/guides/basics/getting-started#creating-an-application). The following options are mandatory:
-  * `width`: The width of the canvas.
-  * `height`: The height of the canvas.
-* `devtoolsOptions`: Equivalent to the options you can use when initializing the [PixiJS Devtools](https://pixi-vn.web.app/it/start/canvas#use-pixijs-devtools-with-pixivn).
+- `element`: The HTML element to append the canvas to.
+- `options`: Equivalent to the options you can use when initializing a [PixiJS Application](https://pixijs.com/8.x/guides/basics/getting-started#creating-an-application). The following options are mandatory:
+  - `width`: The width of the canvas.
+  - `height`: The height of the canvas.
+- `devtoolsOptions`: Equivalent to the options you can use when initializing the [PixiJS Devtools](https://pixi-vn.web.app/it/start/canvas#use-pixijs-devtools-with-pixivn).
 
 ```ts title="src/main.tsx"
 import { Game } from "@drincs/pixi-vn";
 
-const body = document.body
+const body = document.body;
 if (!body) {
-    throw new Error('body element not found')
+  throw new Error("body element not found");
 }
 
 Game.init(body, {
-    height: 1080,
-    width: 1920,
-    backgroundColor: "#303030",
+  height: 1080,
+  width: 1920,
+  backgroundColor: "#303030",
 }).then(() => {
-    // ...
-    Game.start("start", {})
+  // ...
+  Game.start("start", {});
 });
 
 // read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
 Game.onEnd(async (props) => {
-    Game.clear();
-    // navigate to main menu
+  Game.clear();
+  // navigate to main menu
 });
 
 Game.addOnError((error, props) => {
-    console.error(`Error occurred`, error);
+  console.error(`Error occurred`, error);
 });
 
 Game.onNavigate((path) => navigateTo(path));
@@ -166,12 +165,9 @@ Game.onNavigate((path) => navigateTo(path));
 ```
 
 ```css title="styles.css"
-:root {
-  background-color: #242424;
-}
-
 html,
 body {
+  background-color: #242424;
   height: 100%;
 }
 
@@ -182,7 +178,4 @@ body {
   overflow: hidden;
 }
 ```
-
-
-
 
