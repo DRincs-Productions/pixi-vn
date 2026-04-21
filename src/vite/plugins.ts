@@ -1,6 +1,19 @@
 import type { CharacterInterface } from "@drincs/pixi-vn";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
-import type { Plugin } from "vite";
+import type { IncomingMessage, ServerResponse } from "node:http";
+
+type Plugin = {
+    name: string;
+    apply: "serve";
+    configureServer: (server: {
+        middlewares: {
+            use: (
+                path: string,
+                handler: (req: IncomingMessage, res: ServerResponse) => void,
+            ) => void;
+        };
+    }) => void;
+};
 
 let characters: CharacterInterface[] | null = null;
 let labels: string[] | null = null;
