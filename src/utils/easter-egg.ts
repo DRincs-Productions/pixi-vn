@@ -17,9 +17,7 @@ const versionSuffix = ` v${packageJson.version}`;
 export function asciiArtLog() {
     for (const row of asciiRows) {
         const hasVersionSuffix = row.endsWith(versionSuffix);
-        const contentRow = hasVersionSuffix
-            ? row.slice(0, -versionSuffix.length)
-            : row;
+        const contentRow = hasVersionSuffix ? row.slice(0, -versionSuffix.length) : row;
         const firstSegment = contentRow.slice(0, firstSegmentLength);
         const secondSegment = contentRow.slice(firstSegmentLength);
         let format = "%c%s%c%s";
@@ -35,6 +33,6 @@ export function asciiArtLog() {
             values.push(plainStyle, versionSuffix);
         }
 
-        console.debug(format, ...values);
+        console.info(format, ...values);
     }
 }
