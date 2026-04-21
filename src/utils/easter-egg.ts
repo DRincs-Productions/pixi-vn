@@ -8,7 +8,7 @@ const asciiRows = [
     ` |_|   |_/_/\\_\\_|    \\_/  |_| \\_| v${packageJson.version}`,
 ];
 
-const firstSegmentLength = 17;
+const firstSegmentLength = " |_|   |_/_/\\_\\_|".length;
 const firstSegmentStyle = "background:#2f90da;";
 const secondSegmentStyle = "background:#c832bb;";
 const plainStyle = "background:transparent;";
