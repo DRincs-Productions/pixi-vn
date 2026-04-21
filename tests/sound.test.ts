@@ -394,6 +394,93 @@ describe("sound play routing and mediaInstances tracking", () => {
 });
 
 // ---------------------------------------------------------------------------
+// Tests: stopTransientAll
+// ---------------------------------------------------------------------------
+
+describe("stopTransientAll", () => {
+    beforeEach(() => clearSound());
+
+    test("AudioChannel.stopTransientAll() calls stop() on every tracked transient instance", () => {
+        const ch = new AudioChannel("ch1");
+        const media1 = makeFakeMediaInstance();
+        const media2 = makeFakeMediaInstance();
+        // Inject fake transient instances directly into the private set
+        (ch as any)._transientInstances.add(media1);
+        (ch as any)._transientInstances.add(media2);
+
+        ch.stopTransientAll();
+
+        expect(media1.stop).toHaveBeenCalledOnce();
+        expect(media2.stop).toHaveBeenCalledOnce();
+        expect((ch as any)._transientInstances.size).toBe(0);
+    });
+
+    test("AudioChannel.stopTransientAll() does not affect media tracked by play()", () => {
+        const ch = new AudioChannel("ch1");
+        const persistent = makeFakeMediaInstance();
+        const transient = makeFakeMediaInstance();
+
+        // Register persistent media via SoundManagerStatic
+        SoundManagerStatic.mediaInstances.set("persistent", {
+            channelAlias: "ch1",
+            soundAlias: "bg",
+            instance: persistent,
+            stepCounter: 0,
+            options: { volume: 1, muted: false, loop: false },
+        });
+        (ch as any)._transientInstances.add(transient);
+
+        ch.stopTransientAll();
+
+        expect(transient.stop).toHaveBeenCalledOnce();
+        expect(persistent.stop).not.toHaveBeenCalled();
+    });
+
+    test("finished transient is auto-removed and not stopped again by stopTransientAll()", async () => {
+        const ch = new AudioChannel("ch1");
+        const media = makeFakeMediaInstance();
+
+        (ch as any)._transientInstances.add(media);
+        // Simulate `on("end", ...)` callback registered by playTransient
+        (ch as any)._transientInstances.delete(media);
+
+        ch.stopTransientAll();
+
+        expect(media.stop).not.toHaveBeenCalled();
+    });
+
+    test("stopTransientAll() is chainable", () => {
+        const ch = new AudioChannel("ch1");
+        const result = ch.stopTransientAll();
+        expect(result).toBe(ch);
+    });
+
+    test("sound.stopTransientAll() with a channel alias stops only that channel's transients", () => {
+        sound.addChannel("ch-a");
+        sound.addChannel("ch-b");
+        const stopA = vi.spyOn(sound.findChannel("ch-a"), "stopTransientAll");
+        const stopB = vi.spyOn(sound.findChannel("ch-b"), "stopTransientAll");
+        sound.stopTransientAll("ch-a");
+        expect(stopA).toHaveBeenCalledOnce();
+        expect(stopB).not.toHaveBeenCalled();
+        stopA.mockRestore();
+        stopB.mockRestore();
+    });
+
+    test("sound.stopTransientAll() without argument stops transients on all channels", () => {
+        sound.addChannel("x");
+        sound.addChannel("y");
+        const stopX = vi.spyOn(sound.findChannel("x"), "stopTransientAll");
+        const stopY = vi.spyOn(sound.findChannel("y"), "stopTransientAll");
+        sound.stopTransientAll();
+        expect(stopX).toHaveBeenCalledOnce();
+        expect(stopY).toHaveBeenCalledOnce();
+        stopX.mockRestore();
+        stopY.mockRestore();
+    });
+});
+
+// ---------------------------------------------------------------------------
 // Tests: restore
 // ---------------------------------------------------------------------------
 

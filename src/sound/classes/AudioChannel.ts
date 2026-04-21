@@ -12,6 +12,7 @@ export default class AudioChannel implements AudioChannelInterface {
         readonly alias: string,
         readonly channelOptions: ChannelOptions = {},
     ) {}
+    private readonly _transientInstances: Set<IMediaInstance> = new Set();
     async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
     async play(
         mediaAlias: string,
@@ -102,7 +103,18 @@ export default class AudioChannel implements AudioChannelInterface {
                 media.paused = pausedState;
             }, options.delay * 1000);
         }
+        this._transientInstances.add(media);
+        media.on("end", () => {
+            this._transientInstances.delete(media);
+        });
         return media;
+    }
+    stopTransientAll(): this {
+        for (const media of this._transientInstances) {
+            media.stop();
+        }
+        this._transientInstances.clear();
+        return this;
     }
     private updateMediaVolume() {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {

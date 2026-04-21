@@ -38,6 +38,13 @@ export default interface AudioChannelInterface {
      */
     playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
     /**
+     * Stops all media instances that were started with {@link playTransient} on this channel.
+     * Instances that have already ended are automatically removed, so this only affects
+     * those that are still playing or paused.
+     * @return Instance for chaining.
+     */
+    stopTransientAll(): this;
+    /**
      * The volume of the audio channel, between 0 and 1. This is multiplied with the volume of each sound played through this channel.
      */
     volume: number;

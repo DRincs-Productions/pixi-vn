@@ -55,6 +55,14 @@ export default interface SoundManagerInterface
      */
     playTransient(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
     /**
+     * Stops all transient media instances started with {@link playTransient}.
+     * If `channel` is provided only instances on that channel are stopped;
+     * otherwise all channels are affected.
+     * @param channel Optional channel alias to limit the operation to.
+     * @return Instance for chaining.
+     */
+    stopTransientAll(channel?: string): this;
+    /**
      * Find a media by alias.
      * @param alias - The media alias reference.
      * @return Media object.

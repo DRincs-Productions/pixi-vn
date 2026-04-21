@@ -114,6 +114,16 @@ export default class SoundManager implements SoundManagerInterface {
         sound.stopAll();
         return this;
     }
+    stopTransientAll(channel?: string): this {
+        if (channel !== undefined) {
+            this.findChannel(channel).stopTransientAll();
+        } else {
+            for (const ch of SoundManagerStatic.channels.values()) {
+                ch.stopTransientAll();
+            }
+        }
+        return this;
+    }
     isPlaying(): boolean {
         return sound.isPlaying();
     }
