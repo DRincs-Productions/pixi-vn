@@ -309,17 +309,14 @@ export default class SoundManager implements SoundManagerInterface {
                 channelAlias: string;
                 soundAlias: string;
                 stepCounter: number;
-                paused: boolean;
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
             };
         } = Array.from(SoundManagerStatic.mediaInstances.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
-                const paused = mediaInstance.instance.paused;
                 result[mediaAlias] = {
                     channelAlias: mediaInstance.channelAlias,
                     soundAlias: mediaInstance.soundAlias,
                     stepCounter: mediaInstance.stepCounter,
-                    paused,
                     options: {
                         ...mediaInstance.options,
                         filters: FilterToFilterMemory(mediaInstance.options.filters),
@@ -332,7 +329,6 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: string;
                     soundAlias: string;
                     stepCounter: number;
-                    paused: boolean;
                     options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
                 };
             },

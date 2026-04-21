@@ -181,12 +181,11 @@ describe("sound export format", () => {
             soundAlias: "s",
             instance: inst,
             stepCounter: 1,
-            options: { volume: 1, muted: false, loop: false },
+            options: { volume: 1, muted: false, loop: false, paused: true },
         });
-        inst.paused = true;
 
         const exported = sound.export();
-        expect(exported.mediaInstances["pausable"].paused).toBe(true);
+        expect(exported.mediaInstances["pausable"].options.paused).toBe(true);
     });
 
     test("export() records paused state as false when sound is playing", () => {
@@ -196,11 +195,11 @@ describe("sound export format", () => {
             soundAlias: "s",
             instance: inst,
             stepCounter: 1,
-            options: { volume: 1, muted: false, loop: false },
+            options: { volume: 1, muted: false, loop: false, paused: false },
         });
 
         const exported = sound.export();
-        expect(exported.mediaInstances["playing"].paused).toBe(false);
+        expect(exported.mediaInstances["playing"].options.paused).toBe(false);
     });
 
     test("export() includes the channelAlias for each media instance", () => {
