@@ -56,7 +56,7 @@ export default class AudioChannel implements AudioChannelInterface {
             this,
         );
         if (paused || this.channelOptions.paused) {
-            media.paused = paused ?? false;
+            media.paused = paused ?? this.channelOptions.paused ?? false;
         }
         if (options?.delay) {
             media.paused = true;
