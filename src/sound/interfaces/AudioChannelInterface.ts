@@ -53,6 +53,11 @@ export default interface AudioChannelInterface {
      */
     muted: boolean;
     /**
+     * Temporary paused state applied at channel level.
+     * When true, all media in this channel are paused without mutating each media persisted paused option.
+     */
+    paused: boolean;
+    /**
      * The MediaInstances currently playing through this channel. This is read-only and cannot be modified directly. Use the play method to add new MediaInstances to this channel.
      */
     readonly mediaInstances: IMediaInstance[];
