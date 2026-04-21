@@ -376,7 +376,9 @@ export default class SoundManager implements SoundManagerInterface {
                             await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 paused:
-                                    mediaInstanceData.options.paused || mediaInstanceData.paused,
+                                    mediaInstanceData.options.paused ??
+                                    mediaInstanceData.paused ??
+                                    false,
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
@@ -389,7 +391,9 @@ export default class SoundManager implements SoundManagerInterface {
                             await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 paused:
-                                    mediaInstanceData.options.paused || mediaInstanceData.paused,
+                                    mediaInstanceData.options.paused ??
+                                    mediaInstanceData.paused ??
+                                    false,
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
@@ -405,11 +409,15 @@ export default class SoundManager implements SoundManagerInterface {
                             const instance = mediaInstance.instance;
                             if (
                                 instance.paused !==
-                                (mediaInstanceData.paused || mediaInstanceData.options.paused)
+                                (
+                                    mediaInstanceData.options.paused ??
+                                    mediaInstanceData.paused ??
+                                    false
+                                )
                             ) {
                                 instance.paused =
-                                    mediaInstanceData.paused ||
-                                    mediaInstanceData.options.paused ||
+                                    mediaInstanceData.options.paused ??
+                                    mediaInstanceData.paused ??
                                     false;
                             }
                             if (instance.loop !== (mediaInstanceData.options.loop || false)) {
@@ -427,7 +435,9 @@ export default class SoundManager implements SoundManagerInterface {
                             mediaInstance.options = {
                                 ...mediaInstanceData.options,
                                 paused:
-                                    mediaInstanceData.options.paused || mediaInstanceData.paused,
+                                    mediaInstanceData.options.paused ??
+                                    mediaInstanceData.paused ??
+                                    false,
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
