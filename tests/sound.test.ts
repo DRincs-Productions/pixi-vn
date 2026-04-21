@@ -288,6 +288,26 @@ describe("sound channels", () => {
         // Mutating chA must not affect chB
         expect(chB.volume).toBe(0.5);
     });
+
+    test("pauseUnsavedAll/resumeUnsavedAll pause channel without persisting paused option", () => {
+        const ch = sound.addChannel("music")!;
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances.set("music-track", {
+            channelAlias: "music",
+            soundAlias: "music-track",
+            instance: inst,
+            stepCounter: 1,
+            options: { volume: 1, muted: false, loop: false, paused: false },
+        });
+
+        ch.pauseUnsavedAll();
+        expect(ch.paused).toBe(true);
+        expect(SoundManagerStatic.mediaInstances.get("music-track")?.options.paused).toBe(false);
+
+        ch.resumeUnsavedAll();
+        expect(ch.paused).toBe(false);
+    });
+
 });
 
 // ---------------------------------------------------------------------------
@@ -355,6 +375,187 @@ describe("sound play routing and mediaInstances tracking", () => {
         expect(SoundManagerStatic.mediaInstances.get("my-sound")?.channelAlias).toBe(
             "explicit-channel",
         );
+    });
+
+    test("playTransient routes to channel without tracking save state", async () => {
+        const transientSpy = vi
+            .spyOn(AudioChannel.prototype as any, "playTransient")
+            .mockImplementation(async () => makeFakeMediaInstance());
+        try {
+            sound.addChannel("pause-menu");
+            await sound.playTransient("ui-click", { channel: "pause-menu", volume: 0.2 });
+            expect(transientSpy).toHaveBeenCalledWith("ui-click", { volume: 0.2 });
+            expect(transientSpy.mock.instances[0]?.alias).toBe("pause-menu");
+            expect(SoundManagerStatic.mediaInstances.has("ui-click")).toBe(false);
+        } finally {
+            transientSpy.mockRestore();
+        }
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: stopTransientAll
+// ---------------------------------------------------------------------------
+
+describe("stopTransientAll", () => {
+    beforeEach(() => clearSound());
+
+    test("AudioChannel.stopTransientAll() calls stop() on every tracked transient instance", () => {
+        const ch = new AudioChannel("ch1");
+        const media1 = makeFakeMediaInstance();
+        const media2 = makeFakeMediaInstance();
+        // Inject fake transient instances directly into the private set
+        (ch as any)._transientInstances.add(media1);
+        (ch as any)._transientInstances.add(media2);
+
+        ch.stopTransientAll();
+
+        expect(media1.stop).toHaveBeenCalledOnce();
+        expect(media2.stop).toHaveBeenCalledOnce();
+        expect((ch as any)._transientInstances.size).toBe(0);
+    });
+
+    test("AudioChannel.stopTransientAll() does not affect media tracked by play()", () => {
+        const ch = new AudioChannel("ch1");
+        const persistent = makeFakeMediaInstance();
+        const transient = makeFakeMediaInstance();
+
+        // Register persistent media via SoundManagerStatic
+        SoundManagerStatic.mediaInstances.set("persistent", {
+            channelAlias: "ch1",
+            soundAlias: "bg",
+            instance: persistent,
+            stepCounter: 0,
+            options: { volume: 1, muted: false, loop: false },
+        });
+        (ch as any)._transientInstances.add(transient);
+
+        ch.stopTransientAll();
+
+        expect(transient.stop).toHaveBeenCalledOnce();
+        expect(persistent.stop).not.toHaveBeenCalled();
+    });
+
+    test("manually removed transient (simulating 'end' event) is not stopped by stopTransientAll()", () => {
+        const ch = new AudioChannel("ch1");
+        const media = makeFakeMediaInstance();
+
+        (ch as any)._transientInstances.add(media);
+        // Simulate `on("end", ...)` callback registered by playTransient
+        (ch as any)._transientInstances.delete(media);
+
+        ch.stopTransientAll();
+
+        expect(media.stop).not.toHaveBeenCalled();
+    });
+
+    test("stopTransientAll() is chainable", () => {
+        const ch = new AudioChannel("ch1");
+        const result = ch.stopTransientAll();
+        expect(result).toBe(ch);
+    });
+
+    test("sound.stopTransientAll() with a channel alias stops only that channel's transients", () => {
+        sound.addChannel("ch-a");
+        sound.addChannel("ch-b");
+        const stopA = vi.spyOn(sound.findChannel("ch-a"), "stopTransientAll");
+        const stopB = vi.spyOn(sound.findChannel("ch-b"), "stopTransientAll");
+        sound.stopTransientAll("ch-a");
+        expect(stopA).toHaveBeenCalledOnce();
+        expect(stopB).not.toHaveBeenCalled();
+        stopA.mockRestore();
+        stopB.mockRestore();
+    });
+
+    test("sound.stopTransientAll() without argument stops transients on all channels", () => {
+        sound.addChannel("x");
+        sound.addChannel("y");
+        const stopX = vi.spyOn(sound.findChannel("x"), "stopTransientAll");
+        const stopY = vi.spyOn(sound.findChannel("y"), "stopTransientAll");
+        sound.stopTransientAll();
+        expect(stopX).toHaveBeenCalledOnce();
+        expect(stopY).toHaveBeenCalledOnce();
+        stopX.mockRestore();
+        stopY.mockRestore();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: pauseUnsavedAll / resumeUnsavedAll on SoundManager
+// ---------------------------------------------------------------------------
+
+describe("sound.pauseUnsavedAll / sound.resumeUnsavedAll", () => {
+    beforeEach(() => clearSound());
+
+    test("sound.pauseUnsavedAll() with a channel alias delegates only to that channel", () => {
+        sound.addChannel("a");
+        sound.addChannel("b");
+        const spyA = vi.spyOn(sound.findChannel("a"), "pauseUnsavedAll");
+        const spyB = vi.spyOn(sound.findChannel("b"), "pauseUnsavedAll");
+        sound.pauseUnsavedAll("a");
+        expect(spyA).toHaveBeenCalledOnce();
+        expect(spyB).not.toHaveBeenCalled();
+        spyA.mockRestore();
+        spyB.mockRestore();
+    });
+
+    test("sound.pauseUnsavedAll() without argument delegates to all channels", () => {
+        sound.addChannel("x");
+        sound.addChannel("y");
+        const spyX = vi.spyOn(sound.findChannel("x"), "pauseUnsavedAll");
+        const spyY = vi.spyOn(sound.findChannel("y"), "pauseUnsavedAll");
+        sound.pauseUnsavedAll();
+        expect(spyX).toHaveBeenCalledOnce();
+        expect(spyY).toHaveBeenCalledOnce();
+        spyX.mockRestore();
+        spyY.mockRestore();
+    });
+
+    test("sound.resumeUnsavedAll() with a channel alias delegates only to that channel", () => {
+        sound.addChannel("a");
+        sound.addChannel("b");
+        const spyA = vi.spyOn(sound.findChannel("a"), "resumeUnsavedAll");
+        const spyB = vi.spyOn(sound.findChannel("b"), "resumeUnsavedAll");
+        sound.resumeUnsavedAll("a");
+        expect(spyA).toHaveBeenCalledOnce();
+        expect(spyB).not.toHaveBeenCalled();
+        spyA.mockRestore();
+        spyB.mockRestore();
+    });
+
+    test("sound.resumeUnsavedAll() without argument delegates to all channels", () => {
+        sound.addChannel("x");
+        sound.addChannel("y");
+        const spyX = vi.spyOn(sound.findChannel("x"), "resumeUnsavedAll");
+        const spyY = vi.spyOn(sound.findChannel("y"), "resumeUnsavedAll");
+        sound.resumeUnsavedAll();
+        expect(spyX).toHaveBeenCalledOnce();
+        expect(spyY).toHaveBeenCalledOnce();
+        spyX.mockRestore();
+        spyY.mockRestore();
+    });
+
+    test("pauseUnsavedAll/resumeUnsavedAll do not mutate per-media paused option", () => {
+        const ch = sound.addChannel("music")!;
+        const inst = makeFakeMediaInstance();
+        SoundManagerStatic.mediaInstances.set("track", {
+            channelAlias: "music",
+            soundAlias: "track",
+            instance: inst,
+            stepCounter: 1,
+            options: { volume: 1, muted: false, loop: false, paused: false },
+        });
+        sound.pauseUnsavedAll("music");
+        expect(ch.paused).toBe(true);
+        expect(SoundManagerStatic.mediaInstances.get("track")?.options.paused).toBe(false);
+        sound.resumeUnsavedAll("music");
+        expect(ch.paused).toBe(false);
+    });
+
+    test("pauseUnsavedAll and resumeUnsavedAll are chainable", () => {
+        sound.addChannel("ch");
+        expect(sound.pauseUnsavedAll("ch")).toBe(sound);
+        expect(sound.resumeUnsavedAll("ch")).toBe(sound);
     });
 });
 
