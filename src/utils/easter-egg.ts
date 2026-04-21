@@ -35,6 +35,6 @@ export function asciiArtLog() {
             values.push(plainStyle, versionSuffix);
         }
 
-        console.log(format, ...values);
+        console.debug(format, ...values);
     }
 }
