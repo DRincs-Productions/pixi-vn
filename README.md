@@ -146,6 +146,8 @@ Game.onEnd(async (props) => {
 Game.addOnError((error, props) => {
     console.error(`Error occurred`, error);
 });
+
+Game.onNavigate((path) => navigateTo(path));
 ```
 
 ```html title="index.html"
