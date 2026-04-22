@@ -574,6 +574,34 @@ describe("sound restore", () => {
     test("restore() with legacy soundsPlaying does not throw", async () => {
         await expect(sound.restore({ soundsPlaying: {}, filters: [] })).resolves.not.toThrow();
     });
+
+    test("restore() prioritizes mediaInstances over legacy soundsPlaying", async () => {
+        const loadSpy = vi.spyOn(sound as any, "load").mockResolvedValue(undefined);
+        const playSpy = stubChannelPlay();
+        try {
+            await sound.restore({
+                soundsPlaying: {
+                    legacyAlias: {} as any,
+                },
+                mediaInstances: {
+                    "media-alias": {
+                        channelAlias: "general",
+                        soundAlias: "sound-alias",
+                        stepCounter: 0,
+                        options: {},
+                    },
+                },
+                filters: [],
+            });
+
+            expect(playSpy).toHaveBeenCalledTimes(1);
+            expect(SoundManagerStatic.mediaInstances.has("legacyAlias")).toBe(false);
+            expect(SoundManagerStatic.mediaInstances.has("media-alias")).toBe(true);
+        } finally {
+            playSpy.mockRestore();
+            loadSpy.mockRestore();
+        }
+    });
 });
 
 // ---------------------------------------------------------------------------

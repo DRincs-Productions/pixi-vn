@@ -340,7 +340,13 @@ export default class SoundManager implements SoundManagerInterface {
     }
     async restore(data: object) {
         try {
-            if (Object.hasOwn(data, "soundsPlaying")) {
+            const mediaInstancesData = Object.hasOwn(data, "mediaInstances")
+                ? (data as SoundGameState).mediaInstances
+                : undefined;
+            const hasMediaInstancesData =
+                mediaInstancesData !== undefined && Object.keys(mediaInstancesData).length > 0;
+
+            if (!hasMediaInstancesData && Object.hasOwn(data, "soundsPlaying")) {
                 const soundsPlaying = (data as SoundGameState).soundsPlaying;
                 if (soundsPlaying) {
                     const promises = Object.keys(soundsPlaying).map(async (alias) => {
@@ -353,7 +359,7 @@ export default class SoundManager implements SoundManagerInterface {
             }
 
             if (Object.hasOwn(data, "mediaInstances")) {
-                const mediaInstances = (data as SoundGameState).mediaInstances;
+                const mediaInstances = mediaInstancesData;
                 if (mediaInstances) {
                     // load all media first
                     const usedChannels = new Set<string>();
