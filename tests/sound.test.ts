@@ -1,4 +1,5 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+import { sound as pixiSound } from "@pixi/sound";
 import { sound, type SoundGameState } from "../src";
 import AudioChannel from "../src/sound/classes/AudioChannel";
 import type IMediaInstance from "../src/sound/interfaces/IMediaInstance";
@@ -477,6 +478,34 @@ describe("stopTransientAll", () => {
         expect(stopY).toHaveBeenCalledOnce();
         stopX.mockRestore();
         stopY.mockRestore();
+    });
+});
+
+describe("AudioChannel.play media alias replacement lifecycle", () => {
+    beforeEach(() => clearSound());
+
+    test("old instance end does not untrack the newer replacement instance", async () => {
+        const ch = new AudioChannel("general");
+        const first = makeFakeMediaInstance();
+        const second = makeFakeMediaInstance();
+        const pixiPlaySpy = vi
+            .spyOn(pixiSound, "play")
+            .mockResolvedValueOnce(first as any)
+            .mockResolvedValueOnce(second as any);
+        try {
+            await ch.play("same-media", "shared-sound");
+            await ch.play("same-media", "shared-sound");
+
+            expect(first.stop).toHaveBeenCalledOnce();
+
+            first.emit("end");
+
+            const tracked = SoundManagerStatic.mediaInstances.get("same-media");
+            expect(tracked).toBeDefined();
+            expect(tracked?.instance.id).toBe(second.id);
+        } finally {
+            pixiPlaySpy.mockRestore();
+        }
     });
 });
 

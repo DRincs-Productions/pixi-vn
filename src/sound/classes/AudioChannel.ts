@@ -82,7 +82,10 @@ export default class AudioChannel implements AudioChannelInterface {
             },
         });
         media.on("end", () => {
-            SoundManagerStatic.mediaInstances.delete(mediaAlias);
+            const trackedMedia = SoundManagerStatic.mediaInstances.get(mediaAlias);
+            if (trackedMedia?.instance === media) {
+                SoundManagerStatic.mediaInstances.delete(mediaAlias);
+            }
         });
         return media;
     }
