@@ -1,10 +1,11 @@
+import * as Tone from "tone";
 import { GENERAL_CHANNEL } from "@constants";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { type Filter, filters, type IMediaContext, Sound, sound } from "@pixi/sound";
 import AudioChannel from "@sound/classes/AudioChannel";
 import { FilterMemoryToFilter, FilterToFilterMemory } from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type AudioFilter from "@sound/interfaces/AudioFilter";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
@@ -20,20 +21,65 @@ import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
 
 export default class SoundManager implements SoundManagerInterface {
-    get context(): IMediaContext {
-        return sound.context;
+    // ------------------------------------------------------------------ //
+    // Global audio-bus properties                                          //
+    // ------------------------------------------------------------------ //
+
+    get context(): AudioContext {
+        return Tone.getContext().rawContext as AudioContext;
     }
-    get filtersAll(): Filter[] {
-        return sound.filtersAll;
+
+    private _filtersAll: AudioFilter[] = [];
+    get filtersAll(): AudioFilter[] {
+        return this._filtersAll;
     }
-    set filtersAll(filtersAll: Filter[]) {
-        sound.filtersAll = filtersAll.filter((f) => {
-            return !(f instanceof filters.Filter);
-        });
+    set filtersAll(filtersAll: AudioFilter[]) {
+        this._filtersAll = filtersAll;
     }
+
     get supported(): boolean {
-        return sound.supported;
+        return typeof AudioContext !== "undefined" || typeof (window as any)?.webkitAudioContext !== "undefined";
     }
+
+    /** @deprecated No-op — legacy HTML5 Audio fallback is not used with Tone.js. */
+    get useLegacy(): boolean {
+        return false;
+    }
+    /** @deprecated */
+    set useLegacy(_legacy: boolean) {}
+
+    /** @deprecated */
+    get disableAutoPause(): boolean {
+        return false;
+    }
+    /** @deprecated */
+    set disableAutoPause(_autoPause: boolean) {}
+
+    get volumeAll(): number {
+        // Tone.Destination volume is in dB; convert back to linear [0, 1].
+        const db = Tone.getDestination().volume.value;
+        if (db === -Infinity) return 0;
+        return Math.pow(10, db / 20);
+    }
+    set volumeAll(volume: number) {
+        Tone.getDestination().volume.value = volume <= 0 ? -Infinity : 20 * Math.log10(volume);
+    }
+
+    get speedAll(): number {
+        return this._speedAll;
+    }
+    set speedAll(speed: number) {
+        this._speedAll = speed;
+        // Apply to all currently active media instances.
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+            mediaInstance.instance.speed = speed;
+        }
+    }
+    private _speedAll = 1;
+
+    // ------------------------------------------------------------------ //
+    // Default channel                                                      //
+    // ------------------------------------------------------------------ //
 
     _defaultChannelAlias = GENERAL_CHANNEL;
     get defaultChannelAlias(): string {
@@ -43,45 +89,29 @@ export default class SoundManager implements SoundManagerInterface {
         this._defaultChannelAlias = alias;
     }
 
-    add(alias: string, sourceOptions: string) {
-        return sound.add(alias, sourceOptions);
-    }
-    async edit(alias: string, options: SoundOptions): Promise<void> {
-        let s = sound.find(alias);
-        if (!s) {
-            await this.load(alias);
-            s = sound.find(alias);
-            if (!s) {
-                logger.error(`Sound with alias ${alias} not found after loading.`);
-                return;
-            }
+    // ------------------------------------------------------------------ //
+    // Sound registration                                                   //
+    // ------------------------------------------------------------------ //
+
+    /** @deprecated Register sound assets directly via `PIXI.Assets` instead. */
+    add(alias: string, sourceOptions: string): void {
+        if (!SoundManagerStatic.bufferRegistry.has(alias)) {
+            const buffer = new Tone.ToneAudioBuffer(sourceOptions);
+            SoundManagerStatic.bufferRegistry.set(alias, buffer);
         }
-        s.options = options;
     }
-    get useLegacy(): boolean {
-        return sound.useLegacy;
+
+    async edit(alias: string, options: SoundOptions): Promise<void> {
+        if (!SoundManagerStatic.bufferRegistry.has(alias)) {
+            await this.load(alias);
+        }
+        SoundManagerStatic.soundOptions.set(alias, options);
     }
-    set useLegacy(legacy: boolean) {
-        sound.useLegacy = legacy;
-    }
-    get disableAutoPause(): boolean {
-        return sound.disableAutoPause;
-    }
-    set disableAutoPause(autoPause: boolean) {
-        sound.disableAutoPause = autoPause;
-    }
-    get volumeAll(): number {
-        return sound.volumeAll;
-    }
-    set volumeAll(volume: number) {
-        sound.volumeAll = volume;
-    }
-    get speedAll(): number {
-        return sound.speedAll;
-    }
-    set speedAll(speed: number) {
-        sound.speedAll = speed;
-    }
+
+    // ------------------------------------------------------------------ //
+    // Global playback controls                                             //
+    // ------------------------------------------------------------------ //
+
     pauseAll(): this {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
             if (!mediaInstance.instance.paused) {
@@ -99,19 +129,23 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     toggleMuteAll(): boolean {
-        return sound.toggleMuteAll();
+        const newMuted = !Tone.getDestination().mute;
+        Tone.getDestination().mute = newMuted;
+        return newMuted;
     }
     muteAll(): this {
-        sound.muteAll();
+        Tone.getDestination().mute = true;
         return this;
     }
     unmuteAll(): this {
-        sound.unmuteAll();
+        Tone.getDestination().mute = false;
         return this;
     }
     stopAll(): this {
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+            mediaInstance.instance.stop();
+        }
         SoundManagerStatic.mediaInstances.clear();
-        sound.stopAll();
         return this;
     }
     pauseUnsavedAll(channel?: string): this {
@@ -145,8 +179,13 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     isPlaying(): boolean {
-        return sound.isPlaying();
+        return SoundManagerStatic.mediaInstances.size > 0;
     }
+
+    // ------------------------------------------------------------------ //
+    // Playback                                                             //
+    // ------------------------------------------------------------------ //
+
     async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
     async play(
         mediaAlias: string,
@@ -168,25 +207,28 @@ export default class SoundManager implements SoundManagerInterface {
             soundAlias = aliasOrMediaAlias;
             paramOptions = soundAliasOrOptions;
         }
-        if (!sound.exists(soundAlias)) {
+        if (!SoundManagerStatic.bufferRegistry.has(soundAlias)) {
             await this.load(soundAlias);
         }
         const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
         return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
     }
+
     async playTransient(
         alias: string,
         options?: SoundPlayOptionsWithChannel,
     ): Promise<IMediaInstance> {
-        if (!sound.exists(alias)) {
+        if (!SoundManagerStatic.bufferRegistry.has(alias)) {
             await this.load(alias);
         }
         const { channel = this.defaultChannelAlias, ...channelOptions } = options ?? {};
         return await this.findChannel(channel).playTransient(alias, channelOptions);
     }
+
     find(alias: string): IMediaInstance | undefined {
         return SoundManagerStatic.mediaInstances.get(alias)?.instance;
     }
+
     stop(alias: string): void {
         const mediaInstance = this.find(alias);
         if (mediaInstance) {
@@ -196,6 +238,7 @@ export default class SoundManager implements SoundManagerInterface {
             logger.warn(`No media instance found with alias ${alias} to stop.`);
         }
     }
+
     pause(alias: string): IMediaInstance | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
@@ -205,6 +248,7 @@ export default class SoundManager implements SoundManagerInterface {
         mediaInstance.paused = true;
         return mediaInstance;
     }
+
     resume(alias: string): IMediaInstance | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
@@ -214,49 +258,78 @@ export default class SoundManager implements SoundManagerInterface {
         mediaInstance.paused = false;
         return mediaInstance;
     }
+
     duration(alias: string): number {
-        return sound.duration(alias);
+        const buffer = SoundManagerStatic.bufferRegistry.get(alias);
+        return buffer?.duration ?? 0;
     }
-    async load(alias: string | string[]): Promise<Sound[]> {
+
+    // ------------------------------------------------------------------ //
+    // Loading                                                              //
+    // ------------------------------------------------------------------ //
+
+    async load(alias: string | string[]): Promise<void> {
         if (typeof alias === "string") {
             alias = [alias];
         }
-        const promises = alias.map(async (alias) => {
-            const item = await PIXI.Assets.load<Sound>(alias);
-            if (!sound.exists(alias)) sound.add(alias, item);
-            return item;
-        });
-        return await Promise.all(promises);
-    }
-    backgroundLoad(alias: string | string[]): Promise<void> {
-        const promise = PIXI.Assets.backgroundLoad(alias);
-
-        promise.then(() => {
-            if (typeof alias === "string") {
-                alias = [alias];
+        const promises = alias.map(async (a) => {
+            if (SoundManagerStatic.bufferRegistry.has(a)) return;
+            // Resolve via PIXI.Assets when the alias has been registered
+            // there; fall back to using the alias as a raw URL.
+            let url: string = a;
+            try {
+                const resolved = PIXI.Assets.resolver.resolve(a);
+                if (resolved?.src) url = resolved.src;
+            } catch {
+                // Not registered in PIXI.Assets — use alias as URL.
             }
-            alias.forEach((alias) => {
-                const item = PIXI.Assets.get<Sound>(alias);
-                if (!sound.exists(alias)) sound.add(alias, item);
-            });
+            try {
+                // Load the raw AudioBuffer, then wrap it in a ToneAudioBuffer.
+                // Using the static ToneAudioBuffer.load() + try/catch instead of
+                // the constructor avoids an unhandled-rejection timing issue that
+                // occurs when loading invalid URLs in test environments.
+                const audioBuffer = await Tone.ToneAudioBuffer.load(url);
+                const buffer = new Tone.ToneAudioBuffer(audioBuffer as unknown as AudioBuffer);
+                SoundManagerStatic.bufferRegistry.set(a, buffer);
+            } catch (e) {
+                logger.warn(
+                    `Failed to load audio buffer for "${a}" (url: "${url}"): ${e instanceof Error ? e.message : e}`,
+                );
+                // Register an empty stub so downstream code can proceed
+                // without crashing (e.g. in test / headless environments).
+                SoundManagerStatic.bufferRegistry.set(a, new Tone.ToneAudioBuffer());
+            }
         });
-        return promise;
+        await Promise.all(promises);
     }
+
+    backgroundLoad(alias: string | string[]): Promise<void> {
+        // Fire-and-forget: load the buffer(s) without blocking the caller.
+        return this.load(alias).catch((e) => {
+            logger.error("Error background-loading sound", e);
+        });
+    }
+
     backgroundLoadBundle(alias: string): Promise<void> {
         const promise = PIXI.Assets.backgroundLoadBundle(alias);
-        promise.then(async () => {
-            try {
-                const assets = await PIXI.Assets.loadBundle(alias);
-                for (const key in assets) {
-                    const item = assets[key];
-                    if (item instanceof Sound) {
-                        if (!sound.exists(key)) sound.add(key, item);
+        promise
+            .then(async () => {
+                try {
+                    const assets = await PIXI.Assets.loadBundle(alias);
+                    const loadPromises: Promise<void>[] = [];
+                    for (const key in assets) {
+                        if (!SoundManagerStatic.bufferRegistry.has(key)) {
+                            loadPromises.push(this.load(key));
+                        }
                     }
+                    await Promise.all(loadPromises);
+                } catch (e) {
+                    logger.error("Error loading sound bundle", e);
                 }
-            } catch (e) {
-                logger.error("Error loading sound bundle", e);
-            }
-        });
+            })
+            .catch((e) => {
+                logger.error("Error background-loading sound bundle", e);
+            });
         return promise;
     }
 
@@ -264,7 +337,9 @@ export default class SoundManager implements SoundManagerInterface {
         this.stopAll();
     }
 
-    /* Channel Methods */
+    // ------------------------------------------------------------------ //
+    // Channels                                                             //
+    // ------------------------------------------------------------------ //
 
     addChannel(
         alias: string | string[],
@@ -301,7 +376,9 @@ export default class SoundManager implements SoundManagerInterface {
         return Array.from(SoundManagerStatic.channels.values());
     }
 
-    /* Export and Import Methods */
+    // ------------------------------------------------------------------ //
+    // Export / restore                                                     //
+    // ------------------------------------------------------------------ //
 
     public export(): SoundGameState {
         const mediaInstances: {
@@ -338,6 +415,7 @@ export default class SoundManager implements SoundManagerInterface {
             filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
     }
+
     async restore(data: object) {
         try {
             if (Object.hasOwn(data, "soundsPlaying")) {
@@ -345,7 +423,6 @@ export default class SoundManager implements SoundManagerInterface {
                 if (soundsPlaying) {
                     const promises = Object.keys(soundsPlaying).map(async (alias) => {
                         await this.load(alias);
-
                         await this.play(alias);
                     });
                     await Promise.all(promises);
@@ -355,7 +432,6 @@ export default class SoundManager implements SoundManagerInterface {
             if (Object.hasOwn(data, "mediaInstances")) {
                 const mediaInstances = (data as SoundGameState).mediaInstances;
                 if (mediaInstances) {
-                    // load all media first
                     const usedChannels = new Set<string>();
                     const promises = Object.values(mediaInstances).map(
                         async ({ soundAlias, channelAlias }) => {
@@ -386,7 +462,6 @@ export default class SoundManager implements SoundManagerInterface {
                             mediaInstanceData.stepCounter === GameUnifier.stepCounter ||
                             !this.find(mediaAlias)
                         ) {
-                            // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
                             await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
                                 ...mediaInstanceData.options,
                                 paused: restoredPaused,

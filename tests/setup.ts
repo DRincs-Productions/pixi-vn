@@ -60,6 +60,14 @@ try {
     // best-effort stub; tests can proceed without real asset loading
 }
 
+// Stub Tone.js audio loading so that tests running in jsdom do not attempt
+// real network requests.  SoundManager.load() creates ToneAudioBuffer instances;
+// the stub registers a no-op buffer that resolves immediately on error.
+// Note: runtime mocking of the sealed Tone.js ESM namespace is not possible
+// here; actual isolation is handled in sound.test.ts via vi.mock("tone").
+// This block exists only to document the intent.
+
+
 GameUnifier.init({
     navigate: (path: string) => window.history.pushState({}, "test", path),
     getCurrentGameStepState: () => {

@@ -1,4 +1,47 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
+
+// Stub Tone.js so tests never attempt real audio/network I/O.
+vi.mock("tone", () => {
+    const destStub = { volume: { value: 0 }, mute: false };
+    const playerStub = () => ({
+        toDestination: () => playerStub(),
+        start: vi.fn(),
+        stop: vi.fn(),
+        volume: { value: 0 },
+        mute: false,
+        loop: false,
+        playbackRate: 1,
+        onstop: null as (() => void) | null,
+    });
+    return {
+        ToneAudioBuffer: class {
+            duration = 0;
+            constructor(_url?: string, onload?: () => void) {
+                if (onload) setTimeout(onload, 0);
+            }
+        },
+        Player: class {
+            volume = { value: 0 };
+            mute = false;
+            loop = false;
+            playbackRate = 1;
+            onstop: (() => void) | null = null;
+            constructor(_url?: unknown) {}
+            toDestination() {
+                return this;
+            }
+            start = vi.fn();
+            stop = vi.fn(() => {
+                if (typeof this.onstop === "function") this.onstop();
+            });
+        },
+        getContext: () => ({ rawContext: {} }),
+        getDestination: () => destStub,
+        loaded: () => Promise.resolve(),
+        now: () => 0,
+    };
+});
+
 import { sound, type SoundGameState } from "../src";
 import AudioChannel from "../src/sound/classes/AudioChannel";
 import type IMediaInstance from "../src/sound/interfaces/IMediaInstance";
@@ -42,7 +85,7 @@ function makeFakeMediaInstance(): FakeMediaInstance {
         emit(event: string) {
             listeners[event]?.forEach((cb) => cb());
         },
-    } as FakeMediaInstance;
+    } as unknown as FakeMediaInstance;
 }
 
 /**
@@ -51,13 +94,16 @@ function makeFakeMediaInstance(): FakeMediaInstance {
  * SoundManagerStatic.mediaInstances so that export/restore helpers still work.
  */
 function stubChannelPlay() {
-    return vi.spyOn(AudioChannel.prototype as any, "play").mockImplementation(async function (
-        this: AudioChannel,
-        aliasOrMediaAlias: string,
-        soundAliasOrOptions?: string | SoundPlayOptions,
-        options?: SoundPlayOptions,
-    ): Promise<IMediaInstance> {
-        let mediaAlias: string;
+    return vi
+        .spyOn(AudioChannel.prototype as any, "play")
+        .mockImplementation(
+            // eslint-disable-next-line @typescript-eslint/no-explicit-any
+            async function (
+                this: AudioChannel,
+                aliasOrMediaAlias: string,
+                soundAliasOrOptions?: string | SoundPlayOptions,
+                options?: SoundPlayOptions,
+            ): Promise<IMediaInstance> {        let mediaAlias: string;
         let soundAlias: string;
         if (typeof soundAliasOrOptions === "string") {
             mediaAlias = aliasOrMediaAlias;
@@ -83,13 +129,17 @@ function stubChannelPlay() {
             SoundManagerStatic.mediaInstances.delete(mediaAlias);
         });
         return inst;
-    });
+        // The `as any` silences a vitest overload mismatch on strict parameter types.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        } as any,
+        );
 }
 
 /** Reset all sound-related state between tests. */
 function clearSound() {
     SoundManagerStatic.mediaInstances.clear();
     SoundManagerStatic.channels.clear();
+    SoundManagerStatic.bufferRegistry.clear();
     sound.defaultChannelAlias = "general";
 }
 
@@ -774,7 +824,7 @@ describe("background channel settings restoration", () => {
             makeBackgroundState({ delay: 2, end: 10, singleInstance: true, start: 1 }),
         );
 
-        const storedOptions = SoundManagerStatic.mediaInstances.get("bg-music")?.options;
+        const storedOptions = SoundManagerStatic.mediaInstances.get("bg-music")!.options;
         expect(storedOptions.delay).toBe(2);
         expect(storedOptions.end).toBe(10);
         expect(storedOptions.singleInstance).toBe(true);
