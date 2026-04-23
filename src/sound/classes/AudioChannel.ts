@@ -1,5 +1,4 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import { sound } from "@pixi/sound";
 import { calculateVolume } from "@sound/functions/channel-utility";
 import { proxyMedia } from "@sound/functions/proxy-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
@@ -48,7 +47,7 @@ export default class AudioChannel implements AudioChannelInterface {
         const effectivePaused = Boolean(this.channelOptions.paused) || Boolean(paused);
         const media = proxyMedia(
             mediaAlias,
-            await sound.play(soundAlias, {
+            await SoundManagerStatic.sound.play(soundAlias, {
                 ...(rest ?? {}),
                 filters: [...(this.channelOptions.filters || []), ...(rest?.filters || [])],
                 muted: Boolean(this.channelOptions.muted) || Boolean(rest?.muted),
@@ -88,7 +87,7 @@ export default class AudioChannel implements AudioChannelInterface {
     }
     async playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
         const { paused, ...rest } = options || {};
-        const media = await sound.play(soundAlias, {
+        const media = await SoundManagerStatic.sound.play(soundAlias, {
             ...rest,
             filters: [...(this.channelOptions.filters || []), ...(rest?.filters || [])],
             muted: Boolean(this.channelOptions.muted) || Boolean(rest?.muted),
