@@ -274,6 +274,8 @@ export namespace Game {
         storageUtils.storage.restore(data.storageData);
         try {
             await canvasUtils.canvas.restore(data.canvasData);
+        } catch (_e) {}
+        try {
             await soundUtils.sound.restore(data.soundData);
         } catch (_e) {}
         if (navigate) {
