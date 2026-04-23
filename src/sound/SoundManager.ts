@@ -349,33 +349,28 @@ export default class SoundManager implements SoundManagerInterface {
             if (!hasMediaInstancesData && Object.hasOwn(data, "soundsPlaying")) {
                 const soundsPlaying = (data as SoundGameState).soundsPlaying;
                 if (soundsPlaying) {
-                    const promises = Object.keys(soundsPlaying).map(async (alias) => {
+                    for (const alias of Object.keys(soundsPlaying)) {
                         await this.load(alias);
-
                         await this.play(alias);
-                    });
-                    await Promise.all(promises);
+                    }
                 }
             }
 
             if (Object.hasOwn(data, "mediaInstances")) {
                 const mediaInstances = mediaInstancesData;
                 if (mediaInstances) {
-                    // load all media first
+                    // load all media first (sequentially to avoid pixi/sound race conditions)
                     const usedChannels = new Set<string>();
-                    const promises = Object.values(mediaInstances).map(
-                        async ({ soundAlias, channelAlias }) => {
-                            usedChannels.add(channelAlias);
-                            return await this.load(soundAlias);
-                        },
-                    );
-                    await Promise.all(promises);
+                    for (const { soundAlias, channelAlias } of Object.values(mediaInstances)) {
+                        usedChannels.add(channelAlias);
+                        await this.load(soundAlias);
+                    }
                     this.channels.forEach((channel) => {
                         if (!channel.background || !usedChannels.has(channel.alias)) {
                             channel.stopAll();
                         }
                     });
-                    const promises2 = Object.keys(mediaInstances).map(async (mediaAlias) => {
+                    for (const mediaAlias of Object.keys(mediaInstances)) {
                         const mediaInstanceData = mediaInstances[mediaAlias];
                         const channel = this.findChannel(mediaInstanceData.channelAlias);
                         const restoredPaused =
@@ -406,7 +401,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 logger.warn(
                                     `No media instance found with alias ${mediaAlias} while restoring background state.`,
                                 );
-                                return;
+                                continue;
                             }
                             const instance = mediaInstance.instance;
                             if (instance.paused !== restoredPaused) {
@@ -432,8 +427,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 ),
                             };
                         }
-                    });
-                    await Promise.all(promises2);
+                    }
                 }
             }
 
