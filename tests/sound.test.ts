@@ -103,7 +103,8 @@ function stubChannelPlay() {
                 aliasOrMediaAlias: string,
                 soundAliasOrOptions?: string | SoundPlayOptions,
                 options?: SoundPlayOptions,
-            ): Promise<IMediaInstance> {        let mediaAlias: string;
+            ): Promise<IMediaInstance> {
+        let mediaAlias: string;
         let soundAlias: string;
         if (typeof soundAliasOrOptions === "string") {
             mediaAlias = aliasOrMediaAlias;

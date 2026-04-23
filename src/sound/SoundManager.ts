@@ -38,7 +38,11 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     get supported(): boolean {
-        return typeof AudioContext !== "undefined" || typeof (window as any)?.webkitAudioContext !== "undefined";
+        return (
+            typeof AudioContext !== "undefined" ||
+            typeof (globalThis as unknown as Record<string, unknown>).webkitAudioContext !==
+                "undefined"
+        );
     }
 
     /** @deprecated No-op — legacy HTML5 Audio fallback is not used with Tone.js. */

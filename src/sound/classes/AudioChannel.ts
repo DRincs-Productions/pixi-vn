@@ -7,7 +7,6 @@ import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface"
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
-import { logger } from "@utils/log-utility";
 
 export default class AudioChannel implements AudioChannelInterface {
     constructor(
@@ -74,11 +73,8 @@ export default class AudioChannel implements AudioChannelInterface {
 
         if (options?.delay) {
             if (!effectivePaused) {
-                // Pause immediately and resume after the delay.
-                toneMedia["_pausing"] = true;
-                player.stop();
-                toneMedia["_paused"] = true;
-                toneMedia["_startContextTime"] = null;
+                // Pause immediately so the sound is heard only after the delay.
+                toneMedia.pauseImmediate();
             }
             const timeoutId = setTimeout(() => {
                 media.paused = effectivePaused;
@@ -114,16 +110,13 @@ export default class AudioChannel implements AudioChannelInterface {
         const pausedState = Boolean(paused) || Boolean(this.channelOptions.paused);
 
         const player = this._createPlayer(soundAlias, rest);
-        const media = new ToneMediaInstance(player, !pausedState) as IMediaInstance;
+        const media = new ToneMediaInstance(player, !pausedState);
 
         let delayTimeout: ReturnType<typeof setTimeout> | undefined;
         if (options?.delay) {
             if (!pausedState) {
-                // Pause immediately then resume after the delay.
-                (media as ToneMediaInstance)["_pausing"] = true;
-                player.stop();
-                (media as ToneMediaInstance)["_paused"] = true;
-                (media as ToneMediaInstance)["_startContextTime"] = null;
+                // Pause immediately so the sound is heard only after the delay.
+                media.pauseImmediate();
             }
             delayTimeout = setTimeout(() => {
                 media.paused = pausedState;
@@ -264,6 +257,3 @@ export default class AudioChannel implements AudioChannelInterface {
         return this;
     }
 }
-
-// Silence unused-variable warning in tests that access private fields via `as any`.
-void (logger as unknown);

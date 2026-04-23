@@ -118,6 +118,21 @@ export default class ToneMediaInstance implements IMediaInstance {
         this._listeners[event].push(fn);
     }
 
+    /**
+     * Pause the player immediately without triggering the `"end"` event.
+     * Used internally by {@link AudioChannel} when implementing playback delay.
+     */
+    pauseImmediate(): void {
+        if (this._paused) return;
+        if (this._startContextTime !== null) {
+            this._offset += Tone.now() - this._startContextTime;
+            this._startContextTime = null;
+        }
+        this._pausing = true;
+        this._player.stop();
+        this._paused = true;
+    }
+
     // ------------------------------------------------------------------ //
     // Internals                                                            //
     // ------------------------------------------------------------------ //
