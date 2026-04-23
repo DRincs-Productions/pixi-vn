@@ -6,7 +6,7 @@ import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 export default class SoundManagerStatic {
     private constructor() {}
 
-    static get activeSound(): SoundLibrary | undefined {
+    static get soundInstance(): SoundLibrary | undefined {
         return SoundManagerStatic._sound;
     }
 

@@ -111,7 +111,7 @@ export default class SoundManager implements SoundManagerInterface {
     }
     stopAll(): this {
         SoundManagerStatic.mediaInstances.clear();
-        SoundManagerStatic.activeSound?.stopAll();
+        SoundManagerStatic.soundInstance?.stopAll();
         return this;
     }
     pauseUnsavedAll(channel?: string): this {
@@ -337,7 +337,7 @@ export default class SoundManager implements SoundManagerInterface {
         return {
             mediaInstances: createExportableElement(mediaInstances),
             filters: createExportableElement(
-                FilterToFilterMemory(SoundManagerStatic.activeSound?.filtersAll) ?? [],
+                FilterToFilterMemory(SoundManagerStatic.soundInstance?.filtersAll) ?? [],
             ),
         };
     }
