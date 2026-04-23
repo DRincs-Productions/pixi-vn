@@ -47,6 +47,8 @@ import { asciiArtLog } from "./utils/easter-egg";
 import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
+let pendingCanvasSoundRestore: { canvasData: object; soundData: object } | null = null;
+
 export namespace Game {
     /**
      * Initialize the Game and PixiJS Application and the interface div.
@@ -205,13 +207,28 @@ export namespace Game {
             );
             return;
         }
-        return await canvasUtils.canvas.init(element, options, devtoolsOptions);
+        return await canvasUtils.canvas.init(element, options, devtoolsOptions).then(async () => {
+            if (pendingCanvasSoundRestore) {
+                const pending = pendingCanvasSoundRestore;
+                pendingCanvasSoundRestore = null;
+                // Restore canvas/sound state that was saved before PIXI was initialized.
+                // Errors are intentionally swallowed: if a canvas/sound asset fails to
+                // restore it is preferable to continue rather than crash the app.
+                try {
+                    await canvasUtils.canvas.restore(pending.canvasData);
+                } catch (_e) {}
+                try {
+                    await soundUtils.sound.restore(pending.soundData);
+                } catch (_e) {}
+            }
+        });
     }
 
     /**
      * Clear all game data. This function is used to reset the game.
      */
     export function clear() {
+        pendingCanvasSoundRestore = null;
         storageUtils.storage.clear();
         try {
             canvasUtils.canvas.clear();
@@ -272,12 +289,25 @@ export namespace Game {
             await narrationUtils.narration.restore(data.stepData, historyItem);
         }
         storageUtils.storage.restore(data.storageData);
-        try {
-            await canvasUtils.canvas.restore(data.canvasData);
-        } catch (_e) {}
-        try {
-            await soundUtils.sound.restore(data.soundData);
-        } catch (_e) {}
+        if (canvasUtils.canvas.isInitialized) {
+            // Canvas is already ready — restore canvas and sound immediately.
+            // Errors are intentionally swallowed: if a canvas/sound asset fails to
+            // restore it is preferable to continue rather than crash the app.
+            try {
+                await canvasUtils.canvas.restore(data.canvasData);
+            } catch (_e) {}
+            try {
+                await soundUtils.sound.restore(data.soundData);
+            } catch (_e) {}
+        } else {
+            // Canvas is not initialized yet (e.g. called from a route loader before
+            // Game.init() runs). Store the data so Game.init() can apply it once PIXI
+            // is ready.
+            pendingCanvasSoundRestore = {
+                canvasData: data.canvasData,
+                soundData: data.soundData,
+            };
+        }
         if (navigate) {
             await navigate(data.path);
         } else {
