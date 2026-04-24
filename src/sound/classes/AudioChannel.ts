@@ -1,19 +1,183 @@
 import * as Tone from "tone";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import ToneMediaInstance from "@sound/classes/ToneMediaInstance";
-import { calculateVolume } from "@sound/functions/channel-utility";
 import { proxyMedia } from "@sound/functions/proxy-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
 
-export default class AudioChannel implements AudioChannelInterface {
-    constructor(
-        readonly alias: string,
-        readonly channelOptions: ChannelOptions = {},
-    ) {}
-    private readonly _transientInstances: Set<IMediaInstance> = new Set();
+// ---------------------------------------------------------------------------
+// Helpers
+// ---------------------------------------------------------------------------
+
+/** Convert a linear [0, 1] gain value to decibels. */
+function linearToDecibels(v: number): number {
+    return v <= 0 ? -Infinity : 20 * Math.log10(v);
+}
+
+/** Convert a decibel value to a linear [0, 1] gain. */
+function decibelsToLinear(db: number): number {
+    return db <= -Infinity ? 0 : Math.pow(10, db / 20);
+}
+
+// ---------------------------------------------------------------------------
+// Type-erasure base
+//
+// Tone.Channel declares `volume` and `pan` as `readonly Param<...>` instance
+// properties, and `muted` as a readonly prototype getter.  These types are
+// incompatible with our AudioChannelInterface (which uses plain numbers and a
+// writable `muted`).  We cast the constructor to a version that omits those
+// three properties so TypeScript lets us redeclare them below.
+// ---------------------------------------------------------------------------
+
+const _ToneChannelBase = Tone.Channel as unknown as new (
+    ...args: unknown[]
+) => Omit<Tone.Channel, "volume" | "pan" | "muted">;
+
+// ---------------------------------------------------------------------------
+// AudioChannel
+// ---------------------------------------------------------------------------
+
+export default class AudioChannel extends _ToneChannelBase implements AudioChannelInterface {
+    readonly alias: string;
+
+    /**
+     * Reference to Tone.Channel's `volume` Param captured during construction
+     * (before we remove the own-instance property so our prototype getter takes
+     * over).
+     */
+    private readonly _toneVolume: { value: number };
+
+    /**
+     * Reference to Tone.Channel's `pan` Param captured during construction.
+     */
+    private readonly _tonePan: { value: number };
+
+    /** Per-channel state for concepts not modelled by Tone.Channel (paused, background, filters). */
+    private readonly _channelState: Pick<ChannelOptions, "paused" | "background" | "filters">;
+
+    private readonly _transientInstances: Set<ToneMediaInstance> = new Set();
+
+    constructor(alias: string, channelOptions: ChannelOptions = {}) {
+        // Initialise Tone.Channel with dB volume, mute, and pan.
+        // Some host environments (e.g. jsdom test mocks) ignore these args, so
+        // we explicitly set the params afterwards as well.
+        super({ volume: linearToDecibels(channelOptions.volume ?? 1), mute: channelOptions.muted ?? false, pan: channelOptions.pan ?? 0 });
+
+        this.alias = alias;
+        this._channelState = {
+            paused: channelOptions.paused,
+            background: channelOptions.background,
+            filters: channelOptions.filters,
+        };
+
+        // After super() the parent assigns `this.volume` and `this.pan` as own
+        // instance data-properties (via Tone's `readOnly()` helper which sets
+        // `writable:false` but keeps `configurable:true`).  We capture these
+        // Param references before redefining the properties.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._toneVolume = (this as any).volume as { value: number };
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        this._tonePan = (this as any).pan as { value: number };
+
+        // Remove the own properties so our prototype getter/setter definitions
+        // (below) are reached by the JavaScript property-lookup chain.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (this as any).volume;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        delete (this as any).pan;
+
+        // Apply the requested initial values (handles mocks that ignore super() args).
+        this._toneVolume.value = linearToDecibels(channelOptions.volume ?? 1);
+        this._tonePan.value = channelOptions.pan ?? 0;
+        this.mute = channelOptions.muted ?? false;
+
+        // Route this channel's output to the global audio destination.
+        this.toDestination();
+    }
+
+    // ------------------------------------------------------------------ //
+    // volume — linear [0, 1] façade over Tone.Channel's dB Param          //
+    // ------------------------------------------------------------------ //
+
+    get volume(): number {
+        return decibelsToLinear(this._toneVolume.value);
+    }
+    set volume(v: any) {
+        if (this._toneVolume !== undefined) {
+            // Normal use: convert linear → dB and store in the Tone Param.
+            this._toneVolume.value = linearToDecibels(v as number);
+        } else {
+            // Called from super() during construction with a Tone.Param object.
+            // Store it as a configurable own property so Tone's readOnly() call
+            // (which sets writable:false) does not permanently lock it
+            // (configurable:true allows us to delete it after super() returns).
+            Object.defineProperty(this, "volume", {
+                value: v,
+                writable: true,
+                configurable: true,
+                enumerable: true,
+            });
+        }
+    }
+
+    // ------------------------------------------------------------------ //
+    // pan — plain number [-1, 1] façade over Tone.Channel's audioRange Param //
+    // ------------------------------------------------------------------ //
+
+    get pan(): number {
+        return this._tonePan.value;
+    }
+    set pan(v: any) {
+        if (this._tonePan !== undefined) {
+            // Normal use.
+            this._tonePan.value = v as number;
+        } else {
+            // Called from super() with a Tone.Param object — see set volume() above.
+            Object.defineProperty(this, "pan", {
+                value: v,
+                writable: true,
+                configurable: true,
+                enumerable: true,
+            });
+        }
+    }
+
+    // ------------------------------------------------------------------ //
+    // muted — read/write, delegating to Tone.Channel's mute setter        //
+    // ------------------------------------------------------------------ //
+
+    get muted(): boolean {
+        return this.mute;
+    }
+    set muted(v: boolean) {
+        this.mute = v;
+    }
+
+    // ------------------------------------------------------------------ //
+    // paused — no Tone.Channel equivalent; managed internally             //
+    // ------------------------------------------------------------------ //
+
+    get paused(): boolean {
+        return this._channelState.paused ?? false;
+    }
+    set paused(value: boolean) {
+        this._channelState.paused = value;
+        this._updateMediaPaused();
+    }
+
+    // ------------------------------------------------------------------ //
+    // background                                                          //
+    // ------------------------------------------------------------------ //
+
+    get background(): boolean {
+        return this._channelState.background ?? false;
+    }
+
+    // ------------------------------------------------------------------ //
+    // Private helpers                                                     //
+    // ------------------------------------------------------------------ //
 
     private _createPlayer(soundAlias: string, options: SoundPlayOptions): Tone.Player {
         const buffer = SoundManagerStatic.bufferRegistry.get(soundAlias);
@@ -22,12 +186,16 @@ export default class AudioChannel implements AudioChannelInterface {
                 `Sound buffer for alias "${soundAlias}" is not loaded. Call sound.load() first.`,
             );
         }
-        const player = new Tone.Player(buffer).toDestination();
+        // Connect the player INTO this channel (not directly to the destination).
+        // Tone.Channel applies its own volume and pan on top of the player's output.
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const player = new Tone.Player(buffer).connect(this as any);
         player.loop = options.loop ?? false;
         player.playbackRate = options.speed ?? 1;
-        player.mute = Boolean(this.channelOptions.muted) || Boolean(options.muted);
-        const vol = calculateVolume(options.volume, this.channelOptions.volume);
-        player.volume.value = vol <= 0 ? -Infinity : 20 * Math.log10(vol);
+        // Per-media mute only — channel-level muting is handled by Tone.Channel.
+        player.mute = Boolean(options.muted);
+        // Per-media volume (linear → dB).  Channel volume is applied by the audio graph.
+        player.volume.value = linearToDecibels(options.volume ?? 1);
         return player;
     }
 
@@ -65,7 +233,7 @@ export default class AudioChannel implements AudioChannelInterface {
         }
 
         const { paused, ...rest } = options || {};
-        const effectivePaused = Boolean(this.channelOptions.paused) || Boolean(paused);
+        const effectivePaused = Boolean(this.paused) || Boolean(paused);
 
         const player = this._createPlayer(soundAlias, rest);
         const toneMedia = new ToneMediaInstance(player, !effectivePaused);
@@ -107,7 +275,7 @@ export default class AudioChannel implements AudioChannelInterface {
 
     async playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
         const { paused, ...rest } = options || {};
-        const pausedState = Boolean(paused) || Boolean(this.channelOptions.paused);
+        const pausedState = Boolean(paused) || Boolean(this.paused);
 
         const player = this._createPlayer(soundAlias, rest);
         const media = new ToneMediaInstance(player, !pausedState);
@@ -143,40 +311,6 @@ export default class AudioChannel implements AudioChannelInterface {
         return this;
     }
 
-    private updateMediaVolume() {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias) {
-                const mediaVolume = mediaInstance.options.volume ?? 1;
-                mediaInstance.instance.volume = mediaVolume;
-            }
-        }
-    }
-
-    get volume(): number {
-        return this.channelOptions.volume ?? 1;
-    }
-    set volume(value: number) {
-        this.channelOptions.volume = value;
-        this.updateMediaVolume();
-    }
-
-    private updateMediaMuted() {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias) {
-                const mediaMuted = mediaInstance.options.muted ?? false;
-                mediaInstance.instance.muted = mediaMuted;
-            }
-        }
-    }
-
-    get muted(): boolean {
-        return this.channelOptions.muted ?? false;
-    }
-    set muted(value: boolean) {
-        this.channelOptions.muted = value;
-        this.updateMediaMuted();
-    }
-
     toggleMuteAll(): boolean {
         this.muted = !this.muted;
         return this.muted;
@@ -192,10 +326,6 @@ export default class AudioChannel implements AudioChannelInterface {
             },
             [],
         );
-    }
-
-    get background(): boolean {
-        return this.channelOptions.background || false;
     }
 
     stopAll() {
@@ -230,21 +360,13 @@ export default class AudioChannel implements AudioChannelInterface {
         return this;
     }
 
-    private updateMediaPaused() {
+    private _updateMediaPaused() {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
             if (mediaInstance.channelAlias === this.alias) {
                 const mediaPaused = mediaInstance.options.paused ?? false;
                 mediaInstance.instance.paused = mediaPaused;
             }
         }
-    }
-
-    get paused(): boolean {
-        return this.channelOptions.paused ?? false;
-    }
-    set paused(value: boolean) {
-        this.channelOptions.paused = value;
-        this.updateMediaPaused();
     }
 
     pauseUnsavedAll(): this {

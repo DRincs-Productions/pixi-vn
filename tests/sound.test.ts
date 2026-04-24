@@ -3,21 +3,45 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 // Stub Tone.js so tests never attempt real audio/network I/O.
 vi.mock("tone", () => {
     const destStub = { volume: { value: 0 }, mute: false };
-    const playerStub = () => ({
-        toDestination: () => playerStub(),
-        start: vi.fn(),
-        stop: vi.fn(),
-        volume: { value: 0 },
-        mute: false,
-        loop: false,
-        playbackRate: 1,
-        onstop: null as (() => void) | null,
-    });
     return {
         ToneAudioBuffer: class {
             duration = 0;
             constructor(_url?: string, onload?: () => void) {
                 if (onload) setTimeout(onload, 0);
+            }
+            static load(_url: string) {
+                return Promise.resolve({});
+            }
+        },
+        /**
+         * Stub for Tone.Channel.
+         *
+         * AudioChannel extends this class.  The stub exposes `volume` and `pan`
+         * as plain own data-properties (each a `{ value: number }` object) so
+         * the AudioChannel constructor can capture and delete them before
+         * installing its own prototype getters/setters.  It also exposes `mute`
+         * as a simple boolean, and `toDestination` / `connect` / `dispose` as
+         * no-op methods.
+         */
+        Channel: class {
+            volume = { value: 0 };
+            pan = { value: 0 };
+            mute = false;
+            get muted() {
+                return this.mute;
+            }
+            constructor(_opts?: unknown) {}
+            toDestination() {
+                return this;
+            }
+            connect(_node: unknown) {
+                return this;
+            }
+            disconnect() {
+                return this;
+            }
+            dispose() {
+                return this;
             }
         },
         Player: class {
@@ -30,8 +54,11 @@ vi.mock("tone", () => {
             toDestination() {
                 return this;
             }
+            connect(_node: unknown) {
+                return this;
+            }
             start = vi.fn();
-            stop = vi.fn(() => {
+            stop = vi.fn(function (this: { onstop: (() => void) | null }) {
                 if (typeof this.onstop === "function") this.onstop();
             });
         },
@@ -336,7 +363,7 @@ describe("sound channels", () => {
         const chB = sound.findChannel("b");
         chA.volume = 0.8;
         // Mutating chA must not affect chB
-        expect(chB.volume).toBe(0.5);
+        expect(chB.volume).toBeCloseTo(0.5);
     });
 
     test("pauseUnsavedAll/resumeUnsavedAll pause channel without persisting paused option", () => {

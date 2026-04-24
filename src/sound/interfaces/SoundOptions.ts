@@ -56,4 +56,10 @@ export interface ChannelOptions
      * when a scene changes, but continues in the background.
      */
     background?: boolean;
+    /**
+     * The stereo pan position for this channel in the range [-1, 1].
+     * -1 is full left, 0 is centre, 1 is full right.
+     * Defaults to 0.
+     */
+    pan?: number;
 }

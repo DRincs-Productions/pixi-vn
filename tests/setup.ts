@@ -1,32 +1,7 @@
-// Polyfill minimal WebAudio API for Node/jsdom environment used by Vitest
-if (typeof (globalThis as any).AudioBuffer === "undefined") {
-    class _AudioBuffer {
-        length = 0;
-        duration = 0;
-        sampleRate = 44100;
-        numberOfChannels = 1;
-        constructor() {}
-    }
-    (globalThis as any).AudioBuffer = _AudioBuffer;
-}
-
-if (typeof (globalThis as any).AudioContext === "undefined") {
-    class _AudioContext {
-        sampleRate = 44100;
-        constructor() {}
-        decodeAudioData(_buffer: ArrayBuffer) {
-            // simple stub
-            return Promise.resolve(new (globalThis as any).AudioBuffer());
-        }
-        createBufferSource() {
-            return { connect: () => {}, start: () => {}, stop: () => {} };
-        }
-        createGain() {
-            return { connect: () => {}, gain: { value: 1 } };
-        }
-    }
-    (globalThis as any).AudioContext = _AudioContext;
-}
+// Web Audio API polyfills are defined in tests/webaudio-setup.ts which is
+// listed before this file in vitest.config.ts setupFiles.  That file has no
+// static imports so its body executes before Tone.js is loaded, ensuring
+// window.AudioContext is defined when Tone.js evaluates hasAudioContext.
 
 import { motion } from "@drincs/pixi-vn/motion";
 // Avoid real network/file loading in tests: stub PIXI.Assets.load to a no-op

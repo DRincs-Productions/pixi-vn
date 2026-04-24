@@ -1,6 +1,5 @@
 import SoundManagerStatic from "../SoundManagerStatic";
 import type AudioChannel from "../classes/AudioChannel";
-import { calculateVolume } from "./channel-utility";
 import type IMediaInstance from "../interfaces/IMediaInstance";
 
 export function proxyMedia(
@@ -30,18 +29,21 @@ export function proxyMedia(
                 let targetValue = value;
                 switch (prop) {
                     case "volume":
+                        // Store the per-media volume.  Channel volume is applied
+                        // automatically by the Tone.Channel audio graph, so no
+                        // multiplication is needed here.
                         mediaEntry.options[prop] = value;
-                        targetValue = calculateVolume(value, channel.channelOptions.volume);
                         break;
                     case "muted":
+                        // Store the per-media muted state.  Channel-level muting
+                        // is handled by Tone.Channel.mute, so no override needed.
                         mediaEntry.options[prop] = value;
-                        if (channel.channelOptions.muted) {
-                            targetValue = true;
-                        }
                         break;
                     case "paused":
                         mediaEntry.options[prop] = value;
-                        if (channel.channelOptions.paused) {
+                        // If the channel itself is paused, keep the player paused
+                        // regardless of the per-media request.
+                        if (channel.paused) {
                             targetValue = true;
                         }
                         break;

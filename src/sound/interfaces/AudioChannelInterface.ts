@@ -45,6 +45,11 @@ export default interface AudioChannelInterface {
      */
     stopTransientAll(): this;
     /**
+     * The stereo pan position for this channel in the range [-1, 1].
+     * -1 is full left, 0 is centre, 1 is full right.
+     */
+    pan: number;
+    /**
      * The volume of the audio channel, between 0 and 1. This is multiplied with the volume of each sound played through this channel.
      */
     volume: number;
