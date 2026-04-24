@@ -104,17 +104,18 @@ export default class AudioChannel extends _ToneChannelBase implements AudioChann
     get volume(): number {
         return decibelsToLinear(this._toneVolume.value);
     }
-    set volume(v: any) {
+    set volume(v: number) {
         if (this._toneVolume !== undefined) {
             // Normal use: convert linear → dB and store in the Tone Param.
-            this._toneVolume.value = linearToDecibels(v as number);
+            this._toneVolume.value = linearToDecibels(v);
         } else {
             // Called from super() during construction with a Tone.Param object.
             // Store it as a configurable own property so Tone's readOnly() call
             // (which sets writable:false) does not permanently lock it
             // (configurable:true allows us to delete it after super() returns).
             Object.defineProperty(this, "volume", {
-                value: v,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                value: v as any,
                 writable: true,
                 configurable: true,
                 enumerable: true,
@@ -129,14 +130,15 @@ export default class AudioChannel extends _ToneChannelBase implements AudioChann
     get pan(): number {
         return this._tonePan.value;
     }
-    set pan(v: any) {
+    set pan(v: number) {
         if (this._tonePan !== undefined) {
             // Normal use.
-            this._tonePan.value = v as number;
+            this._tonePan.value = v;
         } else {
             // Called from super() with a Tone.Param object — see set volume() above.
             Object.defineProperty(this, "pan", {
-                value: v,
+                // eslint-disable-next-line @typescript-eslint/no-explicit-any
+                value: v as any,
                 writable: true,
                 configurable: true,
                 enumerable: true,

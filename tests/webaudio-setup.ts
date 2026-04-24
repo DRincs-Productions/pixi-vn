@@ -101,8 +101,8 @@ if (typeof (globalThis as any).AudioContext === "undefined") {
             positionX: new _AudioParam(),
             positionY: new _AudioParam(),
             positionZ: new _AudioParam(),
-            setPosition(_x: number, _y: number, _z: number) {},
-            setOrientation(_x: number, _y: number, _z: number, _ux: number, _uy: number, _uz: number) {},
+            setPosition(_xPos: number, _yPos: number, _zPos: number) {},
+            setOrientation(_forwardX: number, _forwardY: number, _forwardZ: number, _upX: number, _upY: number, _upZ: number) {},
         };
 
         createGain() { return new _GainNode(); }
