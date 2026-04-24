@@ -62,9 +62,6 @@ export default interface SoundManagerInterface {
      */
     resume(alias: string): IMediaInstance | undefined;
 
-    /** Returns `true` if any sound is currently playing. */
-    isPlaying(): boolean;
-
     /** Duration in seconds of the loaded sound with the given alias. */
     duration(alias: string): number;
 

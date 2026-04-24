@@ -103,7 +103,7 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     pauseUnsavedAll(channel?: string): this {
-        if (channel !== undefined) {
+        if (channel) {
             this.findChannel(channel).pauseUnsavedAll();
         } else {
             for (const ch of SoundManagerStatic.channels.values()) {
@@ -113,7 +113,7 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     resumeUnsavedAll(channel?: string): this {
-        if (channel !== undefined) {
+        if (channel) {
             this.findChannel(channel).resumeUnsavedAll();
         } else {
             for (const ch of SoundManagerStatic.channels.values()) {
@@ -123,7 +123,7 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     stopTransientAll(channel?: string): this {
-        if (channel !== undefined) {
+        if (channel) {
             this.findChannel(channel).stopTransientAll();
         } else {
             for (const ch of SoundManagerStatic.channels.values()) {
@@ -131,9 +131,6 @@ export default class SoundManager implements SoundManagerInterface {
             }
         }
         return this;
-    }
-    isPlaying(): boolean {
-        return SoundManagerStatic.mediaInstances.size > 0;
     }
 
     async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
