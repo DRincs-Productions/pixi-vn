@@ -2,14 +2,11 @@ import type AudioChannelInterface from "./AudioChannelInterface";
 import type AudioFilter from "./AudioFilter";
 import type IMediaInstance from "./IMediaInstance";
 import type SoundGameState from "./SoundGameState";
-import type SoundOptions from "./SoundOptions";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
 
 export default interface SoundManagerInterface {
     /** Global filters applied to all sounds. */
     filtersAll: AudioFilter[];
-    /** Whether Web Audio is supported in the current environment. */
-    readonly supported: boolean;
     /** Master volume in the range [0, 1]. */
     volumeAll: number;
     /** Master playback speed multiplier. */
@@ -25,12 +22,6 @@ export default interface SoundManagerInterface {
      * @deprecated Register sound assets directly via `PIXI.Assets` instead.
      */
     add(alias: string, options: string): void;
-
-    /**
-     * Edit the options of an already-registered sound asset.
-     * If the asset has not been loaded yet it will be loaded first.
-     */
-    edit(alias: string, options: SoundOptions): Promise<void>;
 
     /**
      * Plays a sound.

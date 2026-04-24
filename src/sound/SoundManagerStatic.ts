@@ -1,7 +1,8 @@
-import * as Tone from "tone";
+import CachedMap from "@classes/CachedMap";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
+import type * as Tone from "tone";
 
 export default class SoundManagerStatic {
     private constructor() {}
@@ -18,8 +19,7 @@ export default class SoundManagerStatic {
     static readonly channels: Map<string, AudioChannelInterface> = new Map();
     static delayTimeoutInstances: [number | NodeJS.Timeout, string][] = [];
     /** Tone.js audio buffers keyed by sound alias. */
-    static readonly bufferRegistry: Map<string, Tone.ToneAudioBuffer> = new Map();
-    /** Per-alias playback options set via `SoundManager.edit()`. */
-    static readonly soundOptions: Map<string, import("@sound/interfaces/SoundOptions").default> =
-        new Map();
+    static readonly bufferRegistry: CachedMap<string, Tone.ToneAudioBuffer> = new CachedMap({
+        cacheSize: 10,
+    });
 }

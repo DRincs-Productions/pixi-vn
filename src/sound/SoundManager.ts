@@ -8,7 +8,6 @@ import type AudioFilter from "@sound/interfaces/AudioFilter";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
-import type SoundOptions from "@sound/interfaces/SoundOptions";
 import type {
     ChannelOptions,
     SoundPlayOptions,
@@ -27,14 +26,6 @@ export default class SoundManager implements SoundManagerInterface {
     }
     set filtersAll(filtersAll: AudioFilter[]) {
         this._filtersAll = filtersAll;
-    }
-
-    get supported(): boolean {
-        return (
-            typeof AudioContext !== "undefined" ||
-            typeof (globalThis as unknown as Record<string, unknown>).webkitAudioContext !==
-                "undefined"
-        );
     }
 
     get volumeAll(): number {
@@ -73,13 +64,6 @@ export default class SoundManager implements SoundManagerInterface {
             const buffer = new Tone.ToneAudioBuffer(sourceOptions);
             SoundManagerStatic.bufferRegistry.set(alias, buffer);
         }
-    }
-
-    async edit(alias: string, options: SoundOptions): Promise<void> {
-        if (!SoundManagerStatic.bufferRegistry.has(alias)) {
-            await this.load(alias);
-        }
-        SoundManagerStatic.soundOptions.set(alias, options);
     }
 
     pauseAll(): this {
