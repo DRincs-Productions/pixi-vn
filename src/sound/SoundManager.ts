@@ -1,4 +1,3 @@
-import * as Tone from "tone";
 import { GENERAL_CHANNEL } from "@constants";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -19,16 +18,9 @@ import SoundManagerStatic from "@sound/SoundManagerStatic";
 import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
+import * as Tone from "tone";
 
 export default class SoundManager implements SoundManagerInterface {
-    // ------------------------------------------------------------------ //
-    // Global audio-bus properties                                          //
-    // ------------------------------------------------------------------ //
-
-    get context(): AudioContext {
-        return Tone.getContext().rawContext as AudioContext;
-    }
-
     private _filtersAll: AudioFilter[] = [];
     get filtersAll(): AudioFilter[] {
         return this._filtersAll;
@@ -45,25 +37,11 @@ export default class SoundManager implements SoundManagerInterface {
         );
     }
 
-    /** @deprecated No-op — legacy HTML5 Audio fallback is not used with Tone.js. */
-    get useLegacy(): boolean {
-        return false;
-    }
-    /** @deprecated */
-    set useLegacy(_legacy: boolean) {}
-
-    /** @deprecated */
-    get disableAutoPause(): boolean {
-        return false;
-    }
-    /** @deprecated */
-    set disableAutoPause(_autoPause: boolean) {}
-
     get volumeAll(): number {
         // Tone.Destination volume is in dB; convert back to linear [0, 1].
         const db = Tone.getDestination().volume.value;
         if (db === -Infinity) return 0;
-        return Math.pow(10, db / 20);
+        return 10 ** (db / 20);
     }
     set volumeAll(volume: number) {
         Tone.getDestination().volume.value = volume <= 0 ? -Infinity : 20 * Math.log10(volume);
@@ -81,10 +59,6 @@ export default class SoundManager implements SoundManagerInterface {
     }
     private _speedAll = 1;
 
-    // ------------------------------------------------------------------ //
-    // Default channel                                                      //
-    // ------------------------------------------------------------------ //
-
     _defaultChannelAlias = GENERAL_CHANNEL;
     get defaultChannelAlias(): string {
         return this._defaultChannelAlias;
@@ -92,10 +66,6 @@ export default class SoundManager implements SoundManagerInterface {
     set defaultChannelAlias(alias: string) {
         this._defaultChannelAlias = alias;
     }
-
-    // ------------------------------------------------------------------ //
-    // Sound registration                                                   //
-    // ------------------------------------------------------------------ //
 
     /** @deprecated Register sound assets directly via `PIXI.Assets` instead. */
     add(alias: string, sourceOptions: string): void {
@@ -111,10 +81,6 @@ export default class SoundManager implements SoundManagerInterface {
         }
         SoundManagerStatic.soundOptions.set(alias, options);
     }
-
-    // ------------------------------------------------------------------ //
-    // Global playback controls                                             //
-    // ------------------------------------------------------------------ //
 
     pauseAll(): this {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
@@ -185,10 +151,6 @@ export default class SoundManager implements SoundManagerInterface {
     isPlaying(): boolean {
         return SoundManagerStatic.mediaInstances.size > 0;
     }
-
-    // ------------------------------------------------------------------ //
-    // Playback                                                             //
-    // ------------------------------------------------------------------ //
 
     async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
     async play(
@@ -268,10 +230,6 @@ export default class SoundManager implements SoundManagerInterface {
         return buffer?.duration ?? 0;
     }
 
-    // ------------------------------------------------------------------ //
-    // Loading                                                              //
-    // ------------------------------------------------------------------ //
-
     async load(alias: string | string[]): Promise<void> {
         if (typeof alias === "string") {
             alias = [alias];
@@ -341,10 +299,6 @@ export default class SoundManager implements SoundManagerInterface {
         this.stopAll();
     }
 
-    // ------------------------------------------------------------------ //
-    // Channels                                                             //
-    // ------------------------------------------------------------------ //
-
     addChannel(
         alias: string | string[],
         options: ChannelOptions = {},
@@ -379,10 +333,6 @@ export default class SoundManager implements SoundManagerInterface {
     get channels(): AudioChannelInterface[] {
         return Array.from(SoundManagerStatic.channels.values());
     }
-
-    // ------------------------------------------------------------------ //
-    // Export / restore                                                     //
-    // ------------------------------------------------------------------ //
 
     public export(): SoundGameState {
         const mediaInstances: {

@@ -1,47 +1,25 @@
-import type AudioFilter from "./AudioFilter";
 import type AudioChannelInterface from "./AudioChannelInterface";
+import type AudioFilter from "./AudioFilter";
 import type IMediaInstance from "./IMediaInstance";
 import type SoundGameState from "./SoundGameState";
 import type SoundOptions from "./SoundOptions";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
 
 export default interface SoundManagerInterface {
-    // ------------------------------------------------------------------ //
-    // Global audio-bus properties                                          //
-    // ------------------------------------------------------------------ //
-
-    /** The underlying Web Audio `AudioContext`. */
-    readonly context: AudioContext;
     /** Global filters applied to all sounds. */
     filtersAll: AudioFilter[];
     /** Whether Web Audio is supported in the current environment. */
     readonly supported: boolean;
-    /**
-     * @deprecated No-op – legacy HTML5 Audio fallback is not used.
-     */
-    useLegacy: boolean;
-    /**
-     * @deprecated No-op – auto-pause is handled by the application.
-     */
-    disableAutoPause: boolean;
     /** Master volume in the range [0, 1]. */
     volumeAll: number;
     /** Master playback speed multiplier. */
     speedAll: number;
-
-    // ------------------------------------------------------------------ //
-    // Default channel                                                      //
-    // ------------------------------------------------------------------ //
 
     /**
      * The default channel alias used when playing a sound without specifying a
      * channel. Defaults to `"general"`.
      */
     defaultChannelAlias: string;
-
-    // ------------------------------------------------------------------ //
-    // Sound registration                                                   //
-    // ------------------------------------------------------------------ //
 
     /**
      * @deprecated Register sound assets directly via `PIXI.Assets` instead.
@@ -53,10 +31,6 @@ export default interface SoundManagerInterface {
      * If the asset has not been loaded yet it will be loaded first.
      */
     edit(alias: string, options: SoundOptions): Promise<void>;
-
-    // ------------------------------------------------------------------ //
-    // Playback                                                             //
-    // ------------------------------------------------------------------ //
 
     /**
      * Plays a sound.
@@ -103,10 +77,6 @@ export default interface SoundManagerInterface {
     /** Duration in seconds of the loaded sound with the given alias. */
     duration(alias: string): number;
 
-    // ------------------------------------------------------------------ //
-    // Global playback controls                                             //
-    // ------------------------------------------------------------------ //
-
     /** Toggle mute on all sounds. Returns the new muted state. */
     toggleMuteAll(): boolean;
     /** Mute all sounds. */
@@ -134,10 +104,6 @@ export default interface SoundManagerInterface {
      */
     stopTransientAll(channel?: string): this;
 
-    // ------------------------------------------------------------------ //
-    // Loading                                                              //
-    // ------------------------------------------------------------------ //
-
     /** Load one or more sound assets. */
     load(alias: string | string[]): Promise<void>;
     /** Trigger background loading of one or more sound assets. */
@@ -147,10 +113,6 @@ export default interface SoundManagerInterface {
 
     /** Stop all sounds and clear internal state. */
     clear(): void;
-
-    // ------------------------------------------------------------------ //
-    // Channels                                                             //
-    // ------------------------------------------------------------------ //
 
     /**
      * Add a new audio channel.
@@ -169,11 +131,6 @@ export default interface SoundManagerInterface {
     /** All registered audio channels. */
     readonly channels: AudioChannelInterface[];
 
-    // ------------------------------------------------------------------ //
-    // State export / restore                                               //
-    // ------------------------------------------------------------------ //
-
     export(): SoundGameState;
     restore(data: object): Promise<void>;
 }
-
