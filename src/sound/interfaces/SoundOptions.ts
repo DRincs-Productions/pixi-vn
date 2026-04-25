@@ -1,4 +1,4 @@
-import type AudioFilter from "./AudioFilter";
+import type { InputNode } from "tone";
 
 export default interface SoundOptions {
     /** Auto play on load. */
@@ -14,7 +14,7 @@ export default interface SoundOptions {
     /** Whether the sound starts muted. */
     muted?: boolean;
     /** Initial filters to apply. */
-    filters?: AudioFilter[];
+    filters?: InputNode[];
     /** Only allow a single concurrent instance of this sound. */
     singleInstance?: boolean;
 }

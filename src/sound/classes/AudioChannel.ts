@@ -41,6 +41,10 @@ export default class AudioChannel implements AudioChannelInterface {
             mute: channelOptions.muted ?? false,
             pan: channelOptions.pan ?? 0,
         }).toDestination();
+
+        if (channelOptions.filters) {
+            this.toneChannel.chain(...channelOptions.filters);
+        }
     }
 
     // ------------------------------------------------------------------ //
