@@ -16,12 +16,10 @@ vi.mock("tone", () => {
         /**
          * Stub for Tone.Channel.
          *
-         * AudioChannel extends this class.  The stub exposes `volume` and `pan`
-         * as plain own data-properties (each a `{ value: number }` object) so
-         * the AudioChannel constructor can capture and delete them before
-         * installing its own prototype getters/setters.  It also exposes `mute`
-         * as a simple boolean, and `toDestination` / `connect` / `dispose` as
-         * no-op methods.
+         * AudioChannel holds a `toneChannel` property of this type.  The stub
+         * exposes `volume` and `pan` as `{ value: number }` objects (matching
+         * Tone's Param shape), `mute` as a boolean, and `toDestination` /
+         * `connect` / `dispose` as no-op methods.
          */
         Channel: class {
             volume = { value: 0 };

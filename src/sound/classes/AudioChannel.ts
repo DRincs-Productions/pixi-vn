@@ -22,37 +22,18 @@ function decibelsToLinear(db: number): number {
 }
 
 // ---------------------------------------------------------------------------
-// Type-erasure base
-//
-// Tone.Channel declares `volume` and `pan` as `readonly Param<...>` instance
-// properties, and `muted` as a readonly prototype getter.  These types are
-// incompatible with our AudioChannelInterface (which uses plain numbers and a
-// writable `muted`).  We cast the constructor to a version that omits those
-// three properties so TypeScript lets us redeclare them below.
-// ---------------------------------------------------------------------------
-
-const _ToneChannelBase = Tone.Channel as unknown as new (
-    ...args: unknown[]
-) => Omit<Tone.Channel, "volume" | "pan" | "muted">;
-
-// ---------------------------------------------------------------------------
 // AudioChannel
 // ---------------------------------------------------------------------------
 
-export default class AudioChannel extends _ToneChannelBase implements AudioChannelInterface {
+export default class AudioChannel implements AudioChannelInterface {
     readonly alias: string;
 
     /**
-     * Reference to Tone.Channel's `volume` Param captured during construction
-     * (before we remove the own-instance property so our prototype getter takes
-     * over).
+     * The underlying Tone.Channel that handles volume, pan and mute for this
+     * channel in the Web Audio graph.  All players are connected into this node
+     * before it is routed to the audio destination.
      */
-    private readonly _toneVolume: { value: number };
-
-    /**
-     * Reference to Tone.Channel's `pan` Param captured during construction.
-     */
-    private readonly _tonePan: { value: number };
+    readonly toneChannel: Tone.Channel;
 
     /** Per-channel state for concepts not modelled by Tone.Channel (paused, background, filters). */
     private readonly _channelState: Pick<ChannelOptions, "paused" | "background" | "filters">;
@@ -60,11 +41,6 @@ export default class AudioChannel extends _ToneChannelBase implements AudioChann
     private readonly _transientInstances: Set<ToneMediaInstance> = new Set();
 
     constructor(alias: string, channelOptions: ChannelOptions = {}) {
-        // Initialise Tone.Channel with dB volume, mute, and pan.
-        // Some host environments (e.g. jsdom test mocks) ignore these args, so
-        // we explicitly set the params afterwards as well.
-        super({ volume: linearToDecibels(channelOptions.volume ?? 1), mute: channelOptions.muted ?? false, pan: channelOptions.pan ?? 0 });
-
         this.alias = alias;
         this._channelState = {
             paused: channelOptions.paused,
@@ -72,29 +48,12 @@ export default class AudioChannel extends _ToneChannelBase implements AudioChann
             filters: channelOptions.filters,
         };
 
-        // After super() the parent assigns `this.volume` and `this.pan` as own
-        // instance data-properties (via Tone's `readOnly()` helper which sets
-        // `writable:false` but keeps `configurable:true`).  We capture these
-        // Param references before redefining the properties.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this._toneVolume = (this as any).volume as { value: number };
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        this._tonePan = (this as any).pan as { value: number };
-
-        // Remove the own properties so our prototype getter/setter definitions
-        // (below) are reached by the JavaScript property-lookup chain.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        delete (this as any).volume;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        delete (this as any).pan;
-
-        // Apply the requested initial values (handles mocks that ignore super() args).
-        this._toneVolume.value = linearToDecibels(channelOptions.volume ?? 1);
-        this._tonePan.value = channelOptions.pan ?? 0;
-        this.mute = channelOptions.muted ?? false;
-
-        // Route this channel's output to the global audio destination.
-        this.toDestination();
+        // Create and connect Tone.Channel with the requested initial values.
+        this.toneChannel = new Tone.Channel({
+            volume: linearToDecibels(channelOptions.volume ?? 1),
+            mute: channelOptions.muted ?? false,
+            pan: channelOptions.pan ?? 0,
+        }).toDestination();
     }
 
     // ------------------------------------------------------------------ //
@@ -102,25 +61,10 @@ export default class AudioChannel extends _ToneChannelBase implements AudioChann
     // ------------------------------------------------------------------ //
 
     get volume(): number {
-        return decibelsToLinear(this._toneVolume.value);
+        return decibelsToLinear(this.toneChannel.volume.value);
     }
     set volume(v: number) {
-        if (this._toneVolume !== undefined) {
-            // Normal use: convert linear → dB and store in the Tone Param.
-            this._toneVolume.value = linearToDecibels(v);
-        } else {
-            // Called from super() during construction with a Tone.Param object.
-            // Store it as a configurable own property so Tone's readOnly() call
-            // (which sets writable:false) does not permanently lock it
-            // (configurable:true allows us to delete it after super() returns).
-            Object.defineProperty(this, "volume", {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                value: v as any,
-                writable: true,
-                configurable: true,
-                enumerable: true,
-            });
-        }
+        this.toneChannel.volume.value = linearToDecibels(v);
     }
 
     // ------------------------------------------------------------------ //
@@ -128,33 +72,21 @@ export default class AudioChannel extends _ToneChannelBase implements AudioChann
     // ------------------------------------------------------------------ //
 
     get pan(): number {
-        return this._tonePan.value;
+        return this.toneChannel.pan.value;
     }
     set pan(v: number) {
-        if (this._tonePan !== undefined) {
-            // Normal use.
-            this._tonePan.value = v;
-        } else {
-            // Called from super() with a Tone.Param object — see set volume() above.
-            Object.defineProperty(this, "pan", {
-                // eslint-disable-next-line @typescript-eslint/no-explicit-any
-                value: v as any,
-                writable: true,
-                configurable: true,
-                enumerable: true,
-            });
-        }
+        this.toneChannel.pan.value = v;
     }
 
     // ------------------------------------------------------------------ //
-    // muted — read/write, delegating to Tone.Channel's mute setter        //
+    // muted — read/write, delegating to Tone.Channel's mute property      //
     // ------------------------------------------------------------------ //
 
     get muted(): boolean {
-        return this.mute;
+        return this.toneChannel.mute;
     }
     set muted(v: boolean) {
-        this.mute = v;
+        this.toneChannel.mute = v;
     }
 
     // ------------------------------------------------------------------ //
@@ -188,10 +120,8 @@ export default class AudioChannel extends _ToneChannelBase implements AudioChann
                 `Sound buffer for alias "${soundAlias}" is not loaded. Call sound.load() first.`,
             );
         }
-        // Connect the player INTO this channel (not directly to the destination).
-        // Tone.Channel applies its own volume and pan on top of the player's output.
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        const player = new Tone.Player(buffer).connect(this as any);
+        // Connect the player into the Tone.Channel so its volume/pan/mute apply.
+        const player = new Tone.Player(buffer).connect(this.toneChannel);
         player.loop = options.loop ?? false;
         player.playbackRate = options.speed ?? 1;
         // Per-media mute only — channel-level muting is handled by Tone.Channel.
