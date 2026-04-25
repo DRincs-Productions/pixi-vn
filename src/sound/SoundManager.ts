@@ -400,7 +400,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 mediaInstance.volume.value !==
                                 (mediaInstanceData.options.volume ?? 1)
                             ) {
-                                mediaInstance.volume = mediaInstanceData.options.volume ?? 1;
+                                mediaInstance.volume.value = mediaInstanceData.options.volume ?? 1;
                             }
                             if (
                                 mediaInstance.muted !== (mediaInstanceData.options.muted || false)
