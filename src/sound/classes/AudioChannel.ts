@@ -1,21 +1,12 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import ToneMediaInstance from "@sound/classes/ToneMediaInstance";
 import { proxyMedia } from "@sound/functions/proxy-utility";
+import { decibelsToLinear, linearToDecibels } from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
 import * as Tone from "tone";
-
-/** Convert a linear [0, 1] gain value to decibels. */
-function linearToDecibels(v: number): number {
-    return v <= 0 ? -Infinity : 20 * Math.log10(v);
-}
-
-/** Convert a decibel value to a linear [0, 1] gain. */
-function decibelsToLinear(db: number): number {
-    return db <= -Infinity ? 0 : 10 ** (db / 20);
-}
 
 export default class AudioChannel implements AudioChannelInterface {
     /**

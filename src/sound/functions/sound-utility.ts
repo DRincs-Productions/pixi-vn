@@ -1,4 +1,14 @@
 import { logger } from "../../utils/log-utility";
+
+/** Convert a linear [0, 1] gain value to decibels. */
+export function linearToDecibels(v: number): number {
+    return v <= 0 ? -Infinity : 20 * Math.log10(v);
+}
+
+/** Convert a decibel value to a linear [0, 1] gain. */
+export function decibelsToLinear(db: number): number {
+    return db <= -Infinity ? 0 : 10 ** (db / 20);
+}
 import type AudioFilter from "../interfaces/AudioFilter";
 import type SoundFilterMemory from "../types/SoundFilterMemory";
 
