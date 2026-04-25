@@ -1,3 +1,4 @@
+import type * as Tone from "tone";
 import type IMediaInstance from "./IMediaInstance";
 import type { SoundPlayOptions } from "./SoundOptions";
 
@@ -97,4 +98,77 @@ export default interface AudioChannelInterface {
      * @return `true` if all sounds are muted.
      */
     toggleMuteAll(): boolean;
+    /**
+     * Routes the channel output through one or more Tone.js audio nodes before
+     * reaching the master destination. This replaces any previously set routing,
+     * so calling `chain` again will override the previous chain.
+     *
+     * Useful for inserting channel-wide audio effects such as reverb, delay or
+     * EQ.  Internally this disconnects the channel from its current destination
+     * and reconnects it through the provided nodes in series, ending at the
+     * master output.
+     *
+     * @param nodes One or more Tone.js {@link https://tonejs.github.io/docs/InputNode | InputNode} instances to chain in series.
+     * @return Instance for chaining.
+     *
+     * @example
+     * ```ts
+     * import * as Tone from "tone";
+     *
+     * const channel = sound.findChannel("music");
+     *
+     * // Create a reverb effect and wait for its impulse response to be ready.
+     * const reverb = new Tone.Reverb({ decay: 2.5 });
+     * await reverb.ready;
+     *
+     * // Route the channel through the reverb to the master output.
+     * channel.chain(reverb);
+     * ```
+     */
+    chain(...nodes: Tone.InputNode[]): this;
+    /**
+     * **Advanced** — the raw `Tone.Param<"decibels">` for this channel's volume.
+     *
+     * Unlike the {@link volume} property (which uses a linear 0–1 scale), this
+     * Param works directly in **decibels** and exposes all Tone.js automation
+     * methods such as `rampTo`, `linearRampTo`, and `exponentialRampTo`.
+     *
+     * Use this when you need to smoothly automate volume over time instead of
+     * setting it instantly.
+     *
+     * @example
+     * ```ts
+     * const channel = sound.findChannel("music");
+     *
+     * // Fade the volume from its current level to -12 dB over 3 seconds.
+     * channel.volumeParam.rampTo(-12, 3);
+     *
+     * // Fade to silence over 2 seconds.
+     * channel.volumeParam.rampTo(-Infinity, 2);
+     * ```
+     */
+    readonly volumeParam: Tone.Param<"decibels">;
+    /**
+     * **Advanced** — the raw `Tone.Param<"audioRange">` for this channel's
+     * stereo pan position.
+     *
+     * Unlike the {@link pan} property (which sets the value instantly), this
+     * Param exposes all Tone.js automation methods such as `rampTo`,
+     * `linearRampTo`, and `exponentialRampTo`.
+     *
+     * Use this when you need to smoothly automate panning over time instead of
+     * setting it instantly.  Values range from -1 (full left) to 1 (full right).
+     *
+     * @example
+     * ```ts
+     * const channel = sound.findChannel("music");
+     *
+     * // Gradually pan to the left over 3 seconds.
+     * channel.panParam.rampTo(-1, 3);
+     *
+     * // Return to centre over 2 seconds.
+     * channel.panParam.rampTo(0, 2);
+     * ```
+     */
+    readonly panParam: Tone.Param<"audioRange">;
 }

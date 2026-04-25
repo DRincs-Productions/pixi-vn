@@ -93,6 +93,28 @@ export default class AudioChannel implements AudioChannelInterface {
     }
 
     // ------------------------------------------------------------------ //
+    // chain — route channel output through effect nodes                   //
+    // ------------------------------------------------------------------ //
+
+    chain(...nodes: Tone.InputNode[]): this {
+        this.toneChannel.disconnect();
+        this.toneChannel.chain(...nodes, Tone.getDestination());
+        return this;
+    }
+
+    // ------------------------------------------------------------------ //
+    // volumeParam / panParam — advanced raw Tone.Param accessors          //
+    // ------------------------------------------------------------------ //
+
+    get volumeParam(): Tone.Param<"decibels"> {
+        return this.toneChannel.volume;
+    }
+
+    get panParam(): Tone.Param<"audioRange"> {
+        return this.toneChannel.pan;
+    }
+
+    // ------------------------------------------------------------------ //
     // background                                                          //
     // ------------------------------------------------------------------ //
 
