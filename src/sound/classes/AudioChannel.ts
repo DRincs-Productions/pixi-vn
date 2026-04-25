@@ -1,4 +1,3 @@
-import * as Tone from "tone";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import ToneMediaInstance from "@sound/classes/ToneMediaInstance";
 import { proxyMedia } from "@sound/functions/proxy-utility";
@@ -6,6 +5,7 @@ import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface"
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
+import * as Tone from "tone";
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -18,7 +18,7 @@ function linearToDecibels(v: number): number {
 
 /** Convert a decibel value to a linear [0, 1] gain. */
 function decibelsToLinear(db: number): number {
-    return db <= -Infinity ? 0 : Math.pow(10, db / 20);
+    return db <= -Infinity ? 0 : 10 ** (db / 20);
 }
 
 // ---------------------------------------------------------------------------
@@ -26,8 +26,6 @@ function decibelsToLinear(db: number): number {
 // ---------------------------------------------------------------------------
 
 export default class AudioChannel implements AudioChannelInterface {
-    readonly alias: string;
-
     /**
      * The underlying Tone.Channel that handles volume, pan and mute for this
      * channel in the Web Audio graph.  All players are connected into this node
@@ -40,7 +38,10 @@ export default class AudioChannel implements AudioChannelInterface {
 
     private readonly _transientInstances: Set<ToneMediaInstance> = new Set();
 
-    constructor(alias: string, channelOptions: ChannelOptions = {}) {
+    constructor(
+        readonly alias: string,
+        channelOptions: ChannelOptions = {},
+    ) {
         this.alias = alias;
         this._channelState = {
             paused: channelOptions.paused,
