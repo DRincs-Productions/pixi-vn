@@ -143,7 +143,6 @@ export default class AudioChannel implements AudioChannelInterface {
         const player = new MediaInstance(alias, this.alias, soundAlias, GameUnifier.stepCounter, {
             ...restOptions,
             url: buffer,
-            autostart,
             mute,
             playbackRate,
         });
@@ -152,6 +151,10 @@ export default class AudioChannel implements AudioChannelInterface {
             player.chain(delayFilter, ...filters, this.toneChannel);
         } else {
             player.chain(...filters, this.toneChannel);
+        }
+        player.toDestination();
+        if (autostart) {
+            player.start();
         }
 
         return player;

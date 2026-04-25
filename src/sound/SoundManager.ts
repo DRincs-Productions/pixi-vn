@@ -178,7 +178,11 @@ export default class SoundManager implements SoundManagerInterface {
             );
         }
         const { autostart = true, ...playerOptions } = options ?? {};
-        return new Tone.Player({ ...playerOptions, url: buffer, autostart }).toDestination();
+        const player = new Tone.Player({ ...playerOptions, url: buffer }).toDestination();
+        if (autostart) {
+            player.start();
+        }
+        return player;
     }
 
     find(alias: string): MediaInteface | undefined {
