@@ -1,4 +1,4 @@
-import { GameUnifier } from "@drincs/pixi-vn/core";
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import MediaInstance from "@sound/classes/MediaInstance";
 import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
@@ -27,7 +27,9 @@ export default class AudioChannel implements AudioChannelInterface {
             volume: linearToDecibels(channelOptions.volume ?? 1),
             mute: channelOptions.muted ?? false,
             pan: channelOptions.pan ?? 0,
-        }).toDestination();
+        })
+            .toDestination()
+            .connect(SoundManagerStatic.liveBus);
 
         if (channelOptions.filters) {
             this.toneChannel.chain(...channelOptions.filters);
@@ -122,7 +124,8 @@ export default class AudioChannel implements AudioChannelInterface {
     ): MediaInstance {
         const buffer = SoundManagerStatic.bufferRegistry.get(soundAlias);
         if (!buffer) {
-            throw new Error(
+            throw new PixiError(
+                "unregistered_asset",
                 `Sound buffer for alias "${soundAlias}" is not loaded. Call sound.load() first.`,
             );
         }

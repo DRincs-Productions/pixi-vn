@@ -1,5 +1,5 @@
 import { GENERAL_CHANNEL } from "@constants";
-import { GameUnifier } from "@drincs/pixi-vn/core";
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import AudioChannel from "@sound/classes/AudioChannel";
 import {
@@ -49,7 +49,7 @@ export default class SoundManager implements SoundManagerInterface {
         this._speedAll = speed;
         // Apply to all currently active media instances.
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            mediaInstance.instance.speed = speed;
+            mediaInstance.speed = speed;
         }
     }
     private _speedAll = 1;
@@ -72,16 +72,16 @@ export default class SoundManager implements SoundManagerInterface {
 
     pauseAll(): this {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (!mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = true;
+            if (!mediaInstance.paused) {
+                mediaInstance.paused = true;
             }
         }
         return this;
     }
     resumeAll(): this {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = false;
+            if (mediaInstance.paused) {
+                mediaInstance.paused = false;
             }
         }
         return this;
@@ -101,39 +101,44 @@ export default class SoundManager implements SoundManagerInterface {
     }
     stopAll(): this {
         for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            mediaInstance.instance.stop();
+            mediaInstance.stop();
         }
         SoundManagerStatic.mediaInstances.clear();
         return this;
     }
     pauseUnsavedAll(channel?: string): this {
         if (channel) {
-            this.findChannel(channel).pauseUnsavedAll();
+            const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
+            toneChannel.disconnect();
+            toneChannel.connect(SoundManagerStatic.freezeBus);
         } else {
             for (const ch of SoundManagerStatic.channels.values()) {
-                ch.pauseUnsavedAll();
+                const toneChannel = (ch as AudioChannel).toneChannel;
+                toneChannel.disconnect();
+                toneChannel.connect(SoundManagerStatic.freezeBus);
             }
         }
         return this;
     }
     resumeUnsavedAll(channel?: string): this {
         if (channel) {
-            this.findChannel(channel).resumeUnsavedAll();
+            const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
+            toneChannel.disconnect();
+            toneChannel.connect(SoundManagerStatic.liveBus);
         } else {
             for (const ch of SoundManagerStatic.channels.values()) {
-                ch.resumeUnsavedAll();
+                const toneChannel = (ch as AudioChannel).toneChannel;
+                toneChannel.disconnect();
+                toneChannel.connect(SoundManagerStatic.liveBus);
             }
         }
         return this;
     }
-    stopTransientAll(channel?: string): this {
-        if (channel) {
-            this.findChannel(channel).stopTransientAll();
-        } else {
-            for (const ch of SoundManagerStatic.channels.values()) {
-                ch.stopTransientAll();
-            }
+    stopTransientAll(): this {
+        for (const player of SoundManagerStatic.transients) {
+            player.stop();
         }
+        SoundManagerStatic.transients.clear();
         return this;
     }
 
@@ -167,17 +172,24 @@ export default class SoundManager implements SoundManagerInterface {
 
     async playTransient(
         alias: string,
-        options?: SoundPlayOptionsWithChannel,
-    ): Promise<MediaInteface> {
+        options?: Partial<Tone.PlayerOptions>,
+    ): Promise<Tone.Player> {
         if (!SoundManagerStatic.bufferRegistry.has(alias)) {
             await this.load(alias);
         }
-        const { channel = this.defaultChannelAlias, ...channelOptions } = options ?? {};
-        return await this.findChannel(channel).playTransient(alias, channelOptions);
+        const buffer = SoundManagerStatic.bufferRegistry.get(alias);
+        if (!buffer) {
+            throw new PixiError(
+                "unregistered_asset",
+                `Sound buffer for alias "${alias}" is not loaded. Call sound.load() first.`,
+            );
+        }
+        const { autostart = true, ...playerOptions } = options ?? {};
+        return new Tone.Player({ ...playerOptions, url: buffer, autostart }).toDestination();
     }
 
     find(alias: string): MediaInteface | undefined {
-        return SoundManagerStatic.mediaInstances.get(alias)?.instance;
+        return SoundManagerStatic.mediaInstances.get(alias);
     }
 
     stop(alias: string): void {
@@ -386,29 +398,27 @@ export default class SoundManager implements SoundManagerInterface {
                                 );
                                 return;
                             }
-                            const instance = mediaInstance.instance;
-                            if (instance.paused !== restoredPaused) {
-                                instance.paused = restoredPaused;
+                            if (mediaInstance.paused !== restoredPaused) {
+                                mediaInstance.paused = restoredPaused;
                             }
-                            if (instance.loop !== (mediaInstanceData.options.loop || false)) {
-                                instance.loop = mediaInstanceData.options.loop || false;
+                            if (mediaInstance.loop !== (mediaInstanceData.options.loop || false)) {
+                                mediaInstance.loop = mediaInstanceData.options.loop || false;
                             }
-                            if (instance.volume !== (mediaInstanceData.options.volume ?? 1)) {
-                                instance.volume = mediaInstanceData.options.volume ?? 1;
+                            if (
+                                mediaInstance.volume.value !==
+                                (mediaInstanceData.options.volume ?? 1)
+                            ) {
+                                mediaInstance.volume = mediaInstanceData.options.volume ?? 1;
                             }
-                            if (instance.muted !== (mediaInstanceData.options.muted || false)) {
-                                instance.muted = mediaInstanceData.options.muted || false;
+                            if (
+                                mediaInstance.muted !== (mediaInstanceData.options.muted || false)
+                            ) {
+                                mediaInstance.muted = mediaInstanceData.options.muted || false;
                             }
-                            if (instance.speed !== (mediaInstanceData.options.speed ?? 1)) {
-                                instance.speed = mediaInstanceData.options.speed ?? 1;
+                            if (mediaInstance.speed !== (mediaInstanceData.options.speed ?? 1)) {
+                                mediaInstance.speed = mediaInstanceData.options.speed ?? 1;
                             }
-                            mediaInstance.options = {
-                                ...mediaInstanceData.options,
-                                paused: restoredPaused,
-                                filters: FilterMemoryToFilter(
-                                    mediaInstanceData.options.filters || [],
-                                ),
-                            };
+                            // TODO filters
                         }
                     });
                     await Promise.all(promises2);

@@ -1,3 +1,4 @@
+import type { Player, PlayerOptions } from "tone";
 import type AudioChannelInterface from "./AudioChannelInterface";
 import type AudioFilter from "./AudioFilter";
 import type MediaInteface from "./MediaInteface";
@@ -9,7 +10,9 @@ export default interface SoundManagerInterface {
     filtersAll: AudioFilter[];
     /** Master volume in the range [0, 1]. */
     volumeAll: number;
-    /** Master playback speed multiplier. */
+    /**
+     * @deprecated Global playback speed. This is not a well-supported feature and may be removed in a future release. Use individual sound speed options instead.
+     */
     speedAll: number;
 
     /**
@@ -40,7 +43,7 @@ export default interface SoundManagerInterface {
      * Plays a non-persistent ("transient") sound (e.g. UI / menu sounds).
      * Transient playback is not tracked in save/export state.
      */
-    playTransient(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInteface>;
+    playTransient(alias: string, options?: Partial<PlayerOptions>): Promise<Player>;
 
     /**
      * Find a tracked media instance by alias.
@@ -88,9 +91,8 @@ export default interface SoundManagerInterface {
     resumeUnsavedAll(channel?: string): this;
     /**
      * Stop all transient media instances started with {@link playTransient}.
-     * If `channel` is provided only that channel's instances are affected.
      */
-    stopTransientAll(channel?: string): this;
+    stopTransientAll(): this;
 
     /** Load one or more sound assets. */
     load(...alias: string[]): Promise<void>;
