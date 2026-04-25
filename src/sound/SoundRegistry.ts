@@ -9,7 +9,6 @@ namespace SoundRegistry {
     export const mediaInstances: Map<string, MediaInteface> = new Map();
     export const channels: Map<string, AudioChannelInterface> = new Map();
     export const transients: Set<Player> = new Set();
-    /** Tone.js audio buffers keyed by sound alias. */
     export const bufferRegistry: CachedMap<string, ToneAudioBuffer> = new CachedMap({
         cacheSize: 10,
     });

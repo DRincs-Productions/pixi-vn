@@ -5,7 +5,7 @@ import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface"
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundRegistry from "@sound/SoundRegistry";
-import * as Tone from "tone";
+import { Channel, Delay, type InputNode, type Param } from "tone";
 
 export default class AudioChannel implements AudioChannelInterface {
     /**
@@ -13,7 +13,7 @@ export default class AudioChannel implements AudioChannelInterface {
      * channel in the Web Audio graph.  All players are connected into this node
      * before it is routed to the audio destination.
      */
-    readonly toneChannel: Tone.Channel;
+    readonly toneChannel: Channel;
 
     constructor(
         readonly alias: string,
@@ -23,7 +23,7 @@ export default class AudioChannel implements AudioChannelInterface {
         this.background = channelOptions.background ?? false;
 
         // Create and connect Tone.Channel with the requested initial values.
-        this.toneChannel = new Tone.Channel({
+        this.toneChannel = new Channel({
             volume: linearToDecibels(channelOptions.volume ?? 1),
             mute: channelOptions.muted ?? false,
             pan: channelOptions.pan ?? 0,
@@ -46,7 +46,7 @@ export default class AudioChannel implements AudioChannelInterface {
     set volume(v: number) {
         this.toneChannel.volume.value = linearToDecibels(v);
     }
-    get volumeParam(): Tone.Param<"decibels"> {
+    get volumeParam(): Param<"decibels"> {
         return this.toneChannel.volume;
     }
 
@@ -60,7 +60,7 @@ export default class AudioChannel implements AudioChannelInterface {
     set pan(v: number) {
         this.toneChannel.pan.value = v;
     }
-    get panParam(): Tone.Param<"audioRange"> {
+    get panParam(): Param<"audioRange"> {
         return this.toneChannel.pan;
     }
 
@@ -101,9 +101,8 @@ export default class AudioChannel implements AudioChannelInterface {
     // chain — route channel output through effect nodes                   //
     // ------------------------------------------------------------------ //
 
-    chain(...nodes: Tone.InputNode[]): this {
-        this.toneChannel.disconnect();
-        this.toneChannel.chain(...nodes, Tone.getDestination());
+    chain(...nodes: InputNode[]): this {
+        this.toneChannel.chain(...nodes);
         return this;
     }
 
@@ -149,7 +148,7 @@ export default class AudioChannel implements AudioChannelInterface {
             playbackRate,
         });
         if (delay) {
-            const delayFilter = new Tone.Delay(delay);
+            const delayFilter = new Delay(delay);
             player.chain(delayFilter, ...filters, this.toneChannel);
         } else {
             player.chain(...filters, this.toneChannel);

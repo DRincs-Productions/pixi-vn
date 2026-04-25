@@ -1,6 +1,6 @@
-import type * as Tone from "tone";
-import type MediaInteface from "./MediaInteface";
-import type { SoundPlayOptions } from "./SoundOptions";
+import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
+import type { InputNode, Param } from "tone";
 
 export default interface AudioChannelInterface {
     /**
@@ -99,7 +99,7 @@ export default interface AudioChannelInterface {
      * channel.chain(reverb);
      * ```
      */
-    chain(...nodes: Tone.InputNode[]): this;
+    chain(...nodes: InputNode[]): this;
     /**
      * **Advanced** — the raw `Tone.Param<"decibels">` for this channel's volume.
      *
@@ -121,7 +121,7 @@ export default interface AudioChannelInterface {
      * channel.volumeParam.rampTo(-Infinity, 2);
      * ```
      */
-    readonly volumeParam: Tone.Param<"decibels">;
+    readonly volumeParam: Param<"decibels">;
     /**
      * **Advanced** — the raw `Tone.Param<"audioRange">` for this channel's
      * stereo pan position.
@@ -144,5 +144,5 @@ export default interface AudioChannelInterface {
      * channel.panParam.rampTo(0, 2);
      * ```
      */
-    readonly panParam: Tone.Param<"audioRange">;
+    readonly panParam: Param<"audioRange">;
 }

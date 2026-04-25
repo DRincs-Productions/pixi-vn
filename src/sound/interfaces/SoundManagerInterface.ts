@@ -1,8 +1,8 @@
+import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type SoundGameState from "@sound/interfaces/SoundGameState";
+import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
 import type { Player, PlayerOptions } from "tone";
-import type AudioChannelInterface from "./AudioChannelInterface";
-import type MediaInteface from "./MediaInteface";
-import type SoundGameState from "./SoundGameState";
-import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
 
 export default interface SoundManagerInterface {
     /** Master volume in the range [0, 1]. */

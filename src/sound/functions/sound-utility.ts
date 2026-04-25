@@ -2,8 +2,7 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import SoundRegistry from "@sound/SoundRegistry";
 import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { logger } from "@utils/log-utility";
-import * as Tone from "tone";
-import { type InputNode, Reverb, ToneAudioBuffer } from "tone";
+import { type InputNode, Reverb, Time, ToneAudioBuffer } from "tone";
 
 /** Convert a linear [0, 1] gain value to decibels. */
 export function linearToDecibels(v: number): number {
@@ -50,8 +49,8 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             res.push({
                 type: "ReverbFilter",
                 wet: f.wet.toSeconds(),
-                decay: Tone.Time(f.decay).toSeconds(),
-                preDelay: Tone.Time(f.preDelay).toSeconds(),
+                decay: Time(f.decay).toSeconds(),
+                preDelay: Time(f.preDelay).toSeconds(),
             });
         }
         return res;
