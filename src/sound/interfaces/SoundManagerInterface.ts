@@ -5,8 +5,6 @@ import type SoundGameState from "./SoundGameState";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
 
 export default interface SoundManagerInterface {
-    /** Global filters applied to all sounds. */
-    filtersAll: AudioFilter[];
     /** Master volume in the range [0, 1]. */
     volumeAll: number;
     /**

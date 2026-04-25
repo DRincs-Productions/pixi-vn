@@ -3,9 +3,7 @@ import type SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundManager from "./SoundManager";
 import SoundManagerStatic from "./SoundManagerStatic";
 
-export { filters } from "./constants";
 export type { default as AudioChannelInterface } from "./interfaces/AudioChannelInterface";
-export type { default as AudioFilter } from "./interfaces/AudioFilter";
 export type { default as IMediaInstance } from "./interfaces/MediaInteface";
 export type {
     ExportedSound,
@@ -26,20 +24,12 @@ const sound: SoundManagerInterface = new SoundManager();
 
 GameUnifier.addOnPreContinue(async () => {
     try {
-        SoundManagerStatic.delayTimeoutInstances.forEach((id) => {
-            clearTimeout(id[0]);
-            const instance = SoundManagerStatic.mediaInstances.get(id[1]);
-            if (instance) {
-                instance.instance.paused = false;
-            }
-        });
-        SoundManagerStatic.delayTimeoutInstances = [];
         SoundManagerStatic.channels.forEach((channel) => {
             if (!channel.background) {
                 channel.stopAll();
             }
         });
-    } catch (e) {}
+    } catch (_e) {}
 });
 
 export { sound };

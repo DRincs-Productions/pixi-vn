@@ -2,14 +2,15 @@ import { GENERAL_CHANNEL } from "@constants";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import AudioChannel from "@sound/classes/AudioChannel";
+import type MediaInstance from "@sound/classes/MediaInstance";
 import {
     FilterMemoryToFilter,
     FilterToFilterMemory,
     soundLoad,
 } from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type AudioFilter from "@sound/interfaces/AudioFilter";
 import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type { MediaMemory } from "@sound/interfaces/MediaInteface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
 import type {
@@ -24,14 +25,6 @@ import { logger } from "@utils/log-utility";
 import * as Tone from "tone";
 
 export default class SoundManager implements SoundManagerInterface {
-    private _filtersAll: AudioFilter[] = [];
-    get filtersAll(): AudioFilter[] {
-        return this._filtersAll;
-    }
-    set filtersAll(filtersAll: AudioFilter[]) {
-        this._filtersAll = filtersAll;
-    }
-
     get volumeAll(): number {
         // Tone.Destination volume is in dB; convert back to linear [0, 1].
         const db = Tone.getDestination().volume.value;
@@ -312,12 +305,12 @@ export default class SoundManager implements SoundManagerInterface {
         } = Array.from(SoundManagerStatic.mediaInstances.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
                 result[mediaAlias] = {
-                    channelAlias: mediaInstance.channelAlias,
-                    soundAlias: mediaInstance.soundAlias,
-                    stepCounter: mediaInstance.stepCounter,
+                    channelAlias: (mediaInstance as MediaInstance).channelAlias,
+                    soundAlias: (mediaInstance as MediaInstance).soundAlias,
+                    stepCounter: (mediaInstance as MediaInstance).stepCounter,
                     options: {
-                        ...mediaInstance.options,
-                        filters: FilterToFilterMemory(mediaInstance.options.filters),
+                        ...(mediaInstance as MediaInstance).memory,
+                        filters: FilterToFilterMemory((mediaInstance as MediaInstance).filters),
                     },
                 };
                 return result;
@@ -327,13 +320,12 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: string;
                     soundAlias: string;
                     stepCounter: number;
-                    options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                    options: MediaMemory & { filters?: SoundFilterMemory[] };
                 };
             },
         );
         return {
             mediaInstances: createExportableElement(mediaInstances),
-            filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
     }
 
@@ -422,13 +414,6 @@ export default class SoundManager implements SoundManagerInterface {
                         }
                     });
                     await Promise.all(promises2);
-                }
-            }
-
-            if (Object.hasOwn(data, "filters")) {
-                const f = (data as SoundGameState).filters;
-                if (f) {
-                    this.filtersAll = FilterMemoryToFilter(f);
                 }
             }
         } catch (e) {

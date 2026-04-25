@@ -1,8 +1,8 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import type AudioFilter from "@sound/interfaces/AudioFilter";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
 import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { logger } from "@utils/log-utility";
+import * as Tone from "tone";
 import { type InputNode, Reverb, ToneAudioBuffer } from "tone";
 
 /** Convert a linear [0, 1] gain value to decibels. */
@@ -23,26 +23,19 @@ export function decibelsToLinear(db: number): number {
  * returned objects are plain data containers that remember the filter
  * parameters for future use.
  */
-export function FilterMemoryToFilter(filter: SoundFilterMemory[]): AudioFilter[] {
-    const res: AudioFilter[] = [];
-    for (const f of filter) {
-        if (
-            f.type === "TelephoneFilter" ||
-            f.type === "StreamFilter" ||
-            f.type === "StereoFilter" ||
-            f.type === "ReverbFilter" ||
-            f.type === "MonoFilter" ||
-            f.type === "EqualizerFilter" ||
-            f.type === "DistortionFilter"
-        ) {
-            // Return a plain AudioFilter stub that carries the serialised data.
-            // TODO: replace with real Tone.js effect implementations.
-            res.push({ filterType: f.type, ...f } as AudioFilter & Record<string, unknown>);
-        } else {
-            logger.error("Unknown sound filter type");
+export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
+    return filter.reduce((res: InputNode[], f) => {
+        if (f.type === "ReverbFilter") {
+            res.push(
+                new Reverb({
+                    decay: f.decay,
+                    preDelay: f.preDelay,
+                    wet: f.wet,
+                }),
+            );
         }
-    }
-    return res;
+        return res;
+    }, []);
 }
 
 /**
@@ -52,18 +45,17 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): AudioFilter[]
  */
 export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] | undefined {
     if (!filter) return undefined;
-    const res: SoundFilterMemory[] = [];
-    for (const f of filter) {
+    return filter.reduce((res: SoundFilterMemory[], f) => {
         if (f instanceof Reverb) {
             res.push({
                 type: "ReverbFilter",
-                wet: f.wet,
-                decay: f.decay,
-                preDelay: f.preDelay,
+                wet: f.wet.toSeconds(),
+                decay: Tone.Time(f.decay).toSeconds(),
+                preDelay: Tone.Time(f.preDelay).toSeconds(),
             });
         }
-    }
-    return res;
+        return res;
+    }, []);
 }
 
 export async function soundLoad(alias: string): Promise<void> {

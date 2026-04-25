@@ -3,6 +3,8 @@
 //     amount?: number;
 // };
 
+import type { ReverbOptions } from "tone";
+
 // type EqualizerFilter = {
 //     type: "EqualizerFilter";
 //     f32?: number;
@@ -23,10 +25,7 @@
 
 type ReverbFilter = {
     type: "ReverbFilter";
-    seconds?: number;
-    decay?: number;
-    reverse?: boolean;
-};
+} & Omit<ReverbOptions, "context">;
 
 // type StereoFilter = {
 //     type: "StereoFilter";

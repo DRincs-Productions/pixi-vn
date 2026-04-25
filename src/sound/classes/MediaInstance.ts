@@ -1,7 +1,7 @@
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { MediaMemory } from "@sound/interfaces/MediaInteface";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
-import { type BasicPlaybackState, Player, type PlayerOptions } from "tone";
+import { type BasicPlaybackState, type InputNode, Player, type PlayerOptions } from "tone";
 import type { Time } from "tone/build/esm/core/type/Units";
 
 export default class MediaInstance extends Player implements MediaInteface {
@@ -16,6 +16,7 @@ export default class MediaInstance extends Player implements MediaInteface {
         this.options = options;
     }
     readonly options: Partial<PlayerOptions>;
+    readonly filters: InputNode[] = [];
     get memory() {
         const options: MediaMemory = {
             ...this.options,
@@ -70,5 +71,9 @@ export default class MediaInstance extends Player implements MediaInteface {
     override stop(time?: Time): this {
         SoundManagerStatic.mediaInstances.delete(this.alias);
         return super.stop(time);
+    }
+    override chain(...nodes: InputNode[]): this {
+        this.filters.push(...nodes);
+        return super.chain(...nodes);
     }
 }
