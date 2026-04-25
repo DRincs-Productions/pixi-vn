@@ -211,10 +211,7 @@ export default class SoundManager implements SoundManagerInterface {
         return buffer?.duration ?? 0;
     }
 
-    async load(alias: string | string[]): Promise<void> {
-        if (typeof alias === "string") {
-            alias = [alias];
-        }
+    async load(...alias: string[]): Promise<void> {
         const promises = alias.map(async (a) => {
             if (SoundManagerStatic.bufferRegistry.has(a)) return;
             // Resolve via PIXI.Assets when the alias has been registered
@@ -246,9 +243,9 @@ export default class SoundManager implements SoundManagerInterface {
         await Promise.all(promises);
     }
 
-    backgroundLoad(alias: string | string[]): Promise<void> {
+    backgroundLoad(...alias: string[]): Promise<void> {
         // Fire-and-forget: load the buffer(s) without blocking the caller.
-        return this.load(alias).catch((e) => {
+        return this.load(...alias).catch((e) => {
             logger.error("Error background-loading sound", e);
         });
     }

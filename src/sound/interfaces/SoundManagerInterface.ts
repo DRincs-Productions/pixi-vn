@@ -93,9 +93,9 @@ export default interface SoundManagerInterface {
     stopTransientAll(channel?: string): this;
 
     /** Load one or more sound assets. */
-    load(alias: string | string[]): Promise<void>;
+    load(...alias: string[]): Promise<void>;
     /** Trigger background loading of one or more sound assets. */
-    backgroundLoad(alias: string | string[]): Promise<void>;
+    backgroundLoad(...alias: string[]): Promise<void>;
     /** Trigger background loading of a sound bundle. */
     backgroundLoadBundle(alias: string): Promise<void>;
 
