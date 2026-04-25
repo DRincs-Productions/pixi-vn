@@ -1,6 +1,5 @@
 import type { Player, PlayerOptions } from "tone";
 import type AudioChannelInterface from "./AudioChannelInterface";
-import type AudioFilter from "./AudioFilter";
 import type MediaInteface from "./MediaInteface";
 import type SoundGameState from "./SoundGameState";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
