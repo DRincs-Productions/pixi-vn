@@ -18,7 +18,7 @@ import type {
     SoundPlayOptions,
     SoundPlayOptionsWithChannel,
 } from "@sound/interfaces/SoundOptions";
-import SoundManagerStatic from "@sound/SoundManagerStatic";
+import SoundRegistry from "@sound/SoundRegistry";
 import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
@@ -41,7 +41,7 @@ export default class SoundManager implements SoundManagerInterface {
     set speedAll(speed: number) {
         this._speedAll = speed;
         // Apply to all currently active media instances.
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
             mediaInstance.speed = speed;
         }
     }
@@ -57,14 +57,14 @@ export default class SoundManager implements SoundManagerInterface {
 
     /** @deprecated Register sound assets directly via `PIXI.Assets` instead. */
     add(alias: string, sourceOptions: string): void {
-        if (!SoundManagerStatic.bufferRegistry.has(alias)) {
+        if (!SoundRegistry.bufferRegistry.has(alias)) {
             const buffer = new Tone.ToneAudioBuffer(sourceOptions);
-            SoundManagerStatic.bufferRegistry.set(alias, buffer);
+            SoundRegistry.bufferRegistry.set(alias, buffer);
         }
     }
 
     pauseAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
             if (!mediaInstance.paused) {
                 mediaInstance.paused = true;
             }
@@ -72,7 +72,7 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     resumeAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
             if (mediaInstance.paused) {
                 mediaInstance.paused = false;
             }
@@ -93,22 +93,22 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     stopAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
             mediaInstance.stop();
         }
-        SoundManagerStatic.mediaInstances.clear();
+        SoundRegistry.mediaInstances.clear();
         return this;
     }
     pauseUnsavedAll(channel?: string): this {
         if (channel) {
             const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
             toneChannel.disconnect();
-            toneChannel.connect(SoundManagerStatic.freezeBus);
+            toneChannel.connect(SoundRegistry.freezeBus);
         } else {
-            for (const ch of SoundManagerStatic.channels.values()) {
+            for (const ch of SoundRegistry.channels.values()) {
                 const toneChannel = (ch as AudioChannel).toneChannel;
                 toneChannel.disconnect();
-                toneChannel.connect(SoundManagerStatic.freezeBus);
+                toneChannel.connect(SoundRegistry.freezeBus);
             }
         }
         return this;
@@ -117,21 +117,21 @@ export default class SoundManager implements SoundManagerInterface {
         if (channel) {
             const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
             toneChannel.disconnect();
-            toneChannel.connect(SoundManagerStatic.liveBus);
+            toneChannel.connect(SoundRegistry.liveBus);
         } else {
-            for (const ch of SoundManagerStatic.channels.values()) {
+            for (const ch of SoundRegistry.channels.values()) {
                 const toneChannel = (ch as AudioChannel).toneChannel;
                 toneChannel.disconnect();
-                toneChannel.connect(SoundManagerStatic.liveBus);
+                toneChannel.connect(SoundRegistry.liveBus);
             }
         }
         return this;
     }
     stopTransientAll(): this {
-        for (const player of SoundManagerStatic.transients) {
+        for (const player of SoundRegistry.transients) {
             player.stop();
         }
-        SoundManagerStatic.transients.clear();
+        SoundRegistry.transients.clear();
         return this;
     }
 
@@ -156,7 +156,7 @@ export default class SoundManager implements SoundManagerInterface {
             soundAlias = aliasOrMediaAlias;
             paramOptions = soundAliasOrOptions;
         }
-        if (!SoundManagerStatic.bufferRegistry.has(soundAlias)) {
+        if (!SoundRegistry.bufferRegistry.has(soundAlias)) {
             await this.load(soundAlias);
         }
         const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
@@ -167,10 +167,10 @@ export default class SoundManager implements SoundManagerInterface {
         alias: string,
         options?: Partial<Tone.PlayerOptions>,
     ): Promise<Tone.Player> {
-        if (!SoundManagerStatic.bufferRegistry.has(alias)) {
+        if (!SoundRegistry.bufferRegistry.has(alias)) {
             await this.load(alias);
         }
-        const buffer = SoundManagerStatic.bufferRegistry.get(alias);
+        const buffer = SoundRegistry.bufferRegistry.get(alias);
         if (!buffer) {
             throw new PixiError(
                 "unregistered_asset",
@@ -182,14 +182,14 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     find(alias: string): MediaInteface | undefined {
-        return SoundManagerStatic.mediaInstances.get(alias);
+        return SoundRegistry.mediaInstances.get(alias);
     }
 
     stop(alias: string): void {
         const mediaInstance = this.find(alias);
         if (mediaInstance) {
             mediaInstance.stop();
-            SoundManagerStatic.mediaInstances.delete(alias);
+            SoundRegistry.mediaInstances.delete(alias);
         } else {
             logger.warn(`No media instance found with alias ${alias} to stop.`);
         }
@@ -216,7 +216,7 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     duration(alias: string): number {
-        const buffer = SoundManagerStatic.bufferRegistry.get(alias);
+        const buffer = SoundRegistry.bufferRegistry.get(alias);
         return buffer?.duration ?? 0;
     }
 
@@ -240,7 +240,7 @@ export default class SoundManager implements SoundManagerInterface {
                     const assets = await PIXI.Assets.loadBundle(alias);
                     const loadPromises: Promise<void>[] = [];
                     for (const key in assets) {
-                        if (!SoundManagerStatic.bufferRegistry.has(key)) {
+                        if (!SoundRegistry.bufferRegistry.has(key)) {
                             loadPromises.push(this.load(key));
                         }
                     }
@@ -273,17 +273,17 @@ export default class SoundManager implements SoundManagerInterface {
             });
             return;
         }
-        if (SoundManagerStatic.channels.has(alias)) {
+        if (SoundRegistry.channels.has(alias)) {
             logger.warn(`Channel with alias ${alias} already exists.`);
             return;
         }
         const channel = new AudioChannel(alias, options);
-        SoundManagerStatic.channels.set(alias, channel);
+        SoundRegistry.channels.set(alias, channel);
         return channel;
     }
 
     findChannel(alias: string): AudioChannelInterface {
-        const channel = SoundManagerStatic.channels.get(alias);
+        const channel = SoundRegistry.channels.get(alias);
         if (!channel) {
             return this.addChannel(alias) as AudioChannelInterface;
         }
@@ -291,7 +291,7 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     get channels(): AudioChannelInterface[] {
-        return Array.from(SoundManagerStatic.channels.values());
+        return Array.from(SoundRegistry.channels.values());
     }
 
     public export(): SoundGameState {
@@ -302,7 +302,7 @@ export default class SoundManager implements SoundManagerInterface {
                 stepCounter: number;
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
             };
-        } = Array.from(SoundManagerStatic.mediaInstances.entries()).reduce(
+        } = Array.from(SoundRegistry.mediaInstances.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
                 result[mediaAlias] = {
                     channelAlias: (mediaInstance as MediaInstance).channelAlias,
@@ -383,7 +383,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 ),
                             });
                         } else {
-                            const mediaInstance = SoundManagerStatic.mediaInstances.get(mediaAlias);
+                            const mediaInstance = SoundRegistry.mediaInstances.get(mediaAlias);
                             if (!mediaInstance) {
                                 logger.warn(
                                     `No media instance found with alias ${mediaAlias} while restoring background state.`,

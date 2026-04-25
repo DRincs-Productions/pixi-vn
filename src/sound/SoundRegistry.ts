@@ -3,7 +3,7 @@ import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface"
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import { Gain, getDestination, type Player, type ToneAudioBuffer } from "tone";
 
-namespace SoundManagerStatic {
+namespace SoundRegistry {
     export const freezeBus = new Gain(1).toDestination();
     export const liveBus = getDestination();
     export const mediaInstances: Map<string, MediaInteface> = new Map();
@@ -14,4 +14,4 @@ namespace SoundManagerStatic {
         cacheSize: 10,
     });
 }
-export default SoundManagerStatic;
+export default SoundRegistry;

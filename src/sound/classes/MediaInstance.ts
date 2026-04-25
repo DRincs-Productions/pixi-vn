@@ -1,6 +1,6 @@
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { MediaMemory } from "@sound/interfaces/MediaInteface";
-import SoundManagerStatic from "@sound/SoundManagerStatic";
+import SoundRegistry from "@sound/SoundRegistry";
 import { type BasicPlaybackState, type InputNode, Player, type PlayerOptions } from "tone";
 import type { Time } from "tone/build/esm/core/type/Units";
 
@@ -69,7 +69,7 @@ export default class MediaInstance extends Player implements MediaInteface {
         return super.state;
     }
     override stop(time?: Time): this {
-        SoundManagerStatic.mediaInstances.delete(this.alias);
+        SoundRegistry.mediaInstances.delete(this.alias);
         return super.stop(time);
     }
     override chain(...nodes: InputNode[]): this {

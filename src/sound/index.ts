@@ -1,7 +1,7 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import type SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundManager from "./SoundManager";
-import SoundManagerStatic from "./SoundManagerStatic";
+import SoundRegistry from "./SoundRegistry";
 
 export type { default as AudioChannelInterface } from "./interfaces/AudioChannelInterface";
 export type { default as IMediaInstance } from "./interfaces/MediaInteface";
@@ -17,14 +17,14 @@ export type {
     SoundPlayOptions,
     SoundPlayOptionsWithChannel,
 } from "./interfaces/SoundOptions";
-export { default as SoundManagerStatic } from "./SoundManagerStatic";
+export { default as SoundRegistry } from "./SoundRegistry";
 export type { default as SoundFilterMemory } from "./types/SoundFilterMemory";
 
 const sound: SoundManagerInterface = new SoundManager();
 
 GameUnifier.addOnPreContinue(async () => {
     try {
-        SoundManagerStatic.channels.forEach((channel) => {
+        SoundRegistry.channels.forEach((channel) => {
             if (!channel.background) {
                 channel.stopAll();
             }

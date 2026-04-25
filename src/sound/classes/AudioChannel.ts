@@ -4,7 +4,7 @@ import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/functions/
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
-import SoundManagerStatic from "@sound/SoundManagerStatic";
+import SoundRegistry from "@sound/SoundRegistry";
 import * as Tone from "tone";
 
 export default class AudioChannel implements AudioChannelInterface {
@@ -29,7 +29,7 @@ export default class AudioChannel implements AudioChannelInterface {
             pan: channelOptions.pan ?? 0,
         })
             .toDestination()
-            .connect(SoundManagerStatic.liveBus);
+            .connect(SoundRegistry.liveBus);
 
         if (channelOptions.filters) {
             this.toneChannel.chain(...channelOptions.filters);
@@ -80,7 +80,7 @@ export default class AudioChannel implements AudioChannelInterface {
     // ------------------------------------------------------------------ //
 
     pauseAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values() as MapIterator<MediaInstance>) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values() as MapIterator<MediaInstance>) {
             if (mediaInstance.channelAlias === this.alias && !mediaInstance.paused) {
                 mediaInstance.paused = true;
             }
@@ -89,7 +89,7 @@ export default class AudioChannel implements AudioChannelInterface {
     }
 
     resumeAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values() as MapIterator<MediaInstance>) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values() as MapIterator<MediaInstance>) {
             if (mediaInstance.channelAlias === this.alias && mediaInstance.paused) {
                 mediaInstance.paused = false;
             }
@@ -122,7 +122,7 @@ export default class AudioChannel implements AudioChannelInterface {
         soundAlias: string,
         options: SoundPlayOptions = {},
     ): MediaInstance {
-        const buffer = SoundManagerStatic.bufferRegistry.get(soundAlias);
+        const buffer = SoundRegistry.bufferRegistry.get(soundAlias);
         if (!buffer) {
             throw new PixiError(
                 "unregistered_asset",
@@ -180,8 +180,8 @@ export default class AudioChannel implements AudioChannelInterface {
             options = soundAliasOrOptions;
         }
 
-        if (SoundManagerStatic.mediaInstances.has(mediaAlias)) {
-            const oldMedia = SoundManagerStatic.mediaInstances.get(mediaAlias) as MediaInstance;
+        if (SoundRegistry.mediaInstances.has(mediaAlias)) {
+            const oldMedia = SoundRegistry.mediaInstances.get(mediaAlias) as MediaInstance;
             if (oldMedia) {
                 oldMedia.stop();
                 options = {
@@ -194,7 +194,7 @@ export default class AudioChannel implements AudioChannelInterface {
         await soundLoad(soundAlias);
         const media = this._createPlayer(soundAlias, soundAlias, options);
 
-        SoundManagerStatic.mediaInstances.set(mediaAlias, media);
+        SoundRegistry.mediaInstances.set(mediaAlias, media);
         return media;
     }
 
@@ -204,7 +204,7 @@ export default class AudioChannel implements AudioChannelInterface {
     }
 
     get mediaInstances(): MediaInteface[] {
-        return Array.from(SoundManagerStatic.mediaInstances.values()).reduce(
+        return Array.from(SoundRegistry.mediaInstances.values()).reduce(
             (instances: MediaInteface[], mediaInstance) => {
                 if ((mediaInstance as MediaInstance).channelAlias === this.alias) {
                     instances.push(mediaInstance);
@@ -220,14 +220,14 @@ export default class AudioChannel implements AudioChannelInterface {
         for (const [
             mediaAlias,
             mediaInstance,
-        ] of SoundManagerStatic.mediaInstances.entries() as MapIterator<[string, MediaInstance]>) {
+        ] of SoundRegistry.mediaInstances.entries() as MapIterator<[string, MediaInstance]>) {
             if (mediaInstance.channelAlias === this.alias) {
                 mediaInstance.stop();
                 aliasesToDelete.push(mediaAlias);
             }
         }
         aliasesToDelete.forEach((mediaAlias) => {
-            SoundManagerStatic.mediaInstances.delete(mediaAlias);
+            SoundRegistry.mediaInstances.delete(mediaAlias);
         });
         return this;
     }

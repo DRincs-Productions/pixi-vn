@@ -1,5 +1,5 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import SoundManagerStatic from "@sound/SoundManagerStatic";
+import SoundRegistry from "@sound/SoundRegistry";
 import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { logger } from "@utils/log-utility";
 import * as Tone from "tone";
@@ -59,7 +59,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
 }
 
 export async function soundLoad(alias: string): Promise<void> {
-    if (SoundManagerStatic.bufferRegistry.has(alias)) return;
+    if (SoundRegistry.bufferRegistry.has(alias)) return;
     // Resolve via PIXI.Assets when the alias has been registered
     // there; fall back to using the alias as a raw URL.
     let url: string = alias;
@@ -76,13 +76,13 @@ export async function soundLoad(alias: string): Promise<void> {
         // occurs when loading invalid URLs in test environments.
         const audioBuffer = await ToneAudioBuffer.load(url);
         const buffer = new ToneAudioBuffer(audioBuffer as unknown as AudioBuffer);
-        SoundManagerStatic.bufferRegistry.set(alias, buffer);
+        SoundRegistry.bufferRegistry.set(alias, buffer);
     } catch (e) {
         logger.warn(
             `Failed to load audio buffer for "${alias}" (url: "${url}"): ${e instanceof Error ? e.message : e}`,
         );
         // Register an empty stub so downstream code can proceed
         // without crashing (e.g. in test / headless environments).
-        SoundManagerStatic.bufferRegistry.set(alias, new ToneAudioBuffer());
+        SoundRegistry.bufferRegistry.set(alias, new ToneAudioBuffer());
     }
 }
