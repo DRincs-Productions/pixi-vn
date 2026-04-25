@@ -2,7 +2,6 @@ import { GameUnifier } from "@drincs/pixi-vn/core";
 import ToneMediaInstance from "@sound/classes/ToneMediaInstance";
 import { proxyMedia } from "@sound/functions/proxy-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type AudioFilter from "@sound/interfaces/AudioFilter";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
@@ -35,7 +34,6 @@ export default class AudioChannel implements AudioChannelInterface {
         this.alias = alias;
         this._paused = channelOptions.paused ?? false;
         this.background = channelOptions.background ?? false;
-        this.filters = channelOptions.filters;
 
         // Create and connect Tone.Channel with the requested initial values.
         this.toneChannel = new Tone.Channel({
@@ -104,12 +102,6 @@ export default class AudioChannel implements AudioChannelInterface {
     // ------------------------------------------------------------------ //
 
     readonly background: boolean;
-
-    // ------------------------------------------------------------------ //
-    // filters                                                             //
-    // ------------------------------------------------------------------ //
-
-    readonly filters: AudioFilter[] | undefined;
 
     // ------------------------------------------------------------------ //
     // Private helpers                                                     //
