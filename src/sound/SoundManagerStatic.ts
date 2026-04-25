@@ -1,6 +1,6 @@
 import CachedMap from "@classes/CachedMap";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import type * as Tone from "tone";
 
@@ -11,7 +11,7 @@ export default class SoundManagerStatic {
         {
             channelAlias: string;
             soundAlias: string;
-            instance: IMediaInstance;
+            instance: MediaInteface;
             stepCounter: number;
             options: SoundPlayOptions;
         }

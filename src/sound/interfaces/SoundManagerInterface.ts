@@ -1,6 +1,6 @@
 import type AudioChannelInterface from "./AudioChannelInterface";
 import type AudioFilter from "./AudioFilter";
-import type IMediaInstance from "./IMediaInstance";
+import type MediaInteface from "./MediaInteface";
 import type SoundGameState from "./SoundGameState";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
 
@@ -29,23 +29,23 @@ export default interface SoundManagerInterface {
      * @param options The options.
      * @returns The media instance (resolves immediately if already loaded).
      */
-    play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInteface>;
     play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance>;
+    ): Promise<MediaInteface>;
 
     /**
      * Plays a non-persistent ("transient") sound (e.g. UI / menu sounds).
      * Transient playback is not tracked in save/export state.
      */
-    playTransient(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    playTransient(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInteface>;
 
     /**
      * Find a tracked media instance by alias.
      */
-    find(alias: string): IMediaInstance | undefined;
+    find(alias: string): MediaInteface | undefined;
 
     /**
      * Stop a tracked media instance and remove it from the manager.
@@ -55,12 +55,12 @@ export default interface SoundManagerInterface {
     /**
      * Pause a tracked media instance.
      */
-    pause(alias: string): IMediaInstance | undefined;
+    pause(alias: string): MediaInteface | undefined;
 
     /**
      * Resume a paused media instance.
      */
-    resume(alias: string): IMediaInstance | undefined;
+    resume(alias: string): MediaInteface | undefined;
 
     /** Duration in seconds of the loaded sound with the given alias. */
     duration(alias: string): number;

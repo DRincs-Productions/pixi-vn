@@ -6,7 +6,7 @@ import SoundManagerStatic from "./SoundManagerStatic";
 export { filters } from "./constants";
 export type { default as AudioChannelInterface } from "./interfaces/AudioChannelInterface";
 export type { default as AudioFilter } from "./interfaces/AudioFilter";
-export type { default as IMediaInstance } from "./interfaces/IMediaInstance";
+export type { default as IMediaInstance } from "./interfaces/MediaInteface";
 export type {
     ExportedSound,
     ExportedSoundPlay,

@@ -1,5 +1,5 @@
 import type * as Tone from "tone";
-import type IMediaInstance from "./IMediaInstance";
+import type MediaInteface from "./MediaInteface";
 import type { SoundPlayOptions } from "./SoundOptions";
 
 export default interface AudioChannelInterface {
@@ -15,7 +15,7 @@ export default interface AudioChannelInterface {
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
-    play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    play(alias: string, options?: SoundPlayOptions): Promise<MediaInteface>;
     /**
      * Plays a sound.
      * @param mediaAlias The media alias reference.
@@ -29,7 +29,7 @@ export default interface AudioChannelInterface {
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptions,
-    ): Promise<IMediaInstance>;
+    ): Promise<MediaInteface>;
     /**
      * Plays a non-persistent sound on this channel.
      * The returned media is not tracked by the sound manager and is therefore excluded from save/export state.
@@ -37,7 +37,7 @@ export default interface AudioChannelInterface {
      * @param options The options.
      * @return The sound instance.
      */
-    playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<MediaInteface>;
     /**
      * Stops all media instances that were started with {@link playTransient} on this channel.
      * Instances that have already ended are automatically removed, so this only affects
@@ -61,7 +61,7 @@ export default interface AudioChannelInterface {
     /**
      * The MediaInstances currently playing through this channel. This is read-only and cannot be modified directly. Use the play method to add new MediaInstances to this channel.
      */
-    readonly mediaInstances: IMediaInstance[];
+    readonly mediaInstances: MediaInteface[];
     /**
      * Whether this channel is a background channel.
      * Background channels are special channels. Unlike normal channels, media connected to a background channel does not stop when a scene changes, but continues to play in the background.

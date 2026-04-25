@@ -1,42 +1,44 @@
-import type { InputNode } from "tone";
+import type { InputNode, PlayerOptions } from "tone";
 
-export default interface SoundOptions {
-    /** Auto play on load. */
-    autoPlay?: boolean;
-    /** Pre-load sound. */
-    preload?: boolean;
-    /** Initial volume (0–1). */
-    volume?: number;
-    /** Initial playback speed multiplier. */
-    speed?: number;
-    /** Whether the sound loops. */
-    loop?: boolean;
-    /** Whether the sound starts muted. */
-    muted?: boolean;
-    /** Initial filters to apply. */
+export default interface SoundOptions
+    extends Pick<
+        Partial<PlayerOptions>,
+        | "loop"
+        | "autostart"
+        | "fadeIn"
+        | "fadeOut"
+        | "volume"
+        | "mute"
+        | "loopEnd"
+        | "loopStart"
+        | "reverse"
+        | "playbackRate"
+    > {
+    /**
+     * Initial filters to apply.
+     */
     filters?: InputNode[];
-    /** Only allow a single concurrent instance of this sound. */
-    singleInstance?: boolean;
+    /**
+     * @deprecated Use {@link playbackRate} instead.
+     */
+    speed?: number;
+    /**
+     * @deprecated Use {@link mute} instead.
+     */
+    muted?: boolean;
+    /**
+     * @deprecated Use {@link autostart} instead.
+     */
+    paused?: boolean;
 }
 
 export interface SoundPlayOptions extends SoundOptions {
-    /** Offset in seconds from which to start playback. */
-    start?: number;
-    /** Time in seconds at which to stop playback. */
-    end?: number;
-    /** Sprite identifier (for sprite-sheet sounds). */
-    sprite?: string;
     /**
      * The delay in seconds before playback becomes audible or resumes. If
      * specified the sound is started immediately but paused so that it is
      * effectively heard only after the delay has elapsed.
      */
     delay?: number;
-    /**
-     * Whether the sound starts in a paused state. If omitted the sound plays
-     * immediately.
-     */
-    paused?: boolean;
 }
 
 export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {

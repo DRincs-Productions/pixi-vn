@@ -2,10 +2,14 @@ import { GENERAL_CHANNEL } from "@constants";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import AudioChannel from "@sound/classes/AudioChannel";
-import { FilterMemoryToFilter, FilterToFilterMemory } from "@sound/functions/sound-utility";
+import {
+    FilterMemoryToFilter,
+    FilterToFilterMemory,
+    soundLoad,
+} from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type AudioFilter from "@sound/interfaces/AudioFilter";
-import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
 import type {
@@ -133,17 +137,17 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
 
-    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInteface>;
     async play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance>;
+    ): Promise<MediaInteface>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptionsWithChannel,
         paramOptions?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance> {
+    ): Promise<MediaInteface> {
         let mediaAlias: string;
         let soundAlias: string;
         if (typeof soundAliasOrOptions === "string") {
@@ -164,7 +168,7 @@ export default class SoundManager implements SoundManagerInterface {
     async playTransient(
         alias: string,
         options?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance> {
+    ): Promise<MediaInteface> {
         if (!SoundManagerStatic.bufferRegistry.has(alias)) {
             await this.load(alias);
         }
@@ -172,7 +176,7 @@ export default class SoundManager implements SoundManagerInterface {
         return await this.findChannel(channel).playTransient(alias, channelOptions);
     }
 
-    find(alias: string): IMediaInstance | undefined {
+    find(alias: string): MediaInteface | undefined {
         return SoundManagerStatic.mediaInstances.get(alias)?.instance;
     }
 
@@ -186,7 +190,7 @@ export default class SoundManager implements SoundManagerInterface {
         }
     }
 
-    pause(alias: string): IMediaInstance | undefined {
+    pause(alias: string): MediaInteface | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
             logger.warn(`No media instance found with alias ${alias} to pause.`);
@@ -196,7 +200,7 @@ export default class SoundManager implements SoundManagerInterface {
         return mediaInstance;
     }
 
-    resume(alias: string): IMediaInstance | undefined {
+    resume(alias: string): MediaInteface | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
             logger.warn(`No media instance found with alias ${alias} to resume.`);
@@ -212,34 +216,7 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     async load(...alias: string[]): Promise<void> {
-        const promises = alias.map(async (a) => {
-            if (SoundManagerStatic.bufferRegistry.has(a)) return;
-            // Resolve via PIXI.Assets when the alias has been registered
-            // there; fall back to using the alias as a raw URL.
-            let url: string = a;
-            try {
-                const resolved = PIXI.Assets.resolver.resolve(a);
-                if (resolved?.src) url = resolved.src;
-            } catch {
-                // Not registered in PIXI.Assets — use alias as URL.
-            }
-            try {
-                // Load the raw AudioBuffer, then wrap it in a ToneAudioBuffer.
-                // Using the static ToneAudioBuffer.load() + try/catch instead of
-                // the constructor avoids an unhandled-rejection timing issue that
-                // occurs when loading invalid URLs in test environments.
-                const audioBuffer = await Tone.ToneAudioBuffer.load(url);
-                const buffer = new Tone.ToneAudioBuffer(audioBuffer as unknown as AudioBuffer);
-                SoundManagerStatic.bufferRegistry.set(a, buffer);
-            } catch (e) {
-                logger.warn(
-                    `Failed to load audio buffer for "${a}" (url: "${url}"): ${e instanceof Error ? e.message : e}`,
-                );
-                // Register an empty stub so downstream code can proceed
-                // without crashing (e.g. in test / headless environments).
-                SoundManagerStatic.bufferRegistry.set(a, new Tone.ToneAudioBuffer());
-            }
-        });
+        const promises = alias.map(soundLoad);
         await Promise.all(promises);
     }
 

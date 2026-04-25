@@ -1,9 +1,8 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import ToneMediaInstance from "@sound/classes/ToneMediaInstance";
-import { proxyMedia } from "@sound/functions/proxy-utility";
-import { decibelsToLinear, linearToDecibels } from "@sound/functions/sound-utility";
+import MediaInstance from "@sound/classes/MediaInstance";
+import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
 import * as Tone from "tone";
@@ -118,35 +117,53 @@ export default class AudioChannel implements AudioChannelInterface {
     // Private helpers                                                     //
     // ------------------------------------------------------------------ //
 
-    private _createPlayer(soundAlias: string, options: SoundPlayOptions): Tone.Player {
+    private _createPlayer(soundAlias: string, options: SoundPlayOptions = {}): MediaInteface {
         const buffer = SoundManagerStatic.bufferRegistry.get(soundAlias);
         if (!buffer) {
             throw new Error(
                 `Sound buffer for alias "${soundAlias}" is not loaded. Call sound.load() first.`,
             );
         }
-        // Connect the player into the Tone.Channel so its volume/pan/mute apply.
-        const player = new Tone.Player(buffer).connect(this.toneChannel);
-        player.loop = options.loop ?? false;
-        player.playbackRate = options.speed ?? 1;
-        // Per-media mute only — channel-level muting is handled by Tone.Channel.
-        player.mute = Boolean(options.muted);
-        // Per-media volume (linear → dB).  Channel volume is applied by the audio graph.
-        player.volume.value = linearToDecibels(options.volume ?? 1);
+
+        const {
+            delay,
+            filters = [],
+            paused,
+            muted,
+            autostart = paused ? !paused : true,
+            mute = muted,
+            speed,
+            playbackRate = speed,
+            ...restOptions
+        } = options;
+        const player = new MediaInstance({
+            ...restOptions,
+            url: buffer,
+            autostart,
+            mute,
+            playbackRate,
+        });
+        if (delay) {
+            const delayFilter = new Tone.Delay(delay);
+            player.chain(delayFilter, ...filters, this.toneChannel);
+        } else {
+            player.chain(...filters, this.toneChannel);
+        }
+
         return player;
     }
 
-    async play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    async play(alias: string, options?: SoundPlayOptions): Promise<MediaInteface>;
     async play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptions,
-    ): Promise<IMediaInstance>;
+    ): Promise<MediaInteface>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptions,
         options?: SoundPlayOptions,
-    ): Promise<IMediaInstance> {
+    ): Promise<MediaInteface> {
         let mediaAlias: string;
         let soundAlias: string;
         if (typeof soundAliasOrOptions === "string") {
@@ -169,12 +186,9 @@ export default class AudioChannel implements AudioChannelInterface {
             }
         }
 
-        const { paused, ...rest } = options || {};
-        const effectivePaused = Boolean(this.paused) || Boolean(paused);
-
-        const player = this._createPlayer(soundAlias, rest);
-        const toneMedia = new ToneMediaInstance(player, !effectivePaused);
-        const media = proxyMedia(mediaAlias, toneMedia, this);
+        await soundLoad(soundAlias);
+        const player = this._createPlayer(soundAlias, options);
+        const media = proxyMedia(mediaAlias, player, this);
 
         if (options?.delay) {
             if (!effectivePaused) {
@@ -210,7 +224,7 @@ export default class AudioChannel implements AudioChannelInterface {
         return media;
     }
 
-    async playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance> {
+    async playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<MediaInteface> {
         const { paused, ...rest } = options || {};
         const pausedState = Boolean(paused) || Boolean(this.paused);
 
@@ -253,9 +267,9 @@ export default class AudioChannel implements AudioChannelInterface {
         return this.muted;
     }
 
-    get mediaInstances(): IMediaInstance[] {
+    get mediaInstances(): MediaInteface[] {
         return Array.from(SoundManagerStatic.mediaInstances.values()).reduce(
-            (instances: IMediaInstance[], mediaInstance) => {
+            (instances: MediaInteface[], mediaInstance) => {
                 if (mediaInstance.channelAlias === this.alias) {
                     instances.push(mediaInstance.instance);
                 }
