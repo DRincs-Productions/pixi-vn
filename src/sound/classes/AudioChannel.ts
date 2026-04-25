@@ -2,14 +2,11 @@ import { GameUnifier } from "@drincs/pixi-vn/core";
 import ToneMediaInstance from "@sound/classes/ToneMediaInstance";
 import { proxyMedia } from "@sound/functions/proxy-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type AudioFilter from "@sound/interfaces/AudioFilter";
 import type IMediaInstance from "@sound/interfaces/IMediaInstance";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundManagerStatic from "@sound/SoundManagerStatic";
 import * as Tone from "tone";
-
-// ---------------------------------------------------------------------------
-// Helpers
-// ---------------------------------------------------------------------------
 
 /** Convert a linear [0, 1] gain value to decibels. */
 function linearToDecibels(v: number): number {
@@ -21,10 +18,6 @@ function decibelsToLinear(db: number): number {
     return db <= -Infinity ? 0 : 10 ** (db / 20);
 }
 
-// ---------------------------------------------------------------------------
-// AudioChannel
-// ---------------------------------------------------------------------------
-
 export default class AudioChannel implements AudioChannelInterface {
     /**
      * The underlying Tone.Channel that handles volume, pan and mute for this
@@ -33,9 +26,6 @@ export default class AudioChannel implements AudioChannelInterface {
      */
     readonly toneChannel: Tone.Channel;
 
-    /** Per-channel state for concepts not modelled by Tone.Channel (paused, background, filters). */
-    private readonly _channelState: Pick<ChannelOptions, "paused" | "background" | "filters">;
-
     private readonly _transientInstances: Set<ToneMediaInstance> = new Set();
 
     constructor(
@@ -43,11 +33,9 @@ export default class AudioChannel implements AudioChannelInterface {
         channelOptions: ChannelOptions = {},
     ) {
         this.alias = alias;
-        this._channelState = {
-            paused: channelOptions.paused,
-            background: channelOptions.background,
-            filters: channelOptions.filters,
-        };
+        this._paused = channelOptions.paused ?? false;
+        this.background = channelOptions.background ?? false;
+        this.filters = channelOptions.filters;
 
         // Create and connect Tone.Channel with the requested initial values.
         this.toneChannel = new Tone.Channel({
@@ -94,21 +82,34 @@ export default class AudioChannel implements AudioChannelInterface {
     // paused — no Tone.Channel equivalent; managed internally             //
     // ------------------------------------------------------------------ //
 
+    private _paused: boolean;
     get paused(): boolean {
-        return this._channelState.paused ?? false;
+        return this._paused ?? false;
     }
     set paused(value: boolean) {
-        this._channelState.paused = value;
+        this._paused = value;
         this._updateMediaPaused();
+    }
+    private _updateMediaPaused() {
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
+            if (mediaInstance.channelAlias === this.alias) {
+                const mediaPaused = mediaInstance.options.paused ?? false;
+                mediaInstance.instance.paused = mediaPaused;
+            }
+        }
     }
 
     // ------------------------------------------------------------------ //
     // background                                                          //
     // ------------------------------------------------------------------ //
 
-    get background(): boolean {
-        return this._channelState.background ?? false;
-    }
+    readonly background: boolean;
+
+    // ------------------------------------------------------------------ //
+    // filters                                                             //
+    // ------------------------------------------------------------------ //
+
+    readonly filters: AudioFilter[] | undefined;
 
     // ------------------------------------------------------------------ //
     // Private helpers                                                     //
@@ -291,15 +292,6 @@ export default class AudioChannel implements AudioChannelInterface {
             }
         }
         return this;
-    }
-
-    private _updateMediaPaused() {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias) {
-                const mediaPaused = mediaInstance.options.paused ?? false;
-                mediaInstance.instance.paused = mediaPaused;
-            }
-        }
     }
 
     pauseUnsavedAll(): this {
