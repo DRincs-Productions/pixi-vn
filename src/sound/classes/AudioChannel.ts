@@ -48,6 +48,9 @@ export default class AudioChannel implements AudioChannelInterface {
     set volume(v: number) {
         this.toneChannel.volume.value = linearToDecibels(v);
     }
+    get volumeParam(): Tone.Param<"decibels"> {
+        return this.toneChannel.volume;
+    }
 
     // ------------------------------------------------------------------ //
     // pan — plain number [-1, 1] façade over Tone.Channel's audioRange Param //
@@ -58,6 +61,9 @@ export default class AudioChannel implements AudioChannelInterface {
     }
     set pan(v: number) {
         this.toneChannel.pan.value = v;
+    }
+    get panParam(): Tone.Param<"audioRange"> {
+        return this.toneChannel.pan;
     }
 
     // ------------------------------------------------------------------ //
@@ -100,18 +106,6 @@ export default class AudioChannel implements AudioChannelInterface {
         this.toneChannel.disconnect();
         this.toneChannel.chain(...nodes, Tone.getDestination());
         return this;
-    }
-
-    // ------------------------------------------------------------------ //
-    // volumeParam / panParam — advanced raw Tone.Param accessors          //
-    // ------------------------------------------------------------------ //
-
-    get volumeParam(): Tone.Param<"decibels"> {
-        return this.toneChannel.volume;
-    }
-
-    get panParam(): Tone.Param<"audioRange"> {
-        return this.toneChannel.pan;
     }
 
     // ------------------------------------------------------------------ //
