@@ -17,6 +17,7 @@ export default interface MediaInteface
         | "start"
         | "stop"
         | "volume"
+        // TODO add chain
     > {
     /**
      * Whether the sound is currently paused.

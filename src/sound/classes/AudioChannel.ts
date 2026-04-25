@@ -15,14 +15,11 @@ export default class AudioChannel implements AudioChannelInterface {
      */
     readonly toneChannel: Tone.Channel;
 
-    private readonly _transientInstances: Set<ToneMediaInstance> = new Set();
-
     constructor(
         readonly alias: string,
         channelOptions: ChannelOptions = {},
     ) {
         this.alias = alias;
-        this._paused = channelOptions.paused ?? false;
         this.background = channelOptions.background ?? false;
 
         // Create and connect Tone.Channel with the requested initial values.
@@ -80,21 +77,22 @@ export default class AudioChannel implements AudioChannelInterface {
     // paused — no Tone.Channel equivalent; managed internally             //
     // ------------------------------------------------------------------ //
 
-    private _paused: boolean;
-    get paused(): boolean {
-        return this._paused ?? false;
-    }
-    set paused(value: boolean) {
-        this._paused = value;
-        this._updateMediaPaused();
-    }
-    private _updateMediaPaused() {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias) {
-                const mediaPaused = mediaInstance.options.paused ?? false;
-                mediaInstance.instance.paused = mediaPaused;
+    pauseAll(): this {
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values() as MapIterator<MediaInstance>) {
+            if (mediaInstance.channelAlias === this.alias && !mediaInstance.paused) {
+                mediaInstance.paused = true;
             }
         }
+        return this;
+    }
+
+    resumeAll(): this {
+        for (const mediaInstance of SoundManagerStatic.mediaInstances.values() as MapIterator<MediaInstance>) {
+            if (mediaInstance.channelAlias === this.alias && mediaInstance.paused) {
+                mediaInstance.paused = false;
+            }
+        }
+        return this;
     }
 
     // ------------------------------------------------------------------ //
@@ -117,7 +115,11 @@ export default class AudioChannel implements AudioChannelInterface {
     // Private helpers                                                     //
     // ------------------------------------------------------------------ //
 
-    private _createPlayer(soundAlias: string, options: SoundPlayOptions = {}): MediaInteface {
+    private _createPlayer(
+        alias: string,
+        soundAlias: string,
+        options: SoundPlayOptions = {},
+    ): MediaInstance {
         const buffer = SoundManagerStatic.bufferRegistry.get(soundAlias);
         if (!buffer) {
             throw new Error(
@@ -136,7 +138,7 @@ export default class AudioChannel implements AudioChannelInterface {
             playbackRate = speed,
             ...restOptions
         } = options;
-        const player = new MediaInstance({
+        const player = new MediaInstance(alias, this.alias, soundAlias, GameUnifier.stepCounter, {
             ...restOptions,
             url: buffer,
             autostart,
@@ -176,9 +178,9 @@ export default class AudioChannel implements AudioChannelInterface {
         }
 
         if (SoundManagerStatic.mediaInstances.has(mediaAlias)) {
-            const oldMedia = SoundManagerStatic.mediaInstances.get(mediaAlias);
+            const oldMedia = SoundManagerStatic.mediaInstances.get(mediaAlias) as MediaInstance;
             if (oldMedia) {
-                oldMedia.instance.stop();
+                oldMedia.stop();
                 options = {
                     ...oldMedia.options,
                     ...options,
@@ -187,79 +189,10 @@ export default class AudioChannel implements AudioChannelInterface {
         }
 
         await soundLoad(soundAlias);
-        const player = this._createPlayer(soundAlias, options);
-        const media = proxyMedia(mediaAlias, player, this);
+        const media = this._createPlayer(soundAlias, soundAlias, options);
 
-        if (options?.delay) {
-            if (!effectivePaused) {
-                // Pause immediately so the sound is heard only after the delay.
-                toneMedia.pauseImmediate();
-            }
-            const timeoutId = setTimeout(() => {
-                media.paused = effectivePaused;
-                SoundManagerStatic.delayTimeoutInstances =
-                    SoundManagerStatic.delayTimeoutInstances.filter(
-                        (item) => item[0] !== timeoutId,
-                    );
-            }, options.delay * 1000);
-            SoundManagerStatic.delayTimeoutInstances.push([timeoutId, mediaAlias]);
-        }
-
-        SoundManagerStatic.mediaInstances.set(mediaAlias, {
-            channelAlias: this.alias,
-            soundAlias: soundAlias,
-            instance: media,
-            stepCounter: GameUnifier.stepCounter,
-            options: {
-                volume: options?.volume ?? 1,
-                muted: options?.muted ?? false,
-                loop: options?.loop ?? false,
-                ...(options ?? {}),
-                paused: effectivePaused,
-            },
-        });
-        media.on("end", () => {
-            SoundManagerStatic.mediaInstances.delete(mediaAlias);
-        });
+        SoundManagerStatic.mediaInstances.set(mediaAlias, media);
         return media;
-    }
-
-    async playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<MediaInteface> {
-        const { paused, ...rest } = options || {};
-        const pausedState = Boolean(paused) || Boolean(this.paused);
-
-        const player = this._createPlayer(soundAlias, rest);
-        const media = new ToneMediaInstance(player, !pausedState);
-
-        let delayTimeout: ReturnType<typeof setTimeout> | undefined;
-        if (options?.delay) {
-            if (!pausedState) {
-                // Pause immediately so the sound is heard only after the delay.
-                media.pauseImmediate();
-            }
-            delayTimeout = setTimeout(() => {
-                media.paused = pausedState;
-                delayTimeout = undefined;
-            }, options.delay * 1000);
-        }
-
-        this._transientInstances.add(media);
-        media.on("end", () => {
-            if (delayTimeout !== undefined) {
-                clearTimeout(delayTimeout);
-                delayTimeout = undefined;
-            }
-            this._transientInstances.delete(media);
-        });
-        return media;
-    }
-
-    stopTransientAll(): this {
-        for (const media of this._transientInstances) {
-            media.stop();
-        }
-        this._transientInstances.clear();
-        return this;
     }
 
     toggleMuteAll(): boolean {
@@ -270,8 +203,8 @@ export default class AudioChannel implements AudioChannelInterface {
     get mediaInstances(): MediaInteface[] {
         return Array.from(SoundManagerStatic.mediaInstances.values()).reduce(
             (instances: MediaInteface[], mediaInstance) => {
-                if (mediaInstance.channelAlias === this.alias) {
-                    instances.push(mediaInstance.instance);
+                if ((mediaInstance as MediaInstance).channelAlias === this.alias) {
+                    instances.push(mediaInstance);
                 }
                 return instances;
             },
@@ -281,43 +214,18 @@ export default class AudioChannel implements AudioChannelInterface {
 
     stopAll() {
         const aliasesToDelete: string[] = [];
-        for (const [mediaAlias, mediaInstance] of SoundManagerStatic.mediaInstances.entries()) {
+        for (const [
+            mediaAlias,
+            mediaInstance,
+        ] of SoundManagerStatic.mediaInstances.entries() as MapIterator<[string, MediaInstance]>) {
             if (mediaInstance.channelAlias === this.alias) {
-                mediaInstance.instance.stop();
+                mediaInstance.stop();
                 aliasesToDelete.push(mediaAlias);
             }
         }
         aliasesToDelete.forEach((mediaAlias) => {
             SoundManagerStatic.mediaInstances.delete(mediaAlias);
         });
-        return this;
-    }
-
-    pauseAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias && !mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = true;
-            }
-        }
-        return this;
-    }
-
-    resumeAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.channelAlias === this.alias && mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = false;
-            }
-        }
-        return this;
-    }
-
-    pauseUnsavedAll(): this {
-        this.paused = true;
-        return this;
-    }
-
-    resumeUnsavedAll(): this {
-        this.paused = false;
         return this;
     }
 }

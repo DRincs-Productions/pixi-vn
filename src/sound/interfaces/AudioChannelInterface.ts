@@ -31,21 +31,6 @@ export default interface AudioChannelInterface {
         options?: SoundPlayOptions,
     ): Promise<MediaInteface>;
     /**
-     * Plays a non-persistent sound on this channel.
-     * The returned media is not tracked by the sound manager and is therefore excluded from save/export state.
-     * @param soundAlias The sound (asset) alias reference.
-     * @param options The options.
-     * @return The sound instance.
-     */
-    playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<MediaInteface>;
-    /**
-     * Stops all media instances that were started with {@link playTransient} on this channel.
-     * Instances that have already ended are automatically removed, so this only affects
-     * those that are still playing or paused.
-     * @return Instance for chaining.
-     */
-    stopTransientAll(): this;
-    /**
      * The stereo pan position for this channel in the range [-1, 1].
      * -1 is full left, 0 is centre, 1 is full right.
      */
@@ -72,22 +57,6 @@ export default interface AudioChannelInterface {
      * @return Instance for chaining.
      */
     stopAll(): this;
-    /**
-     * Pauses any playing sounds.
-     * @return Instance for chaining.
-     */
-    pauseAll(): this;
-    /**
-     * Temporarily pauses this channel without mutating each media instance's persisted paused option.
-     * Useful for overlays (for example settings/pause menus) where pause state must not be saved.
-     * @return Instance for chaining.
-     */
-    pauseUnsavedAll(): this;
-    /**
-     * Restores this channel after `pauseUnsavedAll()`, reapplying each media instance's persisted paused option.
-     * @return Instance for chaining.
-     */
-    resumeUnsavedAll(): this;
     /**
      * Resumes any sounds.
      * @return Instance for chaining.

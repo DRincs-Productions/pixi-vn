@@ -16,6 +16,7 @@ export default interface SoundOptions
     > {
     /**
      * Initial filters to apply.
+     * TODO: To edit
      */
     filters?: InputNode[];
     /**

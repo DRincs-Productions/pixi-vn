@@ -1,13 +1,21 @@
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { MediaMemory } from "@sound/interfaces/MediaInteface";
+import SoundManagerStatic from "@sound/SoundManagerStatic";
 import { type BasicPlaybackState, Player, type PlayerOptions } from "tone";
+import type { Time } from "tone/build/esm/core/type/Units";
 
 export default class MediaInstance extends Player implements MediaInteface {
-    constructor(options: Partial<PlayerOptions> = {}) {
+    constructor(
+        readonly alias: string,
+        readonly channelAlias: string,
+        readonly soundAlias: string,
+        readonly stepCounter: number,
+        options: Partial<PlayerOptions> = {},
+    ) {
         super(options);
         this.options = options;
     }
-    private readonly options: Partial<PlayerOptions>;
+    readonly options: Partial<PlayerOptions>;
     get memory() {
         const options: MediaMemory = {
             ...this.options,
@@ -32,11 +40,11 @@ export default class MediaInstance extends Player implements MediaInteface {
         if (value) {
             if (this.state === "started") {
                 this.offset = this.now();
-                this.stop();
+                super.stop();
             }
         } else {
             if (typeof this.offset === "number") {
-                this.start(undefined, this.offset);
+                super.start(undefined, this.offset);
                 this.offset = undefined;
             }
         }
@@ -58,5 +66,9 @@ export default class MediaInstance extends Player implements MediaInteface {
             return "paused" as BasicPlaybackState;
         }
         return super.state;
+    }
+    override stop(time?: Time): this {
+        SoundManagerStatic.mediaInstances.delete(this.alias);
+        return super.stop(time);
     }
 }
