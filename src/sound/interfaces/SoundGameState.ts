@@ -1,3 +1,4 @@
+import type { MediaMemory } from "@sound/interfaces/MediaInteface";
 import type SoundOptions from "@sound/interfaces/SoundOptions";
 import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import type { SoundFilterMemory } from "@sound/utils/filter-utility";
@@ -30,10 +31,13 @@ export default interface SoundGameState {
             channelAlias: string;
             soundAlias: string;
             stepCounter: number;
-            options: Omit<SoundPlayOptions, "filters"> & {
+            options: MediaMemory & {
                 filters?: SoundFilterMemory[];
                 delay?: number;
             };
+            /**
+             * @deprecated Use options.paused instead.
+             */
             paused?: boolean;
         };
     };

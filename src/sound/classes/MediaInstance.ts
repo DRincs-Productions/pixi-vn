@@ -32,8 +32,36 @@ export default class MediaInstance extends Player implements MediaInteface {
             volume: this.volume.value,
             autostart: !this.paused,
             offset: this.now(),
+            paused: this.paused,
         };
         return options;
+    }
+    set memory(options: MediaMemory) {
+        this.paused = options.paused;
+        if (this.loop !== (options.loop || false)) {
+            this.loop = options.loop || false;
+        }
+        if (this.volume.value !== (this.options.volume ?? 1)) {
+            this.volume.value = options.volume ?? 1;
+        }
+        if (this.mute !== (options.mute || false)) {
+            this.mute = options.mute || false;
+        }
+        if (this.playbackRate !== (options.playbackRate ?? 1)) {
+            this.playbackRate = options.playbackRate ?? 1;
+        }
+        if (this.reverse !== (options.reverse || false)) {
+            this.reverse = options.reverse || false;
+        }
+        if (this.fadeIn !== (options.fadeIn || 0)) {
+            this.fadeIn = options.fadeIn || 0;
+        }
+        if (this.loopStart !== (options.loopStart || 0)) {
+            this.loopStart = options.loopStart || 0;
+        }
+        if (this.loopEnd !== (options.loopEnd || 0)) {
+            this.loopEnd = options.loopEnd || 0;
+        }
     }
     private offset: undefined | number;
     get paused(): boolean {

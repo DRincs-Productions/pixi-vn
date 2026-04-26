@@ -48,6 +48,10 @@ export interface SoundPlayOptions extends SoundOptions {
      * effectively heard only after the delay has elapsed.
      */
     delay?: number;
+    /**
+     * The offset in seconds from the start of the sound at which to begin playback.
+     */
+    offset?: number;
 }
 
 export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {

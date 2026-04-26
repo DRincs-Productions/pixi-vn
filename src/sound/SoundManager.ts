@@ -8,11 +8,7 @@ import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { MediaMemory } from "@sound/interfaces/MediaInteface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
-import type {
-    ChannelOptions,
-    SoundPlayOptions,
-    SoundPlayOptionsWithChannel,
-} from "@sound/interfaces/SoundOptions";
+import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
 import SoundRegistry from "@sound/SoundRegistry";
 import {
     FilterMemoryToFilter,
@@ -306,7 +302,7 @@ export default class SoundManager implements SoundManagerInterface {
                 soundAlias: string;
                 stepCounter: number;
                 paused: boolean;
-                options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                options: MediaMemory & { filters?: SoundFilterMemory[]; delay?: number };
             };
         } = Array.from(SoundRegistry.mediaInstances.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
@@ -378,7 +374,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 mediaInstanceData.soundAlias,
                                 {
                                     ...mediaInstanceData.options,
-                                    autostart: restoredPaused,
+                                    autostart: !restoredPaused,
                                     filters: FilterMemoryToFilter(
                                         mediaInstanceData.options.filters || [],
                                     ),
@@ -395,7 +391,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 mediaInstanceData.soundAlias,
                                 {
                                     ...mediaInstanceData.options,
-                                    autostart: restoredPaused,
+                                    autostart: !restoredPaused,
                                     filters: FilterMemoryToFilter(
                                         mediaInstanceData.options.filters || [],
                                     ),
@@ -411,24 +407,10 @@ export default class SoundManager implements SoundManagerInterface {
                                 );
                                 return;
                             }
-                            mediaInstance.paused = restoredPaused;
-                            if (mediaInstance.loop !== (mediaInstanceData.options.loop || false)) {
-                                mediaInstance.loop = mediaInstanceData.options.loop || false;
-                            }
-                            if (
-                                mediaInstance.volume.value !==
-                                (mediaInstanceData.options.volume ?? 1)
-                            ) {
-                                mediaInstance.volume.value = mediaInstanceData.options.volume ?? 1;
-                            }
-                            if (
-                                mediaInstance.muted !== (mediaInstanceData.options.muted || false)
-                            ) {
-                                mediaInstance.muted = mediaInstanceData.options.muted || false;
-                            }
-                            if (mediaInstance.speed !== (mediaInstanceData.options.speed ?? 1)) {
-                                mediaInstance.speed = mediaInstanceData.options.speed ?? 1;
-                            }
+                            (mediaInstance as MediaInstance).memory = {
+                                ...mediaInstanceData.options,
+                                paused: restoredPaused,
+                            };
                             (mediaInstance as MediaInstance).filters.forEach((filter) => {
                                 mediaInstance.disconnect(filter);
                             });
