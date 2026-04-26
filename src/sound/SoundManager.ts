@@ -305,6 +305,7 @@ export default class SoundManager implements SoundManagerInterface {
                 channelAlias: string;
                 soundAlias: string;
                 stepCounter: number;
+                paused: boolean;
                 options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
             };
         } = Array.from(SoundRegistry.mediaInstances.entries()).reduce(
@@ -313,6 +314,7 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: (mediaInstance as MediaInstance).channelAlias,
                     soundAlias: (mediaInstance as MediaInstance).soundAlias,
                     stepCounter: (mediaInstance as MediaInstance).stepCounter,
+                    paused: mediaInstance.paused,
                     options: {
                         ...(mediaInstance as MediaInstance).memory,
                         filters: FilterToFilterMemory((mediaInstance as MediaInstance).filters),
@@ -326,6 +328,7 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: string;
                     soundAlias: string;
                     stepCounter: number;
+                    paused: boolean;
                     options: MediaMemory & { filters?: SoundFilterMemory[]; delay?: number };
                 };
             },
@@ -370,26 +373,36 @@ export default class SoundManager implements SoundManagerInterface {
                         const restoredPaused =
                             mediaInstanceData.options.paused ?? mediaInstanceData.paused ?? false;
                         if (!channel.background) {
-                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
-                                ...mediaInstanceData.options,
-                                paused: restoredPaused,
-                                filters: FilterMemoryToFilter(
-                                    mediaInstanceData.options.filters || [],
-                                ),
-                                delay: mediaInstanceData.options.delay,
-                            });
+                            const mediaInstance = await channel.play(
+                                mediaAlias,
+                                mediaInstanceData.soundAlias,
+                                {
+                                    ...mediaInstanceData.options,
+                                    autostart: restoredPaused,
+                                    filters: FilterMemoryToFilter(
+                                        mediaInstanceData.options.filters || [],
+                                    ),
+                                    delay: mediaInstanceData.options.delay,
+                                },
+                            );
+                            mediaInstance.paused = restoredPaused;
                         } else if (
                             mediaInstanceData.stepCounter === GameUnifier.stepCounter ||
                             !this.find(mediaAlias)
                         ) {
-                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
-                                ...mediaInstanceData.options,
-                                paused: restoredPaused,
-                                filters: FilterMemoryToFilter(
-                                    mediaInstanceData.options.filters || [],
-                                ),
-                                delay: mediaInstanceData.options.delay,
-                            });
+                            const mediaInstance = await channel.play(
+                                mediaAlias,
+                                mediaInstanceData.soundAlias,
+                                {
+                                    ...mediaInstanceData.options,
+                                    autostart: restoredPaused,
+                                    filters: FilterMemoryToFilter(
+                                        mediaInstanceData.options.filters || [],
+                                    ),
+                                    delay: mediaInstanceData.options.delay,
+                                },
+                            );
+                            mediaInstance.paused = restoredPaused;
                         } else {
                             const mediaInstance = SoundRegistry.mediaInstances.get(mediaAlias);
                             if (!mediaInstance) {
@@ -398,9 +411,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 );
                                 return;
                             }
-                            if (mediaInstance.paused !== restoredPaused) {
-                                mediaInstance.paused = restoredPaused;
-                            }
+                            mediaInstance.paused = restoredPaused;
                             if (mediaInstance.loop !== (mediaInstanceData.options.loop || false)) {
                                 mediaInstance.loop = mediaInstanceData.options.loop || false;
                             }

@@ -34,9 +34,6 @@ export default interface SoundGameState {
                 filters?: SoundFilterMemory[];
                 delay?: number;
             };
-            /**
-             * @deprecated Use options.paused instead.
-             */
             paused?: boolean;
         };
     };

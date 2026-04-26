@@ -42,9 +42,9 @@ export default class MediaInstance extends Player implements MediaInteface {
     set paused(value: boolean) {
         if (value) {
             if (this.state === "started") {
-                this.offset = this.now();
                 super.stop();
             }
+            this.offset = this.now();
         } else {
             if (typeof this.offset === "number") {
                 super.start(undefined, this.offset);
