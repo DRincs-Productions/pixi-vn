@@ -2,7 +2,7 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import SoundRegistry from "@sound/SoundRegistry";
 import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { logger } from "@utils/log-utility";
-import { type InputNode, Reverb, Time, ToneAudioBuffer } from "tone";
+import { FeedbackDelay, type InputNode, Reverb, Time, ToneAudioBuffer } from "tone";
 
 /** Convert a linear [0, 1] gain value to decibels. */
 export function linearToDecibels(v: number): number {
@@ -15,7 +15,7 @@ export function decibelsToLinear(db: number): number {
 }
 
 /**
- * Reconstructs {@link AudioFilter} instances from their serialised
+ * Reconstructs {@link InputNode} instances from their serialised
  * {@link SoundFilterMemory} representations.
  *
  * Filter effects using Tone.js are a work-in-progress; currently the
@@ -32,13 +32,22 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                     wet: f.wet,
                 }),
             );
+        } else if (f.type === "FeedbackDelayFilter") {
+            res.push(
+                new FeedbackDelay({
+                    feedback: f.feedback,
+                    delayTime: f.delayTime,
+                    maxDelay: f.maxDelay,
+                    wet: f.wet,
+                }),
+            );
         }
         return res;
     }, []);
 }
 
 /**
- * Serialises {@link AudioFilter} instances into their
+ * Serialises {@link InputNode} instances into their
  * {@link SoundFilterMemory} representations so they can be saved and
  * restored later.
  */
@@ -51,6 +60,15 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
                 wet: f.wet.toSeconds(),
                 decay: Time(f.decay).toSeconds(),
                 preDelay: Time(f.preDelay).toSeconds(),
+            });
+        }
+        if (f instanceof FeedbackDelay) {
+            res.push({
+                type: "FeedbackDelayFilter",
+                feedback: f.feedback.toSeconds(),
+                delayTime: f.delayTime.toSeconds(),
+                maxDelay: f.maxDelay.toSeconds(),
+                wet: f.wet.toSeconds(),
             });
         }
         return res;
