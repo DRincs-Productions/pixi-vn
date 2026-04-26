@@ -48,45 +48,31 @@ type SoundFilterMemory =
       } & Omit<GateOptions, "context">)
     | ({
           type: "AutoFilterFilter";
-          /** The oscillator type of the LFO (Tone.js {@link AutoFilterOptions.type}). */
-          toneType?: AutoFilterOptions["type"];
-      } & Omit<AutoFilterOptions, "context" | "type">)
+      } & Omit<AutoFilterOptions, "context">)
     | ({
           type: "BiquadFilterFilter";
-          /** The biquad filter type (Tone.js {@link BiquadFilterOptions.type}). */
-          toneType?: BiquadFilterOptions["type"];
-      } & Omit<BiquadFilterOptions, "context" | "type">)
+      } & Omit<BiquadFilterOptions, "context">)
     | ({
           type: "OnePoleFilterFilter";
-          /** The one-pole filter type (Tone.js {@link OnePoleFilterOptions.type}). */
-          toneType?: OnePoleFilterOptions["type"];
-      } & Omit<OnePoleFilterOptions, "context" | "type">)
+      } & Omit<OnePoleFilterOptions, "context">)
     | ({
           type: "FeedbackCombFilterFilter";
       } & Omit<FeedbackCombFilterOptions, "context">)
     | ({
           type: "CustomFilter";
-          /** The biquad filter type (Tone.js {@link FilterOptions.type}). */
-          toneType?: FilterOptions["type"];
-      } & Omit<FilterOptions, "context" | "type">)
+      } & Omit<FilterOptions, "context">)
     | ({
           type: "ChorusFilter";
-          /** The oscillator type of the LFO (Tone.js {@link ChorusOptions.type}). */
-          toneType?: ChorusOptions["type"];
-      } & Omit<ChorusOptions, "context" | "type">)
+      } & Omit<ChorusOptions, "context">)
     | ({
           type: "PhaserFilter";
       } & Omit<PhaserOptions, "context">)
     | ({
           type: "TremoloFilter";
-          /** The oscillator type of the LFO (Tone.js {@link TremoloOptions.type}). */
-          toneType?: TremoloOptions["type"];
-      } & Omit<TremoloOptions, "context" | "type">)
+      } & Omit<TremoloOptions, "context">)
     | ({
           type: "VibratoFilter";
-          /** The oscillator type of the LFO (Tone.js {@link VibratoOptions.type}). */
-          toneType?: VibratoOptions["type"];
-      } & Omit<VibratoOptions, "context" | "type">)
+      } & Omit<VibratoOptions, "context">)
     | ({
           type: "CompressorFilter";
       } & Omit<CompressorOptions, "context">)
@@ -116,9 +102,7 @@ type SoundFilterMemory =
       } & Omit<Panner3DOptions, "context">)
     | ({
           type: "AutoPannerFilter";
-          /** The oscillator type of the LFO (Tone.js {@link AutoPannerOptions.type}). */
-          toneType?: AutoPannerOptions["type"];
-      } & Omit<AutoPannerOptions, "context" | "type">)
+      } & Omit<AutoPannerOptions, "context">)
     | ({
           type: "StereoWidenerFilter";
       } & Omit<StereoWidenerOptions, "context">);
