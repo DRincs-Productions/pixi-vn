@@ -3,6 +3,10 @@ import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface"
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import { Gain, getDestination, type Player, type ToneAudioBuffer } from "tone";
 
+/**
+ * SoundRegistry is a singleton namespace that holds global state for the sound system.
+ * **DO NOT** import this module directly; use `sound`.
+ */
 namespace SoundRegistry {
     export const freezeBus = new Gain(1).toDestination();
     export const liveBus = getDestination();

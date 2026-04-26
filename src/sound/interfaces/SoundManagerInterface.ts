@@ -122,6 +122,12 @@ export default interface SoundManagerInterface {
     /** All registered audio channels. */
     readonly channels: AudioChannelInterface[];
 
+    /**
+     * Export the current sound state, including currently playing sounds and their options, for saving or debugging purposes. This is not guaranteed to be stable across versions and may contain implementation details; it is not intended for use in general application code.
+     */
     export(): SoundGameState;
+    /**
+     * Restore a sound state exported by {@link export}. This will stop any currently playing sounds and replace them with the sounds specified in the exported state. This is not guaranteed to be stable across versions and may contain implementation details; it is not intended for use in general application code.
+     */
     restore(data: object): Promise<void>;
 }

@@ -73,16 +73,14 @@ export default interface AudioChannelInterface {
      */
     toggleMuteAll(): boolean;
     /**
-     * Routes the channel output through one or more Tone.js audio nodes before
-     * reaching the master destination. This replaces any previously set routing,
-     * so calling `chain` again will override the previous chain.
-     *
      * Useful for inserting channel-wide audio effects such as reverb, delay or
      * EQ.  Internally this disconnects the channel from its current destination
      * and reconnects it through the provided nodes in series, ending at the
      * master output.
      *
-     * @param nodes One or more Tone.js {@link https://tonejs.github.io/docs/InputNode | InputNode} instances to chain in series.
+     * Install "tone" to use this method.
+     *
+     * @param nodes One or more Tone.js {@link InputNode} instances to chain in series.
      * @return Instance for chaining.
      *
      * @example

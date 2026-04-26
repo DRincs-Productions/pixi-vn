@@ -15,8 +15,16 @@ export default interface SoundOptions
         | "playbackRate"
     > {
     /**
-     * Initial filters to apply.
-     * TODO: To edit
+     * An array of audio filters/effects to apply to this sound.
+     *
+     * Install "tone" for the full list of available filters.
+     *
+     * @example
+     * ```ts
+     * import * as Tone from "tone";
+     *
+     * const filters = [new Tone.FeedbackDelay("8n", 0.5)];
+     * ```
      */
     filters?: InputNode[];
     /**

@@ -1,25 +1,28 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import type SoundManagerInterface from "./interfaces/SoundManagerInterface";
-import SoundManager from "./SoundManager";
-import SoundRegistry from "./SoundRegistry";
+import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
+import SoundManager from "@sound/SoundManager";
+import SoundRegistry from "@sound/SoundRegistry";
 
-export type { default as AudioChannelInterface } from "./interfaces/AudioChannelInterface";
-export type { default as IMediaInstance } from "./interfaces/MediaInteface";
+export type { default as AudioChannelInterface } from "@sound/interfaces/AudioChannelInterface";
+export type { default as IMediaInstance } from "@sound/interfaces/MediaInteface";
 export type {
     ExportedSound,
     ExportedSoundPlay,
     default as SoundGameState,
     SoundPlay,
-} from "./interfaces/SoundGameState";
+} from "@sound/interfaces/SoundGameState";
 export type {
     ChannelOptions,
     default as SoundOptions,
     SoundPlayOptions,
     SoundPlayOptionsWithChannel,
-} from "./interfaces/SoundOptions";
-export { default as SoundRegistry } from "./SoundRegistry";
-export type { default as SoundFilterMemory } from "./types/SoundFilterMemory";
+} from "@sound/interfaces/SoundOptions";
+export { default as SoundRegistry } from "@sound/SoundRegistry";
+export type { default as SoundFilterMemory } from "@sound/types/SoundFilterMemory";
 
+/**
+ * The singleton sound manager instance. Use this to play and manage sounds in your game.
+ */
 const sound: SoundManagerInterface = new SoundManager();
 
 GameUnifier.addOnPreContinue(async () => {

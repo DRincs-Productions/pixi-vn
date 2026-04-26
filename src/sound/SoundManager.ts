@@ -26,7 +26,6 @@ import * as Tone from "tone";
 
 export default class SoundManager implements SoundManagerInterface {
     get volumeAll(): number {
-        // Tone.Destination volume is in dB; convert back to linear [0, 1].
         const db = Tone.getDestination().volume.value;
         if (db === -Infinity) return 0;
         return 10 ** (db / 20);
@@ -40,7 +39,6 @@ export default class SoundManager implements SoundManagerInterface {
     }
     set speedAll(speed: number) {
         this._speedAll = speed;
-        // Apply to all currently active media instances.
         for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
             mediaInstance.speed = speed;
         }
