@@ -30,80 +30,80 @@ import type {
 type SoundFilterMemory =
     | ({
           filterType: "ReverbFilter";
-      } & Omit<ReverbOptions, "context">)
+      } & Omit<Partial<ReverbOptions>, "context">)
     | ({
           filterType: "FeedbackDelayFilter";
-      } & Omit<FeedbackDelayOptions, "context" | "maxDelay">)
+      } & Omit<Partial<FeedbackDelayOptions>, "context">)
     | ({
           filterType: "FreeverbFilter";
-      } & Omit<FreeverbOptions, "context">)
+      } & Omit<Partial<FreeverbOptions>, "context">)
     | ({
           filterType: "DelayFilter";
-      } & Omit<DelayOptions, "context">)
+      } & Omit<Partial<DelayOptions>, "context">)
     | ({
           filterType: "PingPongDelayFilter";
-      } & Omit<PingPongDelayOptions, "context">)
+      } & Omit<Partial<PingPongDelayOptions>, "context">)
     | ({
           filterType: "GateFilter";
-      } & Omit<GateOptions, "context">)
+      } & Omit<Partial<GateOptions>, "context">)
     | ({
           filterType: "AutoFilterFilter";
-      } & Omit<AutoFilterOptions, "context">)
+      } & Omit<Partial<AutoFilterOptions>, "context">)
     | ({
           filterType: "BiquadFilterFilter";
-      } & Omit<BiquadFilterOptions, "context">)
+      } & Omit<Partial<BiquadFilterOptions>, "context">)
     | ({
           filterType: "OnePoleFilterFilter";
-      } & Omit<OnePoleFilterOptions, "context">)
+      } & Omit<Partial<OnePoleFilterOptions>, "context">)
     | ({
           filterType: "FeedbackCombFilterFilter";
-      } & Omit<FeedbackCombFilterOptions, "context">)
+      } & Omit<Partial<FeedbackCombFilterOptions>, "context">)
     | ({
           filterType: "CustomFilter";
-      } & Omit<FilterOptions, "context">)
+      } & Omit<Partial<FilterOptions>, "context">)
     | ({
           filterType: "ChorusFilter";
-      } & Omit<ChorusOptions, "context">)
+      } & Omit<Partial<ChorusOptions>, "context">)
     | ({
           filterType: "PhaserFilter";
-      } & Omit<PhaserOptions, "context">)
+      } & Omit<Partial<PhaserOptions>, "context">)
     | ({
           filterType: "TremoloFilter";
-      } & Omit<TremoloOptions, "context">)
+      } & Omit<Partial<TremoloOptions>, "context">)
     | ({
           filterType: "VibratoFilter";
-      } & Omit<VibratoOptions, "context">)
+      } & Omit<Partial<VibratoOptions>, "context">)
     | ({
           filterType: "CompressorFilter";
-      } & Omit<CompressorOptions, "context">)
+      } & Omit<Partial<CompressorOptions>, "context">)
     | ({
           filterType: "MidSideCompressorFilter";
-      } & Omit<MidSideCompressorOptions, "context">)
+      } & Omit<Partial<MidSideCompressorOptions>, "context">)
     | ({
           filterType: "MultibandCompressorFilter";
-      } & Omit<MultibandCompressorOptions, "context">)
+      } & Omit<Partial<MultibandCompressorOptions>, "context">)
     | ({
           filterType: "LimiterFilter";
-      } & Omit<LimiterOptions, "context">)
+      } & Omit<Partial<LimiterOptions>, "context">)
     | ({
           filterType: "GreaterThanFilter";
-      } & Omit<GreaterThanOptions, "context">)
+      } & Omit<Partial<GreaterThanOptions>, "context">)
     | ({
           filterType: "GreaterThanZeroFilter";
-      } & Omit<GreaterThanZeroOptions, "context">)
+      } & Omit<Partial<GreaterThanZeroOptions>, "context">)
     | ({
           filterType: "DistortionFilter";
-      } & Omit<DistortionOptions, "context">)
+      } & Omit<Partial<DistortionOptions>, "context">)
     | ({
           filterType: "BitCrusherFilter";
-      } & Omit<BitCrusherOptions, "context">)
+      } & Omit<Partial<BitCrusherOptions>, "context">)
     | ({
           filterType: "Panner3DFilter";
-      } & Omit<Panner3DOptions, "context">)
+      } & Omit<Partial<Panner3DOptions>, "context">)
     | ({
           filterType: "AutoPannerFilter";
-      } & Omit<AutoPannerOptions, "context">)
+      } & Omit<Partial<AutoPannerOptions>, "context">)
     | ({
           filterType: "StereoWidenerFilter";
-      } & Omit<StereoWidenerOptions, "context">);
+      } & Omit<Partial<StereoWidenerOptions>, "context">);
 export default SoundFilterMemory;

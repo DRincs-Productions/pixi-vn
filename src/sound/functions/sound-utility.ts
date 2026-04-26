@@ -322,7 +322,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
 export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] | undefined {
     if (!filter) return undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return filter.reduce((res: SoundFilterMemory[], f: any) => {
+    return filter.reduce((res: SoundFilterMemory[], f) => {
         if (f instanceof Reverb) {
             res.push({
                 filterType: "ReverbFilter",
@@ -337,9 +337,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
                 wet: f.wet.value,
                 delayTime: f.delayTime.value,
                 feedback: f.feedback.value,
-                // PingPongDelay does not expose maxDelay publicly; read from the
-                // internal left-delay node (same value set in the constructor).
-                maxDelay: (f as any)._leftDelay?.maxDelay ?? 1,
+                // maxDelay: f.maxDelay,
             });
         } else if (f instanceof FeedbackDelay) {
             res.push({
@@ -396,17 +394,13 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
                 smoothing: f.smoothing,
             });
         } else if (f instanceof GreaterThan) {
-            // GreaterThan extends Signal; the comparison threshold is in
-            // f.comparator.value. The signal-level options (units, convert,
-            // minValue, maxValue) are not part of the public API but are
-            // stored on the instance — read them defensively with fallbacks.
             res.push({
                 filterType: "GreaterThanFilter",
                 value: f.comparator.value,
-                units: (f as any).units ?? "number",
-                convert: (f as any).convert ?? true,
-                minValue: (f as any).minValue,
-                maxValue: (f as any).maxValue,
+                convert: f.convert,
+                maxValue: f.maxValue,
+                minValue: f.minValue,
+                // units: f.units,
             });
         } else if (f instanceof GreaterThanZero) {
             res.push({ filterType: "GreaterThanZeroFilter" });
@@ -486,9 +480,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
                 baseFrequency: f.baseFrequency,
                 wet: f.wet.value,
                 Q: f.Q.value,
-                // Phaser does not expose the stage count publicly; infer it from
-                // the internal filter array length (set once in the constructor).
-                stages: (f as any)._filtersL?.length ?? 10,
+                // stages: f.stages,
             });
         } else if (f instanceof StereoWidener) {
             res.push({
@@ -499,7 +491,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
         } else if (f instanceof AutoFilter) {
             res.push({
                 filterType: "AutoFilterFilter",
-                toneType: f.type,
+                type: f.type,
                 frequency: f.frequency.value,
                 depth: f.depth.value,
                 baseFrequency: f.baseFrequency,
@@ -514,7 +506,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
         } else if (f instanceof Chorus) {
             res.push({
                 filterType: "ChorusFilter",
-                toneType: f.type,
+                type: f.type,
                 frequency: f.frequency.value,
                 delayTime: f.delayTime,
                 depth: f.depth,
@@ -525,7 +517,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
         } else if (f instanceof Tremolo) {
             res.push({
                 filterType: "TremoloFilter",
-                toneType: f.type,
+                type: f.type,
                 frequency: f.frequency.value,
                 depth: f.depth.value,
                 spread: f.spread,
@@ -534,27 +526,25 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
         } else if (f instanceof Vibrato) {
             res.push({
                 filterType: "VibratoFilter",
-                toneType: f.type,
-                // Vibrato does not expose maxDelay publicly; read from the
-                // internal delay node (set once in the constructor, default 0.005 s).
-                maxDelay: (f as any)._delayNode?.maxDelay ?? 0.005,
+                type: f.type,
                 frequency: f.frequency.value,
                 depth: f.depth.value,
+                // maxDelay: f.maxDelay,
                 wet: f.wet.value,
             });
         } else if (f instanceof AutoPanner) {
             res.push({
                 filterType: "AutoPannerFilter",
-                toneType: f.type,
+                type: f.type,
                 frequency: f.frequency.value,
                 depth: f.depth.value,
-                channelCount: f.channelCount ?? 1,
+                channelCount: f.channelCount,
                 wet: f.wet.value,
             });
         } else if (f instanceof BiquadFilter) {
             res.push({
                 filterType: "BiquadFilterFilter",
-                toneType: f.type,
+                type: f.type,
                 frequency: f.frequency.value,
                 detune: f.detune.value,
                 Q: f.Q.value,
@@ -563,13 +553,13 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
         } else if (f instanceof OnePoleFilter) {
             res.push({
                 filterType: "OnePoleFilterFilter",
-                toneType: f.type,
+                type: f.type,
                 frequency: f.frequency,
             });
         } else if (f instanceof Filter) {
             res.push({
                 filterType: "CustomFilter",
-                toneType: f.type,
+                type: f.type,
                 frequency: f.frequency.value,
                 Q: f.Q.value,
                 detune: f.detune.value,
@@ -578,7 +568,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else {
             logger.warn(
-                `Unsupported filter type for serialisation: ${(f as any)?.constructor?.name ?? f}, please report this to the developers if you encounter it.`,
+                `Unsupported filter type for serialisation: ${f?.constructor?.name ?? f}, please report this to the developers if you encounter it.`,
             );
         }
         return res;
