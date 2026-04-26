@@ -18,6 +18,7 @@ export default interface MediaInteface
         | "stop"
         | "volume"
         | "chain"
+        | "disconnect"
     > {
     /**
      * Whether the sound is currently paused.

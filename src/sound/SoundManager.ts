@@ -418,7 +418,12 @@ export default class SoundManager implements SoundManagerInterface {
                             if (mediaInstance.speed !== (mediaInstanceData.options.speed ?? 1)) {
                                 mediaInstance.speed = mediaInstanceData.options.speed ?? 1;
                             }
-                            // TODO filters
+                            (mediaInstance as MediaInstance).filters.forEach((filter) => {
+                                mediaInstance.disconnect(filter);
+                            });
+                            mediaInstance.chain(
+                                ...FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                            );
                         }
                     });
                     await Promise.all(promises2);
