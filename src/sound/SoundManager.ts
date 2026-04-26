@@ -23,7 +23,6 @@ import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
 import * as Tone from "tone";
-import type { Time } from "tone/build/esm/core/type/Units";
 
 export default class SoundManager implements SoundManagerInterface {
     get volumeAll(): number {
@@ -329,7 +328,7 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: string;
                     soundAlias: string;
                     stepCounter: number;
-                    options: MediaMemory & { filters?: SoundFilterMemory[]; depay?: Time };
+                    options: MediaMemory & { filters?: SoundFilterMemory[]; delay?: number };
                 };
             },
         );
