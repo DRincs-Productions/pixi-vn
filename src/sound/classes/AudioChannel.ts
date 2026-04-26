@@ -164,7 +164,7 @@ export default class AudioChannel implements AudioChannelInterface {
         ).chain(...filters, this.toneChannel);
         if (autostart) {
             if (delay) {
-                player.start(delay);
+                player.start(`+${delay}`);
             } else {
                 player.start();
             }
