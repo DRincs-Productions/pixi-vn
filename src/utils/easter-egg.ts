@@ -14,7 +14,25 @@ const secondSegmentStyle = "background:#c832bb;color:#fff;font-weight:bold;";
 const plainStyle = "background:transparent;font-weight:bold;";
 const versionSuffix = ` v${packageJson.version}`;
 
+/**
+ * Checks if the code is running in Vite development mode.
+ * Uses indirect access to avoid TypeScript compilation issues with import.meta in commonjs modules.
+ */
+function isViteDevelopmentMode(): boolean {
+    try {
+        return new Function(
+            'return typeof import !== "undefined" && typeof import.meta !== "undefined" && import.meta.env?.DEV === true',
+        )();
+    } catch {
+        return false;
+    }
+}
+
 export function asciiArtLog() {
+    if (isViteDevelopmentMode()) {
+        return;
+    }
+
     const formatParts: string[] = [];
     const values: string[] = [];
 
