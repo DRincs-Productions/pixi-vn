@@ -5,6 +5,7 @@ import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface"
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundRegistry from "@sound/SoundRegistry";
+import { logger } from "@utils/log-utility";
 import { Channel, Delay, type InputNode, type Param } from "tone";
 
 export default class AudioChannel implements AudioChannelInterface {
@@ -135,16 +136,24 @@ export default class AudioChannel implements AudioChannelInterface {
             paused,
             muted,
             autostart = paused ? !paused : true,
-            mute = muted,
             speed,
-            playbackRate = speed,
             ...restOptions
         } = options;
+        if (muted !== undefined) {
+            logger.warn(
+                `MediaInstance "${alias}" is being created with muted=${muted}. This will override the channel's muted state (${this.muted}).`,
+            );
+            restOptions.mute = muted;
+        }
+        if (speed !== undefined) {
+            logger.warn(
+                `MediaInstance "${alias}" is being created with speed=${speed}. This will override the default playback speed of 1.`,
+            );
+            restOptions.playbackRate = speed;
+        }
         const player = new MediaInstance(alias, this.alias, soundAlias, GameUnifier.stepCounter, {
             ...restOptions,
             url: buffer,
-            mute,
-            playbackRate,
         });
         if (delay) {
             const delayFilter = new Delay(delay);
