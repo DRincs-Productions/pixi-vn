@@ -1,6 +1,7 @@
 import type SoundOptions from "@sound/interfaces/SoundOptions";
 import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
+import type { Time } from "tone/build/esm/core/type/Units";
 
 export interface ExportedSound {
     options: SoundOptions;
@@ -30,7 +31,10 @@ export default interface SoundGameState {
             channelAlias: string;
             soundAlias: string;
             stepCounter: number;
-            options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+            options: Omit<SoundPlayOptions, "filters"> & {
+                filters?: SoundFilterMemory[];
+                delay?: Time;
+            };
             /**
              * @deprecated Use options.paused instead.
              */

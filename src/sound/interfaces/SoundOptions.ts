@@ -1,4 +1,5 @@
 import type { InputNode, PlayerOptions } from "tone";
+import type { Time } from "tone/build/esm/core/type/Units";
 
 export default interface SoundOptions
     extends Pick<
@@ -39,7 +40,7 @@ export interface SoundPlayOptions extends SoundOptions {
      * specified the sound is started immediately but paused so that it is
      * effectively heard only after the delay has elapsed.
      */
-    delay?: number;
+    delay?: Time;
 }
 
 export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {

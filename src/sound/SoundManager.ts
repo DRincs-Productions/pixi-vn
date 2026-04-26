@@ -23,6 +23,7 @@ import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
 import * as Tone from "tone";
+import type { Time } from "tone/build/esm/core/type/Units";
 
 export default class SoundManager implements SoundManagerInterface {
     get volumeAll(): number {
@@ -318,6 +319,7 @@ export default class SoundManager implements SoundManagerInterface {
                     options: {
                         ...(mediaInstance as MediaInstance).memory,
                         filters: FilterToFilterMemory((mediaInstance as MediaInstance).filters),
+                        deplay: (mediaInstance as MediaInstance).delay,
                     },
                 };
                 return result;
@@ -327,7 +329,7 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: string;
                     soundAlias: string;
                     stepCounter: number;
-                    options: MediaMemory & { filters?: SoundFilterMemory[] };
+                    options: MediaMemory & { filters?: SoundFilterMemory[]; deplay?: Time };
                 };
             },
         );
@@ -377,6 +379,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
+                                delay: mediaInstanceData.options.delay,
                             });
                         } else if (
                             mediaInstanceData.stepCounter === GameUnifier.stepCounter ||
@@ -388,6 +391,7 @@ export default class SoundManager implements SoundManagerInterface {
                                 filters: FilterMemoryToFilter(
                                     mediaInstanceData.options.filters || [],
                                 ),
+                                delay: mediaInstanceData.options.delay,
                             });
                         } else {
                             const mediaInstance = SoundRegistry.mediaInstances.get(mediaAlias);

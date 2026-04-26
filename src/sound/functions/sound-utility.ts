@@ -37,7 +37,6 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                 new FeedbackDelay({
                     feedback: f.feedback,
                     delayTime: f.delayTime,
-                    maxDelay: f.maxDelay,
                     wet: f.wet,
                 }),
             );
@@ -67,7 +66,6 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
                 type: "FeedbackDelayFilter",
                 feedback: f.feedback.toSeconds(),
                 delayTime: f.delayTime.toSeconds(),
-                maxDelay: f.maxDelay.toSeconds(),
                 wet: f.wet.toSeconds(),
             });
         }

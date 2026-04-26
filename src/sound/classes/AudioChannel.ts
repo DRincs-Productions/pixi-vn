@@ -6,7 +6,7 @@ import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundRegistry from "@sound/SoundRegistry";
 import { logger } from "@utils/log-utility";
-import { Channel, Delay, type InputNode, type Param } from "tone";
+import { Channel, type InputNode, type Param } from "tone";
 
 export default class AudioChannel implements AudioChannelInterface {
     /**
@@ -151,18 +151,23 @@ export default class AudioChannel implements AudioChannelInterface {
             );
             restOptions.playbackRate = speed;
         }
-        const player = new MediaInstance(alias, this.alias, soundAlias, GameUnifier.stepCounter, {
-            ...restOptions,
-            url: buffer,
-        });
-        if (delay) {
-            const delayFilter = new Delay(delay);
-            player.chain(delayFilter, ...filters, this.toneChannel);
-        } else {
-            player.chain(...filters, this.toneChannel);
-        }
+        const player = new MediaInstance(
+            alias,
+            this.alias,
+            soundAlias,
+            GameUnifier.stepCounter,
+            {
+                ...restOptions,
+                url: buffer,
+            },
+            delay,
+        ).chain(...filters, this.toneChannel);
         if (autostart) {
-            player.start();
+            if (delay) {
+                player.start(delay);
+            } else {
+                player.start();
+            }
         }
 
         return player;
