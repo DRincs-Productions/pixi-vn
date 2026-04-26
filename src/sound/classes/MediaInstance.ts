@@ -31,7 +31,7 @@ export default class MediaInstance extends Player implements MediaInteface {
             reverse: this.reverse,
             volume: this.volume.value,
             autostart: !this.paused,
-            offset: this.now(),
+            offset: this.seek(),
             paused: this.paused,
         };
         return options;
