@@ -11,7 +11,7 @@ export default class MediaInstance extends Player implements MediaInteface {
         readonly soundAlias: string,
         readonly stepCounter: number,
         options: Partial<PlayerOptions> = {},
-        readonly delay?: Time,
+        readonly delay?: number,
     ) {
         super(options);
         this.options = options;

@@ -319,7 +319,7 @@ export default class SoundManager implements SoundManagerInterface {
                     options: {
                         ...(mediaInstance as MediaInstance).memory,
                         filters: FilterToFilterMemory((mediaInstance as MediaInstance).filters),
-                        deplay: (mediaInstance as MediaInstance).delay,
+                        delay: (mediaInstance as MediaInstance).delay,
                     },
                 };
                 return result;
@@ -329,7 +329,7 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: string;
                     soundAlias: string;
                     stepCounter: number;
-                    options: MediaMemory & { filters?: SoundFilterMemory[]; deplay?: Time };
+                    options: MediaMemory & { filters?: SoundFilterMemory[]; depay?: Time };
                 };
             },
         );
