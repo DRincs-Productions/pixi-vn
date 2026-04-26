@@ -668,3 +668,34 @@ export function FilterToFilterMemory(filters?: InputNode[]): SoundFilterMemory[]
         return res;
     }, []);
 }
+
+export function isFilter(filter: InputNode): boolean {
+    return (
+        filter instanceof Reverb ||
+        filter instanceof FeedbackDelay ||
+        filter instanceof PingPongDelay ||
+        filter instanceof BitCrusher ||
+        filter instanceof Compressor ||
+        filter instanceof Delay ||
+        filter instanceof Distortion ||
+        filter instanceof FeedbackCombFilter ||
+        filter instanceof Freeverb ||
+        filter instanceof Gate ||
+        filter instanceof GreaterThan ||
+        filter instanceof GreaterThanZero ||
+        filter instanceof Limiter ||
+        filter instanceof MidSideCompressor ||
+        filter instanceof MultibandCompressor ||
+        filter instanceof Panner3D ||
+        filter instanceof Phaser ||
+        filter instanceof StereoWidener ||
+        filter instanceof AutoFilter ||
+        filter instanceof Chorus ||
+        filter instanceof Vibrato ||
+        filter instanceof Tremolo ||
+        filter instanceof AutoPanner ||
+        filter instanceof BiquadFilter ||
+        filter instanceof OnePoleFilter ||
+        filter instanceof Filter
+    );
+}

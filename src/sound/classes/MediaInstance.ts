@@ -1,6 +1,7 @@
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { MediaMemory } from "@sound/interfaces/MediaInteface";
 import SoundRegistry from "@sound/SoundRegistry";
+import { isFilter } from "@sound/utils/filter-utility";
 import { type BasicPlaybackState, type InputNode, Player, type PlayerOptions } from "tone";
 import type { Time } from "tone/build/esm/core/type/Units";
 
@@ -74,7 +75,11 @@ export default class MediaInstance extends Player implements MediaInteface {
         return super.stop(time);
     }
     override chain(...nodes: InputNode[]): this {
-        this.filters.push(...nodes);
+        nodes.forEach((node) => {
+            if (isFilter(node)) {
+                this.filters.push(node);
+            }
+        });
         return super.chain(...nodes);
     }
 }
