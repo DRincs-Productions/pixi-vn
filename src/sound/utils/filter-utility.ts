@@ -1,7 +1,32 @@
-import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import SoundRegistry from "@sound/SoundRegistry";
-import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
 import { logger } from "@utils/log-utility";
+import type {
+    AutoFilterOptions,
+    AutoPannerOptions,
+    BiquadFilterOptions,
+    BitCrusherOptions,
+    ChorusOptions,
+    CompressorOptions,
+    DelayOptions,
+    DistortionOptions,
+    FeedbackCombFilterOptions,
+    FeedbackDelayOptions,
+    FilterOptions,
+    FreeverbOptions,
+    GateOptions,
+    GreaterThanOptions,
+    GreaterThanZeroOptions,
+    LimiterOptions,
+    MidSideCompressorOptions,
+    MultibandCompressorOptions,
+    OnePoleFilterOptions,
+    Panner3DOptions,
+    PhaserOptions,
+    PingPongDelayOptions,
+    ReverbOptions,
+    StereoWidenerOptions,
+    TremoloOptions,
+    VibratoOptions,
+} from "tone";
 import {
     AutoFilter,
     AutoPanner,
@@ -29,20 +54,89 @@ import {
     Reverb,
     StereoWidener,
     Time,
-    ToneAudioBuffer,
     Tremolo,
     Vibrato,
 } from "tone";
 
-/** Convert a linear [0, 1] gain value to decibels. */
-export function linearToDecibels(v: number): number {
-    return v <= 0 ? -Infinity : 20 * Math.log10(v);
-}
-
-/** Convert a decibel value to a linear [0, 1] gain. */
-export function decibelsToLinear(db: number): number {
-    return db <= -Infinity ? 0 : 10 ** (db / 20);
-}
+export type SoundFilterMemory =
+    | ({
+          filterType: "ReverbFilter";
+      } & Omit<Partial<ReverbOptions>, "context">)
+    | ({
+          filterType: "FeedbackDelayFilter";
+      } & Omit<Partial<FeedbackDelayOptions>, "context">)
+    | ({
+          filterType: "FreeverbFilter";
+      } & Omit<Partial<FreeverbOptions>, "context">)
+    | ({
+          filterType: "DelayFilter";
+      } & Omit<Partial<DelayOptions>, "context">)
+    | ({
+          filterType: "PingPongDelayFilter";
+      } & Omit<Partial<PingPongDelayOptions>, "context">)
+    | ({
+          filterType: "GateFilter";
+      } & Omit<Partial<GateOptions>, "context">)
+    | ({
+          filterType: "AutoFilterFilter";
+      } & Omit<Partial<AutoFilterOptions>, "context">)
+    | ({
+          filterType: "BiquadFilterFilter";
+      } & Omit<Partial<BiquadFilterOptions>, "context">)
+    | ({
+          filterType: "OnePoleFilterFilter";
+      } & Omit<Partial<OnePoleFilterOptions>, "context">)
+    | ({
+          filterType: "FeedbackCombFilterFilter";
+      } & Omit<Partial<FeedbackCombFilterOptions>, "context">)
+    | ({
+          filterType: "CustomFilter";
+      } & Omit<Partial<FilterOptions>, "context">)
+    | ({
+          filterType: "ChorusFilter";
+      } & Omit<Partial<ChorusOptions>, "context">)
+    | ({
+          filterType: "PhaserFilter";
+      } & Omit<Partial<PhaserOptions>, "context">)
+    | ({
+          filterType: "TremoloFilter";
+      } & Omit<Partial<TremoloOptions>, "context">)
+    | ({
+          filterType: "VibratoFilter";
+      } & Omit<Partial<VibratoOptions>, "context">)
+    | ({
+          filterType: "CompressorFilter";
+      } & Omit<Partial<CompressorOptions>, "context">)
+    | ({
+          filterType: "MidSideCompressorFilter";
+      } & Omit<Partial<MidSideCompressorOptions>, "context">)
+    | ({
+          filterType: "MultibandCompressorFilter";
+      } & Omit<Partial<MultibandCompressorOptions>, "context">)
+    | ({
+          filterType: "LimiterFilter";
+      } & Omit<Partial<LimiterOptions>, "context">)
+    | ({
+          filterType: "GreaterThanFilter";
+      } & Omit<Partial<GreaterThanOptions>, "context">)
+    | ({
+          filterType: "GreaterThanZeroFilter";
+      } & Omit<Partial<GreaterThanZeroOptions>, "context">)
+    | ({
+          filterType: "DistortionFilter";
+      } & Omit<Partial<DistortionOptions>, "context">)
+    | ({
+          filterType: "BitCrusherFilter";
+      } & Omit<Partial<BitCrusherOptions>, "context">)
+    | ({
+          filterType: "Panner3DFilter";
+      } & Omit<Partial<Panner3DOptions>, "context">)
+    | ({
+          filterType: "AutoPannerFilter";
+      } & Omit<Partial<AutoPannerOptions>, "context">)
+    | ({
+          filterType: "StereoWidenerFilter";
+      } & Omit<Partial<StereoWidenerOptions>, "context">);
 
 /**
  * Reconstructs {@link InputNode} instances from their serialised
@@ -573,33 +667,4 @@ export function FilterToFilterMemory(filters?: InputNode[]): SoundFilterMemory[]
         }
         return res;
     }, []);
-}
-
-export async function soundLoad(alias: string): Promise<void> {
-    if (SoundRegistry.bufferRegistry.has(alias)) return;
-    // Resolve via PIXI.Assets when the alias has been registered
-    // there; fall back to using the alias as a raw URL.
-    let url: string = alias;
-    try {
-        const resolved = PIXI.Assets.resolver.resolve(alias);
-        if (resolved?.src) url = resolved.src;
-    } catch {
-        // Not registered in PIXI.Assets — use alias as URL.
-    }
-    try {
-        // Load the raw AudioBuffer, then wrap it in a ToneAudioBuffer.
-        // Using the static ToneAudioBuffer.load() + try/catch instead of
-        // the constructor avoids an unhandled-rejection timing issue that
-        // occurs when loading invalid URLs in test environments.
-        const audioBuffer = await ToneAudioBuffer.load(url);
-        const buffer = new ToneAudioBuffer(audioBuffer as unknown as AudioBuffer);
-        SoundRegistry.bufferRegistry.set(alias, buffer);
-    } catch (e) {
-        logger.warn(
-            `Failed to load audio buffer for "${alias}" (url: "${url}"): ${e instanceof Error ? e.message : e}`,
-        );
-        // Register an empty stub so downstream code can proceed
-        // without crashing (e.g. in test / headless environments).
-        SoundRegistry.bufferRegistry.set(alias, new ToneAudioBuffer());
-    }
 }

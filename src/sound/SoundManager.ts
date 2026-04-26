@@ -3,11 +3,6 @@ import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import AudioChannel from "@sound/classes/AudioChannel";
 import type MediaInstance from "@sound/classes/MediaInstance";
-import {
-    FilterMemoryToFilter,
-    FilterToFilterMemory,
-    soundLoad,
-} from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { MediaMemory } from "@sound/interfaces/MediaInteface";
@@ -19,7 +14,12 @@ import type {
     SoundPlayOptionsWithChannel,
 } from "@sound/interfaces/SoundOptions";
 import SoundRegistry from "@sound/SoundRegistry";
-import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
+import {
+    FilterMemoryToFilter,
+    FilterToFilterMemory,
+    type SoundFilterMemory,
+} from "@sound/utils/filter-utility";
+import { soundLoad } from "@sound/utils/sound-utility";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
 import * as Tone from "tone";

@@ -1,10 +1,10 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import MediaInstance from "@sound/classes/MediaInstance";
-import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/functions/sound-utility";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type MediaInteface from "@sound/interfaces/MediaInteface";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundRegistry from "@sound/SoundRegistry";
+import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/utils/sound-utility";
 import { logger } from "@utils/log-utility";
 import { Channel, type InputNode, type Param } from "tone";
 

@@ -18,7 +18,6 @@ export type {
     SoundPlayOptionsWithChannel,
 } from "@sound/interfaces/SoundOptions";
 export { default as SoundRegistry } from "@sound/SoundRegistry";
-export type { default as SoundFilterMemory } from "@sound/types/SoundFilterMemory";
 
 /**
  * The singleton sound manager instance. Use this to play and manage sounds in your game.
