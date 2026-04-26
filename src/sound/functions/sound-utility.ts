@@ -50,7 +50,7 @@ export function decibelsToLinear(db: number): number {
  */
 export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
     return filter.reduce((res: InputNode[], f) => {
-        switch (f.type) {
+        switch (f.filterType) {
             case "ReverbFilter":
                 res.push(
                     new Reverb({
@@ -223,12 +223,12 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                 res.push(
                     new AutoFilter({
                         frequency: f.frequency,
-                        type: f.toneType,
                         depth: f.depth,
                         baseFrequency: f.baseFrequency,
                         octaves: f.octaves,
                         filter: f.filter,
                         wet: f.wet,
+                        type: f.type,
                     }),
                 );
                 break;
@@ -238,7 +238,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         frequency: f.frequency,
                         detune: f.detune,
                         Q: f.Q,
-                        type: f.toneType,
+                        type: f.type,
                         gain: f.gain,
                     }),
                 );
@@ -247,7 +247,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                 res.push(
                     new OnePoleFilter({
                         frequency: f.frequency,
-                        type: f.toneType,
+                        type: f.type,
                     }),
                 );
                 break;
@@ -256,7 +256,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                     new Filter({
                         frequency: f.frequency,
                         Q: f.Q,
-                        type: f.toneType,
+                        type: f.type,
                         detune: f.detune,
                         gain: f.gain,
                         rolloff: f.rolloff,
@@ -269,7 +269,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         frequency: f.frequency,
                         delayTime: f.delayTime,
                         depth: f.depth,
-                        type: f.toneType,
+                        type: f.type,
                         spread: f.spread,
                         feedback: f.feedback,
                         wet: f.wet,
@@ -280,7 +280,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                 res.push(
                     new Tremolo({
                         frequency: f.frequency,
-                        type: f.toneType,
+                        type: f.type,
                         depth: f.depth,
                         spread: f.spread,
                         wet: f.wet,
@@ -293,7 +293,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         maxDelay: f.maxDelay,
                         frequency: f.frequency,
                         depth: f.depth,
-                        type: f.toneType,
+                        type: f.type,
                         wet: f.wet,
                     }),
                 );
@@ -302,7 +302,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                 res.push(
                     new AutoPanner({
                         frequency: f.frequency,
-                        type: f.toneType,
+                        type: f.type,
                         depth: f.depth,
                         channelCount: f.channelCount,
                         wet: f.wet,
@@ -325,7 +325,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
     return filter.reduce((res: SoundFilterMemory[], f: any) => {
         if (f instanceof Reverb) {
             res.push({
-                type: "ReverbFilter",
+                filterType: "ReverbFilter",
                 wet: f.wet.value,
                 decay: Time(f.decay).toSeconds(),
                 preDelay: Time(f.preDelay).toSeconds(),
@@ -333,7 +333,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
         } else if (f instanceof PingPongDelay) {
             // Check PingPongDelay before FeedbackDelay (both share feedback/delayTime)
             res.push({
-                type: "PingPongDelayFilter",
+                filterType: "PingPongDelayFilter",
                 wet: f.wet.value,
                 delayTime: f.delayTime.value,
                 feedback: f.feedback.value,
@@ -343,20 +343,20 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof FeedbackDelay) {
             res.push({
-                type: "FeedbackDelayFilter",
+                filterType: "FeedbackDelayFilter",
                 feedback: f.feedback.value,
                 delayTime: f.delayTime.value,
                 wet: f.wet.value,
             });
         } else if (f instanceof BitCrusher) {
             res.push({
-                type: "BitCrusherFilter",
+                filterType: "BitCrusherFilter",
                 bits: f.bits.value,
                 wet: f.wet.value,
             });
         } else if (f instanceof Compressor) {
             res.push({
-                type: "CompressorFilter",
+                filterType: "CompressorFilter",
                 attack: f.attack.value,
                 knee: f.knee.value,
                 ratio: f.ratio.value,
@@ -365,33 +365,33 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof Delay) {
             res.push({
-                type: "DelayFilter",
+                filterType: "DelayFilter",
                 delayTime: f.delayTime.value,
                 maxDelay: f.maxDelay,
             });
         } else if (f instanceof Distortion) {
             res.push({
-                type: "DistortionFilter",
+                filterType: "DistortionFilter",
                 distortion: f.distortion,
                 oversample: f.oversample,
                 wet: f.wet.value,
             });
         } else if (f instanceof FeedbackCombFilter) {
             res.push({
-                type: "FeedbackCombFilterFilter",
+                filterType: "FeedbackCombFilterFilter",
                 delayTime: f.delayTime.value,
                 resonance: f.resonance.value,
             });
         } else if (f instanceof Freeverb) {
             res.push({
-                type: "FreeverbFilter",
+                filterType: "FreeverbFilter",
                 roomSize: f.roomSize.value,
                 dampening: f.dampening,
                 wet: f.wet.value,
             });
         } else if (f instanceof Gate) {
             res.push({
-                type: "GateFilter",
+                filterType: "GateFilter",
                 threshold: f.threshold,
                 smoothing: f.smoothing,
             });
@@ -401,7 +401,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             // minValue, maxValue) are not part of the public API but are
             // stored on the instance — read them defensively with fallbacks.
             res.push({
-                type: "GreaterThanFilter",
+                filterType: "GreaterThanFilter",
                 value: f.comparator.value,
                 units: (f as any).units ?? "number",
                 convert: (f as any).convert ?? true,
@@ -409,15 +409,15 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
                 maxValue: (f as any).maxValue,
             });
         } else if (f instanceof GreaterThanZero) {
-            res.push({ type: "GreaterThanZeroFilter" });
+            res.push({ filterType: "GreaterThanZeroFilter" });
         } else if (f instanceof Limiter) {
             res.push({
-                type: "LimiterFilter",
+                filterType: "LimiterFilter",
                 threshold: f.threshold.value,
             });
         } else if (f instanceof MidSideCompressor) {
             res.push({
-                type: "MidSideCompressorFilter",
+                filterType: "MidSideCompressorFilter",
                 mid: {
                     attack: f.mid.attack.value,
                     knee: f.mid.knee.value,
@@ -435,7 +435,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof MultibandCompressor) {
             res.push({
-                type: "MultibandCompressorFilter",
+                filterType: "MultibandCompressorFilter",
                 lowFrequency: f.lowFrequency.value,
                 highFrequency: f.highFrequency.value,
                 low: {
@@ -462,7 +462,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof Panner3D) {
             res.push({
-                type: "Panner3DFilter",
+                filterType: "Panner3DFilter",
                 positionX: f.positionX.value,
                 positionY: f.positionY.value,
                 positionZ: f.positionZ.value,
@@ -480,7 +480,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof Phaser) {
             res.push({
-                type: "PhaserFilter",
+                filterType: "PhaserFilter",
                 frequency: f.frequency.value,
                 octaves: f.octaves,
                 baseFrequency: f.baseFrequency,
@@ -492,13 +492,13 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof StereoWidener) {
             res.push({
-                type: "StereoWidenerFilter",
+                filterType: "StereoWidenerFilter",
                 width: f.width.value,
                 wet: f.wet.value,
             });
         } else if (f instanceof AutoFilter) {
             res.push({
-                type: "AutoFilterFilter",
+                filterType: "AutoFilterFilter",
                 toneType: f.type,
                 frequency: f.frequency.value,
                 depth: f.depth.value,
@@ -513,7 +513,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof Chorus) {
             res.push({
-                type: "ChorusFilter",
+                filterType: "ChorusFilter",
                 toneType: f.type,
                 frequency: f.frequency.value,
                 delayTime: f.delayTime,
@@ -524,7 +524,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof Tremolo) {
             res.push({
-                type: "TremoloFilter",
+                filterType: "TremoloFilter",
                 toneType: f.type,
                 frequency: f.frequency.value,
                 depth: f.depth.value,
@@ -533,7 +533,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof Vibrato) {
             res.push({
-                type: "VibratoFilter",
+                filterType: "VibratoFilter",
                 toneType: f.type,
                 // Vibrato does not expose maxDelay publicly; read from the
                 // internal delay node (set once in the constructor, default 0.005 s).
@@ -544,7 +544,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof AutoPanner) {
             res.push({
-                type: "AutoPannerFilter",
+                filterType: "AutoPannerFilter",
                 toneType: f.type,
                 frequency: f.frequency.value,
                 depth: f.depth.value,
@@ -553,7 +553,7 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof BiquadFilter) {
             res.push({
-                type: "BiquadFilterFilter",
+                filterType: "BiquadFilterFilter",
                 toneType: f.type,
                 frequency: f.frequency.value,
                 detune: f.detune.value,
@@ -562,13 +562,13 @@ export function FilterToFilterMemory(filter?: InputNode[]): SoundFilterMemory[] 
             });
         } else if (f instanceof OnePoleFilter) {
             res.push({
-                type: "OnePoleFilterFilter",
+                filterType: "OnePoleFilterFilter",
                 toneType: f.type,
                 frequency: f.frequency,
             });
         } else if (f instanceof Filter) {
             res.push({
-                type: "CustomFilter",
+                filterType: "CustomFilter",
                 toneType: f.type,
                 frequency: f.frequency.value,
                 Q: f.Q.value,

@@ -29,81 +29,81 @@ import type {
 
 type SoundFilterMemory =
     | ({
-          type: "ReverbFilter";
+          filterType: "ReverbFilter";
       } & Omit<ReverbOptions, "context">)
     | ({
-          type: "FeedbackDelayFilter";
+          filterType: "FeedbackDelayFilter";
       } & Omit<FeedbackDelayOptions, "context" | "maxDelay">)
     | ({
-          type: "FreeverbFilter";
+          filterType: "FreeverbFilter";
       } & Omit<FreeverbOptions, "context">)
     | ({
-          type: "DelayFilter";
+          filterType: "DelayFilter";
       } & Omit<DelayOptions, "context">)
     | ({
-          type: "PingPongDelayFilter";
+          filterType: "PingPongDelayFilter";
       } & Omit<PingPongDelayOptions, "context">)
     | ({
-          type: "GateFilter";
+          filterType: "GateFilter";
       } & Omit<GateOptions, "context">)
     | ({
-          type: "AutoFilterFilter";
+          filterType: "AutoFilterFilter";
       } & Omit<AutoFilterOptions, "context">)
     | ({
-          type: "BiquadFilterFilter";
+          filterType: "BiquadFilterFilter";
       } & Omit<BiquadFilterOptions, "context">)
     | ({
-          type: "OnePoleFilterFilter";
+          filterType: "OnePoleFilterFilter";
       } & Omit<OnePoleFilterOptions, "context">)
     | ({
-          type: "FeedbackCombFilterFilter";
+          filterType: "FeedbackCombFilterFilter";
       } & Omit<FeedbackCombFilterOptions, "context">)
     | ({
-          type: "CustomFilter";
+          filterType: "CustomFilter";
       } & Omit<FilterOptions, "context">)
     | ({
-          type: "ChorusFilter";
+          filterType: "ChorusFilter";
       } & Omit<ChorusOptions, "context">)
     | ({
-          type: "PhaserFilter";
+          filterType: "PhaserFilter";
       } & Omit<PhaserOptions, "context">)
     | ({
-          type: "TremoloFilter";
+          filterType: "TremoloFilter";
       } & Omit<TremoloOptions, "context">)
     | ({
-          type: "VibratoFilter";
+          filterType: "VibratoFilter";
       } & Omit<VibratoOptions, "context">)
     | ({
-          type: "CompressorFilter";
+          filterType: "CompressorFilter";
       } & Omit<CompressorOptions, "context">)
     | ({
-          type: "MidSideCompressorFilter";
+          filterType: "MidSideCompressorFilter";
       } & Omit<MidSideCompressorOptions, "context">)
     | ({
-          type: "MultibandCompressorFilter";
+          filterType: "MultibandCompressorFilter";
       } & Omit<MultibandCompressorOptions, "context">)
     | ({
-          type: "LimiterFilter";
+          filterType: "LimiterFilter";
       } & Omit<LimiterOptions, "context">)
     | ({
-          type: "GreaterThanFilter";
+          filterType: "GreaterThanFilter";
       } & Omit<GreaterThanOptions, "context">)
     | ({
-          type: "GreaterThanZeroFilter";
+          filterType: "GreaterThanZeroFilter";
       } & Omit<GreaterThanZeroOptions, "context">)
     | ({
-          type: "DistortionFilter";
+          filterType: "DistortionFilter";
       } & Omit<DistortionOptions, "context">)
     | ({
-          type: "BitCrusherFilter";
+          filterType: "BitCrusherFilter";
       } & Omit<BitCrusherOptions, "context">)
     | ({
-          type: "Panner3DFilter";
+          filterType: "Panner3DFilter";
       } & Omit<Panner3DOptions, "context">)
     | ({
-          type: "AutoPannerFilter";
+          filterType: "AutoPannerFilter";
       } & Omit<AutoPannerOptions, "context">)
     | ({
-          type: "StereoWidenerFilter";
+          filterType: "StereoWidenerFilter";
       } & Omit<StereoWidenerOptions, "context">);
 export default SoundFilterMemory;
