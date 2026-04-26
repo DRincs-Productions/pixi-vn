@@ -72,7 +72,7 @@ export default class MediaInstance extends Player implements MediaInteface {
             if (this.state === "started") {
                 super.stop();
             }
-            this.offset = this.now();
+            this.offset = this.seek();
         } else {
             if (typeof this.offset === "number") {
                 super.start(undefined, this.offset);
