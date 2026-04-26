@@ -79,6 +79,9 @@ export default class SoundManager implements SoundManagerInterface {
         }
         return this;
     }
+    get muted(): boolean {
+        return Tone.getDestination().mute;
+    }
     toggleMuteAll(): boolean {
         const newMuted = !Tone.getDestination().mute;
         Tone.getDestination().mute = newMuted;

@@ -67,6 +67,10 @@ export default interface SoundManagerInterface {
 
     /** Toggle mute on all sounds. Returns the new muted state. */
     toggleMuteAll(): boolean;
+    /**
+     * Whether all sounds are currently muted. Note that individual channels or media instances may still be muted or unmuted; this is just the global master mute state.
+     */
+    readonly muted: boolean;
     /** Mute all sounds. */
     muteAll(): this;
     /** Unmute all sounds. */

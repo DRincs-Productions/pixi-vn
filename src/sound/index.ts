@@ -2,7 +2,6 @@ import { GameUnifier } from "@drincs/pixi-vn/core";
 import type SoundManagerInterface from "./interfaces/SoundManagerInterface";
 import SoundManager from "./SoundManager";
 import SoundRegistry from "./SoundRegistry";
-import { getDestination } from "tone";
 
 export type { default as AudioChannelInterface } from "./interfaces/AudioChannelInterface";
 export type { default as IMediaInstance } from "./interfaces/MediaInteface";
@@ -41,14 +40,13 @@ GameUnifier.addOnPreContinue(async () => {
 if (typeof document !== "undefined") {
     let _autoMuted = false;
     document.addEventListener("visibilitychange", () => {
-        const destination = getDestination();
         if (document.hidden) {
-            if (!destination.mute) {
-                destination.mute = true;
+            if (!sound.muted) {
+                sound.muteAll();
                 _autoMuted = true;
             }
         } else if (_autoMuted) {
-            destination.mute = false;
+            sound.unmuteAll();
             _autoMuted = false;
         }
     });
