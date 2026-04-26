@@ -161,7 +161,6 @@ export default class AudioChannel implements AudioChannelInterface {
         } else {
             player.chain(...filters, this.toneChannel);
         }
-        player.toDestination();
         if (autostart) {
             player.start();
         }
