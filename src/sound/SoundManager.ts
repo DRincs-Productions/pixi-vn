@@ -1,39 +1,45 @@
 import { GENERAL_CHANNEL } from "@constants";
-import { GameUnifier } from "@drincs/pixi-vn/core";
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { type Filter, filters, type IMediaContext, Sound, sound } from "@pixi/sound";
 import AudioChannel from "@sound/classes/AudioChannel";
-import { FilterMemoryToFilter, FilterToFilterMemory } from "@sound/functions/sound-utility";
+import type MediaInstance from "@sound/classes/MediaInstance";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type IMediaInstance from "@sound/interfaces/IMediaInstance";
+import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type { MediaMemory } from "@sound/interfaces/MediaInteface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
-import type SoundOptions from "@sound/interfaces/SoundOptions";
-import type {
-    ChannelOptions,
-    SoundPlayOptions,
-    SoundPlayOptionsWithChannel,
-} from "@sound/interfaces/SoundOptions";
-import SoundManagerStatic from "@sound/SoundManagerStatic";
-import type SoundFilterMemory from "@sound/types/SoundFilterMemory";
+import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
+import SoundRegistry from "@sound/SoundRegistry";
+import {
+    FilterMemoryToFilter,
+    FilterToFilterMemory,
+    type SoundFilterMemory,
+} from "@sound/utils/filter-utility";
+import { soundLoad } from "@sound/utils/sound-utility";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
+import * as Tone from "tone";
 
 export default class SoundManager implements SoundManagerInterface {
-    get context(): IMediaContext {
-        return sound.context;
+    get volumeAll(): number {
+        const db = Tone.getDestination().volume.value;
+        if (db === -Infinity) return 0;
+        return 10 ** (db / 20);
     }
-    get filtersAll(): Filter[] {
-        return sound.filtersAll;
+    set volumeAll(volume: number) {
+        Tone.getDestination().volume.value = volume <= 0 ? -Infinity : 20 * Math.log10(volume);
     }
-    set filtersAll(filtersAll: Filter[]) {
-        sound.filtersAll = filtersAll.filter((f) => {
-            return !(f instanceof filters.Filter);
-        });
+
+    get speedAll(): number {
+        return this._speedAll;
     }
-    get supported(): boolean {
-        return sound.supported;
+    set speedAll(speed: number) {
+        this._speedAll = speed;
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
+            mediaInstance.speed = speed;
+        }
     }
+    private _speedAll = 1;
 
     _defaultChannelAlias = GENERAL_CHANNEL;
     get defaultChannelAlias(): string {
@@ -43,121 +49,100 @@ export default class SoundManager implements SoundManagerInterface {
         this._defaultChannelAlias = alias;
     }
 
-    add(alias: string, sourceOptions: string) {
-        return sound.add(alias, sourceOptions);
-    }
-    async edit(alias: string, options: SoundOptions): Promise<void> {
-        let s = sound.find(alias);
-        if (!s) {
-            await this.load(alias);
-            s = sound.find(alias);
-            if (!s) {
-                logger.error(`Sound with alias ${alias} not found after loading.`);
-                return;
-            }
+    /** @deprecated Register sound assets directly via `PIXI.Assets` instead. */
+    add(alias: string, sourceOptions: string): void {
+        if (!SoundRegistry.bufferRegistry.has(alias)) {
+            const buffer = new Tone.ToneAudioBuffer(sourceOptions);
+            SoundRegistry.bufferRegistry.set(alias, buffer);
         }
-        s.options = options;
     }
-    get useLegacy(): boolean {
-        return sound.useLegacy;
-    }
-    set useLegacy(legacy: boolean) {
-        sound.useLegacy = legacy;
-    }
-    get disableAutoPause(): boolean {
-        return sound.disableAutoPause;
-    }
-    set disableAutoPause(autoPause: boolean) {
-        sound.disableAutoPause = autoPause;
-    }
-    get volumeAll(): number {
-        return sound.volumeAll;
-    }
-    set volumeAll(volume: number) {
-        sound.volumeAll = volume;
-    }
-    get speedAll(): number {
-        return sound.speedAll;
-    }
-    set speedAll(speed: number) {
-        sound.speedAll = speed;
-    }
+
     pauseAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (!mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = true;
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
+            if (!mediaInstance.paused) {
+                mediaInstance.paused = true;
             }
         }
         return this;
     }
     resumeAll(): this {
-        for (const mediaInstance of SoundManagerStatic.mediaInstances.values()) {
-            if (mediaInstance.instance.paused) {
-                mediaInstance.instance.paused = false;
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
+            if (mediaInstance.paused) {
+                mediaInstance.paused = false;
             }
         }
         return this;
     }
+    get muted(): boolean {
+        return Tone.getDestination().mute;
+    }
     toggleMuteAll(): boolean {
-        return sound.toggleMuteAll();
+        const newMuted = !Tone.getDestination().mute;
+        Tone.getDestination().mute = newMuted;
+        return newMuted;
     }
     muteAll(): this {
-        sound.muteAll();
+        Tone.getDestination().mute = true;
         return this;
     }
     unmuteAll(): this {
-        sound.unmuteAll();
+        Tone.getDestination().mute = false;
         return this;
     }
     stopAll(): this {
-        SoundManagerStatic.mediaInstances.clear();
-        sound.stopAll();
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
+            mediaInstance.stop();
+        }
+        SoundRegistry.mediaInstances.clear();
         return this;
     }
     pauseUnsavedAll(channel?: string): this {
-        if (channel !== undefined) {
-            this.findChannel(channel).pauseUnsavedAll();
+        if (channel) {
+            const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
+            toneChannel.disconnect();
+            toneChannel.connect(SoundRegistry.freezeBus);
         } else {
-            for (const ch of SoundManagerStatic.channels.values()) {
-                ch.pauseUnsavedAll();
+            for (const ch of SoundRegistry.channels.values()) {
+                const toneChannel = (ch as AudioChannel).toneChannel;
+                toneChannel.disconnect();
+                toneChannel.connect(SoundRegistry.freezeBus);
             }
         }
         return this;
     }
     resumeUnsavedAll(channel?: string): this {
-        if (channel !== undefined) {
-            this.findChannel(channel).resumeUnsavedAll();
+        if (channel) {
+            const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
+            toneChannel.disconnect();
+            toneChannel.connect(SoundRegistry.liveBus);
         } else {
-            for (const ch of SoundManagerStatic.channels.values()) {
-                ch.resumeUnsavedAll();
+            for (const ch of SoundRegistry.channels.values()) {
+                const toneChannel = (ch as AudioChannel).toneChannel;
+                toneChannel.disconnect();
+                toneChannel.connect(SoundRegistry.liveBus);
             }
         }
         return this;
     }
-    stopTransientAll(channel?: string): this {
-        if (channel !== undefined) {
-            this.findChannel(channel).stopTransientAll();
-        } else {
-            for (const ch of SoundManagerStatic.channels.values()) {
-                ch.stopTransientAll();
-            }
+    stopTransientAll(): this {
+        for (const player of SoundRegistry.transients) {
+            player.stop();
         }
+        SoundRegistry.transients.clear();
         return this;
     }
-    isPlaying(): boolean {
-        return sound.isPlaying();
-    }
-    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+
+    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInteface>;
     async play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance>;
+    ): Promise<MediaInteface>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptionsWithChannel,
         paramOptions?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance> {
+    ): Promise<MediaInteface> {
         let mediaAlias: string;
         let soundAlias: string;
         if (typeof soundAliasOrOptions === "string") {
@@ -168,35 +153,50 @@ export default class SoundManager implements SoundManagerInterface {
             soundAlias = aliasOrMediaAlias;
             paramOptions = soundAliasOrOptions;
         }
-        if (!sound.exists(soundAlias)) {
+        if (!SoundRegistry.bufferRegistry.has(soundAlias)) {
             await this.load(soundAlias);
         }
         const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
         return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
     }
+
     async playTransient(
         alias: string,
-        options?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance> {
-        if (!sound.exists(alias)) {
+        options?: Partial<Tone.PlayerOptions>,
+    ): Promise<Tone.Player> {
+        if (!SoundRegistry.bufferRegistry.has(alias)) {
             await this.load(alias);
         }
-        const { channel = this.defaultChannelAlias, ...channelOptions } = options ?? {};
-        return await this.findChannel(channel).playTransient(alias, channelOptions);
+        const buffer = SoundRegistry.bufferRegistry.get(alias);
+        if (!buffer) {
+            throw new PixiError(
+                "unregistered_asset",
+                `Sound buffer for alias "${alias}" is not loaded. Call sound.load() first.`,
+            );
+        }
+        const { autostart = true, ...playerOptions } = options ?? {};
+        const player = new Tone.Player({ ...playerOptions, url: buffer }).toDestination();
+        if (autostart) {
+            player.start();
+        }
+        return player;
     }
-    find(alias: string): IMediaInstance | undefined {
-        return SoundManagerStatic.mediaInstances.get(alias)?.instance;
+
+    find(alias: string): MediaInteface | undefined {
+        return SoundRegistry.mediaInstances.get(alias);
     }
+
     stop(alias: string): void {
         const mediaInstance = this.find(alias);
         if (mediaInstance) {
             mediaInstance.stop();
-            SoundManagerStatic.mediaInstances.delete(alias);
+            SoundRegistry.mediaInstances.delete(alias);
         } else {
             logger.warn(`No media instance found with alias ${alias} to stop.`);
         }
     }
-    pause(alias: string): IMediaInstance | undefined {
+
+    pause(alias: string): MediaInteface | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
             logger.warn(`No media instance found with alias ${alias} to pause.`);
@@ -205,7 +205,8 @@ export default class SoundManager implements SoundManagerInterface {
         mediaInstance.paused = true;
         return mediaInstance;
     }
-    resume(alias: string): IMediaInstance | undefined {
+
+    resume(alias: string): MediaInteface | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
             logger.warn(`No media instance found with alias ${alias} to resume.`);
@@ -214,57 +215,50 @@ export default class SoundManager implements SoundManagerInterface {
         mediaInstance.paused = false;
         return mediaInstance;
     }
-    duration(alias: string): number {
-        return sound.duration(alias);
-    }
-    async load(alias: string | string[]): Promise<Sound[]> {
-        if (typeof alias === "string") {
-            alias = [alias];
-        }
-        const promises = alias.map(async (alias) => {
-            const item = await PIXI.Assets.load<Sound>(alias);
-            if (!sound.exists(alias)) sound.add(alias, item);
-            return item;
-        });
-        return await Promise.all(promises);
-    }
-    backgroundLoad(alias: string | string[]): Promise<void> {
-        const promise = PIXI.Assets.backgroundLoad(alias);
 
-        promise.then(() => {
-            if (typeof alias === "string") {
-                alias = [alias];
-            }
-            alias.forEach((alias) => {
-                const item = PIXI.Assets.get<Sound>(alias);
-                if (!sound.exists(alias)) sound.add(alias, item);
-            });
-        });
-        return promise;
+    duration(alias: string): number {
+        const buffer = SoundRegistry.bufferRegistry.get(alias);
+        return buffer?.duration ?? 0;
     }
+
+    async load(...alias: string[]): Promise<void> {
+        const promises = alias.map(soundLoad);
+        await Promise.all(promises);
+    }
+
+    backgroundLoad(...alias: string[]): Promise<void> {
+        // Fire-and-forget: load the buffer(s) without blocking the caller.
+        return this.load(...alias).catch((e) => {
+            logger.error("Error background-loading sound", e);
+        });
+    }
+
     backgroundLoadBundle(alias: string): Promise<void> {
         const promise = PIXI.Assets.backgroundLoadBundle(alias);
-        promise.then(async () => {
-            try {
-                const assets = await PIXI.Assets.loadBundle(alias);
-                for (const key in assets) {
-                    const item = assets[key];
-                    if (item instanceof Sound) {
-                        if (!sound.exists(key)) sound.add(key, item);
+        promise
+            .then(async () => {
+                try {
+                    const assets = await PIXI.Assets.loadBundle(alias);
+                    const loadPromises: Promise<void>[] = [];
+                    for (const key in assets) {
+                        if (!SoundRegistry.bufferRegistry.has(key)) {
+                            loadPromises.push(this.load(key));
+                        }
                     }
+                    await Promise.all(loadPromises);
+                } catch (e) {
+                    logger.error("Error loading sound bundle", e);
                 }
-            } catch (e) {
-                logger.error("Error loading sound bundle", e);
-            }
-        });
+            })
+            .catch((e) => {
+                logger.error("Error background-loading sound bundle", e);
+            });
         return promise;
     }
 
     clear() {
         this.stopAll();
     }
-
-    /* Channel Methods */
 
     addChannel(
         alias: string | string[],
@@ -280,17 +274,17 @@ export default class SoundManager implements SoundManagerInterface {
             });
             return;
         }
-        if (SoundManagerStatic.channels.has(alias)) {
+        if (SoundRegistry.channels.has(alias)) {
             logger.warn(`Channel with alias ${alias} already exists.`);
             return;
         }
         const channel = new AudioChannel(alias, options);
-        SoundManagerStatic.channels.set(alias, channel);
+        SoundRegistry.channels.set(alias, channel);
         return channel;
     }
 
     findChannel(alias: string): AudioChannelInterface {
-        const channel = SoundManagerStatic.channels.get(alias);
+        const channel = SoundRegistry.channels.get(alias);
         if (!channel) {
             return this.addChannel(alias) as AudioChannelInterface;
         }
@@ -298,10 +292,8 @@ export default class SoundManager implements SoundManagerInterface {
     }
 
     get channels(): AudioChannelInterface[] {
-        return Array.from(SoundManagerStatic.channels.values());
+        return Array.from(SoundRegistry.channels.values());
     }
-
-    /* Export and Import Methods */
 
     public export(): SoundGameState {
         const mediaInstances: {
@@ -309,17 +301,20 @@ export default class SoundManager implements SoundManagerInterface {
                 channelAlias: string;
                 soundAlias: string;
                 stepCounter: number;
-                options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                paused: boolean;
+                options: MediaMemory & { filters?: SoundFilterMemory[]; delay?: number };
             };
-        } = Array.from(SoundManagerStatic.mediaInstances.entries()).reduce(
+        } = Array.from(SoundRegistry.mediaInstances.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
                 result[mediaAlias] = {
-                    channelAlias: mediaInstance.channelAlias,
-                    soundAlias: mediaInstance.soundAlias,
-                    stepCounter: mediaInstance.stepCounter,
+                    channelAlias: (mediaInstance as MediaInstance).channelAlias,
+                    soundAlias: (mediaInstance as MediaInstance).soundAlias,
+                    stepCounter: (mediaInstance as MediaInstance).stepCounter,
+                    paused: mediaInstance.paused,
                     options: {
-                        ...mediaInstance.options,
-                        filters: FilterToFilterMemory(mediaInstance.options.filters),
+                        ...(mediaInstance as MediaInstance).memory,
+                        filters: FilterToFilterMemory((mediaInstance as MediaInstance).filters),
+                        delay: (mediaInstance as MediaInstance).delay,
                     },
                 };
                 return result;
@@ -329,15 +324,16 @@ export default class SoundManager implements SoundManagerInterface {
                     channelAlias: string;
                     soundAlias: string;
                     stepCounter: number;
-                    options: Omit<SoundPlayOptions, "filters"> & { filters?: SoundFilterMemory[] };
+                    paused: boolean;
+                    options: MediaMemory & { filters?: SoundFilterMemory[]; delay?: number };
                 };
             },
         );
         return {
             mediaInstances: createExportableElement(mediaInstances),
-            filters: createExportableElement(FilterToFilterMemory(this.filtersAll)),
         };
     }
+
     async restore(data: object) {
         try {
             if (Object.hasOwn(data, "soundsPlaying")) {
@@ -345,7 +341,6 @@ export default class SoundManager implements SoundManagerInterface {
                 if (soundsPlaying) {
                     const promises = Object.keys(soundsPlaying).map(async (alias) => {
                         await this.load(alias);
-
                         await this.play(alias);
                     });
                     await Promise.all(promises);
@@ -355,7 +350,6 @@ export default class SoundManager implements SoundManagerInterface {
             if (Object.hasOwn(data, "mediaInstances")) {
                 const mediaInstances = (data as SoundGameState).mediaInstances;
                 if (mediaInstances) {
-                    // load all media first
                     const usedChannels = new Set<string>();
                     const promises = Object.values(mediaInstances).map(
                         async ({ soundAlias, channelAlias }) => {
@@ -375,66 +369,57 @@ export default class SoundManager implements SoundManagerInterface {
                         const restoredPaused =
                             mediaInstanceData.options.paused ?? mediaInstanceData.paused ?? false;
                         if (!channel.background) {
-                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
-                                ...mediaInstanceData.options,
-                                paused: restoredPaused,
-                                filters: FilterMemoryToFilter(
-                                    mediaInstanceData.options.filters || [],
-                                ),
-                            });
+                            const mediaInstance = await channel.play(
+                                mediaAlias,
+                                mediaInstanceData.soundAlias,
+                                {
+                                    ...mediaInstanceData.options,
+                                    autostart: !restoredPaused,
+                                    filters: FilterMemoryToFilter(
+                                        mediaInstanceData.options.filters || [],
+                                    ),
+                                    delay: mediaInstanceData.options.delay,
+                                },
+                            );
+                            mediaInstance.paused = restoredPaused;
                         } else if (
                             mediaInstanceData.stepCounter === GameUnifier.stepCounter ||
                             !this.find(mediaAlias)
                         ) {
-                            // if the channel is background, we only restore it if it was played in the current step, to avoid restoring background music that was playing in a previous step
-                            await channel.play(mediaAlias, mediaInstanceData.soundAlias, {
-                                ...mediaInstanceData.options,
-                                paused: restoredPaused,
-                                filters: FilterMemoryToFilter(
-                                    mediaInstanceData.options.filters || [],
-                                ),
-                            });
+                            const mediaInstance = await channel.play(
+                                mediaAlias,
+                                mediaInstanceData.soundAlias,
+                                {
+                                    ...mediaInstanceData.options,
+                                    autostart: !restoredPaused,
+                                    filters: FilterMemoryToFilter(
+                                        mediaInstanceData.options.filters || [],
+                                    ),
+                                    delay: mediaInstanceData.options.delay,
+                                },
+                            );
+                            mediaInstance.paused = restoredPaused;
                         } else {
-                            const mediaInstance = SoundManagerStatic.mediaInstances.get(mediaAlias);
+                            const mediaInstance = SoundRegistry.mediaInstances.get(mediaAlias);
                             if (!mediaInstance) {
                                 logger.warn(
                                     `No media instance found with alias ${mediaAlias} while restoring background state.`,
                                 );
                                 return;
                             }
-                            const instance = mediaInstance.instance;
-                            if (instance.paused !== restoredPaused) {
-                                instance.paused = restoredPaused;
-                            }
-                            if (instance.loop !== (mediaInstanceData.options.loop || false)) {
-                                instance.loop = mediaInstanceData.options.loop || false;
-                            }
-                            if (instance.volume !== (mediaInstanceData.options.volume ?? 1)) {
-                                instance.volume = mediaInstanceData.options.volume ?? 1;
-                            }
-                            if (instance.muted !== (mediaInstanceData.options.muted || false)) {
-                                instance.muted = mediaInstanceData.options.muted || false;
-                            }
-                            if (instance.speed !== (mediaInstanceData.options.speed ?? 1)) {
-                                instance.speed = mediaInstanceData.options.speed ?? 1;
-                            }
-                            mediaInstance.options = {
+                            (mediaInstance as MediaInstance).memory = {
                                 ...mediaInstanceData.options,
                                 paused: restoredPaused,
-                                filters: FilterMemoryToFilter(
-                                    mediaInstanceData.options.filters || [],
-                                ),
                             };
+                            (mediaInstance as MediaInstance).filters.forEach((filter) => {
+                                mediaInstance.disconnect(filter);
+                            });
+                            mediaInstance.chain(
+                                ...FilterMemoryToFilter(mediaInstanceData.options.filters || []),
+                            );
                         }
                     });
                     await Promise.all(promises2);
-                }
-            }
-
-            if (Object.hasOwn(data, "filters")) {
-                const f = (data as SoundGameState).filters;
-                if (f) {
-                    this.filtersAll = FilterMemoryToFilter(f);
                 }
             }
         } catch (e) {

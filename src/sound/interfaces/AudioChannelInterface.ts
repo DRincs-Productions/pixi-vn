@@ -1,5 +1,6 @@
-import type IMediaInstance from "./IMediaInstance";
-import type { SoundPlayOptions } from "./SoundOptions";
+import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
+import type { InputNode, Param } from "tone";
 
 export default interface AudioChannelInterface {
     /**
@@ -14,7 +15,7 @@ export default interface AudioChannelInterface {
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
-    play(alias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
+    play(alias: string, options?: SoundPlayOptions): Promise<MediaInteface>;
     /**
      * Plays a sound.
      * @param mediaAlias The media alias reference.
@@ -28,22 +29,12 @@ export default interface AudioChannelInterface {
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptions,
-    ): Promise<IMediaInstance>;
+    ): Promise<MediaInteface>;
     /**
-     * Plays a non-persistent sound on this channel.
-     * The returned media is not tracked by the sound manager and is therefore excluded from save/export state.
-     * @param soundAlias The sound (asset) alias reference.
-     * @param options The options.
-     * @return The sound instance.
+     * The stereo pan position for this channel in the range [-1, 1].
+     * -1 is full left, 0 is centre, 1 is full right.
      */
-    playTransient(soundAlias: string, options?: SoundPlayOptions): Promise<IMediaInstance>;
-    /**
-     * Stops all media instances that were started with {@link playTransient} on this channel.
-     * Instances that have already ended are automatically removed, so this only affects
-     * those that are still playing or paused.
-     * @return Instance for chaining.
-     */
-    stopTransientAll(): this;
+    pan: number;
     /**
      * The volume of the audio channel, between 0 and 1. This is multiplied with the volume of each sound played through this channel.
      */
@@ -55,7 +46,7 @@ export default interface AudioChannelInterface {
     /**
      * The MediaInstances currently playing through this channel. This is read-only and cannot be modified directly. Use the play method to add new MediaInstances to this channel.
      */
-    readonly mediaInstances: IMediaInstance[];
+    readonly mediaInstances: MediaInteface[];
     /**
      * Whether this channel is a background channel.
      * Background channels are special channels. Unlike normal channels, media connected to a background channel does not stop when a scene changes, but continues to play in the background.
@@ -72,17 +63,6 @@ export default interface AudioChannelInterface {
      */
     pauseAll(): this;
     /**
-     * Temporarily pauses this channel without mutating each media instance's persisted paused option.
-     * Useful for overlays (for example settings/pause menus) where pause state must not be saved.
-     * @return Instance for chaining.
-     */
-    pauseUnsavedAll(): this;
-    /**
-     * Restores this channel after `pauseUnsavedAll()`, reapplying each media instance's persisted paused option.
-     * @return Instance for chaining.
-     */
-    resumeUnsavedAll(): this;
-    /**
      * Resumes any sounds.
      * @return Instance for chaining.
      */
@@ -92,4 +72,75 @@ export default interface AudioChannelInterface {
      * @return `true` if all sounds are muted.
      */
     toggleMuteAll(): boolean;
+    /**
+     * Useful for inserting channel-wide audio effects such as reverb, delay or
+     * EQ.  Internally this disconnects the channel from its current destination
+     * and reconnects it through the provided nodes in series, ending at the
+     * master output.
+     *
+     * Install "tone" to use this method.
+     *
+     * @param nodes One or more Tone.js {@link InputNode} instances to chain in series.
+     * @return Instance for chaining.
+     *
+     * @example
+     * ```ts
+     * import * as Tone from "tone";
+     *
+     * const channel = sound.findChannel("music");
+     *
+     * // Create a reverb effect and wait for its impulse response to be ready.
+     * const reverb = new Tone.Reverb({ decay: 2.5 });
+     * await reverb.ready;
+     *
+     * // Route the channel through the reverb to the master output.
+     * channel.chain(reverb);
+     * ```
+     */
+    chain(...nodes: InputNode[]): this;
+    /**
+     * **Advanced** — the raw `Tone.Param<"decibels">` for this channel's volume.
+     *
+     * Unlike the {@link volume} property (which uses a linear 0–1 scale), this
+     * Param works directly in **decibels** and exposes all Tone.js automation
+     * methods such as `rampTo`, `linearRampTo`, and `exponentialRampTo`.
+     *
+     * Use this when you need to smoothly automate volume over time instead of
+     * setting it instantly.
+     *
+     * @example
+     * ```ts
+     * const channel = sound.findChannel("music");
+     *
+     * // Fade the volume from its current level to -12 dB over 3 seconds.
+     * channel.volumeParam.rampTo(-12, 3);
+     *
+     * // Fade to silence over 2 seconds.
+     * channel.volumeParam.rampTo(-Infinity, 2);
+     * ```
+     */
+    readonly volumeParam: Param<"decibels">;
+    /**
+     * **Advanced** — the raw `Tone.Param<"audioRange">` for this channel's
+     * stereo pan position.
+     *
+     * Unlike the {@link pan} property (which sets the value instantly), this
+     * Param exposes all Tone.js automation methods such as `rampTo`,
+     * `linearRampTo`, and `exponentialRampTo`.
+     *
+     * Use this when you need to smoothly automate panning over time instead of
+     * setting it instantly.  Values range from -1 (full left) to 1 (full right).
+     *
+     * @example
+     * ```ts
+     * const channel = sound.findChannel("music");
+     *
+     * // Gradually pan to the left over 3 seconds.
+     * channel.panParam.rampTo(-1, 3);
+     *
+     * // Return to centre over 2 seconds.
+     * channel.panParam.rampTo(0, 2);
+     * ```
+     */
+    readonly panParam: Param<"audioRange">;
 }

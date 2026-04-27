@@ -73,7 +73,7 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/core",
                 "@drincs/pixi-vn/pixi.js",
                 // external dependencies
-                "@pixi/sound",
+                "tone",
                 "@pixi/devtools",
             ],
             outExtension({ format }) {

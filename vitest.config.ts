@@ -5,6 +5,6 @@ export default defineConfig({
     plugins: [tsconfigPaths({ projects: ["./tsconfig.json", "./tests/tsconfig.json"] })],
     test: {
         environment: "jsdom",
-        setupFiles: ["tests/setup.ts"],
+        setupFiles: ["tests/webaudio-setup.ts", "tests/setup.ts"],
     },
 });

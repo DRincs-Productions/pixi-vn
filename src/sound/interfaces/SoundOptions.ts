@@ -1,30 +1,80 @@
-import type { Options, PlayOptions } from "@pixi/sound";
+import type { InputNode, PlayerOptions } from "tone";
 
 export default interface SoundOptions
-    extends Omit<Options, "complete" | "loaded" | "sprites" | "source"> {}
-
-export interface SoundPlayOptions extends Omit<PlayOptions, "complete" | "loaded"> {
+    extends Pick<
+        Partial<PlayerOptions>,
+        | "loop"
+        | "autostart"
+        | "fadeIn"
+        | "fadeOut"
+        | "volume"
+        | "mute"
+        | "loopEnd"
+        | "loopStart"
+        | "reverse"
+        | "playbackRate"
+    > {
     /**
-     * The delay in seconds before playback becomes audible or resumes. If specified, the sound will be started immediately but delayed (for example, via pause/unpause) so that it is effectively heard only after the delay. If not specified, the sound will play without any additional delay.
+     * An array of audio filters/effects to apply to this sound.
+     *
+     * Install "tone" for the full list of available filters.
+     *
+     * @example
+     * ```ts
+     * import * as Tone from "tone";
+     *
+     * const filters = [new Tone.FeedbackDelay("8n", 0.5)];
+     * ```
      */
-    delay?: number;
+    filters?: InputNode[];
     /**
-     * Whether the sound is paused. If specified, the sound will be paused or unpaused according to the value. If not specified, the sound will play without being paused or unpaused.
+     * @deprecated Use {@link playbackRate} instead.
+     */
+    speed?: number;
+    /**
+     * @deprecated Use {@link mute} instead.
+     */
+    muted?: boolean;
+    /**
+     * @deprecated Use {@link autostart} instead.
      */
     paused?: boolean;
 }
+
+export interface SoundPlayOptions extends SoundOptions {
+    /**
+     * The delay in seconds before playback becomes audible or resumes. If
+     * specified the sound is started immediately but paused so that it is
+     * effectively heard only after the delay has elapsed.
+     */
+    delay?: number;
+    /**
+     * The offset in seconds from the start of the sound at which to begin playback.
+     */
+    currentTime?: number;
+}
+
 export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {
     /**
-     * The alias of the audio channel to play the sound on. If the channel does not exist, it will be created.
-     * If not specified, the sound will be played on the default channel (see `SoundManagerInterface.defaultChannelAlias`).
+     * The alias of the audio channel to play the sound on. If the channel does
+     * not exist it will be created automatically.
+     * Defaults to `SoundManagerInterface.defaultChannelAlias` ("general").
      */
     channel?: string;
 }
+
 export interface ChannelOptions
     extends Pick<SoundPlayOptions, "filters" | "muted" | "volume" | "paused"> {
     /**
      * Whether this channel is a background channel.
-     * Background channels are special channels. Unlike normal channels, media connected to a background channel does not stop when a scene changes, but continues to play in the background.
+     * Background channels are special: media playing on them is not stopped
+     * when a scene changes, but continues in the background.
      */
     background?: boolean;
+    /**
+     * The stereo pan position for this channel in the range [-1, 1].
+     * -1 is full left, 0 is centre, 1 is full right.
+     * Defaults to 0.
+     */
+    pan?: number;
 }
