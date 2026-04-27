@@ -171,6 +171,11 @@ export default class AudioChannel implements AudioChannelInterface {
             }
         }
 
+        player.onstop = () => {
+            player.dispose();
+            SoundRegistry.mediaInstances.delete(alias);
+        };
+
         return player;
     }
 
