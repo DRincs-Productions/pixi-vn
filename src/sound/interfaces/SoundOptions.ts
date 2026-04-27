@@ -51,7 +51,7 @@ export interface SoundPlayOptions extends SoundOptions {
     /**
      * The offset in seconds from the start of the sound at which to begin playback.
      */
-    offset?: number;
+    currentTime?: number;
 }
 
 export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {

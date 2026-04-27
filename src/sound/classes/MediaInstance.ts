@@ -31,7 +31,7 @@ export default class MediaInstance extends Player implements MediaInteface {
             reverse: this.reverse,
             volume: this.volume.value,
             autostart: !this.paused,
-            offset: this.offset,
+            currentTime: this.context.currentTime,
             paused: this.paused,
         };
         return options;
@@ -72,7 +72,7 @@ export default class MediaInstance extends Player implements MediaInteface {
             if (this.state === "started") {
                 super.stop();
             }
-            this.offset = this.offset;
+            this.offset = this.context.currentTime;
         } else {
             if (typeof this.offset === "number") {
                 super.start(undefined, this.offset);

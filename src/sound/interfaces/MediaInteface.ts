@@ -44,6 +44,6 @@ export default interface MediaInteface
 }
 
 export interface MediaMemory extends Partial<PlayerOptions> {
-    offset: number | undefined;
+    currentTime: number | undefined;
     paused: boolean;
 }
