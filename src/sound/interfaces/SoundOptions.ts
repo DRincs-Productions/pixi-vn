@@ -15,7 +15,7 @@ export default interface SoundOptions
         | "playbackRate"
     > {
     /**
-     * An array of audio filters/effects to apply to this sound.
+     * A collection of audio filters/effects to apply to this sound.
      *
      * Install "tone" for the full list of available filters.
      *

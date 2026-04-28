@@ -206,7 +206,7 @@ export default class AudioChannel implements AudioChannelInterface {
                 oldMedia.stop();
                 options = {
                     ...oldMedia.memory,
-                    filters: oldMedia.filters,
+                    filters: [...oldMedia.filters],
                     ...options,
                 };
             }
