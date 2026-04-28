@@ -412,10 +412,12 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): ToneAudioNode
  * {@link SoundFilterMemory} representations so they can be saved and
  * restored later.
  */
-export function FilterToFilterMemory(filters?: ToneAudioNode[]): SoundFilterMemory[] | undefined {
+export function FilterToFilterMemory(
+    filters?: Set<ToneAudioNode> | ToneAudioNode[],
+): SoundFilterMemory[] | undefined {
     if (!filters) return undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return filters.reduce((res: SoundFilterMemory[], f) => {
+    return Array.from(filters).reduce((res: SoundFilterMemory[], f) => {
         if (f instanceof Reverb) {
             res.push({
                 filterType: "ReverbFilter",
