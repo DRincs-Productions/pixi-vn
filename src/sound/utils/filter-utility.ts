@@ -85,7 +85,7 @@ export type SoundFilterMemory =
       } & Omit<Partial<BiquadFilterOptions>, "context">)
     | ({
           filterType: "OnePoleFilterFilter";
-      } & Omit<Partial<OnePoleFilterOptions>, "context">)
+      } & Omit<Partial<OnePoleFilterOptions>, "context" | "frequency">)
     | ({
           filterType: "FeedbackCombFilterFilter";
       } & Omit<Partial<FeedbackCombFilterOptions>, "context">)
@@ -340,7 +340,6 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
             case "OnePoleFilterFilter":
                 res.push(
                     new OnePoleFilter({
-                        frequency: f.frequency,
                         type: f.type,
                     }),
                 );
@@ -648,7 +647,6 @@ export function FilterToFilterMemory(filters?: InputNode[]): SoundFilterMemory[]
             res.push({
                 filterType: "OnePoleFilterFilter",
                 type: f.type,
-                frequency: f.frequency.value,
             });
         } else if (f instanceof Filter) {
             res.push({
