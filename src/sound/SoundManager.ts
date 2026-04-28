@@ -179,6 +179,11 @@ export default class SoundManager implements SoundManagerInterface {
         if (autostart) {
             player.start();
         }
+        SoundRegistry.transients.add(player);
+        player.onstop = () => {
+            player.dispose();
+            SoundRegistry.transients.delete(player);
+        };
         return player;
     }
 
