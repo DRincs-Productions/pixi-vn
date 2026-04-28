@@ -19,6 +19,7 @@ export default class MediaInstance extends Player implements MediaInteface {
     }
     readonly options: Partial<PlayerOptions>;
     readonly filters: InputNode[] = [];
+    private readonly startTime = this.now();
     get memory() {
         const options: MediaMemory = {
             ...this.options,
@@ -31,7 +32,7 @@ export default class MediaInstance extends Player implements MediaInteface {
             reverse: this.reverse,
             volume: this.volume.value,
             autostart: !this.paused,
-            currentTime: this.context.currentTime,
+            currentTime: this.offset ?? this.now() - this.startTime,
             paused: this.paused,
         };
         return options;
@@ -72,7 +73,7 @@ export default class MediaInstance extends Player implements MediaInteface {
             if (this.state === "started") {
                 super.stop();
             }
-            this.offset = this.context.currentTime;
+            this.offset = this.now() - this.startTime;
         } else {
             if (typeof this.offset === "number") {
                 super.start(undefined, this.offset);
