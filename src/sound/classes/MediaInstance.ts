@@ -18,7 +18,7 @@ export default class MediaInstance extends Player implements MediaInterface {
         this.options = options;
     }
     readonly options: Partial<PlayerOptions>;
-    readonly filters: ToneAudioNode[] = [];
+    readonly filters: Set<ToneAudioNode> = new Set();
     private readonly startTime = this.now();
     get memory() {
         const options: MediaMemory = {
@@ -107,17 +107,15 @@ export default class MediaInstance extends Player implements MediaInterface {
         nodes.forEach((node) => {
             if (isFilter(node)) {
                 node.toDestination();
-                this.filters.push(node);
+                this.filters.add(node);
             }
         });
         return super.chain(...nodes);
     }
     override disconnect(node: ToneAudioNode): this {
         if (isFilter(node)) {
-            const index = this.filters.indexOf(node);
-            if (index !== -1) {
-                this.filters.splice(index, 1);
-            }
+            node.disconnect();
+            this.filters.delete(node);
         }
         return super.disconnect(node);
     }
