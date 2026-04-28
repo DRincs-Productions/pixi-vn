@@ -115,16 +115,20 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     resumeUnsavedAll(channel?: string): this {
+        const toResume: string[] = [];
         for (const alias of SoundRegistry.systemPausedAliases) {
             const mediaInstance = SoundRegistry.mediaInstances.get(alias);
             if (!mediaInstance) {
-                SoundRegistry.systemPausedAliases.delete(alias);
+                toResume.push(alias);
                 continue;
             }
             if (channel && (mediaInstance as MediaInstance).channelAlias !== channel) {
                 continue;
             }
             mediaInstance.paused = false;
+            toResume.push(alias);
+        }
+        for (const alias of toResume) {
             SoundRegistry.systemPausedAliases.delete(alias);
         }
         return this;
