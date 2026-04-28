@@ -214,7 +214,7 @@ export default class AudioChannel implements AudioChannelInterface {
         }
 
         await soundLoad(soundAlias);
-        const media = this._createPlayer(soundAlias, soundAlias, options);
+        const media = this._createPlayer(mediaAlias, soundAlias, options);
 
         SoundRegistry.mediaInstances.set(mediaAlias, media);
         return media;
