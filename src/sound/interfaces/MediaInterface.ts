@@ -1,6 +1,6 @@
 import type { BasicPlaybackState, Player, PlayerOptions } from "tone";
 
-export default interface MediaInteface
+export default interface MediaInterface
     extends Pick<
         Player,
         | "blockTime"

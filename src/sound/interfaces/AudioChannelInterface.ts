@@ -1,4 +1,4 @@
-import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import type { InputNode, Param } from "tone";
 
@@ -15,7 +15,7 @@ export default interface AudioChannelInterface {
      *        this cannot be reused after it is done playing. Returns a Promise if the sound
      *        has not yet loaded.
      */
-    play(alias: string, options?: SoundPlayOptions): Promise<MediaInteface>;
+    play(alias: string, options?: SoundPlayOptions): Promise<MediaInterface>;
     /**
      * Plays a sound.
      * @param mediaAlias The media alias reference.
@@ -29,7 +29,7 @@ export default interface AudioChannelInterface {
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptions,
-    ): Promise<MediaInteface>;
+    ): Promise<MediaInterface>;
     /**
      * The stereo pan position for this channel in the range [-1, 1].
      * -1 is full left, 0 is centre, 1 is full right.
@@ -46,7 +46,7 @@ export default interface AudioChannelInterface {
     /**
      * The MediaInstances currently playing through this channel. This is read-only and cannot be modified directly. Use the play method to add new MediaInstances to this channel.
      */
-    readonly mediaInstances: MediaInteface[];
+    readonly mediaInstances: MediaInterface[];
     /**
      * Whether this channel is a background channel.
      * Background channels are special channels. Unlike normal channels, media connected to a background channel does not stop when a scene changes, but continues to play in the background.

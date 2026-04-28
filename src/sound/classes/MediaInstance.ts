@@ -1,11 +1,11 @@
-import type MediaInteface from "@sound/interfaces/MediaInteface";
-import type { MediaMemory } from "@sound/interfaces/MediaInteface";
+import type MediaInterface from "@sound/interfaces/MediaInterface";
+import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
 import { type BasicPlaybackState, type InputNode, Player, type PlayerOptions } from "tone";
 import type { Time } from "tone/build/esm/core/type/Units";
 
-export default class MediaInstance extends Player implements MediaInteface {
+export default class MediaInstance extends Player implements MediaInterface {
     constructor(
         readonly alias: string,
         readonly channelAlias: string,

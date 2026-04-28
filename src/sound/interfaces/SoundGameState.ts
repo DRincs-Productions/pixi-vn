@@ -1,4 +1,4 @@
-import type { MediaMemory } from "@sound/interfaces/MediaInteface";
+import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import type SoundOptions from "@sound/interfaces/SoundOptions";
 import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import type { SoundFilterMemory } from "@sound/utils/filter-utility";

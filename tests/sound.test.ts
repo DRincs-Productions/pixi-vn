@@ -69,7 +69,7 @@ vi.mock("tone", () => {
 
 import { sound, type SoundGameState } from "../src";
 import AudioChannel from "../src/sound/classes/AudioChannel";
-import type MediaInteface from "../src/sound/interfaces/MediaInteface";
+import type MediaInterface from "../src/sound/interfaces/MediaInterface";
 import type { SoundPlayOptions } from "../src/sound/interfaces/SoundOptions";
 import SoundRegistry from "../src/sound/SoundRegistry";
 
@@ -83,7 +83,7 @@ let _idCounter = 0;
  * Minimal test double for MediaInteface, extended with test-only helpers and
  * the extra properties that SoundManager reads when exporting/restoring state.
  */
-interface FakeMediaInstance extends MediaInteface {
+interface FakeMediaInstance extends MediaInterface {
     emit(event: string): void;
     channelAlias: string;
     soundAlias: string;
@@ -162,7 +162,7 @@ function makeFakeMediaInstance(opts: {
         on: vi.fn((event: string, cb: () => void) => {
             if (!listeners[event]) listeners[event] = [];
             listeners[event].push(cb);
-        }) as unknown as MediaInteface["on"],
+        }) as unknown as MediaInterface["on"],
         emit(event: string) {
             listeners[event]?.forEach((cb) => cb());
         },
@@ -186,7 +186,7 @@ function stubChannelPlay() {
                 aliasOrMediaAlias: string,
                 soundAliasOrOptions?: string | SoundPlayOptions,
                 options?: SoundPlayOptions,
-            ): Promise<MediaInteface> {
+            ): Promise<MediaInterface> {
                 let mediaAlias: string;
                 let soundAlias: string;
                 if (typeof soundAliasOrOptions === "string") {

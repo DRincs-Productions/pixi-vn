@@ -4,8 +4,8 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import AudioChannel from "@sound/classes/AudioChannel";
 import type MediaInstance from "@sound/classes/MediaInstance";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type MediaInteface from "@sound/interfaces/MediaInteface";
-import type { MediaMemory } from "@sound/interfaces/MediaInteface";
+import type MediaInterface from "@sound/interfaces/MediaInterface";
+import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
@@ -132,17 +132,17 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
 
-    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInteface>;
+    async play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInterface>;
     async play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptionsWithChannel,
-    ): Promise<MediaInteface>;
+    ): Promise<MediaInterface>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptionsWithChannel,
         paramOptions?: SoundPlayOptionsWithChannel,
-    ): Promise<MediaInteface> {
+    ): Promise<MediaInterface> {
         let mediaAlias: string;
         let soundAlias: string;
         if (typeof soundAliasOrOptions === "string") {
@@ -182,7 +182,7 @@ export default class SoundManager implements SoundManagerInterface {
         return player;
     }
 
-    find(alias: string): MediaInteface | undefined {
+    find(alias: string): MediaInterface | undefined {
         return SoundRegistry.mediaInstances.get(alias);
     }
 
@@ -196,7 +196,7 @@ export default class SoundManager implements SoundManagerInterface {
         }
     }
 
-    pause(alias: string): MediaInteface | undefined {
+    pause(alias: string): MediaInterface | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
             logger.warn(`No media instance found with alias ${alias} to pause.`);
@@ -206,7 +206,7 @@ export default class SoundManager implements SoundManagerInterface {
         return mediaInstance;
     }
 
-    resume(alias: string): MediaInteface | undefined {
+    resume(alias: string): MediaInterface | undefined {
         const mediaInstance = this.find(alias);
         if (!mediaInstance) {
             logger.warn(`No media instance found with alias ${alias} to resume.`);

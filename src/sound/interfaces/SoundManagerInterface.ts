@@ -1,5 +1,5 @@
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
 import type { Player, PlayerOptions } from "tone";
@@ -29,12 +29,12 @@ export default interface SoundManagerInterface {
      * @param options The options.
      * @returns The media instance (resolves immediately if already loaded).
      */
-    play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInteface>;
+    play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInterface>;
     play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptionsWithChannel,
-    ): Promise<MediaInteface>;
+    ): Promise<MediaInterface>;
 
     /**
      * Plays a non-persistent ("transient") sound (e.g. UI / menu sounds).
@@ -45,7 +45,7 @@ export default interface SoundManagerInterface {
     /**
      * Find a tracked media instance by alias.
      */
-    find(alias: string): MediaInteface | undefined;
+    find(alias: string): MediaInterface | undefined;
 
     /**
      * Stop a tracked media instance and remove it from the manager.
@@ -55,12 +55,12 @@ export default interface SoundManagerInterface {
     /**
      * Pause a tracked media instance.
      */
-    pause(alias: string): MediaInteface | undefined;
+    pause(alias: string): MediaInterface | undefined;
 
     /**
      * Resume a paused media instance.
      */
-    resume(alias: string): MediaInteface | undefined;
+    resume(alias: string): MediaInterface | undefined;
 
     /** Duration in seconds of the loaded sound with the given alias. */
     duration(alias: string): number;

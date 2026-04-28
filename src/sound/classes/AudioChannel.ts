@@ -1,7 +1,7 @@
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import MediaInstance from "@sound/classes/MediaInstance";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type MediaInteface from "@sound/interfaces/MediaInteface";
+import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOptions";
 import SoundRegistry from "@sound/SoundRegistry";
 import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/utils/sound-utility";
@@ -179,17 +179,17 @@ export default class AudioChannel implements AudioChannelInterface {
         return player;
     }
 
-    async play(alias: string, options?: SoundPlayOptions): Promise<MediaInteface>;
+    async play(alias: string, options?: SoundPlayOptions): Promise<MediaInterface>;
     async play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptions,
-    ): Promise<MediaInteface>;
+    ): Promise<MediaInterface>;
     async play(
         aliasOrMediaAlias: string,
         soundAliasOrOptions?: string | SoundPlayOptions,
         options?: SoundPlayOptions,
-    ): Promise<MediaInteface> {
+    ): Promise<MediaInterface> {
         let mediaAlias: string;
         let soundAlias: string;
         if (typeof soundAliasOrOptions === "string") {
@@ -225,9 +225,9 @@ export default class AudioChannel implements AudioChannelInterface {
         return this.muted;
     }
 
-    get mediaInstances(): MediaInteface[] {
+    get mediaInstances(): MediaInterface[] {
         return Array.from(SoundRegistry.mediaInstances.values()).reduce(
-            (instances: MediaInteface[], mediaInstance) => {
+            (instances: MediaInterface[], mediaInstance) => {
                 if ((mediaInstance as MediaInstance).channelAlias === this.alias) {
                     instances.push(mediaInstance);
                 }
