@@ -8,7 +8,7 @@ import { Gain, getDestination, type Player, type ToneAudioBuffer } from "tone";
  * **DO NOT** import this module directly; use `sound`.
  */
 namespace SoundRegistry {
-    export const freezeBus = new Gain(1).toDestination();
+    export const freezeBus = new Gain(0).toDestination();
     export const liveBus = getDestination();
     export const mediaInstances: Map<string, MediaInterface> = new Map();
     export const channels: Map<string, AudioChannelInterface> = new Map();
