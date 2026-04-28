@@ -4,7 +4,7 @@ import SoundManager from "@sound/SoundManager";
 import SoundRegistry from "@sound/SoundRegistry";
 
 export type { default as AudioChannelInterface } from "@sound/interfaces/AudioChannelInterface";
-export type { default as MediaInteface } from "@sound/interfaces/MediaInterface";
+export type { default as MediaInterface } from "@sound/interfaces/MediaInterface";
 export type {
     ExportedSound,
     ExportedSoundPlay,
