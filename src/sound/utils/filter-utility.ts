@@ -648,7 +648,7 @@ export function FilterToFilterMemory(filters?: InputNode[]): SoundFilterMemory[]
             res.push({
                 filterType: "OnePoleFilterFilter",
                 type: f.type,
-                frequency: f.frequency,
+                frequency: f.frequency.value,
             });
         } else if (f instanceof Filter) {
             res.push({
