@@ -20,7 +20,6 @@ export default class AudioChannel implements AudioChannelInterface {
         readonly alias: string,
         channelOptions: ChannelOptions = {},
     ) {
-        this.alias = alias;
         this.background = channelOptions.background ?? false;
 
         // Create and connect Tone.Channel with the requested initial values.
