@@ -6,7 +6,7 @@ import type { ChannelOptions, SoundPlayOptions } from "@sound/interfaces/SoundOp
 import SoundRegistry from "@sound/SoundRegistry";
 import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/utils/sound-utility";
 import { logger } from "@utils/log-utility";
-import { Channel, type InputNode, type Param } from "tone";
+import { Channel, type Param, type ToneAudioNode } from "tone";
 
 export default class AudioChannel implements AudioChannelInterface {
     /**
@@ -99,7 +99,7 @@ export default class AudioChannel implements AudioChannelInterface {
     // chain — route channel output through effect nodes                   //
     // ------------------------------------------------------------------ //
 
-    chain(...nodes: InputNode[]): this {
+    chain(...nodes: ToneAudioNode[]): this {
         this.toneChannel.chain(...nodes);
         return this;
     }

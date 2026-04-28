@@ -2,7 +2,7 @@ import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
-import { type BasicPlaybackState, type InputNode, Player, type PlayerOptions } from "tone";
+import { type BasicPlaybackState, Player, type PlayerOptions, type ToneAudioNode } from "tone";
 import type { Time } from "tone/build/esm/core/type/Units";
 
 export default class MediaInstance extends Player implements MediaInterface {
@@ -18,7 +18,7 @@ export default class MediaInstance extends Player implements MediaInterface {
         this.options = options;
     }
     readonly options: Partial<PlayerOptions>;
-    readonly filters: InputNode[] = [];
+    readonly filters: ToneAudioNode[] = [];
     private readonly startTime = this.now();
     get memory() {
         const options: MediaMemory = {
@@ -103,12 +103,22 @@ export default class MediaInstance extends Player implements MediaInterface {
         SoundRegistry.mediaInstances.delete(this.alias);
         return super.stop(time);
     }
-    override chain(...nodes: InputNode[]): this {
+    override chain(...nodes: ToneAudioNode[]): this {
         nodes.forEach((node) => {
             if (isFilter(node)) {
+                node.toDestination();
                 this.filters.push(node);
             }
         });
         return super.chain(...nodes);
+    }
+    override disconnect(node: ToneAudioNode): this {
+        if (isFilter(node)) {
+            const index = this.filters.indexOf(node);
+            if (index !== -1) {
+                this.filters.splice(index, 1);
+            }
+        }
+        return super.disconnect(node);
     }
 }

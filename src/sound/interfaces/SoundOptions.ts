@@ -1,4 +1,4 @@
-import type { InputNode, PlayerOptions } from "tone";
+import type { PlayerOptions, ToneAudioNode } from "tone";
 
 export default interface SoundOptions
     extends Pick<
@@ -26,7 +26,7 @@ export default interface SoundOptions
      * const filters = [new Tone.FeedbackDelay("8n", 0.5)];
      * ```
      */
-    filters?: InputNode[];
+    filters?: ToneAudioNode[];
     /**
      * @deprecated Use {@link playbackRate} instead.
      */

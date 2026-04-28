@@ -1,6 +1,6 @@
 import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { SoundPlayOptions } from "@sound/interfaces/SoundOptions";
-import type { InputNode, Param } from "tone";
+import type { Param, ToneAudioNode } from "tone";
 
 export default interface AudioChannelInterface {
     /**
@@ -77,7 +77,7 @@ export default interface AudioChannelInterface {
      *
      * Install "tone" to use this method.
      *
-     * @param nodes One or more Tone.js {@link InputNode} instances to chain in series.
+     * @param nodes One or more Tone.js {@link ToneAudioNode} instances to chain in series.
      * @return Instance for chaining.
      *
      * @example
@@ -88,13 +88,12 @@ export default interface AudioChannelInterface {
      *
      * // Create a reverb effect and wait for its impulse response to be ready.
      * const reverb = new Tone.Reverb({ decay: 2.5 });
-     * await reverb.ready;
      *
      * // Route the channel through the reverb to the master output.
      * channel.chain(reverb);
      * ```
      */
-    chain(...nodes: InputNode[]): this;
+    chain(...nodes: ToneAudioNode[]): this;
     /**
      * **Advanced** — the raw `Tone.Param<"decibels">` for this channel's volume.
      *

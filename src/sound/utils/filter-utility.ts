@@ -24,6 +24,7 @@ import type {
     PingPongDelayOptions,
     ReverbOptions,
     StereoWidenerOptions,
+    ToneAudioNode,
     TremoloOptions,
     VibratoOptions,
 } from "tone";
@@ -43,7 +44,6 @@ import {
     Gate,
     GreaterThan,
     GreaterThanZero,
-    type InputNode,
     Limiter,
     MidSideCompressor,
     MultibandCompressor,
@@ -139,11 +139,11 @@ export type SoundFilterMemory =
       } & Omit<Partial<StereoWidenerOptions>, "context">);
 
 /**
- * Reconstructs {@link InputNode} instances from their serialised
+ * Reconstructs {@link ToneAudioNode} instances from their serialised
  * {@link SoundFilterMemory} representations.
  */
-export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
-    return filter.reduce((res: InputNode[], f) => {
+export function FilterMemoryToFilter(filter: SoundFilterMemory[]): ToneAudioNode[] {
+    return filter.reduce((res: ToneAudioNode[], f) => {
         switch (f.filterType) {
             case "ReverbFilter":
                 res.push(
@@ -151,7 +151,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         decay: f.decay,
                         preDelay: f.preDelay,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "FeedbackDelayFilter":
@@ -160,14 +160,14 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         feedback: f.feedback,
                         delayTime: f.delayTime,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "BitCrusherFilter":
                 res.push(
                     new BitCrusher({
                         bits: f.bits,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "CompressorFilter":
@@ -178,7 +178,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         ratio: f.ratio,
                         release: f.release,
                         threshold: f.threshold,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "DelayFilter":
@@ -186,7 +186,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                     new Delay({
                         delayTime: f.delayTime,
                         maxDelay: f.maxDelay,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "DistortionFilter":
@@ -195,7 +195,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         distortion: f.distortion,
                         oversample: f.oversample,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "FeedbackCombFilterFilter":
@@ -203,7 +203,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                     new FeedbackCombFilter({
                         delayTime: f.delayTime,
                         resonance: f.resonance,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "FreeverbFilter":
@@ -212,7 +212,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         roomSize: f.roomSize,
                         dampening: f.dampening,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "GateFilter":
@@ -220,7 +220,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                     new Gate({
                         threshold: f.threshold,
                         smoothing: f.smoothing,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "GreaterThanFilter":
@@ -231,7 +231,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         maxValue: f.maxValue,
                         minValue: f.minValue,
                         units: f.units,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "GreaterThanZeroFilter":
@@ -241,7 +241,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                 res.push(
                     new Limiter({
                         threshold: f.threshold,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "MidSideCompressorFilter":
@@ -249,7 +249,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                     new MidSideCompressor({
                         mid: f.mid,
                         side: f.side,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "MultibandCompressorFilter":
@@ -260,7 +260,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         low: f.low,
                         mid: f.mid,
                         high: f.high,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "Panner3DFilter":
@@ -280,7 +280,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         refDistance: f.refDistance,
                         rolloffFactor: f.rolloffFactor,
                         panningModel: f.panningModel,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "PhaserFilter":
@@ -292,7 +292,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         wet: f.wet,
                         Q: f.Q,
                         stages: f.stages,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "StereoWidenerFilter":
@@ -300,7 +300,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                     new StereoWidener({
                         width: f.width,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "PingPongDelayFilter":
@@ -310,7 +310,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         delayTime: f.delayTime,
                         feedback: f.feedback,
                         maxDelay: f.maxDelay,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "AutoFilterFilter":
@@ -323,7 +323,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         filter: f.filter,
                         wet: f.wet,
                         type: f.type,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "BiquadFilterFilter":
@@ -334,14 +334,14 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         Q: f.Q,
                         type: f.type,
                         gain: f.gain,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "OnePoleFilterFilter":
                 res.push(
                     new OnePoleFilter({
                         type: f.type,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "CustomFilter":
@@ -353,7 +353,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         detune: f.detune,
                         gain: f.gain,
                         rolloff: f.rolloff,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "ChorusFilter":
@@ -366,7 +366,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         spread: f.spread,
                         feedback: f.feedback,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "TremoloFilter":
@@ -377,7 +377,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         depth: f.depth,
                         spread: f.spread,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "VibratoFilter":
@@ -388,7 +388,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         depth: f.depth,
                         type: f.type,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
             case "AutoPannerFilter":
@@ -399,7 +399,7 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
                         depth: f.depth,
                         channelCount: f.channelCount,
                         wet: f.wet,
-                    }),
+                    }).toDestination(),
                 );
                 break;
         }
@@ -408,11 +408,11 @@ export function FilterMemoryToFilter(filter: SoundFilterMemory[]): InputNode[] {
 }
 
 /**
- * Serialises {@link InputNode} instances into their
+ * Serialises {@link ToneAudioNode} instances into their
  * {@link SoundFilterMemory} representations so they can be saved and
  * restored later.
  */
-export function FilterToFilterMemory(filters?: InputNode[]): SoundFilterMemory[] | undefined {
+export function FilterToFilterMemory(filters?: ToneAudioNode[]): SoundFilterMemory[] | undefined {
     if (!filters) return undefined;
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
     return filters.reduce((res: SoundFilterMemory[], f) => {
@@ -667,7 +667,7 @@ export function FilterToFilterMemory(filters?: InputNode[]): SoundFilterMemory[]
     }, []);
 }
 
-export function isFilter(filter: InputNode): boolean {
+export function isFilter(filter: ToneAudioNode): boolean {
     return (
         filter instanceof Reverb ||
         filter instanceof FeedbackDelay ||
