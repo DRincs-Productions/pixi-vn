@@ -73,10 +73,7 @@ export default interface AudioChannelInterface {
      */
     toggleMuteAll(): boolean;
     /**
-     * Useful for inserting channel-wide audio effects such as reverb, delay or
-     * EQ.  Internally this disconnects the channel from its current destination
-     * and reconnects it through the provided nodes in series, ending at the
-     * master output.
+     * Useful for inserting channel-wide audio effects such as reverb, delay or EQ.
      *
      * Install "tone" to use this method.
      *
