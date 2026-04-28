@@ -42,7 +42,7 @@ export default class MediaInstance extends Player implements MediaInterface {
         if (this.loop !== (options.loop || false)) {
             this.loop = options.loop || false;
         }
-        if (this.volume.value !== (this.options.volume ?? 1)) {
+        if (this.volume.value !== (options.volume ?? 1)) {
             this.volume.value = options.volume ?? 1;
         }
         if (this.mute !== (options.mute || false)) {
