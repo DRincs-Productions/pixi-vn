@@ -27,7 +27,7 @@ export default class AudioChannel implements AudioChannelInterface {
             volume: linearToDecibels(channelOptions.volume ?? 1),
             mute: channelOptions.muted ?? false,
             pan: channelOptions.pan ?? 0,
-        }).connect(SoundRegistry.liveBus);
+        }).toDestination();
 
         if (channelOptions.filters) {
             this.toneChannel.chain(...channelOptions.filters);

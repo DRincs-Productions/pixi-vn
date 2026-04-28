@@ -82,12 +82,22 @@ export default interface SoundManagerInterface {
     /** Resume all sounds. */
     resumeAll(): this;
     /**
-     * Temporarily pause all sounds (or just the given channel) without
-     * persisting the paused option. Useful for overlays / pause menus.
+     * Temporarily pause all currently-playing sounds (or just those in the given
+     * channel) without persisting the paused state. Useful for overlays / pause
+     * menus.
+     *
+     * Only sounds that are **actively playing** at the time of the call are paused;
+     * sounds that were already paused beforehand are left untouched so that they
+     * remain paused when {@link resumeUnsavedAll} is called later.
+     *
+     * When called without a channel argument all transient players started with
+     * {@link playTransient} are also stopped.
      */
     pauseUnsavedAll(channel?: string): this;
     /**
-     * Restore all sounds (or just the given channel) after `pauseUnsavedAll()`.
+     * Resume all sounds (or just those in the given channel) that were paused by
+     * the most recent call to {@link pauseUnsavedAll}. Sounds that were already
+     * paused before `pauseUnsavedAll` was called are **not** resumed.
      */
     resumeUnsavedAll(channel?: string): this;
     /**
