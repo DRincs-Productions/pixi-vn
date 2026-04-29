@@ -131,9 +131,8 @@ export default class AudioChannel implements AudioChannelInterface {
             delay,
             elapsed,
             filters = [],
-            paused,
             muted,
-            autostart = paused ? !paused : true,
+            autostart = true,
             speed,
             volume,
             ...restOptions
@@ -157,7 +156,7 @@ export default class AudioChannel implements AudioChannelInterface {
             GameUnifier.stepCounter,
             {
                 ...restOptions,
-                ...(volume !== undefined && { volume: linearToDecibels(volume) }),
+                volume: volume !== undefined ? linearToDecibels(volume) : undefined,
                 url: buffer,
             },
             delay,

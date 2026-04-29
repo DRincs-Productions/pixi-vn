@@ -99,14 +99,20 @@ export default class MediaInstance extends Player implements MediaInterface {
                 super.stop();
             }
         } else {
-            const pausedAt = this.pausedAt;
-            if (typeof pausedAt === "number") {
+            let elapsed: number | undefined;
+            if (typeof this.pausedAt === "number") {
                 // Shift playStartTime forward by the time spent paused so that
                 // subsequent `toneNow() - playStartTime` gives the correct
                 // playback position without including the paused interval.
-                this.playStartTime += toneNow() - pausedAt;
+                elapsed = this.pausedAt - this.playStartTime;
                 this.pausedAt = undefined;
-                super.start(undefined, pausedAt);
+            }
+            if (state === "stopped") {
+                if (this.delay) {
+                    super.start(`+${this.delay}`, elapsed);
+                } else {
+                    super.start(undefined, elapsed);
+                }
             }
         }
     }

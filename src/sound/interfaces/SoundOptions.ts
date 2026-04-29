@@ -40,10 +40,6 @@ export default interface SoundOptions
      * @deprecated Use {@link mute} instead.
      */
     muted?: boolean;
-    /**
-     * @deprecated Use {@link autostart} instead.
-     */
-    paused?: boolean;
 }
 
 export interface SoundPlayOptions extends SoundOptions {
@@ -68,8 +64,7 @@ export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {
     channel?: string;
 }
 
-export interface ChannelOptions
-    extends Pick<SoundPlayOptions, "filters" | "muted" | "volume"> {
+export interface ChannelOptions extends Pick<SoundPlayOptions, "filters" | "muted" | "volume"> {
     /**
      * Whether this channel is a background channel.
      * Background channels are special: media playing on them is not stopped
