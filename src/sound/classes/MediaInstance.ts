@@ -53,7 +53,7 @@ export default class MediaInstance extends Player implements MediaInterface {
             mute: this.mute,
             playbackRate: this.playbackRate,
             reverse: this.reverse,
-            volume: this.volume,
+            volume: this.volumeParam.value,
             autostart: !this.paused,
             elapsed: elapsed,
             paused: this.paused,
@@ -65,8 +65,8 @@ export default class MediaInstance extends Player implements MediaInterface {
         if (this.loop !== (options.loop || false)) {
             this.loop = options.loop || false;
         }
-        if (this.volume !== (options.volume ?? 1)) {
-            this.volume = options.volume ?? 1;
+        if (this.volumeParam.value !== (options.volume ?? 0)) {
+            this.volumeParam.value = options.volume ?? 0;
         }
         if (this.mute !== (options.mute || false)) {
             this.mute = options.mute || false;
