@@ -27,7 +27,7 @@ export default class AudioChannel implements AudioChannelInterface {
             volume: linearToDecibels(channelOptions.volume ?? 1),
             mute: channelOptions.muted ?? false,
             pan: channelOptions.pan ?? 0,
-        }).connect(SoundRegistry.liveBus);
+        }).toDestination();
 
         if (channelOptions.filters) {
             this.toneChannel.chain(...channelOptions.filters);
@@ -129,7 +129,7 @@ export default class AudioChannel implements AudioChannelInterface {
 
         const {
             delay,
-            currentTime,
+            elapsed,
             filters = [],
             paused,
             muted,
@@ -162,9 +162,9 @@ export default class AudioChannel implements AudioChannelInterface {
         ).chain(...filters, this.toneChannel);
         if (autostart) {
             if (delay) {
-                player.start(`+${delay}`, currentTime);
+                player.start(`+${delay}`, elapsed);
             } else {
-                player.start(undefined, currentTime);
+                player.start(undefined, elapsed);
             }
         }
 

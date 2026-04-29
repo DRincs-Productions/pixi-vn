@@ -97,30 +97,39 @@ export default class SoundManager implements SoundManagerInterface {
         return this;
     }
     pauseUnsavedAll(channel?: string): this {
-        if (channel) {
-            const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
-            toneChannel.disconnect();
-            toneChannel.connect(SoundRegistry.freezeBus);
-        } else {
-            for (const ch of SoundRegistry.channels.values()) {
-                const toneChannel = (ch as AudioChannel).toneChannel;
-                toneChannel.disconnect();
-                toneChannel.connect(SoundRegistry.freezeBus);
+        for (const [alias, mediaInstance] of SoundRegistry.mediaInstances.entries()) {
+            if (channel && (mediaInstance as MediaInstance).channelAlias !== channel) {
+                continue;
             }
+            if (!mediaInstance.paused) {
+                mediaInstance.paused = true;
+                SoundRegistry.systemPausedAliases.add(alias);
+            }
+        }
+        if (!channel) {
+            for (const player of SoundRegistry.transients) {
+                player.stop();
+            }
+            SoundRegistry.transients.clear();
         }
         return this;
     }
     resumeUnsavedAll(channel?: string): this {
-        if (channel) {
-            const toneChannel = (this.findChannel(channel) as AudioChannel).toneChannel;
-            toneChannel.disconnect();
-            toneChannel.connect(SoundRegistry.liveBus);
-        } else {
-            for (const ch of SoundRegistry.channels.values()) {
-                const toneChannel = (ch as AudioChannel).toneChannel;
-                toneChannel.disconnect();
-                toneChannel.connect(SoundRegistry.liveBus);
+        const toResume: string[] = [];
+        for (const alias of SoundRegistry.systemPausedAliases) {
+            const mediaInstance = SoundRegistry.mediaInstances.get(alias);
+            if (!mediaInstance) {
+                toResume.push(alias);
+                continue;
             }
+            if (channel && (mediaInstance as MediaInstance).channelAlias !== channel) {
+                continue;
+            }
+            mediaInstance.paused = false;
+            toResume.push(alias);
+        }
+        for (const alias of toResume) {
+            SoundRegistry.systemPausedAliases.delete(alias);
         }
         return this;
     }

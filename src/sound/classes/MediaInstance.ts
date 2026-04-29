@@ -2,7 +2,7 @@ import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
-import { type BasicPlaybackState, Player, type PlayerOptions, type ToneAudioNode } from "tone";
+import { type BasicPlaybackState, now as toneNow, Player, type PlayerOptions, type ToneAudioNode } from "tone";
 import type { Time } from "tone/build/esm/core/type/Units";
 
 export default class MediaInstance extends Player implements MediaInterface {
@@ -19,7 +19,7 @@ export default class MediaInstance extends Player implements MediaInterface {
     }
     readonly options: Partial<PlayerOptions>;
     readonly filters: Set<ToneAudioNode> = new Set();
-    private readonly startTime = this.now();
+    private readonly startTime = toneNow();
     get memory() {
         const options: MediaMemory = {
             ...this.options,
@@ -32,7 +32,7 @@ export default class MediaInstance extends Player implements MediaInterface {
             reverse: this.reverse,
             volume: this.volume.value,
             autostart: !this.paused,
-            currentTime: this.offset ?? this.now() - this.startTime,
+            elapsed: this.elapsed ?? toneNow() - this.startTime,
             paused: this.paused,
         };
         return options;
@@ -64,20 +64,20 @@ export default class MediaInstance extends Player implements MediaInterface {
             this.loopEnd = options.loopEnd || 0;
         }
     }
-    private offset: undefined | number;
+    private elapsed: undefined | number;
     get paused(): boolean {
-        return typeof this.offset === "number";
+        return typeof this.elapsed === "number";
     }
     set paused(value: boolean) {
         if (value) {
             if (this.state === "started") {
                 super.stop();
             }
-            this.offset = this.now() - this.startTime;
+            this.elapsed = toneNow() - this.startTime;
         } else {
-            if (typeof this.offset === "number") {
-                super.start(undefined, this.offset);
-                this.offset = undefined;
+            if (typeof this.elapsed === "number") {
+                super.start(undefined, this.elapsed);
+                this.elapsed = undefined;
             }
         }
     }

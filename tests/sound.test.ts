@@ -146,7 +146,7 @@ function makeFakeMediaInstance(opts: {
                 mute: _muted,
                 playbackRate: _speed,
                 paused: _paused,
-                currentTime: undefined,
+                elapsed: undefined,
             };
         },
         set memory(m: any) {
@@ -375,9 +375,9 @@ describe("sound channels", () => {
 
         expect(inst.paused).toBe(false);
 
-        // pauseUnsavedAll reroutes the channel bus; it must NOT set paused on instances
+        // pauseUnsavedAll actually pauses playing instances, then resumeUnsavedAll restores them
         sound.pauseUnsavedAll("music");
-        expect(inst.paused).toBe(false);
+        expect(inst.paused).toBe(true);
 
         sound.resumeUnsavedAll("music");
         expect(inst.paused).toBe(false);
@@ -522,60 +522,70 @@ describe("stopTransientAll", () => {
 describe("sound.pauseUnsavedAll / sound.resumeUnsavedAll", () => {
     beforeEach(() => clearSound());
 
-    test("sound.pauseUnsavedAll() with a channel alias disconnects only that channel's toneChannel", () => {
+    test("sound.pauseUnsavedAll() with a channel alias pauses only playing instances in that channel", () => {
         sound.addChannel("a");
         sound.addChannel("b");
-        const chA = sound.findChannel("a") as AudioChannel;
-        const chB = sound.findChannel("b") as AudioChannel;
-        const disconnectA = vi.spyOn(chA.toneChannel, "disconnect");
-        const disconnectB = vi.spyOn(chB.toneChannel, "disconnect");
+        const instA = makeFakeMediaInstance({ channelAlias: "a", soundAlias: "s1" });
+        const instB = makeFakeMediaInstance({ channelAlias: "b", soundAlias: "s2" });
+        SoundRegistry.mediaInstances.set("s1", instA);
+        SoundRegistry.mediaInstances.set("s2", instB);
         sound.pauseUnsavedAll("a");
-        expect(disconnectA).toHaveBeenCalled();
-        expect(disconnectB).not.toHaveBeenCalled();
-        disconnectA.mockRestore();
-        disconnectB.mockRestore();
+        expect(instA.paused).toBe(true);
+        expect(instB.paused).toBe(false);
     });
 
-    test("sound.pauseUnsavedAll() without argument disconnects all channels", () => {
+    test("sound.pauseUnsavedAll() without argument pauses all playing instances", () => {
         sound.addChannel("x");
         sound.addChannel("y");
-        const chX = sound.findChannel("x") as AudioChannel;
-        const chY = sound.findChannel("y") as AudioChannel;
-        const disconnectX = vi.spyOn(chX.toneChannel, "disconnect");
-        const disconnectY = vi.spyOn(chY.toneChannel, "disconnect");
+        const instX = makeFakeMediaInstance({ channelAlias: "x", soundAlias: "sx" });
+        const instY = makeFakeMediaInstance({ channelAlias: "y", soundAlias: "sy" });
+        SoundRegistry.mediaInstances.set("sx", instX);
+        SoundRegistry.mediaInstances.set("sy", instY);
         sound.pauseUnsavedAll();
-        expect(disconnectX).toHaveBeenCalled();
-        expect(disconnectY).toHaveBeenCalled();
-        disconnectX.mockRestore();
-        disconnectY.mockRestore();
+        expect(instX.paused).toBe(true);
+        expect(instY.paused).toBe(true);
     });
 
-    test("sound.resumeUnsavedAll() with a channel alias reconnects only that channel's toneChannel", () => {
+    test("sound.resumeUnsavedAll() with a channel alias resumes only system-paused instances in that channel", () => {
         sound.addChannel("a");
         sound.addChannel("b");
-        const chA = sound.findChannel("a") as AudioChannel;
-        const chB = sound.findChannel("b") as AudioChannel;
-        const connectA = vi.spyOn(chA.toneChannel, "connect");
-        const connectB = vi.spyOn(chB.toneChannel, "connect");
-        sound.resumeUnsavedAll("a");
-        expect(connectA).toHaveBeenCalled();
-        expect(connectB).not.toHaveBeenCalled();
-        connectA.mockRestore();
-        connectB.mockRestore();
+        const instA = makeFakeMediaInstance({ channelAlias: "a", soundAlias: "s1" });
+        const instB = makeFakeMediaInstance({ channelAlias: "b", soundAlias: "s2" });
+        SoundRegistry.mediaInstances.set("s1", instA);
+        SoundRegistry.mediaInstances.set("s2", instB);
+        sound.pauseUnsavedAll(); // pauses both
+        sound.resumeUnsavedAll("a"); // resumes only channel "a"
+        expect(instA.paused).toBe(false);
+        expect(instB.paused).toBe(true); // still paused
     });
 
-    test("sound.resumeUnsavedAll() without argument reconnects all channels", () => {
+    test("sound.resumeUnsavedAll() without argument resumes all system-paused instances", () => {
         sound.addChannel("x");
         sound.addChannel("y");
-        const chX = sound.findChannel("x") as AudioChannel;
-        const chY = sound.findChannel("y") as AudioChannel;
-        const connectX = vi.spyOn(chX.toneChannel, "connect");
-        const connectY = vi.spyOn(chY.toneChannel, "connect");
+        const instX = makeFakeMediaInstance({ channelAlias: "x", soundAlias: "sx" });
+        const instY = makeFakeMediaInstance({ channelAlias: "y", soundAlias: "sy" });
+        SoundRegistry.mediaInstances.set("sx", instX);
+        SoundRegistry.mediaInstances.set("sy", instY);
+        sound.pauseUnsavedAll();
         sound.resumeUnsavedAll();
-        expect(connectX).toHaveBeenCalled();
-        expect(connectY).toHaveBeenCalled();
-        connectX.mockRestore();
-        connectY.mockRestore();
+        expect(instX.paused).toBe(false);
+        expect(instY.paused).toBe(false);
+    });
+
+    test("resumeUnsavedAll does not resume instances that were already paused before pauseUnsavedAll", () => {
+        sound.addChannel("music");
+        const alreadyPaused = makeFakeMediaInstance({ channelAlias: "music", soundAlias: "track1", paused: true });
+        const playing = makeFakeMediaInstance({ channelAlias: "music", soundAlias: "track2" });
+        SoundRegistry.mediaInstances.set("track1", alreadyPaused);
+        SoundRegistry.mediaInstances.set("track2", playing);
+
+        sound.pauseUnsavedAll(); // should only system-pause "track2"
+        expect(alreadyPaused.paused).toBe(true); // unchanged
+        expect(playing.paused).toBe(true); // paused by system
+
+        sound.resumeUnsavedAll(); // should only resume "track2"
+        expect(alreadyPaused.paused).toBe(true); // still paused
+        expect(playing.paused).toBe(false); // resumed by system
     });
 
     test("pauseUnsavedAll/resumeUnsavedAll do not mutate per-media paused option", () => {
@@ -584,7 +594,7 @@ describe("sound.pauseUnsavedAll / sound.resumeUnsavedAll", () => {
         SoundRegistry.mediaInstances.set("track", inst);
         expect(inst.paused).toBe(false);
         sound.pauseUnsavedAll("music");
-        expect(inst.paused).toBe(false);
+        expect(inst.paused).toBe(true);
         sound.resumeUnsavedAll("music");
         expect(inst.paused).toBe(false);
     });
