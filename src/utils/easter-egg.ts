@@ -3,14 +3,15 @@ import packageJson from "../../package.json";
 const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
 
 const asciiRows = [
-    "  ____  _      _ ___     ___   _ ",
-    " |  _ \\(_)_  _(_| ) \\   / / \\ | |",
-    " | |_) | \\ \\/ / |/ \\ \\ / /|  \\| |",
-    " |  __/| |>  <| |   \\ V / | |\\  |",
-    ` |_|   |_/_/\\_\\_|    \\_/  |_| \\_| v${packageJson.version}`,
+    " _______   _            _    _   ____   ____  ____  _____ ",
+    "|_   __ \\ (_)          (_)  | | |_  _| |_  _||_   \\|_   _|",
+    "  | |__) |__   _   __  __   \\_|   \\ \\   / /    |   \\ | |  ",
+    "  |  ___/[  | [ \\ [  ][  |         \\ \\ / /     | |\\ \\| |  ",
+    " _| |_    | |  > '  <  | |          \\ ' /     _| |_\\   |_ ",
+    `|_____|  [___][__]\`\\_][___]          \\_/     |_____|\\____| v${packageJson.version}`,
 ];
 
-const firstSegmentLength = " |_|   |_/_/\\_\\_|".length;
+const firstSegmentLength = "  | |__) |__   _   __  __   \\_|".length;
 const firstSegmentStyle = "background:#2f90da;color:#fff;font-weight:bold;";
 const secondSegmentStyle = "background:#c832bb;color:#fff;font-weight:bold;";
 const plainStyle = "background:transparent;font-weight:bold;";
