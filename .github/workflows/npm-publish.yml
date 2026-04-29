@@ -68,6 +68,6 @@ jobs:
           
           ### Dependencies
           - **PixiJS**: ${{ steps.versions.outputs.pixijs }}
-          - **Pixi Sound**: ${{ steps.versions.outputs.pixisound }}
           - **Pixi Devtools**: ${{ steps.versions.outputs.pixidevtools }}
+          - **Tone.js**: ${{ steps.versions.outputs.tone }}
           - **Motion**: ${{ steps.versions.outputs.motion }}
