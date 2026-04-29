@@ -2,7 +2,13 @@ import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
-import { type BasicPlaybackState, now as toneNow, Player, type PlayerOptions, type ToneAudioNode } from "tone";
+import {
+    type BasicPlaybackState,
+    Player,
+    type PlayerOptions,
+    type ToneAudioNode,
+    now as toneNow,
+} from "tone";
 import type { Time } from "tone/build/esm/core/type/Units";
 
 export default class MediaInstance extends Player implements MediaInterface {
@@ -69,11 +75,12 @@ export default class MediaInstance extends Player implements MediaInterface {
         return typeof this.elapsed === "number";
     }
     set paused(value: boolean) {
+        const state = this.state;
         if (value) {
-            if (this.state === "started") {
+            this.elapsed = toneNow() - this.startTime;
+            if (state === "started") {
                 super.stop();
             }
-            this.elapsed = toneNow() - this.startTime;
         } else {
             if (typeof this.elapsed === "number") {
                 super.start(undefined, this.elapsed);
