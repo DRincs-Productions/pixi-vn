@@ -4,7 +4,8 @@
   "entryPoints": [
     "./src/index.ts",
     "./src/vite/index.ts",
-    "./src/vite-listener/index.ts"
+    "./src/vite-listener/index.ts",
+    "./src/pixi-js/index.ts"
   ],
   "out": "doc",
   "exclude": ["*.md"],
