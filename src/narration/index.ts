@@ -24,8 +24,6 @@ export type {
     StoredIndexedChoiceInterface,
 } from "./interfaces/StoredChoiceInterface";
 export { default as NarrationManagerStatic } from "./NarrationManagerStatic";
-export { Close } from "./types/CloseType";
-export type { CloseType } from "./types/CloseType";
 export type { default as HistoryChoiceMenuOption } from "./types/HistoryChoiceMenuOption";
 export type { InputInfo } from "./types/InputInfo";
 export type { default as LabelRunModeType } from "./types/LabelRunModeType";

@@ -20,7 +20,6 @@ export * from "@drincs/pixi-vn/storage";
 export * from "./classes";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
-    GENERAL_CHANNEL,
     Pause,
     PIXIVN_VERSION,
     Repeat,

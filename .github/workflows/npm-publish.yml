@@ -71,3 +71,45 @@ jobs:
           - **Pixi Devtools**: ${{ steps.versions.outputs.pixidevtools }}
           - **Tone.js**: ${{ steps.versions.outputs.tone }}
           - **Motion**: ${{ steps.versions.outputs.motion }}
+
+  deploy-docs:
+    name: Deploy Docs to Wiki
+    needs: create-release
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout repo
+        uses: actions/checkout@v3
+
+      - name: Setup Node
+        uses: actions/setup-node@v3
+        with:
+          node-version: 24.12.0
+
+      - name: Install deps
+        run: npm ci
+
+      - name: Generate docs
+        run: npm run docs
+
+      - name: Clone Wiki
+        run: |
+          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
+
+      - name: Clean Wiki (safe)
+        run: |
+          find wiki -mindepth 1 -not -path "wiki/.git*" -delete
+
+      - name: Copy docs
+        run: |
+          cp -r doc/* wiki/
+
+      - name: Commit & Push
+        run: |
+          cd wiki
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add .
+          git diff --cached --quiet || git commit -m "Update TypeDoc API docs"
+          git push
