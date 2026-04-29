@@ -2,8 +2,6 @@ import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
-import { decibelsToLinear, linearToDecibels } from "@sound/utils/sound-utility";
-import type { Param } from "tone";
 import {
     type BasicPlaybackState,
     Player,
@@ -53,7 +51,7 @@ export default class MediaInstance extends Player implements MediaInterface {
             mute: this.mute,
             playbackRate: this.playbackRate,
             reverse: this.reverse,
-            volume: this.volumeParam.value,
+            volume: this.volume.value,
             autostart: !this.paused,
             elapsed: elapsed,
             paused: this.paused,
@@ -65,8 +63,8 @@ export default class MediaInstance extends Player implements MediaInterface {
         if (this.loop !== (options.loop || false)) {
             this.loop = options.loop || false;
         }
-        if (this.volumeParam.value !== (options.volume ?? 0)) {
-            this.volumeParam.value = options.volume ?? 0;
+        if (this.volume.value !== (options.volume ?? 0)) {
+            this.volume.value = options.volume ?? 0;
         }
         if (this.mute !== (options.mute || false)) {
             this.mute = options.mute || false;
@@ -116,18 +114,6 @@ export default class MediaInstance extends Player implements MediaInterface {
     }
     set muted(value: boolean) {
         this.mute = value;
-    }
-    // ------------------------------------------------------------------ //
-    // volume — linear [0, 1] façade over Tone.Player's dB Signal          //
-    // ------------------------------------------------------------------ //
-    override get volume(): number {
-        return decibelsToLinear(super.volume.value);
-    }
-    override set volume(v: number) {
-        super.volume.value = linearToDecibels(v);
-    }
-    get volumeParam(): Param<"decibels"> {
-        return super.volume;
     }
     get speed(): number {
         return this.playbackRate;
