@@ -15,8 +15,7 @@ import {
     FilterToFilterMemory,
     type SoundFilterMemory,
 } from "@sound/utils/filter-utility";
-import { soundLoad } from "@sound/utils/sound-utility";
-import { decibelsToLinear, linearToDecibels } from "@sound/utils/sound-utility";
+import { decibelsToLinear, linearToDecibels, soundLoad } from "@sound/utils/sound-utility";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
 import * as Tone from "tone";
@@ -327,7 +326,6 @@ export default class SoundManager implements SoundManagerInterface {
                     options: {
                         ...(mediaInstance as MediaInstance).memory,
                         filters: FilterToFilterMemory((mediaInstance as MediaInstance).filters),
-                        delay: (mediaInstance as MediaInstance).delay,
                     },
                 };
                 return result;
@@ -338,7 +336,7 @@ export default class SoundManager implements SoundManagerInterface {
                     soundAlias: string;
                     stepCounter: number;
                     paused: boolean;
-                    options: MediaMemory & { filters?: SoundFilterMemory[]; delay?: number };
+                    options: MediaMemory & { filters?: SoundFilterMemory[] };
                 };
             },
         );

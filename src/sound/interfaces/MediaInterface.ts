@@ -38,4 +38,5 @@ export default interface MediaInterface
 export interface MediaMemory extends Partial<PlayerOptions> {
     elapsed: number | undefined;
     paused: boolean;
+    delay?: number;
 }

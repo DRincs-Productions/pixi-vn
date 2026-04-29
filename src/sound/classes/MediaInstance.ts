@@ -55,6 +55,7 @@ export default class MediaInstance extends Player implements MediaInterface {
             autostart: !this.paused,
             elapsed: elapsed,
             paused: paused,
+            delay: this.delay,
         };
         return options;
     }
