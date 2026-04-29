@@ -83,7 +83,9 @@ jobs:
     name: Deploy Docs to Wiki
     runs-on: ubuntu-latest
     needs: create-release
-    if: github.event_name == 'push'
+    if: |
+      github.event_name == 'push' ||
+      github.event.inputs.run_deploy_docs == 'true'
     permissions:
       contents: write
     steps:
