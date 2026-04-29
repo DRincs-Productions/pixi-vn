@@ -15,7 +15,8 @@
     "lint": "biome lint",
     "check": "biome check",
     "format": "biome format --write",
-    "test": "vitest"
+    "test": "vitest",
+    "docs": "typedoc"
   },
   "exports": {
     ".": {
@@ -164,6 +165,8 @@
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.5.1",
+    "typedoc": "^0.28.19",
+    "typedoc-plugin-markdown": "^4.11.0",
     "typescript": "^5.9.3",
     "vite": "^8.0.9",
     "vite-tsconfig-paths": "^6.1.1",
