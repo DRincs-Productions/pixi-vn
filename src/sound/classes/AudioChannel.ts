@@ -198,10 +198,8 @@ export default class AudioChannel implements AudioChannelInterface {
             const oldMedia = SoundRegistry.mediaInstances.get(mediaAlias);
             if (oldMedia) {
                 oldMedia.stop();
-                const { volume, ...oldOptions } = oldMedia.memory;
                 options = {
-                    ...oldOptions,
-                    volume: volume !== undefined ? decibelsToLinear(volume) : undefined,
+                    ...oldMedia.memory,
                     ...options,
                     filters: [...oldMedia.filters, ...(options?.filters || [])],
                 };

@@ -2,6 +2,7 @@ import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
+import { decibelsToLinear, linearToDecibels } from "@sound/utils/sound-utility";
 import { Player, type PlayerOptions, type ToneAudioNode, now as toneNow } from "tone";
 
 type Time = Parameters<Player["stop"]>[0];
@@ -51,7 +52,7 @@ export default class MediaInstance extends Player implements MediaInterface {
             mute: this.mute,
             playbackRate: this.playbackRate,
             reverse: this.reverse,
-            volume: this.volume.value,
+            volume: decibelsToLinear(this.volume.value),
             autostart: !this.paused,
             elapsed: elapsed,
             paused: paused,
@@ -64,8 +65,8 @@ export default class MediaInstance extends Player implements MediaInterface {
         if (this.loop !== (options.loop || false)) {
             this.loop = options.loop || false;
         }
-        if (this.volume.value !== (options.volume ?? 0)) {
-            this.volume.value = options.volume ?? 0;
+        if (this.volume.value !== linearToDecibels(options.volume ?? 1)) {
+            this.volume.value = linearToDecibels(options.volume ?? 1);
         }
         if (this.mute !== (options.mute || false)) {
             this.mute = options.mute || false;
