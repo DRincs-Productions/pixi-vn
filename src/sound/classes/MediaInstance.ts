@@ -2,13 +2,7 @@ import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
-import {
-    type BasicPlaybackState,
-    Player,
-    type PlayerOptions,
-    type ToneAudioNode,
-    now as toneNow,
-} from "tone";
+import { Player, type PlayerOptions, type ToneAudioNode, now as toneNow } from "tone";
 
 type Time = Parameters<Player["stop"]>[0];
 export default class MediaInstance extends Player implements MediaInterface {
@@ -126,12 +120,6 @@ export default class MediaInstance extends Player implements MediaInterface {
     }
     set speed(value: number) {
         this.playbackRate = value;
-    }
-    override get state() {
-        if (this.paused) {
-            return "paused" as BasicPlaybackState;
-        }
-        return super.state;
     }
     override stop(time?: Time): this {
         SoundRegistry.mediaInstances.delete(this.alias);

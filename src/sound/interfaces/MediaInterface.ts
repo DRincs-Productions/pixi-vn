@@ -1,4 +1,4 @@
-import type { BasicPlaybackState, Player, PlayerOptions } from "tone";
+import type { Player, PlayerOptions } from "tone";
 
 export default interface MediaInterface
     extends Pick<
@@ -19,6 +19,7 @@ export default interface MediaInterface
         | "chain"
         | "disconnect"
         | "volume"
+        | "state"
     > {
     /**
      * Whether the sound is currently paused.
@@ -32,15 +33,6 @@ export default interface MediaInterface
      * @deprecated Use {@link playbackRate} instead.
      */
     speed: number;
-    /**
-     * Returns the playback state of the source, either "started" or "stopped" or "paused".
-     * @example
-     * const player = new Tone.Player("https://tonejs.github.io/audio/berklee/ahntone_c3.mp3", () => {
-     * 	player.start();
-     * 	console.log(player.state);
-     * }).toDestination();
-     */
-    readonly state: BasicPlaybackState | "paused";
 }
 
 export interface MediaMemory extends Partial<PlayerOptions> {
