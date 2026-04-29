@@ -1,0 +1,9 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": [
+    "./src/index.ts",
+    "./src/vite/index.ts",
+    "./src/vite-listener/index.ts"
+  ],
+  "out": "doc"
+}
