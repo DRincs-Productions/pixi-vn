@@ -142,15 +142,15 @@
   "funding": "https://github.com/DRincs-Productions/pixi-vn?sponsor=1",
   "dependencies": {
     "@pixi/devtools": "^2.0.1",
-    "@pixi/sound": "^6.0.1",
     "motion": "^12.38.0",
-    "pixi.js": "^8.18.1"
+    "pixi.js": "^8.18.1",
+    "tone": "^15.1.22"
   },
   "peerDependencies": {
-    "@pixi/devtools": "^2.0.0",
-    "@pixi/sound": "^6.0.0",
-    "motion": "^12.38.0",
-    "pixi.js": "^8.17.0"
+    "@pixi/devtools": ">=2.0.0",
+    "motion": ">=12.38.0",
+    "pixi.js": ">=8.17.0",
+    "tone": ">=15.1.0"
   },
   "devDependencies": {
     "@biomejs/biome": "^2.4.12",

@@ -1,165 +1,143 @@
-import type { Sound, SoundLibrary } from "@pixi/sound";
-import type AudioChannelInterface from "./AudioChannelInterface";
-import type IMediaInstance from "./IMediaInstance";
-import type SoundGameState from "./SoundGameState";
-import type SoundOptions from "./SoundOptions";
-import type { ChannelOptions, SoundPlayOptionsWithChannel } from "./SoundOptions";
+import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
+import type MediaInterface from "@sound/interfaces/MediaInterface";
+import type SoundGameState from "@sound/interfaces/SoundGameState";
+import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
+import type { Player, PlayerOptions } from "tone";
 
-export default interface SoundManagerInterface
-    extends Omit<
-        SoundLibrary,
-        | "init"
-        | "close"
-        | "add"
-        | "play"
-        | "volume"
-        | "speed"
-        | "remove"
-        | "exists"
-        | "find"
-        | "stop"
-        | "pause"
-        | "resume"
-        | "pauseAll"
-        | "resumeAll"
-        | "muteAll"
-        | "unmuteAll"
-        | "stopAll"
-        | "removeAll"
-        | "togglePauseAll"
-    > {
+export default interface SoundManagerInterface {
+    /** Master volume in the range [0, 1]. */
+    volumeAll: number;
     /**
-     * @deprecated You can define sound assets directly in `PIXI.Assets`
+     * @deprecated Global playback speed. This is not a well-supported feature and may be removed in a future release. Use individual sound speed options instead.
      */
-    add(alias: string, options: string): Sound;
+    speedAll: number;
+
+    /**
+     * The default channel alias used when playing a sound without specifying a
+     * channel. Defaults to `"general"`.
+     */
+    defaultChannelAlias: string;
+
+    /**
+     * @deprecated Register sound assets directly via `PIXI.Assets` instead.
+     */
+    add(alias: string, options: string): void;
+
     /**
      * Plays a sound.
      * @param alias The media and sound (asset) alias reference.
-     * @param options The options
-     * @return The sound instance,
-     *        this cannot be reused after it is done playing. Returns a Promise if the sound
-     *        has not yet loaded.
+     * @param options The options.
+     * @returns The media instance (resolves immediately if already loaded).
      */
-    play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    play(alias: string, options?: SoundPlayOptionsWithChannel): Promise<MediaInterface>;
     play(
         mediaAlias: string,
         soundAlias: string,
         options?: SoundPlayOptionsWithChannel,
-    ): Promise<IMediaInstance>;
+    ): Promise<MediaInterface>;
+
     /**
-     * Plays a non-persistent sound (for example UI/menu sounds).
-     * This playback is not tracked in save/export state.
-     * @param alias The sound (asset) alias reference.
-     * @param options The options.
-     * @return The sound instance.
+     * Plays a non-persistent ("transient") sound (e.g. UI / menu sounds).
+     * Transient playback is not tracked in save/export state.
      */
-    playTransient(alias: string, options?: SoundPlayOptionsWithChannel): Promise<IMediaInstance>;
+    playTransient(alias: string, options?: Partial<PlayerOptions>): Promise<Player>;
+
     /**
-     * Stops all transient media instances started with {@link playTransient}.
-     * If `channel` is provided only instances on that channel are stopped;
-     * otherwise all channels are affected.
-     * @param channel Optional channel alias to limit the operation to.
-     * @return Instance for chaining.
+     * Find a tracked media instance by alias.
      */
-    stopTransientAll(channel?: string): this;
+    find(alias: string): MediaInterface | undefined;
+
     /**
-     * Find a media by alias.
-     * @param alias - The media alias reference.
-     * @return Media object.
-     */
-    find(alias: string): IMediaInstance | undefined;
-    /**
-     * Stops a media and removes it from the manager.
-     * @param alias - The media alias reference.
+     * Stop a tracked media instance and remove it from the manager.
      */
     stop(alias: string): void;
+
     /**
-     * Pauses a media.
-     * @param alias - The media alias reference.
-     * @return Media object.
+     * Pause a tracked media instance.
      */
-    pause(alias: string): IMediaInstance | undefined;
+    pause(alias: string): MediaInterface | undefined;
+
     /**
-     * Resumes a media.
-     * @param alias - The media alias reference.
-     * @return Media object.
+     * Resume a paused media instance.
      */
-    resume(alias: string): IMediaInstance | undefined;
+    resume(alias: string): MediaInterface | undefined;
+
+    /** Duration in seconds of the loaded sound with the given alias. */
+    duration(alias: string): number;
+
+    /** Toggle mute on all sounds. Returns the new muted state. */
+    toggleMuteAll(): boolean;
     /**
-     * Edits the options of an existing sound (asset).
-     * If the asset is not yet loaded, it will be loaded with the new options.
+     * Whether all sounds are currently muted. Note that individual channels or media instances may still be muted or unmuted; this is just the global master mute state.
      */
-    edit(alias: string, options: SoundOptions): Promise<void>;
-    /**
-     * Pauses any playing sounds.
-     * @return Instance for chaining.
-     */
+    readonly muted: boolean;
+    /** Mute all sounds. */
+    muteAll(): this;
+    /** Unmute all sounds. */
+    unmuteAll(): this;
+    /** Stop all sounds. */
+    stopAll(): this;
+    /** Pause all sounds. */
     pauseAll(): this;
-    /**
-     * Resumes any sounds.
-     * @return Instance for chaining.
-     */
+    /** Resume all sounds. */
     resumeAll(): this;
     /**
-     * Temporarily pauses all sounds across all channels (or just the given channel) without
-     * mutating each media instance's persisted paused option.
-     * Useful for overlays (for example settings/pause menus) where pause state must not be saved.
-     * @param channel Optional channel alias to limit the operation to.
-     * @return Instance for chaining.
+     * Temporarily pause all currently-playing sounds (or just those in the given
+     * channel) without persisting the paused state. Useful for overlays / pause
+     * menus.
+     *
+     * Only sounds that are **actively playing** at the time of the call are paused;
+     * sounds that were already paused beforehand are left untouched so that they
+     * remain paused when {@link resumeUnsavedAll} is called later.
+     *
+     * When called without a channel argument all transient players started with
+     * {@link playTransient} are also stopped.
      */
     pauseUnsavedAll(channel?: string): this;
     /**
-     * Restores all channels (or just the given channel) after `pauseUnsavedAll()`,
-     * reapplying each media instance's persisted paused option.
-     * @param channel Optional channel alias to limit the operation to.
-     * @return Instance for chaining.
+     * Resume all sounds (or just those in the given channel) that were paused by
+     * the most recent call to {@link pauseUnsavedAll}. Sounds that were already
+     * paused before `pauseUnsavedAll` was called are **not** resumed.
      */
     resumeUnsavedAll(channel?: string): this;
     /**
-     * Mutes all playing sounds.
-     * @return Instance for chaining.
+     * Stop all transient media instances started with {@link playTransient}.
      */
-    muteAll(): this;
-    /**
-     * Unmutes all playing sounds.
-     * @return Instance for chaining.
-     */
-    unmuteAll(): this;
-    /**
-     * Stops all sounds.
-     * @return Instance for chaining.
-     */
-    stopAll(): this;
-    load(alias: string | string[]): Promise<Sound[]>;
-    backgroundLoad(alias: string | string[]): Promise<void>;
+    stopTransientAll(): this;
+
+    /** Load one or more sound assets. */
+    load(...alias: string[]): Promise<void>;
+    /** Trigger background loading of one or more sound assets. */
+    backgroundLoad(...alias: string[]): Promise<void>;
+    /** Trigger background loading of a sound bundle. */
     backgroundLoadBundle(alias: string): Promise<void>;
+
+    /** Stop all sounds and clear internal state. */
     clear(): void;
-    /* Channel Methods */
+
     /**
-     * Adds a new audio channel with the specified alias(es).
-     * @param alias The alias or aliases for the new channel.
-     * @returns The created AudioChannelInterface instance, or undefined if a channel with the alias already exists.
+     * Add a new audio channel.
+     * Returns the created channel, or `undefined` if the alias already exists.
      */
     addChannel(
         alias: string | string[],
         options?: ChannelOptions,
     ): AudioChannelInterface | undefined;
+
     /**
-     * Finds and returns the audio channel associated with the given alias. If the channel does not exist, it will be created.
-     * @param alias The alias of the audio channel to find.
-     * @returns The AudioChannelInterface instance associated with the alias.
+     * Find the channel for the given alias, creating it if it does not yet exist.
      */
     findChannel(alias: string): AudioChannelInterface;
-    /**
-     * Returns an array of all existing audio channels.
-     */
+
+    /** All registered audio channels. */
     readonly channels: AudioChannelInterface[];
+
     /**
-     * The default channel alias to use when playing a sound without specifying a channel.
-     * By default, this is set to `GENERAL_CHANNEL` ("general"), but it can be changed to any string; if the channel does not yet exist, it will be created on demand when used.
+     * Export the current sound state, including currently playing sounds and their options, for saving or debugging purposes. This is not guaranteed to be stable across versions and may contain implementation details; it is not intended for use in general application code.
      */
-    defaultChannelAlias: string;
-    /* Export and Import Methods */
     export(): SoundGameState;
+    /**
+     * Restore a sound state exported by {@link export}. This will stop any currently playing sounds and replace them with the sounds specified in the exported state. This is not guaranteed to be stable across versions and may contain implementation details; it is not intended for use in general application code.
+     */
     restore(data: object): Promise<void>;
 }

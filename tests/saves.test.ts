@@ -110,7 +110,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
         },
         soundData: {
             mediaInstances: {},
-            filters: [],
         },
         historyData: {
             stepsHistory: [
@@ -566,7 +565,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                 },
                 sound: {
                     mediaInstances: {},
-                    filters: [],
                 },
                 labelIndex: 2,
                 openedLabels: [
@@ -594,7 +592,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
         },
         soundData: {
             mediaInstances: {},
-            filters: [],
         },
         historyData: {
             stepsHistory: [],
