@@ -35,7 +35,7 @@ export default interface MediaInterface
     speed: number;
 }
 
-export interface MediaMemory extends Partial<PlayerOptions> {
+export interface MediaMemory extends Partial<Omit<PlayerOptions, "url">> {
     elapsed: number | undefined;
     paused: boolean;
     delay?: number;
