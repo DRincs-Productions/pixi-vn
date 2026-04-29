@@ -6,5 +6,6 @@
     "./src/vite/index.ts",
     "./src/vite-listener/index.ts"
   ],
-  "out": "doc"
+  "out": "doc",
+  "exclude": ["*.md"]
 }
