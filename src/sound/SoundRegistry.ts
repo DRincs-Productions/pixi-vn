@@ -1,7 +1,7 @@
 import CachedMap from "@classes/CachedMap";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type MediaInterface from "@sound/interfaces/MediaInterface";
-import { type Player, type ToneAudioBuffer } from "tone";
+import type { Player, ToneAudioBuffer } from "tone";
 
 /**
  * SoundRegistry is a singleton namespace that holds global state for the sound system.
