@@ -1,5 +1,7 @@
 import packageJson from "../../package.json";
 
+const isBrowser = typeof window !== "undefined" && typeof document !== "undefined";
+
 const asciiRows = [
     "  ____  _      _ ___     ___   _ ",
     " |  _ \\(_)_  _(_| ) \\   / / \\ | |",
@@ -15,6 +17,9 @@ const plainStyle = "background:transparent;font-weight:bold;";
 const versionSuffix = ` v${packageJson.version}`;
 
 export function asciiArtLog() {
+    if (!isBrowser) {
+        return;
+    }
     const formatParts: string[] = [];
     const values: string[] = [];
 

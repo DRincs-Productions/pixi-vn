@@ -46,6 +46,8 @@ import { asciiArtLog } from "./utils/easter-egg";
 import { logger } from "./utils/log-utility";
 import { getGamePath } from "./utils/path-utility";
 
+asciiArtLog();
+
 export namespace Game {
     /**
      * Initialize the Game and PixiJS Application and the interface div.
@@ -197,7 +199,6 @@ export namespace Game {
             onLabelClosing: (openedLabelsNumber) =>
                 storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
         });
-        asciiArtLog();
         if (!element || !options) {
             logger.warn(
                 "The canvas element or options are not defined. The canvas will not be initialized.",
