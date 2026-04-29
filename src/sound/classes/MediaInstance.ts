@@ -9,8 +9,8 @@ import {
     type ToneAudioNode,
     now as toneNow,
 } from "tone";
-import type { Time } from "tone/build/esm/core/type/Units";
 
+type Time = Parameters<Player["stop"]>[0];
 export default class MediaInstance extends Player implements MediaInterface {
     constructor(
         readonly alias: string,
