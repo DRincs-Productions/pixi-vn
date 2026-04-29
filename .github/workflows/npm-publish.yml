@@ -8,6 +8,13 @@ on:
     tags:
       - 'v*'
 
+  workflow_dispatch:
+    inputs:
+      run_deploy_docs:
+        description: "Run only deploy-docs"
+        required: false
+        default: "false"
+
 run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
 
 jobs:
@@ -74,8 +81,11 @@ jobs:
 
   deploy-docs:
     name: Deploy Docs to Wiki
-    needs: create-release
     runs-on: ubuntu-latest
+    needs: create-release
+    if: |
+      github.event_name != 'workflow_dispatch' ||
+      github.event.inputs.run_deploy_docs == 'true'
     permissions:
       contents: write
     steps:
