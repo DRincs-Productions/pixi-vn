@@ -80,7 +80,7 @@ import SoundRegistry from "../src/sound/SoundRegistry";
 let _idCounter = 0;
 
 /**
- * Minimal test double for MediaInteface, extended with test-only helpers and
+ * Minimal test double for MediaInterface, extended with test-only helpers and
  * the extra properties that SoundManager reads when exporting/restoring state.
  */
 interface FakeMediaInstance extends MediaInterface {
@@ -97,7 +97,7 @@ interface FakeMediaInstance extends MediaInterface {
 }
 
 /**
- * Creates a fake MediaInteface that satisfies what SoundManager needs for
+ * Creates a fake MediaInterface that satisfies what SoundManager needs for
  * export, restore, stop, and channel-routing tests.
  */
 function makeFakeMediaInstance(opts: {
