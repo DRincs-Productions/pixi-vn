@@ -1,4 +1,5 @@
 import type { BasicPlaybackState, Player, PlayerOptions } from "tone";
+import type { Param } from "tone";
 
 export default interface MediaInterface
     extends Pick<
@@ -16,10 +17,22 @@ export default interface MediaInterface
         | "restart"
         | "start"
         | "stop"
-        | "volume"
         | "chain"
         | "disconnect"
     > {
+    /**
+     * The volume of this sound in the linear range [0, 1], where 0 is silence
+     * and 1 is full volume.
+     */
+    volume: number;
+    /**
+     * **Advanced** — the raw `Tone.Param<"decibels">` for this instance's volume.
+     *
+     * Unlike the {@link volume} property (which uses a linear 0–1 scale), this
+     * Param works directly in **decibels** and exposes all Tone.js automation
+     * methods such as `rampTo`, `linearRampTo`, and `exponentialRampTo`.
+     */
+    readonly volumeParam: Param<"decibels">;
     /**
      * Whether the sound is currently paused.
      */

@@ -16,18 +16,17 @@ import {
     type SoundFilterMemory,
 } from "@sound/utils/filter-utility";
 import { soundLoad } from "@sound/utils/sound-utility";
+import { decibelsToLinear, linearToDecibels } from "@sound/utils/sound-utility";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
 import * as Tone from "tone";
 
 export default class SoundManager implements SoundManagerInterface {
     get volumeAll(): number {
-        const db = Tone.getDestination().volume.value;
-        if (db === -Infinity) return 0;
-        return 10 ** (db / 20);
+        return decibelsToLinear(Tone.getDestination().volume.value);
     }
     set volumeAll(volume: number) {
-        Tone.getDestination().volume.value = volume <= 0 ? -Infinity : 20 * Math.log10(volume);
+        Tone.getDestination().volume.value = linearToDecibels(volume);
     }
 
     get speedAll(): number {

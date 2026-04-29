@@ -7,13 +7,18 @@ export default interface SoundOptions
         | "autostart"
         | "fadeIn"
         | "fadeOut"
-        | "volume"
         | "mute"
         | "loopEnd"
         | "loopStart"
         | "reverse"
         | "playbackRate"
     > {
+    /**
+     * The volume of this sound in the linear range [0, 1], where 0 is silence
+     * and 1 is full volume.  This is converted to decibels internally before
+     * being passed to the Tone.js Player.
+     */
+    volume?: number;
     /**
      * A collection of audio filters/effects to apply to this sound.
      *
