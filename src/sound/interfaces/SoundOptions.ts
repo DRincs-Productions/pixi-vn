@@ -44,9 +44,9 @@ export default interface SoundOptions
 
 export interface SoundPlayOptions extends SoundOptions {
     /**
-     * The delay in seconds before playback becomes audible or resumes. If
-     * specified the sound is started immediately but paused so that it is
-     * effectively heard only after the delay has elapsed.
+     * The delay in seconds before playback starts. If specified, playback is
+     * scheduled to begin after the delay has elapsed rather than starting
+     * immediately in a paused state.
      */
     delay?: number;
     /**
