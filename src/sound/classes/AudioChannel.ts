@@ -208,8 +208,8 @@ export default class AudioChannel implements AudioChannelInterface {
                 oldMedia.stop();
                 options = {
                     ...oldMedia.memory,
-                    filters: [...oldMedia.filters],
                     ...options,
+                    filters: [...oldMedia.filters, ...(options?.filters || [])],
                 };
             }
         }
