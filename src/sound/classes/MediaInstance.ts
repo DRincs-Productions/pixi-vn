@@ -32,7 +32,7 @@ export default class MediaInstance extends Player implements MediaInterface {
             reverse: this.reverse,
             volume: this.volume.value,
             autostart: !this.paused,
-            currentTime: this.elapsed ?? toneNow() - this.startTime,
+            elapsed: this.elapsed ?? toneNow() - this.startTime,
             paused: this.paused,
         };
         return options;

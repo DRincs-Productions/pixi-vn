@@ -146,7 +146,7 @@ function makeFakeMediaInstance(opts: {
                 mute: _muted,
                 playbackRate: _speed,
                 paused: _paused,
-                currentTime: undefined,
+                elapsed: undefined,
             };
         },
         set memory(m: any) {

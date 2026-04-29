@@ -129,7 +129,7 @@ export default class AudioChannel implements AudioChannelInterface {
 
         const {
             delay,
-            currentTime,
+            elapsed,
             filters = [],
             paused,
             muted,
@@ -162,9 +162,9 @@ export default class AudioChannel implements AudioChannelInterface {
         ).chain(...filters, this.toneChannel);
         if (autostart) {
             if (delay) {
-                player.start(`+${delay}`, currentTime);
+                player.start(`+${delay}`, elapsed);
             } else {
-                player.start(undefined, currentTime);
+                player.start(undefined, elapsed);
             }
         }
 
