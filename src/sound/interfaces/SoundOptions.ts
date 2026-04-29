@@ -64,7 +64,7 @@ export interface SoundPlayOptionsWithChannel extends SoundPlayOptions {
 }
 
 export interface ChannelOptions
-    extends Pick<SoundPlayOptions, "filters" | "muted" | "volume" | "paused"> {
+    extends Pick<SoundPlayOptions, "filters" | "muted" | "volume"> {
     /**
      * Whether this channel is a background channel.
      * Background channels are special: media playing on them is not stopped
