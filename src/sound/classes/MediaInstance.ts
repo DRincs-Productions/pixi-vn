@@ -25,7 +25,19 @@ export default class MediaInstance extends Player implements MediaInterface {
     }
     readonly options: Partial<PlayerOptions>;
     readonly filters: Set<ToneAudioNode> = new Set();
-    private readonly startTime = toneNow();
+    /**
+     * Set to `toneNow()` the moment playback is paused; cleared on resume.
+     * Used to compute how long the instance was paused so that
+     * `playStartTime` can be adjusted accordingly.
+     */
+    private pausedAt: number | undefined = undefined;
+    /**
+     * Tracks the effective playback start time in Tone's clock, adjusted
+     * after each resume to exclude all time spent paused.
+     * Invariant: `toneNow() - playStartTime` equals actual playback position
+     * while the player is playing.
+     */
+    private playStartTime = toneNow();
     get memory() {
         const options: MediaMemory = {
             ...this.options,
@@ -38,7 +50,7 @@ export default class MediaInstance extends Player implements MediaInterface {
             reverse: this.reverse,
             volume: this.volume.value,
             autostart: !this.paused,
-            elapsed: this.elapsed ?? toneNow() - this.startTime,
+            elapsed: this.elapsed ?? toneNow() - this.playStartTime,
             paused: this.paused,
         };
         return options;
@@ -77,12 +89,22 @@ export default class MediaInstance extends Player implements MediaInterface {
     set paused(value: boolean) {
         const state = this.state;
         if (value) {
-            this.elapsed = toneNow() - this.startTime;
+            // Record the wall-clock time at which we pause so the resume path
+            // can shift playStartTime forward by the exact paused duration.
+            this.pausedAt = toneNow();
+            this.elapsed = this.pausedAt - this.playStartTime;
             if (state === "started") {
                 super.stop();
             }
         } else {
             if (typeof this.elapsed === "number") {
+                // Shift playStartTime forward by the time spent paused so that
+                // subsequent `toneNow() - playStartTime` gives the correct
+                // playback position without including the paused interval.
+                if (this.pausedAt !== undefined) {
+                    this.playStartTime += toneNow() - this.pausedAt;
+                    this.pausedAt = undefined;
+                }
                 super.start(undefined, this.elapsed);
                 this.elapsed = undefined;
             }
