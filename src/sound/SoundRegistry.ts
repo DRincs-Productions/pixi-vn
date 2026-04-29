@@ -1,6 +1,6 @@
 import CachedMap from "@classes/CachedMap";
+import type MediaInstance from "@sound/classes/MediaInstance";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
-import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { Player, ToneAudioBuffer } from "tone";
 
 /**
@@ -8,7 +8,7 @@ import type { Player, ToneAudioBuffer } from "tone";
  * **DO NOT** import this module directly; use `sound`.
  */
 namespace SoundRegistry {
-    export const mediaInstances: Map<string, MediaInterface> = new Map();
+    export const mediaInstances: Map<string, MediaInstance> = new Map();
     export const channels: Map<string, AudioChannelInterface> = new Map();
     export const transients: Set<Player> = new Set();
     /**

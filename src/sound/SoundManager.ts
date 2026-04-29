@@ -2,7 +2,6 @@ import { GENERAL_CHANNEL } from "@constants";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import AudioChannel from "@sound/classes/AudioChannel";
-import type MediaInstance from "@sound/classes/MediaInstance";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
@@ -96,7 +95,7 @@ export default class SoundManager implements SoundManagerInterface {
     }
     pauseUnsavedAll(channel?: string): this {
         for (const [alias, mediaInstance] of SoundRegistry.mediaInstances.entries()) {
-            if (channel && (mediaInstance as MediaInstance).channelAlias !== channel) {
+            if (channel && mediaInstance.channelAlias !== channel) {
                 continue;
             }
             if (!mediaInstance.paused) {
@@ -120,7 +119,7 @@ export default class SoundManager implements SoundManagerInterface {
                 toResume.push(alias);
                 continue;
             }
-            if (channel && (mediaInstance as MediaInstance).channelAlias !== channel) {
+            if (channel && mediaInstance.channelAlias !== channel) {
                 continue;
             }
             mediaInstance.paused = false;
@@ -319,13 +318,13 @@ export default class SoundManager implements SoundManagerInterface {
         } = Array.from(SoundRegistry.mediaInstances.entries()).reduce(
             (result, [mediaAlias, mediaInstance]) => {
                 result[mediaAlias] = {
-                    channelAlias: (mediaInstance as MediaInstance).channelAlias,
-                    soundAlias: (mediaInstance as MediaInstance).soundAlias,
-                    stepCounter: (mediaInstance as MediaInstance).stepCounter,
+                    channelAlias: mediaInstance.channelAlias,
+                    soundAlias: mediaInstance.soundAlias,
+                    stepCounter: mediaInstance.stepCounter,
                     paused: mediaInstance.paused,
                     options: {
-                        ...(mediaInstance as MediaInstance).memory,
-                        filters: FilterToFilterMemory((mediaInstance as MediaInstance).filters),
+                        ...mediaInstance.memory,
+                        filters: FilterToFilterMemory(mediaInstance.filters),
                     },
                 };
                 return result;
@@ -418,11 +417,11 @@ export default class SoundManager implements SoundManagerInterface {
                                 );
                                 return;
                             }
-                            (mediaInstance as MediaInstance).memory = {
+                            mediaInstance.memory = {
                                 ...mediaInstanceData.options,
                                 paused: restoredPaused,
                             };
-                            (mediaInstance as MediaInstance).filters.forEach((filter) => {
+                            mediaInstance.filters.forEach((filter) => {
                                 mediaInstance.disconnect(filter);
                             });
                             mediaInstance.chain(

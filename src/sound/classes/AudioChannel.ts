@@ -78,7 +78,7 @@ export default class AudioChannel implements AudioChannelInterface {
     // ------------------------------------------------------------------ //
 
     pauseAll(): this {
-        for (const mediaInstance of SoundRegistry.mediaInstances.values() as MapIterator<MediaInstance>) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
             if (mediaInstance.channelAlias === this.alias && !mediaInstance.paused) {
                 mediaInstance.paused = true;
             }
@@ -87,7 +87,7 @@ export default class AudioChannel implements AudioChannelInterface {
     }
 
     resumeAll(): this {
-        for (const mediaInstance of SoundRegistry.mediaInstances.values() as MapIterator<MediaInstance>) {
+        for (const mediaInstance of SoundRegistry.mediaInstances.values()) {
             if (mediaInstance.channelAlias === this.alias && mediaInstance.paused) {
                 mediaInstance.paused = false;
             }
@@ -202,7 +202,7 @@ export default class AudioChannel implements AudioChannelInterface {
         }
 
         if (SoundRegistry.mediaInstances.has(mediaAlias)) {
-            const oldMedia = SoundRegistry.mediaInstances.get(mediaAlias) as MediaInstance;
+            const oldMedia = SoundRegistry.mediaInstances.get(mediaAlias);
             if (oldMedia) {
                 oldMedia.stop();
                 options = {
@@ -228,7 +228,7 @@ export default class AudioChannel implements AudioChannelInterface {
     get mediaInstances(): MediaInterface[] {
         return Array.from(SoundRegistry.mediaInstances.values()).reduce(
             (instances: MediaInterface[], mediaInstance) => {
-                if ((mediaInstance as MediaInstance).channelAlias === this.alias) {
+                if (mediaInstance.channelAlias === this.alias) {
                     instances.push(mediaInstance);
                 }
                 return instances;
@@ -239,10 +239,7 @@ export default class AudioChannel implements AudioChannelInterface {
 
     stopAll() {
         const aliasesToDelete: string[] = [];
-        for (const [
-            mediaAlias,
-            mediaInstance,
-        ] of SoundRegistry.mediaInstances.entries() as MapIterator<[string, MediaInstance]>) {
+        for (const [mediaAlias, mediaInstance] of SoundRegistry.mediaInstances.entries()) {
             if (mediaInstance.channelAlias === this.alias) {
                 mediaInstance.stop();
                 aliasesToDelete.push(mediaAlias);
