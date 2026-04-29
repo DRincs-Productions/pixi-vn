@@ -37,9 +37,9 @@ export default class MediaInstance extends Player implements MediaInterface {
             ? this.pausedAt - this.playStartTime
             : toneNow() - this.playStartTime;
         let paused = this.paused;
-        if (!paused && SoundRegistry.systemPausedAliases.has(this.alias)) {
-            // If the instance is currently paused due to a system-wide pause, report it as unpaused
-            // so that `resumeUnsavedAll` doesn't attempt to resume it again.
+        if (paused && SoundRegistry.systemPausedAliases.has(this.alias)) {
+            // Hide system-wide pauses from persisted/exported state so
+            // `resumeUnsavedAll` does not try to resume this instance again.
             paused = false;
         }
         const options: MediaMemory = {
