@@ -7,5 +7,6 @@
     "./src/vite-listener/index.ts"
   ],
   "out": "doc",
-  "exclude": ["*.md"]
+  "exclude": ["*.md"],
+  "readme": "none"
 }
