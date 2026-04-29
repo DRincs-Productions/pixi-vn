@@ -421,8 +421,10 @@ export default class SoundManager implements SoundManagerInterface {
                                 ...mediaInstanceData.options,
                                 paused: restoredPaused,
                             };
-                            mediaInstance.filters.forEach((filter) => {
+                            const existingFilters = [...mediaInstance.filters];
+                            existingFilters.forEach((filter) => {
                                 mediaInstance.disconnect(filter);
+                                filter.dispose();
                             });
                             mediaInstance.chain(
                                 ...FilterMemoryToFilter(mediaInstanceData.options.filters || []),
