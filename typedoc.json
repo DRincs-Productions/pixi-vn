@@ -9,6 +9,5 @@
   ],
   "out": "doc",
   "exclude": ["*.md"],
-  "readme": "none",
   "entryFileName": "index.md"
 }
