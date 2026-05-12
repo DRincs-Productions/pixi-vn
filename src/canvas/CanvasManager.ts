@@ -894,7 +894,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (shouldRePause) {
             this.resume();
         }
-        let imagePromise: Promise<HTMLImageElement>;
+        let imagePromise: Promise<{ src: string }>;
         try {
             imagePromise = this.app.renderer.extract.image(this.app.stage);
         } finally {
