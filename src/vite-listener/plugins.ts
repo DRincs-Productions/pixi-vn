@@ -1,12 +1,22 @@
 import { canvas } from "@drincs/pixi-vn/canvas";
 import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
 import { RegisteredLabels } from "@drincs/pixi-vn/narration";
-import type { ApplicationOptions, AssetsManifest, UnresolvedAsset } from "@drincs/pixi-vn/pixi.js";
+import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import {
+    PIXIVN_DEV_API_ASSETS_MANIFEST,
+    PIXIVN_DEV_API_CANVAS_OPTIONS,
+    PIXIVN_DEV_API_CHARACTERS,
+    PIXIVN_DEV_API_LABELS,
+} from "../vite/costants";
 
 /**
- * Checks if the code is running in Vite development mode.
- * Uses indirect access to avoid TypeScript compilation issues with import.meta in commonjs modules.
+ * Determines if the code is executing in Vite development mode.
+ * Uses indirect Function constructor access to avoid TypeScript compilation issues
+ * with import.meta in CommonJS modules.
+ *
+ * @returns {boolean} True if running in Vite development mode, false otherwise
+ * @private
  */
 function isViteDevelopmentMode(): boolean {
     try {
@@ -21,11 +31,68 @@ function isViteDevelopmentMode(): boolean {
 }
 
 /**
- * Function that setup the pixivn vite data.
- * This function should be called in the client side, after the RegisteredCharacters and RegisteredLabels are populated.
- * **Note:** This function only runs in development mode and does nothing in production.
+ * Sends a POST request to the development API endpoint with error handling.
+ *
+ * @param {string} endpoint - The API endpoint URL
+ * @param {unknown} data - The data to send as JSON
+ * @param {string} [dataName="data"] - Human-readable name of the data being sent (for logging)
+ * @private
  */
-export function setupPixivnViteData() {
+function sendToDevApi(endpoint: string, data: unknown, dataName = "data"): void {
+    try {
+        fetch(endpoint, {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify(data),
+        }).catch((error) => {
+            console.warn(`Failed to send ${dataName} to ${endpoint}:`, error);
+        });
+    } catch (error) {
+        console.warn(`Error sending ${dataName} to ${endpoint}:`, error);
+    }
+}
+
+/**
+ * Builds the PIXI assets manifest from the resolver's internal state.
+ *
+ * @returns {AssetsManifest} The constructed assets manifest
+ * @private
+ */
+function buildAssetsManifest(): AssetsManifest {
+    const assetMap = PIXI.Assets.resolver["_assetMap"];
+    const bundles: { [key: string]: string[] } = PIXI.Assets.resolver["_bundles"];
+
+    return {
+        bundles: Object.entries(bundles).map(([bundleName, assets]) => ({
+            name: bundleName,
+            assets: assets.flatMap((asset) => assetMap[asset] ?? []),
+        })),
+    };
+}
+
+/**
+ * Initializes Pixi VN development tools by syncing game state with the Vite dev server.
+ * Sends registered characters, labels, assets manifest, and canvas options.
+ *
+ * **Note:** This function only operates in Vite development mode and is a no-op in production.
+ *
+ * **Call this function:** After RegisteredCharacters and RegisteredLabels are populated,
+ * typically in your client-side initialization code.
+ *
+ * @example
+ * ```typescript
+ * // In your main game initialization file
+ * import { setupPixivnViteData } from '@drincs/pixi-vn/vite-listener';
+ *
+ * await Promise.all([import("@/content")]);
+ * // After game setup
+ * setupPixivnViteData();
+ * ```
+ *
+ * @returns {void}
+ * @public
+ */
+export function setupPixivnViteData(): void {
     // Only run in development mode
     if (!isViteDevelopmentMode()) {
         return;
@@ -33,54 +100,32 @@ export function setupPixivnViteData() {
 
     try {
         const characters = RegisteredCharacters.values();
-        fetch("/pixi-vn/characters", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(characters),
-        });
-    } catch (e) {}
+        sendToDevApi(PIXIVN_DEV_API_CHARACTERS, characters, "characters");
+    } catch (error) {
+        console.warn("Error collecting characters:", error);
+    }
+
     try {
         const labels = RegisteredLabels.keys();
-        fetch("/pixi-vn/labels", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(labels),
-        });
-    } catch (e) {}
+        sendToDevApi(PIXIVN_DEV_API_LABELS, labels, "labels");
+    } catch (error) {
+        console.warn("Error collecting labels:", error);
+    }
+
     try {
-        const assetMap = PIXI.Assets.resolver["_assetMap"];
-        const bundles: { [key: string]: string[] } = PIXI.Assets.resolver["_bundles"];
-        const manifest: AssetsManifest = {
-            bundles: [],
-        };
-        Object.entries(bundles).forEach(([bundleName, assets]) => {
-            let res: UnresolvedAsset[] = [];
-            assets.forEach((asset) => {
-                if (assetMap[asset]) {
-                    const existing = assetMap[asset];
-                    res = [...res, ...existing];
-                }
-            });
-            manifest.bundles.push({
-                name: bundleName,
-                assets: res,
-            });
-        });
-        fetch("/pixi-vn/assets/manifest", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(manifest),
-        });
-    } catch (e) {}
+        const manifest = buildAssetsManifest();
+        sendToDevApi(PIXIVN_DEV_API_ASSETS_MANIFEST, manifest, "assets manifest");
+    } catch (error) {
+        console.warn("Error collecting assets manifest:", error);
+    }
+
     try {
         const options: Partial<ApplicationOptions> = {
             height: canvas.app.screen.height,
             width: canvas.app.screen.width,
         };
-        fetch("/pixi-vn/canvas/options", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify(options),
-        });
-    } catch (e) {}
+        sendToDevApi(PIXIVN_DEV_API_CANVAS_OPTIONS, options, "canvas options");
+    } catch (error) {
+        console.warn("Error collecting canvas options:", error);
+    }
 }

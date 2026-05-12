@@ -1,7 +1,22 @@
 import type { CharacterInterface } from "@drincs/pixi-vn";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import {
+    PIXIVN_DEV_API_ASSETS_MANIFEST,
+    PIXIVN_DEV_API_CANVAS_OPTIONS,
+    PIXIVN_DEV_API_CHARACTERS,
+    PIXIVN_DEV_API_LABELS,
+} from "./costants";
 
+/**
+ * Represents a Vite plugin configuration object.
+ * Defines the structure for registering middleware and handling server requests.
+ *
+ * @typedef {Object} Plugin
+ * @property {string} name - Unique identifier for the plugin
+ * @property {"serve"} apply - Plugin application scope (development server only)
+ * @property {Function} configureServer - Middleware configuration function
+ */
 type Plugin = {
     name: string;
     apply: "serve";
@@ -15,142 +30,120 @@ type Plugin = {
     }) => void;
 };
 
-let characters: CharacterInterface[] | null = null;
-let labels: string[] | null = null;
-let manifest: AssetsManifest | null = null;
-let options: Partial<ApplicationOptions> | null = null;
+/** @type {CharacterInterface[] | null} Cached registered characters */
+const characters: CharacterInterface[] | null = null;
+
+/** @type {string[] | null} Cached narration label names */
+const labels: string[] | null = null;
+
+/** @type {AssetsManifest | null} Cached PIXI assets manifest */
+const manifest: AssetsManifest | null = null;
+
+/** @type {Partial<ApplicationOptions> | null} Cached canvas rendering options */
+const options: Partial<ApplicationOptions> | null = null;
 
 /**
- * Vite plugin to handle pixi-vn related endpoints.
- * This plugin only runs in development mode (serve).
- * Endpoints:
- * - GET  /pixi-vn/characters       -> list of registered characters
- * - POST /pixi-vn/characters       -> update the list of registered characters
- * - GET  /pixi-vn/labels           -> list of registered labels
- * - POST /pixi-vn/labels           -> update the list of registered labels
- * - GET  /pixi-vn/assets/manifest  -> assets manifest
- * - POST /pixi-vn/assets/manifest  -> update assets manifest
+ * Creates a Vite development server plugin for Pixi VN integration.
+ *
+ * This plugin provides four API endpoints to sync game state between the client
+ * and the development server. Only active in development mode (serve).
+ *
+ * **Endpoints:**
+ * - `GET  /__pixi-vn/characters` - Retrieve cached registered characters
+ * - `POST /__pixi-vn/characters` - Update registered characters from client
+ * - `GET  /__pixi-vn/labels` - Retrieve cached narration labels
+ * - `POST /__pixi-vn/labels` - Update narration labels from client
+ * - `GET  /__pixi-vn/assets/manifest` - Retrieve PIXI assets manifest
+ * - `POST /__pixi-vn/assets/manifest` - Update assets manifest from client
+ * - `GET  /__pixi-vn/canvas-options` - Retrieve canvas rendering options
+ * - `POST /__pixi-vn/canvas-options` - Update canvas options from client
+ *
+ * @returns {Plugin} Configured Vite plugin object
+ *
+ * @example
+ * ```typescript
+ * // vite.config.ts
+ * import { defineConfig } from 'vite';
+ * import { vitePluginPixivn } from '@drincs/pixi-vn/vite';
+ *
+ * export default defineConfig({
+ *   plugins: [vitePluginPixivn()],
+ * });
+ * ```
+ *
+ * @public
  */
 export function vitePluginPixivn(): Plugin {
+    /**
+     * Generic handler for creating middleware that stores/retrieves state.
+     * Handles both GET (retrieve) and POST (update) operations.
+     *
+     * @param {T} stateRef - Reference object to state (mutated)
+     * @param {string} stateName - Human-readable state name for logging
+     * @returns {(req: IncomingMessage, res: ServerResponse) => void} Middleware handler
+     * @template T
+     */
+    const createStateHandler = <T>(
+        stateRef: { current: T | null },
+        stateName: string,
+    ) => {
+        return (req: IncomingMessage, res: ServerResponse) => {
+            res.setHeader("Content-Type", "application/json");
+
+            if (req.method === "GET") {
+                if (stateRef.current === null) {
+                    res.statusCode = 404;
+                    res.end(JSON.stringify({ error: `${stateName} not initialized` }));
+                    return;
+                }
+                res.statusCode = 200;
+                res.end(JSON.stringify(stateRef.current));
+                return;
+            }
+
+            if (req.method === "POST") {
+                let body = "";
+                req.on("data", (chunk) => (body += chunk));
+                req.on("end", () => {
+                    try {
+                        stateRef.current = JSON.parse(body);
+                        res.statusCode = 201;
+                        res.end(JSON.stringify({ message: `${stateName} updated successfully` }));
+                    } catch (error) {
+                        res.statusCode = 400;
+                        res.end(JSON.stringify({ error: `Invalid JSON format for ${stateName}` }));
+                    }
+                });
+            }
+        };
+    };
+
     return {
         name: "vite-plugin-pixi-vn",
         apply: "serve",
         configureServer(server) {
-            server.middlewares.use("/pixi-vn/characters", (req, res) => {
-                res.setHeader("Content-Type", "application/json");
+            // Characters endpoint
+            server.middlewares.use(
+                PIXIVN_DEV_API_CHARACTERS,
+                createStateHandler({ current: characters }, "Characters"),
+            );
 
-                if (req.method === "GET") {
-                    if (!characters) {
-                        res.statusCode = 404;
-                        res.end(JSON.stringify({ error: "Characters not initialized" }));
-                        return;
-                    }
-                    res.statusCode = 200;
-                    res.end(JSON.stringify(characters));
-                }
+            // Labels endpoint
+            server.middlewares.use(
+                PIXIVN_DEV_API_LABELS,
+                createStateHandler({ current: labels }, "Labels"),
+            );
 
-                if (req.method === "POST") {
-                    let body = "";
-                    req.on("data", (chunk) => (body += chunk));
-                    req.on("end", () => {
-                        try {
-                            characters = JSON.parse(body);
-                            res.statusCode = 201;
-                            res.end(JSON.stringify({ message: "Characters updated successfully" }));
-                        } catch {
-                            res.statusCode = 400;
-                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
-                        }
-                    });
-                }
-            });
+            // Assets manifest endpoint
+            server.middlewares.use(
+                PIXIVN_DEV_API_ASSETS_MANIFEST,
+                createStateHandler({ current: manifest }, "Manifest"),
+            );
 
-            server.middlewares.use("/pixi-vn/labels", (req, res) => {
-                res.setHeader("Content-Type", "application/json");
-
-                if (req.method === "GET") {
-                    if (!labels) {
-                        res.statusCode = 404;
-                        res.end(JSON.stringify({ error: "Labels not initialized" }));
-                        return;
-                    }
-                    res.statusCode = 200;
-                    res.end(JSON.stringify(labels));
-                }
-
-                if (req.method === "POST") {
-                    let body = "";
-                    req.on("data", (chunk) => (body += chunk));
-                    req.on("end", () => {
-                        try {
-                            labels = JSON.parse(body);
-                            res.statusCode = 201;
-                            res.end(JSON.stringify({ message: "Labels updated successfully" }));
-                        } catch {
-                            res.statusCode = 400;
-                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
-                        }
-                    });
-                }
-            });
-
-            server.middlewares.use("/pixi-vn/assets/manifest", (req, res) => {
-                res.setHeader("Content-Type", "application/json");
-
-                if (req.method === "GET") {
-                    if (!manifest) {
-                        res.statusCode = 404;
-                        res.end(JSON.stringify({ error: "Manifest not initialized" }));
-                        return;
-                    }
-                    res.statusCode = 200;
-                    res.end(JSON.stringify(manifest));
-                }
-
-                if (req.method === "POST") {
-                    let body = "";
-                    req.on("data", (chunk) => (body += chunk));
-                    req.on("end", () => {
-                        try {
-                            manifest = JSON.parse(body);
-                            res.statusCode = 201;
-                            res.end(JSON.stringify({ message: "Manifest updated successfully" }));
-                        } catch {
-                            res.statusCode = 400;
-                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
-                        }
-                    });
-                }
-            });
-
-            server.middlewares.use("/pixi-vn/canvas/options", (req, res) => {
-                res.setHeader("Content-Type", "application/json");
-
-                if (req.method === "GET") {
-                    if (!options) {
-                        res.statusCode = 404;
-                        res.end(JSON.stringify({ error: "Options not initialized" }));
-                        return;
-                    }
-                    res.statusCode = 200;
-                    res.end(JSON.stringify(options));
-                }
-
-                if (req.method === "POST") {
-                    let body = "";
-                    req.on("data", (chunk) => (body += chunk));
-                    req.on("end", () => {
-                        try {
-                            options = JSON.parse(body);
-                            res.statusCode = 201;
-                            res.end(JSON.stringify({ message: "Options updated successfully" }));
-                        } catch {
-                            res.statusCode = 400;
-                            res.end(JSON.stringify({ error: "Invalid JSON format" }));
-                        }
-                    });
-                }
-            });
+            // Canvas options endpoint
+            server.middlewares.use(
+                PIXIVN_DEV_API_CANVAS_OPTIONS,
+                createStateHandler({ current: options }, "Canvas options"),
+            );
         },
     };
-}
