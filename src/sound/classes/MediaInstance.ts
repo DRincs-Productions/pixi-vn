@@ -4,9 +4,8 @@ import SoundRegistry from "@sound/SoundRegistry";
 import { isFilter } from "@sound/utils/filter-utility";
 import { decibelsToLinear, linearToDecibels } from "@sound/utils/sound-utility";
 import { Player, type PlayerOptions, type ToneAudioNode, now as toneNow } from "tone";
-import type { Time } from "tone/build/esm/core/type/Units";
 
-type StopTime = Parameters<Player["stop"]>[0];
+type Time = Parameters<Player["stop"]>[0];
 export default class MediaInstance extends Player implements MediaInterface {
     constructor(
         readonly alias: string,
@@ -36,9 +35,12 @@ export default class MediaInstance extends Player implements MediaInterface {
      */
     private playStartTime = toneNow();
     get memory() {
-        const elapsed = this.pausedAt
+        const elapsed = Math.max(
+            0,
+            this.pausedAt
             ? this.pausedAt - this.playStartTime
-            : toneNow() - this.playStartTime;
+            : toneNow() - this.playStartTime,
+        );
         let paused = this.paused;
         if (paused && SoundRegistry.systemPausedAliases.has(this.alias)) {
             // Hide system-wide pauses from persisted/exported state so
@@ -108,6 +110,7 @@ export default class MediaInstance extends Player implements MediaInterface {
                 // subsequent `toneNow() - playStartTime` gives the correct
                 // playback position without including the paused interval.
                 elapsed = this.pausedAt - this.playStartTime;
+                this.playStartTime = toneNow() - elapsed;
                 this.pausedAt = undefined;
             }
             if (state === "stopped") {
@@ -131,15 +134,9 @@ export default class MediaInstance extends Player implements MediaInterface {
     set speed(value: number) {
         this.playbackRate = value;
     }
-    override stop(time?: StopTime): this {
+    override stop(time?: Time): this {
         SoundRegistry.mediaInstances.delete(this.alias);
         return super.stop(time);
-    }
-    override start(time?: Time, offset?: Time, duration?: Time): this {
-        if (!this.paused) {
-            this.playStartTime = toneNow();
-        }
-        return super.start(time, offset, duration);
     }
     override chain(...nodes: ToneAudioNode[]): this {
         nodes.forEach((node) => {
