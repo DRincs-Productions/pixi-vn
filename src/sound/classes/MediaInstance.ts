@@ -5,7 +5,10 @@ import { isFilter } from "@sound/utils/filter-utility";
 import { decibelsToLinear, linearToDecibels } from "@sound/utils/sound-utility";
 import { Player, type PlayerOptions, type ToneAudioNode, now as toneNow } from "tone";
 
-type Time = Parameters<Player["stop"]>[0];
+type StopTime = Parameters<Player["stop"]>[0];
+type StartTime = Parameters<Player["start"]>[0];
+type StartOffset = Parameters<Player["start"]>[1];
+type StartDuration = Parameters<Player["start"]>[2];
 export default class MediaInstance extends Player implements MediaInterface {
     constructor(
         readonly alias: string,
@@ -106,18 +109,14 @@ export default class MediaInstance extends Player implements MediaInterface {
         } else {
             let elapsed: number | undefined;
             if (typeof this.pausedAt === "number") {
-                // Shift playStartTime forward by the time spent paused so that
-                // subsequent `toneNow() - playStartTime` gives the correct
-                // playback position without including the paused interval.
                 elapsed = this.pausedAt - this.playStartTime;
-                this.playStartTime = toneNow() - elapsed;
                 this.pausedAt = undefined;
             }
             if (state === "stopped") {
                 if (this.delay) {
-                    super.start(`+${this.delay}`, elapsed);
+                    this.start(`+${this.delay}`, elapsed);
                 } else {
-                    super.start(undefined, elapsed);
+                    this.start(undefined, elapsed);
                 }
             }
         }
@@ -134,9 +133,29 @@ export default class MediaInstance extends Player implements MediaInterface {
     set speed(value: number) {
         this.playbackRate = value;
     }
-    override stop(time?: Time): this {
+    private static parseTimeToSeconds(value: StartTime | StartOffset): number | undefined {
+        if (typeof value === "number") {
+            return value;
+        }
+        if (typeof value === "string") {
+            const parsed = Number(value.startsWith("+") ? value.slice(1) : value);
+            if (!Number.isNaN(parsed)) {
+                return value.startsWith("+") ? toneNow() + parsed : parsed;
+            }
+        }
+        return undefined;
+    }
+    override stop(time?: StopTime): this {
         SoundRegistry.mediaInstances.delete(this.alias);
         return super.stop(time);
+    }
+    override start(time?: StartTime, offset?: StartOffset, duration?: StartDuration): this {
+        if (!this.paused) {
+            const startAt = MediaInstance.parseTimeToSeconds(time) ?? toneNow();
+            const startOffset = MediaInstance.parseTimeToSeconds(offset) ?? 0;
+            this.playStartTime = startAt - startOffset;
+        }
+        return super.start(time, offset, duration);
     }
     override chain(...nodes: ToneAudioNode[]): this {
         nodes.forEach((node) => {

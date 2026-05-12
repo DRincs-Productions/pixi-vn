@@ -49,7 +49,7 @@ describe("MediaInstance pause/resume", () => {
         media.paused = false;
 
         expect(stopSpy).toHaveBeenCalledTimes(1);
-        expect(startSpy).toHaveBeenLastCalledWith("+2", 3);
+        expect(startSpy).toHaveBeenLastCalledWith("+2", 3, undefined);
     });
 
     test("resume does not clamp negative offset before delayed start", async () => {
@@ -98,7 +98,7 @@ describe("MediaInstance pause/resume", () => {
         media.paused = true;
         media.paused = false;
 
-        expect(startSpy).toHaveBeenLastCalledWith("+2", -1);
+        expect(startSpy).toHaveBeenLastCalledWith("+2", -1, undefined);
     });
 
     test("memory.elapsed is clamped to zero before delayed start", async () => {
