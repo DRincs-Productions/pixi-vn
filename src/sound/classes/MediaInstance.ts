@@ -5,7 +5,10 @@ import { isFilter } from "@sound/utils/filter-utility";
 import { decibelsToLinear, linearToDecibels } from "@sound/utils/sound-utility";
 import { Player, type PlayerOptions, type ToneAudioNode, now as toneNow } from "tone";
 
-type Time = Parameters<Player["stop"]>[0];
+type StopTime = Parameters<Player["stop"]>[0];
+type StartTime = Parameters<Player["start"]>[0];
+type StartOffset = Parameters<Player["start"]>[1];
+type StartDuration = Parameters<Player["start"]>[2];
 export default class MediaInstance extends Player implements MediaInterface {
     constructor(
         readonly alias: string,
@@ -17,6 +20,7 @@ export default class MediaInstance extends Player implements MediaInterface {
     ) {
         super(options);
         this.options = options;
+        this.playStartTime = toneNow() + (delay ?? 0);
     }
     readonly options: Partial<PlayerOptions>;
     readonly filters: Set<ToneAudioNode> = new Set();
@@ -34,9 +38,12 @@ export default class MediaInstance extends Player implements MediaInterface {
      */
     private playStartTime = toneNow();
     get memory() {
-        const elapsed = this.pausedAt
+        const elapsed = Math.max(
+            0,
+            this.pausedAt
             ? this.pausedAt - this.playStartTime
-            : toneNow() - this.playStartTime;
+            : toneNow() - this.playStartTime,
+        );
         let paused = this.paused;
         if (paused && SoundRegistry.systemPausedAliases.has(this.alias)) {
             // Hide system-wide pauses from persisted/exported state so
@@ -102,17 +109,14 @@ export default class MediaInstance extends Player implements MediaInterface {
         } else {
             let elapsed: number | undefined;
             if (typeof this.pausedAt === "number") {
-                // Shift playStartTime forward by the time spent paused so that
-                // subsequent `toneNow() - playStartTime` gives the correct
-                // playback position without including the paused interval.
                 elapsed = this.pausedAt - this.playStartTime;
                 this.pausedAt = undefined;
             }
             if (state === "stopped") {
                 if (this.delay) {
-                    super.start(`+${this.delay}`, elapsed);
+                    this.start(`+${this.delay}`, elapsed);
                 } else {
-                    super.start(undefined, elapsed);
+                    this.start(undefined, elapsed);
                 }
             }
         }
@@ -129,9 +133,24 @@ export default class MediaInstance extends Player implements MediaInterface {
     set speed(value: number) {
         this.playbackRate = value;
     }
-    override stop(time?: Time): this {
+    override stop(time?: StopTime): this {
         SoundRegistry.mediaInstances.delete(this.alias);
         return super.stop(time);
+    }
+    override start(time?: StartTime, offset?: StartOffset, duration?: StartDuration): this {
+        const now = toneNow();
+        let startAt = now;
+        if (typeof time === "number") {
+            startAt = time;
+        } else if (typeof time === "string" && time.startsWith("+")) {
+            const relative = Number(time.slice(1));
+            if (!Number.isNaN(relative)) {
+                startAt = now + relative;
+            }
+        }
+        const startOffset = typeof offset === "number" ? offset : 0;
+        this.playStartTime = startAt - startOffset;
+        return super.start(time, offset, duration);
     }
     override chain(...nodes: ToneAudioNode[]): this {
         nodes.forEach((node) => {
