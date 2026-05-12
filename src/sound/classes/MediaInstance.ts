@@ -138,9 +138,10 @@ export default class MediaInstance extends Player implements MediaInterface {
             return value;
         }
         if (typeof value === "string") {
-            const parsed = Number(value.startsWith("+") ? value.slice(1) : value);
+            const isRelative = value.startsWith("+");
+            const parsed = Number(isRelative ? value.slice(1) : value);
             if (!Number.isNaN(parsed)) {
-                return value.startsWith("+") ? toneNow() + parsed : parsed;
+                return isRelative ? toneNow() + parsed : parsed;
             }
         }
         return undefined;
