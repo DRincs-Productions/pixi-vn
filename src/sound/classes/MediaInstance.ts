@@ -133,26 +133,21 @@ export default class MediaInstance extends Player implements MediaInterface {
     set speed(value: number) {
         this.playbackRate = value;
     }
-    private static parseTimeToSeconds(value: StartTime | StartOffset): number | undefined {
-        if (typeof value === "number") {
-            return value;
-        }
-        if (typeof value === "string") {
-            const isRelative = value.startsWith("+");
-            const parsed = Number(isRelative ? value.slice(1) : value);
-            if (!Number.isNaN(parsed)) {
-                return isRelative ? toneNow() + parsed : parsed;
-            }
-        }
-        return undefined;
-    }
     override stop(time?: StopTime): this {
         SoundRegistry.mediaInstances.delete(this.alias);
         return super.stop(time);
     }
     override start(time?: StartTime, offset?: StartOffset, duration?: StartDuration): this {
-        const startAt = MediaInstance.parseTimeToSeconds(time) ?? toneNow();
-        const startOffset = MediaInstance.parseTimeToSeconds(offset) ?? 0;
+        const now = toneNow();
+        const startAt =
+            typeof time === "number"
+                ? time
+                : typeof time === "string" && time.startsWith("+")
+                  ? Number.isNaN(Number(time.slice(1)))
+                      ? now
+                      : now + Number(time.slice(1))
+                  : now;
+        const startOffset = typeof offset === "number" ? offset : 0;
         this.playStartTime = startAt - startOffset;
         return super.start(time, offset, duration);
     }
