@@ -1,6 +1,6 @@
 import { Keyv } from "keyv";
 import { expect, test } from "vitest";
-import { narration, newLabel, storage, StorageManagerStatic } from "../src";
+import { narration, newLabel, storage, StorageRegistry } from "../src";
 import { MAIN_STORAGE_KEY, TEMP_STORAGE_KEY } from "../src/constants";
 import type { StorageGameStateItem } from "../src/storage/interfaces/StorageGameState";
 
@@ -180,11 +180,11 @@ test("storage external handler is triggered with unprefixed keys", async () => {
         onClearOldTempVariable: (key) => clearEvents.push(key),
     });
     try {
-        StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, "ext-main", 42);
-        StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, "ext-main");
-        StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, "ext-temp", "temp-value");
-        StorageManagerStatic.tempStorageDeadlines.set("ext-temp", 10);
-        StorageManagerStatic.clearOldTempVariables(1);
+        StorageRegistry.setVariable(MAIN_STORAGE_KEY, "ext-main", 42);
+        StorageRegistry.removeVariable(MAIN_STORAGE_KEY, "ext-main");
+        StorageRegistry.setVariable(TEMP_STORAGE_KEY, "ext-temp", "temp-value");
+        StorageRegistry.tempStorageDeadlines.set("ext-temp", 10);
+        StorageRegistry.clearOldTempVariables(1);
 
         expect(setEvents).toContainEqual({ key: "ext-main", value: 42 });
         expect(setEvents).toContainEqual({ key: "ext-temp", value: "temp-value" });
@@ -192,9 +192,9 @@ test("storage external handler is triggered with unprefixed keys", async () => {
         expect(clearEvents).toContain("ext-temp");
     } finally {
         storage.setStorageHandler(undefined);
-        StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, "ext-main");
-        StorageManagerStatic.removeVariable(TEMP_STORAGE_KEY, "ext-temp");
-        StorageManagerStatic.tempStorageDeadlines.delete("ext-temp");
+        StorageRegistry.removeVariable(MAIN_STORAGE_KEY, "ext-main");
+        StorageRegistry.removeVariable(TEMP_STORAGE_KEY, "ext-temp");
+        StorageRegistry.tempStorageDeadlines.delete("ext-temp");
     }
 });
 

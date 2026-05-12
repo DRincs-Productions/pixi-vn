@@ -17,7 +17,7 @@ import {
     type StepLabelPropsType,
     type StepLabelResultType,
     storage,
-    StorageManagerStatic,
+    StorageRegistry,
 } from "../src";
 import { getGamePath } from "../src/utils/path-utility";
 try {
@@ -41,7 +41,6 @@ try {
 // Note: runtime mocking of the sealed Tone.js ESM namespace is not possible
 // here; actual isolation is handled in sound.test.ts via vi.mock("tone").
 // This block exists only to document the intent.
-
 
 GameUnifier.init({
     navigate: (path: string) => window.history.pushState({}, "test", path),
@@ -93,13 +92,13 @@ GameUnifier.init({
         return { newValue, result };
     },
     // storage
-    getVariable: (prefix, key) => StorageManagerStatic.getVariable(prefix, key),
-    setVariable: (prefix, key, value) => StorageManagerStatic.setVariable(prefix, key, value),
-    removeVariable: (prefix, key) => StorageManagerStatic.removeVariable(prefix, key),
+    getVariable: (prefix, key) => StorageRegistry.getVariable(prefix, key),
+    setVariable: (prefix, key, value) => StorageRegistry.setVariable(prefix, key, value),
+    removeVariable: (prefix, key) => StorageRegistry.removeVariable(prefix, key),
     getFlag: (key) => storage.getFlag(key),
     setFlag: (name, value) => storage.setFlag(name, value),
     onLabelClosing: (openedLabelsNumber) =>
-        StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
+        StorageRegistry.clearOldTempVariables(openedLabelsNumber),
     // animations
     animate: (target, animationProps, options, priority) => {
         motion.animate(target, animationProps, options, priority);

@@ -188,16 +188,15 @@ export namespace Game {
                 return motion.animate(components, keyframes, options, priority);
             },
             // storage
-            getVariable: (prefix, key) =>
-                storageUtils.StorageManagerStatic.getVariable(prefix, key),
+            getVariable: (prefix, key) => storageUtils.StorageRegistry.getVariable(prefix, key),
             setVariable: (prefix, key, value) =>
-                storageUtils.StorageManagerStatic.setVariable(prefix, key, value),
+                storageUtils.StorageRegistry.setVariable(prefix, key, value),
             removeVariable: (prefix, key) =>
-                storageUtils.StorageManagerStatic.removeVariable(prefix, key),
+                storageUtils.StorageRegistry.removeVariable(prefix, key),
             getFlag: (key) => storageUtils.storage.getFlag(key),
             setFlag: (name, value) => storageUtils.storage.setFlag(name, value),
             onLabelClosing: (openedLabelsNumber) =>
-                storageUtils.StorageManagerStatic.clearOldTempVariables(openedLabelsNumber),
+                storageUtils.StorageRegistry.clearOldTempVariables(openedLabelsNumber),
         });
         if (!element || !options) {
             logger.warn(
