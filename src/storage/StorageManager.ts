@@ -1,76 +1,76 @@
-import { GameUnifier } from "@drincs/pixi-vn/core";
 import {
     MAIN_STORAGE_KEY,
     NARRATION_STORAGE_KEY,
     SYSTEM_RESERVED_STORAGE_KEYS,
     TEMP_STORAGE_KEY,
-} from "../constants";
-import { createExportableElement } from "../utils/export-utility";
-import { logger } from "../utils/log-utility";
-import type StorageGameState from "./interfaces/StorageGameState";
-import type { StorageGameStateItem } from "./interfaces/StorageGameState";
-import type StorageExternalStoreHandler from "./interfaces/StorageExternalStoreHandler";
-import type StorageManagerInterface from "./interfaces/StorageManagerInterface";
-import StorageManagerStatic from "./StorageManagerStatic";
-import type { StorageElementType } from "./types/StorageElementType";
+} from "@constants";
+import { GameUnifier } from "@drincs/pixi-vn/core";
+import type StorageExternalStoreHandler from "@storage/interfaces/StorageExternalStoreHandler";
+import type StorageGameState from "@storage/interfaces/StorageGameState";
+import type { StorageGameStateItem } from "@storage/interfaces/StorageGameState";
+import type StorageManagerInterface from "@storage/interfaces/StorageManagerInterface";
+import StorageRegistry from "@storage/StorageRegistry";
+import type { StorageElementType } from "@storage/types/StorageElementType";
+import { createExportableElement } from "@utils/export-utility";
+import { logger } from "@utils/log-utility";
 
 export default class StorageManager implements StorageManagerInterface {
     get base() {
-        return StorageManagerStatic.storage.map;
+        return StorageRegistry.storage.map;
     }
     get cache() {
-        return StorageManagerStatic.storage.cache as any;
+        return StorageRegistry.storage.cache as any;
     }
     get tempStorageDeadlines() {
-        return StorageManagerStatic.tempStorageDeadlines;
+        return StorageRegistry.tempStorageDeadlines;
     }
     set default(value: { [key: string]: StorageElementType }) {
         Object.entries(value).forEach(([key, value]) => {
-            StorageManagerStatic.defaultStorage.map.set(key, value);
+            StorageRegistry.defaultStorage.map.set(key, value);
         });
     }
     public set(key: string, value: StorageElementType) {
-        return StorageManagerStatic.setVariable(MAIN_STORAGE_KEY, key, value);
+        return StorageRegistry.setVariable(MAIN_STORAGE_KEY, key, value);
     }
     public get<T>(key: string): T | undefined {
-        let result = StorageManagerStatic.getVariable<T>(TEMP_STORAGE_KEY, key);
+        let result = StorageRegistry.getVariable<T>(TEMP_STORAGE_KEY, key);
         if (result === undefined) {
-            result = StorageManagerStatic.getVariable<T>(MAIN_STORAGE_KEY, key);
+            result = StorageRegistry.getVariable<T>(MAIN_STORAGE_KEY, key);
         }
         if (result === undefined) {
-            result = createExportableElement(StorageManagerStatic.defaultStorage.get(key));
+            result = createExportableElement(StorageRegistry.defaultStorage.get(key));
         }
         return result;
     }
     public remove(key: string) {
         this.removeTempVariable(key);
-        return StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, key);
+        return StorageRegistry.removeVariable(MAIN_STORAGE_KEY, key);
     }
     public setTempVariable(key: string, value: StorageElementType) {
         if (value === undefined || value === null) {
             this.removeTempVariable(key);
             return;
         } else {
-            StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, key, value);
+            StorageRegistry.setVariable(TEMP_STORAGE_KEY, key, value);
             if (!this.tempStorageDeadlines.has(key)) {
                 this.tempStorageDeadlines.set(key, GameUnifier.openedLabels);
             }
         }
     }
     public removeTempVariable(key: string) {
-        StorageManagerStatic.removeVariable(TEMP_STORAGE_KEY, key);
+        StorageRegistry.removeVariable(TEMP_STORAGE_KEY, key);
         if (this.tempStorageDeadlines.has(key)) {
             this.tempStorageDeadlines.delete(key);
         }
     }
     setFlag(key: string, value: boolean) {
-        return StorageManagerStatic.setFlag(key, value);
+        return StorageRegistry.setFlag(key, value);
     }
     getFlag(key: string): boolean {
-        return StorageManagerStatic.getFlag(key);
+        return StorageRegistry.getFlag(key);
     }
     setStorageHandler(value?: StorageExternalStoreHandler) {
-        StorageManagerStatic.setExternalStoreHandler(value);
+        StorageRegistry.setExternalStoreHandler(value);
     }
     public clear() {
         this.base.clear();
@@ -83,7 +83,7 @@ export default class StorageManager implements StorageManagerInterface {
             main.push({ key, value: this.base.get(key) });
         });
         const tempDeadlines: StorageGameStateItem<number>[] = [];
-        [...StorageManagerStatic.tempStorageDeadlines.keys()].forEach((key) => {
+        [...StorageRegistry.tempStorageDeadlines.keys()].forEach((key) => {
             tempDeadlines.push({ key, value: this.tempStorageDeadlines.get(key)! });
         });
         return createExportableElement({
@@ -98,95 +98,91 @@ export default class StorageManager implements StorageManagerInterface {
                 (data.base as any)?.forEach((item: StorageGameStateItem) => {
                     switch (item.key) {
                         case "___current_dialogue_memory___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_DIALOGUE_MEMORY_KEY,
                                 item.value,
                             );
                             break;
                         case "___last_dialogue_added_in_step_memory___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_DIALOGUE_ADDED_IN_STEP_MEMORY_KEY,
                                 item.value,
                             );
                             break;
                         case "___current_menu_options_memory___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
                                 item.value,
                             );
                             break;
                         case "___last_menu_options_added_in_step_memory___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_MENU_OPTIONS_ADDED_IN_STEP_MEMORY_KEY,
                                 item.value,
                             );
                             break;
                         case "_input_value_":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
                                 item.value,
                             );
                             break;
                         case "___last_input_added_in_step_memory___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_INPUT_ADDED_IN_STEP_MEMORY_KEY,
                                 item.value,
                             );
                             break;
                         case "___current_input_info_memory___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY,
                                 item.value,
                             );
                             break;
                         case "___opened_labels_counter___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.OPENED_LABELS_COUNTER_KEY,
                                 item.value,
                             );
                             break;
                         case "___all_choices_made___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.ALL_CHOICES_MADE_KEY,
                                 item.value,
                             );
                             break;
                         case "___current_step_times_counter___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_STEP_TIMES_COUNTER_KEY,
                                 item.value,
                             );
                             break;
                         case "___last_step_glued___":
-                            StorageManagerStatic.setVariable(
+                            StorageRegistry.setVariable(
                                 NARRATION_STORAGE_KEY,
                                 SYSTEM_RESERVED_STORAGE_KEYS.LAST_STEP_GLUED,
                                 item.value,
                             );
                             break;
                         default:
-                            StorageManagerStatic.setVariable(
-                                MAIN_STORAGE_KEY,
-                                item.key,
-                                item.value,
-                            );
+                            StorageRegistry.setVariable(MAIN_STORAGE_KEY, item.key, item.value);
                     }
                 });
                 (data.temp as any)?.forEach((item: StorageGameStateItem) => {
-                    StorageManagerStatic.setVariable(TEMP_STORAGE_KEY, item.key, item.value);
+                    StorageRegistry.setVariable(TEMP_STORAGE_KEY, item.key, item.value);
                 });
                 (data.flags as any)?.forEach((flag: string) => {
-                    StorageManagerStatic.setFlag(flag, true);
+                    StorageRegistry.setFlag(flag, true);
                 });
                 (data.main as any)?.forEach((item: StorageGameStateItem) => {
                     this.base.set(item.key, item.value);

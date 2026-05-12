@@ -1,6 +1,6 @@
-import { MAIN_STORAGE_KEY } from "../../constants";
-import StorageManagerStatic from "../StorageManagerStatic";
-import type { StorageElementType } from "../types/StorageElementType";
+import { MAIN_STORAGE_KEY } from "@constants";
+import StorageRegistry from "@storage/StorageRegistry";
+import type { StorageElementType } from "@storage/types/StorageElementType";
 
 /**
  * StoredClassModel is a abstract class that contains the methods to store a class in the game.
@@ -41,12 +41,12 @@ export default class StoredClassModel {
         this.migrateOldStorage();
     }
     protected migrateOldStorage(oldCategoryId: string = this.categoryId) {
-        const oldStorage = StorageManagerStatic.getVariable<any>(MAIN_STORAGE_KEY, oldCategoryId);
+        const oldStorage = StorageRegistry.getVariable<any>(MAIN_STORAGE_KEY, oldCategoryId);
         if (oldStorage) {
             Object.entries(oldStorage).forEach(([id, value]) => {
                 if (typeof value === "object" && value !== null) {
                     Object.entries(value).forEach(([propertyName, propertyValue]) => {
-                        StorageManagerStatic.setVariable(
+                        StorageRegistry.setVariable(
                             this.categoryId,
                             `${id}:${propertyName}`,
                             propertyValue,
@@ -54,7 +54,7 @@ export default class StoredClassModel {
                     });
                 }
             });
-            StorageManagerStatic.removeVariable(MAIN_STORAGE_KEY, oldCategoryId);
+            StorageRegistry.removeVariable(MAIN_STORAGE_KEY, oldCategoryId);
         }
     }
     /**
@@ -72,7 +72,7 @@ export default class StoredClassModel {
      * @param value The value to set. If is undefined, the property will be removed from the storage.
      */
     protected setStorageProperty(propertyName: string, value: StorageElementType): void {
-        StorageManagerStatic.setVariable(this.categoryId, `${this.id}:${propertyName}`, value);
+        StorageRegistry.setVariable(this.categoryId, `${this.id}:${propertyName}`, value);
     }
     /**
      * Get a property from the storage.
@@ -84,6 +84,6 @@ export default class StoredClassModel {
         propertyName: string,
         idToUse: string = this.id,
     ): T | undefined {
-        return StorageManagerStatic.getVariable<T>(this.categoryId, `${idToUse}:${propertyName}`);
+        return StorageRegistry.getVariable<T>(this.categoryId, `${idToUse}:${propertyName}`);
     }
 }
