@@ -24,6 +24,38 @@ function createTicker(paused = false) {
     };
 }
 
+function createGameLayer(renderable = true) {
+    return {
+        renderable,
+        label: "game-layer",
+        children: [],
+        getChildIndex: vi.fn(() => 0),
+        width: 0,
+        height: 0,
+        isRenderGroup: false,
+        blendMode: "normal",
+        tint: 0xffffff,
+        alpha: 1,
+        angle: 0,
+        rotation: 0,
+        scale: { x: 1, y: 1 },
+        pivot: { x: 0, y: 0 },
+        position: { x: 0, y: 0 },
+        skew: { x: 0, y: 0 },
+        visible: true,
+        x: 0,
+        y: 0,
+        boundsArea: undefined,
+        cursor: "default",
+        eventMode: "auto",
+        interactive: false,
+        interactiveChildren: true,
+        hitArea: undefined,
+        onEventsHandlers: {},
+        parent: undefined,
+    };
+}
+
 describe("CanvasManager gameLayer render controls", () => {
     afterEach(() => {
         CanvasManagerStatic._currentTickers.clear();
@@ -49,5 +81,50 @@ describe("CanvasManager gameLayer render controls", () => {
         expect(gameLayer.renderable).toBe(true);
         expect(activeTicker.play).toHaveBeenCalledTimes(1);
         expect(alreadyPausedTicker.play).not.toHaveBeenCalled();
+    });
+
+    test("export temporarily resumes and then re-pauses when game layer is paused", () => {
+        const manager = new CanvasManager();
+        const gameLayer = createGameLayer(false);
+        vi.spyOn(CanvasManagerStatic, "gameLayer", "get").mockReturnValue(gameLayer as any);
+
+        const resumeSpy = vi.spyOn(manager, "resume");
+        const pauseSpy = vi.spyOn(manager, "pause");
+
+        manager.export();
+
+        expect(resumeSpy).toHaveBeenCalledTimes(1);
+        expect(pauseSpy).toHaveBeenCalledTimes(1);
+        expect(gameLayer.renderable).toBe(false);
+    });
+
+    test("extractImage resumes only for extraction and pauses again immediately", async () => {
+        const manager = new CanvasManager();
+        const gameLayer = createGameLayer(false);
+        vi.spyOn(CanvasManagerStatic, "gameLayer", "get").mockReturnValue(gameLayer as any);
+
+        let resolveImage!: (value: { src: string }) => void;
+        const imagePromise = new Promise<{ src: string }>((resolve) => {
+            resolveImage = resolve;
+        });
+
+        vi.spyOn(manager, "app", "get").mockReturnValue({
+            stage: {},
+            renderer: {
+                extract: {
+                    image: vi.fn(() => {
+                        expect(gameLayer.renderable).toBe(true);
+                        return imagePromise as Promise<HTMLImageElement>;
+                    }),
+                },
+            },
+        } as any);
+
+        const extractedImagePromise = manager.extractImage();
+        expect(gameLayer.renderable).toBe(false);
+
+        resolveImage({ src: "data:image/png;base64,abc" });
+        await expect(extractedImagePromise).resolves.toBe("data:image/png;base64,abc");
+        expect(gameLayer.renderable).toBe(false);
     });
 });
