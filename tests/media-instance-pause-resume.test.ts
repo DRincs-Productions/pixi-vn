@@ -15,7 +15,9 @@ describe("MediaInstance pause/resume", () => {
             reverse = false;
             fadeIn = 0;
             state: "started" | "stopped" = "stopped";
-            start(_time?: string, _offset?: number) {
+            start(time?: string, offset?: number) {
+                void time;
+                void offset;
                 this.state = "started";
                 return this;
             }
@@ -29,7 +31,9 @@ describe("MediaInstance pause/resume", () => {
             disconnect() {
                 return this;
             }
-            constructor(_options?: unknown) {}
+            constructor(options?: unknown) {
+                void options;
+            }
         }
 
         const startSpy = vi.spyOn(MockPlayer.prototype, "start");
