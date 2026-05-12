@@ -103,7 +103,7 @@ describe("CanvasManager gameLayer render controls", () => {
         const gameLayer = createGameLayer(false);
         vi.spyOn(CanvasManagerStatic, "gameLayer", "get").mockReturnValue(gameLayer as any);
 
-        let resolveImage!: (value: { src: string }) => void;
+        let resolveImage: ((value: { src: string }) => void) | undefined;
         const imagePromise = new Promise<{ src: string }>((resolve) => {
             resolveImage = resolve;
         });
@@ -123,7 +123,7 @@ describe("CanvasManager gameLayer render controls", () => {
         const extractedImagePromise = manager.extractImage();
         expect(gameLayer.renderable).toBe(false);
 
-        resolveImage({ src: "data:image/png;base64,abc" });
+        resolveImage?.({ src: "data:image/png;base64,abc" });
         await expect(extractedImagePromise).resolves.toBe("data:image/png;base64,abc");
         expect(gameLayer.renderable).toBe(false);
     });
