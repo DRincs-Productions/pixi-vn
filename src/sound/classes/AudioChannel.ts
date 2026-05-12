@@ -161,11 +161,12 @@ export default class AudioChannel implements AudioChannelInterface {
             },
             delay,
         ).chain(...filters, this.toneChannel);
+        const normalizedElapsed = elapsed !== undefined ? Math.max(0, elapsed) : undefined;
         if (autostart) {
             if (delay) {
-                player.start(`+${delay}`, elapsed);
+                player.start(`+${delay}`, normalizedElapsed);
             } else {
-                player.start(undefined, elapsed);
+                player.start(undefined, normalizedElapsed);
             }
         }
 

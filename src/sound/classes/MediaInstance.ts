@@ -106,7 +106,7 @@ export default class MediaInstance extends Player implements MediaInterface {
                 // Shift playStartTime forward by the time spent paused so that
                 // subsequent `toneNow() - playStartTime` gives the correct
                 // playback position without including the paused interval.
-                elapsed = Math.max(0, this.pausedAt - this.playStartTime);
+                elapsed = this.pausedAt - this.playStartTime;
                 this.pausedAt = undefined;
             }
             if (state === "stopped") {
