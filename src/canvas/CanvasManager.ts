@@ -890,7 +890,19 @@ export default class CanvasManager implements CanvasManagerInterface {
     /* Other Methods */
 
     async extractImage() {
-        const image = await this.app.renderer.extract.image(this.app.stage);
+        const shouldRePause = this.gameLayer.renderable === false;
+        if (shouldRePause) {
+            this.resume();
+        }
+        let imagePromise: Promise<HTMLImageElement>;
+        try {
+            imagePromise = this.app.renderer.extract.image(this.app.stage);
+        } finally {
+            if (shouldRePause) {
+                this.pause();
+            }
+        }
+        const image = await imagePromise;
         return image.src;
     }
 
@@ -902,24 +914,34 @@ export default class CanvasManager implements CanvasManagerInterface {
     /* Export and Import Methods */
 
     public export(): CanvasGameState {
-        const currentElements: { [alias: string]: CanvasBaseItemMemory } = {};
-        this.children.forEach((child) => {
-            if (child.label) {
-                currentElements[child.label] = exportCanvasElement(child);
+        const shouldRePause = this.gameLayer.renderable === false;
+        if (shouldRePause) {
+            this.resume();
+        }
+        try {
+            const currentElements: { [alias: string]: CanvasBaseItemMemory } = {};
+            this.children.forEach((child) => {
+                if (child.label) {
+                    currentElements[child.label] = exportCanvasElement(child);
+                }
+            });
+            return {
+                tickers: createExportableElement(
+                    CanvasManagerStatic.currentTickersWithoutCreatedBySteps,
+                ),
+                tickersSteps: createExportableElement(CanvasManagerStatic.currentTickersSequence),
+                elements: createExportableElement(currentElements),
+                stage: createExportableElement(getMemoryContainer(this.gameLayer)),
+                elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
+                tickersToCompleteOnStepEnd: createExportableElement(
+                    CanvasManagerStatic._tickersToCompleteOnStepEnd,
+                ),
+            };
+        } finally {
+            if (shouldRePause) {
+                this.pause();
             }
-        });
-        return {
-            tickers: createExportableElement(
-                CanvasManagerStatic.currentTickersWithoutCreatedBySteps,
-            ),
-            tickersSteps: createExportableElement(CanvasManagerStatic.currentTickersSequence),
-            elements: createExportableElement(currentElements),
-            stage: createExportableElement(getMemoryContainer(this.gameLayer)),
-            elementAliasesOrder: createExportableElement(CanvasManagerStatic.childrenAliasesOrder),
-            tickersToCompleteOnStepEnd: createExportableElement(
-                CanvasManagerStatic._tickersToCompleteOnStepEnd,
-            ),
-        };
+        }
     }
     public async restore(data: object) {
         this.clear();
