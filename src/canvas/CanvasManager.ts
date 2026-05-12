@@ -31,6 +31,7 @@ import type {
 import type {
     ApplicationOptions,
     Container as PixiContainer,
+    ImageLike,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -894,7 +895,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (shouldRePause) {
             this.resume();
         }
-        let imagePromise: Promise<HTMLImageElement>;
+        let imagePromise: Promise<ImageLike>;
         try {
             imagePromise = this.app.renderer.extract.image(this.app.stage);
         } finally {
