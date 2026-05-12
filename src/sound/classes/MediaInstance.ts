@@ -139,14 +139,15 @@ export default class MediaInstance extends Player implements MediaInterface {
     }
     override start(time?: StartTime, offset?: StartOffset, duration?: StartDuration): this {
         const now = toneNow();
-        const startAt =
-            typeof time === "number"
-                ? time
-                : typeof time === "string" && time.startsWith("+")
-                  ? Number.isNaN(Number(time.slice(1)))
-                      ? now
-                      : now + Number(time.slice(1))
-                  : now;
+        let startAt = now;
+        if (typeof time === "number") {
+            startAt = time;
+        } else if (typeof time === "string" && time.startsWith("+")) {
+            const relative = Number(time.slice(1));
+            if (!Number.isNaN(relative)) {
+                startAt = now + relative;
+            }
+        }
         const startOffset = typeof offset === "number" ? offset : 0;
         this.playStartTime = startAt - startOffset;
         return super.start(time, offset, duration);
