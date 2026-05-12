@@ -150,11 +150,9 @@ export default class MediaInstance extends Player implements MediaInterface {
         return super.stop(time);
     }
     override start(time?: StartTime, offset?: StartOffset, duration?: StartDuration): this {
-        if (!this.paused) {
-            const startAt = MediaInstance.parseTimeToSeconds(time) ?? toneNow();
-            const startOffset = MediaInstance.parseTimeToSeconds(offset) ?? 0;
-            this.playStartTime = startAt - startOffset;
-        }
+        const startAt = MediaInstance.parseTimeToSeconds(time) ?? toneNow();
+        const startOffset = MediaInstance.parseTimeToSeconds(offset) ?? 0;
+        this.playStartTime = startAt - startOffset;
         return super.start(time, offset, duration);
     }
     override chain(...nodes: ToneAudioNode[]): this {
