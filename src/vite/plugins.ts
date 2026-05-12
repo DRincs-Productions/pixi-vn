@@ -109,7 +109,7 @@ export function vitePluginPixivn(): Plugin {
                         stateRef.current = JSON.parse(body);
                         res.statusCode = 201;
                         res.end(JSON.stringify({ message: `${stateName} updated successfully` }));
-                    } catch (error) {
+                    } catch {
                         res.statusCode = 400;
                         res.end(JSON.stringify({ error: `Invalid JSON format for ${stateName}` }));
                     }

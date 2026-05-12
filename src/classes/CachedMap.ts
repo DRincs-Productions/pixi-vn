@@ -17,7 +17,7 @@ export default class CachedMap<K extends {}, V extends {}> implements Map<K, V> 
     }
     clear(): void {
         this.cache.clear();
-        return this.map.clear();
+        this.map.clear();
     }
     delete(key: K): boolean {
         const deleted = this.map.delete(key);
