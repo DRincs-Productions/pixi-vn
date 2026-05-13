@@ -55,7 +55,10 @@ export namespace Game {
      * @param element The html element where I will put the canvas. Example: document.body
      * @param width The width of the canvas
      * @param height The height of the canvas
-     * @param options The options of PixiJS Application and other options
+     * @param options Equivalent to the options you can use when initializing a [PixiJS Application](https://pixijs.com/8.x/guides/components/application). Additionally, it supports the following options:
+     * - `id`: The id of the canvas element.
+     * - `navigate`: The route navigate function.
+     * - `resizeMode`: The resize mode of the canvas.
      * @param devtoolsOptions The options of the devtools. You can read more about it in the [PixiJS Devtools documentation](https://pixijs.io/devtools/docs/plugin/)
      * @example
      * ```typescript
@@ -78,7 +81,7 @@ export namespace Game {
         element: HTMLElement,
         options: Partial<ApplicationOptions> & {
             /**
-             * The id of the canvas element.
+             * The id of the canvas element. It will be used to create the canvas element and to reference it.
              * @default "pixi-vn-canvas"
              */
             id?: string;
@@ -90,7 +93,9 @@ export namespace Game {
              */
             navigate?: (path: string) => void | Promise<void>;
             /**
-             * The resize mode of the canvas.
+             * The resize mode of the canvas. Possible values are:
+             * - `none`: No resizing.
+             * - `contain`: The canvas will be resized to fit within the parent element while maintaining its aspect ratio. (default)
              * @default "contain"
              */
             resizeMode?: "contain" | "none";
@@ -106,22 +111,8 @@ export namespace Game {
     export async function init(
         element?: HTMLElement,
         options?: Partial<ApplicationOptions> & {
-            /**
-             * The id of the canvas element.
-             * @default "pixi-vn-canvas"
-             */
             id?: string;
-            /**
-             * The route navigate function.
-             * You can set this function after the initialization using {@link GameUnifier.navigate}
-             * @param path The path to navigate to.
-             * @returns
-             */
             navigate?: (path: string) => void | Promise<void>;
-            /**
-             * The resize mode of the canvas.
-             * @default "contain"
-             */
             resizeMode?: "contain" | "none";
         },
         devtoolsOptions?: Devtools,
