@@ -31,7 +31,7 @@ export * from "./utils";
 import * as canvasUtils from "@drincs/pixi-vn/canvas";
 import * as characterUtils from "@drincs/pixi-vn/characters";
 import type { OnErrorHandler } from "@drincs/pixi-vn/core";
-import { GameUnifier } from "@drincs/pixi-vn/core";
+import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import { motion } from "@drincs/pixi-vn/motion";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
@@ -328,6 +328,9 @@ export namespace Game {
     /**
      * Register an error handler. Multiple handlers can be registered; they
      * will be executed in registration order.
+     *
+     * You can also check if the error is an instance of {@link PixiError} to handle specific errors related to Pixi’VN.
+     *
      * @example
      * ```typescript
      * // Register a synchronous error handler
@@ -335,6 +338,13 @@ export namespace Game {
      *    props.notify("An error occurred")
      *    // send a notification to GlitchTip, Sentry, etc...
      * })
+     *
+     * // Register an error handler for Pixi’VN specific errors
+     * Game.addOnError((error, { notify }) => {
+     *     if (error instanceof PixiError) {
+     *         // ...
+     *     }
+     * });
      *
      * // Register an asynchronous error handler
      * Game.addOnError(async (error, props) => {
