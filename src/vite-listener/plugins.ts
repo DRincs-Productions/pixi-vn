@@ -1,3 +1,4 @@
+/// <reference types="vite/client" />
 import { canvas } from "@drincs/pixi-vn/canvas";
 import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
 import { RegisteredLabels } from "@drincs/pixi-vn/narration";
@@ -11,26 +12,6 @@ import {
 } from "../vite/costants";
 
 /**
- * Determines if the code is executing in Vite development mode.
- * Uses indirect Function constructor access to avoid TypeScript compilation issues
- * with import.meta in CommonJS modules.
- *
- * @returns {boolean} True if running in Vite development mode, false otherwise
- * @private
- */
-function isViteDevelopmentMode(): boolean {
-    try {
-        // Use Function constructor to indirectly access import.meta at runtime
-        // This avoids direct eval while still bypassing TypeScript's static analysis
-        return new Function(
-            'return typeof import !== "undefined" && typeof import.meta !== "undefined" && import.meta.env?.DEV === true',
-        )();
-    } catch {
-        return false;
-    }
-}
-
-/**
  * Sends a POST request to the development API endpoint with error handling.
  *
  * @param {string} endpoint - The API endpoint URL
@@ -38,7 +19,7 @@ function isViteDevelopmentMode(): boolean {
  * @param {string} [dataName="data"] - Human-readable name of the data being sent (for logging)
  * @private
  */
-function sendToDevApi(endpoint: string, data: unknown, dataName = "data"): void {
+function sendToDevApi(endpoint: string, data: unknown, dataName: string = "data"): void {
     try {
         fetch(endpoint, {
             method: "POST",
@@ -93,8 +74,7 @@ function buildAssetsManifest(): AssetsManifest {
  * @public
  */
 export function setupPixivnViteData(): void {
-    // Only run in development mode
-    if (!isViteDevelopmentMode()) {
+    if (!import.meta.hot) {
         return;
     }
 
