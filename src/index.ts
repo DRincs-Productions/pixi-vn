@@ -382,7 +382,7 @@ export namespace Game {
         narrationUtils.NarrationManagerStatic.onStepStart = value;
     }
     /**
-     * Is a function that will be executed in {@link Game.onStepStart} if the id of the step is 0
+     * Is a function that will be executed in {@link onStepStart} if the id of the step is 0
      * and when the user laods a save file.
      * When you load a save file, will be executed all onLoadingLabel functions of the {@link narrationUtils.narration}.openedLabels.
      * It is useful for example to make sure all images used have been cached
