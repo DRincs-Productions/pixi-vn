@@ -52,13 +52,18 @@ function buildAssetsManifest(): AssetsManifest {
 
 /**
  * Checks if the current runtime is Vite development mode.
- * Uses NODE_ENV for development detection.
+ * Detects Vite dev client script injected in development.
+ * Assumes default Vite client path starts with `/@vite/client`.
  *
  * @returns {boolean}
  * @public
  */
 export function isViteDevelopmentMode(): boolean {
-    return process.env.NODE_ENV === "development";
+    if (typeof window === "undefined" || typeof document === "undefined") {
+        return false;
+    }
+
+    return Boolean(document.querySelector('script[src^="/@vite/client"]'));
 }
 
 /**
