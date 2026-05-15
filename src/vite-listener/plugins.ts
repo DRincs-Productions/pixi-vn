@@ -1,4 +1,3 @@
-/// <reference types="vite/client" />
 import { canvas } from "@drincs/pixi-vn/canvas";
 import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
 import { RegisteredLabels } from "@drincs/pixi-vn/narration";
@@ -52,6 +51,17 @@ function buildAssetsManifest(): AssetsManifest {
 }
 
 /**
+ * Checks if the current runtime is Vite development mode.
+ * Uses NODE_ENV for development detection.
+ *
+ * @returns {boolean}
+ * @public
+ */
+export function isViteDevelopmentMode(): boolean {
+    return process.env.NODE_ENV === "development";
+}
+
+/**
  * Initializes Pixi VN development tools by syncing game state with the Vite dev server.
  * Sends registered characters, labels, assets manifest, and canvas options.
  *
@@ -74,7 +84,7 @@ function buildAssetsManifest(): AssetsManifest {
  * @public
  */
 export function setupPixivnViteData(): void {
-    if (!import.meta.hot) {
+    if (!isViteDevelopmentMode()) {
         return;
     }
 

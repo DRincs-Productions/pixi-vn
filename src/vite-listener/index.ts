@@ -1,1 +1,1 @@
-export { setupPixivnViteData } from "./plugins";
+export { isViteDevelopmentMode, setupPixivnViteData } from "./plugins";
