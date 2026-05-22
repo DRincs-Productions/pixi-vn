@@ -18,17 +18,19 @@ import {
  * @param {string} [dataName="data"] - Human-readable name of the data being sent (for logging)
  * @private
  */
-function sendToDevApi(endpoint: string, data: unknown, dataName: string = "data"): void {
+async function sendToDevApi(
+    endpoint: string,
+    data: unknown,
+    dataName: string = "data",
+): Promise<void> {
     try {
-        fetch(endpoint, {
+        await fetch(endpoint, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(data),
-        }).catch((error) => {
-            console.warn(`Failed to send ${dataName} to ${endpoint}:`, error);
         });
     } catch (error) {
-        console.warn(`Error sending ${dataName} to ${endpoint}:`, error);
+        console.warn(`Failed to send ${dataName} to ${endpoint}:`, error);
     }
 }
 
@@ -82,34 +84,34 @@ export function isViteDevelopmentMode(): boolean {
  *
  * await Promise.all([import("@/content")]);
  * // After game setup
- * setupPixivnViteData();
+ * await setupPixivnViteData();
  * ```
  *
- * @returns {void}
+ * @returns {Promise<void>}
  * @public
  */
-export function setupPixivnViteData(): void {
+export async function setupPixivnViteData(): Promise<void> {
     if (!isViteDevelopmentMode()) {
         return;
     }
 
     try {
         const characters = RegisteredCharacters.values();
-        sendToDevApi(PIXIVN_DEV_API_CHARACTERS, characters, "characters");
+        await sendToDevApi(PIXIVN_DEV_API_CHARACTERS, characters, "characters");
     } catch (error) {
         console.warn("Error collecting characters:", error);
     }
 
     try {
         const labels = RegisteredLabels.keys();
-        sendToDevApi(PIXIVN_DEV_API_LABELS, labels, "labels");
+        await sendToDevApi(PIXIVN_DEV_API_LABELS, labels, "labels");
     } catch (error) {
         console.warn("Error collecting labels:", error);
     }
 
     try {
         const manifest = buildAssetsManifest();
-        sendToDevApi(PIXIVN_DEV_API_ASSETS_MANIFEST, manifest, "assets manifest");
+        await sendToDevApi(PIXIVN_DEV_API_ASSETS_MANIFEST, manifest, "assets manifest");
     } catch (error) {
         console.warn("Error collecting assets manifest:", error);
     }
@@ -119,7 +121,7 @@ export function setupPixivnViteData(): void {
             height: canvas.app.screen.height,
             width: canvas.app.screen.width,
         };
-        sendToDevApi(PIXIVN_DEV_API_CANVAS_OPTIONS, options, "canvas options");
+        await sendToDevApi(PIXIVN_DEV_API_CANVAS_OPTIONS, options, "canvas options");
     } catch (error) {
         console.warn("Error collecting canvas options:", error);
     }
