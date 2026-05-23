@@ -120,9 +120,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
     const watchedFiles = new Set<string>();
     const reloadCallbacks: Array<() => void> = [];
 
-    async function readSsrState(
-        ssrLoadModule: (url: string) => Promise<unknown>,
-    ): Promise<void> {
+    async function readSsrState(ssrLoadModule: (url: string) => Promise<unknown>): Promise<void> {
         try {
             const mod = (await ssrLoadModule("@drincs/pixi-vn/characters")) as {
                 RegisteredCharacters?: { values(): CharacterInterface[] };
@@ -130,6 +128,17 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             ssrCharacters = mod.RegisteredCharacters?.values() ?? [];
         } catch {
             ssrCharacters = [];
+        }
+        // Dynamic import (non-literal path → `any`) to avoid the CharacterInterface
+        // type mismatch between internal source and built package declarations.
+        try {
+            const charsPath: string = "@drincs/pixi-vn/characters";
+            for (const c of ssrCharacters) {
+                if ((await import(charsPath)).RegisteredCharacters?.has(c.id)) continue;
+                (await import(charsPath)).RegisteredCharacters?.add(c);
+            }
+        } catch {
+            /* ignore */
         }
         try {
             const mod = (await ssrLoadModule("@drincs/pixi-vn/narration")) as {
@@ -173,7 +182,9 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
                 registeredCharacters?: { clear(): void };
             };
             mod.registeredCharacters?.clear?.();
-        } catch { /* ignore */ }
+        } catch {
+            /* ignore */
+        }
         const files = await glob(allPatterns, {
             cwd: resolvedConfig!.root,
             absolute: true,
@@ -183,7 +194,9 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             watchedFiles.add(file);
             try {
                 await server.ssrLoadModule(file);
-            } catch { /* silently ignore */ }
+            } catch {
+                /* silently ignore */
+            }
         }
         await readSsrState((p) => server.ssrLoadModule(p));
         for (const cb of reloadCallbacks) cb();
@@ -322,9 +335,12 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         hotUpdate({ file, server }) {
             if (allPatterns.length > 0 && watchedFiles.has(file)) {
                 void reloadContent(server).catch((error) => {
-                    resolvedConfig?.logger.error("[vite-plugin-pixi-vn] Failed to reload content.", {
-                        error: error instanceof Error ? error : new Error(String(error)),
-                    });
+                    resolvedConfig?.logger.error(
+                        "[vite-plugin-pixi-vn] Failed to reload content.",
+                        {
+                            error: error instanceof Error ? error : new Error(String(error)),
+                        },
+                    );
                 });
                 return [];
             }

@@ -7,27 +7,31 @@ import CharacterStoredClass from "./CharacterStoredClass";
  * You must use the {@link RegisteredCharacters.add} function to save the character in the game.
  * It is raccomended to create your own class Character, read more here: https://pixi-vn.web.app/start/character.html#custom-character
  * @example
- * ```typescript
- * export const liam = new CharacterBaseModel('liam', {
- *     name: 'Liam',
- *     surname: 'Smith',
+ * ```ts
+ * import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
+ *
+ * export const liam = new CharacterBaseModel("liam", {
+ *     name: "Liam",
+ *     surname: "Smith",
  *     age: 25,
- *     icon: "https://pixijs.com/assets/eggHead.png",
- *     color: "#9e2e12"
+ *     icon: "https://example.com/liam.png",
+ *     color: "#9e2e12",
  * });
- * export const alice = new CharacterBaseModel('alice', {
- *     name: 'Alice',
- *     surname: 'Smith',
- *     age: 25,
- *     icon: "https://pixijs.com/assets/eggHead.png",
- *     color: "#9e2e12"
+ *
+ * export const emma = new CharacterBaseModel("emma", {
+ *     name: "Emma",
+ *     surname: "Johnson",
+ *     age: 23,
+ *     icon: "https://example.com/emma.png",
+ *     color: "#9e2e12",
  * });
- * RegisteredCharacters.add([liam, alice]);
+ *
+ * RegisteredCharacters.add([liam, emma]);
  * ```
  */
 export default class CharacterBaseModel extends CharacterStoredClass {
     /**
-     * @param id The id of the character.
+     * @param id A unique identifier (string). It is used to reference the character in the game (must be unique). If you want to create a character with an "emotion", you can pass an object.
      * @param props The properties of the character.
      */
     constructor(id: string | { id: string; emotion: string }, props: CharacterBaseModelProps) {
