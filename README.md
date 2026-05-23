@@ -26,13 +26,8 @@ For a quick start, various [project templates](#project-initialization) are avai
 You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
 
 - [_ink_](https://pixi-vn.web.app/ink/ink)
-- [Ren'Py](https://pixi-vn.web.app/renpy/renpy)
 
 Pixi’VN does not provide built-in components to create the game UI. Instead, you should use external JavaScript frameworks to build your UI. This allows you to leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
-
-- [React](https://pixi-vn.web.app/start/interface-react)
-- [Vue](https://pixi-vn.web.app/start/interface-vue)
-- [PixiJS](https://pixi-vn.web.app/start/interface-pixijs)
 
 ## Wiki
 
@@ -56,68 +51,30 @@ Before starting, you must have the following tools installed:
   - [Visual Studio Code](https://code.visualstudio.com/)
   - [Cursor](https://www.cursor.com/)
   - [VSCodium](https://vscodium.com/)
-- (Recommended) [Git](https://git-scm.com/)
-  - A [GitHub account](https://github.com/)
 
 ## Project Initialization
 
 If you want to start from a new project, you can use the following command to initialize a new project with the Pixi’VN templates:
 
-```bash
-# npm
+```npm
 npm create pixi-vn@latest
-
-# yarn
-yarn create pixi-vn
-
-# pnpm
-pnpm create pixi-vn
-
-# bun
-bun create pixi-vn
-
-# deno
-deno init --npm pixi-vn
 ```
 
-You can see the list of available templates and interactive demos [here](https://pixi-vn.web.app/start/templates).
+You can see the list of available templates and interactive demos <DynamicLink href="/start/templates">here</DynamicLink>.
 
 After the project is initialized, open the project directory with your text editor (VSCode is recommended) and start developing your project.
-
-All templates include a `README.md` file with more information about the project.
 
 ## Installation
 
 To install the Pixi’VN package in an existing JavaScript project, use one of the following commands:
 
-```bash
-# npm
+```npm
 npm install @drincs/pixi-vn
-
-# yarn
-yarn add @drincs/pixi-vn
-
-# pnpm
-pnpm add @drincs/pixi-vn
-
-# bun
-bun add @drincs/pixi-vn
-
-# deno
-deno install npm:@drincs/pixi-vn
 ```
 
 ## Initialize
 
 Before using the Pixi’VN engine, you must initialize the game. You can do this by calling the `Game.init` method.
-
-This function has the following parameters:
-
-- `element`: The HTML element to append the canvas to.
-- `options`: Equivalent to the options you can use when initializing a [PixiJS Application](https://pixijs.com/8.x/guides/basics/getting-started#creating-an-application). The following options are mandatory:
-  - `width`: The width of the canvas.
-  - `height`: The height of the canvas.
-- `devtoolsOptions`: Equivalent to the options you can use when initializing the [PixiJS Devtools](https://pixi-vn.web.app/it/start/canvas#use-pixijs-devtools-with-pixivn).
 
 ```ts title="src/main.tsx"
 import { Game } from "@drincs/pixi-vn";
@@ -178,4 +135,3 @@ body {
   overflow: hidden;
 }
 ```
-
