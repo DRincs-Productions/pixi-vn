@@ -1,5 +1,6 @@
 import type { CharacterInterface } from "@drincs/pixi-vn/characters";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
+import { readFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import pc from "picocolors";
 import { glob } from "tinyglobby";
@@ -16,6 +17,22 @@ const PLUGIN_PREFIX = pc.cyan("(pixi-vn)");
 function asArray(value: string | string[] | undefined): string[] {
     if (!value) return [];
     return Array.isArray(value) ? value : [value];
+}
+
+function staticAnalyzeFiles(files: string[]): { charIds: string[]; labelIds: string[] } {
+    const charIds: string[] = [];
+    const labelIds: string[] = [];
+    for (const file of files) {
+        try {
+            const content = readFileSync(file, "utf-8");
+            const labelRe = /newLabel\(\s*["']([^"']+)["']/g;
+            let m: RegExpExecArray | null;
+            while ((m = labelRe.exec(content)) !== null) labelIds.push(m[1]);
+            const charRe = /new\s+\w*[Cc]haracter\(\s*["']([^"']+)["']/g;
+            while ((m = charRe.exec(content)) !== null) charIds.push(m[1]);
+        } catch { /* ignore */ }
+    }
+    return { charIds, labelIds };
 }
 
 /**
@@ -123,33 +140,35 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
     const watchedFiles = new Set<string>();
     const reloadCallbacks: Array<() => void> = [];
 
-    async function readSsrState(ssrLoadModule: (url: string) => Promise<unknown>): Promise<void> {
+    async function readSsrState(ssrLoadModule: (url: string) => Promise<unknown>, failedFiles: string[] = []): Promise<void> {
+        // Read from "@drincs/pixi-vn" (not sub-paths) so we hit the same module
+        // instance that user files import from — sub-paths are separate SSR instances.
         try {
-            const mod = (await ssrLoadModule("@drincs/pixi-vn/characters")) as {
+            const mod = (await ssrLoadModule("@drincs/pixi-vn")) as {
                 RegisteredCharacters?: { values(): CharacterInterface[] };
             };
             ssrCharacters = mod.RegisteredCharacters?.values() ?? [];
         } catch {
             ssrCharacters = [];
         }
-        // Dynamic import (non-literal path → `any`) to avoid the CharacterInterface
-        // type mismatch between internal source and built package declarations.
         try {
-            const charsPath: string = "@drincs/pixi-vn/characters";
-            for (const c of ssrCharacters) {
-                if ((await import(charsPath)).RegisteredCharacters?.has(c.id)) continue;
-                (await import(charsPath)).RegisteredCharacters?.add(c);
-            }
-        } catch {
-            /* ignore */
-        }
-        try {
-            const mod = (await ssrLoadModule("@drincs/pixi-vn/narration")) as {
+            const mod = (await ssrLoadModule("@drincs/pixi-vn")) as {
                 RegisteredLabels?: { keys(): string[] };
             };
             ssrLabels = mod.RegisteredLabels?.keys() ?? [];
         } catch {
             ssrLabels = [];
+        }
+        if (failedFiles.length > 0) {
+            const { charIds: staticCharIds, labelIds: staticLabelIds } = staticAnalyzeFiles(failedFiles);
+            const existingCharIds = new Set(ssrCharacters.map((c) => c.id));
+            const existingLabelIds = new Set(ssrLabels);
+            for (const id of staticCharIds) {
+                if (!existingCharIds.has(id)) ssrCharacters.push({ id } as CharacterInterface);
+            }
+            for (const id of staticLabelIds) {
+                if (!existingLabelIds.has(id)) ssrLabels.push(id);
+            }
         }
         const charIds = ssrCharacters.map((c) => c.id).join(", ") || "none";
         resolvedConfig?.logger.info(
@@ -163,15 +182,16 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         root: string,
     ): Promise<void> {
         const files = await glob(allPatterns, { cwd: root, absolute: true, onlyFiles: true });
+        const failedFiles: string[] = [];
         for (const file of files) {
             watchedFiles.add(file);
             try {
                 await ssrLoadModule(file);
             } catch {
-                // silently ignore — file may have browser-only dependencies
+                failedFiles.push(file);
             }
         }
-        await readSsrState(ssrLoadModule);
+        await readSsrState(ssrLoadModule, failedFiles);
         contentLoadedResolve();
     }
 
@@ -194,15 +214,16 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             absolute: true,
             onlyFiles: true,
         });
+        const failedFiles: string[] = [];
         for (const file of files) {
             watchedFiles.add(file);
             try {
                 await server.ssrLoadModule(file);
             } catch {
-                /* silently ignore */
+                failedFiles.push(file);
             }
         }
-        await readSsrState((p) => server.ssrLoadModule(p));
+        await readSsrState((p) => server.ssrLoadModule(p), failedFiles);
         for (const cb of reloadCallbacks) cb();
     }
 
