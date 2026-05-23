@@ -57,10 +57,10 @@ function createRes() {
 }
 
 describe("vitePluginPixivn", () => {
-    test("returns a plugin with correct name and apply", () => {
+    test("returns a plugin with correct name and enforce", () => {
         const plugin = vitePluginPixivn();
         expect(plugin.name).toBe("vite-plugin-pixi-vn");
-        expect(plugin.apply).toBe("serve");
+        expect(plugin.enforce).toBe("pre");
     });
 
     test("registers middleware for all expected endpoints", () => {

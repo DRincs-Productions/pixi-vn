@@ -2,6 +2,7 @@ import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 
 vi.mock("@drincs/pixi-vn/canvas", () => ({
     canvas: {
+        isInitialized: false,
         app: {
             screen: { height: 600, width: 800 },
         },
@@ -112,7 +113,7 @@ describe("setupPixivnViteData", () => {
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
-    test("calls fetch for all four endpoints in vite development mode", async () => {
+    test("calls fetch for the three base endpoints in vite development mode", async () => {
         addViteClientScript();
         await setupPixivnViteData();
 
@@ -120,7 +121,18 @@ describe("setupPixivnViteData", () => {
         expect(calledUrls).toContain(PIXIVN_DEV_API_CHARACTERS);
         expect(calledUrls).toContain(PIXIVN_DEV_API_LABELS);
         expect(calledUrls).toContain(PIXIVN_DEV_API_ASSETS_MANIFEST);
+        expect(calledUrls).not.toContain(PIXIVN_DEV_API_CANVAS_OPTIONS);
+    });
+
+    test("calls canvas-options endpoint when canvas is initialized", async () => {
+        const { canvas } = await import("@drincs/pixi-vn/canvas");
+        (canvas as any).isInitialized = true;
+        addViteClientScript();
+        await setupPixivnViteData();
+
+        const calledUrls = fetchMock.mock.calls.map((call) => call[0]);
         expect(calledUrls).toContain(PIXIVN_DEV_API_CANVAS_OPTIONS);
+        (canvas as any).isInitialized = false;
     });
 
     test("sends each request as POST with application/json content-type", async () => {
