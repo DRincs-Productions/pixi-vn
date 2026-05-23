@@ -2,7 +2,7 @@ import type { CharacterInterface } from "@drincs/pixi-vn/characters";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
 import { glob } from "tinyglobby";
-import type { Plugin, ResolvedConfig } from "vite";
+import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import {
     PIXIVN_DEV_API_ASSETS_MANIFEST,
     PIXIVN_DEV_API_CANVAS_OPTIONS,
@@ -115,19 +115,78 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         ...asArray(options?.labels),
     ];
 
+    let ssrCharacters: CharacterInterface[] = [];
+    let ssrLabels: string[] = [];
+    const watchedFiles = new Set<string>();
+    const reloadCallbacks: Array<() => void> = [];
+
+    async function readSsrState(
+        ssrLoadModule: (url: string) => Promise<unknown>,
+    ): Promise<void> {
+        try {
+            const mod = (await ssrLoadModule("@drincs/pixi-vn/characters")) as {
+                RegisteredCharacters?: { values(): CharacterInterface[] };
+            };
+            ssrCharacters = mod.RegisteredCharacters?.values() ?? [];
+        } catch {
+            ssrCharacters = [];
+        }
+        try {
+            const mod = (await ssrLoadModule("@drincs/pixi-vn/narration")) as {
+                RegisteredLabels?: { keys(): string[] };
+            };
+            ssrLabels = mod.RegisteredLabels?.keys() ?? [];
+        } catch {
+            ssrLabels = [];
+        }
+        const charIds = ssrCharacters.map((c) => c.id).join(", ") || "none";
+        resolvedConfig?.logger.info(
+            `[vite-plugin-pixi-vn] ${ssrCharacters.length} character(s): [${charIds}], ${ssrLabels.length} label(s)`,
+        );
+    }
+
     async function loadModules(
         ssrLoadModule: (url: string) => Promise<unknown>,
         root: string,
     ): Promise<void> {
         const files = await glob(allPatterns, { cwd: root, absolute: true, onlyFiles: true });
         for (const file of files) {
+            watchedFiles.add(file);
             try {
                 await ssrLoadModule(file);
             } catch {
                 // silently ignore — file may have browser-only dependencies
             }
         }
+        await readSsrState(ssrLoadModule);
         contentLoadedResolve();
+    }
+
+    async function reloadContent(server: ViteDevServer): Promise<void> {
+        for (const file of watchedFiles) {
+            for (const mod of server.moduleGraph.getModulesByFile(file) ?? []) {
+                server.moduleGraph.invalidateModule(mod);
+            }
+        }
+        try {
+            const mod = (await server.ssrLoadModule("@drincs/pixi-vn/characters")) as {
+                registeredCharacters?: { clear(): void };
+            };
+            mod.registeredCharacters?.clear?.();
+        } catch { /* ignore */ }
+        const files = await glob(allPatterns, {
+            cwd: resolvedConfig!.root,
+            absolute: true,
+            onlyFiles: true,
+        });
+        for (const file of files) {
+            watchedFiles.add(file);
+            try {
+                await server.ssrLoadModule(file);
+            } catch { /* silently ignore */ }
+        }
+        await readSsrState((p) => server.ssrLoadModule(p));
+        for (const cb of reloadCallbacks) cb();
     }
 
     // ── in-memory state ──────────────────────────────────────────────────────
@@ -184,7 +243,15 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         // when both plugins share the same enforce group.
         enforce: "pre",
 
-        api: { contentLoaded },
+        api: {
+            contentLoaded,
+            get characters(): CharacterInterface[] {
+                return ssrCharacters;
+            },
+            onReload(cb: () => void): void {
+                reloadCallbacks.push(cb);
+            },
+        },
 
         configResolved(config) {
             resolvedConfig = config;
@@ -250,6 +317,17 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
                 PIXIVN_DEV_API_CANVAS_OPTIONS,
                 createStateHandler("canvasOptions", "Canvas options"),
             );
+        },
+
+        hotUpdate({ file, server }) {
+            if (allPatterns.length > 0 && watchedFiles.has(file)) {
+                void reloadContent(server).catch((error) => {
+                    resolvedConfig?.logger.error("[vite-plugin-pixi-vn] Failed to reload content.", {
+                        error: error instanceof Error ? error : new Error(String(error)),
+                    });
+                });
+                return [];
+            }
         },
     };
 }
