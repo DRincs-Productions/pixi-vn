@@ -116,13 +116,15 @@ export async function setupPixivnViteData(): Promise<void> {
         console.warn("Error collecting assets manifest:", error);
     }
 
-    try {
-        const options: Partial<ApplicationOptions> = {
-            height: canvas.app.screen.height,
-            width: canvas.app.screen.width,
-        };
-        await sendToDevApi(PIXIVN_DEV_API_CANVAS_OPTIONS, options, "canvas options");
-    } catch (error) {
-        console.warn("Error collecting canvas options:", error);
+    if (canvas.isInitialized) {
+        try {
+            const options: Partial<ApplicationOptions> = {
+                height: canvas.app.screen.height,
+                width: canvas.app.screen.width,
+            };
+            await sendToDevApi(PIXIVN_DEV_API_CANVAS_OPTIONS, options, "canvas options");
+        } catch (error) {
+            console.warn("Error collecting canvas options:", error);
+        }
     }
 }
