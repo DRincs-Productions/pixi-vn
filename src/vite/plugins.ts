@@ -30,7 +30,9 @@ function staticAnalyzeFiles(files: string[]): { charIds: string[]; labelIds: str
             while ((m = labelRe.exec(content)) !== null) labelIds.push(m[1]);
             const charRe = /new\s+\w*[Cc]haracter\(\s*["']([^"']+)["']/g;
             while ((m = charRe.exec(content)) !== null) charIds.push(m[1]);
-        } catch { /* ignore */ }
+        } catch {
+            /* ignore */
+        }
     }
     return { charIds, labelIds };
 }
@@ -140,7 +142,10 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
     const watchedFiles = new Set<string>();
     const reloadCallbacks: Array<() => void> = [];
 
-    async function readSsrState(ssrLoadModule: (url: string) => Promise<unknown>, failedFiles: string[] = []): Promise<void> {
+    async function readSsrState(
+        ssrLoadModule: (url: string) => Promise<unknown>,
+        failedFiles: string[] = [],
+    ): Promise<void> {
         // Read from "@drincs/pixi-vn" (not sub-paths) so we hit the same module
         // instance that user files import from — sub-paths are separate SSR instances.
         try {
@@ -160,7 +165,8 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             ssrLabels = [];
         }
         if (failedFiles.length > 0) {
-            const { charIds: staticCharIds, labelIds: staticLabelIds } = staticAnalyzeFiles(failedFiles);
+            const { charIds: staticCharIds, labelIds: staticLabelIds } =
+                staticAnalyzeFiles(failedFiles);
             const existingCharIds = new Set(ssrCharacters.map((c) => c.id));
             const existingLabelIds = new Set(ssrLabels);
             for (const id of staticCharIds) {

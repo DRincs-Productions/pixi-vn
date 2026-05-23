@@ -40,9 +40,7 @@ export default class MediaInstance extends Player implements MediaInterface {
     get memory() {
         const elapsed = Math.max(
             0,
-            this.pausedAt
-            ? this.pausedAt - this.playStartTime
-            : toneNow() - this.playStartTime,
+            this.pausedAt ? this.pausedAt - this.playStartTime : toneNow() - this.playStartTime,
         );
         let paused = this.paused;
         if (paused && SoundRegistry.systemPausedAliases.has(this.alias)) {

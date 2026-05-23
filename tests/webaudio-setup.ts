@@ -22,16 +22,35 @@ if (typeof (globalThis as any).AudioParam === "undefined") {
         minValue = -3.4028235e38;
         maxValue = 3.4028235e38;
         automationRate = "a-rate";
-        setValueAtTime(v: number, _t: number) { this.value = v; return this as any; }
-        linearRampToValueAtTime(v: number, _t: number) { this.value = v; return this as any; }
-        exponentialRampToValueAtTime(v: number, _t: number) { this.value = v; return this as any; }
-        setTargetAtTime(_t: number, _s: number, _tc: number) { return this as any; }
-        setValueCurveAtTime(_vs: Float32Array, _s: number, _d: number) { return this as any; }
-        cancelScheduledValues(_t: number) { return this as any; }
-        cancelAndHoldAtTime(_t: number) { return this as any; }
+        setValueAtTime(v: number, _t: number) {
+            this.value = v;
+            return this as any;
+        }
+        linearRampToValueAtTime(v: number, _t: number) {
+            this.value = v;
+            return this as any;
+        }
+        exponentialRampToValueAtTime(v: number, _t: number) {
+            this.value = v;
+            return this as any;
+        }
+        setTargetAtTime(_t: number, _s: number, _tc: number) {
+            return this as any;
+        }
+        setValueCurveAtTime(_vs: Float32Array, _s: number, _d: number) {
+            return this as any;
+        }
+        cancelScheduledValues(_t: number) {
+            return this as any;
+        }
+        cancelAndHoldAtTime(_t: number) {
+            return this as any;
+        }
         addEventListener() {}
         removeEventListener() {}
-        dispatchEvent() { return false; }
+        dispatchEvent() {
+            return false;
+        }
     };
 }
 
@@ -45,11 +64,15 @@ if (typeof (globalThis as any).AudioNode === "undefined") {
         channelInterpretation = "speakers";
         numberOfInputs = 1;
         numberOfOutputs = 1;
-        connect(node: any) { return node; }
+        connect(node: any) {
+            return node;
+        }
         disconnect() {}
         addEventListener() {}
         removeEventListener() {}
-        dispatchEvent() { return false; }
+        dispatchEvent() {
+            return false;
+        }
     };
 }
 
@@ -62,7 +85,9 @@ if (typeof (globalThis as any).AudioBuffer === "undefined") {
         duration = 0;
         sampleRate = 44100;
         numberOfChannels = 1;
-        getChannelData() { return new Float32Array(0); }
+        getChannelData() {
+            return new Float32Array(0);
+        }
     };
 }
 
@@ -102,11 +127,22 @@ if (typeof (globalThis as any).AudioContext === "undefined") {
             positionY: new _AudioParam(),
             positionZ: new _AudioParam(),
             setPosition(_xPos: number, _yPos: number, _zPos: number) {},
-            setOrientation(_forwardX: number, _forwardY: number, _forwardZ: number, _upX: number, _upY: number, _upZ: number) {},
+            setOrientation(
+                _forwardX: number,
+                _forwardY: number,
+                _forwardZ: number,
+                _upX: number,
+                _upY: number,
+                _upZ: number,
+            ) {},
         };
 
-        createGain() { return new _GainNode(); }
-        createStereoPanner() { return new _StereoPannerNode(); }
+        createGain() {
+            return new _GainNode();
+        }
+        createStereoPanner() {
+            return new _StereoPannerNode();
+        }
         createBufferSource() {
             const node: any = new _AudioNode();
             node.buffer = null;
@@ -137,11 +173,19 @@ if (typeof (globalThis as any).AudioContext === "undefined") {
                 getChannelData: () => new Float32Array(0),
             });
         }
-        resume() { return Promise.resolve(); }
-        suspend() { return Promise.resolve(); }
-        close() { return Promise.resolve(); }
+        resume() {
+            return Promise.resolve();
+        }
+        suspend() {
+            return Promise.resolve();
+        }
+        close() {
+            return Promise.resolve();
+        }
         addEventListener() {}
         removeEventListener() {}
-        dispatchEvent() { return false; }
+        dispatchEvent() {
+            return false;
+        }
     };
 }

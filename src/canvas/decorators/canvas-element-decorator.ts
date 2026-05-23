@@ -1,4 +1,8 @@
-import type { ContainerOptions, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
+import type {
+    ContainerOptions,
+    Container as PixiContainer,
+    PointData,
+} from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
@@ -74,7 +78,8 @@ export async function setMemoryContainer<T extends PixiContainer>(
     const end = options?.end;
     if ("isRenderGroup" in memory && memory.isRenderGroup !== undefined)
         element.isRenderGroup = memory.isRenderGroup;
-    if ("blendMode" in memory && memory.blendMode !== undefined) element.blendMode = memory.blendMode;
+    if ("blendMode" in memory && memory.blendMode !== undefined)
+        element.blendMode = memory.blendMode;
     if ("tint" in memory && memory.tint !== undefined) element.tint = memory.tint;
     if ("alpha" in memory && memory.alpha !== undefined) element.alpha = memory.alpha;
     if ("angle" in memory && memory.angle !== undefined) element.angle = memory.angle;
@@ -118,7 +123,11 @@ export async function setMemoryContainer<T extends PixiContainer>(
     // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
     if ("align" in memory && memory.align !== undefined && "align" in element)
         element.align = memory.align as Partial<PointData>;
-    if ("percentagePosition" in memory && memory.percentagePosition !== undefined && "percentagePosition" in element)
+    if (
+        "percentagePosition" in memory &&
+        memory.percentagePosition !== undefined &&
+        "percentagePosition" in element
+    )
         element.percentagePosition = memory.percentagePosition as Partial<PointData>;
 
     // end
