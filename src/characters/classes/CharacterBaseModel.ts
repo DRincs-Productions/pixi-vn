@@ -40,10 +40,10 @@ export default class CharacterBaseModel extends CharacterStoredClass {
         this.defaultName = props.name;
         this.defaultSurname = props.surname;
         this.defaultAge = props.age;
-        this._icon = props.icon;
-        this._color = props.color;
+        this.icon = props.icon;
+        this.color = props.color;
     }
-    private defaultName?: string;
+    readonly defaultName?: string;
     /***
      * The name of the character.
      * If you set undefined, it will return the default name.
@@ -52,9 +52,9 @@ export default class CharacterBaseModel extends CharacterStoredClass {
         return this.getStorageProperty<string>("name") || this.defaultName || this.id;
     }
     set name(value: string | undefined) {
-        this.setStorageProperty<string>("name", value);
+        this.setStorageProperty("name", value);
     }
-    private defaultSurname?: string;
+    readonly defaultSurname?: string;
     /**
      * The surname of the character.
      * If you set undefined, it will return the default surname.
@@ -63,9 +63,9 @@ export default class CharacterBaseModel extends CharacterStoredClass {
         return this.getStorageProperty<string>("surname") || this.defaultSurname;
     }
     set surname(value: string | undefined) {
-        this.setStorageProperty<string>("surname", value);
+        this.setStorageProperty("surname", value);
     }
-    private defaultAge?: number | undefined;
+    readonly defaultAge?: number | undefined;
     /**
      * The age of the character.
      * If you set undefined, it will return the default age.
@@ -76,18 +76,12 @@ export default class CharacterBaseModel extends CharacterStoredClass {
     set age(value: number | undefined) {
         this.setStorageProperty("age", value);
     }
-    private _icon?: string;
     /**
      * The icon of the character.
      */
-    get icon(): string | undefined {
-        return this._icon;
-    }
-    private _color?: string | undefined;
+    readonly icon?: string;
     /**
      * The color of the character.
      */
-    get color(): string | undefined {
-        return this._color;
-    }
+    readonly color?: string | undefined;
 }

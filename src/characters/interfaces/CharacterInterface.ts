@@ -21,38 +21,35 @@
  *         this.defaultName = props.name
  *         this.defaultSurname = props.surname
  *         this.defaultAge = props.age
- *         this._icon = props.icon
- *         this._color = props.color
+ *         this.icon = props.icon
+ *         this.color = props.color
  *     }
- *     private defaultName: string = ""
+ *     readonly defaultName: string = ""
  *     get name(): string {
  *         return this.getStorageProperty<string>("name") || this.defaultName
  *     }
  *     set name(value: string | undefined) {
- *         this.setStorageProperty<string>("name", value)
+ *         this.setStorageProperty("name", value)
  *     }
- *     private defaultSurname?: string
+ *     readonly defaultSurname?: string
  *     get surname(): string | undefined {
  *         return this.getStorageProperty<string>("surname") || this.defaultSurname
  *     }
  *     set surname(value: string | undefined) {
- *         this.setStorageProperty<string>("surname", value)
+ *         this.setStorageProperty("surname", value)
  *     }
- *     private defaultAge?: number | undefined
+ *     readonly defaultAge?: number | undefined
  *     get age(): number | undefined {
  *         return this.getStorageProperty<number>("age") || this.defaultAge
  *     }
  *     set age(value: number | undefined) {
- *         this.setStorageProperty<number>("age", value)
+ *         this.setStorageProperty("age", value)
  *     }
- *     private _icon?: string
+ *     readonly icon?: string
  *     get icon(): string | undefined {
  *         return this._icon
  *     }
- *     private _color?: string | undefined
- *     get color(): string | undefined {
- *         return this._color
- *     }
+ *     readonly color?: string | undefined
  * }
  * ```
  */

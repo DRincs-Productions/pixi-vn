@@ -13,19 +13,19 @@ import type { StorageElementType } from "@storage/types/StorageElementType";
  *         this.defaultName = props.name
  *         this.defaultSurname = props.surname
  *     }
- *     private defaultName: string = ""
+ *     readonly defaultName: string = ""
  *     get name(): string {
  *         return this.getStorageProperty<string>("name") || this.defaultName
  *     }
  *     set name(value: string) {
- *         this.setStorageProperty<string>("name", value)
+ *         this.setStorageProperty("name", value)
  *     }
- *     private defaultSurname?: string
+ *     readonly defaultSurname?: string
  *     get surname(): string | undefined {
  *         return this.getStorageProperty<string>("surname") || this.defaultSurname
  *     }
  *     set surname(value: string | undefined) {
- *         this.setStorageProperty<string>("surname", value)
+ *         this.setStorageProperty("surname", value)
  *     }
  * }
  * ```
@@ -63,15 +63,12 @@ export default class StoredClassModel {
     readonly id: string;
     private categoryId: string;
     /**
-     * @deprecated Remove the type parameter, it is not needed and it is not used in the implementation.
-     */
-    protected setStorageProperty<T>(propertyName: string, value: StorageElementType): void;
-    /**
      * Update a property in the storage.
      * @param propertyName The name of the property to set.
      * @param value The value to set. If is undefined, the property will be removed from the storage.
+     * @template T The type of the value to set. (Deprecated, it is not necessary to specify the type of the value, it will be inferred from the value)
      */
-    protected setStorageProperty(propertyName: string, value: StorageElementType): void {
+    protected setStorageProperty<T>(propertyName: string, value: StorageElementType): void {
         StorageRegistry.setVariable(this.categoryId, `${this.id}:${propertyName}`, value);
     }
     /**
