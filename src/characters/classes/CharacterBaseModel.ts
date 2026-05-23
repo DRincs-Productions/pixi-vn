@@ -1,6 +1,7 @@
-import { default as RegisteredCharacters } from "../decorators/character-decorator";
-import type CharacterBaseModelProps from "../interfaces/CharacterBaseModelProps";
-import CharacterStoredClass from "./CharacterStoredClass";
+import CharacterStoredClass from "@characters/classes/CharacterStoredClass";
+import RegisteredCharacters from "@characters/decorators/character-decorator";
+import type CharacterBaseModelProps from "@characters/interfaces/CharacterBaseModelProps";
+import type { CharacterEmotionId } from "@characters/types/CharacterEmotionId";
 
 /**
  * CharacterBaseModel is a class that is used to create a character model.
@@ -34,7 +35,7 @@ export default class CharacterBaseModel extends CharacterStoredClass {
      * @param id A unique identifier (string). It is used to reference the character in the game (must be unique). If you want to create a character with an "emotion", you can pass an object.
      * @param props The properties of the character.
      */
-    constructor(id: string | { id: string; emotion: string }, props: CharacterBaseModelProps) {
+    constructor(id: string | CharacterEmotionId, props: CharacterBaseModelProps) {
         super(typeof id === "string" ? id : id.id, typeof id === "string" ? "" : id.emotion);
         this.defaultName = props.name;
         this.defaultSurname = props.surname;
