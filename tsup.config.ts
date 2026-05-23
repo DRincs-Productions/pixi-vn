@@ -139,6 +139,8 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/characters",
                 // animation
                 "@drincs/pixi-vn/motion",
+                // peer dep — must not be bundled
+                "vite",
             ],
             outExtension({ format }) {
                 return {

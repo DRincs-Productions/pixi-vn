@@ -4,4 +4,5 @@ export {
     PIXIVN_DEV_API_CHARACTERS,
     PIXIVN_DEV_API_LABELS,
 } from "./costants";
+export type { VitePluginPixivnOptions } from "./plugins";
 export { vitePluginPixivn } from "./plugins";

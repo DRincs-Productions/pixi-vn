@@ -1,6 +1,8 @@
-import type { CharacterInterface } from "@drincs/pixi-vn";
+import type { CharacterInterface } from "@drincs/pixi-vn/characters";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { glob } from "tinyglobby";
+import type { Plugin, ResolvedConfig } from "vite";
 import {
     PIXIVN_DEV_API_ASSETS_MANIFEST,
     PIXIVN_DEV_API_CANVAS_OPTIONS,
@@ -8,105 +10,163 @@ import {
     PIXIVN_DEV_API_LABELS,
 } from "./costants";
 
+function asArray(value: string | string[] | undefined): string[] {
+    if (!value) return [];
+    return Array.isArray(value) ? value : [value];
+}
+
 /**
- * Represents a Vite plugin configuration object.
- * Defines the structure for registering middleware and handling server requests.
- *
- * @typedef {Object} Plugin
- * @property {string} name - Unique identifier for the plugin
- * @property {"serve"} apply - Plugin application scope (development server only)
- * @property {Function} configureServer - Middleware configuration function
+ * Options for {@link vitePluginPixivn}.
  */
-type Plugin = {
-    name: string;
-    apply: "serve";
-    configureServer: (server: {
-        middlewares: {
-            use: (
-                path: string,
-                handler: (req: IncomingMessage, res: ServerResponse) => void,
-            ) => void;
-        };
-    }) => void;
-};
+export interface VitePluginPixivnOptions {
+    /**
+     * Glob / path of module(s) that set up all game content as side effects:
+     * characters, labels, hashtag-command handlers, text-replace handlers, etc.
+     *
+     * The plugin loads these files server-side (via Vite SSR) at startup so that
+     * every downstream plugin that depends on the registered data — most notably
+     * `vitePluginInk` for JSON compilation — has the full registry available
+     * before it runs.  This also works during `vite build`.
+     *
+     * Pointing to a barrel file that re-exports everything is the simplest option.
+     * All patterns are resolved relative to Vite `root`.
+     *
+     * @example "./src/content/index.ts"
+     * @example "./src/content/*.ts"
+     */
+    content?: string | string[];
 
-/** @type {CharacterInterface[] | null} Cached registered characters */
-const characters: CharacterInterface[] | null = null;
+    /**
+     * Glob / path of module(s) whose side effects register characters via
+     * `RegisteredCharacters.add(...)`.
+     *
+     * Use when characters are defined separately from other content.
+     *
+     * @example "./src/characters.ts"
+     */
+    characters?: string | string[];
 
-/** @type {string[] | null} Cached narration label names */
-const labels: string[] | null = null;
-
-/** @type {AssetsManifest | null} Cached PIXI assets manifest */
-const manifest: AssetsManifest | null = null;
-
-/** @type {Partial<ApplicationOptions> | null} Cached canvas rendering options */
-const options: Partial<ApplicationOptions> | null = null;
+    /**
+     * Glob / path of module(s) whose side effects register narration labels via
+     * `RegisteredLabels.register(...)`.
+     *
+     * @example "./src/*.label.ts"
+     */
+    labels?: string | string[];
+}
 
 /**
- * Creates a Vite development server plugin for Pixi VN integration.
+ * Creates a Vite plugin for Pixi'VN integration.
  *
- * This plugin provides four API endpoints to sync game state between the client
- * and the development server. Only active in development mode (serve).
+ * **Static content loading**
  *
- * **Endpoints:**
- * - `GET  /__pixi-vn/characters` - Retrieve cached registered characters
- * - `POST /__pixi-vn/characters` - Update registered characters from client
- * - `GET  /__pixi-vn/labels` - Retrieve cached narration labels
- * - `POST /__pixi-vn/labels` - Update narration labels from client
- * - `GET  /__pixi-vn/assets/manifest` - Retrieve PIXI assets manifest
- * - `POST /__pixi-vn/assets/manifest` - Update assets manifest from client
- * - `GET  /__pixi-vn/canvas-options` - Retrieve canvas rendering options
- * - `POST /__pixi-vn/canvas-options` - Update canvas options from client
+ * When {@link VitePluginPixivnOptions.content}, {@link VitePluginPixivnOptions.characters}, or
+ * {@link VitePluginPixivnOptions.labels} are provided, the matched files are executed server-side
+ * via Vite SSR at startup, populating `RegisteredCharacters`, `RegisteredLabels`, and any other
+ * singletons before downstream plugins (such as `vitePluginInk`) run — including during
+ * `vite build`.
  *
- * @returns {Plugin} Configured Vite plugin object
+ * **Dev-server HTTP endpoints**
+ *
+ * - `GET  /__pixi-vn/characters` — retrieve registered characters
+ * - `POST /__pixi-vn/characters` — *(deprecated)* update from client; use the `characters` option instead
+ * - `GET  /__pixi-vn/labels` — retrieve narration labels
+ * - `POST /__pixi-vn/labels` — *(deprecated)* update from client; use the `labels` / `content` option instead
+ * - `GET  /__pixi-vn/assets/manifest` — retrieve PIXI assets manifest
+ * - `POST /__pixi-vn/assets/manifest` — update assets manifest from client
+ * - `GET  /__pixi-vn/canvas-options` — retrieve canvas rendering options
+ * - `POST /__pixi-vn/canvas-options` — update canvas options from client
+ *
+ * **Plugin API** (consumed by `vitePluginInk`):
+ * - `api.contentLoaded` — `Promise<void>` that resolves once all content modules have finished
+ *   loading.  Await this before generating JSON files.
  *
  * @example
  * ```typescript
  * // vite.config.ts
- * import { defineConfig } from 'vite';
- * import { vitePluginPixivn } from '@drincs/pixi-vn/vite';
+ * import { defineConfig } from "vite";
+ * import { vitePluginPixivn } from "@drincs/pixi-vn/vite";
  *
  * export default defineConfig({
- *   plugins: [vitePluginPixivn()],
+ *   plugins: [
+ *     vitePluginPixivn({ content: "./src/content/index.ts" }),
+ *   ],
  * });
  * ```
  *
- * @public
+ * @param options - Optional plugin configuration.
+ * @returns A Vite plugin.
  */
-export function vitePluginPixivn(): Plugin {
+export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
+    let resolvedConfig: ResolvedConfig | undefined;
+
+    let contentLoadedResolve!: () => void;
     /**
-     * Generic handler for creating middleware that stores/retrieves state.
-     * Handles both GET (retrieve) and POST (update) operations.
-     *
-     * @param {T} stateRef - Reference object to state (mutated)
-     * @param {string} stateName - Human-readable state name for logging
-     * @returns {(req: IncomingMessage, res: ServerResponse) => void} Middleware handler
-     * @template T
+     * Resolves once all content modules specified by the plugin options have been
+     * loaded server-side.  `vitePluginInk` awaits this before compiling JSON files.
      */
-    const createStateHandler = <T>(
-        stateRef: { current: T | null },
-        stateName: string,
-    ) => {
-        return (req: IncomingMessage, res: ServerResponse) => {
+    const contentLoaded = new Promise<void>((resolve) => {
+        contentLoadedResolve = resolve;
+    });
+
+    const allPatterns = [
+        ...asArray(options?.content),
+        ...asArray(options?.characters),
+        ...asArray(options?.labels),
+    ];
+
+    async function loadModules(
+        ssrLoadModule: (url: string) => Promise<unknown>,
+        root: string,
+    ): Promise<void> {
+        const files = await glob(allPatterns, { cwd: root, absolute: true, onlyFiles: true });
+        for (const file of files) {
+            try {
+                await ssrLoadModule(file);
+            } catch {
+                // silently ignore — file may have browser-only dependencies
+            }
+        }
+        contentLoadedResolve();
+    }
+
+    // ── in-memory state ──────────────────────────────────────────────────────
+    const state: {
+        characters: CharacterInterface[] | null;
+        labels: string[] | null;
+        manifest: AssetsManifest | null;
+        canvasOptions: Partial<ApplicationOptions> | null;
+    } = {
+        characters: null,
+        labels: null,
+        manifest: null,
+        canvasOptions: null,
+    };
+
+    function createStateHandler(key: keyof typeof state, stateName: string) {
+        return (req: IncomingMessage, res: ServerResponse): void => {
             res.setHeader("Content-Type", "application/json");
 
             if (req.method === "GET") {
-                if (stateRef.current === null) {
+                const value = state[key];
+                if (value === null) {
                     res.statusCode = 404;
                     res.end(JSON.stringify({ error: `${stateName} not initialized` }));
                     return;
                 }
                 res.statusCode = 200;
-                res.end(JSON.stringify(stateRef.current));
+                res.end(JSON.stringify(value));
                 return;
             }
 
             if (req.method === "POST") {
                 let body = "";
-                req.on("data", (chunk) => (body += chunk));
+                req.on("data", (chunk: Buffer) => {
+                    body += chunk.toString();
+                });
                 req.on("end", () => {
                     try {
-                        stateRef.current = JSON.parse(body);
+                        (state as Record<string, unknown>)[key] = JSON.parse(body);
                         res.statusCode = 201;
                         res.end(JSON.stringify({ message: `${stateName} updated successfully` }));
                     } catch {
@@ -116,34 +176,79 @@ export function vitePluginPixivn(): Plugin {
                 });
             }
         };
-    };
+    }
 
     return {
         name: "vite-plugin-pixi-vn",
-        apply: "serve",
+        // Run before vitePluginInk so configureServer and buildStart fire first
+        // when both plugins share the same enforce group.
+        enforce: "pre",
+
+        api: { contentLoaded },
+
+        configResolved(config) {
+            resolvedConfig = config;
+            // No patterns — nothing to load, resolve immediately.
+            if (allPatterns.length === 0) {
+                contentLoadedResolve();
+            }
+        },
+
+        async buildStart() {
+            // Dev mode uses configureServer + the existing dev server's ssrLoadModule.
+            // Only create a temporary server during an actual build.
+            if (resolvedConfig?.command !== "build" || allPatterns.length === 0) return;
+
+            const { createServer } = await import("vite");
+            const tempServer = await createServer({
+                root: resolvedConfig.root,
+                configFile: false,
+                server: { middlewareMode: true },
+                appType: "custom",
+                logLevel: "silent",
+                optimizeDeps: { noDiscovery: true },
+            });
+            try {
+                await loadModules((p) => tempServer.ssrLoadModule(p), resolvedConfig.root);
+            } catch {
+                contentLoadedResolve(); // always resolve so dependents are not blocked
+            } finally {
+                await tempServer.close();
+            }
+        },
+
         configureServer(server) {
-            // Characters endpoint
+            if (allPatterns.length > 0) {
+                void loadModules((p) => server.ssrLoadModule(p), resolvedConfig!.root).catch(() => {
+                    contentLoadedResolve();
+                });
+            }
+
+            /**
+             * GET  /__pixi-vn/characters — retrieve registered characters.
+             * POST /__pixi-vn/characters — @deprecated use the `characters` / `content` option instead.
+             */
             server.middlewares.use(
                 PIXIVN_DEV_API_CHARACTERS,
-                createStateHandler({ current: characters }, "Characters"),
+                createStateHandler("characters", "Characters"),
             );
 
-            // Labels endpoint
-            server.middlewares.use(
-                PIXIVN_DEV_API_LABELS,
-                createStateHandler({ current: labels }, "Labels"),
-            );
+            /**
+             * GET  /__pixi-vn/labels — retrieve narration labels.
+             * POST /__pixi-vn/labels — @deprecated use the `labels` / `content` option instead.
+             */
+            server.middlewares.use(PIXIVN_DEV_API_LABELS, createStateHandler("labels", "Labels"));
 
-            // Assets manifest endpoint
+            /** GET / POST /__pixi-vn/assets/manifest */
             server.middlewares.use(
                 PIXIVN_DEV_API_ASSETS_MANIFEST,
-                createStateHandler({ current: manifest }, "Manifest"),
+                createStateHandler("manifest", "Manifest"),
             );
 
-            // Canvas options endpoint
+            /** GET / POST /__pixi-vn/canvas-options */
             server.middlewares.use(
                 PIXIVN_DEV_API_CANVAS_OPTIONS,
-                createStateHandler({ current: options }, "Canvas options"),
+                createStateHandler("canvasOptions", "Canvas options"),
             );
         },
     };

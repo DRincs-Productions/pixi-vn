@@ -29,6 +29,7 @@
     // "rootDir": "./",                                  /* Specify the root folder within your source files. */
     // "moduleResolution": "node10",                     /* Specify how TypeScript looks up a file from a given module specifier. */
     "paths": {
+      "vite": ["./node_modules/vite/dist/node/index.d.ts"],
       "@utils/*": ["./src/utils/*"],
       "@classes/*": ["./src/classes/*"],
       "@constants": ["./src/constants"],
