@@ -1,6 +1,7 @@
 import type { CharacterInterface } from "@drincs/pixi-vn/characters";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import pc from "picocolors";
 import { glob } from "tinyglobby";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
 import {
@@ -9,6 +10,8 @@ import {
     PIXIVN_DEV_API_CHARACTERS,
     PIXIVN_DEV_API_LABELS,
 } from "./costants";
+
+const PLUGIN_PREFIX = pc.cyan("(pixi-vn)");
 
 function asArray(value: string | string[] | undefined): string[] {
     if (!value) return [];
@@ -150,7 +153,8 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         }
         const charIds = ssrCharacters.map((c) => c.id).join(", ") || "none";
         resolvedConfig?.logger.info(
-            `[vite-plugin-pixi-vn] ${ssrCharacters.length} character(s): [${charIds}], ${ssrLabels.length} label(s)`,
+            `${PLUGIN_PREFIX} ${pc.dim(`${ssrCharacters.length} character(s): [${charIds}], ${ssrLabels.length} label(s)`)}`,
+            { timestamp: true },
         );
     }
 
@@ -335,12 +339,10 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         hotUpdate({ file, server }) {
             if (allPatterns.length > 0 && watchedFiles.has(file)) {
                 void reloadContent(server).catch((error) => {
-                    resolvedConfig?.logger.error(
-                        "[vite-plugin-pixi-vn] Failed to reload content.",
-                        {
-                            error: error instanceof Error ? error : new Error(String(error)),
-                        },
-                    );
+                    resolvedConfig?.logger.error(`${PLUGIN_PREFIX} Failed to reload content.`, {
+                        error: error instanceof Error ? error : new Error(String(error)),
+                        timestamp: true,
+                    });
                 });
                 return [];
             }

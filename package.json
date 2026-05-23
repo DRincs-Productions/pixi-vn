@@ -141,11 +141,11 @@
   "homepage": "https://pixi-vn.web.app/",
   "funding": "https://github.com/DRincs-Productions/pixi-vn?sponsor=1",
   "dependencies": {
-    "@pixi/devtools": "^2.0.1",
-    "motion": "^12.38.0",
-    "pixi.js": "^8.18.1",
+    "@pixi/devtools": ">=2.0.0",
+    "motion": ">=12.38.0",
+    "pixi.js": ">=8.17.0",
     "tinyglobby": "^0.2.16",
-    "tone": "^15.1.22"
+    "tone": ">=15.1.0"
   },
   "peerDependencies": {
     "@pixi/devtools": ">=2.0.0",
@@ -169,6 +169,7 @@
     "lru-cache": "11.2.7",
     "microdiff": "^1.5.0",
     "mime-db": "^1.54.0",
+    "picocolors": "^1.1.1",
     "ts-node": "^10.9.2",
     "tsconfig-paths": "^4.2.0",
     "tsup": "^8.5.1",
