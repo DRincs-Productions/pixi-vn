@@ -59,7 +59,7 @@ export namespace Game {
      * - `id`: The id of the canvas element.
      * - `navigate`: The route navigate function.
      * - `resizeMode`: The resize mode of the canvas.
-     * @param devtoolsOptions Equivalent to the options you can use when initializing the [PixiJS Devtools](https://pixi-vn.web.app/start/canvas#use-pixijs-devtools-with-pixivn).
+     * @param devtoolsOptions Equivalent to the options you can use when initializing the [PixiJS Devtools](https://pixi-vn.com/start/canvas#use-pixijs-devtools-with-pixivn).
      * @example
      * ```typescript
      * const body = document.body

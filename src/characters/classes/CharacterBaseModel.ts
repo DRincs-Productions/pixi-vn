@@ -6,7 +6,7 @@ import type { CharacterEmotionId } from "@characters/types/CharacterEmotionId";
 /**
  * CharacterBaseModel is a class that is used to create a character model.
  * You must use the {@link RegisteredCharacters.add} function to save the character in the game.
- * It is raccomended to create your own class Character, read more here: https://pixi-vn.web.app/start/character.html#custom-character
+ * It is raccomended to create your own class Character, read more here: https://pixi-vn.com/start/character.html#custom-character
  * @example
  * ```ts
  * import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";

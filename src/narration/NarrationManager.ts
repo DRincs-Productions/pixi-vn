@@ -304,7 +304,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 return await GameUnifier.onEnd(props, { labelId: "end" });
             } else {
                 logger.error(
-                    "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game",
+                    "The end of the game is not managed, so the game is blocked. Read this documentation to know how to manage the end of the game: https://pixi-vn.com/start/other-narrative-features.html#how-manage-the-end-of-the-game",
                 );
             }
         }

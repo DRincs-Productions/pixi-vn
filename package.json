@@ -138,7 +138,7 @@
   "bugs": {
     "url": "https://github.com/DRincs-Productions/pixi-vn/issues"
   },
-  "homepage": "https://pixi-vn.web.app/",
+  "homepage": "https://pixi-vn.com/",
   "funding": "https://github.com/DRincs-Productions/pixi-vn?sponsor=1",
   "dependencies": {
     "@pixi/devtools": ">=2.0.0",

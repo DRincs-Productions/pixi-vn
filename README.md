@@ -25,22 +25,22 @@ For a quick start, various [project templates](#project-initialization) are avai
 
 You have the option to use various types of narrative languages ​​(in addition to JavaScript/TypeScript). Currently you can use the following:
 
-- [_ink_](https://pixi-vn.web.app/ink/ink)
+- [_ink_](https://pixi-vn.com/ink/ink)
 
 Pixi’VN does not provide built-in components to create the game UI. Instead, you should use external JavaScript frameworks to build your UI. This allows you to leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
 
 ## Wiki
 
-- [Why Pixi’VN?](https://pixi-vn.web.app/start/why)
-  - [Ren'Py vs Pixi’VN](https://pixi-vn.web.app/start/versus-renpy)
-- [Quick Start](https://pixi-vn.web.app/start/getting-started)
-  - [Templates](https://pixi-vn.web.app/start/templates)
+- [Why Pixi’VN?](https://pixi-vn.com/start/why)
+  - [Ren'Py vs Pixi’VN](https://pixi-vn.com/start/versus-renpy)
+- [Quick Start](https://pixi-vn.com/start/getting-started)
+  - [Templates](https://pixi-vn.com/start/templates)
 - Make your first:
-  - [Visual Novel](https://pixi-vn.web.app/start/make-visual-novel)
-  - [Point & Click Adventure](https://pixi-vn.web.app/nqtr/make-point-and-click)
-  - [RPG game](https://pixi-vn.web.app/start/make-rpg)
-  - [IDE or graphical editor](https://pixi-vn.web.app/start/make-ide)
-  - [Game engine](https://pixi-vn.web.app/start/make-game-engine)
+  - [Visual Novel](https://pixi-vn.com/start/make-visual-novel)
+  - [Point & Click Adventure](https://pixi-vn.com/nqtr/make-point-and-click)
+  - [RPG game](https://pixi-vn.com/start/make-rpg)
+  - [IDE or graphical editor](https://pixi-vn.com/start/make-ide)
+  - [Game engine](https://pixi-vn.com/start/make-game-engine)
 
 ## Prerequisites
 
@@ -93,7 +93,7 @@ Game.init(body, {
   Game.start("start", {});
 });
 
-// read more here: https://pixi-vn.web.app/start/other-narrative-features.html#how-manage-the-end-of-the-game
+// read more here: https://pixi-vn.com/start/other-narrative-features.html#how-manage-the-end-of-the-game
 Game.onEnd(async (props) => {
   Game.clear();
   // navigate to main menu

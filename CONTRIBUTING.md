@@ -14,7 +14,7 @@ A great way to contribute to the project is to send a detailed issue when you en
 
 ## :bulb: Asking Questions
 
-Need help? Or have a doubt? You can ask on Discord (find the invitation on the main [site](https://pixi-vn.web.app/)) or start a new discussion [here](https://github.com/DRincs-Productions/pixi-vn/discussions/new?category=q-a).
+Need help? Or have a doubt? You can ask on Discord (find the invitation on the main [site](https://pixi-vn.com/)) or start a new discussion [here](https://github.com/DRincs-Productions/pixi-vn/discussions/new?category=q-a).
 
 ## :love_letter: Feature Requests
 

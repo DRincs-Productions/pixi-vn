@@ -61,7 +61,7 @@ export function addListenerHandler<T extends ListenerExtension>(
         return true;
     } else {
         logger.warn(
-            `The event handler for event "${event as string}" is not registered with the eventDecorator, it will not be saved in the memory and it will not work after loading the game. Please register the event handler with the eventDecorator to avoid this warning. Read more about it here: https://pixi-vn.web.app/start/canvas-functions#add-a-listener-to-an-event`,
+            `The event handler for event "${event as string}" is not registered with the eventDecorator, it will not be saved in the memory and it will not work after loading the game. Please register the event handler with the eventDecorator to avoid this warning. Read more about it here: https://pixi-vn.com/start/canvas-functions#add-a-listener-to-an-event`,
         );
         return false;
     }
