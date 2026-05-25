@@ -1,6 +1,7 @@
 /**
  * StepLabelPropsType is the type of the props that will be passed to the StepLabel.
  * You can override this interface to add your own props.
+ * @default {}
  * @example
  * ```typescript
  * // pixi-vn.d.ts
