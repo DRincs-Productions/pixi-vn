@@ -7,9 +7,9 @@ import RegisteredLabels from "./RegisteredLabels";
 /**
  * Creates a new label and registers it in the system.
  * **This function must be called at least once at system startup to register the label, otherwise the system cannot be used.**
- * @param id The id of the label, it must be unique
- * @param steps The steps of the label
- * @param props The properties of the label
+ * @param id A unique identifier. Used to reference the `label` in the game (must be unique).
+ * @param steps An array of functions to be executed in order. To create a dynamic array.
+ * @param props An object with the `label`'s options
  * @returns The created label
  */
 export default function newLabel<T extends {} = {}>(
