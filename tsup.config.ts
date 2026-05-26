@@ -22,7 +22,7 @@ export default defineConfig((options) => {
             skipNodeModulesBundle: false,
             outExtension({ format }) {
                 return {
-                    js: format === "esm" ? ".js" : ".cjs",
+                    js: format === "esm" ? ".mjs" : ".cjs",
                 };
             },
         }),
@@ -78,7 +78,7 @@ export default defineConfig((options) => {
             ],
             outExtension({ format }) {
                 return {
-                    js: format === "esm" ? ".js" : ".cjs",
+                    js: format === "esm" ? ".mjs" : ".cjs",
                 };
             },
         }),
@@ -109,7 +109,7 @@ export default defineConfig((options) => {
             ],
             outExtension({ format }) {
                 return {
-                    js: format === "esm" ? ".js" : ".cjs",
+                    js: format === "esm" ? ".mjs" : ".cjs",
                 };
             },
         }),
@@ -144,7 +144,7 @@ export default defineConfig((options) => {
             ],
             outExtension({ format }) {
                 return {
-                    js: format === "esm" ? ".js" : ".cjs",
+                    js: format === "esm" ? ".mjs" : ".cjs",
                 };
             },
         }),

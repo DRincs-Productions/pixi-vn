@@ -4,7 +4,7 @@
   "type": "module",
   "description": "Pixi'VN is a npm package that provides various features for creating visual novels.",
   "main": "./dist/index.cjs",
-  "module": "./dist/index.js",
+  "module": "./dist/index.mjs",
   "types": "./dist/index.d.ts",
   "files": [
     "dist"
@@ -21,15 +21,15 @@
   "exports": {
     ".": {
       "types": "./dist/index.d.ts",
-      "import": "./dist/index.js",
+      "import": "./dist/index.mjs",
       "require": "./dist/index.cjs",
-      "default": "./dist/index.js"
+      "default": "./dist/index.mjs"
     },
     "./core": {
       "types": "./dist/core.d.ts",
-      "import": "./dist/core.js",
+      "import": "./dist/core.mjs",
       "require": "./dist/core.cjs",
-      "default": "./dist/core.js"
+      "default": "./dist/core.mjs"
     },
     "./pixi.js": {
       "types": "./dist/pixi/index.d.ts",
@@ -39,57 +39,57 @@
     },
     "./narration": {
       "types": "./dist/narration.d.ts",
-      "import": "./dist/narration.js",
+      "import": "./dist/narration.mjs",
       "require": "./dist/narration.cjs",
-      "default": "./dist/narration.js"
+      "default": "./dist/narration.mjs"
     },
     "./history": {
       "types": "./dist/history.d.ts",
-      "import": "./dist/history.js",
+      "import": "./dist/history.mjs",
       "require": "./dist/history.cjs",
-      "default": "./dist/history.js"
+      "default": "./dist/history.mjs"
     },
     "./storage": {
       "types": "./dist/storage.d.ts",
-      "import": "./dist/storage.js",
+      "import": "./dist/storage.mjs",
       "require": "./dist/storage.cjs",
-      "default": "./dist/storage.js"
+      "default": "./dist/storage.mjs"
     },
     "./canvas": {
       "types": "./dist/canvas.d.ts",
-      "import": "./dist/canvas.js",
+      "import": "./dist/canvas.mjs",
       "require": "./dist/canvas.cjs",
-      "default": "./dist/canvas.js"
+      "default": "./dist/canvas.mjs"
     },
     "./sound": {
       "types": "./dist/sound.d.ts",
-      "import": "./dist/sound.js",
+      "import": "./dist/sound.mjs",
       "require": "./dist/sound.cjs",
-      "default": "./dist/sound.js"
+      "default": "./dist/sound.mjs"
     },
     "./characters": {
       "types": "./dist/characters.d.ts",
-      "import": "./dist/characters.js",
+      "import": "./dist/characters.mjs",
       "require": "./dist/characters.cjs",
-      "default": "./dist/characters.js"
+      "default": "./dist/characters.mjs"
     },
     "./vite": {
       "types": "./dist/vite.d.ts",
-      "import": "./dist/vite.js",
+      "import": "./dist/vite.mjs",
       "require": "./dist/vite.cjs",
-      "default": "./dist/vite.js"
+      "default": "./dist/vite.mjs"
     },
     "./vite-listener": {
       "types": "./dist/vite-listener.d.ts",
-      "import": "./dist/vite-listener.js",
+      "import": "./dist/vite-listener.mjs",
       "require": "./dist/vite-listener.cjs",
-      "default": "./dist/vite-listener.js"
+      "default": "./dist/vite-listener.mjs"
     },
     "./motion": {
       "types": "./dist/motion.d.ts",
-      "import": "./dist/motion.js",
+      "import": "./dist/motion.mjs",
       "require": "./dist/motion.cjs",
-      "default": "./dist/motion.js"
+      "default": "./dist/motion.mjs"
     }
   },
   "typesVersions": {
