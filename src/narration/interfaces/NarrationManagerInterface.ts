@@ -104,7 +104,10 @@ export default interface NarrationManagerInterface {
     /* Run Methods */
 
     /**
-     * Return if can go to the next step.
+     * Return if can go to the next step. It's `false` when:
+     * - A `step` is running
+     * - The player must "make a choice"
+     * - The player must "enter a value"
      * @returns True if can go to the next step.
      */
     readonly canContinue: boolean;
