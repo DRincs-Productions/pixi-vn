@@ -6,7 +6,7 @@ import type { StorageElementType } from "@storage/types/StorageElementType";
  * StoredClassModel is a abstract class that contains the methods to store a class in the game.
  * I suggest you extend this class to create your own stored class.
  * @example
- * ```typescript
+ * ```ts
  * export class CharacterBaseModel extends StoredClassModel implements CharacterBaseModelProps {
  *     constructor(id: string, props: CharacterBaseModelProps) {
  *         super("___character___", id)

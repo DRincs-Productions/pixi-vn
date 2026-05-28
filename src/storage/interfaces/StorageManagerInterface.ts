@@ -83,7 +83,7 @@ export default interface StorageManagerInterface {
      * Call this at any time to start/stop mirroring.
      * @param value The handler to set. If undefined, the handler will be removed.
      * @example
-     * ```typescript
+     * ```ts
      * import { Store } from '@tanstack/store'
      *
      * // Create a TanStack store that mirrors the game storage variables

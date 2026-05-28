@@ -61,7 +61,7 @@ export namespace Game {
      * - `resizeMode`: The resize mode of the canvas.
      * @param devtoolsOptions Equivalent to the options you can use when initializing the [PixiJS Devtools](https://pixi-vn.com/start/canvas#use-pixijs-devtools-with-pixivn).
      * @example
-     * ```typescript
+     * ```ts
      * const body = document.body
      * if (!body) {
      *     throw new Error('body element not found')
@@ -299,7 +299,7 @@ export namespace Game {
     /**
      * Function to be executed at the end of the game. It should be set in the game initialization.
      * @example
-     * ```typescript
+     * ```ts
      * Game.onEnd(async (props) => {
      *    props.navigate("/end")
      * })
@@ -332,7 +332,7 @@ export namespace Game {
      * You can also check if the error is an instance of {@link PixiError} to handle specific errors related to Pixi’VN.
      *
      * @example
-     * ```typescript
+     * ```ts
      * // Register a synchronous error handler
      * Game.addOnError((error, props) => {
      *    props.notify("An error occurred")
@@ -390,7 +390,7 @@ export namespace Game {
      * @param label Label
      * @returns
      * @example
-     * ```typescript
+     * ```ts
      * Game.onLoadingLabel(async (stepId, label) => {
      *     await Assets.load('path/to/image1.png')
      *     await Assets.load('path/to/image2.png')
@@ -417,7 +417,7 @@ export namespace Game {
     /**
      * Function to be executed when navigation is requested.
      * @example
-     * ```typescript
+     * ```ts
      * Game.onNavigate(async (path) => {
      *    // custom navigation logic
      *    window.history.pushState({}, "title", path)

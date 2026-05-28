@@ -14,7 +14,7 @@ import ImageSprite from "../components/ImageSprite";
  * @returns the container of the image.
  * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
- * ```typescript
+ * ```ts
  * let bunny1 = addImage("bunny1", "https://pixijs.com/assets/bunny1.png")
  * await bunny1.load()
  * Assets.add({ alias: "bunny2", src: "https://pixijs.com/assets/bunny2.png" })
@@ -60,7 +60,7 @@ export function addImage(
  * @returns A promise that is resolved when the image is loaded.
  * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
- * ```typescript
+ * ```ts
  * let bunny1 = showImage("bunny1", "https://pixijs.com/assets/bunny1.png")
  * Assets.add({ alias: "bunny2", src: "https://pixijs.com/assets/bunny2.png" })
  * let bunny2 = showImage("bunny2")

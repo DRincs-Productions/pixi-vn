@@ -17,7 +17,7 @@ interface ChoiceMenuOptionOptions
 /**
  * Function to create a new choice menu option.
  * @example
- * ```typescript
+ * ```ts
  * newChoiceOption("Hello", HelloLabel, {})
  * ```
  */

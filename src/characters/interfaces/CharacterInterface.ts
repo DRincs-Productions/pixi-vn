@@ -3,7 +3,7 @@
  * So if you want to create your own Character, you must override this interface, implement or extend it and extend the {@link CharacterStoredClass} class.
  * You can override this interface to add your own props.
  * @example
- * ```typescript
+ * ```ts
  * // pixi-vn.d.ts
  * declare module '@drincs/pixi-vn' {
  *     interface CharacterInterface {

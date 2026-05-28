@@ -20,7 +20,7 @@ export default interface NarrationManagerInterface {
      * **Attention**: if the step index is edited or the code of step is edited, the counter will be reset.
      *
      * You can restart the counter in this way:
-     * ```typescript
+     * ```ts
      * narration.currentStepTimesCounter = 0
      * ```
      */
@@ -115,7 +115,7 @@ export default interface NarrationManagerInterface {
      * @param options The options.
      * @returns StepLabelResultType or undefined.
      * @example
-     * ```typescript
+     * ```ts
      *     function nextOnClick() {
      *     setLoading(true)
      *     narration.continue(yourParams)
@@ -149,13 +149,13 @@ export default interface NarrationManagerInterface {
         },
     ) => Promise<StepLabelResultType>;
     /**
-     * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
+     * Execute the label, add the label to the history and execute the next step of the label.
      * @param label The label to execute or the id of the label
      * @param props The props to pass to the label.
      * @returns StepLabelResultType or undefined.
      * @throws {PixiError} when the label is not found in the registered labels.
      * @example
-     * ```typescript
+     * ```ts
      * narration.call(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
@@ -163,7 +163,7 @@ export default interface NarrationManagerInterface {
      * })
      * ```
      * @example
-     * ```typescript
+     * ```ts
      * // if you use it in a step label you should return the result.
      * return narration.call(startLabel).then((result) => {
      *     return result
@@ -175,13 +175,13 @@ export default interface NarrationManagerInterface {
         props: StepLabelPropsType<T>,
     ): Promise<StepLabelResultType>;
     /**
-     * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
+     * Execute the label, replace the current label in the history with the new label and execute the next step of the label.
      * @param label The label to execute.
      * @param props The props to pass to the label or the id of the label
      * @returns StepLabelResultType or undefined.
      * @throws {PixiError} when the label is not found in the registered labels.
      * @example
-     * ```typescript
+     * ```ts
      * narration.jump(startLabel, yourParams).then((result) => {
      *     if (result) {
      *         // your code
@@ -189,7 +189,7 @@ export default interface NarrationManagerInterface {
      * })
      * ```
      * @example
-     * ```typescript
+     * ```ts
      * // if you use it in a step label you should return the result.
      * return narration.jump(startLabel).then((result) => {
      *     return result
@@ -207,7 +207,7 @@ export default interface NarrationManagerInterface {
      * @returns
      * @throws {PixiError} when the choice type is not `"call"`, `"jump"`, or `"close"`.
      * @example
-     * ```typescript
+     * ```ts
      * narration.selectChoice(item, {
      *     navigate: navigate,
      *     // your props
@@ -242,7 +242,7 @@ export default interface NarrationManagerInterface {
     /**
      * The options to be shown in the game
      * @example
-     * ```typescript
+     * ```ts
      * narration.choices = [
      *     newChoiceOption("Events Test", EventsTestLabel, {}),
      *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
@@ -257,7 +257,7 @@ export default interface NarrationManagerInterface {
      * The options to be shown in the game
      * @throws {PixiError} when a choice contains functions or class instances that cannot be serialized to JSON.
      * @example
-     * ```typescript
+     * ```ts
      * narration.choices = [
      *     newChoiceOption("Events Test", EventsTestLabel, {}),
      *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),

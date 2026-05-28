@@ -104,7 +104,7 @@ export interface VitePluginPixivnOptions {
  *   loading.  Await this before generating JSON files.
  *
  * @example
- * ```typescript
+ * ```ts
  * // vite.config.ts
  * import { defineConfig } from "vite";
  * import { vitePluginPixivn } from "@drincs/pixi-vn/vite";

@@ -17,7 +17,7 @@ import { logger } from "@utils/log-utility";
  * This class is a extension of the {@link Container}, it has the same properties and methods,
  * but this container is composed only of {@link ImageSprite} and introduces the {@link load} functionality
  * @example
- * ```typescript
+ * ```ts
  *  const liamBodyImageUrl = 'https://example.com/assets/liam/body.png';
  *  const liamHeadImageUrl = 'https://example.com/assets/liam/head.png';
  *  const container = new ImageContainer(undefined, [liamBodyImageUrl, liamHeadImageUrl]);

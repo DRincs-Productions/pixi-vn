@@ -14,7 +14,7 @@ import VideoSprite from "../components/VideoSprite";
  * @returns the container of the video.
  * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
- * ```typescript
+ * ```ts
  * let video1 = addVideo("video1", "https://pixijs.com/assets/video1.mp4")
  * await video1.load()
  * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
@@ -60,7 +60,7 @@ export function addVideo(
  * @returns A promise that is resolved when the video is loaded.
  * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
- * ```typescript
+ * ```ts
  * let video1 = showVideo("video1", "https://pixijs.com/assets/video1.mp4")
  * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
  * let video2 = showVideo("video2")

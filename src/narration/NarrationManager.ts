@@ -578,7 +578,7 @@ export default class NarrationManager implements NarrationManagerInterface {
      * @returns StepLabelResultType or undefined.
      * @throws {PixiError} when `choice.type` is not `"close"`.
      * @example
-     * ```typescript
+     * ```ts
      * narration.closeChoiceMenu(yourParams).then((result) => {
      *     if (result) {
      *         // your code

@@ -25,7 +25,7 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
  * This class is a extension of the [PIXI.Text class](https://pixijs.com/8.x/examples/text/pixi-text), it has the same properties and methods,
  * but it has the ability to be saved and loaded by the Pixi’VN library.
  * @example
- * ```typescript
+ * ```ts
  * const text = new Text();
  * text.text = "Hello World"
  * canvas.add("text", text);

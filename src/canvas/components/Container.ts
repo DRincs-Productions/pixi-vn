@@ -26,7 +26,7 @@ import {
  * This class is a extension of the [PIXI.Container class](https://pixijs.com/8.x/examples/basic/container), it has the same properties and methods,
  * but it has the ability to be saved and loaded by the Pixi’VN library.
  * @example
- * ```typescript
+ * ```ts
  *  const container = new Container();
  *  canvas.add(container);
  *  const texture = await Assets.load('https://pixijs.com/assets/bunny.png');

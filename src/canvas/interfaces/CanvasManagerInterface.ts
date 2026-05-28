@@ -59,7 +59,7 @@ export default interface CanvasManagerInterface {
      * @param options The options of PixiJS Application
      * @param devtoolsOptions The options of the devtools. You can read more about it in the [PixiJS Devtools documentation](https://pixijs.io/devtools/docs/plugin/)
      * @example
-     * ```typescript
+     * ```ts
      * const body = document.body
      * if (!body) {
      *     throw new Error('body element not found')
@@ -126,7 +126,7 @@ export default interface CanvasManagerInterface {
      * @param canvasComponent The canvas elements to be added.
      * @param options The options of the canvas element.
      * @example
-     * ```typescript
+     * ```ts
      * const texture = await Assets.load('https://pixijs.com/assets/bunny.png');
      * const sprite = Sprite.from(texture);
      * canvas.add("bunny", sprite);
@@ -155,7 +155,7 @@ export default interface CanvasManagerInterface {
      * @param options The options of the canvas element.
      * @returns
      * @example
-     * ```typescript
+     * ```ts
      * canvas.remove("bunny");
      * ```
      */
@@ -174,7 +174,7 @@ export default interface CanvasManagerInterface {
      * @param alias The alias of the canvas element.
      * @returns The canvas element.
      * @example
-     * ```typescript
+     * ```ts
      * const sprite = canvas.find<Sprite>("bunny");
      * ```
      */
@@ -232,7 +232,7 @@ export default interface CanvasManagerInterface {
      * @param ticker The ticker class to be run.
      * @returns The id of the ticker.
      * @example
-     * ```typescript
+     * ```ts
      * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
      * ```
      */
@@ -247,7 +247,7 @@ export default interface CanvasManagerInterface {
      * @param currentStepNumber The current step number. It is used to continue the sequence of tickers.
      * @returns The id of tickers.
      * @example
-     * ```typescript
+     * ```ts
      * canvas.addTickersSequence("alien", [
      *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
      *     Pause(1), // 1 second
@@ -267,7 +267,7 @@ export default interface CanvasManagerInterface {
      * @param alias The alias of the canvas element that will use the ticker.
      * @param ticker The ticker class to be removed.
      * @example
-     * ```typescript
+     * ```ts
      * canvas.unlinkComponentFromTicker("alien", RotateTicker)
      * ```
      * @deprecated
@@ -418,7 +418,7 @@ export default interface CanvasManagerInterface {
      * @param layer The layer to be added.
      * @returns The layer.
      * @example
-     * ```typescript
+     * ```ts
      * const uiLayer = new Container();
      * canvas.addLayer("ui", uiLayer);
      * ```
@@ -429,7 +429,7 @@ export default interface CanvasManagerInterface {
      * @param label The label of the layer.
      * @returns The layer.
      * @example
-     * ```typescript
+     * ```ts
      * const uiLayer = canvas.getLayer("ui");
      * ```
      */
@@ -438,7 +438,7 @@ export default interface CanvasManagerInterface {
      * Remove a layer from the canvas.
      * @param label The label of the layer to be removed.
      * @example
-     * ```typescript
+     * ```ts
      * canvas.removeLayer("ui");
      * ```
      */

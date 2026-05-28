@@ -16,7 +16,7 @@ import type TickerValue from "./TickerValue";
  * In Ren'Py is a transform.
  * @template TArgs The type of the arguments that you want to pass to the ticker.
  * @example
- * ```typescript
+ * ```ts
  * \@tickerDecorator() // this is equivalent to tickerDecorator("RotateTicker")
  * export class RotateTicker extends TickerBase<{ speed?: number }> {
  *     override fn(

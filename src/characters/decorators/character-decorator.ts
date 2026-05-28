@@ -10,7 +10,7 @@ namespace RegisteredCharacters {
      * @param id is the id of the character
      * @returns the character
      * @example
-     * ```typescript
+     * ```ts
      * const liam = RegisteredCharacters.get('liam');
      * ```
      */
@@ -35,7 +35,7 @@ namespace RegisteredCharacters {
      * @param character is the character to save
      * @returns
      * @example
-     * ```typescript
+     * ```ts
      * export const liam = new CharacterBaseModel('liam', { name: 'Liam'});
      * export const alice = new CharacterBaseModel('alice', { name: 'Alice'});
      * RegisteredCharacters.add([liam, alice]);
@@ -58,7 +58,7 @@ namespace RegisteredCharacters {
      * is a function that returns all characters
      * @returns all characters
      * @example
-     * ```typescript
+     * ```ts
      * const allCharacters = RegisteredCharacters.values();
      * ```
      */

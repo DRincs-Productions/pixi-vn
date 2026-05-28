@@ -78,7 +78,7 @@ export function isViteDevelopmentMode(): boolean {
  * typically in your client-side initialization code.
  *
  * @example
- * ```typescript
+ * ```ts
  * // In your main game initialization file
  * import { setupPixivnViteData } from '@drincs/pixi-vn/vite-listener';
  *

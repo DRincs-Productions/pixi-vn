@@ -11,7 +11,7 @@ import type ImageSprite from "../components/ImageSprite";
  * @param options The options of the image.
  * @returns the container of the image.
  * @example
- * ```typescript
+ * ```ts
  * let bunny = addImageContainer("bunny", ["https://pixijs.com/assets/bunny-body.png", "https://pixijs.com/assets/bunny-eyes.png"])
  * await bunny.load()
  * ```
@@ -37,7 +37,7 @@ export function addImageCointainer(
  * @param options The options of the image.
  * @returns A promise that is resolved when the image is loaded.
  * @example
- * ```typescript
+ * ```ts
  * let bunny = showImageContainer("bunny", ["https://pixijs.com/assets/bunny-body.png", "https://pixijs.com/assets/bunny-eyes.png"])
  * ```
  */

@@ -7,7 +7,7 @@ import { canvas, Text, type TextOptions } from "..";
  * @param options The options of the text.
  * @returns A promise that is resolved when the text is loaded.
  * @example
- * ```typescript
+ * ```ts
  * let text = showText("text", "Hello World", { fontSize: 24, fill: "white" })
  * ```
  */

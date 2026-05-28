@@ -13,7 +13,7 @@ interface ChoiceMenuOptionCloseOptions
 /**
  * Function to create a new choice menu option that will close the menu.
  * @example
- * ```typescript
+ * ```ts
  * newCloseChoiceOption("Return")
  * ```
  */

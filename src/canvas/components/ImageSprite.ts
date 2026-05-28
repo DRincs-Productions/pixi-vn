@@ -19,7 +19,7 @@ import { logger } from "@utils/log-utility";
  * You need to use {@link load} to show the image in the canvas.
  * This class is used for functions like {@link addImage} and {@link showWithDissolve}.
  * @example
- * ```typescript
+ * ```ts
  * let alien = new ImageSprite({
  *     anchor: { x: 0.5, y: 0.5 },
  *     x: 100,
@@ -29,7 +29,7 @@ import { logger } from "@utils/log-utility";
  * canvas.add("alien", alien)
  * ```
  * @example
- * ```typescript
+ * ```ts
  * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
  * alien.anchor.set(0.5);
  * alien.x = 100

@@ -9,7 +9,7 @@ import canvasComponentDecorator from "../decorators/canvas-element-decorator";
  * You must use the {@link canvasComponentDecorator} to register the canvas in the game.
  * In Ren'Py is a displayable.
  * @example
- * ```typescript
+ * ```ts
  * const CANVAS_EXAMPLE_ID = "CanvasExample";
  *
  * \@canvasComponentDecorator({

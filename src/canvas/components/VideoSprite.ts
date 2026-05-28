@@ -15,7 +15,7 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
  * You need to use {@link load} to show the video in the canvas.
  * This class is used for functions like {@link addVideo} and {@link showWithDissolve}.
  * @example
- * ```typescript
+ * ```ts
  * let film = new VideoSprite({
  *     x: 100,
  *     y: 100,
@@ -24,7 +24,7 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
  * canvas.add("film", film)
  * ```
  * @example
- * ```typescript
+ * ```ts
  * let film = addVideo("film", 'https://pixijs.com/assets/video.mp4')
  * film.currentTime = 2
  * await film.load()

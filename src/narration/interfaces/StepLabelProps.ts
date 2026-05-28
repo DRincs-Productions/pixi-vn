@@ -3,7 +3,7 @@
  * You can override this interface to add your own props.
  * @default {}
  * @example
- * ```typescript
+ * ```ts
  * // pixi-vn.d.ts
  * declare module '@drincs/pixi-vn' {
  *     interface StepLabelProps {

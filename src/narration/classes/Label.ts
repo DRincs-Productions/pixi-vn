@@ -10,7 +10,7 @@ import LabelAbstract from "./LabelAbstract";
  * Label is a class that contains a list of steps, which will be performed as the game continues.
  * For Ren'py this is the equivalent of a label.
  * @example
- * ```typescript
+ * ```ts
  * const START_LABEL_ID = "StartLabel"
  *
  * export const startLabel = newLabel(START_LABEL_ID,
