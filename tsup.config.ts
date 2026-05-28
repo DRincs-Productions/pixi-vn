@@ -9,12 +9,12 @@ export default defineConfig((options) => {
 
     return [
         createConfig({
-            target: "es2020",
+            target: "es2022",
             entry: {
                 core: "src/core/index.ts",
             },
             format: ["cjs", "esm"],
-            dts: true,
+            dts: false,
             treeshake: true,
             clean: true,
             minify: true,
@@ -27,12 +27,12 @@ export default defineConfig((options) => {
             },
         }),
         createConfig({
-            target: "es2020",
+            target: "es2022",
             entry: {
                 "pixi/index": "src/pixi-js/index.ts",
             },
             format: ["esm"],
-            dts: true,
+            dts: false,
             splitting: false,
             clean: false,
             minify: true,
@@ -40,7 +40,7 @@ export default defineConfig((options) => {
             external: ["pixi.js"],
         }),
         createConfig({
-            target: "es2020",
+            target: "es2022",
             entry: {
                 "pixi/browser": "src/pixi-js/browser.cts",
             },
@@ -53,7 +53,7 @@ export default defineConfig((options) => {
             noExternal: ["pixi.js"],
         }),
         createConfig({
-            target: "es2020",
+            target: "es2022",
             entry: {
                 narration: "src/narration/index.ts",
                 history: "src/history/index.ts",
@@ -63,7 +63,7 @@ export default defineConfig((options) => {
                 characters: "src/characters/index.ts",
             },
             format: ["cjs", "esm"],
-            dts: true,
+            dts: false,
             treeshake: true,
             clean: false,
             minify: true,
@@ -83,12 +83,12 @@ export default defineConfig((options) => {
             },
         }),
         createConfig({
-            target: "es2020",
+            target: "es2022",
             entry: {
                 motion: "src/motion/index.ts",
             },
             format: ["cjs", "esm"],
-            dts: true,
+            dts: false,
             treeshake: true,
             clean: false,
             minify: true,
@@ -114,19 +114,19 @@ export default defineConfig((options) => {
             },
         }),
         createConfig({
-            target: "es2020",
+            target: "es2022",
             entry: {
                 index: "src/index.ts",
                 vite: "src/vite/index.ts",
                 "vite-listener": "src/vite-listener/index.ts",
             },
-            format: ["cjs", "esm"], // Build for commonJS and ESmodules
-            dts: true, // Generate declaration file (.d.ts)
+            format: ["cjs", "esm"],
+            dts: false,
             treeshake: true,
             clean: false,
             minify: true,
             bundle: true,
-            skipNodeModulesBundle: false, // Skip bundling of node_modules
+            skipNodeModulesBundle: false,
             external: [
                 "@drincs/pixi-vn/core",
                 "@drincs/pixi-vn/pixi.js",
@@ -147,6 +147,42 @@ export default defineConfig((options) => {
                     js: format === "esm" ? ".mjs" : ".cjs",
                 };
             },
+        }),
+        createConfig({
+            target: "es2022",
+            entry: {
+                core: "src/core/index.ts",
+                "pixi/index": "src/pixi-js/index.ts",
+                narration: "src/narration/index.ts",
+                history: "src/history/index.ts",
+                storage: "src/storage/index.ts",
+                canvas: "src/canvas/index.ts",
+                sound: "src/sound/index.ts",
+                characters: "src/characters/index.ts",
+                motion: "src/motion/index.ts",
+                index: "src/index.ts",
+                vite: "src/vite/index.ts",
+                "vite-listener": "src/vite-listener/index.ts",
+            },
+            format: ["cjs", "esm"],
+            dts: { only: true },
+            clean: false,
+            external: [
+                "pixi.js",
+                "@drincs/pixi-vn/core",
+                "@drincs/pixi-vn/pixi.js",
+                "@drincs/pixi-vn/narration",
+                "@drincs/pixi-vn/history",
+                "@drincs/pixi-vn/storage",
+                "@drincs/pixi-vn/canvas",
+                "@drincs/pixi-vn/sound",
+                "@drincs/pixi-vn/characters",
+                "@drincs/pixi-vn/motion",
+                "tone",
+                "@pixi/devtools",
+                "motion",
+                "vite",
+            ],
         }),
     ];
 });
