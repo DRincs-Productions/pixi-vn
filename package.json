@@ -9,6 +9,9 @@
   "files": [
     "dist"
   ],
+  "workspaces": [
+    "sandbox"
+  ],
   "scripts": {
     "dev": "tsup --watch",
     "build": "tsup --config tsup.config.ts && node scripts/fix-imports.mjs",
@@ -16,7 +19,8 @@
     "check": "biome check",
     "format": "biome format --write",
     "test": "vitest",
-    "docs": "typedoc"
+    "docs": "typedoc",
+    "sandbox": "npm install && npm run start --workspace=sandbox"
   },
   "exports": {
     ".": {

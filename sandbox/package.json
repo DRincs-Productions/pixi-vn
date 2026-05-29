@@ -1,0 +1,32 @@
+{
+  "name": "pixi-vn-sandbox",
+  "version": "1.0.0",
+  "private": true,
+  "dependencies": {
+    "react": "latest",
+    "react-dom": "latest",
+    "react-scripts": "latest",
+    "@drincs/pixi-vn": "latest",
+    "@tanstack/react-query": "latest",
+    "react-markdown": "latest",
+    "rehype-raw": "latest",
+    "remark-gfm": "latest",
+    "@pixi/devtools": "latest",
+    "motion": "latest",
+    "pixi.js": "latest",
+    "tone": "latest"
+  },
+  "devDependencies": {
+    "@types/react": "latest",
+    "@types/react-dom": "latest",
+    "typescript": "latest"
+  },
+  "scripts": {
+    "start": "react-scripts start",
+    "build": "react-scripts build"
+  },
+  "browserslist": {
+    "production": [">0.2%", "not dead", "not op_mini all"],
+    "development": ["last 1 chrome version", "last 1 firefox version", "last 1 safari version"]
+  }
+}
