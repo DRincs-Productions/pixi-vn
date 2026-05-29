@@ -4,12 +4,27 @@ export default defineConfig((options) => {
     const sourcemap = Boolean(options.watch);
     const createConfig = (config: Options): Options => ({
         sourcemap,
+        esbuildOptions(opts) {
+            // Force-transpile private class fields/methods to WeakMaps.
+            // Keeping es2022 target ensures useDefineForClassFields:true so arrow-function
+            // class fields stay as native class fields (outside the constructor body),
+            // avoiding the Babel super()-in-arrow-function error in CRA/react-scripts.
+            opts.supported = {
+                ...opts.supported,
+                "class-private-field": false,
+                "class-private-method": false,
+                "class-private-accessor": false,
+                "class-private-static-field": false,
+                "class-private-static-method": false,
+                "class-private-static-accessor": false,
+            };
+        },
         ...config,
     });
 
     return [
         createConfig({
-            target: "es2021",
+            target: "es2022",
             entry: {
                 core: "src/core/index.ts",
             },
@@ -27,7 +42,7 @@ export default defineConfig((options) => {
             },
         }),
         createConfig({
-            target: "es2021",
+            target: "es2022",
             entry: {
                 "pixi/index": "src/pixi-js/index.ts",
             },
@@ -40,7 +55,7 @@ export default defineConfig((options) => {
             external: ["pixi.js"],
         }),
         createConfig({
-            target: "es2021",
+            target: "es2022",
             entry: {
                 "pixi/browser": "src/pixi-js/browser.cts",
             },
@@ -53,7 +68,7 @@ export default defineConfig((options) => {
             noExternal: ["pixi.js"],
         }),
         createConfig({
-            target: "es2021",
+            target: "es2022",
             entry: {
                 narration: "src/narration/index.ts",
                 history: "src/history/index.ts",
@@ -83,7 +98,7 @@ export default defineConfig((options) => {
             },
         }),
         createConfig({
-            target: "es2021",
+            target: "es2022",
             entry: {
                 motion: "src/motion/index.ts",
             },
@@ -114,7 +129,7 @@ export default defineConfig((options) => {
             },
         }),
         createConfig({
-            target: "es2021",
+            target: "es2022",
             entry: {
                 index: "src/index.ts",
                 vite: "src/vite/index.ts",
@@ -149,7 +164,7 @@ export default defineConfig((options) => {
             },
         }),
         createConfig({
-            target: "es2021",
+            target: "es2022",
             entry: {
                 core: "src/core/index.ts",
                 "pixi/index": "src/pixi-js/index.ts",
