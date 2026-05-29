@@ -3,8 +3,8 @@ import { narration } from "../..";
 export default interface LabelProps<T, StepIdType = number> {
     /**
      * A function executed before each `step`.
-     * @param stepId Step id
-     * @param label Label
+     * @param stepId The index of the `step` being executed
+     * @param label The `label` containing the `step`
      * @returns
      * @example
      * ```ts
@@ -28,12 +28,12 @@ export default interface LabelProps<T, StepIdType = number> {
      * and when the user laods a save file.
      * When you load a save file, will be executed all onLoadingLabel functions of the {@link narration.openedLabels}.
      * It is useful for example to make sure all images used have been cached
-     * @param stepId Step id
-     * @param label Label
+     * @param stepId The index of the `step` being executed
+     * @param label The `label` being executed
      * @returns
      * @example
-     * ```ts
-     * newLabel("id", [], {
+     * ```ts title="content/labels/start.label.ts"
+     * newLabel("start", [], {
      *     onLoadingLabel: async (stepId, label) => {
      *         await Assets.load('path/to/image1.png')
      *         await Assets.load('path/to/image2.png')
@@ -44,8 +44,8 @@ export default interface LabelProps<T, StepIdType = number> {
     onLoadingLabel?: (stepId: StepIdType, label: T) => void | Promise<void>;
     /**
      * A function executed after each `step`. See more <DynamicLink href="/start/labels-advanced#onstepend">here</DynamicLink>.
-     * @param stepId Step id
-     * @param label Label
+     * @param stepId The index of the `step` that ended
+     * @param label The `label` containing the `step`
      * @returns
      * @example
      * ```ts
