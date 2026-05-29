@@ -26,7 +26,7 @@ import { logger } from "@utils/log-utility";
  * ```
  */
 export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
-    constructor(options?: ImageContainerOptions<ImageSprite>, textureAliases: string[] = []) {
+    constructor(options?: ImageContainerOptions<ImageSprite>, textureAliases?: string[]) {
         const { anchor, align, percentagePosition, ...restOptions } =
             analizePositionsExtensionProps(options) || {};
         super(restOptions);

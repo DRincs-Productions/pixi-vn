@@ -104,7 +104,9 @@ export default class CanvasManagerStatic {
                 // listen for the browser telling us that the screen size changed
                 switch (resizeMode) {
                     case "contain": {
-                        const throttledResize = throttle(() => CanvasManagerStatic.resize(), 10);
+                        const throttledResize = throttle(async () => {
+                            requestAnimationFrame(() => CanvasManagerStatic.resize());
+                        }, 10);
                         new ResizeObserver(throttledResize).observe(element);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();

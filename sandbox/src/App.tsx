@@ -1,14 +1,17 @@
+import { Game, narration, newLabel } from "@drincs/pixi-vn";
 import { useEffect, useRef, useState } from "react";
 import ReactMarkdown from "react-markdown";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
-import { Game, newLabel } from "@drincs/pixi-vn";
 
 const startLabel = newLabel("start", [
-    ({ narration }) => {
-        narration.dialogue = { character: "Alice", text: "**Hello!** This is _pixi-vn_ in Sandpack." };
+    () => {
+        narration.dialogue = {
+            character: "Alice",
+            text: "**Hello!** This is _pixi-vn_ in Sandpack.",
+        };
     },
-    ({ narration }) => {
+    () => {
         narration.dialogue = { character: "Alice", text: "Working! 🎉" };
     },
 ]);
@@ -28,7 +31,7 @@ export default function App() {
         try {
             await Game.init(canvasRef.current, { width: 480, height: 270 });
             await Game.start(startLabel, {
-                onStepEnd: (_, narration) => {
+                onStepEnd: () => {
                     const d = narration.dialogue;
                     setDialogue(typeof d === "object" && d ? String(d.text ?? "") : "");
                 },
@@ -42,7 +45,7 @@ export default function App() {
 
     async function handleContinue() {
         try {
-            await Game.narration.continue(() => {});
+            await narration.continue(() => {});
             setLog((p) => [...p, "✓ continue OK"]);
         } catch (e: any) {
             setLog((p) => [...p, `✗ ${e?.message ?? e}`]);
@@ -61,10 +64,21 @@ export default function App() {
                 </div>
             )}
             <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-                <button onClick={handleStart} disabled={started}>Init + Start</button>
-                <button onClick={handleContinue} disabled={!started}>Continue</button>
+                <button onClick={handleStart} disabled={started}>
+                    Init + Start
+                </button>
+                <button onClick={handleContinue} disabled={!started}>
+                    Continue
+                </button>
             </div>
-            <pre style={{ background: "#f4f4f4", padding: 8, minHeight: 60, fontSize: 12 }}>
+            <pre
+                style={{
+                    background: "#f4f4f4",
+                    padding: 8,
+                    minHeight: 60,
+                    fontSize: 12,
+                }}
+            >
                 {log.join("\n")}
             </pre>
         </div>
