@@ -1,5 +1,9 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import db from "mime-db";
+
+const VIDEO_EXTENSIONS = new Set([
+    "mp4", "webm", "ogg", "ogv", "avi", "mov", "wmv",
+    "flv", "mkv", "m4v", "3gp", "3g2", "ts", "mts",
+]);
 
 export function checkIfVideo(textureAlias: string): boolean {
     const cachedTexture = PIXI.Assets.cache.has(textureAlias)
@@ -15,12 +19,5 @@ export function checkIfVideo(textureAlias: string): boolean {
 
 function isVideoPath(path: string): boolean {
     const ext = path.split(".").pop()?.toLowerCase();
-    if (!ext) return false;
-
-    for (const [mime, data] of Object.entries(db)) {
-        if (data.extensions?.includes(ext) && mime.startsWith("video/")) {
-            return true;
-        }
-    }
-    return false;
+    return ext !== undefined && VIDEO_EXTENSIONS.has(ext);
 }
