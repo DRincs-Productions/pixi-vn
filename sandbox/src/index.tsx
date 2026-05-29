@@ -1,26 +1,43 @@
-import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import React from "react";
-import ReactDOM from "react-dom/client";
-import App from "./App";
+import { Container, Game, canvas, sound } from "@drincs/pixi-vn";
+import { createRoot } from "react-dom/client";
 
-// Wrap ResizeObserver callbacks in requestAnimationFrame so observations
-// never cause synchronous layout changes — this prevents the browser from
-// dispatching the "ResizeObserver loop" error that CRA's overlay shows.
-const _ResizeObserver = window.ResizeObserver;
-window.ResizeObserver = class ResizeObserver extends _ResizeObserver {
-    constructor(callback: ResizeObserverCallback) {
-        super((entries, observer) => {
-            requestAnimationFrame(() => callback(entries, observer));
-        });
-    }
-};
+// Canvas setup with PIXI
+const body = document.body;
+if (!body) {
+  throw new Error("body element not found");
+}
 
-const queryClient = new QueryClient();
+Game.init(body, {}).then(() => {
+  // Pixi.JS UI Layer
+  canvas.addLayer("ui", new Container());
 
-ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
-    <React.StrictMode>
-        <QueryClientProvider client={queryClient}>
-            <App />
-        </QueryClientProvider>
-    </React.StrictMode>,
-);
+  // Sound setup
+  sound.addChannel("bgm", { background: true });
+  sound.addChannel("sfx");
+  sound.defaultChannelAlias = "sfx";
+
+  // React setup with ReactDOM
+  const root = document.getElementById("root");
+  if (!root) {
+    throw new Error("root element not found");
+  }
+
+  const htmlLayout = canvas.addHtmlLayer("ui", root);
+  if (!htmlLayout) {
+    throw new Error("htmlLayout not found");
+  }
+  const reactRoot = createRoot(htmlLayout);
+
+  reactRoot.render(
+    <div
+      style={{
+        color: "white",
+        position: "absolute",
+        bottom: 0,
+        left: 0,
+      }}
+    >
+      Loading...
+    </div>,
+  );
+});
