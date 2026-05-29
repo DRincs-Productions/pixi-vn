@@ -372,8 +372,8 @@ export namespace Game {
     }
     /**
      * Is a function that will be executed before any step is executed.
-     * @param stepId Step id
-     * @param label Label
+     * @param stepId The index of the `step` being executed
+     * @param label The `label` containing the `step`
      * @returns
      */
     export function onStepStart(
@@ -404,8 +404,8 @@ export namespace Game {
     }
     /**
      * Is a function that will be executed when the step ends.
-     * @param stepId Step id
-     * @param label Label
+     * @param stepId The index of the `step` that ended
+     * @param label The `label` containing the `step`
      * @returns
      */
     export function onStepEnd(
