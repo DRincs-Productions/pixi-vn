@@ -20,7 +20,7 @@
     "format": "biome format --write",
     "test": "vitest",
     "docs": "typedoc",
-    "sandbox": "npm install && npm run start --workspace=sandbox"
+    "sandbox": "npm run build && npm install && npm run start --workspace=sandbox"
   },
   "exports": {
     ".": {

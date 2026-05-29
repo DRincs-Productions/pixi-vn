@@ -6,7 +6,7 @@
     "react": "latest",
     "react-dom": "latest",
     "react-scripts": "latest",
-    "@drincs/pixi-vn": "latest",
+    "@drincs/pixi-vn": "*",
     "@tanstack/react-query": "latest",
     "react-markdown": "latest",
     "rehype-raw": "latest",

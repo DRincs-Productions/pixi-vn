@@ -386,8 +386,8 @@ export namespace Game {
      * and when the user laods a save file.
      * When you load a save file, will be executed all onLoadingLabel functions of the {@link narrationUtils.narration}.openedLabels.
      * It is useful for example to make sure all images used have been cached
-     * @param stepId Step id
-     * @param label Label
+     * @param stepId The index of the `step` being executed
+     * @param label The `label` being executed
      * @returns
      * @example
      * ```ts
