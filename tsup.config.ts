@@ -4,6 +4,21 @@ export default defineConfig((options) => {
     const sourcemap = Boolean(options.watch);
     const createConfig = (config: Options): Options => ({
         sourcemap,
+        esbuildOptions(options) {
+            // Force private class fields/methods to be transpiled to WeakMaps
+            // so Sandpack/CodeSandbox (old Babel config) can process the output.
+            // Keeping es2022 target avoids the separate super()-in-arrow-function
+            // Babel error that appears at lower targets.
+            options.supported = {
+                ...options.supported,
+                "class-private-field": false,
+                "class-private-method": false,
+                "class-private-accessor": false,
+                "class-private-static-field": false,
+                "class-private-static-method": false,
+                "class-private-static-accessor": false,
+            };
+        },
         ...config,
     });
 
