@@ -342,9 +342,17 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         }
         try {
             const mod = (await server.ssrLoadModule("@drincs/pixi-vn/characters")) as {
-                registeredCharacters?: { clear(): void };
+                RegisteredCharacters?: { clear(): void };
             };
-            mod.registeredCharacters?.clear?.();
+            mod.RegisteredCharacters?.clear?.();
+        } catch {
+            /* ignore */
+        }
+        try {
+            const mod = (await server.ssrLoadModule("@drincs/pixi-vn/narration")) as {
+                RegisteredLabels?: { clear(): void };
+            };
+            mod.RegisteredLabels?.clear?.();
         } catch {
             /* ignore */
         }

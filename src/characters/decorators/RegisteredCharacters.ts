@@ -88,5 +88,12 @@ namespace RegisteredCharacters {
     export function keys(): CharacterIdType[] {
         return Array.from(registeredCharacters.keys());
     }
+
+    /**
+     * Removes all registered characters.
+     */
+    export function clear(): void {
+        registeredCharacters.clear();
+    }
 }
 export default RegisteredCharacters;

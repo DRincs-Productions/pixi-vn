@@ -70,5 +70,12 @@ namespace RegisteredLabels {
     export function keys(): LabelIdType[] {
         return Array.from(registeredLabels.keys());
     }
+
+    /**
+     * Removes all registered labels.
+     */
+    export function clear(): void {
+        registeredLabels.clear();
+    }
 }
 export default RegisteredLabels;
