@@ -252,10 +252,13 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         ssrLoadModule: (url: string) => Promise<unknown>,
         failedFiles: string[] = [],
     ): Promise<void> {
-        // Read from "@drincs/pixi-vn" (not sub-paths) so we hit the same module
-        // instance that user files import from — sub-paths are separate SSR instances.
+        // Read from the sub-paths rather than "@drincs/pixi-vn" (main): we only
+        // need the registry singletons, not the full canvas/pixi.js surface.
+        // With noExternal configured, sub-path imports share the same Vite SSR
+        // module instances as the user content files, so the registered
+        // characters/labels are visible here.
         try {
-            const mod = (await ssrLoadModule("@drincs/pixi-vn")) as {
+            const mod = (await ssrLoadModule("@drincs/pixi-vn/characters")) as {
                 RegisteredCharacters?: { values(): CharacterInterface[] };
             };
             ssrCharacters = mod.RegisteredCharacters?.values() ?? [];
@@ -263,7 +266,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             ssrCharacters = [];
         }
         try {
-            const mod = (await ssrLoadModule("@drincs/pixi-vn")) as {
+            const mod = (await ssrLoadModule("@drincs/pixi-vn/narration")) as {
                 RegisteredLabels?: { keys(): string[] };
             };
             ssrLabels = mod.RegisteredLabels?.keys() ?? [];
@@ -293,6 +296,12 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         ssrLoadModule: (url: string) => Promise<unknown>,
         root: string,
     ): Promise<void> {
+        // Pre-load the singleton subpaths so the Vite SSR module graph has them
+        // before user content files execute and register into them.  This mirrors
+        // what reloadContent does and ensures readSsrState reads from the same
+        // instances that user files populated.
+        try { await ssrLoadModule("@drincs/pixi-vn/characters"); } catch { /* ignore */ }
+        try { await ssrLoadModule("@drincs/pixi-vn/narration"); } catch { /* ignore */ }
         const files = await glob(allPatterns, { cwd: root, absolute: true, onlyFiles: true });
         const failedFiles: string[] = [];
         for (const file of files) {
@@ -432,6 +441,19 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             },
         },
 
+        config(_, env) {
+            // When content patterns are configured, prevent Vite from externalising
+            // @drincs/pixi-vn in SSR.  By default Vite loads node_modules via
+            // Node's native resolver, which creates a separate module instance from
+            // the one produced by ssrLoadModule — so RegisteredCharacters /
+            // RegisteredLabels registered by user content files are invisible to
+            // readSsrState.  noExternal forces all imports through Vite's SSR module
+            // graph so every call shares the same singleton instances.
+            if (env.command === "serve" && allPatterns.length > 0) {
+                return { ssr: { noExternal: ["@drincs/pixi-vn"] } };
+            }
+        },
+
         configResolved(config) {
             resolvedConfig = config;
             // No patterns — nothing to load, resolve immediately.
@@ -453,6 +475,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
                 appType: "custom",
                 logLevel: "silent",
                 optimizeDeps: { noDiscovery: true },
+                ssr: { noExternal: ["@drincs/pixi-vn"] },
             });
             try {
                 await loadModules((p) => tempServer.ssrLoadModule(p), resolvedConfig.root);
