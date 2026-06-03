@@ -1,5 +1,8 @@
 import { EventEmitter } from "events";
-import { beforeEach, describe, expect, test } from "vitest";
+import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
+import { tmpdir } from "node:os";
+import { join } from "node:path";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import {
     PIXIVN_DEV_API_ASSETS_MANIFEST,
     PIXIVN_DEV_API_CANVAS_OPTIONS,
@@ -138,5 +141,124 @@ describe.each([
         await new Promise((resolve) => setTimeout(resolve, 0));
         expect(res.statusCode).toBe(400);
         expect(JSON.parse(res.body)).toHaveProperty("error");
+    });
+});
+
+// ── label type file generation ────────────────────────────────────────────────
+
+describe("vitePluginPixivn – label type file generation", () => {
+    let tmpDir: string;
+    let labelTypeFilePath: string;
+
+    beforeEach(() => {
+        tmpDir = join(tmpdir(), `pixi-vn-test-${Date.now()}`);
+        mkdirSync(tmpDir, { recursive: true });
+        labelTypeFilePath = join(tmpDir, "pixi-vn.gen.d.ts");
+    });
+
+    afterEach(() => {
+        rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    function createConfiguredPlugin(filePath = labelTypeFilePath) {
+        const plugin = vitePluginPixivn({ labelTypeFilePath: filePath });
+        // Simulate configResolved so resolvedConfig is available
+        (plugin.configResolved as any)({ root: tmpDir, command: "serve", logger: { info() {}, error() {} } });
+        return plugin;
+    }
+
+    test("setExternalLabels writes a label type file with the provided labels", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("myPlugin", ["startLabel", "menuLabel"]);
+
+        expect(existsSync(labelTypeFilePath)).toBe(true);
+        const content = readFileSync(labelTypeFilePath, "utf-8");
+        expect(content).toContain(`declare module "@drincs/pixi-vn/narration"`);
+        expect(content).toContain(`interface PixivnLabelIds`);
+        expect(content).toContain(`"startLabel": never`);
+        expect(content).toContain(`"menuLabel": never`);
+        expect(content).toContain(`export {};`);
+    });
+
+    test("setExternalLabels merges labels from multiple providers", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("providerA", ["labelA"]);
+        (plugin.api as any).setExternalLabels("providerB", ["labelB"]);
+
+        const content = readFileSync(labelTypeFilePath, "utf-8");
+        expect(content).toContain(`"labelA": never`);
+        expect(content).toContain(`"labelB": never`);
+    });
+
+    test("setExternalLabels replaces existing labels for the same provider", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("provider", ["oldLabel"]);
+        (plugin.api as any).setExternalLabels("provider", ["newLabel"]);
+
+        const content = readFileSync(labelTypeFilePath, "utf-8");
+        expect(content).not.toContain(`"oldLabel"`);
+        expect(content).toContain(`"newLabel": never`);
+    });
+
+    test("clearExternalLabels removes provider labels from the file", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("provider", ["startLabel"]);
+        (plugin.api as any).clearExternalLabels("provider");
+
+        const content = readFileSync(labelTypeFilePath, "utf-8");
+        expect(content).not.toContain(`"startLabel"`);
+        // File must still be valid TypeScript (export {}; at the end)
+        expect(content).toContain(`export {};`);
+    });
+
+    test("clearExternalLabels for unknown provider is a no-op", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("knownProvider", ["label1"]);
+        // Should not throw
+        expect(() => (plugin.api as any).clearExternalLabels("unknownProvider")).not.toThrow();
+        const content = readFileSync(labelTypeFilePath, "utf-8");
+        expect(content).toContain(`"label1": never`);
+    });
+
+    test("generated file has the auto-generated header comment", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("p", ["l"]);
+        const content = readFileSync(labelTypeFilePath, "utf-8");
+        expect(content).toContain("auto-generated");
+    });
+
+    test("generated file with no labels contains only the export statement", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("p", []);
+        const content = readFileSync(labelTypeFilePath, "utf-8");
+        expect(content).not.toContain(`interface PixivnLabelIds`);
+        expect(content).toContain(`export {};`);
+    });
+
+    test("hotUpdate returns [] for the generated label type file", () => {
+        const plugin = createConfiguredPlugin(labelTypeFilePath);
+        const result = (plugin.hotUpdate as any)({
+            file: labelTypeFilePath,
+            server: {},
+            modules: [],
+            timestamp: Date.now(),
+            read: () => Promise.resolve(""),
+            environment: {},
+        });
+        expect(result).toEqual([]);
+    });
+
+    test("hotUpdate does NOT intercept unrelated files", () => {
+        const plugin = createConfiguredPlugin(labelTypeFilePath);
+        const result = (plugin.hotUpdate as any)({
+            file: join(tmpDir, "somethingElse.ts"),
+            server: {},
+            modules: [],
+            timestamp: Date.now(),
+            read: () => Promise.resolve(""),
+            environment: {},
+        });
+        // Should be undefined (no interception) for unrelated files
+        expect(result).toBeUndefined();
     });
 });

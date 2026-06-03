@@ -25,6 +25,7 @@ export type {
 export { default as NarrationManagerStatic } from "@narration/NarrationManagerStatic";
 export type { default as HistoryChoiceMenuOption } from "@narration/types/HistoryChoiceMenuOption";
 export type { InputInfo } from "@narration/types/InputInfo";
+export type { LabelIdType, PixivnLabelIds } from "@narration/types/LabelIdType";
 export type { default as LabelRunModeType } from "@narration/types/LabelRunModeType";
 export type { default as LabelSteps } from "@narration/types/LabelSteps";
 export type {

@@ -280,7 +280,7 @@ export namespace Game {
      * @returns The result of the label execution. It can be a {@link StepLabelResultType} or a Promise that resolves to a {@link StepLabelResultType}.
      */
     export async function start<T extends {} = {}>(
-        label: narrationUtils.LabelAbstract<any, T> | string,
+        label: narrationUtils.LabelAbstract<any, T> | narrationUtils.LabelIdType,
         props: narrationUtils.StepLabelPropsType<T>,
     ) {
         Game.clear();

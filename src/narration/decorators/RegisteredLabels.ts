@@ -18,7 +18,9 @@ namespace RegisteredLabels {
      * @param id The id of the label
      * @returns The label or undefined if it does not exist
      */
-    export function get<T = LabelAbstract<any>>(id: LabelIdType): T | undefined {
+    export function get<T = LabelAbstract<any>, T2 extends LabelIdType | string = LabelIdType>(
+        id: T2,
+    ): T | undefined {
         const label = registeredLabels.get(id);
         if (!label) {
             logger.error(`Label "${id}" not found`);
@@ -65,7 +67,7 @@ namespace RegisteredLabels {
      * Get a list of all label ids registered.
      * @returns An array of label ids.
      */
-    export function keys(): string[] {
+    export function keys(): LabelIdType[] {
         return Array.from(registeredLabels.keys());
     }
 }

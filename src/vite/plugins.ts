@@ -1,7 +1,8 @@
 import type { CharacterInterface } from "@drincs/pixi-vn/characters";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
-import { readFileSync } from "node:fs";
+import { mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import type { IncomingMessage, ServerResponse } from "node:http";
+import { dirname, isAbsolute, resolve } from "node:path";
 import pc from "picocolors";
 import { glob } from "tinyglobby";
 import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
@@ -75,6 +76,25 @@ export interface VitePluginPixivnOptions {
      * @example "./src/*.label.ts"
      */
     labels?: string | string[];
+
+    /**
+     * Path to the auto-generated TypeScript declaration file that augments
+     * `PixivnCharacterIds` (in `@drincs/pixi-vn/characters`) and `PixivnLabelIds`
+     * (in `@drincs/pixi-vn/narration`) with all currently known IDs.
+     *
+     * When provided, the plugin generates (or overwrites) this file:
+     * - after all content modules have been loaded at startup,
+     * - after every hot-reload of a watched content file,
+     * - whenever `api.setExternalLabels` or `api.clearExternalLabels` is called.
+     *
+     * The generated file is **excluded from HMR** so that updating it never
+     * triggers a full-page reload.
+     *
+     * The path may be absolute or relative to Vite `root`.
+     *
+     * @example "./src/pixi-vn.gen.d.ts"
+     */
+    typeFilePath?: string;
 }
 
 /**
@@ -87,6 +107,26 @@ export interface VitePluginPixivnOptions {
  * via Vite SSR at startup, populating `RegisteredCharacters`, `RegisteredLabels`, and any other
  * singletons before downstream plugins (such as `vitePluginInk`) run — including during
  * `vite build`.
+ *
+ * **Auto-generated type file**
+ *
+ * When {@link VitePluginPixivnOptions.typeFilePath} is provided, the plugin writes a
+ * TypeScript declaration file that augments `PixivnCharacterIds` in `@drincs/pixi-vn/characters`
+ * and `PixivnLabelIds` in `@drincs/pixi-vn/narration` with all currently known IDs.
+ * This narrows `CharacterIdType` and `LabelIdType` from `string` to unions of known literals,
+ * giving compile-time safety for character lookups, `narration.call`, `narration.jump`, etc.
+ *
+ * The file is regenerated whenever the character or label set changes (content reload or
+ * external-label updates). It is **excluded from HMR** so regenerating it never triggers a page reload.
+ *
+ * **External label providers**
+ *
+ * Other Vite plugins can inject label IDs via the plugin API without needing to register
+ * them through SSR-loaded modules:
+ * - `api.setExternalLabels(providerId, labels)` — registers (or replaces) the label list for
+ *   the given provider and regenerates the type file.
+ * - `api.clearExternalLabels(providerId)` — removes all labels for the given provider and
+ *   regenerates the type file.
  *
  * **Dev-server HTTP endpoints**
  *
@@ -101,7 +141,11 @@ export interface VitePluginPixivnOptions {
  *
  * **Plugin API** (consumed by `vitePluginInk`):
  * - `api.contentLoaded` — `Promise<void>` that resolves once all content modules have finished
- *   loading.  Await this before generating JSON files.
+ *   loading. Await this before generating JSON files.
+ * - `api.characters` — the list of registered characters (populated after `contentLoaded`).
+ * - `api.onReload(cb)` — register a callback that fires after every hot-content-reload.
+ * - `api.setExternalLabels(providerId, labels)` — add/replace labels from an external provider.
+ * - `api.clearExternalLabels(providerId)` — remove labels previously set for a provider.
  *
  * @example
  * ```ts
@@ -111,7 +155,10 @@ export interface VitePluginPixivnOptions {
  *
  * export default defineConfig({
  *   plugins: [
- *     vitePluginPixivn({ content: "./src/content/index.ts" }),
+ *     vitePluginPixivn({
+ *       content: "./src/content/index.ts",
+ *       typeFilePath: "./src/pixi-vn.gen.d.ts",
+ *     }),
  *   ],
  * });
  * ```
@@ -141,6 +188,82 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
     let ssrLabels: string[] = [];
     const watchedFiles = new Set<string>();
     const reloadCallbacks: Array<() => void> = [];
+
+    /** Labels registered by external providers: providerId → label IDs */
+    const externalLabels = new Map<string, string[]>();
+
+    /** Returns the absolute path of the generated type file, or null if not configured. */
+    function getAbsTypeFilePath(): string | null {
+        if (!options?.typeFilePath || !resolvedConfig) return null;
+        const p = options.typeFilePath;
+        return isAbsolute(p) ? p : resolve(resolvedConfig.root, p);
+    }
+
+    /** Returns the merged, deduplicated list of all label IDs (SSR + external). */
+    function getAllLabelIds(): string[] {
+        const all = [...ssrLabels, ...Array.from(externalLabels.values()).flat()];
+        return Array.from(new Set(all));
+    }
+
+    /**
+     * Writes the auto-generated TypeScript declaration file that augments
+     * `PixivnCharacterIds` and `PixivnLabelIds` with the current known IDs.
+     */
+    function generateTypeFile(
+        filePath: string,
+        charIds: string[],
+        labelIds: string[],
+    ): void {
+        mkdirSync(dirname(filePath), { recursive: true });
+        const lines = [
+            "// @ts-nocheck",
+            "/* eslint-disable */",
+            "// noinspection JSUnusedGlobalSymbols",
+            "// This file is auto-generated by @drincs/pixi-vn vite plugin. Do not edit manually.",
+        ];
+        if (charIds.length > 0) {
+            lines.push(`declare module "@drincs/pixi-vn/characters" {`);
+            lines.push(`    interface PixivnCharacterIds {`);
+            for (const id of charIds) {
+                lines.push(`        ${JSON.stringify(id)}: never;`);
+            }
+            lines.push(`    }`);
+            lines.push(`}`);
+        }
+        if (labelIds.length > 0) {
+            lines.push(`declare module "@drincs/pixi-vn/narration" {`);
+            lines.push(`    interface PixivnLabelIds {`);
+            for (const id of labelIds) {
+                lines.push(`        ${JSON.stringify(id)}: never;`);
+            }
+            lines.push(`    }`);
+            lines.push(`}`);
+        }
+        lines.push("export {};");
+        lines.push("");
+        writeFileSync(filePath, lines.join("\n"), "utf-8");
+    }
+
+    /** Regenerates the type file if configured. Errors are logged and swallowed. */
+    function tryGenerateTypeFile(): void {
+        const absPath = getAbsTypeFilePath();
+        if (!absPath) return;
+        try {
+            generateTypeFile(
+                absPath,
+                ssrCharacters.map((c) => c.id),
+                getAllLabelIds(),
+            );
+        } catch (error) {
+            resolvedConfig?.logger.error(
+                `${PLUGIN_PREFIX} Failed to write type file "${absPath}".`,
+                {
+                    error: error instanceof Error ? error : new Error(String(error)),
+                    timestamp: true,
+                },
+            );
+        }
+    }
 
     async function readSsrState(
         ssrLoadModule: (url: string) => Promise<unknown>,
@@ -207,6 +330,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             }
         }
         await readSsrState(ssrLoadModule, failedFiles);
+        tryGenerateTypeFile();
         contentLoadedResolve();
     }
 
@@ -239,6 +363,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             }
         }
         await readSsrState((p) => server.ssrLoadModule(p), failedFiles);
+        tryGenerateTypeFile();
         for (const cb of reloadCallbacks) cb();
     }
 
@@ -303,6 +428,33 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             },
             onReload(cb: () => void): void {
                 reloadCallbacks.push(cb);
+            },
+            /**
+             * Registers (or replaces) a set of label IDs contributed by an external provider.
+             *
+             * After the update, the auto-generated label type file (configured via
+             * {@link VitePluginPixivnOptions.typeFilePath}) is regenerated so that
+             * TypeScript immediately reflects the new set of valid label IDs.
+             *
+             * @param providerId - A unique identifier for the external provider (e.g. the
+             *   name of the plugin that owns these labels).
+             * @param labels - The list of label IDs contributed by this provider.
+             */
+            setExternalLabels(providerId: string, labels: string[]): void {
+                externalLabels.set(providerId, labels);
+                tryGenerateTypeFile();
+            },
+            /**
+             * Removes all label IDs that were previously registered for the given provider.
+             *
+             * After the update, the auto-generated label type file is regenerated.
+             *
+             * @param providerId - The same identifier that was passed to
+             *   {@link api.setExternalLabels}.
+             */
+            clearExternalLabels(providerId: string): void {
+                externalLabels.delete(providerId);
+                tryGenerateTypeFile();
             },
         },
 
@@ -387,6 +539,13 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         },
 
         hotUpdate({ file, server }) {
+            // Prevent HMR for the auto-generated label type file so that regenerating
+            // it never causes a full-page reload.
+            const absLabelTypePath = getAbsTypeFilePath();
+            if (absLabelTypePath && file === absLabelTypePath) {
+                return [];
+            }
+
             if (allPatterns.length > 0 && watchedFiles.has(file)) {
                 void reloadContent(server).catch((error) => {
                     resolvedConfig?.logger.error(`${PLUGIN_PREFIX} Failed to reload content.`, {
