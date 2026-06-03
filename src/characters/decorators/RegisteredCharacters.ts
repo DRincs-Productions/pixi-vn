@@ -17,7 +17,10 @@ namespace RegisteredCharacters {
      * const liam = RegisteredCharacters.get('liam');
      * ```
      */
-    export function get<T = CharacterInterface>(id: CharacterIdType): T | undefined {
+    export function get<
+        T = CharacterInterface,
+        T2 extends CharacterIdType | string = CharacterIdType,
+    >(id: T2): T | undefined {
         try {
             const character = registeredCharacters.get(id);
             if (!character) {
