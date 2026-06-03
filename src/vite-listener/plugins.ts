@@ -63,7 +63,7 @@ export function isViteDevelopmentMode(): boolean {
 
 /**
  * Initializes Pixi VN development tools by syncing game state with the Vite dev server.
- * Sends registered characters, labels, assets manifest, and canvas options.
+ * Sends assets manifest and canvas options.
  *
  * **Note:** This function only operates in Vite development mode and is a no-op in production.
  *

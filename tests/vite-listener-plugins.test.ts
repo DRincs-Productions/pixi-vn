@@ -9,18 +9,6 @@ vi.mock("@drincs/pixi-vn/canvas", () => ({
     },
 }));
 
-vi.mock("@drincs/pixi-vn/characters", () => ({
-    RegisteredCharacters: {
-        values: vi.fn(() => [{ id: "char1", name: "Character 1" }]),
-    },
-}));
-
-vi.mock("@drincs/pixi-vn/narration", () => ({
-    RegisteredLabels: {
-        keys: vi.fn(() => ["label1", "label2"]),
-    },
-}));
-
 vi.mock("@drincs/pixi-vn/pixi.js", () => ({
     default: {
         Assets: {
@@ -43,8 +31,6 @@ import {
 import {
     PIXIVN_DEV_API_ASSETS_MANIFEST,
     PIXIVN_DEV_API_CANVAS_OPTIONS,
-    PIXIVN_DEV_API_CHARACTERS,
-    PIXIVN_DEV_API_LABELS,
 } from "../src/vite/costants";
 
 function addViteClientScript() {
@@ -113,13 +99,11 @@ describe("setupPixivnViteData", () => {
         expect(fetchMock).not.toHaveBeenCalled();
     });
 
-    test("calls fetch for the three base endpoints in vite development mode", async () => {
+    test("calls fetch for the manifest endpoint in vite development mode", async () => {
         addViteClientScript();
         await setupPixivnViteData();
 
         const calledUrls = fetchMock.mock.calls.map((call) => call[0]);
-        expect(calledUrls).toContain(PIXIVN_DEV_API_CHARACTERS);
-        expect(calledUrls).toContain(PIXIVN_DEV_API_LABELS);
         expect(calledUrls).toContain(PIXIVN_DEV_API_ASSETS_MANIFEST);
         expect(calledUrls).not.toContain(PIXIVN_DEV_API_CANVAS_OPTIONS);
     });
@@ -143,24 +127,6 @@ describe("setupPixivnViteData", () => {
             expect(options.method).toBe("POST");
             expect(options.headers["Content-Type"]).toBe("application/json");
         }
-    });
-
-    test("sends characters data as valid JSON body", async () => {
-        addViteClientScript();
-        await setupPixivnViteData();
-
-        const call = fetchMock.mock.calls.find((c) => c[0] === PIXIVN_DEV_API_CHARACTERS);
-        expect(call).toBeDefined();
-        expect(() => JSON.parse(call![1].body)).not.toThrow();
-    });
-
-    test("sends labels data as valid JSON body", async () => {
-        addViteClientScript();
-        await setupPixivnViteData();
-
-        const call = fetchMock.mock.calls.find((c) => c[0] === PIXIVN_DEV_API_LABELS);
-        expect(call).toBeDefined();
-        expect(() => JSON.parse(call![1].body)).not.toThrow();
     });
 
     test("handles fetch rejection gracefully without throwing", async () => {
