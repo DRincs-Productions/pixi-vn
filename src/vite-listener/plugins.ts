@@ -1,14 +1,7 @@
 import { canvas } from "@drincs/pixi-vn/canvas";
-import { RegisteredCharacters } from "@drincs/pixi-vn/characters";
-import { RegisteredLabels } from "@drincs/pixi-vn/narration";
 import type { ApplicationOptions, AssetsManifest } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import {
-    PIXIVN_DEV_API_ASSETS_MANIFEST,
-    PIXIVN_DEV_API_CANVAS_OPTIONS,
-    PIXIVN_DEV_API_CHARACTERS,
-    PIXIVN_DEV_API_LABELS,
-} from "../vite/costants";
+import { PIXIVN_DEV_API_ASSETS_MANIFEST, PIXIVN_DEV_API_CANVAS_OPTIONS } from "../vite/costants";
 
 /**
  * Sends a POST request to the development API endpoint with error handling.
@@ -93,20 +86,6 @@ export function isViteDevelopmentMode(): boolean {
 export async function setupPixivnViteData(): Promise<void> {
     if (!isViteDevelopmentMode()) {
         return;
-    }
-
-    try {
-        const characters = RegisteredCharacters.values();
-        await sendToDevApi(PIXIVN_DEV_API_CHARACTERS, characters, "characters");
-    } catch (error) {
-        console.warn("Error collecting characters:", error);
-    }
-
-    try {
-        const labels = RegisteredLabels.keys();
-        await sendToDevApi(PIXIVN_DEV_API_LABELS, labels, "labels");
-    } catch (error) {
-        console.warn("Error collecting labels:", error);
     }
 
     try {
