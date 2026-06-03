@@ -1,7 +1,6 @@
-import RegisteredLabels from "../decorators/RegisteredLabels";
-import type LabelProps from "../interfaces/LabelProps";
-import type { LabelIdType } from "../types/LabelIdType";
-import type { StepLabelType } from "../types/StepLabelType";
+import RegisteredLabels from "@narration/decorators/RegisteredLabels";
+import type LabelProps from "@narration/interfaces/LabelProps";
+import type { StepLabelType } from "@narration/types/StepLabelType";
 
 export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, StepIdType = number>
     implements LabelProps<TLabel, StepIdType>
@@ -10,7 +9,7 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
      * @param id is the id of the label
      * @param props is the properties of the label
      */
-    constructor(id: LabelIdType, props?: LabelProps<TLabel, StepIdType>) {
+    constructor(id: string, props?: LabelProps<TLabel, StepIdType>) {
         this.id = id;
         this._onStepStart = props?.onStepStart;
         this._onLoadingLabel = props?.onLoadingLabel;
@@ -20,7 +19,7 @@ export default abstract class LabelAbstract<TLabel, TProps extends {} = {}, Step
     /**
      * Get the id of the label. This variable is used in the system to get the label by id, {@link RegisteredLabels.get}
      */
-    readonly id: LabelIdType;
+    readonly id: string;
 
     /**
      * Get the number of steps in the label. This variable is used in the system to get the number of steps in the label.

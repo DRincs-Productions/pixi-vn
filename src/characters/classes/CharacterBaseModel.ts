@@ -1,5 +1,5 @@
 import CharacterStoredClass from "@characters/classes/CharacterStoredClass";
-import RegisteredCharacters from "@characters/decorators/character-decorator";
+import RegisteredCharacters from "@characters/decorators/RegisteredCharacters";
 import type CharacterBaseModelProps from "@characters/interfaces/CharacterBaseModelProps";
 import type { CharacterEmotionId } from "@characters/types/CharacterEmotionId";
 

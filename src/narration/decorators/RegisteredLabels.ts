@@ -65,7 +65,7 @@ namespace RegisteredLabels {
      * Get a list of all label ids registered.
      * @returns An array of label ids.
      */
-    export function keys(): string[] {
+    export function keys(): LabelIdType[] {
         return Array.from(registeredLabels.keys());
     }
 }

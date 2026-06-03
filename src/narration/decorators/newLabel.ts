@@ -1,8 +1,7 @@
-import Label from "../classes/Label";
-import type LabelProps from "../interfaces/LabelProps";
-import type { LabelIdType } from "../types/LabelIdType";
-import type LabelSteps from "../types/LabelSteps";
-import RegisteredLabels from "./RegisteredLabels";
+import Label from "@narration/classes/Label";
+import RegisteredLabels from "@narration/decorators/RegisteredLabels";
+import type LabelProps from "@narration/interfaces/LabelProps";
+import type LabelSteps from "@narration/types/LabelSteps";
 
 /**
  * Creates a new label and registers it in the system.
@@ -13,7 +12,7 @@ import RegisteredLabels from "./RegisteredLabels";
  * @returns The created label
  */
 export default function newLabel<T extends {} = {}>(
-    id: LabelIdType,
+    id: string,
     steps: LabelSteps<T> | (() => LabelSteps<T>),
     props?: LabelProps<Label<T>>,
 ): Label<T> {

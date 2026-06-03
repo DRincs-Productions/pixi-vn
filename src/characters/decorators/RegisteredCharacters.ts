@@ -1,8 +1,11 @@
+import type { CharacterIdType } from "@characters/types/CharacterIdType";
 import CachedMap from "@classes/CachedMap";
 import type { CharacterInterface } from "@drincs/pixi-vn";
 import { logger } from "@utils/log-utility";
 
-export const registeredCharacters = new CachedMap<string, CharacterInterface>({ cacheSize: 10 });
+export const registeredCharacters = new CachedMap<CharacterIdType, CharacterInterface>({
+    cacheSize: 10,
+});
 
 namespace RegisteredCharacters {
     /**
@@ -14,7 +17,7 @@ namespace RegisteredCharacters {
      * const liam = RegisteredCharacters.get('liam');
      * ```
      */
-    export function get<T = CharacterInterface>(id: string): T | undefined {
+    export function get<T = CharacterInterface>(id: CharacterIdType): T | undefined {
         try {
             const character = registeredCharacters.get(id);
             if (!character) {
@@ -77,9 +80,9 @@ namespace RegisteredCharacters {
 
     /**
      * Get a list of all character ids registered.
-     * @returns An array of label ids.
+     * @returns An array of character ids.
      */
-    export function keys(): string[] {
+    export function keys(): CharacterIdType[] {
         return Array.from(registeredCharacters.keys());
     }
 }
