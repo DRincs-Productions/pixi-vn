@@ -5,13 +5,17 @@ import { Close } from "../types/CloseType";
 interface ChoiceMenuOptionCloseOptions
     extends Omit<ChoiceInterface, "text" | "label" | "type" | "props" | "closeCurrentLabel"> {
     /**
-     * If true, the current label will be closed. @default false
+     * IIf `true`, the current `label` will be closed.
+     * @default false
      */
     closeCurrentLabel?: boolean;
 }
 
 /**
- * Function to create a new choice menu option that will close the menu.
+ * In addition to `newChoiceOption`, you can use `newCloseChoiceOption` to create a closing option.
+ * This closes the choice menu and continues with the `steps`, without calling any `label`.
+ * @param text The text displayed in the choice menu.
+ * @param options An object with the `choice`'s options
  * @example
  * ```ts
  * newCloseChoiceOption("Return")

@@ -52,15 +52,16 @@ declare module "@drincs/pixi-vn" {
          */
         type: LabelRunModeType | CloseType;
         /**
-         * If this is true, the choice can only be made once.
+         * If `true`, the choice can only be made once.
          */
         oneTime?: boolean;
         /**
-         * If this is true, the choice can see only if there are no other choices. For example, all choices are one-time choices and they are already selected.
+         * If `true`, the choice is shown only if there are no other choices.
+         * For example, all choices are one-time choices and they are already selected.
          */
         onlyHaveNoChoice?: boolean;
         /**
-         * If this is true and if is the only choice, it will be automatically selected, and call/jump to the label.
+         * If `true` and it is the only choice, it will be selected automatically.
          */
         autoSelect?: boolean;
         /**
