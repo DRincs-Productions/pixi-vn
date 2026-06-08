@@ -37,7 +37,7 @@ export default interface NarrationManagerInterface {
         max: number,
         options?: {
             /**
-             * If true, the number will be generated only once on the current step of the label.
+             * If `true`, the number will be generated only once for the current `step` of the `label` (default: `false`). Note: `min` and `max` affect the storage of already generated numbers.
              * @default false
              */
             onceOnly?: boolean;
