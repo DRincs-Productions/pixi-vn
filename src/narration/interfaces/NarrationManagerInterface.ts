@@ -283,9 +283,12 @@ export default interface NarrationManagerInterface {
      * If true, the player must enter a value.
      */
     readonly isRequiredInput: boolean;
+    /**
+     * Returns the type of input prompt requested.
+     */
     readonly inputType: string | undefined;
     /**
-     * Request input from the player.
+     * Returns `true` if the player must enter a value.
      * @param info The input value to be inserted by the player.
      * @param defaultValue The default value to be inserted.
      */
