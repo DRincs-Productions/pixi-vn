@@ -14,7 +14,7 @@
   ],
   "scripts": {
     "dev": "tsup --watch",
-    "build": "tsup --config tsup.config.ts && node scripts/fix-imports.mjs",
+    "build": "tsup --config tsup.config.ts",
     "lint": "biome lint",
     "check": "biome check",
     "format": "biome format --write",

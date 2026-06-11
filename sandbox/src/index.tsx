@@ -1,5 +1,6 @@
 import { Container, Game, canvas, sound } from "@drincs/pixi-vn";
 import { createRoot } from "react-dom/client";
+import App from "./App";
 
 // Canvas setup with PIXI
 const body = document.body;
@@ -28,16 +29,5 @@ Game.init(body, {}).then(() => {
   }
   const reactRoot = createRoot(htmlLayout);
 
-  reactRoot.render(
-    <div
-      style={{
-        color: "white",
-        position: "absolute",
-        bottom: 0,
-        left: 0,
-      }}
-    >
-      Loading...
-    </div>,
-  );
+  reactRoot.render(<App />);
 });
