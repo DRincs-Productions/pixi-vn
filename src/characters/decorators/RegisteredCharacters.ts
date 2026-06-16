@@ -51,13 +51,13 @@ namespace RegisteredCharacters {
     export function add(...characters: (CharacterInterface | CharacterInterface[])[]) {
         for (const character of characters) {
             if (Array.isArray(character)) {
-                character.forEach((c) => {
-                    add(c);
-                });
+                add(...character);
                 continue;
             }
             if (registeredCharacters.get(character.id)) {
-                logger.info(`Character id "${character.id}" already exists, it will be overwritten`);
+                logger.info(
+                    `Character id "${character.id}" already exists, it will be overwritten`,
+                );
             }
             registeredCharacters.set(character.id, character);
         }
