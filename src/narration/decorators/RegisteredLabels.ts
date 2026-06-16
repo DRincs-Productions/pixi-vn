@@ -31,19 +31,15 @@ namespace RegisteredLabels {
 
     /**
      * Saves a label in the system
-     * @param label The label to be saved
+     * @param labels The label(s) to be saved
      */
-    export function add(label: LabelAbstract<any, any> | LabelAbstract<any, any>[]) {
-        if (Array.isArray(label)) {
-            label.forEach((l) => {
-                add(l);
-            });
-            return;
+    export function add(...labels: (LabelAbstract<any, any> )[]) {
+        for (const label of labels) {
+            if (registeredLabels.has(label.id)) {
+                logger.info(`Label "${label.id}" already exists, it will be overwritten`);
+            }
+            registeredLabels.set(label.id, label);
         }
-        if (registeredLabels.has(label.id)) {
-            logger.info(`Label "${label.id}" already exists, it will be overwritten`);
-        }
-        registeredLabels.set(label.id, label);
     }
 
     /**

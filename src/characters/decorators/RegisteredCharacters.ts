@@ -38,26 +38,29 @@ namespace RegisteredCharacters {
 
     /**
      * Is a function that saves the character. If the character already exists, it will be overwritten.
-     * @param character is the character to save
+     * @param characters is the character(s) to save
      * @returns
      * @example
      * ```ts
      * export const liam = new CharacterBaseModel('liam', { name: 'Liam'});
      * export const alice = new CharacterBaseModel('alice', { name: 'Alice'});
+     * RegisteredCharacters.add(liam, alice);
      * RegisteredCharacters.add([liam, alice]);
      * ```
      */
-    export function add(character: CharacterInterface | CharacterInterface[]) {
-        if (Array.isArray(character)) {
-            character.forEach((c) => {
-                add(c);
-            });
-            return;
+    export function add(...characters: (CharacterInterface | CharacterInterface[])[]) {
+        for (const character of characters) {
+            if (Array.isArray(character)) {
+                character.forEach((c) => {
+                    add(c);
+                });
+                continue;
+            }
+            if (registeredCharacters.get(character.id)) {
+                logger.info(`Character id "${character.id}" already exists, it will be overwritten`);
+            }
+            registeredCharacters.set(character.id, character);
         }
-        if (registeredCharacters.get(character.id)) {
-            logger.info(`Character id "${character.id}" already exists, it will be overwritten`);
-        }
-        registeredCharacters.set(character.id, character);
     }
 
     /**
