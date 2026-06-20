@@ -179,7 +179,7 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).toContain(`"menuLabel": never`);
     });
 
-    test("setExternalLabels writes runtime labelIds array", () => {
+    test("setExternalLabels writes runtime labelIds array and enum", () => {
         const plugin = createConfiguredPlugin();
         (plugin.api as any).setExternalLabels("myPlugin", ["startLabel", "menuLabel"]);
 
@@ -188,6 +188,9 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).toContain(`"startLabel"`);
         expect(content).toContain(`"menuLabel"`);
         expect(content).toContain(`as const`);
+        expect(content).toContain(`export const labelIdsEnum`);
+        expect(content).toContain(`"startLabel":"startLabel"`);
+        expect(content).toContain(`"menuLabel":"menuLabel"`);
     });
 
     test("setExternalLabels always writes runtime characterIds array", () => {
@@ -246,7 +249,7 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).toContain("auto-generated");
     });
 
-    test("generated file with no IDs has empty runtime arrays but no augmentations", () => {
+    test("generated file with no IDs has empty runtime arrays but no augmentations or enums", () => {
         const plugin = createConfiguredPlugin();
         (plugin.api as any).setExternalLabels("p", []);
         const content = readFileSync(typeFilePath, "utf-8");
@@ -254,6 +257,8 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).not.toContain(`interface PixivnCharacterIds`);
         expect(content).toContain(`export const characterIds = [] as const`);
         expect(content).toContain(`export const labelIds = [] as const`);
+        expect(content).not.toContain(`characterIdsEnum`);
+        expect(content).not.toContain(`labelIdsEnum`);
     });
 
     test("hotUpdate returns [] for the generated type file", () => {
