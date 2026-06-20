@@ -144,16 +144,16 @@ describe.each([
     });
 });
 
-// ── label type file generation ────────────────────────────────────────────────
+// ── type file generation ──────────────────────────────────────────────────────
 
-describe("vitePluginPixivn – label type file generation", () => {
+describe("vitePluginPixivn – type file generation", () => {
     let tmpDir: string;
     let typeFilePath: string;
 
     beforeEach(() => {
         tmpDir = join(tmpdir(), `pixi-vn-test-${Date.now()}`);
         mkdirSync(tmpDir, { recursive: true });
-        typeFilePath = join(tmpDir, "pixi-vn.gen.d.ts");
+        typeFilePath = join(tmpDir, "pixi-vn.keys.gen.ts");
     });
 
     afterEach(() => {
@@ -167,7 +167,7 @@ describe("vitePluginPixivn – label type file generation", () => {
         return plugin;
     }
 
-    test("setExternalLabels writes a label type file with the provided labels", () => {
+    test("setExternalLabels writes a type file with declare module augmentations", () => {
         const plugin = createConfiguredPlugin();
         (plugin.api as any).setExternalLabels("myPlugin", ["startLabel", "menuLabel"]);
 
@@ -177,7 +177,26 @@ describe("vitePluginPixivn – label type file generation", () => {
         expect(content).toContain(`interface PixivnLabelIds`);
         expect(content).toContain(`"startLabel": never`);
         expect(content).toContain(`"menuLabel": never`);
-        expect(content).toContain(`export {};`);
+    });
+
+    test("setExternalLabels writes runtime labelIds array", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("myPlugin", ["startLabel", "menuLabel"]);
+
+        const content = readFileSync(typeFilePath, "utf-8");
+        expect(content).toContain(`export const labelIds`);
+        expect(content).toContain(`"startLabel"`);
+        expect(content).toContain(`"menuLabel"`);
+        expect(content).toContain(`as const`);
+    });
+
+    test("setExternalLabels always writes runtime characterIds array", () => {
+        const plugin = createConfiguredPlugin();
+        (plugin.api as any).setExternalLabels("myPlugin", ["lbl"]);
+
+        const content = readFileSync(typeFilePath, "utf-8");
+        expect(content).toContain(`export const characterIds`);
+        expect(content).toContain(`as const`);
     });
 
     test("setExternalLabels merges labels from multiple providers", () => {
@@ -200,15 +219,15 @@ describe("vitePluginPixivn – label type file generation", () => {
         expect(content).toContain(`"newLabel": never`);
     });
 
-    test("clearExternalLabels removes provider labels from the file", () => {
+    test("clearExternalLabels removes provider labels from augmentations and arrays", () => {
         const plugin = createConfiguredPlugin();
         (plugin.api as any).setExternalLabels("provider", ["startLabel"]);
         (plugin.api as any).clearExternalLabels("provider");
 
         const content = readFileSync(typeFilePath, "utf-8");
         expect(content).not.toContain(`"startLabel"`);
-        // File must still be valid TypeScript (export {}; at the end)
-        expect(content).toContain(`export {};`);
+        expect(content).toContain(`export const labelIds`);
+        expect(content).toContain(`export const characterIds`);
     });
 
     test("clearExternalLabels for unknown provider is a no-op", () => {
@@ -227,15 +246,17 @@ describe("vitePluginPixivn – label type file generation", () => {
         expect(content).toContain("auto-generated");
     });
 
-    test("generated file with no labels contains only the export statement", () => {
+    test("generated file with no IDs has empty runtime arrays but no augmentations", () => {
         const plugin = createConfiguredPlugin();
         (plugin.api as any).setExternalLabels("p", []);
         const content = readFileSync(typeFilePath, "utf-8");
         expect(content).not.toContain(`interface PixivnLabelIds`);
-        expect(content).toContain(`export {};`);
+        expect(content).not.toContain(`interface PixivnCharacterIds`);
+        expect(content).toContain(`export const characterIds = [] as const`);
+        expect(content).toContain(`export const labelIds = [] as const`);
     });
 
-    test("hotUpdate returns [] for the generated label type file", () => {
+    test("hotUpdate returns [] for the generated type file", () => {
         const plugin = createConfiguredPlugin(typeFilePath);
         const result = (plugin.hotUpdate as any)({
             file: typeFilePath,
