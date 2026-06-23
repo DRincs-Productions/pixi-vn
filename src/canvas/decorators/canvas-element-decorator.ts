@@ -41,32 +41,12 @@ const registeredCanvasComponentCopyProperties = new CachedMap<
  * class AlienTintingTest extends Sprite<IAlienTintingMemory> {
  *     readonly pixivnId: string = CANVAS_SPINE_ID;
  *     override get memory() {
- *         return {
- *             ...super.memory,
- *             pixivnId: CANVAS_SPINE_ID,
- *             direction: this.direction,
- *             turningSpeed: this.turningSpeed,
- *             speed: this.speed,
- *         };
+ *         // ...
  *     }
  *     override async setMemory(memory: IAlienTintingMemory) {
- *         await super.setMemory(memory);
- *         this.direction = memory.direction;
- *         this.turningSpeed = memory.turningSpeed;
- *         this.speed = memory.speed;
+ *         // ...
  *     }
- *     direction: number = 0;
- *     turningSpeed: number = 0;
- *     speed: number = 0;
- *     static override from(
- *         source: Texture | TextureSourceLike,
- *         skipCache?: boolean,
- *     ) {
- *         let sprite = Sprite.from(source, skipCache);
- *         let mySprite = new AlienTintingTest();
- *         mySprite.texture = sprite.texture;
- *         return mySprite;
- *     }
+ *     // ...
  * }
  * ```
  */
