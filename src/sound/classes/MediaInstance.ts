@@ -106,11 +106,18 @@ export default class MediaInstance extends Player implements MediaInterface {
             }
         } else {
             let elapsed: number | undefined;
+            let wasActuallyPaused = false;
+            // Only restart when the player was explicitly paused (pausedAt was set).
+            // Without this guard, a delayed player whose state is "stopped" because
+            // its scheduled start is still in the future would be started a second
+            // time, causing Tone.js to throw "Start time must be strictly greater
+            // than previous start time".
             if (typeof this.pausedAt === "number") {
+                wasActuallyPaused = true;
                 elapsed = this.pausedAt - this.playStartTime;
                 this.pausedAt = undefined;
             }
-            if (state === "stopped") {
+            if (wasActuallyPaused && state === "stopped") {
                 if (this.delay) {
                     this.start(`+${this.delay}`, elapsed);
                 } else {

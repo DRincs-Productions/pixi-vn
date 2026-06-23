@@ -69,6 +69,7 @@ vi.mock("tone", () => {
 
 import { sound, type SoundGameState } from "../src";
 import AudioChannel from "../src/sound/classes/AudioChannel";
+import MediaInstance from "../src/sound/classes/MediaInstance";
 import type MediaInterface from "../src/sound/interfaces/MediaInterface";
 import type { SoundPlayOptions } from "../src/sound/interfaces/SoundOptions";
 import SoundRegistry from "../src/sound/SoundRegistry";
@@ -620,6 +621,76 @@ describe("sound restore", () => {
 
     test("restore() with legacy soundsPlaying does not throw", async () => {
         await expect(sound.restore({ soundsPlaying: {}, filters: [] })).resolves.not.toThrow();
+    });
+});
+
+// ---------------------------------------------------------------------------
+// Tests: MediaInstance.paused setter — double-start guard
+// Regression: start → continue → back caused Tone.js to throw
+// "Start time must be strictly greater than previous start time" because
+// restore() called `mediaInstance.paused = false` on a delayed player whose
+// Tone.js state was still "stopped" (scheduled start in the future), which
+// triggered a second start() on the same instance at the same timestamp.
+// ---------------------------------------------------------------------------
+
+describe("MediaInstance.paused setter — double-start guard", () => {
+    test("setting paused=false without a prior pause is a no-op even when state is 'stopped'", () => {
+        const instance = new MediaInstance("sfx", "general", "sound", 0, {}, 0.1);
+        // Simulate the condition that triggers the bug: the Tone.js Player has a
+        // scheduled-but-not-yet-started state ("stopped" at currentTime because
+        // the real start is 0.1 s in the future).
+        vi.spyOn(instance, "state", "get").mockReturnValue("stopped" as any);
+        const startSpy = vi.spyOn(instance, "start");
+
+        instance.paused = false; // no prior paused=true → pausedAt is never set
+
+        expect(startSpy).not.toHaveBeenCalled();
+    });
+
+    test("restore() with a delayed non-background sound calls start() exactly once", async () => {
+        // Regression test for the start → continue → back bug:
+        // restore() must not trigger a second start() via the paused=false call.
+        const loadSpy = vi.spyOn(sound as any, "load").mockResolvedValue(undefined);
+        SoundRegistry.bufferRegistry.set("sfx_whoosh", {} as any);
+        sound.addChannel("sfx");
+        const startSpy = vi.spyOn(MediaInstance.prototype, "start");
+
+        try {
+            await sound.restore({
+                mediaInstances: {
+                    sfx_whoosh: {
+                        channelAlias: "sfx",
+                        soundAlias: "sfx_whoosh",
+                        stepCounter: 0,
+                        paused: false,
+                        options: { loop: false, volume: 1, paused: false, elapsed: 0, delay: 0.1 },
+                    },
+                },
+            });
+
+            // _createPlayer calls start("+0.1", 0) — that must be the only call.
+            // A second call would come from the paused=false setter (the bug).
+            expect(startSpy).toHaveBeenCalledTimes(1);
+            expect(startSpy).toHaveBeenCalledWith("+0.1", 0);
+        } finally {
+            startSpy.mockRestore();
+            SoundRegistry.bufferRegistry.delete("sfx_whoosh");
+            loadSpy.mockRestore();
+        }
+    });
+
+    test("setting paused=false after paused=true restarts the sound (existing behaviour preserved)", () => {
+        const instance = new MediaInstance("sfx", "general", "sound", 0, {});
+        // Keep state as "stopped" throughout so paused=true never triggers
+        // super.stop() (which would call real Tone.js and crash without a buffer).
+        vi.spyOn(instance, "state", "get").mockReturnValue("stopped" as any);
+        // Prevent the real Tone.js start() from executing — no audio buffer in tests.
+        const startSpy = vi.spyOn(instance, "start").mockReturnValue(instance as any);
+
+        instance.paused = true; // sets pausedAt; state="stopped" → no super.stop()
+        instance.paused = false; // pausedAt is set → must call start() once
+
+        expect(startSpy).toHaveBeenCalledTimes(1);
     });
 });
 
