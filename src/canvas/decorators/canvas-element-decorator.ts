@@ -32,6 +32,43 @@ const registeredCanvasComponentCopyProperties = new CachedMap<
  * Is a decorator that register a canvas component in the game.
  * @param options Options for the canvas component.
  * @returns
+ * @example
+ * ```ts title="canvas/components/AlienTinting.ts"
+ * const ALIEN_TINTING_TEST_ID = "AlienTintingTest";
+ * @canvasComponentDecorator({
+ *     name: ALIEN_TINTING_TEST_ID,
+ * })
+ * class AlienTintingTest extends Sprite<IAlienTintingMemory> {
+ *     readonly pixivnId: string = CANVAS_SPINE_ID;
+ *     override get memory() {
+ *         return {
+ *             ...super.memory,
+ *             pixivnId: CANVAS_SPINE_ID,
+ *             direction: this.direction,
+ *             turningSpeed: this.turningSpeed,
+ *             speed: this.speed,
+ *         };
+ *     }
+ *     override async setMemory(memory: IAlienTintingMemory) {
+ *         await super.setMemory(memory);
+ *         this.direction = memory.direction;
+ *         this.turningSpeed = memory.turningSpeed;
+ *         this.speed = memory.speed;
+ *     }
+ *     direction: number = 0;
+ *     turningSpeed: number = 0;
+ *     speed: number = 0;
+ *     static override from(
+ *         source: Texture | TextureSourceLike,
+ *         skipCache?: boolean,
+ *     ) {
+ *         let sprite = Sprite.from(source, skipCache);
+ *         let mySprite = new AlienTintingTest();
+ *         mySprite.texture = sprite.texture;
+ *         return mySprite;
+ *     }
+ * }
+ * ```
  */
 export function canvasComponentDecorator<
     M extends CanvasBaseItemMemory,
@@ -39,7 +76,7 @@ export function canvasComponentDecorator<
 >(
     options: {
         /**
-         * Name of the canvas component. If the name is already registered, it will show a warning
+         * The id used by Pixi’VN to refer to this class (must be unique). If you don't pass the id, the class name will be used as the id.
          * @default target.name
          */
         name?: CanvasElementAliasType;
@@ -61,7 +98,7 @@ export function canvasComponentDecorator<
         copyProperty?: (component: CanvasBaseItem<M>, memory: M) => void | Promise<void>;
     } = {},
 ) {
-    return function (target: T) {
+    return (target: T) => {
         RegisteredCanvasComponents.add(target, options);
     };
 }
