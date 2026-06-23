@@ -191,8 +191,8 @@ export default interface CanvasManagerInterface {
     removeAll(): void;
     /**
      * Edit the alias of a canvas element. The tickers that are connected to the canvas element will be transferred.
-     * @param oldAlias The old alias of the canvas element.
-     * @param newAlias The new alias of the canvas element.
+     * @param oldAlias The old alias of the component to edit.
+     * @param newAlias The new alias of the component.
      * @param options The options of the canvas element.
      */
     editAlias(

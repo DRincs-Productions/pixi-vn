@@ -129,10 +129,10 @@ export async function showWithDissolve(
         tickerIdToResume = [tickerIdToResume];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined;
+    let oldComponentAlias: string | undefined;
     const oldComponent = canvas.find(alias);
     if (oldComponent) {
-        oldComponentAlias = alias + "_temp_disolve";
+        oldComponentAlias = `${alias}_temp_disolve`;
         canvas.editAlias(alias, oldComponentAlias);
     }
     // add the new component and transfer the properties of the old component to the new component
@@ -264,7 +264,7 @@ export async function showWithFade(
     if (!oldComponent) {
         return showWithDissolve(alias, component, props, priority);
     }
-    const oldComponentAlias = alias + "_temp_fade";
+    const oldComponentAlias = `${alias}_temp_fade`;
     canvas.editAlias(alias, oldComponentAlias);
     aliasToRemoveAfter.push(oldComponentAlias);
     // add the new component and transfer the properties of the old component to the new component
@@ -374,8 +374,7 @@ export async function moveIn(
         ...options
     } = props;
     const res: string[] = [];
-    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
-        undefined;
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" };
     if (!component) {
         component = alias;
     }
@@ -386,10 +385,10 @@ export async function moveIn(
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined;
+    let oldComponentAlias: string | undefined;
     const oldComponent = canvas.find(alias);
     if (oldComponent) {
-        oldComponentAlias = alias + "_temp_movein";
+        oldComponentAlias = `${alias}_temp_movein`;
         canvas.editAlias(alias, oldComponentAlias);
         if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
             destination = oldComponent.positionInfo;
@@ -568,8 +567,7 @@ export async function zoomIn(
         ...options
     } = props;
     const res: string[] = [];
-    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
-        undefined;
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" };
     if (!component) {
         component = alias;
     }
@@ -580,10 +578,10 @@ export async function zoomIn(
         aliasToRemoveAfter = [aliasToRemoveAfter];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined;
+    let oldComponentAlias: string | undefined;
     const oldComponent = canvas.find(alias);
     if (oldComponent) {
-        oldComponentAlias = alias + "_temp_zoom";
+        oldComponentAlias = `${alias}_temp_zoom`;
         canvas.editAlias(alias, oldComponentAlias);
         if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
             destination = oldComponent.positionInfo;
@@ -797,8 +795,7 @@ export async function pushIn(
         ...options
     } = props;
     const res: string[] = [];
-    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" } =
-        undefined;
+    let destination: undefined | { x: number; y: number; type: "pixel" | "percentage" | "align" };
     if (!component) {
         component = alias;
     }
@@ -806,10 +803,10 @@ export async function pushIn(
         tickerIdToResume = [tickerIdToResume];
     }
     // check if the alias is already exist
-    let oldComponentAlias: string | undefined = undefined;
+    let oldComponentAlias: string | undefined;
     const oldComponent = canvas.find(alias);
     if (oldComponent) {
-        oldComponentAlias = alias + "_temp_push";
+        oldComponentAlias = `${alias}_temp_push`;
         canvas.editAlias(alias, oldComponentAlias);
         if (oldComponent instanceof ImageSprite || oldComponent instanceof ImageContainer) {
             destination = oldComponent.positionInfo;
