@@ -110,6 +110,8 @@ export default class CanvasManagerStatic {
                         new ResizeObserver(throttledResize).observe(element);
                         // call it manually once so we are sure we are the correct size after starting
                         CanvasManagerStatic.resize();
+                        // some systems report the viewport size with a slight delay after init
+                        setTimeout(() => CanvasManagerStatic.resize(), 750);
                         break;
                     }
                     default:
