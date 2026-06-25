@@ -63,13 +63,19 @@ export default class Label<T extends {} = {}> extends LabelAbstract<Label<T>, T>
     }
 
     public getStepSha(index: number): string {
-        if (index < 0 || index >= this.steps.length) {
-            logger.warn("stepSha not found, setting to ERROR");
+        const steps = this.steps;
+        if (index < 0 || index >= steps.length) {
+            // For generator-function labels the step array can change between calls when
+            // game state is mutated inside a step (e.g. setting a flag that the generator
+            // branches on).  An out-of-bounds index is therefore expected during those
+            // intermediate states and does not indicate a bug.  Only warn for static labels.
+            if (typeof this._steps !== "function") {
+                logger.warn("stepSha not found, setting to ERROR");
+            }
             return AdditionalShaSpetsEnum.ERROR;
         }
         try {
-            const step = this.steps[index];
-            const sha1String = sha1(step.toString().toLocaleLowerCase());
+            const sha1String = sha1(steps[index].toString().toLocaleLowerCase());
             return sha1String.toString();
         } catch (e) {
             logger.warn("stepSha not found, setting to ERROR", e);

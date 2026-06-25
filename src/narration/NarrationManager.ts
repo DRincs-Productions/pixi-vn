@@ -112,7 +112,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
             choiceIndexMade: choiceMade,
             inputValue: inputValue,
-            alreadyMadeChoices: this.alreadyCurrentStepMadeChoices,
+            alreadyMadeChoices: this.getAlreadyMadeChoicesForSha(stepSha),
             isGlued: isGlued,
             openedLabels: openedLabels,
         };
@@ -120,6 +120,26 @@ export default class NarrationManager implements NarrationManagerInterface {
         GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();
+    }
+    /**
+     * Returns the choice indices already made at the current step, identified by the given SHA.
+     * Uses the provided SHA directly instead of re-calling the label's step generator,
+     * which may return a different array if the step mutated the state that the generator depends on.
+     */
+    private getAlreadyMadeChoicesForSha(stepSha: string): number[] | undefined {
+        const currentLabelStepIndex = NarrationManagerStatic.currentLabelStepIndex;
+        const currentLabel = this.currentLabel;
+        if (currentLabelStepIndex === null || !currentLabel) {
+            return undefined;
+        }
+        return NarrationManagerStatic.allChoicesMade
+            .filter(
+                (choice) =>
+                    choice.labelId === currentLabel.id &&
+                    choice.stepIndex === currentLabelStepIndex &&
+                    choice.stepSha1 === stepSha,
+            )
+            .map((c) => c.choiceIndex);
     }
     closeCurrentLabel() {
         if (!NarrationManagerStatic.currentLabelId) {
