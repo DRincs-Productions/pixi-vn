@@ -9,9 +9,9 @@ import ImageSprite from "../components/ImageSprite";
  * Is the same that {@link showImage}, but the image is not shown.
  * If you want to show the image, then you need to use the function {@link ImageSprite.load}.
  * @param alias is the unique alias of the image. You can use this alias to refer to this image
- * @param imageUrl is the url of the image. If you don't provide the url, then the alias is used as the url.
+ * @param imageUrl The url of the image. If you have initialized the "asset matrix", you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
  * @param options The options of the image.
- * @returns the container of the image.
+ * @returns This function returns an {@link ImageSprite} that you can use to manipulate the component.
  * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
@@ -55,9 +55,9 @@ export function addImage(
 /**
  * Add and show a image in the canvas. This function is a combination of {@link addImage}.
  * @param alias The unique alias of the image. You can use this alias to refer to this image
- * @param imageUrl The url of the image.
+ * @param imageUrl The url of the image. If you have initialized the "asset matrix", you can use the alias of the texture. If you don't provide the URL, then the alias is used as the URL.
  * @param options The options of the image.
- * @returns A promise that is resolved when the image is loaded.
+ * @returns This function returns an {@link ImageSprite} that you can use to manipulate the component.
  * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts

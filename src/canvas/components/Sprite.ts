@@ -56,6 +56,9 @@ export default class Sprite<Memory extends PixiSpriteOptions & CanvasBaseItemMem
         ListenerExtension,
         AdditionalPositionsExtension
 {
+    /**
+     * @param options The options for the component.
+     */
     constructor(options?: SpriteOptions | Texture) {
         if (options instanceof PIXI.Texture) {
             super(options);

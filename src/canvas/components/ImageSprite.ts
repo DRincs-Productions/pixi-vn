@@ -48,6 +48,10 @@ export default class ImageSprite<
         return this.texture.source.label;
     }
     readonly pixivnId: string = CANVAS_IMAGE_ID;
+    /**
+     * @param options The options for the component.
+     * @param textureAlias The URL or path. If you have initialized the "asset matrix", you can use the alias of the texture.
+     */
     constructor(
         options?: ImageSpriteOptions | Omit<Texture, "on"> | undefined,
         textureAlias?: string,
