@@ -5,7 +5,7 @@ import { canvas, Text, type TextOptions } from "..";
  * @param alias The unique alias of the text. You can use this alias to refer to this text.
  * @param text
  * @param options The options of the text.
- * @returns A promise that is resolved when the text is loaded.
+ * @returns This function returns an {@link Text} that you can use to manipulate the component.
  * @example
  * ```ts
  * let text = showText("text", "Hello World", { fontSize: 24, fill: "white" })
