@@ -11,7 +11,7 @@ import VideoSprite from "../components/VideoSprite";
  * @param alias is the unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl is the url of the video. If you don't provide the url, then the alias is used as the url.
  * @param options The options of the video.
- * @returns the container of the video.
+ * @returns This function returns an {@link VideoSprite} that you can use to manipulate the component.
  * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
@@ -57,7 +57,7 @@ export function addVideo(
  * @param alias The unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl The url of the video.
  * @param options The options of the video.
- * @returns A promise that is resolved when the video is loaded.
+ * @returns This function returns an {@link VideoSprite} that you can use to manipulate the component.
  * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts

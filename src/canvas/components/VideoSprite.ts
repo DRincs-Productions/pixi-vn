@@ -31,6 +31,10 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
  * ```
  */
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
+    /**
+     * @param options The options for the component.
+     * @param textureAlias The URL or path. If you have initialized the "asset matrix", you can use the alias of the texture.
+     */
     constructor(options?: VideoSpriteOptions | Texture | undefined, textureAlias?: string) {
         if (options instanceof PIXI.Texture) {
             super(options, textureAlias);
