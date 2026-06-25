@@ -26,6 +26,10 @@ import { logger } from "@utils/log-utility";
  * ```
  */
 export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {
+    /**
+     * @param options The options for the component.
+     * @param textureAliases An array of image URLs or paths. If you have initialized the "asset matrix", you can use the alias of the texture.
+     */
     constructor(options?: ImageContainerOptions<ImageSprite>, textureAliases?: string[]) {
         const { anchor, align, percentagePosition, ...restOptions } =
             analizePositionsExtensionProps(options) || {};
