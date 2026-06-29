@@ -840,7 +840,10 @@ export default class NarrationManager implements NarrationManagerInterface {
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_INFO_MEMORY_KEY,
         )?.type;
     }
-    public requestInput(info: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType) {
+    public requestInput(
+        info: Omit<InputInfo, "isRequired"> = {},
+        defaultValue?: StorageElementType,
+    ) {
         (info as InputInfo).isRequired = true;
         GameUnifier.setVariable(
             NARRATION_STORAGE_KEY,

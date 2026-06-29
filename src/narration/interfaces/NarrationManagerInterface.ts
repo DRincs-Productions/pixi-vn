@@ -292,7 +292,7 @@ export default interface NarrationManagerInterface {
      * @param info The input value to be inserted by the player.
      * @param defaultValue The default value to be inserted.
      */
-    requestInput(info: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType): void;
+    requestInput(info?: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType): void;
     /**
      * Remove the input request.
      */
