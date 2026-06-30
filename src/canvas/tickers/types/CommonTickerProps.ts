@@ -1,7 +1,7 @@
 import { narration } from "../../..";
 export type CommonTickerProps = {
     /**
-     * The alias to remove after the effect is done
+     * An array of strings containing the aliases of the canvas components to remove after the animation completes.
      * @default []
      */
     aliasToRemoveAfter?: string[] | string;
@@ -11,12 +11,12 @@ export type CommonTickerProps = {
      */
     startOnlyIfHaveTexture?: boolean;
     /**
-     * The alias to resume after the effect is done
+     * If you want to resume tickers that were previously paused, provide the aliases of the canvas components whose tickers should be resumed.
      * @default []
      */
     tickerAliasToResume?: string[] | string;
     /**
-     * The id of the ticker to resume after the effect is done
+     * A string containing the ticker ID to resume after the animation completes.
      * @default []
      */
     tickerIdToResume?: string[] | string;
@@ -25,6 +25,7 @@ export type CommonTickerProps = {
      */
     forceCompleteBeforeNext?: boolean;
     /**
+     * A boolean indicating whether the animation must complete before the next `step` of the game. If `true`, the game will force the animation to finish before proceeding.
      * When true, calling {@link narration.continue()} forces the current content to complete before advancing to the next narrative step.
      * @default false
      */

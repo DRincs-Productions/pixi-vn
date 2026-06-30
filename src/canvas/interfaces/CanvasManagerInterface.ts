@@ -377,12 +377,12 @@ export default interface CanvasManagerInterface {
      *
      * Pixi’VN will keep track of the animation state of this function.
      * So Pixi’VN will save the animation state in saves.
-     * @param components - The PixiJS component(s) to animate.
-     * @param keyframes - The keyframes to animate the component(s) with.
-     * @param options - Additional options for the animation, including duration, easing, and ticker.
-     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
-     * @returns The id of tickers.
-     * @template T - The type of Pixi’VN component(s) being animated.
+     * @param components The PixiJS component(s) to animate. This can be a single component, an array of components, or a string representing the component's alias.
+     * @param keyframes This is an object containing the properties to animate and the values to reach.
+     * @param options [`motion` options](https://motion.dev/docs/animate#options) for the animation, including duration, `easing`, and ticker.
+     * @param priority The priority of the PixiJS ticker. This parameter sets the ticker's priority. @default UPDATE_PRIORITY.NORMAL
+     * @returns The function returns the ID of the ticker created to animate the component(s).
+     * @template T The type of Pixi’VN component(s) being animated.
      */
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
@@ -396,12 +396,12 @@ export default interface CanvasManagerInterface {
      *
      * Pixi’VN will keep track of the animation state of this function.
      * So Pixi’VN will save the animation state in saves.
-     * @param components - The PixiJS component(s) to animate.
-     * @param sequence - The sequence of keyframes to animate the component(s) with.
-     * @param options - Additional options for the animation, including duration, easing, and ticker.
-     * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
-     * @returns The id of tickers.
-     * @template T - The type of Pixi’VN component(s) being animated.
+     * @param components The PixiJS component(s) to animate. This can be a single component, an array of components, or a string representing the component's alias.
+     * @param sequence The sequence of keyframes to animate the component(s) with.
+     * @param options [`motion` options](https://motion.dev/docs/animate#options) for the animation, including duration, `easing`, and ticker.
+     * @param priority The priority of the PixiJS ticker. This parameter sets the ticker's priority. @default UPDATE_PRIORITY.NORMAL
+     * @returns The function returns the ID of the ticker created to animate the component(s).
+     * @template T The type of Pixi’VN component(s) being animated.
      */
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string,
