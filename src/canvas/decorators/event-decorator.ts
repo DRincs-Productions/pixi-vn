@@ -23,7 +23,7 @@ const registeredEvents = new CachedMap<string, SerializableEventHandler>({ cache
  *
  * sprite.on("pointerdown", Events.eventExample);
  * ```
- * @param name is th identifier of the event, by default is the name of the class
+ * @param name The id used by Pixi’VN to refer to this function (must be unique). If you don't pass the id, the function name will be used as the id.
  * @returns
  */
 export function eventDecorator(name?: string) {
