@@ -122,8 +122,8 @@ export default interface CanvasManagerInterface {
      * Add a canvas element to the canvas.
      * If there is a canvas element with the same alias, all "style", zIndex, and {@link TickerBase} will be transferred to the new canvas element,
      * and the old canvas element will be removed.
-     * @param alias The alias of the canvas element.
-     * @param canvasComponent The canvas elements to be added.
+     * @param alias The alias to identify the component.
+     * @param canvasComponent The component to add.
      * @param options The options of the canvas element.
      * @example
      * ```ts
@@ -171,8 +171,8 @@ export default interface CanvasManagerInterface {
     ): void;
     /**
      * Get a canvas element by the alias.
-     * @param alias The alias of the canvas element.
-     * @returns The canvas element.
+     * @param alias The alias to identify the component.
+     * @returns The canvas element. If the component does not exist, it will return `undefined`.
      * @example
      * ```ts
      * const sprite = canvas.find<Sprite>("bunny");
