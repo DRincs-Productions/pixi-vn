@@ -2,7 +2,7 @@ import { EventEmitter } from "events";
 import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, beforeEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import {
     PIXIVN_DEV_API_ASSETS_MANIFEST,
     PIXIVN_DEV_API_CANVAS_OPTIONS,
@@ -10,6 +10,22 @@ import {
     PIXIVN_DEV_API_LABELS,
 } from "../src/vite/costants";
 import { vitePluginPixivn } from "../src/vite/plugins";
+
+let capturedTempServerConfig: any;
+
+vi.mock("vite", async (importOriginal) => {
+    const actual = await importOriginal<typeof import("vite")>();
+    return {
+        ...actual,
+        createServer: vi.fn(async (config: any) => {
+            capturedTempServerConfig = config;
+            return {
+                ssrLoadModule: async () => ({}),
+                close: async () => {},
+            };
+        }),
+    };
+});
 
 type MiddlewareHandler = (req: any, res: any) => void;
 
@@ -293,5 +309,32 @@ describe("vitePluginPixivn – type file generation", () => {
         });
         // Should be undefined (no interception) for unrelated files
         expect(result).toBeUndefined();
+    });
+});
+
+describe("vitePluginPixivn buildStart (build mode)", () => {
+    afterEach(() => {
+        capturedTempServerConfig = undefined;
+    });
+
+    test("forwards the project's resolved alias config to the temp SSR server", async () => {
+        // Regression test: `buildStart` (build mode) loads content via a bare `createServer()`
+        // call with `configFile: false`. Without forwarding `resolve` from the real
+        // `resolvedConfig`, that temp server has no idea how to resolve path aliases (e.g. `@/`
+        // from `resolve.tsconfigPaths` or a manual `resolve.alias`) — so any content file using
+        // them (in practice, almost all of them) silently fails to load, and the generated keys
+        // file ends up badly incomplete, breaking `vite build` / `tsc -b`.
+        const fakeResolve = { alias: [{ find: "@", replacement: "/fake/src" }] };
+        const plugin: any = vitePluginPixivn({ content: "./src/content/index.ts" });
+        plugin.configResolved({
+            root: tmpdir(),
+            command: "build",
+            resolve: fakeResolve,
+            logger: { info() {}, error() {}, warn() {} },
+        });
+
+        await plugin.buildStart();
+
+        expect(capturedTempServerConfig?.resolve).toBe(fakeResolve);
     });
 });

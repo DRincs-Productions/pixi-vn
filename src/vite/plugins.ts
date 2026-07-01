@@ -520,6 +520,13 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             const tempServer = await createServer({
                 root: resolvedConfig.root,
                 configFile: false,
+                // Forward the project's resolved alias configuration (e.g. `@/...` from
+                // `resolve.tsconfigPaths` or a manual `resolve.alias`). Without this, the temp
+                // server has no idea how to resolve those imports — any content file using them
+                // (which in practice is most of them) silently fails to load, and the plugin
+                // falls back to a much weaker regex-based scan of the failed file's raw source,
+                // producing a badly incomplete keys file for `vite build` / `tsc -b`.
+                resolve: resolvedConfig.resolve,
                 server: { middlewareMode: true },
                 appType: "custom",
                 logLevel: "silent",
