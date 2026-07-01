@@ -5,9 +5,9 @@ import { logger } from "../../utils/log-utility";
 /**
  * Shake the canvas element.
  * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
- * @param alias
- * @param options
- * @param priority
+ * @param alias The alias to identify the component.
+ * @param options Animation options, matching the `options` of animate function.
+ * @param priority The priority of the PixiJS ticker. This parameter sets the ticker's priority.
  * @returns
  */
 export async function shakeEffect(
