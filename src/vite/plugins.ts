@@ -251,12 +251,16 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             lines.push(`}`);
         }
         lines.push(`export const characterIds = ${JSON.stringify(charIds)} as const;`);
-        if (charIds.length > 0) {
+        {
+            // Always emit the enum, even when empty: consumers such as
+            // `zod.enum(characterIdsEnum)` throw at import time if this export is
+            // missing entirely (e.g. `Object.values(undefined)`), which would abort
+            // evaluation of every module still queued behind that import.
             const charEnum = Object.fromEntries(charIds.map((id) => [id, id]));
             lines.push(`export const characterIdsEnum = ${JSON.stringify(charEnum)} as const;`);
         }
         lines.push(`export const labelIds = ${JSON.stringify(labelIds)} as const;`);
-        if (labelIds.length > 0) {
+        {
             const labelEnum = Object.fromEntries(labelIds.map((id) => [id, id]));
             lines.push(`export const labelIdsEnum = ${JSON.stringify(labelEnum)} as const;`);
         }

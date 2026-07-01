@@ -249,7 +249,7 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).toContain("auto-generated");
     });
 
-    test("generated file with no IDs has empty runtime arrays but no augmentations or enums", () => {
+    test("generated file with no IDs has empty runtime arrays and empty enums, but no augmentations", () => {
         const plugin = createConfiguredPlugin();
         (plugin.api as any).setExternalLabels("p", []);
         const content = readFileSync(typeFilePath, "utf-8");
@@ -257,8 +257,15 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).not.toContain(`interface PixivnCharacterIds`);
         expect(content).toContain(`export const characterIds = [] as const`);
         expect(content).toContain(`export const labelIds = [] as const`);
-        expect(content).not.toContain(`characterIdsEnum`);
-        expect(content).not.toContain(`labelIdsEnum`);
+        // Regression: the enum exports must always be present, even when empty. Consumers
+        // commonly do `zod.enum(characterIdsEnum)` at module top-level; if this export were
+        // missing entirely (e.g. right after a fresh checkout, or after an interrupted
+        // dev-server run left the file with no ids), the import resolves to `undefined` and
+        // `zod.enum(undefined)` throws — aborting evaluation of the importing module and every
+        // sibling module still queued behind it (e.g. other content files glob-imported by the
+        // same barrel module).
+        expect(content).toContain(`export const characterIdsEnum = {} as const;`);
+        expect(content).toContain(`export const labelIdsEnum = {} as const;`);
     });
 
     test("hotUpdate returns [] for the generated type file", () => {
