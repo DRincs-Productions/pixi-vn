@@ -89,6 +89,8 @@ export type {
     ZoomInOutProps,
 } from "./interfaces/transition-props";
 export * from "./tickers";
+export type { AssetAliasIdType, PixivnAssetAliasIds } from "./types/AssetAliasIdType";
+export type { BundleIdType, PixivnBundleIds } from "./types/BundleIdType";
 export type { default as ContainerChild } from "./types/ContainerChild";
 export type { PauseType } from "./types/PauseType";
 export type { RepeatType } from "./types/RepeatType";

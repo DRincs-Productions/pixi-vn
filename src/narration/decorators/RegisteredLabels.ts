@@ -33,7 +33,7 @@ namespace RegisteredLabels {
      * Saves a label in the system
      * @param labels The label(s) to be saved
      */
-    export function add(...labels: (LabelAbstract<any, any> )[]) {
+    export function add(...labels: LabelAbstract<any, any>[]) {
         for (const label of labels) {
             if (registeredLabels.has(label.id)) {
                 logger.info(`Label "${label.id}" already exists, it will be overwritten`);

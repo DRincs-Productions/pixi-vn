@@ -1,8 +1,20 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 
 const VIDEO_EXTENSIONS = new Set([
-    "mp4", "webm", "ogg", "ogv", "avi", "mov", "wmv",
-    "flv", "mkv", "m4v", "3gp", "3g2", "ts", "mts",
+    "mp4",
+    "webm",
+    "ogg",
+    "ogv",
+    "avi",
+    "mov",
+    "wmv",
+    "flv",
+    "mkv",
+    "m4v",
+    "3gp",
+    "3g2",
+    "ts",
+    "mts",
 ]);
 
 export function checkIfVideo(textureAlias: string): boolean {
