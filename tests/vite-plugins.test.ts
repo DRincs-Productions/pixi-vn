@@ -1,5 +1,5 @@
 import { EventEmitter } from "events";
-import { existsSync, mkdirSync, readFileSync, rmSync } from "node:fs";
+import { existsSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
@@ -558,6 +558,55 @@ describe("vitePluginPixivn – assetsManifest", () => {
         const content = readFileSync(typeFilePath, "utf-8");
         expect(content).toContain(`export const bundleIds = [] as const;`);
         expect(content).toContain(`export const assetAliasIds = [] as const;`);
+    });
+
+    test("content loads after characters/labels, so a content file's keys-file import sees fresh ids", async () => {
+        // Regression test: `content` files commonly build a validator from the generated keys
+        // file, e.g. `zod.enum(characterIdsEnum)` for a custom hashtag command. If `content`
+        // loaded in the same pass as `characters`/`labels` — before the keys file was
+        // (re)written for *this* run — that import would see whatever characterIdsEnum
+        // happened to be on disk from the *previous* run: empty on a first-ever run, and
+        // capable of going stale any time content and characters/labels are loaded together.
+        writeFileSync(join(tmpDir, "characters.ts"), "// characters");
+        writeFileSync(join(tmpDir, "content.ts"), "// content");
+
+        const registered: { id: string }[] = [];
+        const seenCharacterIdsEnumAtContentLoad: string[] = [];
+
+        const plugin: any = configure(
+            vitePluginPixivn({
+                typeFilePath,
+                characters: "./characters.ts",
+                content: "./content.ts",
+            }),
+        );
+
+        const ssrLoadModule = async (id: string) => {
+            if (id === "@drincs/pixi-vn/characters") {
+                return { RegisteredCharacters: { values: () => registered } };
+            }
+            if (id === "@drincs/pixi-vn/narration") {
+                return { RegisteredLabels: { keys: () => [] } };
+            }
+            if (id.includes("characters.ts")) {
+                registered.push({ id: "mc" });
+                return {};
+            }
+            if (id.includes("content.ts")) {
+                // Simulate a content file importing the generated keys file, the same way
+                // `zod.enum(characterIdsEnum)` does in real app code.
+                const generated = readFileSync(typeFilePath, "utf-8");
+                const match = generated.match(/characterIdsEnum = (\{[^}]*\})/);
+                seenCharacterIdsEnumAtContentLoad.push(match ? match[1] : "<missing>");
+                return {};
+            }
+            return {};
+        };
+
+        plugin.configureServer(createSsrServer(ssrLoadModule));
+        await plugin.api.contentLoaded;
+
+        expect(seenCharacterIdsEnumAtContentLoad).toEqual([`{"mc":"mc"}`]);
     });
 
     test("hotUpdate re-invokes the assetsManifest function even for a file it doesn't otherwise track", async () => {

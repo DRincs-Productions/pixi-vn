@@ -537,6 +537,60 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         );
     }
 
+    /**
+     * Loads every matched `characters` / `labels` / `content` file via `ssrLoadModule`, in two
+     * phases, and returns the combined list of files that failed to load (passed to
+     * `readSsrState` for its regex-based fallback scan).
+     *
+     * `characters` and `labels` load first, followed immediately by `readSsrState` +
+     * `tryGenerateKeysFile()` — so the generated keys file (and its `characterIdsEnum` /
+     * `labelIdsEnum` exports) reflects the current registry *before* `content` loads. Without
+     * this ordering, a `content` file that builds a validator from those generated exports (e.g.
+     * `zod.enum(characterIdsEnum)` for a custom hashtag command) would see whatever the keys file
+     * happened to contain from the *previous* run — empty on a first-ever run, or simply stale —
+     * since the old single-pass loop only (re)generated the keys file after every content file,
+     * including that one, had already executed.
+     */
+    async function loadFilesInPhases(
+        ssrLoadModule: (url: string) => Promise<unknown>,
+        root: string,
+    ): Promise<string[]> {
+        const failedFiles: string[] = [];
+
+        const earlyPatterns = [...asArray(options?.characters), ...asArray(options?.labels)];
+        const earlyFiles = await glob(earlyPatterns, {
+            cwd: root,
+            absolute: true,
+            onlyFiles: true,
+        });
+        for (const file of earlyFiles) {
+            watchedFiles.add(file);
+            try {
+                await ssrLoadModule(file);
+            } catch {
+                failedFiles.push(file);
+            }
+        }
+        await readSsrState(ssrLoadModule, failedFiles);
+        tryGenerateKeysFile();
+
+        const contentFiles = await glob(asArray(options?.content), {
+            cwd: root,
+            absolute: true,
+            onlyFiles: true,
+        });
+        for (const file of contentFiles) {
+            watchedFiles.add(file);
+            try {
+                await ssrLoadModule(file);
+            } catch {
+                failedFiles.push(file);
+            }
+        }
+
+        return failedFiles;
+    }
+
     async function loadModules(
         ssrLoadModule: (url: string) => Promise<unknown>,
         root: string,
@@ -555,16 +609,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         } catch {
             /* ignore */
         }
-        const files = await glob(allPatterns, { cwd: root, absolute: true, onlyFiles: true });
-        const failedFiles: string[] = [];
-        for (const file of files) {
-            watchedFiles.add(file);
-            try {
-                await ssrLoadModule(file);
-            } catch {
-                failedFiles.push(file);
-            }
-        }
+        const failedFiles = await loadFilesInPhases(ssrLoadModule, root);
         await readSsrState(ssrLoadModule, failedFiles);
         await refreshAssetsManifest(ssrLoadModule);
         tryGenerateKeysFile();
@@ -593,20 +638,10 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         } catch {
             /* ignore */
         }
-        const files = await glob(allPatterns, {
-            cwd: resolvedConfig!.root,
-            absolute: true,
-            onlyFiles: true,
-        });
-        const failedFiles: string[] = [];
-        for (const file of files) {
-            watchedFiles.add(file);
-            try {
-                await server.ssrLoadModule(file);
-            } catch {
-                failedFiles.push(file);
-            }
-        }
+        const failedFiles = await loadFilesInPhases(
+            (p) => server.ssrLoadModule(p),
+            resolvedConfig!.root,
+        );
         await readSsrState((p) => server.ssrLoadModule(p), failedFiles);
         await refreshAssetsManifest((p) => server.ssrLoadModule(p));
         tryGenerateKeysFile();
