@@ -35,9 +35,6 @@ namespace RegisteredLabels {
      */
     export function add(...labels: LabelAbstract<any, any>[]) {
         for (const label of labels) {
-            if (registeredLabels.has(label.id)) {
-                logger.info(`Label "${label.id}" already exists, it will be overwritten`);
-            }
             registeredLabels.set(label.id, label);
         }
     }
