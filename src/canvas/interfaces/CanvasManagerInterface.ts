@@ -219,7 +219,7 @@ export default interface CanvasManagerInterface {
     readonly currentTickersSteps: Map<string, Map<string, TickersSequence>>;
     /**
      * Find a ticker by its id.
-     * @param tickerId The id of the ticker.
+     * @param tickerId The id of the ticker to be found.
      * @param args The args of the ticker.
      * @returns The ticker if found, undefined otherwise.
      */
@@ -230,7 +230,7 @@ export default interface CanvasManagerInterface {
      * If already exists a sequence of tickers with the same alias, it will be removed.
      * @param canvasElementAlias The alias of the canvas element that will use the ticker.
      * @param ticker The ticker class to be run.
-     * @returns The id of the ticker.
+     * @returns The id of the ticker that was added.
      * @example
      * ```ts
      * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
@@ -282,7 +282,7 @@ export default interface CanvasManagerInterface {
     removeAllTickers(): void;
     /**
      * Remove a ticker by the id.
-     * @param tickerId The id of the ticker.
+     * @param tickerId The id or an array of ids of the ticker to be removed.
      */
     removeTicker(tickerId: string | string[]): void;
     /**
