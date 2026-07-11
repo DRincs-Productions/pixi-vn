@@ -1,13 +1,10 @@
 import type { Ticker as PixiTicker } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { debounce } from "@utils/time-utility";
 import {
     animate as animateMotion,
     type AnimationOptions,
     type AnimationPlaybackControlsWithThen,
     type At,
-    type MotionValue,
-    motionValue,
     type ObjectSegment,
     type ObjectTarget,
     type SequenceOptions,
@@ -111,6 +108,15 @@ export function animate<T extends {}>(
 
 /**
  * Create a timeline for running a sequence of functions with transitions. Each function will be called with the provided arguments and will run for the specified duration.
+ *
+ * `onPlay`/`onComplete` are driven by a PixiJS-ticker-based scheduler rather than motion's own
+ * per-segment callbacks: motion's array/sequence syntax doesn't reliably call `onPlay`/`onComplete`
+ * once per segment when the timeline repeats (https://github.com/motiondivision/motion/issues/3563),
+ * since the previous workaround (a throwaway `MotionValue` per segment, "change"-debounced into the
+ * callback) got reset and replayed by motion's own `repeat` handling, firing extra times per loop.
+ * This scheduler only supports segments placed sequentially (via `duration`/`delay`); the `at` label
+ * positioning of motion's `At` type is passed through to the underlying visual tween but is not
+ * accounted for when timing these callbacks.
  * @example
  * timeline([
  *     { duration: 10, onComplete: () => console.log("First step completed") },
@@ -123,28 +129,99 @@ export function animate<T extends {}>(
 export function timeline(
     times: SegmentOptions[],
     options?: SequenceOptions & { ticker?: PixiTicker; driver?: any },
-) {
+): AnimationPlaybackControlsWithThen {
+    const { ticker = new PIXI.Ticker(), driver = motionDriver(ticker), repeat, ...rest } =
+        options || {};
+
     const n = { x: 0 };
-    // const sequence: ObjectSegmentWithTransition<number>[] = options.map((option, index) => {
-    //     return [n, {x: index + 1}, option];
-    // });
-    const sequence: ObjectSegmentWithTransition<number | MotionValue<number> | { x: number }>[] =
-        [];
-    times.forEach((option, index) => {
-        const { onComplete, onPlay, ...rest } = option;
-        if (onPlay) {
-            const objp = motionValue(index);
-            objp.on("change", debounce(onPlay, 50));
-            sequence.push([objp, index + 1, { duration: 0.01 }]);
-        }
-        sequence.push([n, { x: index + 1 }, rest]);
-        // TODO: onComplete doesn't work in the following cases. So I found this alternative method to handle it.
-        // TODO: https://github.com/motiondivision/motion/issues/3563
-        if (onComplete) {
-            const objc = motionValue(index);
-            objc.on("change", debounce(onComplete, 50));
-            sequence.push([objc, index + 1, { duration: 0.01 }]);
-        }
+    const steps: {
+        start: number;
+        end: number;
+        onPlay?: () => void;
+        onComplete?: () => void;
+    }[] = [];
+    const sequence: ObjectSegmentWithTransition<number | { x: number }>[] = [];
+
+    let cursor = 0;
+    times.forEach((time, index) => {
+        const { onComplete, onPlay, delay = 0, duration = 0.3, ...rest2 } = time;
+        // `delay` can be a per-target DynamicOption(index, total) for staggering across multiple
+        // subjects; each of our segments only ever targets the single shared `n` subject, so it
+        // always resolves against a single-element group.
+        const resolvedDelay = typeof delay === "function" ? delay(0, 1) : delay;
+        const start = cursor + resolvedDelay;
+        const end = start + duration;
+        steps.push({ start, end, onPlay, onComplete });
+        sequence.push([n, { x: index + 1 }, { ...rest2, delay, duration }]);
+        cursor = end;
     });
-    return animate<number | MotionValue<number> | { x: number }>(sequence, options);
+    const totalDuration = cursor;
+
+    const animation = animate<number | { x: number }>(sequence, {
+        ...rest,
+        repeat,
+        driver,
+    } as SequenceOptions & { driver: any });
+
+    if (steps.length > 0 && totalDuration > 0) {
+        const normalizedRepeat = repeat === null ? Infinity : repeat;
+        const maxCycles = normalizedRepeat === undefined ? 1 : normalizedRepeat + 1;
+        let activeIndex = -1;
+        let cyclesCompleted = 0;
+        let elapsed = 0;
+        let finished = false;
+
+        const enterStep = (index: number) => {
+            if (activeIndex >= 0) steps[activeIndex].onComplete?.();
+            activeIndex = index;
+            steps[activeIndex].onPlay?.();
+        };
+        const finishActiveStep = () => {
+            if (activeIndex >= 0) steps[activeIndex].onComplete?.();
+            activeIndex = -1;
+        };
+        // Returns the index of the step active at `position`, or -1 if `position` falls in a
+        // gap before a step's (delayed) start, where no step should be considered active yet.
+        const stepIndexAt = (position: number) => {
+            for (let i = 0; i < steps.length; i++) {
+                if (position < steps[i].start) return -1;
+                if (position < steps[i].end) return i;
+            }
+            return steps.length - 1;
+        };
+        const stopWatching = () => {
+            finished = true;
+            ticker.remove(onTick);
+        };
+
+        function onTick() {
+            if (finished) return;
+            elapsed += ticker.deltaMS / 1000;
+
+            while (!finished && elapsed >= totalDuration) {
+                finishActiveStep();
+                cyclesCompleted++;
+                if (cyclesCompleted >= maxCycles) {
+                    stopWatching();
+                    return;
+                }
+                elapsed -= totalDuration;
+            }
+            const index = stepIndexAt(elapsed);
+            if (index === -1) {
+                if (activeIndex >= 0) finishActiveStep();
+            } else if (index !== activeIndex) {
+                enterStep(index);
+            }
+        }
+        ticker.add(onTick);
+
+        const stopAnimation = animation.stop.bind(animation);
+        animation.stop = () => {
+            stopWatching();
+            stopAnimation();
+        };
+    }
+
+    return animation;
 }
