@@ -470,8 +470,23 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         writeFileSync(filePath, lines.join("\n"), "utf-8");
     }
 
+    /**
+     * Syncs the in-memory dev-server state (`state.characters` / `state.labels`, backing the
+     * `GET /__pixi-vn/characters` and `GET /__pixi-vn/labels` endpoints) with whatever is
+     * currently known from SSR-loaded content plus external providers.
+     *
+     * Called from {@link tryGenerateKeysFile}, i.e. at every point where the registries may have
+     * changed — content (re)load, external-label updates — and always *before* the typeFilePath
+     * generation logic, so the dev-server endpoints never lag behind the generated keys file.
+     */
+    function syncState(): void {
+        state.characters = ssrCharacters;
+        state.labels = getAllLabelIds();
+    }
+
     /** Regenerates the keys file if configured. Errors are logged and swallowed. */
     function tryGenerateKeysFile(): void {
+        syncState();
         const absPath = getAbsKeysFilePath();
         if (!absPath) return;
         try {

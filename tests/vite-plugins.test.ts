@@ -671,6 +671,172 @@ describe("vitePluginPixivn – assetsManifest", () => {
     });
 });
 
+// ── dev-server state sync (GET endpoints reflect SSR-loaded content) ────────
+
+describe("vitePluginPixivn – dev-server state sync (regression)", () => {
+    // Regression coverage: `state.characters`/`state.labels` (backing `GET
+    // /__pixi-vn/characters` and `GET /__pixi-vn/labels`) used to be written to only by the
+    // deprecated `POST` handler. SSR-loaded content populated `ssrCharacters`/`ssrLabels` (and
+    // the generated `typeFilePath`) just fine, but the dev-server state itself was never synced
+    // from them — so `GET /__pixi-vn/labels` kept 404-ing with "Labels not initialized" even
+    // though labels were demonstrably registered (visible in the generated `labelIds`).
+    let tmpDir: string;
+
+    beforeEach(() => {
+        tmpDir = join(tmpdir(), `pixi-vn-state-sync-test-${Date.now()}-${Math.random()}`);
+        mkdirSync(tmpDir, { recursive: true });
+    });
+
+    afterEach(() => {
+        rmSync(tmpDir, { recursive: true, force: true });
+    });
+
+    function createFullServer(ssrLoadModule: (id: string) => Promise<unknown>) {
+        const handlers = new Map<string, MiddlewareHandler>();
+        return {
+            ssrLoadModule,
+            middlewares: {
+                use(path: string, handler: MiddlewareHandler) {
+                    handlers.set(path, handler);
+                },
+            },
+            moduleGraph: { getModulesByFile: () => [] },
+            getHandler(path: string): MiddlewareHandler {
+                const handler = handlers.get(path);
+                if (!handler) throw new Error(`No handler registered for ${path}`);
+                return handler;
+            },
+        };
+    }
+
+    function configure(plugin: any) {
+        plugin.configResolved({
+            root: tmpDir,
+            command: "serve",
+            logger: { info() {}, error() {}, warn() {} },
+        });
+        return plugin;
+    }
+
+    test("GET /__pixi-vn/characters reflects SSR-registered characters without any POST", async () => {
+        const registeredCharacters = [{ id: "mc" }, { id: "james" }];
+        const plugin: any = configure(vitePluginPixivn({ characters: "./characters.ts" }));
+        const server = createFullServer(async (id: string) => {
+            if (id === "@drincs/pixi-vn/characters") {
+                return { RegisteredCharacters: { values: () => registeredCharacters } };
+            }
+            if (id === "@drincs/pixi-vn/narration") {
+                return { RegisteredLabels: { keys: () => [] } };
+            }
+            return {};
+        });
+        plugin.configureServer(server);
+        await plugin.api.contentLoaded;
+
+        const res = createRes();
+        server.getHandler(PIXIVN_DEV_API_CHARACTERS)(createGetReq(), res);
+
+        expect(res.statusCode).toBe(200);
+        expect(JSON.parse(res.body)).toEqual(registeredCharacters);
+    });
+
+    test("GET /__pixi-vn/labels reflects SSR-registered labels without any POST", async () => {
+        const plugin: any = configure(vitePluginPixivn({ labels: "./labels.ts" }));
+        const server = createFullServer(async (id: string) => {
+            if (id === "@drincs/pixi-vn/characters") {
+                return { RegisteredCharacters: { values: () => [] } };
+            }
+            if (id === "@drincs/pixi-vn/narration") {
+                return { RegisteredLabels: { keys: () => ["start", "second_part"] } };
+            }
+            return {};
+        });
+        plugin.configureServer(server);
+        await plugin.api.contentLoaded;
+
+        const res = createRes();
+        server.getHandler(PIXIVN_DEV_API_LABELS)(createGetReq(), res);
+
+        expect(res.statusCode).toBe(200);
+        expect(JSON.parse(res.body)).toEqual(["start", "second_part"]);
+    });
+
+    test("api.setExternalLabels also updates GET /__pixi-vn/labels immediately", () => {
+        const plugin: any = vitePluginPixivn();
+        const server = createFullServer(async () => ({}));
+        plugin.configureServer(server);
+        const handler = server.getHandler(PIXIVN_DEV_API_LABELS);
+
+        const before = createRes();
+        handler(createGetReq(), before);
+        expect(before.statusCode).toBe(404);
+
+        plugin.api.setExternalLabels("provider", ["extLabel"]);
+
+        const after = createRes();
+        handler(createGetReq(), after);
+        expect(after.statusCode).toBe(200);
+        expect(JSON.parse(after.body)).toEqual(["extLabel"]);
+    });
+
+    test("api.clearExternalLabels also updates GET /__pixi-vn/labels immediately", () => {
+        const plugin: any = vitePluginPixivn();
+        const server = createFullServer(async () => ({}));
+        plugin.configureServer(server);
+        plugin.api.setExternalLabels("provider", ["extLabel"]);
+        const handler = server.getHandler(PIXIVN_DEV_API_LABELS);
+
+        plugin.api.clearExternalLabels("provider");
+
+        const res = createRes();
+        handler(createGetReq(), res);
+        expect(res.statusCode).toBe(200);
+        expect(JSON.parse(res.body)).toEqual([]);
+    });
+
+    test("reloadContent (hot-reload) keeps GET /__pixi-vn/characters and /labels in sync", async () => {
+        writeFileSync(join(tmpDir, "characters.ts"), "// characters");
+        const registered = { characters: [{ id: "mc" }], labels: ["start"] };
+        const plugin: any = configure(vitePluginPixivn({ characters: "./characters.ts" }));
+        const ssrLoadModule = async (id: string) => {
+            if (id === "@drincs/pixi-vn/characters") {
+                return {
+                    RegisteredCharacters: { values: () => registered.characters, clear() {} },
+                };
+            }
+            if (id === "@drincs/pixi-vn/narration") {
+                return { RegisteredLabels: { keys: () => registered.labels, clear() {} } };
+            }
+            return {};
+        };
+        const server = createFullServer(ssrLoadModule);
+        plugin.configureServer(server);
+        await plugin.api.contentLoaded;
+
+        // Simulate a content edit that changes the registered characters/labels, then a
+        // hot-reload cycle picking that change up.
+        registered.characters = [{ id: "mc" }, { id: "james" }];
+        registered.labels = ["start", "second_part"];
+        await plugin.hotUpdate({
+            file: join(tmpDir, "characters.ts"),
+            server,
+            modules: [],
+            timestamp: Date.now(),
+            read: () => Promise.resolve(""),
+            environment: {},
+        });
+        await new Promise((r) => setTimeout(r, 0));
+
+        const charactersRes = createRes();
+        server.getHandler(PIXIVN_DEV_API_CHARACTERS)(createGetReq(), charactersRes);
+        expect(JSON.parse(charactersRes.body)).toEqual(registered.characters);
+
+        const labelsRes = createRes();
+        server.getHandler(PIXIVN_DEV_API_LABELS)(createGetReq(), labelsRes);
+        expect(JSON.parse(labelsRes.body)).toEqual(registered.labels);
+    });
+});
+
 describe("vitePluginPixivn buildStart (build mode)", () => {
     afterEach(() => {
         capturedTempServerConfig = undefined;
