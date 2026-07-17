@@ -467,6 +467,63 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     /**
+     * Push the given label onto the opened labels stack and run its first step, optionally closing
+     * the current label first. Shared by {@link call} and {@link jump}, which only differ in whether
+     * the current label must be closed first and in the verb used in error logs.
+     *
+     * If {@link NarrationManagerStatic.onLabelStarting} is set, it takes over: it is called instead of
+     * the default content, and it receives a `defaultStart` callback that runs that default content, so
+     * it can decide whether (and when) the label actually starts.
+     * @param labelId The id of the label to start.
+     * @param props The props to pass to the label.
+     * @param options Additional options.
+     * @throws {PixiError} when the label is not found in the registered labels.
+     */
+    private async startLabel<T extends {}>(
+        labelId: LabelIdType,
+        props: StepLabelPropsType<T>,
+        options: {
+            choiceMade?: number;
+            closeCurrentLabel?: boolean;
+            /**
+             * Verb used in the error log if starting the label fails, e.g. `"calling"` or `"jumping to"`.
+             */
+            type: string;
+        },
+    ): Promise<StepLabelResultType> {
+        const defaultStart = async (): Promise<StepLabelResultType> => {
+            const { choiceMade, closeCurrentLabel, type } = options;
+            if (closeCurrentLabel && this.openedLabels.length > 0) {
+                this.closeCurrentLabel();
+            }
+            GameUnifier.runningStepsCount++;
+            let result: StepLabelResultType;
+            try {
+                const tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
+                if (!tempLabel) {
+                    throw new PixiError("unregistered_element", `Label ${labelId} not found`);
+                }
+
+                NarrationManagerStatic.pushNewLabel(tempLabel.id);
+                result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
+            } catch (e) {
+                logger.error(`Error ${type} label`, e);
+                throw e;
+            }
+            GameUnifier.runningStepsCount--;
+            return (await this.afterRunCurrentStep(props)) || result;
+        };
+        if (NarrationManagerStatic.onLabelStarting) {
+            return await NarrationManagerStatic.onLabelStarting(
+                labelId,
+                props,
+                options,
+                defaultStart,
+            );
+        }
+        return await defaultStart();
+    }
+    /**
      * Execute the label and add it to the history. (It's similar to Ren'Py's call function)
      * @param label The label to execute or the id of the label.
      * @param props The props to pass to the label.
@@ -491,22 +548,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType;
-        try {
-            const tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
-            if (!tempLabel) {
-                throw new PixiError("unregistered_element", `Label ${labelId} not found`);
-            }
-
-            NarrationManagerStatic.pushNewLabel(tempLabel.id);
-            result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
-        } catch (e) {
-            logger.error("Error calling label", e);
-            throw e;
-        }
-        GameUnifier.runningStepsCount--;
-        return (await this.afterRunCurrentStep(props)) || result;
+        return await this.startLabel<T>(labelId, props, { choiceMade, type: "calling" });
     }
     /**
      * Execute the label, close the current label, execute the new label and add the new label to the history. (It's similar to Ren'Py's jump function)
@@ -529,7 +571,6 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (this.stepCounter === 0) {
             return await this.call(label, props, options);
         }
-        if (this.openedLabels.length > 0) this.closeCurrentLabel();
         const { choiceMade } = options || {};
         let labelId: LabelIdType;
         if (typeof label === "string") {
@@ -537,22 +578,11 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             labelId = label.id;
         }
-        GameUnifier.runningStepsCount++;
-        let result: StepLabelResultType;
-        try {
-            const tempLabel = RegisteredLabels.get<LabelAbstract<any, T>>(labelId);
-            if (!tempLabel) {
-                throw new PixiError("unregistered_element", `Label ${labelId} not found`);
-            }
-
-            NarrationManagerStatic.pushNewLabel(tempLabel.id);
-            result = await this.runCurrentStep<T>(props, { choiceMade: choiceMade });
-        } catch (e) {
-            logger.error("Error jumping to label", e);
-            throw e;
-        }
-        GameUnifier.runningStepsCount--;
-        return (await this.afterRunCurrentStep(props)) || result;
+        return await this.startLabel<T>(labelId, props, {
+            choiceMade,
+            closeCurrentLabel: true,
+            type: "jumping to",
+        });
     }
     /**
      * Select a choice from the choice menu and close the choice menu.

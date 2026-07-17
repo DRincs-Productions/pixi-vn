@@ -413,6 +413,38 @@ export namespace Game {
     ) {
         narrationUtils.NarrationManagerStatic.onStepEnd = value;
     }
+    /**
+     * Is a function that will be executed every time a label is about to be started, either via
+     * `narration.call`, `narration.jump`, or a choice of type `"call"` / `"jump"`.
+     *
+     * By default (when this is not set), the label starts immediately, exactly like before this hook
+     * existed. If you set it, you take control: call `defaultStart()` yourself whenever you actually
+     * want the label to run — right away, or later (e.g. on a subsequent player action in your
+     * template). Until `defaultStart()` is called, nothing about the label happens: it is not added to
+     * the history and no step of it runs.
+     * @example
+     * ```ts
+     * Game.onLabelStarting((labelId, props, options, defaultStart) => {
+     *     pendingLabelStart = defaultStart; // keep it for later, don't run it now
+     * })
+     * ```
+     */
+    export function onLabelStarting(
+        value: (
+            labelId: narrationUtils.LabelIdType,
+            props: narrationUtils.StepLabelPropsType,
+            options: {
+                choiceMade?: number;
+                closeCurrentLabel?: boolean;
+                type: string;
+            },
+            defaultStart: () => Promise<narrationUtils.StepLabelResultType>,
+        ) =>
+            | narrationUtils.StepLabelResultType
+            | Promise<narrationUtils.StepLabelResultType>,
+    ) {
+        narrationUtils.NarrationManagerStatic.onLabelStarting = value;
+    }
 
     /**
      * Function to be executed when navigation is requested.

@@ -7,6 +7,7 @@ import type HistoryStep from "@narration/interfaces/HistoryStep";
 import type OpenedLabel from "@narration/interfaces/OpenedLabel";
 import type ChoicesMadeType from "@narration/types/ChoicesMadeType";
 import type { LabelIdType } from "@narration/types/LabelIdType";
+import type { StepLabelPropsType, StepLabelResultType } from "@narration/types/StepLabelType";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
 
@@ -355,4 +356,24 @@ export default class NarrationManagerStatic {
     }
     static onLoadingLabel?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
     static onStepEnd?: (stepId: number, label: LabelAbstract<any>) => void | Promise<void>;
+    /**
+     * Is a function that will be executed every time a label is about to be started, either via
+     * `call` or `jump` (this includes labels started through a choice of type `"call"` or `"jump"`).
+     *
+     * By default (when this is not set), the label is started immediately, exactly like before this
+     * hook existed. If you set it, you take control: call `defaultStart()` yourself whenever you want
+     * the label to actually run (right away, or later, e.g. from a subsequent `next()`-like action in
+     * your template). Until `defaultStart()` is called, nothing about the label happens: it is not
+     * added to the history and no step of it runs.
+     */
+    static onLabelStarting?: (
+        labelId: LabelIdType,
+        props: StepLabelPropsType,
+        options: {
+            choiceMade?: number;
+            closeCurrentLabel?: boolean;
+            type: string;
+        },
+        defaultStart: () => Promise<StepLabelResultType>,
+    ) => StepLabelResultType | Promise<StepLabelResultType>;
 }
