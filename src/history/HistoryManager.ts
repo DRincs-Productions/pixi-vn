@@ -261,6 +261,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                 choices: choices,
                 stepIndex: step.index,
                 inputValue: inputValue,
+                openedLabelsNumber: step.openedLabels?.length,
             };
         }
         return {
@@ -320,7 +321,7 @@ export default class HistoryManager implements HistoryManagerInterface {
                 }
                 if (
                     openedLabelsTemp[0].label !== label ||
-                    openedLabelsTemp[0].currentStepIndex >= currentStepIndex
+                    openedLabelsTemp[0].currentStepIndex > currentStepIndex
                 ) {
                     return false;
                 }
@@ -331,6 +332,22 @@ export default class HistoryManager implements HistoryManagerInterface {
         });
 
         return result.reverse();
+    }
+    get currentPageParagraphs(): NarrationHistory[][] {
+        const paragraphs: NarrationHistory[][] = [];
+        let lastOpenedLabelsNumber: number | undefined;
+        this.currentLabelHistory.forEach((item) => {
+            if (
+                paragraphs.length === 0 ||
+                item.openedLabelsNumber !== lastOpenedLabelsNumber
+            ) {
+                paragraphs.push([item]);
+            } else {
+                paragraphs[paragraphs.length - 1].push(item);
+            }
+            lastOpenedLabelsNumber = item.openedLabelsNumber;
+        });
+        return paragraphs;
     }
     removeNarrativeHistory(itemsNumber?: number) {
         if (itemsNumber) {

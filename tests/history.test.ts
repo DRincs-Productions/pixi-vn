@@ -137,6 +137,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 1,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -145,6 +146,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 2,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -153,6 +155,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 3,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -161,6 +164,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 5,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -171,6 +175,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 7,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -179,6 +184,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 8,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -187,6 +193,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 9,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -195,6 +202,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 10,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -203,6 +211,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 11,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -224,6 +233,7 @@ test("choice test", async () => {
                 },
             ],
             stepIndex: 12,
+            openedLabelsNumber: 1,
         },
     ]);
     const choice = narration.choices![0];
@@ -236,6 +246,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 1,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -244,6 +255,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 2,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -252,6 +264,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 3,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -260,6 +273,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 5,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -270,6 +284,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 7,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -278,6 +293,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 8,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -286,6 +302,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 9,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -294,6 +311,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 10,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -302,6 +320,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 11,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -323,6 +342,7 @@ test("choice test", async () => {
                 },
             ],
             stepIndex: 12,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -330,6 +350,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 13,
+            openedLabelsNumber: 1,
         },
     ]);
     expect(stepHistory.currentLabelHistory).toEqual([
@@ -339,6 +360,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 13,
+            openedLabelsNumber: 1,
         },
     ]);
     await narration.continue({});
@@ -363,6 +385,7 @@ test("choice test", async () => {
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 14,
+            openedLabelsNumber: 1,
             inputValue: undefined,
         },
         {
@@ -373,6 +396,7 @@ test("choice test", async () => {
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 15,
+            openedLabelsNumber: 1,
             inputValue: undefined,
         },
         {
@@ -386,6 +410,7 @@ test("choice test", async () => {
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 17,
+            openedLabelsNumber: 1,
             inputValue: undefined,
         },
         {
@@ -396,6 +421,7 @@ test("choice test", async () => {
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 18,
+            openedLabelsNumber: 1,
             inputValue: undefined,
         },
         {
@@ -406,6 +432,7 @@ test("choice test", async () => {
             playerMadeChoice: false,
             choices: undefined,
             stepIndex: 19,
+            openedLabelsNumber: 1,
             inputValue: undefined,
         },
     ]);
@@ -426,6 +453,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 14,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -433,6 +461,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 15,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -444,6 +473,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 17,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -452,6 +482,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 18,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -463,6 +494,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 20,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -470,6 +502,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 21,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -478,6 +511,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 22,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -485,6 +519,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 24,
+            openedLabelsNumber: 1,
         },
     ]);
     await narration.continue({});
@@ -514,6 +549,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 14,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -521,6 +557,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 15,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -532,6 +569,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 17,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -540,6 +578,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 18,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -551,6 +590,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 20,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -558,6 +598,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 21,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -566,6 +607,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 22,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -573,6 +615,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 24,
+            openedLabelsNumber: 1,
         },
     ]);
     expect(stepHistory.narrativeHistory).toEqual([
@@ -583,6 +626,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 1,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -591,6 +635,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 2,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -599,6 +644,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 3,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -607,6 +653,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 5,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -617,6 +664,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 7,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -625,6 +673,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 8,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -633,6 +682,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 9,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -641,6 +691,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 10,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -649,6 +700,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 11,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -670,6 +722,7 @@ test("choice test", async () => {
                 },
             ],
             stepIndex: 12,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -682,6 +735,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 14,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -689,6 +743,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 15,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -700,6 +755,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 17,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -708,6 +764,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 18,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -719,6 +776,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 20,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -726,6 +784,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 21,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -734,6 +793,7 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 22,
+            openedLabelsNumber: 1,
         },
         {
             dialogue: {
@@ -741,8 +801,72 @@ test("choice test", async () => {
             },
             playerMadeChoice: false,
             stepIndex: 24,
+            openedLabelsNumber: 1,
         },
     ]);
+});
+
+const paragraphSubLabel = newLabel("paragraphsub", [
+    async () => {
+        narration.dialogue = "Sub line 1.";
+    },
+    async () => {
+        narration.dialogue = "Sub line 2.";
+    },
+]);
+
+const paragraphPage1 = newLabel("paragraphpage1", [
+    async () => {
+        narration.dialogue = "Page1 paragraph1 line1.";
+    },
+    async () => {
+        narration.dialogue = "Page1 paragraph1 line2.";
+    },
+    async (props) => {
+        await narration.call(paragraphSubLabel, props);
+    },
+    async () => {
+        narration.dialogue = "Page1 paragraph1 resumed.";
+    },
+]);
+
+const paragraphPage2 = newLabel("paragraphpage2", [
+    async () => {
+        narration.dialogue = "Page2 line1.";
+    },
+]);
+
+test("stepHistory.currentPageParagraphs splits a page into paragraphs on call, and currentLabelHistory starts a new page on jump", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    await narration.call(paragraphPage1, {});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+    await narration.continue({});
+
+    expect(stepHistory.currentLabelHistory.map((item) => item.openedLabelsNumber)).toEqual([
+        1, 1, 2, 2, 1,
+    ]);
+    expect(
+        stepHistory.currentPageParagraphs.map((paragraph) =>
+            paragraph.map((item) => item.dialogue?.text),
+        ),
+    ).toEqual([
+        ["Page1 paragraph1 line1.", "Page1 paragraph1 line2."],
+        ["Sub line 1.", "Sub line 2."],
+        ["Page1 paragraph1 resumed."],
+    ]);
+
+    await narration.jump(paragraphPage2, {});
+
+    // jump opens a new page: the previous page's paragraphs are gone from currentLabelHistory
+    expect(
+        stepHistory.currentPageParagraphs.map((paragraph) =>
+            paragraph.map((item) => item.dialogue?.text),
+        ),
+    ).toEqual([["Page2 line1."]]);
 });
 
 const twoStep = newLabel("twoStep", [async () => {}, async () => {}]);

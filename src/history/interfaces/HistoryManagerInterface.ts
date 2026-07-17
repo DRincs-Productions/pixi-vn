@@ -18,9 +18,22 @@ export default interface HistoryManagerInterface {
     /**
      * Get the history of the latest steps belonging to the current label and its child labels.
      *
+     * This is effectively the current "page" of an interactive book: it starts over every time a
+     * {@link NarrationManagerInterface.jump} is performed.
+     *
      * @returns the history of the dialogues, choices and steps
      */
     readonly currentLabelHistory: NarrationHistory[];
+    /**
+     * Get the current page ({@link HistoryManagerInterface.currentLabelHistory}) split into paragraphs.
+     *
+     * A new paragraph starts every time the number of opened labels changes compared to the previous step
+     * (i.e. a {@link NarrationManagerInterface.call} was made, or a called label returned), using
+     * {@link NarrationHistory.openedLabelsNumber}.
+     *
+     * @returns the current page as an ordered list of paragraphs, each one a list of steps
+     */
+    readonly currentPageParagraphs: NarrationHistory[][];
     /**
      * The number of steps to keep in the history into the save file.
      *
