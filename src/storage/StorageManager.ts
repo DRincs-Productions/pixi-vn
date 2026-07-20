@@ -6,9 +6,11 @@ import {
 } from "@constants";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import type StorageExternalStoreHandler from "@storage/interfaces/StorageExternalStoreHandler";
+import type StorageFlagsInterface from "@storage/interfaces/StorageFlagsInterface";
 import type StorageGameState from "@storage/interfaces/StorageGameState";
 import type { StorageGameStateItem } from "@storage/interfaces/StorageGameState";
 import type StorageManagerInterface from "@storage/interfaces/StorageManagerInterface";
+import type StorageTempInterface from "@storage/interfaces/StorageTempInterface";
 import StorageRegistry from "@storage/StorageRegistry";
 import type { StorageElementType } from "@storage/types/StorageElementType";
 import { createExportableElement } from "@utils/export-utility";
@@ -21,6 +23,9 @@ export default class StorageManager implements StorageManagerInterface {
     get cache() {
         return StorageRegistry.storage.cache as any;
     }
+    /**
+     * @deprecated Use {@link temp}.deadlines instead.
+     */
     get tempStorageDeadlines() {
         return StorageRegistry.tempStorageDeadlines;
     }
@@ -29,6 +34,17 @@ export default class StorageManager implements StorageManagerInterface {
             StorageRegistry.defaultStorage.map.set(key, value);
         });
     }
+    public readonly temp: StorageTempInterface = {
+        set: (key, value) => this.setTemp(key, value),
+        remove: (key) => this.removeTemp(key),
+        get deadlines() {
+            return StorageRegistry.tempStorageDeadlines;
+        },
+    };
+    public readonly flags: StorageFlagsInterface = {
+        set: (key, value) => StorageRegistry.setFlag(key, value),
+        get: (key) => StorageRegistry.getFlag(key),
+    };
     public set(key: string, value: StorageElementType) {
         return StorageRegistry.setVariable(MAIN_STORAGE_KEY, key, value);
     }
@@ -43,31 +59,49 @@ export default class StorageManager implements StorageManagerInterface {
         return result;
     }
     public remove(key: string) {
-        this.removeTempVariable(key);
+        this.temp.remove(key);
         return StorageRegistry.removeVariable(MAIN_STORAGE_KEY, key);
     }
-    public setTempVariable(key: string, value: StorageElementType) {
+    private setTemp(key: string, value: StorageElementType) {
         if (value === undefined || value === null) {
-            this.removeTempVariable(key);
+            this.temp.remove(key);
             return;
         } else {
             StorageRegistry.setVariable(TEMP_STORAGE_KEY, key, value);
-            if (!this.tempStorageDeadlines.has(key)) {
-                this.tempStorageDeadlines.set(key, GameUnifier.openedLabels);
+            if (!this.temp.deadlines.has(key)) {
+                this.temp.deadlines.set(key, GameUnifier.openedLabels);
             }
         }
     }
-    public removeTempVariable(key: string) {
+    private removeTemp(key: string) {
         StorageRegistry.removeVariable(TEMP_STORAGE_KEY, key);
-        if (this.tempStorageDeadlines.has(key)) {
-            this.tempStorageDeadlines.delete(key);
+        if (this.temp.deadlines.has(key)) {
+            this.temp.deadlines.delete(key);
         }
     }
-    setFlag(key: string, value: boolean) {
-        return StorageRegistry.setFlag(key, value);
+    /**
+     * @deprecated Use {@link temp}.set instead.
+     */
+    public setTempVariable(key: string, value: StorageElementType) {
+        this.temp.set(key, value);
     }
+    /**
+     * @deprecated Use {@link temp}.remove instead.
+     */
+    public removeTempVariable(key: string) {
+        this.temp.remove(key);
+    }
+    /**
+     * @deprecated Use {@link flags}.set instead.
+     */
+    setFlag(key: string, value: boolean) {
+        this.flags.set(key, value);
+    }
+    /**
+     * @deprecated Use {@link flags}.get instead.
+     */
     getFlag(key: string): boolean {
-        return StorageRegistry.getFlag(key);
+        return this.flags.get(key);
     }
     setStorageHandler(value?: StorageExternalStoreHandler) {
         StorageRegistry.setExternalStoreHandler(value);
@@ -75,7 +109,7 @@ export default class StorageManager implements StorageManagerInterface {
     public clear() {
         this.base.clear();
         this.cache.clear();
-        this.tempStorageDeadlines.clear();
+        this.temp.deadlines.clear();
     }
     public export(): StorageGameState {
         const main: StorageGameStateItem[] = [];
@@ -83,8 +117,8 @@ export default class StorageManager implements StorageManagerInterface {
             main.push({ key, value: this.base.get(key) });
         });
         const tempDeadlines: StorageGameStateItem<number>[] = [];
-        [...StorageRegistry.tempStorageDeadlines.keys()].forEach((key) => {
-            tempDeadlines.push({ key, value: this.tempStorageDeadlines.get(key)! });
+        [...this.temp.deadlines.keys()].forEach((key) => {
+            tempDeadlines.push({ key, value: this.temp.deadlines.get(key)! });
         });
         return createExportableElement({
             main,
@@ -188,7 +222,7 @@ export default class StorageManager implements StorageManagerInterface {
                     this.base.set(item.key, item.value);
                 });
                 (data.tempDeadlines as any)?.forEach((item: StorageGameStateItem<number>) => {
-                    this.tempStorageDeadlines.set(item.key, item.value);
+                    this.temp.deadlines.set(item.key, item.value);
                 });
             } else {
                 logger.warn("No storage data found");

@@ -1,7 +1,9 @@
 import type { LRUCache } from "lru-cache";
 import type { StorageElementType } from "../types/StorageElementType";
 import type StorageExternalStoreHandler from "./StorageExternalStoreHandler";
+import type StorageFlagsInterface from "./StorageFlagsInterface";
 import type StorageGameState from "./StorageGameState";
+import type StorageTempInterface from "./StorageTempInterface";
 
 export default interface StorageManagerInterface {
     /**
@@ -57,26 +59,38 @@ export default interface StorageManagerInterface {
      * @param key The key of the temporary variable
      * @param value The value of the temporary variable. If undefined, the variable will be removed
      * @returns
+     * @deprecated Use {@link temp}.set instead.
      */
     setTempVariable(key: string, value: StorageElementType): void;
     /**
      * Remove a temporary variable
      * @param key The key of the temporary variable
+     * @deprecated Use {@link temp}.remove instead.
      */
     removeTempVariable(key: string): void;
+    /**
+     * Namespace for operations on temporary storage variables, whose lifespan is expressed in number of opened labels.
+     */
+    readonly temp: StorageTempInterface;
 
     /**
      * Set a flag to true or false.
      * @param key The name of the flag
      * @param value The value of the flag.
+     * @deprecated Use {@link flags}.set instead.
      */
     setFlag(key: string, value: boolean): void;
     /**
      * Get the value of a flag
      * @param key The name of the flag
      * @returns The value of the flag
+     * @deprecated Use {@link flags}.get instead.
      */
     getFlag(key: string): boolean;
+    /**
+     * Namespace for operations on flags.
+     */
+    readonly flags: StorageFlagsInterface;
 
     /**
      * Configure the handler used to mirror game storage changes into an external reactive store.

@@ -184,8 +184,8 @@ export namespace Game {
                 storageUtils.StorageRegistry.setVariable(prefix, key, value),
             removeVariable: (prefix, key) =>
                 storageUtils.StorageRegistry.removeVariable(prefix, key),
-            getFlag: (key) => storageUtils.storage.getFlag(key),
-            setFlag: (name, value) => storageUtils.storage.setFlag(name, value),
+            getFlag: (key) => storageUtils.storage.flags.get(key),
+            setFlag: (name, value) => storageUtils.storage.flags.set(name, value),
             onLabelClosing: (openedLabelsNumber) =>
                 storageUtils.StorageRegistry.clearOldTempVariables(openedLabelsNumber),
         });
