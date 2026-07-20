@@ -1,5 +1,5 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
-import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
+import type { SoundManagerInterface } from "@sound/interfaces/SoundManagerInterface";
 import SoundManager from "@sound/SoundManager";
 import SoundRegistry from "@sound/SoundRegistry";
 
@@ -11,6 +11,7 @@ export type {
     default as SoundGameState,
     SoundPlay,
 } from "@sound/interfaces/SoundGameState";
+export type { SoundManagerInterface } from "@sound/interfaces/SoundManagerInterface";
 export type {
     ChannelOptions,
     default as SoundOptions,

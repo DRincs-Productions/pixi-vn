@@ -4,7 +4,7 @@ import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
 import type { Player, PlayerOptions } from "tone";
 
-export default interface SoundManagerInterface {
+export  interface SoundManagerInterface {
     /** Master volume in the range [0, 1]. */
     volumeAll: number;
     /**
