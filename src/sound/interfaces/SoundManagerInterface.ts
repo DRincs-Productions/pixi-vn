@@ -1,7 +1,9 @@
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type MediaInterface from "@sound/interfaces/MediaInterface";
+import type SoundChannelsInterface from "@sound/interfaces/SoundChannelsInterface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
+import type SoundUnsavedInterface from "@sound/interfaces/SoundUnsavedInterface";
 import type { Player, PlayerOptions } from "tone";
 
 export default interface SoundManagerInterface {
@@ -39,6 +41,7 @@ export default interface SoundManagerInterface {
     /**
      * Plays a non-persistent ("transient") sound (e.g. UI / menu sounds).
      * Transient playback is not tracked in save/export state.
+     * @deprecated Use {@link unsaved}.playTransient instead.
      */
     playTransient(alias: string, options?: Partial<PlayerOptions>): Promise<Player>;
 
@@ -92,18 +95,26 @@ export default interface SoundManagerInterface {
      *
      * When called without a channel argument all transient players started with
      * {@link playTransient} are also stopped.
+     * @deprecated Use {@link unsaved}.pauseAll instead.
      */
     pauseUnsavedAll(channel?: string): this;
     /**
      * Resume all sounds (or just those in the given channel) that were paused by
      * the most recent call to {@link pauseUnsavedAll}. Sounds that were already
      * paused before `pauseUnsavedAll` was called are **not** resumed.
+     * @deprecated Use {@link unsaved}.resumeAll instead.
      */
     resumeUnsavedAll(channel?: string): this;
     /**
      * Stop all transient media instances started with {@link playTransient}.
+     * @deprecated Use {@link unsaved}.stopTransientAll instead.
      */
     stopTransientAll(): this;
+
+    /**
+     * Namespace for operations on unsaved / transient playback state (not tracked in save/export state).
+     */
+    readonly unsaved: SoundUnsavedInterface;
 
     /** Load one or more sound assets. */
     load(...alias: string[]): Promise<void>;
@@ -118,6 +129,7 @@ export default interface SoundManagerInterface {
     /**
      * Add a new audio channel.
      * Returns the created channel, or `undefined` if the alias already exists.
+     * @deprecated Use {@link channels}.add instead.
      */
     addChannel(
         alias: string | string[],
@@ -126,11 +138,14 @@ export default interface SoundManagerInterface {
 
     /**
      * Find the channel for the given alias, creating it if it does not yet exist.
+     * @deprecated Use {@link channels}.find instead.
      */
     findChannel(alias: string): AudioChannelInterface;
 
-    /** All registered audio channels. */
-    readonly channels: AudioChannelInterface[];
+    /**
+     * Namespace for operations on audio channels.
+     */
+    readonly channels: SoundChannelsInterface;
 
     /**
      * Export the current sound state, including currently playing sounds and their options, for saving or debugging purposes. This is not guaranteed to be stable across versions and may contain implementation details; it is not intended for use in general application code.

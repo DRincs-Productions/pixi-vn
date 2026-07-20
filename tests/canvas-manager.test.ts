@@ -128,3 +128,93 @@ describe("CanvasManager gameLayer render controls", () => {
         expect(gameLayer.renderable).toBe(false);
     });
 });
+
+describe("CanvasManager.tickers namespace", () => {
+    afterEach(() => {
+        CanvasManagerStatic._currentTickers.clear();
+        CanvasManagerStatic._currentTickersSequence.clear();
+        vi.restoreAllMocks();
+    });
+
+    test("tickers.currentTickers exposes the same map as CanvasManagerStatic._currentTickers", () => {
+        const manager = new CanvasManager();
+        expect(manager.tickers.currentTickers).toBe(CanvasManagerStatic._currentTickers);
+    });
+
+    test("tickers.currentTickersSteps exposes the same map as CanvasManagerStatic._currentTickersSequence", () => {
+        const manager = new CanvasManager();
+        expect(manager.tickers.currentTickersSteps).toBe(CanvasManagerStatic._currentTickersSequence);
+    });
+
+    test("tickers.find returns the ticker registered under the given id", () => {
+        const manager = new CanvasManager();
+        const ticker = createTicker();
+        CanvasManagerStatic._currentTickers.set("t1", { ticker } as any);
+        expect(manager.tickers.find("t1")).toBe(ticker);
+        expect(manager.tickers.find("missing")).toBeUndefined();
+    });
+
+    test("tickers.remove stops and removes the ticker", () => {
+        const manager = new CanvasManager();
+        const ticker = createTicker();
+        CanvasManagerStatic._currentTickers.set("t1", { ticker } as any);
+        manager.tickers.remove("t1");
+        expect(ticker.stop).toHaveBeenCalledOnce();
+        expect(CanvasManagerStatic._currentTickers.has("t1")).toBe(false);
+    });
+
+    test("tickers.removeAll clears every running ticker", () => {
+        const manager = new CanvasManager();
+        CanvasManagerStatic._currentTickers.set("t1", { ticker: createTicker() } as any);
+        CanvasManagerStatic._currentTickers.set("t2", { ticker: createTicker() } as any);
+        manager.tickers.removeAll();
+        expect(CanvasManagerStatic._currentTickers.size).toBe(0);
+    });
+
+    test("tickers.pause and tickers.resume by canvas alias", () => {
+        const manager = new CanvasManager();
+        const ticker = createTicker(false);
+        (ticker as any).canvasElementAliases = ["alien"];
+        (ticker as any).alias = "RotateTicker";
+        CanvasManagerStatic._currentTickers.set("t1", { ticker } as any);
+
+        const pausedIds = manager.tickers.pause({ canvasAlias: "alien" });
+        expect(pausedIds).toEqual(["t1"]);
+        expect(ticker.pause).toHaveBeenCalledOnce();
+
+        manager.tickers.resume({ canvasAlias: "alien" });
+        expect(ticker.play).toHaveBeenCalledOnce();
+    });
+
+    test("tickers.isPaused always returns false (stub kept for backward compatibility)", () => {
+        const manager = new CanvasManager();
+        expect(manager.tickers.isPaused("alien")).toBe(false);
+    });
+
+    test("tickers.transfer removes the old alias from a ticker's canvasElementAliases in 'move' mode", () => {
+        const manager = new CanvasManager();
+        const ticker = createTicker(false);
+        (ticker as any).canvasElementAliases = ["old"];
+        (ticker as any).alias = "RotateTicker";
+        (ticker as any).args = {};
+        CanvasManagerStatic._currentTickers.set("t1", { ticker } as any);
+
+        manager.tickers.transfer("old", "new", "move");
+
+        expect(ticker.canvasElementAliases).toEqual([]);
+    });
+
+    test("deprecated flat methods delegate to the tickers namespace", () => {
+        const manager = new CanvasManager();
+        const ticker = createTicker();
+        CanvasManagerStatic._currentTickers.set("t1", { ticker } as any);
+
+        expect(manager.findTicker("t1")).toBe(ticker);
+        expect(manager.currentTickers).toBe(manager.tickers.currentTickers);
+        expect(manager.currentTickersSteps).toBe(manager.tickers.currentTickersSteps);
+
+        manager.removeTicker("t1");
+        expect(ticker.stop).toHaveBeenCalledOnce();
+        expect(CanvasManagerStatic._currentTickers.has("t1")).toBe(false);
+    });
+});

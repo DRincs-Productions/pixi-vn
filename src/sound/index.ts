@@ -5,6 +5,7 @@ import SoundRegistry from "@sound/SoundRegistry";
 
 export type { default as AudioChannelInterface } from "@sound/interfaces/AudioChannelInterface";
 export type { default as MediaInterface } from "@sound/interfaces/MediaInterface";
+export type { default as SoundChannelsInterface } from "@sound/interfaces/SoundChannelsInterface";
 export type {
     ExportedSound,
     ExportedSoundPlay,
@@ -17,6 +18,7 @@ export type {
     SoundPlayOptions,
     SoundPlayOptionsWithChannel,
 } from "@sound/interfaces/SoundOptions";
+export type { default as SoundUnsavedInterface } from "@sound/interfaces/SoundUnsavedInterface";
 export { default as SoundRegistry } from "@sound/SoundRegistry";
 
 /**

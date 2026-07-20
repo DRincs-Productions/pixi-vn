@@ -333,12 +333,19 @@ describe("sound channels", () => {
         expect(sound.addChannel("music")).toBeUndefined();
     });
 
-    test("channels getter returns all registered channels", () => {
-        sound.addChannel(["ch1", "ch2", "ch3"]);
-        const aliases = sound.channels.map((c) => c.alias);
+    test("channels.values returns all registered channels", () => {
+        sound.channels.add(["ch1", "ch2", "ch3"]);
+        const aliases = sound.channels.values.map((c) => c.alias);
         expect(aliases).toContain("ch1");
         expect(aliases).toContain("ch2");
         expect(aliases).toContain("ch3");
+    });
+
+    test("channels.add creates a channel and channels.find retrieves it", () => {
+        const channel = sound.channels.add("music");
+        expect(channel?.alias).toBe("music");
+        expect(sound.channels.find("music")).toBe(channel);
+        expect(sound.channels.add("music")).toBeUndefined();
     });
 
     test("channel volume defaults to 1", () => {
@@ -468,6 +475,23 @@ describe("sound play routing and mediaInstances tracking", () => {
             loadSpy.mockRestore();
         }
     });
+
+    test("unsaved.playTransient creates a Player without adding to tracked mediaInstances", async () => {
+        const loadSpy = vi.spyOn(sound as any, "load").mockResolvedValue(undefined);
+        SoundRegistry.bufferRegistry.set("ui-click", {} as any);
+        try {
+            sound.channels.add("pause-menu");
+            const result = await sound.unsaved.playTransient("ui-click", {
+                autostart: false,
+                volume: 0.2,
+            });
+            expect(result).toBeDefined();
+            expect(SoundRegistry.mediaInstances.has("ui-click")).toBe(false);
+        } finally {
+            SoundRegistry.bufferRegistry.delete("ui-click");
+            loadSpy.mockRestore();
+        }
+    });
 });
 
 // ---------------------------------------------------------------------------
@@ -513,6 +537,17 @@ describe("stopTransientAll", () => {
     test("sound.stopTransientAll() is chainable", () => {
         const result = sound.stopTransientAll();
         expect(result).toBe(sound);
+    });
+
+    test("sound.unsaved.stopTransientAll() stops every player and is chainable off sound.unsaved", () => {
+        const player1 = { stop: vi.fn() } as any;
+        SoundRegistry.transients.add(player1);
+
+        const result = sound.unsaved.stopTransientAll();
+
+        expect(player1.stop).toHaveBeenCalledOnce();
+        expect(SoundRegistry.transients.size).toBe(0);
+        expect(result).toBe(sound.unsaved);
     });
 });
 
@@ -604,6 +639,23 @@ describe("sound.pauseUnsavedAll / sound.resumeUnsavedAll", () => {
         sound.addChannel("ch");
         expect(sound.pauseUnsavedAll("ch")).toBe(sound);
         expect(sound.resumeUnsavedAll("ch")).toBe(sound);
+    });
+
+    test("unsaved.pauseAll/unsaved.resumeAll do not mutate per-media paused option", () => {
+        sound.channels.add("music");
+        const inst = makeFakeMediaInstance({ channelAlias: "music", soundAlias: "track", stepCounter: 1 });
+        SoundRegistry.mediaInstances.set("track", inst);
+        expect(inst.paused).toBe(false);
+        sound.unsaved.pauseAll("music");
+        expect(inst.paused).toBe(true);
+        sound.unsaved.resumeAll("music");
+        expect(inst.paused).toBe(false);
+    });
+
+    test("unsaved.pauseAll and unsaved.resumeAll are chainable off sound.unsaved", () => {
+        sound.channels.add("ch");
+        expect(sound.unsaved.pauseAll("ch")).toBe(sound.unsaved);
+        expect(sound.unsaved.resumeAll("ch")).toBe(sound.unsaved);
     });
 });
 

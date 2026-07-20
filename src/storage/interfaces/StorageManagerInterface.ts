@@ -1,9 +1,9 @@
+import type StorageExternalStoreHandler from "@storage/interfaces/StorageExternalStoreHandler";
+import type StorageFlagsInterface from "@storage/interfaces/StorageFlagsInterface";
+import type StorageGameState from "@storage/interfaces/StorageGameState";
+import type StorageTempInterface from "@storage/interfaces/StorageTempInterface";
+import type { StorageElementType } from "@storage/types/StorageElementType";
 import type { LRUCache } from "lru-cache";
-import type { StorageElementType } from "../types/StorageElementType";
-import type StorageExternalStoreHandler from "./StorageExternalStoreHandler";
-import type StorageFlagsInterface from "./StorageFlagsInterface";
-import type StorageGameState from "./StorageGameState";
-import type StorageTempInterface from "./StorageTempInterface";
 
 export default interface StorageManagerInterface {
     /**

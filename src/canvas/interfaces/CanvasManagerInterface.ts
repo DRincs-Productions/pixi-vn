@@ -20,6 +20,7 @@ import type { PauseType } from "../types/PauseType";
 import type { RepeatType } from "../types/RepeatType";
 import type { CanvasBaseInterface } from "./CanvasBaseInterface";
 import type CanvasGameState from "./CanvasGameState";
+import type CanvasTickersInterface from "./CanvasTickersInterface";
 import type CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 
 export default interface CanvasManagerInterface {
@@ -116,6 +117,7 @@ export default interface CanvasManagerInterface {
      * @param oldAlias Old alias
      * @param newAlias New alias
      * @param mode If "move", the old alias will be removed from the ticker. If "duplicate", the old alias will be kept in the ticker.
+     * @deprecated Use {@link tickers}.transfer instead.
      */
     transferTickers(oldAlias: string, newAlias: string, mode?: "move" | "duplicate"): void;
     /**
@@ -211,10 +213,12 @@ export default interface CanvasManagerInterface {
 
     /**
      * Currently tickers that are running.
+     * @deprecated Use {@link tickers}.currentTickers instead.
      */
     readonly currentTickers: Map<string, TickerInfo<any>>;
     /**
      * The steps of the tickers
+     * @deprecated Use {@link tickers}.currentTickersSteps instead.
      */
     readonly currentTickersSteps: Map<string, Map<string, TickersSequence>>;
     /**
@@ -222,6 +226,7 @@ export default interface CanvasManagerInterface {
      * @param tickerId The id of the ticker to be found.
      * @param args The args of the ticker.
      * @returns The ticker if found, undefined otherwise.
+     * @deprecated Use {@link tickers}.find instead.
      */
     findTicker<TArgs extends TickerArgs>(tickerId: string, args?: TArgs): Ticker<TArgs> | undefined;
     /**
@@ -235,6 +240,7 @@ export default interface CanvasManagerInterface {
      * ```ts
      * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
      * ```
+     * @deprecated Use {@link tickers}.add instead.
      */
     addTicker<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
@@ -255,6 +261,7 @@ export default interface CanvasManagerInterface {
      *     Repeat,
      * ])
      * ```
+     * @deprecated Use {@link tickers}.addSequence instead.
      */
     addTickersSequence(
         alias: string,
@@ -270,7 +277,7 @@ export default interface CanvasManagerInterface {
      * ```ts
      * canvas.unlinkComponentFromTicker("alien", RotateTicker)
      * ```
-     * @deprecated
+     * @deprecated Use {@link tickers}.unlinkComponent instead.
      */
     unlinkComponentFromTicker(
         alias: string | string[],
@@ -278,17 +285,20 @@ export default interface CanvasManagerInterface {
     ): void;
     /**
      * Remove all tickers from the canvas.
+     * @deprecated Use {@link tickers}.removeAll instead.
      */
     removeAllTickers(): void;
     /**
      * Remove a ticker by the id.
      * @param tickerId The id or an array of ids of the ticker to be removed.
+     * @deprecated Use {@link tickers}.remove instead.
      */
     removeTicker(tickerId: string | string[]): void;
     /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param filters The filters to pause the ticker.
      * @returns The ids of the paused tickers.
+     * @deprecated Use {@link tickers}.pause instead.
      */
     pauseTicker(
         filters:
@@ -313,6 +323,7 @@ export default interface CanvasManagerInterface {
     /**
      * Resume a ticker.
      * @param filters The filters to resume the ticker.
+     * @deprecated Use {@link tickers}.resume instead.
      */
     resumeTicker(
         filters:
@@ -331,13 +342,17 @@ export default interface CanvasManagerInterface {
               },
     ): void;
     /**
-     * @deprecated Use {@link findTicker}(id).paused
+     * @deprecated Use {@link tickers}.isPaused instead.
      * Check if a ticker is paused.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param tickerId The ticker that will be checked.
      * @returns If the ticker is paused.
      */
     isTickerPaused(alias: string, tickerId?: string): boolean;
+    /**
+     * Namespace for operations on canvas tickers.
+     */
+    readonly tickers: CanvasTickersInterface;
     /**
      * Pause the rendering of gameLayer and pause currently running tickers.
      * Use {@link resume} to restore rendering and resume only
@@ -353,6 +368,7 @@ export default interface CanvasManagerInterface {
      * Add a ticker that must be completed before the next step.
      * This method is used for example into a transition between scenes.
      * @param step The step that the ticker must be completed before the next step.
+     * @deprecated Use {@link tickers}.completeOnStepEnd instead.
      */
     completeTickerOnStepEnd(step: {
         /**
@@ -369,6 +385,7 @@ export default interface CanvasManagerInterface {
      * This funcions is called in the next step.
      * @param id The id of the ticker. If the alias provided, the id is the id of the sequence of tickers.
      * @param alias The alias of the sequence of tickers.
+     * @deprecated Use {@link tickers}.forceCompletion instead.
      */
     forceCompletionOfTicker(id: string, alias?: string): Promise<void>;
     /**
@@ -505,6 +522,9 @@ export default interface CanvasManagerInterface {
      * @param data The object.
      */
     restore(data: object): Promise<void>;
+    /**
+     * @deprecated Use {@link tickers}.onComplete instead.
+     */
     onTickerComplete(
         tickerId: string,
         options: {

@@ -5,9 +5,11 @@ import AudioChannel from "@sound/classes/AudioChannel";
 import type AudioChannelInterface from "@sound/interfaces/AudioChannelInterface";
 import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
+import type SoundChannelsInterface from "@sound/interfaces/SoundChannelsInterface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
 import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
+import type SoundUnsavedInterface from "@sound/interfaces/SoundUnsavedInterface";
 import SoundRegistry from "@sound/SoundRegistry";
 import {
     FilterMemoryToFilter,
@@ -93,7 +95,7 @@ export default class SoundManager implements SoundManagerInterface {
         SoundRegistry.mediaInstances.clear();
         return this;
     }
-    pauseUnsavedAll(channel?: string): this {
+    private pauseUnsavedAllInternal(channel?: string): void {
         for (const [alias, mediaInstance] of SoundRegistry.mediaInstances.entries()) {
             if (channel && mediaInstance.channelAlias !== channel) {
                 continue;
@@ -109,9 +111,8 @@ export default class SoundManager implements SoundManagerInterface {
             }
             SoundRegistry.transients.clear();
         }
-        return this;
     }
-    resumeUnsavedAll(channel?: string): this {
+    private resumeUnsavedAllInternal(channel?: string): void {
         const toResume: string[] = [];
         for (const alias of SoundRegistry.systemPausedAliases) {
             const mediaInstance = SoundRegistry.mediaInstances.get(alias);
@@ -128,13 +129,75 @@ export default class SoundManager implements SoundManagerInterface {
         for (const alias of toResume) {
             SoundRegistry.systemPausedAliases.delete(alias);
         }
-        return this;
     }
-    stopTransientAll(): this {
+    private stopTransientAllInternal(): void {
         for (const player of SoundRegistry.transients) {
             player.stop();
         }
         SoundRegistry.transients.clear();
+    }
+    private async playTransientInternal(
+        alias: string,
+        options?: Partial<Tone.PlayerOptions>,
+    ): Promise<Tone.Player> {
+        if (!SoundRegistry.bufferRegistry.has(alias)) {
+            await this.load(alias);
+        }
+        const buffer = SoundRegistry.bufferRegistry.get(alias);
+        if (!buffer) {
+            throw new PixiError(
+                "unregistered_asset",
+                `Sound buffer for alias "${alias}" is not loaded. Call sound.load() first.`,
+            );
+        }
+        const { autostart = true, ...playerOptions } = options ?? {};
+        const player = new Tone.Player({ ...playerOptions, url: buffer }).toDestination();
+        if (autostart) {
+            player.start();
+        }
+        SoundRegistry.transients.add(player);
+        player.onstop = () => {
+            player.dispose();
+            SoundRegistry.transients.delete(player);
+        };
+        return player;
+    }
+
+    public readonly unsaved: SoundUnsavedInterface = {
+        playTransient: (alias, options) => this.playTransientInternal(alias, options),
+        pauseAll: (channel) => {
+            this.pauseUnsavedAllInternal(channel);
+            return this.unsaved;
+        },
+        resumeAll: (channel) => {
+            this.resumeUnsavedAllInternal(channel);
+            return this.unsaved;
+        },
+        stopTransientAll: () => {
+            this.stopTransientAllInternal();
+            return this.unsaved;
+        },
+    };
+
+    /**
+     * @deprecated Use {@link unsaved}.pauseAll instead.
+     */
+    pauseUnsavedAll(channel?: string): this {
+        this.pauseUnsavedAllInternal(channel);
+        return this;
+    }
+    /**
+     * @deprecated Use {@link unsaved}.resumeAll instead.
+     */
+    resumeUnsavedAll(channel?: string): this {
+        this.resumeUnsavedAllInternal(channel);
+        return this;
+    }
+    /**
+     * @deprecated Use {@link unsaved}.stopTransientAll instead.
+     */
+    stopTransientAll(): this {
+        this.stopTransientAllInternal();
         return this;
     }
 
@@ -163,34 +226,17 @@ export default class SoundManager implements SoundManagerInterface {
             await this.load(soundAlias);
         }
         const { channel = this.defaultChannelAlias, ...options } = paramOptions ?? {};
-        return await this.findChannel(channel).play(mediaAlias, soundAlias, options);
+        return await this.findChannelInternal(channel).play(mediaAlias, soundAlias, options);
     }
 
+    /**
+     * @deprecated Use {@link unsaved}.playTransient instead.
+     */
     async playTransient(
         alias: string,
         options?: Partial<Tone.PlayerOptions>,
     ): Promise<Tone.Player> {
-        if (!SoundRegistry.bufferRegistry.has(alias)) {
-            await this.load(alias);
-        }
-        const buffer = SoundRegistry.bufferRegistry.get(alias);
-        if (!buffer) {
-            throw new PixiError(
-                "unregistered_asset",
-                `Sound buffer for alias "${alias}" is not loaded. Call sound.load() first.`,
-            );
-        }
-        const { autostart = true, ...playerOptions } = options ?? {};
-        const player = new Tone.Player({ ...playerOptions, url: buffer }).toDestination();
-        if (autostart) {
-            player.start();
-        }
-        SoundRegistry.transients.add(player);
-        player.onstop = () => {
-            player.dispose();
-            SoundRegistry.transients.delete(player);
-        };
-        return player;
+        return this.playTransientInternal(alias, options);
     }
 
     find(alias: string): MediaInterface | undefined {
@@ -271,7 +317,7 @@ export default class SoundManager implements SoundManagerInterface {
         this.stopAll();
     }
 
-    addChannel(
+    private addChannelInternal(
         alias: string | string[],
         options: ChannelOptions = {},
     ): AudioChannelInterface | undefined {
@@ -281,7 +327,7 @@ export default class SoundManager implements SoundManagerInterface {
                     ...options,
                     filters: options.filters ? [...options.filters] : options.filters,
                 };
-                this.addChannel(a, perChannelOptions);
+                this.addChannelInternal(a, perChannelOptions);
             });
             return;
         }
@@ -294,16 +340,37 @@ export default class SoundManager implements SoundManagerInterface {
         return channel;
     }
 
-    findChannel(alias: string): AudioChannelInterface {
+    private findChannelInternal(alias: string): AudioChannelInterface {
         const channel = SoundRegistry.channels.get(alias);
         if (!channel) {
-            return this.addChannel(alias) as AudioChannelInterface;
+            return this.addChannelInternal(alias) as AudioChannelInterface;
         }
         return channel;
     }
 
-    get channels(): AudioChannelInterface[] {
-        return Array.from(SoundRegistry.channels.values());
+    public readonly channels: SoundChannelsInterface = {
+        add: (alias, options) => this.addChannelInternal(alias, options),
+        find: (alias) => this.findChannelInternal(alias),
+        get values() {
+            return Array.from(SoundRegistry.channels.values());
+        },
+    };
+
+    /**
+     * @deprecated Use {@link channels}.add instead.
+     */
+    addChannel(
+        alias: string | string[],
+        options: ChannelOptions = {},
+    ): AudioChannelInterface | undefined {
+        return this.channels.add(alias, options);
+    }
+
+    /**
+     * @deprecated Use {@link channels}.find instead.
+     */
+    findChannel(alias: string): AudioChannelInterface {
+        return this.channels.find(alias);
     }
 
     public export(): SoundGameState {
@@ -368,14 +435,14 @@ export default class SoundManager implements SoundManagerInterface {
                         },
                     );
                     await Promise.all(promises);
-                    this.channels.forEach((channel) => {
+                    this.channels.values.forEach((channel) => {
                         if (!channel.background || !usedChannels.has(channel.alias)) {
                             channel.stopAll();
                         }
                     });
                     const promises2 = Object.keys(mediaInstances).map(async (mediaAlias) => {
                         const mediaInstanceData = mediaInstances[mediaAlias];
-                        const channel = this.findChannel(mediaInstanceData.channelAlias);
+                        const channel = this.findChannelInternal(mediaInstanceData.channelAlias);
                         const restoredPaused =
                             mediaInstanceData.options.paused ?? mediaInstanceData.paused ?? false;
                         if (!channel.background) {

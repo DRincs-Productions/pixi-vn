@@ -144,7 +144,7 @@ export async function showWithDissolve(
         oldComponent.parent.getChildIndex(oldComponent) - 0.1,
     );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
+    oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
     component.alpha = 0;
     // remove the old component
@@ -276,7 +276,7 @@ export async function showWithFade(
         oldComponent.parent.getChildIndex(oldComponent) - 0.1,
     );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "duplicate");
+    oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
     // edit the properties of the new component
     component.alpha = 0;
     // create the ticker and play it
@@ -309,7 +309,7 @@ export async function showWithFade(
 
         res.push(idShow);
         // pause the ticker
-        canvas.pauseTicker({ id: idShow });
+        canvas.tickers.pause({ id: idShow });
     }
     // load the image if the image is not loaded
     if (
@@ -405,7 +405,7 @@ export async function moveIn(
         oldComponent.parent.getChildIndex(oldComponent) - 0.1,
     );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
+    oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "move");
     // edit the properties of the new component
     if (!destination) {
         if (component instanceof ImageSprite || component instanceof ImageContainer) {
@@ -452,7 +452,7 @@ export async function moveIn(
             component.x = -component.width;
             break;
     }
-    const ids = canvas.pauseTicker({ canvasAlias: alias });
+    const ids = canvas.tickers.pause({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     // create the ticker and play it
     const idShow = canvas.animate(
@@ -519,7 +519,7 @@ export function moveOut(
             break;
     }
     // create the ticker and play it
-    canvas.pauseTicker({ canvasAlias: alias });
+    canvas.tickers.pause({ canvasAlias: alias });
     const id = canvas.animate(
         alias,
         destination,
@@ -598,7 +598,7 @@ export async function zoomIn(
         oldComponent.parent.getChildIndex(oldComponent) - 0.1,
     );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
+    oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "move");
     // edit the properties of the new component
     if (!destination) {
         if (component instanceof ImageSprite || component instanceof ImageContainer) {
@@ -663,7 +663,7 @@ export async function zoomIn(
     component.pivot = PropsUtils.getPointBySuperPoint(component.pivot, component.angle);
     component.scale.set(0);
     // pause the ticker
-    const ids = canvas.pauseTicker({ canvasAlias: alias });
+    const ids = canvas.tickers.pause({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     // create the ticker and play it
     const idShow = canvas.animate(
@@ -748,7 +748,7 @@ export function zoomOut(
     }
     pivot = PropsUtils.getPointBySuperPoint(pivot, component.angle);
     // create the ticker and play it
-    canvas.pauseTicker({ canvasAlias: alias });
+    canvas.tickers.pause({ canvasAlias: alias });
     const id = canvas.animate(
         alias,
         {
@@ -823,7 +823,7 @@ export async function pushIn(
         oldComponent.parent.getChildIndex(oldComponent) - 0.1,
     );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-    oldComponentAlias && canvas.transferTickers(oldComponentAlias, alias, "move");
+    oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "move");
     // edit the properties of the new component
     if (!destination) {
         if (
@@ -857,7 +857,7 @@ export async function pushIn(
             component.x = -component.width;
             break;
     }
-    const ids = canvas.pauseTicker({ canvasAlias: alias });
+    const ids = canvas.tickers.pause({ canvasAlias: alias });
     tickerIdToResume.push(...ids);
     // remove the old component
     if (oldComponentAlias) {

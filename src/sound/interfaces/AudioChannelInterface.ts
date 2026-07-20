@@ -84,7 +84,7 @@ export default interface AudioChannelInterface {
      * ```ts
      * import * as Tone from "tone";
      *
-     * const channel = sound.findChannel("music");
+     * const channel = sound.channels.find("music");
      *
      * // Create a reverb effect and wait for its impulse response to be ready.
      * const reverb = new Tone.Reverb({ decay: 2.5 });
@@ -106,7 +106,7 @@ export default interface AudioChannelInterface {
      *
      * @example
      * ```ts
-     * const channel = sound.findChannel("music");
+     * const channel = sound.channels.find("music");
      *
      * // Fade the volume from its current level to -12 dB over 3 seconds.
      * channel.volumeParam.rampTo(-12, 3);
@@ -129,7 +129,7 @@ export default interface AudioChannelInterface {
      *
      * @example
      * ```ts
-     * const channel = sound.findChannel("music");
+     * const channel = sound.channels.find("music");
      *
      * // Gradually pan to the left over 3 seconds.
      * channel.panParam.rampTo(-1, 3);
