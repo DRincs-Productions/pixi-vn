@@ -35,7 +35,15 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (this.size === 0) {
             return null;
         }
-        return Math.max(...Array.from(this.keys()));
+        // Avoid Math.max(...keys): spreading every key taken this session into a single call
+        // both grows in cost with playthrough length and can blow the call stack on long ones.
+        let max: number | null = null;
+        for (const key of this.keys()) {
+            if (max === null || key > max) {
+                max = key;
+            }
+        }
+        return max;
     }
     keys() {
         return HistoryManagerStatic._stepsInfoHistory.keys();
