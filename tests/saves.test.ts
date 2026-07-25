@@ -177,10 +177,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 1,
                             oldValue: 0,
                         },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
-                        },
                     ],
                 },
                 {
@@ -229,10 +225,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             type: "CHANGE",
                             value: 2,
                             oldValue: 1,
-                        },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
                         },
                     ],
                 },
@@ -289,10 +281,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 0,
                             oldValue: 2,
                         },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
-                        },
                     ],
                 },
                 {
@@ -336,10 +324,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 1,
                             oldValue: 0,
                         },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
-                        },
                     ],
                 },
                 {
@@ -382,10 +366,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             type: "CHANGE",
                             value: 2,
                             oldValue: 1,
-                        },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
                         },
                     ],
                 },
@@ -436,10 +416,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 0,
                             oldValue: 2,
                         },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
-                        },
                     ],
                 },
                 {
@@ -482,10 +458,6 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             type: "CHANGE",
                             value: 1,
                             oldValue: 0,
-                        },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
                         },
                     ],
                 },
@@ -530,15 +502,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 2,
                             oldValue: 1,
                         },
-                        {
-                            type: "CREATE",
-                            path: ["canvas"],
-                        },
                     ],
                 },
             ],
             originalStepData: {
                 path: "/",
+                canvas: {},
                 storage: {
                     main: [
                         {

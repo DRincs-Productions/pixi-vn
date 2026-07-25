@@ -2,7 +2,6 @@ import type { GameStepState } from "@drincs/pixi-vn";
 import type { Difference } from "microdiff";
 import { CachedMap } from "../classes";
 import type { HistoryStep, NarrationHistory } from "../narration";
-import { createExportableElement } from "../utils";
 
 export default class HistoryManagerStatic {
     static _diffHistory = new CachedMap<number, Difference[]>({
@@ -30,15 +29,19 @@ export default class HistoryManagerStatic {
                     soundAliasesOrder: [],
                     soundsPlaying: {},
                     playInStepIndex: {},
-                    filters: undefined,
                 },
                 labelIndex: -1,
                 openedLabels: [],
             };
         }
-        return createExportableElement(HistoryManagerStatic._originalStepData);
+        // canvas.export()/storage.export()/sound.export()/narration.openedLabels already
+        // each run their own createExportableElement() internally, so by the time a value
+        // reaches here (see index.ts's getCurrentGameStepState) it's already a clean, alias-free
+        // clone - re-cloning the whole composite object again would be a redundant full-tree
+        // JSON round trip on every single step.
+        return HistoryManagerStatic._originalStepData;
     }
     static set originalStepData(value: GameStepState) {
-        HistoryManagerStatic._originalStepData = createExportableElement(value);
+        HistoryManagerStatic._originalStepData = value;
     }
 }

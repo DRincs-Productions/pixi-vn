@@ -120,10 +120,10 @@ export namespace Game {
         GameUnifier.init({
             navigate: options?.navigate,
             getCurrentGameStepState: () => {
-                let canvasData = {};
-                try {
-                    canvasData = canvasUtils.canvas.export();
-                } catch (_e) {}
+                // Canvas usage is optional - when Game.init() was never given a canvas element,
+                // canvas.export() would throw (and log an error) on every single step just to be
+                // caught here. Skip it entirely instead of relying on the throw/catch for control flow.
+                const canvasData = canvasUtils.canvas.isInitialized ? canvasUtils.canvas.export() : {};
                 return {
                     path: getGamePath(),
                     storage: storageUtils.storage.export(),
