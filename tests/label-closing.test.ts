@@ -3,6 +3,7 @@ import { narration, NarrationManagerStatic, newLabel, stepHistory, storage } fro
 
 afterEach(() => {
     NarrationManagerStatic.onLabelClosing = undefined;
+    NarrationManagerStatic.onLabelStarting = undefined;
 });
 
 const sub = newLabel("lc_sub", [
@@ -97,4 +98,73 @@ test("onLabelClosing is not called when a jump closes the current label", async 
 
     expect(seenLabelIds).toEqual([]);
     expect(narration.dialogue?.text).toEqual("page2 line1.");
+});
+
+test("a goNext-style loop (deferring both onLabelStarting and onLabelClosing) terminates once the story truly ends", async () => {
+    // Mirrors a template's `while (!pendingAction && canContinue) await continue()` driver:
+    // a called sub-label that closes back into a jump, into a label with no further content.
+    const dialogueLog: (string | undefined)[] = [];
+    let pending: (() => Promise<unknown>) | undefined;
+
+    NarrationManagerStatic.onLabelStarting = (_labelId, _props, _options, defaultStart) => {
+        if (!narration.currentLabel) {
+            return defaultStart();
+        }
+        pending = defaultStart;
+        return undefined;
+    };
+    NarrationManagerStatic.onLabelClosing = (_labelId, _props, defaultClose) => {
+        pending = defaultClose;
+        return undefined;
+    };
+
+    async function goNext(props: object) {
+        if (pending) {
+            const run = pending;
+            pending = undefined;
+            await run();
+        }
+        let iterations = 0;
+        while (!pending && narration.canContinue) {
+            await narration.continue(props);
+            dialogueLog.push(narration.dialogue?.text as string | undefined);
+            iterations++;
+            if (iterations > 50) {
+                throw new Error("infinite loop: canContinue never became false");
+            }
+        }
+    }
+
+    const finalLabel = newLabel("lc_final", [
+        async () => {
+            narration.dialogue = "the end.";
+        },
+    ]);
+    const closingSub = newLabel("lc_closing_sub", [
+        async () => {
+            narration.dialogue = "sub only line.";
+        },
+    ]);
+    const outer = newLabel("lc_outer", [
+        async (props) => {
+            await narration.call(closingSub, props);
+        },
+        async (props) => {
+            return narration.jump(finalLabel, props);
+        },
+    ]);
+
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+
+    await narration.call(outer, {});
+    await goNext({}); // enters closingSub (deferred start)
+    await goNext({}); // closingSub runs out of steps (deferred close)
+    await goNext({}); // resumes outer, hits the jump (deferred start)
+    await goNext({}); // enters finalLabel, runs out of steps - must not loop forever
+
+    expect(narration.dialogue?.text).toEqual("the end.");
+    expect(narration.openedLabels).toEqual([]);
+    expect(narration.canContinue).toEqual(false);
 });

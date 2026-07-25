@@ -251,6 +251,9 @@ export default class NarrationManager implements NarrationManagerInterface {
         if (GameUnifier.runningStepsCount !== 0) {
             return false;
         }
+        if (this.openedLabels.length === 0) {
+            return false;
+        }
         return this.getCanContinue();
     }
     private async onStepStart(label: LabelAbstract<any, any>, stepId: number) {
