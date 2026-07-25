@@ -454,8 +454,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
                 return result;
             } else if (this.openedLabels.length > 1) {
-                this.closeCurrentLabel();
-                return await this.continue(props, options);
+                return await this.closeLabel(currentLabel.id, props, options);
             } else if (this.openedLabels.length === 1) {
                 NarrationManagerStatic.openedLabels = [];
                 return;
@@ -465,6 +464,33 @@ export default class NarrationManager implements NarrationManagerInterface {
         } else {
             logger.error("currentLabelId not found");
         }
+    }
+    /**
+     * Close the current label because it naturally ran out of steps, then continue narration into
+     * the label that called it. This is the only path that closes a label without also starting
+     * another one (unlike `jump` or a choice's `closeCurrentLabel`, which close the current label as
+     * part of {@link startLabel}, already deferrable via {@link NarrationManagerStatic.onLabelStarting}).
+     *
+     * If {@link NarrationManagerStatic.onLabelClosing} is set, it takes over: it is called instead of
+     * the default content, and it receives a `defaultClose` callback that runs that default content, so
+     * it can decide whether (and when) the label actually closes.
+     * @param labelId The id of the label that is closing.
+     * @param props The props to pass onward once narration continues.
+     * @param options Options forwarded to the resumed `continue` call.
+     */
+    private async closeLabel(
+        labelId: LabelIdType,
+        props: StepLabelPropsType,
+        options: { steps?: number; runNow?: boolean; choiceMade?: number },
+    ): Promise<StepLabelResultType> {
+        const defaultClose = async (): Promise<StepLabelResultType> => {
+            this.closeCurrentLabel();
+            return await this.continue(props, options);
+        };
+        if (NarrationManagerStatic.onLabelClosing) {
+            return await NarrationManagerStatic.onLabelClosing(labelId, props, defaultClose);
+        }
+        return await defaultClose();
     }
     /**
      * Push the given label onto the opened labels stack and run its first step, optionally closing

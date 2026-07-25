@@ -445,6 +445,37 @@ export namespace Game {
     ) {
         narrationUtils.NarrationManagerStatic.onLabelStarting = value;
     }
+    /**
+     * Is a function that will be executed every time the current label is about to close because it
+     * naturally ran out of steps and control is returning to the label that called it.
+     *
+     * By default (when this is not set), the label closes immediately, exactly like before this hook
+     * existed. If you set it, you take control: call `defaultClose()` yourself whenever you actually
+     * want the label to close — right away, or later (e.g. on a subsequent player action in your
+     * template). Until `defaultClose()` is called, the label stays open and narration does not
+     * continue into the parent label.
+     *
+     * This does not fire for a `jump` or a choice's `closeCurrentLabel` option - those close the
+     * current label as part of starting a new one, so {@link onLabelStarting} already covers
+     * deferring them.
+     * @example
+     * ```ts
+     * Game.onLabelClosing((labelId, props, defaultClose) => {
+     *     pendingLabelClose = defaultClose; // keep it for later, don't run it now
+     * })
+     * ```
+     */
+    export function onLabelClosing(
+        value: (
+            labelId: narrationUtils.LabelIdType,
+            props: narrationUtils.StepLabelPropsType,
+            defaultClose: () => Promise<narrationUtils.StepLabelResultType>,
+        ) =>
+            | narrationUtils.StepLabelResultType
+            | Promise<narrationUtils.StepLabelResultType>,
+    ) {
+        narrationUtils.NarrationManagerStatic.onLabelClosing = value;
+    }
 
     /**
      * Function to be executed when navigation is requested.

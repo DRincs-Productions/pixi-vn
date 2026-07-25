@@ -376,4 +376,23 @@ export default class NarrationManagerStatic {
         },
         defaultStart: () => Promise<StepLabelResultType>,
     ) => StepLabelResultType | Promise<StepLabelResultType>;
+    /**
+     * Is a function that will be executed every time the current label is about to close because it
+     * naturally ran out of steps and control is returning to the label that called it.
+     *
+     * By default (when this is not set), the label is closed immediately, exactly like before this
+     * hook existed. If you set it, you take control: call `defaultClose()` yourself whenever you want
+     * the label to actually close (right away, or later, e.g. from a subsequent `next()`-like action in
+     * your template). Until `defaultClose()` is called, the label stays open: it is not popped off the
+     * opened labels stack and narration does not continue into the parent label.
+     *
+     * This does not fire for a `jump` or a choice's `closeCurrentLabel` option - those close the
+     * current label explicitly as part of starting a new one, so {@link onLabelStarting} already
+     * covers deferring them.
+     */
+    static onLabelClosing?: (
+        labelId: LabelIdType,
+        props: StepLabelPropsType,
+        defaultClose: () => Promise<StepLabelResultType>,
+    ) => StepLabelResultType | Promise<StepLabelResultType>;
 }
