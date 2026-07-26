@@ -138,7 +138,9 @@ export namespace Game {
                 narrationUtils.NarrationManagerStatic.openedLabels = state.openedLabels;
                 storageUtils.storage.restore(state.storage);
                 try {
-                    await canvasUtils.canvas.restore(state.canvas);
+                    if (canvasUtils.canvas.isInitialized) {
+                        await canvasUtils.canvas.restore(state.canvas);
+                    }
                     await soundUtils.sound.restore(state.sound);
                 } catch (e) {
                     logger.error("Error restoring game step state:", e);
@@ -203,9 +205,9 @@ export namespace Game {
      */
     export function clear() {
         storageUtils.storage.clear();
-        try {
+        if (canvasUtils.canvas.isInitialized) {
             canvasUtils.canvas.clear();
-        } catch (_e) {}
+        }
         soundUtils.sound.clear();
         narrationUtils.narration.clear();
         historyUtils.stepHistory.clear();
@@ -216,10 +218,9 @@ export namespace Game {
      * @returns The game data
      */
     export function exportGameState(): pixivninterface.GameState {
-        let canvasData: any = {};
-        try {
-            canvasData = canvasUtils.canvas.export();
-        } catch (_e) {}
+        // Canvas usage is optional - when Game.init() was never given a canvas element,
+        // canvas.export() would throw (and log an error) just to be caught here.
+        const canvasData = canvasUtils.canvas.isInitialized ? canvasUtils.canvas.export() : {};
         return {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
@@ -263,7 +264,9 @@ export namespace Game {
         }
         storageUtils.storage.restore(data.storageData);
         try {
-            await canvasUtils.canvas.restore(data.canvasData);
+            if (canvasUtils.canvas.isInitialized) {
+                await canvasUtils.canvas.restore(data.canvasData);
+            }
             await soundUtils.sound.restore(data.soundData);
         } catch (_e) {}
         if (navigate) {
