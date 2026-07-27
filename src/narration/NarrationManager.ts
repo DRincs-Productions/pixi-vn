@@ -112,6 +112,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             labelStepIndex: NarrationManagerStatic.currentLabelStepIndex,
             choiceIndexMade: choiceMade,
             inputValue: inputValue,
+            ...(this.isRequiredInput ? { isRequiredInput: true } : {}),
             alreadyMadeChoices: this.getAlreadyMadeChoicesForSha(stepSha),
             isGlued: isGlued,
             openedLabels: openedLabels,
@@ -456,11 +457,13 @@ export default class NarrationManager implements NarrationManagerInterface {
                     await this.onStepError(err, props);
                 }
                 return result;
-            } else if (this.openedLabels.length > 1) {
+            } else if (this.openedLabels.length >= 1) {
+                // Route through closeLabel() even when there's no parent to return to (the
+                // outermost label running out of steps, about to end the game) - otherwise a
+                // registered onLabelClosing hook never gets a chance to defer this close, and
+                // the game ends inside the same continue() call that ran the last step, before
+                // the app can let the player see it.
                 return await this.closeLabel(currentLabel.id, props, options);
-            } else if (this.openedLabels.length === 1) {
-                NarrationManagerStatic.openedLabels = [];
-                return;
             }
         } else if (this.openedLabels.length === 0) {
             return;
@@ -469,14 +472,17 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
     }
     /**
-     * Close the current label because it naturally ran out of steps, then continue narration into
-     * the label that called it. This is the only path that closes a label without also starting
-     * another one (unlike `jump` or a choice's `closeCurrentLabel`, which close the current label as
-     * part of {@link startLabel}, already deferrable via {@link NarrationManagerStatic.onLabelStarting}).
+     * Close the current label because it naturally ran out of steps, then continue narration - into
+     * the label that called it, if any is still on the stack, or into {@link Game.onEnd} if this was
+     * the last one. This is the only path that closes a label without also starting another one (unlike
+     * `jump` or a choice's `closeCurrentLabel`, which close the current label as part of
+     * {@link startLabel}, already deferrable via {@link NarrationManagerStatic.onLabelStarting}).
      *
      * If {@link NarrationManagerStatic.onLabelClosing} is set, it takes over: it is called instead of
      * the default content, and it receives a `defaultClose` callback that runs that default content, so
-     * it can decide whether (and when) the label actually closes.
+     * it can decide whether (and when) the label actually closes - this applies even when there's no
+     * parent left, so an app can defer the very last close and let the player see the final paragraph
+     * before the game actually ends.
      * @param labelId The id of the label that is closing.
      * @param props The props to pass onward once narration continues.
      * @param options Options forwarded to the resumed `continue` call.

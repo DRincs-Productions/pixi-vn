@@ -887,3 +887,34 @@ test("stepHistory.canGoBack", async () => {
     await narration.continue({});
     expect(stepHistory.canGoBack).toEqual(true);
 });
+
+test("stepHistory.goBackMode 'paragraph' only checkpoints at paragraph boundaries, and back() jumps to the start of the previous paragraph", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    stepHistory.goBackMode = "paragraph";
+    try {
+        await narration.call(paragraphPage1, {}); // index 0: "Page1 paragraph1 line1." - new paragraph, checkpoint
+        expect(stepHistory.canGoBack).toEqual(false);
+
+        await narration.continue({}); // index 1: "Page1 paragraph1 line2." - same paragraph, not a checkpoint
+        expect(stepHistory.diffMap.has(1)).toEqual(false);
+        expect(stepHistory.canGoBack).toEqual(false);
+
+        await narration.continue({}); // index 2: call into paragraphSubLabel - new paragraph, checkpoint
+        expect(stepHistory.diffMap.has(2)).toEqual(true);
+        expect(stepHistory.canGoBack).toEqual(true);
+
+        await narration.continue({}); // index 3: "Sub line 2." - same paragraph, not a checkpoint
+        expect(stepHistory.diffMap.has(3)).toEqual(false);
+
+        expect(narration.dialogue?.text).toEqual("Sub line 2.");
+        await stepHistory.back({});
+        // Both step 1 and step 2 (all of paragraph 1's own progression, plus the jump
+        // into the sub-label) are undone at once, landing at the very start of paragraph 1.
+        expect(narration.dialogue?.text).toEqual("Page1 paragraph1 line1.");
+        expect(stepHistory.canGoBack).toEqual(false);
+    } finally {
+        stepHistory.goBackMode = "step";
+    }
+});

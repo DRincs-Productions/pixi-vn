@@ -1,7 +1,7 @@
 import HistoryManager from "./HistoryManager";
 import type HistoryManagerInterface from "./interfaces/HistoryManagerInterface";
 
-export { default as HistoryManagerStatic } from "./HistoryManagerStatic";
+export { default as HistoryManagerStatic, type HistoryGoBackModeType } from "./HistoryManagerStatic";
 export type { default as HistoryGameState } from "./interfaces/HistoryGameState";
 export type { default as HistoryManagerInterface } from "./interfaces/HistoryManagerInterface";
 export { stepHistory };

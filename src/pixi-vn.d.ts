@@ -116,6 +116,11 @@ declare module "@drincs/pixi-vn" {
          */
         inputValue?: StorageElementType;
         /**
+         * Whether this step requested an input from the player (regardless of whether a
+         * default value was provided, unlike {@link inputValue} which is only set when one is).
+         */
+        isRequiredInput?: boolean;
+        /**
          * The choice made by the player
          */
         choiceIndexMade?: number;
