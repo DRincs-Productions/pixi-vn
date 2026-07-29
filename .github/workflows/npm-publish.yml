@@ -32,9 +32,20 @@ jobs:
       - run: npm run build
       - run: npm test
 
+  validate-skills:
+    name: Validate Agent Skills
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 24.12.0
+      - run: npm run skills:validate
+
   publish-npm:
     name: Publish to NPM
-    needs: build
+    needs: [build, validate-skills]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     steps:

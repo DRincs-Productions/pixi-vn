@@ -135,3 +135,21 @@ body {
   overflow: hidden;
 }
 ```
+
+## Agent Skills
+
+Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants (like Claude Code) how to correctly use each part of the engine. If you use Claude Code, you can install all of them into your project with:
+
+```npm
+npx skills add DRincs-Productions/pixi-vn
+```
+
+This installs every skill below and prompts you to pick which ones to keep. To install only specific ones, add `--skill <name>` (repeat the flag to install several, e.g. `--skill canvas --skill sound`). Use `--list` instead of installing to just see what's available. Available skills:
+
+- `getting-started` — installing the package and initializing the `Game`
+- `canvas` — images, sprites, text, video, layers, transitions and effects
+- `characters` — defining and registering characters
+- `history` — story-step snapshots and going back
+- `narration` — labels, dialogue and choices
+- `sound` — music, sound effects and audio channels
+- `storage` — game variables, flags and stored classes
