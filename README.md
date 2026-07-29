@@ -150,7 +150,9 @@ This installs every skill below and prompts you to pick which ones to keep. To i
 - `assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
 - `canvas` — images, sprites, text, video, layers, transitions and effects
 - `characters` — defining and registering characters
-- `history` — story-step snapshots and going back
+- `history` — going back/rewinding and reading the narration backlog
 - `narration` — labels, dialogue and choices
+- `saves` — exporting/restoring game state and persisting save files
 - `sound` — music, sound effects and audio channels
 - `storage` — game variables, flags and stored classes
+- `migration` — upgrading an existing project to the current version
