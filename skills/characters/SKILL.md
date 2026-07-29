@@ -294,6 +294,18 @@ narration.dialogue = { character: liam, text: "Which test do you want to perform
 narration.dialogue = { character: "liam", text: "..." };
 ```
 
+Which form to prefer depends on whether the project's `@drincs/pixi-vn/vite` plugin generates
+typed character ids (the `typeFilePath` option covered in `pixi-vn-getting-started`, which narrows
+`CharacterIdType` from plain `string` to a union of the actually-registered ids):
+
+- **Without it**, prefer passing the **instance** (`character: liam`) — a bare string id has no
+  compile-time typo protection, while the instance is a real variable reference the compiler
+  already checks.
+- **With it**, prefer the **string-id form** (`character: "liam"`) — it now gets the same
+  compile-time safety (a typo like `"liem"` fails to typecheck against the generated
+  `CharacterIdType` union) without needing to import the character module wherever a dialogue line
+  is written, which keeps label files decoupled from character-definition files.
+
 `DialogueInterface.character` accepts `CharacterInterface | string`; when a
 string id is stored, the engine resolves it back to the registered character
 object (via `RegisteredCharacters.get`) when the dialogue is read back — so a
