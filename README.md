@@ -10,7 +10,7 @@
   <a target="_blank" href="https://discord.gg/E95FZWakzp" rel="noopener noreferrer nofollow"><img alt="Discord" src="https://img.shields.io/discord/1263071210011496501?color=7289da&label=discord"></a>
 </p>
 
-Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
+Pixi’VN is a very versatile and powerful story-driven engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
 
 It provides the following features:
 
