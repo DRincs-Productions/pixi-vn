@@ -32,19 +32,19 @@ unique string `id` and a props object (`name`, `surname`, `age`, `icon`,
 import { CharacterBaseModel } from "@drincs/pixi-vn";
 
 export const liam = new CharacterBaseModel("liam", {
-    name: "Liam",
-    surname: "Smith",
-    age: 25,
-    icon: "https://example.com/liam.png",
-    color: "#9e2e12",
+  name: "Liam",
+  surname: "Smith",
+  age: 25,
+  icon: "https://example.com/liam.png",
+  color: "#9e2e12",
 });
 
 export const emma = new CharacterBaseModel("emma", {
-    name: "Emma",
-    surname: "Johnson",
-    age: 23,
-    icon: "https://example.com/emma.png",
-    color: "#c23b7f",
+  name: "Emma",
+  surname: "Johnson",
+  age: 23,
+  icon: "https://example.com/emma.png",
+  color: "#c23b7f",
 });
 ```
 
@@ -55,7 +55,7 @@ saves.
 `name`/`surname`/`age` are actually get/set accessors backed by the game's
 storage (see `CharacterStoredClass`, which `CharacterBaseModel` extends, and
 the [stored classes](https://pixi-vn.com/start/stored-classes) doc): the value
-passed in the constructor becomes the *default*, but setting `liam.name = "..."`
+passed in the constructor becomes the _default_, but setting `liam.name = "..."`
 at runtime persists an override in storage that survives save/load and takes
 priority over the default. `icon` and `color` are plain readonly fields, not
 stored/overridable at runtime.
@@ -89,73 +89,85 @@ approach (project templates already ship it as `models/Character.ts`):
    same pattern `CharacterBaseModel` uses internally for `name`/`surname`/`age`.
 
 This is exactly what the official `pixi-vn-react-template` (the "TS narration
-+ React" project `npm create pixi-vn@latest` scaffolds) ships as
-`src/models/Character.ts` — stored getters/setters for `name`, `surname` and
-`age`, and plain (non-stored) fields for `icon`/`color`:
+
+- React" project `npm create pixi-vn@latest` scaffolds) ships as
+  `src/models/Character.ts` — stored getters/setters for `name`, `surname` and
+  `age`, and plain (non-stored) fields for `icon`/`color`:
 
 ```ts
 // models/Character.ts
 import { type CharacterInterface, CharacterStoredClass } from "@drincs/pixi-vn";
 
-export default class Character extends CharacterStoredClass implements CharacterInterface {
-    constructor(id: string | { id: string; emotion: string }, props: CharacterProps) {
-        super(typeof id === "string" ? id : id.id, typeof id === "string" ? "" : id.emotion);
-        this.defaultName = props.name;
-        this.defaultSurname = props.surname;
-        this.defaultAge = props.age;
-        this.icon = props.icon;
-        this.color = props.color;
-    }
+export default class Character
+  extends CharacterStoredClass
+  implements CharacterInterface
+{
+  constructor(
+    id: string | { id: string; emotion: string },
+    props: CharacterProps,
+  ) {
+    super(
+      typeof id === "string" ? id : id.id,
+      typeof id === "string" ? "" : id.emotion,
+    );
+    this.defaultName = props.name;
+    this.defaultSurname = props.surname;
+    this.defaultAge = props.age;
+    this.icon = props.icon;
+    this.color = props.color;
+  }
 
-    // stored — persists across save/load, same pattern as CharacterBaseModel
-    private defaultName?: string;
-    get name(): string {
-        return this.getStorageProperty<string>("name") || this.defaultName || this.id;
-    }
-    set name(value: string | undefined) {
-        this.setStorageProperty<string>("name", value);
-    }
+  // stored — persists across save/load, same pattern as CharacterBaseModel
+  private defaultName?: string;
+  get name(): string {
+    return (
+      this.getStorageProperty<string>("name") || this.defaultName || this.id
+    );
+  }
+  set name(value: string | undefined) {
+    this.setStorageProperty<string>("name", value);
+  }
 
-    private defaultSurname?: string;
-    get surname(): string | undefined {
-        return this.getStorageProperty<string>("surname") || this.defaultSurname;
-    }
-    set surname(value: string | undefined) {
-        this.setStorageProperty<string>("surname", value);
-    }
+  private defaultSurname?: string;
+  get surname(): string | undefined {
+    return this.getStorageProperty<string>("surname") || this.defaultSurname;
+  }
+  set surname(value: string | undefined) {
+    this.setStorageProperty<string>("surname", value);
+  }
 
-    private defaultAge?: number;
-    get age(): number | undefined {
-        return this.getStorageProperty<number>("age") || this.defaultAge;
-    }
-    set age(value: number | undefined) {
-        this.setStorageProperty<number>("age", value);
-    }
+  private defaultAge?: number;
+  get age(): number | undefined {
+    return this.getStorageProperty<number>("age") || this.defaultAge;
+  }
+  set age(value: number | undefined) {
+    this.setStorageProperty<number>("age", value);
+  }
 
-    // not stored
-    readonly icon?: string;
-    readonly color?: string;
+  // not stored
+  readonly icon?: string;
+  readonly color?: string;
 }
 
 interface CharacterProps {
-    name?: string;
-    surname?: string;
-    age?: number;
-    icon?: string;
-    color?: string;
+  name?: string;
+  surname?: string;
+  age?: number;
+  icon?: string;
+  color?: string;
 }
 ```
 
 ```ts
 // pixi-vn.d.ts
 declare module "@drincs/pixi-vn" {
-    interface CharacterInterface {
-        name: string;
-        surname?: string;
-        age?: number;
-        readonly icon?: string;
-        readonly color?: string;
-    }
+  interface CharacterInterface {
+    name: string;
+    surname?: string;
+    age?: number;
+    readonly icon?: string;
+    readonly color?: string;
+  }
 }
 ```
 
@@ -209,8 +221,14 @@ import Character from "@/models/Character";
 import { RegisteredCharacters } from "@drincs/pixi-vn";
 
 export const mc = new Character("mc", { name: "Me" });
-export const james = new Character("james", { name: "James", color: "#0084ac" });
-export const steph = new Character("steph", { name: "Steph", color: "#ac5900" });
+export const james = new Character("james", {
+  name: "James",
+  color: "#0084ac",
+});
+export const steph = new Character("steph", {
+  name: "Steph",
+  color: "#ac5900",
+});
 export const sly = new Character("sly", { name: "Sly", color: "#6d00ac" });
 
 RegisteredCharacters.add([mc, james, steph, sly]);
@@ -222,7 +240,7 @@ effects at app startup — so the module-scope `RegisteredCharacters.add(...)`
 call above always runs. That means you never need to remember to import each
 new character file yourself (dropping it anywhere under `content/` is
 enough), but conversely, a character defined (and `.add`ed) in a file
-*outside* `content/` that nothing else imports never gets its `add` call
+_outside_ `content/` that nothing else imports never gets its `add` call
 executed, and stays silently unregistered.
 
 This is **the official template's convention, not a hard requirement of the
@@ -248,14 +266,14 @@ instead of a plain string as the constructor's first argument:
 
 ```ts
 export const alice = new CharacterBaseModel("alice", {
-    name: "Alice",
-    icon: "https://example.com/alice.png",
-    color: "#9e2e12",
+  name: "Alice",
+  icon: "https://example.com/alice.png",
+  color: "#9e2e12",
 });
 
 export const angryAlice = new CharacterBaseModel(
-    { id: "alice", emotion: "angry" },
-    { icon: "https://example.com/angryAlice.png" },
+  { id: "alice", emotion: "angry" },
+  { icon: "https://example.com/angryAlice.png" },
 );
 
 RegisteredCharacters.add([alice, angryAlice]);
@@ -289,7 +307,10 @@ Once registered, pass the character instance (or its id string) as the
 `character` field of a dialogue, e.g. inside a label step:
 
 ```ts
-narration.dialogue = { character: liam, text: "Which test do you want to perform?" };
+narration.dialogue = {
+  character: liam,
+  text: "Which test do you want to perform?",
+};
 // or by id:
 narration.dialogue = { character: "liam", text: "..." };
 ```
