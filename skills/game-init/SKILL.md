@@ -184,7 +184,7 @@ See also: [pixi-vn.com/start/interface-navigate](https://pixi-vn.com/start/inter
   Game.onNavigate((path) => router.push(path));
   ```
 
-- **`Game.exportGameState()` / `Game.restoreGameState(data)` / `Game.jsonToGameState(json)`** — the save/load trio. `exportGameState()` returns a `GameState` object (version, step/storage/canvas/sound/history data) suitable for `JSON.stringify`; `restoreGameState(data)` restores it (uses the navigate function from `onNavigate`/`init` unless one is passed explicitly — passing `navigate` directly is deprecated); `jsonToGameState(json)` just parses a JSON string back into a `GameState`. All official templates already implement `createGameSave`/`loadSave` wrappers around this trio (see `utils/save-utility.ts`) plus optional IndexedDB persistence and an "auto-save on close" pattern — see [pixi-vn.com/start/save](https://pixi-vn.com/start/save) rather than reimplementing them from scratch.
+- **`Game.exportGameState()` / `Game.restoreGameState(data)` / `Game.jsonToGameState(json)`** — the save/load trio. Full detail, including the official template's save-slot/quick-save/IndexedDB convention, is covered by `pixi-vn-saves`.
 
 - **Narration lifecycle hooks** — `Game.onStepStart`, `Game.onStepEnd`, `Game.onLoadingLabel` (fires on step 0 and on save-load — the hook a label uses to load/background-load its own asset bundle, see `pixi-vn-assets`), `Game.onLabelStarting`, and `Game.onLabelClosing` let you intercept/defer label transitions (e.g. to run a UI transition before the next label actually starts). These are advanced hooks — most projects only need `onEnd`.
 
@@ -378,5 +378,7 @@ Whatever is added here becomes available on the `props` argument of every narrat
 - **pixi-vn-characters** — defining and registering `Character` instances used in dialogue.
 - **pixi-vn-history** — the step history system (`stepHistory`), going back/forward through played steps, and save-checkpoint behavior.
 - **pixi-vn-narration** — labels, steps, dialogue, choices, and the `narration` object driving the story.
+- **pixi-vn-saves** — `Game.exportGameState`/`restoreGameState` and the official save-slot/quick-save convention.
 - **pixi-vn-sound** — playing music and sound effects, channels, and volume control.
 - **pixi-vn-storage** — reading/writing persistent and temporary game variables and flags.
+- **pixi-vn-migration** — upgrading an existing project to the current version.

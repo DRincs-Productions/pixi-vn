@@ -68,9 +68,6 @@ Other `storage` methods:
   of `undefined`.
 - `storage.clear()` — wipes all stored variables (used by tests/new-game
   flows), after which reads fall back to `storage.default`.
-- `storage.base` — the raw underlying `Map`. The docs show wrapping it with
-  [Keyv](https://keyv.org/) (`new Keyv({ store: storage.base })`) if you want a
-  Keyv-compatible interface on top of the same storage.
 
 ### Temporary (label-scoped) variables
 
@@ -172,82 +169,14 @@ confusion when inspecting exported save data.
 
 ## 4. Relation to save/load and history
 
-The documented, recommended way to build save/load is
-[`Game.exportGameState()`](https://pixi-vn.com/start/save#create) /
-[`Game.restoreGameState(saveData, navigate)`](https://pixi-vn.com/start/save#load) —
-you generally don't touch storage directly for this. Under the hood,
-`storage.export()` / `storage.restore(data)` serialize and restore the entire
-variable store (main variables + temp-variable deadlines); this is exactly
-what the save-game payload embeds under its own `storageData`/`storage` field
-alongside narration, sound, and history data (see `tests/saves.test.ts`,
-`exportGameState`/`restoreGameState`). Reach for `storage.export()`/`restore()`
-directly only if you're building something lower-level than a full game save.
-
-Because a snapshot of storage is captured as part of each recorded history
-step (used for `narration.goBack()`/undo), variables set through `storage`
-also participate in step-by-step rewind, not just save/load — see the history
-skill for how that stepping mechanism works. `storage.clear()` resets
-variables back to whatever was set via `storage.default`, which is what tests
-use to get a clean slate between scenarios.
-
-## 5. Real-world save/load convention (official React template)
-
-`Game.exportGameState()` (see section 4) returns the raw `GameState` — the
-engine's own storage/narration/sound/history payload. It says nothing about
-_where_ that payload lives or what metadata a save-slot UI needs (a title, a
-timestamp, a thumbnail...). The storage module itself is agnostic here: how
-and where you persist the exported state is entirely up to the app.
-
-The official React+TS template (`npm create pixi-vn@latest`, source at
-`src/models/GameSaveData.ts` / `src/lib/utils/save-utility.ts`) shows one
-concrete way to close that gap — this is _the template's convention_, not a
-library requirement:
-
-```ts
-interface GameSaveData {
-  saveData: GameState; // the raw Game.exportGameState() output
-  gameVersion: string;
-  date: Date;
-  name: string;
-  image?: string; // thumbnail, e.g. canvas.extractImage()
-}
-
-function createGameSave(options?: {
-  image?: string;
-  name?: string;
-}): GameSaveData {
-  return {
-    saveData: Game.exportGameState(),
-    gameVersion: __APP_VERSION__,
-    date: new Date(),
-    name: options?.name ?? "",
-    image: options?.image,
-  };
-}
-
-async function loadSave(saveData: GameSaveData) {
-  await Game.restoreGameState(saveData.saveData);
-}
-```
-
-So the pattern is: wrap `Game.exportGameState()`'s return value in an
-app-level object carrying save metadata (version, date, display name,
-thumbnail), and pass the inner `saveData` field back to
-`Game.restoreGameState()` when loading.
-
-Illustrative, not exhaustive — the template then persists that wrapped
-`GameSaveData` object rather than the raw game state alone, because real
-projects need more than a single blob: numbered save slots and quick-saves
-via IndexedDB (`saveGameToIndexDB`/`getSaveFromIndexDB`/
-`quickSaveGameToIndexDB`, with a reserved negative-id range for quick-saves),
-an auto "refresh save" kept in `localStorage` under a special `-1` id so an
-accidental page reload doesn't lose progress, and a downloadable/importable
-JSON file (`downloadGameSave`/`loadGameSaveFromFile`) for backing up or
-sharing a save outside the app. None of this is prescribed by
-`@drincs/pixi-vn` — treat it as one worked example of gluing
-`exportGameState`/`restoreGameState` to a real persistence layer, not the
-only way to do it.
+Building save/load itself (the `Game.exportGameState()`/`restoreGameState()` flow, and how to
+persist the result) is covered by `pixi-vn-saves` — you generally don't touch storage directly for
+that; every variable set through `storage` is included automatically. The same is true for
+step-by-step rewind: a snapshot of storage is captured at each recorded history step, so `storage`
+variables participate in "go back" too, not just save/load — see `pixi-vn-history`. `storage.clear()`
+resets variables back to whatever was set via `storage.default`, which is what tests use to get a
+clean slate between scenarios.
 
 ## Related skills
 
-pixi-vn-getting-started, pixi-vn-characters, pixi-vn-history, pixi-vn-narration
+pixi-vn-getting-started, pixi-vn-saves, pixi-vn-characters, pixi-vn-history, pixi-vn-narration

@@ -13,8 +13,9 @@ or driving story progression (starting the game, moving to the next step, callin
 labels). This is the core engine of Pixi'VN — almost every "write a scene" or "add a choice" request
 touches this module.
 
-Do not use this skill for: character definitions/appearance (see `pixi-vn-characters`), save/undo
-history mechanics (see `pixi-vn-history`), or persistent game variables (see `pixi-vn-storage`).
+Do not use this skill for: character definitions/appearance (see `pixi-vn-characters`), undo/go-back
+mechanics (see `pixi-vn-history`), save files (see `pixi-vn-saves`), or persistent game variables
+(see `pixi-vn-storage`).
 
 Official docs for this module: https://pixi-vn.com/start/narration (overview),
 https://pixi-vn.com/start/labels and https://pixi-vn.com/start/labels-flow (labels/steps/flow),
@@ -114,7 +115,48 @@ it to a line.
 
 Docs: https://pixi-vn.com/start/dialogue
 
-## 3. Choices
+## 3. Rich text: Markdown and HTML in dialogue
+
+Docs: [pixi-vn.com/start/markup](https://pixi-vn.com/start/markup),
+[markup-markdown](https://pixi-vn.com/start/markup-markdown),
+[markup-tailwindcss](https://pixi-vn.com/start/markup-tailwindcss).
+
+Pixi'VN isn't tied to any markup language for `narration.dialogue` text, but **Markdown is the
+recommended one**, and Markdown can be freely mixed with raw HTML for anything Markdown itself can't
+express. Every official template already renders dialogue this way — in the React template
+specifically, via `react-markdown` with the `remark-gfm` (GFM tables/strikethrough/etc.) and
+`rehype-raw` (allows raw HTML inside the Markdown source) plugins:
+
+```tsx
+import Markdown from "react-markdown";
+import rehypeRaw from "rehype-raw";
+import remarkGfm from "remark-gfm";
+
+<Markdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]}>
+  {narration.dialogue?.text}
+</Markdown>;
+```
+
+**When writing dialogue text, default to plain Markdown's classic inline styles** — `*italic*`,
+`**bold**`, and similar simple emphasis — rather than reaching for raw HTML/CSS. Only use HTML (or
+anything fancier) when the user actually asks for it (e.g. a specific color, an animation, an
+underline a specific character always has):
+
+```ts
+narration.dialogue = "*She* was **not** amused.";
+```
+
+When HTML *is* asked for, the recommended CSS approach (per the docs) is **Tailwind CSS** — already
+installed and configured in every official template, optionally with plugins like
+`@tailwindcss/typography`, `tw-animate-css`, or `tailwind-animations` for richer text effects. **A
+Tailwind-styled inline element inside dialogue text must be `inline-block`** — a plain `inline`
+element won't apply `transform`/animation utilities correctly mid-paragraph:
+
+```ts
+narration.dialogue = `The night was <span class="inline-block animate-pulse text-violet-400">still</span>.`;
+```
+
+## 4. Choices
 
 A choice menu is created by assigning an array to `narration.choices`, typically built with
 `newChoiceOption` (opens another label) and/or `newCloseChoiceOption` (just closes the menu and lets
@@ -168,7 +210,7 @@ option's `type`, and records the pick so `narration.alreadyCurrentStepMadeChoice
 
 Docs: https://pixi-vn.com/start/choices
 
-## 4. Progressing and closing labels
+## 5. Progressing and closing labels
 
 Docs: https://pixi-vn.com/start/labels-flow
 
@@ -209,7 +251,7 @@ async (props) => {
 - **Going back a step** is handled by the history module, not `narration` — see `stepHistory.back()` /
   `stepHistory.canGoBack` in the `pixi-vn-history` skill.
 
-## 5. Input prompts
+## 6. Input prompts
 
 Docs: https://pixi-vn.com/start/input
 
@@ -241,7 +283,7 @@ To ask the player for a value (string, number, or an HTML element like a textare
 - `narration.removeInputRequest()` cancels a pending request without a value (rarely needed in normal
   authoring).
 
-## 6. Conditional branching
+## 7. Conditional branching
 
 Because `steps` can be a function, a label's content can change based on stored state — e.g. showing
 different dialogue on a repeat visit:
@@ -280,7 +322,7 @@ storage flags/variables (see `pixi-vn-storage`) rather than on anything that cha
 last step in a branch can `await narration.continue(props)` itself if it wants to immediately
 auto-advance past a "setup" step instead of waiting for another player input.
 
-## 7. Other useful narration bits
+## 8. Other useful narration bits
 
 Docs: https://pixi-vn.com/start/other-narrative-features
 
@@ -295,7 +337,7 @@ Docs: https://pixi-vn.com/start/other-narrative-features
   increments when actually read, and only once per step execution); set it to `0` to reset. Useful for
   "show this the first time only" logic inside a dynamic step-list function.
 
-## 8. Real-world project convention (official React template)
+## 9. Real-world project convention (official React template)
 
 The library itself doesn't mandate any file layout or UI wiring — the points below are how
 `npm create pixi-vn@latest`'s official "TS narration + React" template does it, as seen in
