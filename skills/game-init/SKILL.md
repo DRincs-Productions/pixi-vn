@@ -43,6 +43,16 @@ Two paths, depending on whether a project already exists:
 
 With npm 7+, `npm install @drincs/pixi-vn` auto-installs these peer dependencies too — no separate install step is needed in the common case. If a developer is on an older npm, or uses a package manager that doesn't auto-install peers (e.g. pnpm, or yarn in strict mode), they'll need to install them explicitly (`npm install pixi.js tone motion @pixi/devtools`). If a developer reports errors about missing modules like `pixi.js`, `tone`, or `motion`, check their package manager/version and whether these ended up installed before looking elsewhere.
 
+### Import paths: `@drincs/pixi-vn` vs subpaths
+
+Every module (canvas, characters, history, narration, sound, storage, ...) is available both from the package root and from its own subpath, e.g. `Game`/`canvas`/`sound` all from `@drincs/pixi-vn`, or `canvas` alone from `@drincs/pixi-vn/canvas`. **Default to importing from the root `@drincs/pixi-vn`** — that's what every official doc example and template does:
+
+```ts
+import { canvas, Game, narration, sound, storage } from "@drincs/pixi-vn";
+```
+
+Reach for a narrower subpath (`@drincs/pixi-vn/canvas`, `/sound`, `/characters`, `/storage`, `/narration`, `/core`, `/pixi.js`, `/motion`) only when there's a concrete reason to avoid pulling in the whole package surface — e.g. a headless/server-side environment where canvas or sound isn't available or permitted, a size-constrained bundle target, or code that genuinely only ever touches one module. This applies to every skill in this set; it isn't repeated per-module.
+
 ## Initializing the game: `Game.init`
 
 `Game.init` must be called before any other Pixi'VN function (narration, canvas, sound, storage, history). It has two forms:
