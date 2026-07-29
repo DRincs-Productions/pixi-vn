@@ -147,6 +147,7 @@ npx skills add DRincs-Productions/pixi-vn
 This installs every skill below and prompts you to pick which ones to keep. To install only specific ones, add `--skill <name>` (repeat the flag to install several, e.g. `--skill canvas --skill sound`). Use `--list` instead of installing to just see what's available. Available skills:
 
 - `getting-started` — installing the package and initializing the `Game`
+- `assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
 - `canvas` — images, sprites, text, video, layers, transitions and effects
 - `characters` — defining and registering characters
 - `history` — story-step snapshots and going back

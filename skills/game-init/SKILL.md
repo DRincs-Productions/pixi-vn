@@ -5,6 +5,8 @@ description: Use when setting up a new or existing project on @drincs/pixi-vn, w
 
 # Pixi'VN project initialization and the Game API
 
+Official docs: [pixi-vn.com/start](https://pixi-vn.com/start). For a full machine-readable index of every Pixi'VN doc page — useful whenever a task needs more detail than this skill set covers — see [pixi-vn.com/llms.txt](https://pixi-vn.com/llms.txt).
+
 ## When to use this skill
 
 Use this skill whenever you are bootstrapping a Pixi'VN project from scratch, wiring up `src/main.ts`, or need to understand what `Game.init`/`Game.start` actually do before wiring narration, canvas, sound, storage, or history features. Every other Pixi'VN skill assumes `Game.init` has already run.
@@ -22,6 +24,8 @@ Two paths, depending on whether a project already exists:
   This generates a working project (index.html, entry point, bundler config) already wired to call `Game.init`, with pre-built menu/narration screens, VS Code launch configs, and (since template v2.0.0) TanStack Router for navigation. See [pixi-vn.com/start/templates](https://pixi-vn.com/start/templates) for the full generated project structure, available templates/demos, and how to run/customize one.
 
   The wizard asks for a narrative language and **defaults/suggests _Ink + TypeScript_** (it's listed first and pre-selected in the prompt for the Visual Novel, Text-based Story, and Point & Click Adventure project types) — plain **TypeScript** narration (what every skill in this set documents) is the other option, selectable in the same prompt. Ink support is a separate narrative language with its own syntax and its own future skill; nothing in this skill set requires it.
+
+  The wizard's first question is the project/game type; the docs have a dedicated getting-started walkthrough for some of them — [pixi-vn.com/start/make-visual-novel](https://pixi-vn.com/start/make-visual-novel) for "Visual Novel", [pixi-vn.com/nqtr/make-point-and-click](https://pixi-vn.com/nqtr/make-point-and-click) for "Point & Click Adventure" — worth pointing a developer to the matching one for their project type, in addition to the general [pixi-vn.com/start/templates](https://pixi-vn.com/start/templates) page above.
 
 - **Existing JS/TS project** — add the package directly:
 
