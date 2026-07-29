@@ -182,7 +182,7 @@ See also: [pixi-vn.com/start/interface-navigate](https://pixi-vn.com/start/inter
 
 - **`Game.exportGameState()` / `Game.restoreGameState(data)` / `Game.jsonToGameState(json)`** — the save/load trio. `exportGameState()` returns a `GameState` object (version, step/storage/canvas/sound/history data) suitable for `JSON.stringify`; `restoreGameState(data)` restores it (uses the navigate function from `onNavigate`/`init` unless one is passed explicitly — passing `navigate` directly is deprecated); `jsonToGameState(json)` just parses a JSON string back into a `GameState`. All official templates already implement `createGameSave`/`loadSave` wrappers around this trio (see `utils/save-utility.ts`) plus optional IndexedDB persistence and an "auto-save on close" pattern — see [pixi-vn.com/start/save](https://pixi-vn.com/start/save) rather than reimplementing them from scratch.
 
-- **Narration lifecycle hooks** — `Game.onStepStart`, `Game.onStepEnd`, `Game.onLoadingLabel` (fires on step 0 and on save-load, good place to `Assets.load(...)` images used by a label), `Game.onLabelStarting`, and `Game.onLabelClosing` let you intercept/defer label transitions (e.g. to run a UI transition before the next label actually starts). These are advanced hooks — most projects only need `onEnd`.
+- **Narration lifecycle hooks** — `Game.onStepStart`, `Game.onStepEnd`, `Game.onLoadingLabel` (fires on step 0 and on save-load — the hook a label uses to load/background-load its own asset bundle, see `pixi-vn-assets`), `Game.onLabelStarting`, and `Game.onLabelClosing` let you intercept/defer label transitions (e.g. to run a UI transition before the next label actually starts). These are advanced hooks — most projects only need `onEnd`.
 
 - **`Game.addOnPreContinue(handler)` / `Game.removeOnPreContinue(handler)`** — register handlers that run immediately before every narration "continue" step (e.g. auto-save on each step).
 
@@ -264,7 +264,7 @@ What it actually does:
 
 - **Loads content before anything else needs it.** The `content`/`characters`/`labels` glob options are executed server-side (via Vite SSR, in dev *and* during `vite build`) at startup, so `RegisteredCharacters`/`RegisteredLabels` are fully populated before any other plugin (notably an ink compiler) or the app itself runs. Without this, whether your content has actually registered by the time something reads it would depend on unpredictable import ordering.
 - **Generates type-safe ID unions.** When `typeFilePath` is set, the plugin (re)writes that file on every startup and every content hot-reload with `declare module` augmentations that narrow `CharacterIdType`, `LabelIdType`, `BundleIdType`, and `AssetAliasIdType` from plain `string` to a union of the actual known literals — so `narration.call("typo_label")` becomes a compile error instead of a runtime one. The same file also exports plain `as const` arrays/enums (`characterIds`, `labelIds`, `bundleIds`, `assetAliasIds`) for runtime validation (e.g. `z.enum(characterIdsEnum)`). This generated file is excluded from HMR, so regenerating it never triggers a full page reload.
-- **Bridges the PixiJS assets manifest.** The `assetsManifest` option (a value or an async function, for manifests produced by an asset pipeline) feeds bundle/asset-alias ids into the same generated file, and seeds a dev-server endpoint (`GET /__pixi-vn/assets/manifest`) so devtools/other tooling can read the current manifest without the client having to push it first.
+- **Bridges the PixiJS assets manifest.** The `assetsManifest` option (a value or an async function, typically resolving to the `manifest` built in `src/assets/index.ts` — see `pixi-vn-assets` for how that file is authored) feeds bundle/asset-alias ids into the same generated file, and seeds a dev-server endpoint (`GET /__pixi-vn/assets/manifest`) so devtools/other tooling can read the current manifest without the client having to push it first.
 - **Hot-reloads content correctly.** Editing a watched label/character file clears the relevant registry and reloads just those files, regenerating the keys file — without a full page reload.
 
 Don't hand-configure the underlying `GET/POST /__pixi-vn/*` dev-server endpoints or `api.setExternalLabels`/`api.setAssetsManifest` unless building a *plugin that integrates with* `vitePluginPixivn` (e.g. an ink compiler) — for an app, the four options above (`content`, `characters`, `labels`, `typeFilePath`, `assetsManifest`) are the whole interface that matters.
@@ -369,6 +369,7 @@ Whatever is added here becomes available on the `props` argument of every narrat
 
 ## Related skills
 
+- **pixi-vn-assets** — registering local/online assets, the manifest/bundle/alias system, and when to load them.
 - **pixi-vn-canvas** — adding/animating images, sprites, text, video and containers on the PixiJS canvas after `Game.init`.
 - **pixi-vn-characters** — defining and registering `Character` instances used in dialogue.
 - **pixi-vn-history** — the step history system (`stepHistory`), going back/forward through played steps, and save-checkpoint behavior.
