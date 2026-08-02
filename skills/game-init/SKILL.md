@@ -335,7 +335,7 @@ Game.onLoadingLabel((_stepId, { id }) => Assets.backgroundLoadBundle(id));
 
 Key points:
 
-- `canvas.addLayer` adds a PixiJS container drawn directly in the canvas render tree; `canvas.addHtmlLayer` instead hands back a DOM node kept in sync with a canvas-tracked layer, and is where any HTML/React/Vue UI gets mounted. This is the concrete mechanism behind "Pixi'VN has no built-in UI, bring your own framework" (see `pixi-vn-canvas`).
+- `canvas.addLayer` adds a PixiJS container drawn directly in the canvas render tree; `canvas.addHtmlLayer` instead hands back a DOM node kept in sync with a canvas-tracked layer, and is where any HTML/React/Vue UI gets mounted. This is the concrete mechanism behind "Pixi'VN has no built-in UI, bring your own framework" (see `pixi-vn-ui`).
 - Multiple error handlers can be stacked: the library's own `drawCanvasErrorHandler()` (visualizes broken canvas elements) runs alongside a project-specific handler that shows a toast and logs to console.
 - `Game.onLoadingLabel` fires as a label is about to run; the template uses it to kick off `Assets.backgroundLoadBundle(id)`, pre-warming an asset bundle named after the label id so images referenced by that label are already cached when needed.
 
@@ -381,4 +381,5 @@ Whatever is added here becomes available on the `props` argument of every narrat
 - **pixi-vn-saves** — `Game.exportGameState`/`restoreGameState` and the official save-slot/quick-save convention.
 - **pixi-vn-sound** — playing music and sound effects, channels, and volume control.
 - **pixi-vn-storage** — reading/writing persistent and temporary game variables and flags.
+- **pixi-vn-ui** — building/mounting UI layers (HTML or PixiJS) on top of the canvas, screen navigation, theming, and connecting UI to storage.
 - **pixi-vn-migration** — upgrading an existing project to the current version.
