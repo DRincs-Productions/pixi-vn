@@ -155,4 +155,5 @@ This installs every skill below and prompts you to pick which ones to keep. To i
 - `saves` — exporting/restoring game state and persisting save files
 - `sound` — music, sound effects and audio channels
 - `storage` — game variables, flags and stored classes
+- `ui` — mounting HTML/PixiJS UI layers over the canvas, screen navigation, theming, and connecting UI to storage
 - `migration` — upgrading an existing project to the current version
