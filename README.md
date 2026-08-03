@@ -148,7 +148,7 @@ This installs every skill below and prompts you to pick which ones to keep. To i
 
 - `getting-started` — installing the package and initializing the `Game`
 - `assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
-- `canvas` — images, sprites, text, video, layers, transitions and effects
+- `canvas` — images, sprites, text, video, transitions and effects
 - `characters` — defining and registering characters
 - `history` — going back/rewinding and reading the narration backlog
 - `narration` — labels, dialogue and choices
