@@ -7,8 +7,12 @@ import RegisteredLabels from "@narration/decorators/RegisteredLabels";
 import type { StoredDialogue } from "@narration/interfaces/DialogueInterface";
 import type HistoryStep from "@narration/interfaces/HistoryStep";
 import { AdditionalShaSpetsEnum } from "@narration/interfaces/HistoryStep";
+import type NarrationChoicesInterface from "@narration/interfaces/NarrationChoicesInterface";
 import type NarrationGameState from "@narration/interfaces/NarrationGameState";
+import type NarrationInputInterface from "@narration/interfaces/NarrationInputInterface";
+import type NarrationLabelsInterface from "@narration/interfaces/NarrationLabelsInterface";
 import type NarrationManagerInterface from "@narration/interfaces/NarrationManagerInterface";
+import type NarrationQueriesInterface from "@narration/interfaces/NarrationQueriesInterface";
 import type StoredChoiceInterface from "@narration/interfaces/StoredChoiceInterface";
 import type { StoredIndexedChoiceInterface } from "@narration/interfaces/StoredChoiceInterface";
 import NarrationManagerStatic from "@narration/NarrationManagerStatic";
@@ -162,6 +166,16 @@ export default class NarrationManager implements NarrationManagerInterface {
             GameUnifier.onLabelClosing(this.openedLabels.length);
         }
     }
+    public readonly labels: NarrationLabelsInterface = {
+        get opened() {
+            return NarrationManagerStatic.openedLabels;
+        },
+        get current(): LabelAbstract<any> | undefined {
+            return NarrationManagerStatic._currentLabel;
+        },
+        closeCurrent: () => this.closeCurrentLabel(),
+        closeAll: () => this.closeAllLabels(),
+    };
     public isLabelAlreadyCompleted(label: LabelIdType | LabelAbstract<any>): boolean {
         let labelId: LabelIdType;
         if (typeof label === "string") {
@@ -223,6 +237,21 @@ export default class NarrationManager implements NarrationManagerInterface {
                 ?.madeTimes || 0
         );
     }
+    public readonly queries: NarrationQueriesInterface = (() => {
+        const self = this;
+        return {
+            isLabelAlreadyCompleted: (label: LabelIdType | LabelAbstract<any>) =>
+                self.isLabelAlreadyCompleted(label),
+            get alreadyCurrentStepMadeChoices() {
+                return self.alreadyCurrentStepMadeChoices;
+            },
+            get isCurrentStepAlreadyOpened() {
+                return self.isCurrentStepAlreadyOpened;
+            },
+            timesLabelOpened: (label: LabelIdType) => self.getTimesLabelOpened(label),
+            timesChoiceMade: (index: number) => self.getTimesChoiceMade(index),
+        };
+    })();
     addCurrentStepToHistory(): void {
         this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
     }
@@ -237,7 +266,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         showWarn?: boolean;
     }): boolean {
         const showWarn = options?.showWarn || false;
-        const choiceMenuOptions = this.choices;
+        const choiceMenuOptions = this.choicesValue;
         if (choiceMenuOptions && choiceMenuOptions.length > 0) {
             showWarn && logger.warn("The player must make a choice");
             return false;
@@ -392,7 +421,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                 }
 
                 try {
-                    const choiceMenuOptions = this.choices;
+                    const choiceMenuOptions = this.choicesValue;
                     if (choiceMenuOptions?.length === 1 && choiceMenuOptions[0].autoSelect) {
                         const choice = choiceMenuOptions[0];
                         result = await this.selectChoice(choice, props);
@@ -630,7 +659,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         item: StoredIndexedChoiceInterface,
         props: StepLabelPropsType<T>,
     ): Promise<StepLabelResultType> {
-        this.choices = undefined;
+        this.choicesValue = undefined;
         const type = item.type;
         switch (type) {
             case "call":
@@ -794,7 +823,7 @@ export default class NarrationManager implements NarrationManagerInterface {
             );
         }
     }
-    public get choices(): StoredIndexedChoiceInterface[] | undefined {
+    private get choicesValue(): StoredIndexedChoiceInterface[] | undefined {
         const d = GameUnifier.getVariable<any>(
             NARRATION_STORAGE_KEY,
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_MENU_OPTIONS_MEMORY_KEY,
@@ -829,11 +858,7 @@ export default class NarrationManager implements NarrationManagerInterface {
         }
         return undefined;
     }
-    /**
-     * The options to be shown in the game.
-     * @throws {PixiError} when a choice contains functions or class instances that cannot be serialized to JSON.
-     */
-    public set choices(options: StoredChoiceInterface[] | undefined) {
+    private set choicesValue(options: StoredChoiceInterface[] | undefined) {
         if (!options || options.length === 0) {
             GameUnifier.setVariable(
                 NARRATION_STORAGE_KEY,
@@ -860,6 +885,29 @@ export default class NarrationManager implements NarrationManagerInterface {
                 "ChoiceInterface cannot contain functions or classes",
             );
         }
+    }
+    private readonly choicesObj: NarrationChoicesInterface = (() => {
+        const self = this;
+        const obj = {
+            select: <T extends {}>(item: StoredIndexedChoiceInterface, props: StepLabelPropsType<T>) =>
+                self.selectChoice(item, props),
+        };
+        // list has a read type (StoredIndexedChoiceInterface[]) narrower than its write type
+        // (StoredChoiceInterface[]); TS can't infer that asymmetry from an object literal getter/setter pair.
+        Object.defineProperty(obj, "list", {
+            get: () => self.choicesValue,
+            set: (data: StoredChoiceInterface[] | undefined) => {
+                self.choicesValue = data;
+            },
+            enumerable: true,
+        });
+        return obj as unknown as NarrationChoicesInterface;
+    })();
+    public get choices(): NarrationChoicesInterface {
+        return this.choicesObj;
+    }
+    public set choices(data: StoredChoiceInterface[] | undefined) {
+        this.choicesValue = data;
     }
     public get dialogGlue(): boolean {
         return GameUnifier.getFlag(
@@ -938,6 +986,26 @@ export default class NarrationManager implements NarrationManagerInterface {
             SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
         );
     }
+    public readonly input: NarrationInputInterface = (() => {
+        const self = this;
+        return {
+            get value() {
+                return self.inputValue;
+            },
+            set value(value: StorageElementType) {
+                self.inputValue = value;
+            },
+            get isRequired() {
+                return self.isRequiredInput;
+            },
+            get type() {
+                return self.inputType;
+            },
+            request: (info?: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType) =>
+                self.requestInput(info, defaultValue),
+            removeRequest: () => self.removeInputRequest(),
+        };
+    })();
 
     public clear() {
         NarrationManagerStatic.openedLabels = [];

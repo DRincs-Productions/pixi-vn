@@ -10,9 +10,13 @@ export type { default as ChoiceInterface } from "@narration/interfaces/ChoiceInt
 export type { default as DialogueInterface } from "@narration/interfaces/DialogueInterface";
 export type { default as HistoryStep } from "@narration/interfaces/HistoryStep";
 export type { default as LabelProps } from "@narration/interfaces/LabelProps";
+export type { default as NarrationChoicesInterface } from "@narration/interfaces/NarrationChoicesInterface";
 export type { default as NarrationGameState } from "@narration/interfaces/NarrationGameState";
 export type { default as NarrationHistory } from "@narration/interfaces/NarrationHistory";
+export type { default as NarrationInputInterface } from "@narration/interfaces/NarrationInputInterface";
+export type { default as NarrationLabelsInterface } from "@narration/interfaces/NarrationLabelsInterface";
 export type { default as NarrationManagerInterface } from "@narration/interfaces/NarrationManagerInterface";
+export type { default as NarrationQueriesInterface } from "@narration/interfaces/NarrationQueriesInterface";
 export type { default as OpenedLabel } from "@narration/interfaces/OpenedLabel";
 export type { default as StepLabelProps } from "@narration/interfaces/StepLabelProps";
 export type { default as StepLabelResult } from "@narration/interfaces/StepLabelResult";
