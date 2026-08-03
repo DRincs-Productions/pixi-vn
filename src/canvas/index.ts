@@ -72,6 +72,8 @@ export type {
 } from "./interfaces/canvas-options";
 export type { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
 export type { default as CanvasGameState } from "./interfaces/CanvasGameState";
+export type { default as CanvasHtmlLayersInterface } from "./interfaces/CanvasHtmlLayersInterface";
+export type { default as CanvasLayersInterface } from "./interfaces/CanvasLayersInterface";
 export type { default as CanvasManagerInterface } from "./interfaces/CanvasManagerInterface";
 export type { default as CanvasTickersInterface } from "./interfaces/CanvasTickersInterface";
 export type { ShakeEffectProps } from "./interfaces/effect-props";

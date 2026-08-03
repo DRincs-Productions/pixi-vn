@@ -6,6 +6,8 @@ import { importCanvasElement } from "@canvas/functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "@canvas/functions/canvas-memory-utility";
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
 import type CanvasGameState from "@canvas/interfaces/CanvasGameState";
+import type CanvasHtmlLayersInterface from "@canvas/interfaces/CanvasHtmlLayersInterface";
+import type CanvasLayersInterface from "@canvas/interfaces/CanvasLayersInterface";
 import type CanvasManagerInterface from "@canvas/interfaces/CanvasManagerInterface";
 import type CanvasTickersInterface from "@canvas/interfaces/CanvasTickersInterface";
 import type CanvasBaseItemMemory from "@canvas/interfaces/memory/CanvasBaseItemMemory";
@@ -1012,7 +1014,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     /* Layers Methods */
 
-    addLayer(label: string, layer: PixiContainer) {
+    private addLayerInternal(label: string, layer: PixiContainer) {
         if (label === CANVAS_APP_GAME_LAYER_ALIAS) {
             logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
@@ -1021,30 +1023,68 @@ export default class CanvasManager implements CanvasManagerInterface {
         return CanvasManagerStatic.app.stage.addChild(layer);
     }
 
-    getLayer(label: string) {
+    private getLayerInternal(label: string) {
         return CanvasManagerStatic.app.stage.getChildByLabel(label);
     }
 
-    removeLayer(label: string) {
+    private removeLayerInternal(label: string) {
         const child = CanvasManagerStatic.app.stage.getChildByLabel(label);
         if (child) {
             CanvasManagerStatic.app.stage.removeChild(child);
         }
     }
 
-    addHtmlLayer(
+    private addHtmlLayerInternal(
         id: string,
         element: HTMLElement,
         style?: Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">>,
     ) {
         return CanvasManagerStatic.addHtmlLayer(id, element, style);
     }
-    removeHtmlLayer(id: string) {
+    private removeHtmlLayerInternal(id: string) {
         return CanvasManagerStatic.removeHtmlLayer(id);
     }
-    getHtmlLayer(id: string): HTMLElement | undefined {
+    private getHtmlLayerInternal(id: string): HTMLElement | undefined {
         return CanvasManagerStatic.getHtmlLayer(id);
     }
+
+    addLayer(label: string, layer: PixiContainer) {
+        return this.addLayerInternal(label, layer);
+    }
+    getLayer(label: string) {
+        return this.getLayerInternal(label);
+    }
+    removeLayer(label: string) {
+        return this.removeLayerInternal(label);
+    }
+    addHtmlLayer(
+        id: string,
+        element: HTMLElement,
+        style?: Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">>,
+    ) {
+        return this.addHtmlLayerInternal(id, element, style);
+    }
+    removeHtmlLayer(id: string) {
+        return this.removeHtmlLayerInternal(id);
+    }
+    getHtmlLayer(id: string): HTMLElement | undefined {
+        return this.getHtmlLayerInternal(id);
+    }
+
+    public readonly layers: CanvasLayersInterface = {
+        get gameLayer() {
+            return CanvasManagerStatic.gameLayer;
+        },
+        add: (label, layer) => this.addLayerInternal(label, layer),
+        get: (label) => this.getLayerInternal(label),
+        remove: (label) => this.removeLayerInternal(label),
+    };
+
+    public readonly htmlLayers: CanvasHtmlLayersInterface = {
+        add: (id, element, style) => this.addHtmlLayerInternal(id, element, style),
+        get: (id) => this.getHtmlLayerInternal(id),
+        remove: (id) => this.removeHtmlLayerInternal(id),
+    };
 
     /* Other Methods */
 

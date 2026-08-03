@@ -20,6 +20,8 @@ import type { PauseType } from "../types/PauseType";
 import type { RepeatType } from "../types/RepeatType";
 import type { CanvasBaseInterface } from "./CanvasBaseInterface";
 import type CanvasGameState from "./CanvasGameState";
+import type CanvasHtmlLayersInterface from "./CanvasHtmlLayersInterface";
+import type CanvasLayersInterface from "./CanvasLayersInterface";
 import type CanvasTickersInterface from "./CanvasTickersInterface";
 import type CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
 
@@ -31,7 +33,7 @@ export default interface CanvasManagerInterface {
     readonly app: Application;
     /**
      * The PIXI Container that contains all the canvas elements.
-     *
+     * @deprecated Use {@link layers}.gameLayer instead.
      */
     readonly gameLayer: PixiContainer;
     /**
@@ -439,6 +441,7 @@ export default interface CanvasManagerInterface {
      * const uiLayer = new Container();
      * canvas.addLayer("ui", uiLayer);
      * ```
+     * @deprecated Use {@link layers}.add instead.
      */
     addLayer(label: string, layer: PixiContainer): Layer | undefined;
     /**
@@ -449,6 +452,7 @@ export default interface CanvasManagerInterface {
      * ```ts
      * const uiLayer = canvas.getLayer("ui");
      * ```
+     * @deprecated Use {@link layers}.get instead.
      */
     getLayer(label: string): Layer | null;
     /**
@@ -458,6 +462,7 @@ export default interface CanvasManagerInterface {
      * ```ts
      * canvas.removeLayer("ui");
      * ```
+     * @deprecated Use {@link layers}.remove instead.
      */
     removeLayer(label: string): void;
     /**
@@ -480,6 +485,7 @@ export default interface CanvasManagerInterface {
      *     <App />
      * )
      * ```
+     * @deprecated Use {@link htmlLayers}.add instead.
      */
     addHtmlLayer(
         id: string,
@@ -489,13 +495,23 @@ export default interface CanvasManagerInterface {
     /**
      * Get a HTML layer from the canvas.
      * @param id The id of the layer to be removed.
+     * @deprecated Use {@link htmlLayers}.remove instead.
      */
     removeHtmlLayer(id: string): void;
     /**
      * Get a HTML layer from the canvas.
      * @param id The id of the layer.
+     * @deprecated Use {@link htmlLayers}.get instead.
      */
     getHtmlLayer(id: string): HTMLElement | undefined;
+    /**
+     * Namespace for operations on canvas layers.
+     */
+    readonly layers: CanvasLayersInterface;
+    /**
+     * Namespace for operations on canvas HTML layers.
+     */
+    readonly htmlLayers: CanvasHtmlLayersInterface;
 
     /* Other Methods */
 
