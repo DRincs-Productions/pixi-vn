@@ -7,9 +7,23 @@ import type {
     StepLabelPropsType,
     StepLabelResultType,
 } from "../../narration";
+import type { HistoryGoBackModeType } from "../HistoryManagerStatic";
 import type HistoryGameState from "./HistoryGameState";
 
 export default interface HistoryManagerInterface {
+    /**
+     * How often a go-back-able checkpoint is recorded.
+     * @default "step"
+     * - `"step"`: every single narration step, matching visual-novel-style games where
+     *   the player may want to undo one line/sprite change at a time.
+     * - `"paragraph"`: only when a new paragraph starts ({@link HistoryManagerInterface.currentPageParagraphs}),
+     *   a choice is proposed, or an input is requested - matching book-style narrations
+     *   where undoing mid-paragraph doesn't make sense to the player. Every step within a
+     *   paragraph is merged into the checkpoint that closes it out: `back()` from anywhere
+     *   inside paragraph N jumps all the way to the *start* of paragraph N-1, not to
+     *   wherever you were right before N began - the whole of paragraph N-1 gets replayed.
+     */
+    goBackMode: HistoryGoBackModeType;
     /**
      * Get the narrative history.
      * @returns the history of the dialogues, choices and steps

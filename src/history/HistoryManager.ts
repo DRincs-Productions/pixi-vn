@@ -7,7 +7,7 @@ import type {
     StepLabelPropsType,
 } from "@drincs/pixi-vn/narration";
 import type { StorageElementType } from "@drincs/pixi-vn/storage";
-import HistoryManagerStatic from "@history/HistoryManagerStatic";
+import HistoryManagerStatic, { type HistoryGoBackModeType } from "@history/HistoryManagerStatic";
 import type HistoryGameState from "@history/interfaces/HistoryGameState";
 import type HistoryManagerInterface from "@history/interfaces/HistoryManagerInterface";
 import { restoreDiffChanges } from "@utils/diff-utility";
@@ -35,7 +35,33 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (this.size === 0) {
             return null;
         }
-        return Math.max(...Array.from(this.keys()));
+        // Avoid Math.max(...keys): spreading every key taken this session into a single call
+        // both grows in cost with playthrough length and can blow the call stack on long ones.
+        let max: number | null = null;
+        for (const key of this.keys()) {
+            if (max === null || key > max) {
+                max = key;
+            }
+        }
+        return max;
+    }
+    /** The most recent key that actually has a diff recorded - in "step" mode this is
+     * always the same as {@link lastKey}, but in "paragraph" mode most steps don't get
+     * a diff of their own, so this is what `back()` actually needs to jump to. */
+    private get lastDiffKey(): number | null {
+        let max: number | null = null;
+        for (const key of HistoryManagerStatic._diffHistory.keys()) {
+            if (max === null || key > max) {
+                max = key;
+            }
+        }
+        return max;
+    }
+    get goBackMode(): HistoryGoBackModeType {
+        return HistoryManagerStatic.goBackMode;
+    }
+    set goBackMode(mode: HistoryGoBackModeType) {
+        HistoryManagerStatic.goBackMode = mode;
     }
     keys() {
         return HistoryManagerStatic._stepsInfoHistory.keys();
@@ -52,6 +78,15 @@ export default class HistoryManager implements HistoryManagerInterface {
         HistoryManagerStatic._diffHistory.delete(stepIndex);
         HistoryManagerStatic._narrationHistory.delete(stepIndex);
     }
+    /** Deletes every recorded key from `fromKey` onward - in "paragraph" mode, jumping
+     * back to a checkpoint also invalidates every non-checkpoint step recorded after it. */
+    private deleteFromKeyOnward(fromKey: number) {
+        Array.from(this.keys())
+            .filter((key) => key >= fromKey)
+            .forEach((key) => {
+                this.delete(key);
+            });
+    }
     private getOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
@@ -59,17 +94,19 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (this.size === 0) {
             return restoredStep;
         }
-        const lastKey = this.lastKey;
-        if (typeof lastKey !== "number") {
+        // In "step" mode this is always the same as lastKey; in "paragraph" mode most
+        // steps have no diff of their own, so this finds the checkpoint to jump to.
+        const targetKey = this.lastDiffKey;
+        if (typeof targetKey !== "number") {
             logger.warn("You can't go back, there is no step to go back");
             return restoredStep;
         }
-        const diff = HistoryManagerStatic._diffHistory.get(lastKey);
+        const diff = HistoryManagerStatic._diffHistory.get(targetKey);
         if (diff) {
             try {
                 const result = restoreDiffChanges(restoredStep, diff);
-                GameUnifier.stepCounter = lastKey;
-                this.delete(lastKey);
+                GameUnifier.stepCounter = targetKey;
+                this.deleteFromKeyOnward(targetKey);
                 return this.getOldGameState(steps - 1, result);
             } catch (e) {
                 logger.error("Error applying diff", e);
@@ -133,6 +170,29 @@ export default class HistoryManager implements HistoryManagerInterface {
             return await GameUnifier.processNavigationRequests(props);
         }
     }
+    /**
+     * Whether this step should get its own go-back diff. In "step" mode every step
+     * does; in "paragraph" mode only a new paragraph (opened labels count changed vs
+     * the previous step), a proposed choice, or a requested input counts - everything
+     * else is merged into the diff of the next step that does qualify.
+     */
+    private isCheckpointStep(
+        historyInfo: HistoryInfo,
+        lastStepHistory: Omit<HistoryStep, "diff"> | undefined,
+    ): boolean {
+        if (HistoryManagerStatic.goBackMode === "step") {
+            return true;
+        }
+        if (historyInfo.choices && historyInfo.choices.length > 0) {
+            return true;
+        }
+        if (historyInfo.isRequiredInput) {
+            return true;
+        }
+        const currentLabelsCount = historyInfo.openedLabels?.length ?? 0;
+        const lastLabelsCount = lastStepHistory?.openedLabels?.length ?? 0;
+        return currentLabelsCount !== lastLabelsCount;
+    }
     add(
         historyInfo: HistoryInfo,
         options: {
@@ -146,17 +206,23 @@ export default class HistoryManager implements HistoryManagerInterface {
             return;
         }
         const lastKey = this.lastKey;
+        const lastStepHistory =
+            typeof lastKey === "number"
+                ? HistoryManagerStatic._stepsInfoHistory.get(lastKey)
+                : undefined;
+        // historyInfo.index === 0 has nothing to diff against yet, but is otherwise
+        // always treated as a checkpoint (there's no earlier step to merge it into).
+        const isCheckpoint =
+            historyInfo.index === 0 || this.isCheckpointStep(historyInfo, lastStepHistory);
         const asyncFunction = async () => {
             try {
-                let lastStepHistory: Omit<HistoryStep, "diff"> | undefined;
-                let lastNarrativeHistory: NarrationHistory | undefined;
-                if (typeof lastKey === "number") {
-                    lastStepHistory = HistoryManagerStatic._stepsInfoHistory.get(lastKey);
-                    lastNarrativeHistory = HistoryManagerStatic._narrationHistory.get(lastKey);
-                }
+                const lastNarrativeHistory =
+                    typeof lastKey === "number"
+                        ? HistoryManagerStatic._narrationHistory.get(lastKey)
+                        : undefined;
 
                 HistoryManagerStatic._stepsInfoHistory.set(historyInfo.index, historyInfo);
-                if (historyInfo.index !== 0) {
+                if (historyInfo.index !== 0 && isCheckpoint) {
                     const data = diff(originalStepData, currentStepData);
                     if (data) {
                         HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
@@ -189,7 +255,12 @@ export default class HistoryManager implements HistoryManagerInterface {
             }
         };
         asyncFunction();
-        HistoryManagerStatic.originalStepData = currentStepData;
+        // Only move the diffing baseline forward at a checkpoint - a skipped step's
+        // changes stay pending against the last checkpoint's baseline, so the next
+        // checkpoint's diff naturally captures everything accumulated since then.
+        if (historyInfo.index === 0 || isCheckpoint) {
+            HistoryManagerStatic.originalStepData = currentStepData;
+        }
     }
     itemMapper(
         item: {
@@ -337,10 +408,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         const paragraphs: NarrationHistory[][] = [];
         let lastOpenedLabelsNumber: number | undefined;
         this.currentLabelHistory.forEach((item) => {
-            if (
-                paragraphs.length === 0 ||
-                item.openedLabelsNumber !== lastOpenedLabelsNumber
-            ) {
+            if (paragraphs.length === 0 || item.openedLabelsNumber !== lastOpenedLabelsNumber) {
                 paragraphs.push([item]);
             } else {
                 paragraphs[paragraphs.length - 1].push(item);
@@ -366,11 +434,10 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
     }
     get canGoBack(): boolean {
-        const lastKey = this.lastKey;
-        if (typeof lastKey !== "number") {
-            return false;
-        }
-        return HistoryManagerStatic._diffHistory.has(lastKey);
+        // In "step" mode the most recent step always has its own diff, so this is
+        // equivalent to checking lastKey specifically; in "paragraph" mode most steps
+        // don't, so we just need at least one checkpoint recorded anywhere to go back to.
+        return HistoryManagerStatic._diffHistory.size > 0;
     }
     blockGoBack() {
         if (GameUnifier.runningStepsCount !== 0) {

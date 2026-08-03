@@ -10,7 +10,7 @@
   <a target="_blank" href="https://discord.gg/E95FZWakzp" rel="noopener noreferrer nofollow"><img alt="Discord" src="https://img.shields.io/discord/1263071210011496501?color=7289da&label=discord"></a>
 </p>
 
-Pixi’VN is a very versatile and powerful 2D game engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
+Pixi’VN is a very versatile and powerful story-driven engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/).
 
 It provides the following features:
 
@@ -135,3 +135,25 @@ body {
   overflow: hidden;
 }
 ```
+
+## Agent Skills
+
+Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants (like Claude Code) how to correctly use each part of the engine. If you use Claude Code, you can install all of them into your project with:
+
+```npm
+npx skills add DRincs-Productions/pixi-vn
+```
+
+This installs every skill below and prompts you to pick which ones to keep. To install only specific ones, add `--skill <name>` (repeat the flag to install several, e.g. `--skill canvas --skill sound`). Use `--list` instead of installing to just see what's available. Available skills:
+
+- `getting-started` — installing the package and initializing the `Game`
+- `assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
+- `canvas` — images, sprites, text, video, transitions and effects
+- `characters` — defining and registering characters
+- `history` — going back/rewinding and reading the narration backlog
+- `narration` — labels, dialogue and choices
+- `saves` — exporting/restoring game state and persisting save files
+- `sound` — music, sound effects and audio channels
+- `storage` — game variables, flags and stored classes
+- `ui` — mounting HTML/PixiJS UI layers over the canvas, screen navigation, theming, and connecting UI to storage
+- `migration` — upgrading an existing project to the current version

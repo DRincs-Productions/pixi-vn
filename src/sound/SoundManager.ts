@@ -7,7 +7,7 @@ import type MediaInterface from "@sound/interfaces/MediaInterface";
 import type { MediaMemory } from "@sound/interfaces/MediaInterface";
 import type SoundChannelsInterface from "@sound/interfaces/SoundChannelsInterface";
 import type SoundGameState from "@sound/interfaces/SoundGameState";
-import type SoundManagerInterface from "@sound/interfaces/SoundManagerInterface";
+import type { SoundManagerInterface } from "@sound/interfaces/SoundManagerInterface";
 import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfaces/SoundOptions";
 import type SoundUnsavedInterface from "@sound/interfaces/SoundUnsavedInterface";
 import SoundRegistry from "@sound/SoundRegistry";

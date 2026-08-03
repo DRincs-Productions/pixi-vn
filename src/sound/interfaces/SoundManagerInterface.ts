@@ -6,7 +6,7 @@ import type { ChannelOptions, SoundPlayOptionsWithChannel } from "@sound/interfa
 import type SoundUnsavedInterface from "@sound/interfaces/SoundUnsavedInterface";
 import type { Player, PlayerOptions } from "tone";
 
-export default interface SoundManagerInterface {
+export  interface SoundManagerInterface {
     /** Master volume in the range [0, 1]. */
     volumeAll: number;
     /**

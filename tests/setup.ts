@@ -48,9 +48,7 @@ GameUnifier.init({
         return {
             path: getGamePath(),
             storage: storage.export(),
-            canvas: () => {
-                return {} as any;
-            },
+            canvas: {} as any,
             sound: sound.export(),
             labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
             openedLabels: narration.openedLabels,
