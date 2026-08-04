@@ -27,10 +27,9 @@ Game.jsonToGameState(json: string): GameState
 
 - **`Game.exportGameState()`** returns a plain `GameState` object — version info plus the current
   storage, canvas, sound, and history data — suitable for `JSON.stringify`.
-- **`Game.restoreGameState(data)`** restores everything from a previously exported `GameState`. It
-  uses whatever navigate function was set via `Game.onNavigate`/`Game.init`'s `navigate` option;
-  passing a navigate function directly as a second argument still works but is deprecated (see
-  `pixi-vn-migration`).
+- **`Game.restoreGameState(data)`** restores everything from a previously exported `GameState`,
+  using whatever navigate function was set via `Game.onNavigate`/`Game.init`'s `navigate` option —
+  it no longer takes a navigate function as a second argument.
 - **`Game.jsonToGameState(json)`** just parses a JSON string back into a `GameState` — a thin
   wrapper around `JSON.parse` with the right type, for symmetry with `exportGameState`.
 
@@ -87,11 +86,19 @@ and pass the inner `saveData` field back into `restoreGameState()` when loading.
 From there, the template persists that wrapped `GameSaveData` object (not the raw game state alone)
 through several concrete mechanisms — illustrative, not exhaustive:
 
-- **Numbered save slots + quick-saves via IndexedDB** (`saveGameToIndexDB`/`getSaveFromIndexDB`/
-  `quickSaveGameToIndexDB`/`deleteSaveFromIndexDB`), with a reserved negative-id range so quick-saves
-  never collide with numbered manual saves.
-- **An auto "refresh save"** kept in `localStorage` under a special `-1` id, written before the page
-  unloads and consumed on next load, so an accidental page reload doesn't lose progress.
+- **Numbered save slots via IndexedDB** (`saveGameToIndexDB`/`getSaveFromIndexDB`/
+  `deleteSaveFromIndexDB`), auto-incrementing from `0`.
+- **Quick save slots**, also via IndexedDB (`quickSaveGameToIndexDB`), reserved to a fixed negative-id
+  range below the numbered saves (e.g. ids `-2..-7` for 6 slots) so they never collide with manual
+  saves. Each quick-save fills the first empty slot, then cycles by overwriting the
+  least-recently-used slot once all slots are full.
+- **An "auto exit save"** (`addAutoExitSave`, paired with a `useAutoSaveOnPageClose` hook bound to
+  the `beforeunload` and `visibilitychange` events) stringified straight into `localStorage` under
+  its own key — not through IndexedDB — so an accidental tab close or reload doesn't lose progress.
+- **A "Continue" button**: `getLastSaveFromIndexDB` powers a main-menu "Continue" action by comparing
+  the latest numbered IndexedDB save against the auto exit save and returning whichever is newer
+  (synthesizing id `-1` for the auto exit save for that comparison) — `null` if neither exists, to
+  disable the button; the result feeds straight into `loadSave`.
 - **A downloadable/importable JSON file** (`downloadGameSave`/`loadGameSaveFromFile`) for backing up
   or sharing a save outside the app.
 
