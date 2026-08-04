@@ -21,10 +21,6 @@ export type CommonTickerProps = {
      */
     tickerIdToResume?: string[] | string;
     /**
-     * @deprecated Use {@link completeOnContinue} instead.
-     */
-    forceCompleteBeforeNext?: boolean;
-    /**
      * A boolean indicating whether the animation must complete before the next `step` of the game. If `true`, the game will force the animation to finish before proceeding.
      * When true, calling {@link narration.continue()} forces the current content to complete before advancing to the next narrative step.
      * @default false
