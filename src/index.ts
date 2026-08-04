@@ -238,26 +238,7 @@ export namespace Game {
      * Load the save data
      * @param data The save data object to restore the game state from.
      */
-    export async function restoreGameState(data: pixivninterface.GameState): Promise<void>;
-    /**
-     * @deprecated Use `restoreGameState(data)` (without the `navigate` argument) and configure navigation via `Game.init({ navigate })` or `Game.onNavigate(...)`.
-     * @param data The save data
-     * @param navigate Navigation function to use for this restore call.
-     */
-    export async function restoreGameState(
-        data: pixivninterface.GameState,
-        navigate: (path: string) => void | Promise<void>,
-    ): Promise<void>;
-    /**
-     * Load the save data. If `navigate` is not provided, the function registered with {@link Game.onNavigate}
-     * (or the one passed to {@link Game.init}) will be used.
-     * @param data The save data
-     * @param navigate Optional navigation function.
-     */
-    export async function restoreGameState(
-        data: pixivninterface.GameState,
-        navigate?: (path: string) => void | Promise<void>,
-    ) {
+    export async function restoreGameState(data: pixivninterface.GameState): Promise<void> {
         historyUtils.stepHistory.restore(data.historyData);
         const lastHistoryKey = historyUtils.stepHistory.lastKey;
         if (typeof lastHistoryKey === "number") {
@@ -271,11 +252,7 @@ export namespace Game {
             }
             await soundUtils.sound.restore(data.soundData);
         } catch (_e) {}
-        if (navigate) {
-            await navigate(data.path);
-        } else {
-            await GameUnifier.navigate(data.path);
-        }
+        await GameUnifier.navigate(data.path);
     }
 
     /**
@@ -312,22 +289,6 @@ export namespace Game {
      */
     export function onEnd(value: narrationUtils.StepLabelType) {
         GameUnifier.onEnd = value;
-    }
-    /**
-     * @deprecated Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.
-     */
-    export function onError(
-        handler: (
-            type: "step",
-            error: any,
-            props: narrationUtils.StepLabelPropsType,
-        ) => void | Promise<void>,
-    ) {
-        logger.warn(
-            "Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.",
-        );
-        // Maintain backwards compatibility by setting the single onError handler.
-        return GameUnifier.addOnError((error, props) => handler("step", error, props));
     }
 
     /**
