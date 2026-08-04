@@ -123,7 +123,9 @@ export namespace Game {
                 // Canvas usage is optional - when Game.init() was never given a canvas element,
                 // canvas.export() would throw (and log an error) on every single step just to be
                 // caught here. Skip it entirely instead of relying on the throw/catch for control flow.
-                const canvasData = canvasUtils.canvas.isInitialized ? canvasUtils.canvas.export() : {};
+                const canvasData = canvasUtils.canvas.isInitialized
+                    ? canvasUtils.canvas.export()
+                    : {};
                 return {
                     path: getGamePath(),
                     storage: storageUtils.storage.export(),
@@ -234,7 +236,7 @@ export namespace Game {
 
     /**
      * Load the save data
-     * @param data The save data
+     * @param data The save data object to restore the game state from.
      */
     export async function restoreGameState(data: pixivninterface.GameState): Promise<void>;
     /**
@@ -442,9 +444,7 @@ export namespace Game {
                 type: string;
             },
             defaultStart: () => Promise<narrationUtils.StepLabelResultType>,
-        ) =>
-            | narrationUtils.StepLabelResultType
-            | Promise<narrationUtils.StepLabelResultType>,
+        ) => narrationUtils.StepLabelResultType | Promise<narrationUtils.StepLabelResultType>,
     ) {
         narrationUtils.NarrationManagerStatic.onLabelStarting = value;
     }
@@ -473,9 +473,7 @@ export namespace Game {
             labelId: narrationUtils.LabelIdType,
             props: narrationUtils.StepLabelPropsType,
             defaultClose: () => Promise<narrationUtils.StepLabelResultType>,
-        ) =>
-            | narrationUtils.StepLabelResultType
-            | Promise<narrationUtils.StepLabelResultType>,
+        ) => narrationUtils.StepLabelResultType | Promise<narrationUtils.StepLabelResultType>,
     ) {
         narrationUtils.NarrationManagerStatic.onLabelClosing = value;
     }
