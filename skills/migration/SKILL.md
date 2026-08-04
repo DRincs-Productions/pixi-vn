@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-migration
-description: Use when upgrading an existing @drincs/pixi-vn project to a newer version, or when a runtime/type error matches a known breaking change (e.g. `media.volume` no longer a plain number, `sound.edit`/`sound.add` missing, `Game.onError` signature changed, a ticker preset class not found). Covers every breaking change between versions with before/after code.
+description: Use when upgrading an existing @drincs/pixi-vn project to a newer version, or when a runtime/type error matches a known breaking change. Covers every breaking change between versions with before/after code.
 ---
 
 # Pixi'VN Migration guide
@@ -17,6 +17,48 @@ installed version first (`package.json` dependency, or `PIXIVN_VERSION`/`GameSta
 at runtime — see `pixi-vn-getting-started`), then walk forward through only the version sections
 below that fall between the installed version and the target — most of these changes don't apply
 unless a project is crossing that specific boundary.
+
+## v1.8.x → v1.9.0 — long-deprecated APIs removed
+
+This release removes several APIs that had been marked `@deprecated` for a while, with no
+replacement other than the one already documented at deprecation time:
+
+- `Repeat`/`Pause(duration)` and the `RepeatType`/`PauseType` types are gone. `canvas.addTickersSequence`
+  now only accepts plain `Ticker` steps — chain tickers by duration instead of pause/repeat markers:
+  ```ts
+  canvas.addTickersSequence("alien", [
+    new RotateTicker({ speed: 0.1, clockwise: true }, 2),
+    Pause(1), // [!code --]
+    new RotateTicker({ speed: 0.2, clockwise: false }, 2),
+    Repeat, // [!code --]
+  ]);
+  ```
+  See `pixi-vn-canvas`/`tickers.md` for the current sequencing API.
+- `forceCompleteBeforeNext` is gone from every transition helper (`showWithDissolve`, `moveIn`,
+  `zoomIn`, ...) and from `CommonTickerProps` — use `completeOnContinue` directly, it's no longer
+  just an alias:
+  ```ts
+  await showWithDissolve("alice", "alice", {
+    forceCompleteBeforeNext: true, // [!code --]
+    completeOnContinue: true, // [!code ++]
+  });
+  ```
+- The deprecated `AssetMemory.image` field was removed; use `AssetMemory.alias`/`url` instead.
+- `Game.restoreGameState(data, navigate)` lost its `navigate` overload — pass only `data`, and
+  configure navigation once via `Game.onNavigate` (or `Game.init({ navigate })`) instead:
+  ```ts
+  Game.restoreGameState(data, navigateTo); // [!code --]
+  Game.restoreGameState(data); // [!code ++]
+  ```
+- The singular `Game.onError(...)` handler was removed; use `Game.addOnError`/`Game.removeOnError`
+  (already the recommended API since v1.6.0):
+  ```ts
+  Game.onError((type, error, { notify, uiTransition }) => { ... }); // [!code --]
+  Game.addOnError((error, { notify, uiTransition }) => { ... }); // [!code ++]
+  ```
+
+See `pixi-vn-canvas`/`tickers.md` for the current tickers/transitions API and
+`pixi-vn-getting-started` for the current `Game` API.
 
 ## v1.7.x → v1.8.0 — Tone.js audio engine
 
@@ -41,14 +83,16 @@ consequences (full API in `pixi-vn-sound`):
   ```
 - Navigation is now centralized: use `Game.onNavigate` once instead of passing a navigate function to
   every call site that needs one (see `pixi-vn-getting-started`):
+
   ```ts
   Game.onNavigate((path) => navigateTo(path)); // [!code ++]
 
   Game.restoreGameState(data, navigateTo); // [!code --]
   Game.restoreGameState(data); // [!code ++]
   ```
+
 - Custom UI storage reactivity: `storage.setStorageHandler({ onSetVariable, onRemoveVariable,
-  onClearOldTempVariable })` lets a UI state store mirror game-storage changes automatically (see
+onClearOldTempVariable })` lets a UI state store mirror game-storage changes automatically (see
   `pixi-vn-storage`) — new capability, not a breaking change, but worth knowing this version added it.
 
 ## v1.5.x → v1.6.0 — sound module rewrite, `Game.start`, storage key convention, `addOnError`
