@@ -75,6 +75,26 @@ function MinigameLayout() {
 }
 ```
 
+**What actually goes in `src/routes/minigame.tsx` is a judgment call to make while building the
+_first_ minigame, not a file to scaffold reflexively** — work through these questions before adding
+anything to it:
+
+- **Is there actually anything shared across minigames?** If the game's settings menu, pause menu,
+  or quick-actions wheel aren't reachable while a minigame is open, and there's no common
+  hotkey/HUD/provider every minigame needs, `src/routes/minigame.tsx` has nothing to do — leave it
+  empty (just the `<Outlet />`) or skip creating it at all and let each minigame route stand alone.
+- **Are there menus specific to minigames only** (a minigame pause menu, a "quit minigame and return
+  to story" confirmation, a minigame-specific settings panel)? If so, that's exactly what belongs in
+  the shared layout, the same way `src/routes/game.tsx` centralizes `usePauseGameWhenMenuIsOpen` and
+  `useGameHotkeys` for every `/game/*` screen.
+- **Should the same menus as `src/routes/game.tsx` (settings, save/load, quick actions) be reachable
+  from inside a minigame?** If yes, don't assume they behave identically — check case by case whether
+  each one still makes sense mid-minigame. Saving is the clearest example: `Game.exportGameState()`
+  knows nothing about in-progress minigame state (see the Gotchas section below), so a save
+  triggered from inside a minigame either needs to be disabled/hidden there, or the minigame needs to
+  persist its own state first (`pixi-vn-storage`) so the save is still meaningful. Don't wire in the
+  game's menus unchanged and assume they "just work" inside a minigame.
+
 ## The `useMinigame` lifecycle hook
 
 Every official template ships a `useMinigame` hook (e.g. `src/lib/hooks/minigame-hooks.ts`) that
