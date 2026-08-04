@@ -20,9 +20,7 @@ export * from "@drincs/pixi-vn/storage";
 export * from "./classes";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
-    Pause,
     PIXIVN_VERSION,
-    Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
 export * from "./interfaces";
@@ -39,7 +37,7 @@ import type { ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import type { Devtools } from "@pixi/devtools";
-import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS, PIXIVN_VERSION } from "./constants";
 import * as pixivninterface from "./interfaces";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
@@ -472,8 +470,6 @@ export default {
     narrationUtils,
     soundUtils,
     CANVAS_APP_GAME_LAYER_ALIAS,
-    Pause,
-    Repeat,
     PIXIVN_VERSION,
     ...functions,
     ...pixivninterface,

@@ -16,8 +16,6 @@ import type {
 import type { Devtools } from "@pixi/devtools";
 import type Layer from "../components/Layer";
 import type { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import type { PauseType } from "../types/PauseType";
-import type { RepeatType } from "../types/RepeatType";
 import type { CanvasBaseInterface } from "./CanvasBaseInterface";
 import type CanvasGameState from "./CanvasGameState";
 import type CanvasBaseItemMemory from "./memory/CanvasBaseItemMemory";
@@ -250,15 +248,13 @@ export default interface CanvasManagerInterface {
      * ```ts
      * canvas.addTickersSequence("alien", [
      *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
-     *     Pause(1), // 1 second
      *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
-     *     Repeat,
      * ])
      * ```
      */
     addTickersSequence(
         alias: string,
-        steps: (Ticker<any> | RepeatType | PauseType)[],
+        steps: Ticker<any>[],
         currentStepNumber?: number,
     ): string | undefined;
     /**

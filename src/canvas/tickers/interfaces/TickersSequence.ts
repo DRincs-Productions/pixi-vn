@@ -1,6 +1,4 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import type { PauseType } from "../../types/PauseType";
-import type { RepeatType } from "../../types/RepeatType";
 import type TickerArgs from "./TickerArgs";
 
 export interface TickersStep<TArgs extends TickerArgs> {
@@ -33,5 +31,5 @@ export default interface TickersSequence {
     /**
      * The steps of the tickers
      */
-    steps: (TickersStep<any> | RepeatType | PauseType)[];
+    steps: TickersStep<any>[];
 }
