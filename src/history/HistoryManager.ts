@@ -87,6 +87,21 @@ export default class HistoryManager implements HistoryManagerInterface {
                 this.delete(key);
             });
     }
+    /** The key of the checkpoint immediately before `beforeKey` - i.e. the diff boundary
+     * that the restored state actually lands on. In "step" mode this is always
+     * `beforeKey - 1` (every step is its own checkpoint); in "paragraph" mode a checkpoint's
+     * diff can span several merged steps, so the restored state's true step count is this
+     * boundary, not `beforeKey` itself. Falls back to 0 (index 0 is always an implicit
+     * checkpoint, but never stored in `_diffHistory`) when there's no earlier one. */
+    private previousCheckpointKey(beforeKey: number): number {
+        let max = 0;
+        for (const key of HistoryManagerStatic._diffHistory.keys()) {
+            if (key < beforeKey && key > max) {
+                max = key;
+            }
+        }
+        return max;
+    }
     private getOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
@@ -105,8 +120,13 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (diff) {
             try {
                 const result = restoreDiffChanges(restoredStep, diff);
-                GameUnifier.stepCounter = targetKey;
-                this.deleteFromKeyOnward(targetKey);
+                // The diff at `targetKey` undoes everything merged into it since the
+                // PREVIOUS checkpoint - so that previous checkpoint's key (+1), not
+                // `targetKey` itself, is both the restored state's true step count and
+                // where every now-invalidated step (merged or not) needs deleting from.
+                const fromKey = this.previousCheckpointKey(targetKey) + 1;
+                GameUnifier.stepCounter = fromKey;
+                this.deleteFromKeyOnward(fromKey);
                 return this.getOldGameState(steps - 1, result);
             } catch (e) {
                 logger.error("Error applying diff", e);
