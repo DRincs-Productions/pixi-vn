@@ -172,9 +172,18 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
     /**
      * Whether this step should get its own go-back diff. In "step" mode every step
-     * does; in "paragraph" mode only a new paragraph (opened labels count changed vs
-     * the previous step), a proposed choice, or a requested input counts - everything
-     * else is merged into the diff of the next step that does qualify.
+     * does; in "paragraph" mode only a new paragraph (the opened-labels stack changed
+     * vs the previous step - either its depth, or which label sits at any level of it),
+     * a proposed choice, or a requested input counts - everything else is merged into
+     * the diff of the next step that does qualify.
+     *
+     * Comparing only the stack's LENGTH (as this used to) misses a `jump`: it replaces
+     * the top label instead of pushing a new frame, so the stack depth stays the same
+     * even though the player has moved into an entirely different label. That silently
+     * merged the jump target's steps into the SAME paragraph as whatever step triggered
+     * the jump (most commonly a choice) - so going back from inside the jumped-to label
+     * skipped past it entirely, landing at the paragraph before the choice instead of at
+     * the choice itself.
      */
     private isCheckpointStep(
         historyInfo: HistoryInfo,
@@ -189,9 +198,12 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (historyInfo.isRequiredInput) {
             return true;
         }
-        const currentLabelsCount = historyInfo.openedLabels?.length ?? 0;
-        const lastLabelsCount = lastStepHistory?.openedLabels?.length ?? 0;
-        return currentLabelsCount !== lastLabelsCount;
+        const currentLabels = historyInfo.openedLabels ?? [];
+        const lastLabels = lastStepHistory?.openedLabels ?? [];
+        if (currentLabels.length !== lastLabels.length) {
+            return true;
+        }
+        return currentLabels.some((opened, i) => opened.label !== lastLabels[i]?.label);
     }
     add(
         historyInfo: HistoryInfo,
