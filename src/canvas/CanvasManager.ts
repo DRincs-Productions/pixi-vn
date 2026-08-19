@@ -6,7 +6,10 @@ import { importCanvasElement } from "@canvas/functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "@canvas/functions/canvas-memory-utility";
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
 import type CanvasGameState from "@canvas/interfaces/CanvasGameState";
+import type CanvasHtmlLayersInterface from "@canvas/interfaces/CanvasHtmlLayersInterface";
+import type CanvasLayersInterface from "@canvas/interfaces/CanvasLayersInterface";
 import type CanvasManagerInterface from "@canvas/interfaces/CanvasManagerInterface";
+import type CanvasTickersInterface from "@canvas/interfaces/CanvasTickersInterface";
 import type CanvasBaseItemMemory from "@canvas/interfaces/memory/CanvasBaseItemMemory";
 import {
     RegisteredTickers,
@@ -207,7 +210,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         alias.forEach((alias) => {
             this.gameLayer.getChildrenByLabel(alias).forEach((canvasComponent) => {
                 this.gameLayer.removeChild(canvasComponent);
-                !ignoreTickers && this.unlinkComponentFromTicker(alias);
+                !ignoreTickers && this.unlinkComponentFromTickerInternal(alias);
             });
         });
     }
@@ -242,25 +245,48 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (canvasComponent) {
             canvasComponent.label = newAlias;
         }
-        !options.ignoreTickers && this.transferTickers(oldAlias, newAlias, "move");
+        !options.ignoreTickers && this.transferTickersInternal(oldAlias, newAlias, "move");
     }
 
     /** Edit Tickers Methods */
 
+    /**
+     * @deprecated Use {@link tickers}.currentTickers instead.
+     */
     public get currentTickers() {
-        return CanvasManagerStatic._currentTickers;
+        return this.tickers.currentTickers;
     }
+    /**
+     * @deprecated Use {@link tickers}.currentTickersSteps instead.
+     */
     public get currentTickersSteps() {
-        return CanvasManagerStatic._currentTickersSequence;
+        return this.tickers.currentTickersSteps;
     }
+    /**
+     * @deprecated Use {@link tickers}.find instead.
+     */
     findTicker<TArgs extends TickerArgs>(tickerId: string): Ticker<TArgs> | undefined {
+        return this.findTickerInternal<TArgs>(tickerId);
+    }
+    private findTickerInternal<TArgs extends TickerArgs>(
+        tickerId: string,
+    ): Ticker<TArgs> | undefined {
         const ticker = CanvasManagerStatic._currentTickers.get(tickerId);
         if (ticker) {
             return ticker.ticker as Ticker<TArgs>;
         }
         return undefined;
     }
+    /**
+     * @deprecated Use {@link tickers}.add instead.
+     */
     addTicker<TArgs extends TickerArgs>(
+        canvasElementAlias: string | string[],
+        ticker: Ticker<TArgs>,
+    ) {
+        return this.addTickerInternal(canvasElementAlias, ticker);
+    }
+    private addTickerInternal<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
         ticker: Ticker<TArgs>,
     ) {
@@ -383,7 +409,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                     CanvasManagerStatic._currentTickers.forEach((ticker, id) => {
                         if (ticker.createdByTicketSteps?.canvasElementAlias === alias) {
                             if (ticker.createdByTicketSteps.id === key) {
-                                this.removeTicker(id);
+                                this.removeTickerInternal(id);
                             }
                         }
                     });
@@ -391,7 +417,22 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         }
     }
+    /**
+     * @deprecated Use {@link tickers}.onComplete instead.
+     */
     public onTickerComplete(
+        tickerId: string,
+        options: {
+            aliasToRemoveAfter: string[];
+            tickerAliasToResume: string[];
+            tickerIdToResume: string[];
+            ignoreTickerSteps?: boolean;
+            stopTicker?: boolean;
+        },
+    ) {
+        return this.onTickerCompleteInternal(tickerId, options);
+    }
+    private onTickerCompleteInternal(
         tickerId: string,
         options: {
             aliasToRemoveAfter: string[];
@@ -411,11 +452,11 @@ export default class CanvasManager implements CanvasManagerInterface {
         const ignoreTickerSteps = options.ignoreTickerSteps || false;
         this.remove(aliasToRemoveAfter);
         tickerAliasToResume.forEach((alias) => {
-            this.resumeTicker({ canvasAlias: alias });
+            this.resumeTickerInternal({ canvasAlias: alias });
         });
-        this.resumeTicker({ id: tickerIdToResume });
+        this.resumeTickerInternal({ id: tickerIdToResume });
         if (info) {
-            this.removeTicker(tickerId, {
+            this.removeTickerInternal(tickerId, {
                 stopTicker: stopTicker,
             });
             if (
@@ -430,7 +471,18 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         }
     }
+    /**
+     * @deprecated Use {@link tickers}.unlinkComponent instead.
+     */
     public unlinkComponentFromTicker(
+        alias: string | string[],
+        ticker?:
+            | { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }
+            | string,
+    ) {
+        return this.unlinkComponentFromTickerInternal(alias, ticker);
+    }
+    private unlinkComponentFromTickerInternal(
         alias: string | string[],
         ticker?:
             | { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }
@@ -445,7 +497,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                 CanvasManagerStatic._currentTickers.forEach((info, id) => {
                     if (info.ticker.canvasElementAliases.includes(alias)) {
                         if (info.ticker.canvasElementAliases.length === 1) {
-                            this.removeTicker(id);
+                            this.removeTickerInternal(id);
                         } else {
                             info.ticker.canvasElementAliases =
                                 info.ticker.canvasElementAliases.filter((t) => t !== alias);
@@ -518,11 +570,17 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         });
     }
+    /**
+     * @deprecated Use {@link tickers}.removeAll instead.
+     */
     public removeAllTickers() {
+        return this.removeAllTickersInternal();
+    }
+    private removeAllTickersInternal() {
         this.tickersPausedByGameLayerRender = [];
         CanvasManagerStatic._currentTickersSequence.clear();
         Array.from(CanvasManagerStatic._currentTickers.keys()).forEach((id) => {
-            this.removeTicker(id);
+            this.removeTickerInternal(id);
         });
         CanvasManagerStatic._currentTickers.clear();
         Array.from(CanvasManagerStatic._currentTickersTimeouts.keys()).forEach((timeout) => {
@@ -531,7 +589,18 @@ export default class CanvasManager implements CanvasManagerInterface {
         CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.length = 0;
         CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.length = 0;
     }
+    /**
+     * @deprecated Use {@link tickers}.remove instead.
+     */
     removeTicker(
+        tickerId: string | string[],
+        options: {
+            stopTicker?: boolean;
+        } = { stopTicker: true },
+    ) {
+        return this.removeTickerInternal(tickerId, options);
+    }
+    private removeTickerInternal(
         tickerId: string | string[],
         options: {
             stopTicker?: boolean;
@@ -549,7 +618,22 @@ export default class CanvasManager implements CanvasManagerInterface {
         });
     }
 
+    /**
+     * @deprecated Use {@link tickers}.pause instead.
+     */
     pauseTicker(
+        filters:
+            | {
+                  canvasAlias: string;
+                  tickerIdsExcluded?: string[];
+              }
+            | {
+                  id: string | string[];
+              },
+    ) {
+        return this.pauseTickerInternal(filters);
+    }
+    private pauseTickerInternal(
         filters:
             | {
                   canvasAlias: string;
@@ -591,7 +675,21 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
         return ids;
     }
+    /**
+     * @deprecated Use {@link tickers}.resume instead.
+     */
     resumeTicker(
+        filters:
+            | {
+                  canvasAlias: string;
+              }
+            | {
+                  id: string | string[];
+              },
+    ) {
+        return this.resumeTickerInternal(filters);
+    }
+    private resumeTickerInternal(
         filters:
             | {
                   canvasAlias: string;
@@ -622,7 +720,13 @@ export default class CanvasManager implements CanvasManagerInterface {
             });
         }
     }
+    /**
+     * @deprecated Use {@link tickers}.isPaused instead.
+     */
     isTickerPaused(_alias: string, _tickerId?: string): boolean {
+        return this.isTickerPausedInternal(_alias, _tickerId);
+    }
+    private isTickerPausedInternal(_alias: string, _tickerId?: string): boolean {
         return false;
     }
     pause() {
@@ -630,7 +734,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             return;
         }
         this.gameLayer.renderable = false;
-        this.tickersPausedByGameLayerRender = this.pauseTicker({
+        this.tickersPausedByGameLayerRender = this.pauseTickerInternal({
             id: Array.from(CanvasManagerStatic._currentTickers.keys()),
         });
     }
@@ -643,11 +747,21 @@ export default class CanvasManager implements CanvasManagerInterface {
             CanvasManagerStatic._currentTickers.has(id),
         );
         if (tickerIdsToResume.length > 0) {
-            this.resumeTicker({ id: tickerIdsToResume });
+            this.resumeTickerInternal({ id: tickerIdsToResume });
         }
         this.tickersPausedByGameLayerRender = [];
     }
+    /**
+     * @deprecated Use {@link tickers}.transfer instead.
+     */
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
+        return this.transferTickersInternal(oldAlias, newAlias, mode);
+    }
+    private transferTickersInternal(
+        oldAlias: string,
+        newAlias: string,
+        mode: "move" | "duplicate" = "move",
+    ) {
         const oldSeq = CanvasManagerStatic._currentTickersSequence.get(oldAlias);
         if (oldSeq) {
             const cloned = new Map(
@@ -657,7 +771,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
         CanvasManagerStatic._currentTickers.forEach((info, id) => {
             if (info.createdByTicketSteps?.canvasElementAlias === oldAlias) {
-                this.removeTicker(id);
+                this.removeTickerInternal(id);
             }
             if (info.ticker.canvasElementAliases.includes(oldAlias)) {
                 const ticker = RegisteredTickers.getInstance(
@@ -670,7 +784,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                     },
                 );
                 if (ticker) {
-                    this.addTicker(newAlias, ticker);
+                    this.addTickerInternal(newAlias, ticker);
                     if (info.ticker.paused) {
                         ticker.pause();
                     }
@@ -734,6 +848,9 @@ export default class CanvasManager implements CanvasManagerInterface {
             }
         }
     }
+    /**
+     * @deprecated Use {@link tickers}.completeOnStepEnd instead.
+     */
     completeTickerOnStepEnd(step: {
         /**
          * The id of the step.
@@ -744,6 +861,9 @@ export default class CanvasManager implements CanvasManagerInterface {
          */
         alias?: string;
     }) {
+        return this.completeTickerOnStepEndInternal(step);
+    }
+    private completeTickerOnStepEndInternal(step: { id: string; alias?: string }) {
         if (step.alias) {
             CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.push({
                 id: step.id,
@@ -754,7 +874,13 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
+    /**
+     * @deprecated Use {@link tickers}.forceCompletion instead.
+     */
     async forceCompletionOfTicker(id: string, alias?: string) {
+        return this.forceCompletionOfTickerInternal(id, alias);
+    }
+    private async forceCompletionOfTickerInternal(id: string, alias?: string) {
         if (!alias) {
             const info = CanvasManagerStatic._currentTickers.get(id);
             if (info) {
@@ -786,6 +912,30 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
     }
 
+    public readonly tickers: CanvasTickersInterface = {
+        transfer: (oldAlias, newAlias, mode) =>
+            this.transferTickersInternal(oldAlias, newAlias, mode),
+        get currentTickers() {
+            return CanvasManagerStatic._currentTickers;
+        },
+        get currentTickersSteps() {
+            return CanvasManagerStatic._currentTickersSequence;
+        },
+        find: (tickerId) => this.findTickerInternal(tickerId),
+        add: (canvasElementAlias, ticker) => this.addTickerInternal(canvasElementAlias, ticker),
+        addSequence: (alias, steps, currentStepNumber) =>
+            this.addTickersSequence(alias, steps, currentStepNumber),
+        unlinkComponent: (alias, ticker) => this.unlinkComponentFromTickerInternal(alias, ticker),
+        removeAll: () => this.removeAllTickersInternal(),
+        remove: (tickerId) => this.removeTickerInternal(tickerId),
+        pause: (filters) => this.pauseTickerInternal(filters),
+        resume: (filters) => this.resumeTickerInternal(filters),
+        isPaused: (alias, tickerId) => this.isTickerPausedInternal(alias, tickerId),
+        completeOnStepEnd: (step) => this.completeTickerOnStepEndInternal(step),
+        forceCompletion: (id, alias) => this.forceCompletionOfTickerInternal(id, alias),
+        onComplete: (tickerId, options) => this.onTickerCompleteInternal(tickerId, options),
+    };
+
     animate<T extends CanvasBaseInterface<any>>(
         components: T | string | (string | T)[],
         keyframes: KeyframesType<T>,
@@ -809,7 +959,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     /* Layers Methods */
 
-    addLayer(label: string, layer: PixiContainer) {
+    private addLayerInternal(label: string, layer: PixiContainer) {
         if (label === CANVAS_APP_GAME_LAYER_ALIAS) {
             logger.error(`The alias ${CANVAS_APP_GAME_LAYER_ALIAS} is reserved`);
             return;
@@ -818,30 +968,68 @@ export default class CanvasManager implements CanvasManagerInterface {
         return CanvasManagerStatic.app.stage.addChild(layer);
     }
 
-    getLayer(label: string) {
+    private getLayerInternal(label: string) {
         return CanvasManagerStatic.app.stage.getChildByLabel(label);
     }
 
-    removeLayer(label: string) {
+    private removeLayerInternal(label: string) {
         const child = CanvasManagerStatic.app.stage.getChildByLabel(label);
         if (child) {
             CanvasManagerStatic.app.stage.removeChild(child);
         }
     }
 
-    addHtmlLayer(
+    private addHtmlLayerInternal(
         id: string,
         element: HTMLElement,
         style?: Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">>,
     ) {
         return CanvasManagerStatic.addHtmlLayer(id, element, style);
     }
-    removeHtmlLayer(id: string) {
+    private removeHtmlLayerInternal(id: string) {
         return CanvasManagerStatic.removeHtmlLayer(id);
     }
-    getHtmlLayer(id: string): HTMLElement | undefined {
+    private getHtmlLayerInternal(id: string): HTMLElement | undefined {
         return CanvasManagerStatic.getHtmlLayer(id);
     }
+
+    addLayer(label: string, layer: PixiContainer) {
+        return this.addLayerInternal(label, layer);
+    }
+    getLayer(label: string) {
+        return this.getLayerInternal(label);
+    }
+    removeLayer(label: string) {
+        return this.removeLayerInternal(label);
+    }
+    addHtmlLayer(
+        id: string,
+        element: HTMLElement,
+        style?: Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" | "userSelect">>,
+    ) {
+        return this.addHtmlLayerInternal(id, element, style);
+    }
+    removeHtmlLayer(id: string) {
+        return this.removeHtmlLayerInternal(id);
+    }
+    getHtmlLayer(id: string): HTMLElement | undefined {
+        return this.getHtmlLayerInternal(id);
+    }
+
+    public readonly layers: CanvasLayersInterface = {
+        get gameLayer() {
+            return CanvasManagerStatic.gameLayer;
+        },
+        add: (label, layer) => this.addLayerInternal(label, layer),
+        get: (label) => this.getLayerInternal(label),
+        remove: (label) => this.removeLayerInternal(label),
+    };
+
+    public readonly htmlLayers: CanvasHtmlLayersInterface = {
+        add: (id, element, style) => this.addHtmlLayerInternal(id, element, style),
+        get: (id) => this.getHtmlLayerInternal(id),
+        remove: (id) => this.removeHtmlLayerInternal(id),
+    };
 
     /* Other Methods */
 
@@ -863,7 +1051,7 @@ export default class CanvasManager implements CanvasManagerInterface {
     }
 
     clear() {
-        this.removeAllTickers();
+        this.removeAllTickersInternal();
         this.removeAll();
     }
 
@@ -945,7 +1133,7 @@ export default class CanvasManager implements CanvasManagerInterface {
                         });
                         if (ticker) {
                             ticker.canvasElementAliases = aliases;
-                            this.addTicker(aliases, ticker);
+                            this.addTickerInternal(aliases, ticker);
                             // TODO: it should be paused even before starting
                             // TODO: All tickets should be started at the same time and not wait for the previous one to initialize.
                             if (t.paused) {

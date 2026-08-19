@@ -94,10 +94,10 @@ namespace motion {
                 },
             );
         }
-        const id = canvas.addTicker<any>(aliases, ticker);
+        const id = canvas.tickers.add<any>(aliases, ticker);
         const { completeOnContinue } = options || {};
         if (id && completeOnContinue) {
-            canvas.completeTickerOnStepEnd({
+            canvas.tickers.completeOnStepEnd({
                 id: id,
             });
         }

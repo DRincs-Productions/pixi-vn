@@ -12,6 +12,10 @@ import type {
 import type { StorageElementType } from "../../storage";
 import type { LabelIdType } from "../types/LabelIdType";
 import type HistoryStep from "./HistoryStep";
+import type NarrationChoicesInterface from "./NarrationChoicesInterface";
+import type NarrationInputInterface from "./NarrationInputInterface";
+import type NarrationLabelsInterface from "./NarrationLabelsInterface";
+import type NarrationQueriesInterface from "./NarrationQueriesInterface";
 
 export default interface NarrationManagerInterface {
     /**
@@ -51,10 +55,12 @@ export default interface NarrationManagerInterface {
     readonly stepCounter: number;
     /**
      * The stack of the opened labels.
+     * @deprecated Use {@link labels}.opened instead.
      */
     readonly openedLabels: OpenedLabel[];
     /**
      * currentLabel is the current label that occurred during the progression of the steps.
+     * @deprecated Use {@link labels}.current instead.
      */
     readonly currentLabel: LabelAbstract<any> | undefined;
 
@@ -63,43 +69,62 @@ export default interface NarrationManagerInterface {
     /**
      * Close the current label and add it to the history.
      * @returns
+     * @deprecated Use {@link labels}.closeCurrent instead.
      */
     closeCurrentLabel(): void;
     /**
      * Close all labels and add them to the history. **Attention: This method can cause an unhandled game ending.**
+     * @deprecated Use {@link labels}.closeAll instead.
      */
     closeAllLabels(): void;
     /**
      * Check if the label is already completed.
      * @param label The label to check.
      * @returns True if the label is already completed.
+     * @deprecated Use {@link queries}.isLabelAlreadyCompleted instead.
      */
     isLabelAlreadyCompleted(label: LabelIdType | LabelAbstract<any>): boolean;
     /**
      * Get the choices already made in the current step. **Attention**: if the choice step index is edited or the code of choice step is edited, the result will be wrong.
      * @returns The choices already made in the current step. If there are no choices, it will return undefined.
+     * @deprecated Use {@link queries}.alreadyCurrentStepMadeChoices instead.
      */
     readonly alreadyCurrentStepMadeChoices: number[] | undefined;
     /**
      * Check if the current step is already completed.
      * @returns True if the current step is already completed.
+     * @deprecated Use {@link queries}.isCurrentStepAlreadyOpened instead.
      */
     readonly isCurrentStepAlreadyOpened: boolean;
     /**
      * Get times a label has been opened
      * @returns times a label has been opened
+     * @deprecated Use {@link queries}.timesLabelOpened instead.
      */
     getTimesLabelOpened(label: LabelIdType): number;
     /**
      * Get times a choice has been made in the current step.
      * @param index The index of the choice.
      * @returns The number of times the choice has been made.
+     * @deprecated Use {@link queries}.timesChoiceMade instead.
      */
     getTimesChoiceMade(index: number): number;
     /**
      * Save the current step to the history.
      */
     addCurrentStepToHistory(): void;
+    /**
+     * Namespace for operations on the input requested to the player.
+     */
+    readonly input: NarrationInputInterface;
+    /**
+     * Namespace for operations on the opened labels.
+     */
+    readonly labels: NarrationLabelsInterface;
+    /**
+     * Namespace for queries about the current state of the narration.
+     */
+    readonly queries: NarrationQueriesInterface;
 
     /* Run Methods */
 
@@ -223,6 +248,7 @@ export default interface NarrationManagerInterface {
      *         // your code
      *     })
      * ```
+     * @deprecated Use {@link choices}.select instead.
      */
     selectChoice<T extends {}>(
         item: StoredIndexedChoiceInterface,
@@ -243,21 +269,11 @@ export default interface NarrationManagerInterface {
      */
     set dialogue(props: DialogueInterface | string | string[] | undefined);
     /**
-     * The options to be shown in the game
-     * @example
-     * ```ts
-     * narration.choices = [
-     *     newChoiceOption("Events Test", EventsTestLabel, {}),
-     *     newChoiceOption("Show Image Test", ShowImageTest, { image: "imageId" }, "call"),
-     *     newChoiceOption("Ticker Test", TickerTestLabel, {}),
-     *     newChoiceOption("Tinting Test", TintingTestLabel, {}, "jump"),
-     *     newChoiceOption("Base Canvas Element Test", BaseCanvasElementTestLabel, {})
-     * ]
-     * ```
+     * Namespace for operations on the choices to be shown in the game.
      */
-    get choices(): StoredIndexedChoiceInterface[] | undefined;
+    get choices(): NarrationChoicesInterface;
     /**
-     * The options to be shown in the game
+     * Shortcut for {@link NarrationChoicesInterface.list}.
      * @throws {PixiError} when a choice contains functions or class instances that cannot be serialized to JSON.
      * @example
      * ```ts
@@ -277,24 +293,29 @@ export default interface NarrationManagerInterface {
     dialogGlue: boolean;
     /**
      * The input value to be inserted by the player.
+     * @deprecated Use {@link input}.value instead.
      */
     inputValue: StorageElementType;
     /**
      * If true, the player must enter a value.
+     * @deprecated Use {@link input}.isRequired instead.
      */
     readonly isRequiredInput: boolean;
     /**
      * Returns the type of input prompt requested.
+     * @deprecated Use {@link input}.type instead.
      */
     readonly inputType: string | undefined;
     /**
      * Returns `true` if the player must enter a value.
      * @param info The input value to be inserted by the player.
      * @param defaultValue The default value to be inserted.
+     * @deprecated Use {@link input}.request instead.
      */
     requestInput(info?: Omit<InputInfo, "isRequired">, defaultValue?: StorageElementType): void;
     /**
      * Remove the input request.
+     * @deprecated Use {@link input}.removeRequest instead.
      */
     removeInputRequest(): void;
 

@@ -236,7 +236,7 @@ test("choice test", async () => {
             openedLabelsNumber: 1,
         },
     ]);
-    const choice = narration.choices![0];
+    const choice = narration.choices.list![0];
     await narration.selectChoice(choice, {});
     expect(stepHistory.narrativeHistory).toEqual([
         {

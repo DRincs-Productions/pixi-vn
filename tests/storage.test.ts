@@ -265,6 +265,27 @@ test("import & export", async () => {
     });
 });
 
+test("temp.set & temp.remove & temp.deadlines", async () => {
+    storage.temp.set("tempKey", "tempValue");
+    expect(storage.get("tempKey")).toBe("tempValue");
+    expect(storage.temp.deadlines.has("tempKey")).toBe(true);
+
+    storage.temp.remove("tempKey");
+    expect(storage.get("tempKey")).toBe(undefined);
+    expect(storage.temp.deadlines.has("tempKey")).toBe(false);
+
+    storage.temp.set("tempKey2", "tempValue2");
+    storage.temp.set("tempKey2", undefined as any);
+    expect(storage.get("tempKey2")).toBe(undefined);
+});
+
+test("flags.set & flags.get", async () => {
+    storage.flags.set("flagTest", true);
+    expect(storage.flags.get("flagTest")).toBe(true);
+    storage.flags.set("flagTest", false);
+    expect(storage.flags.get("flagTest")).toBe(false);
+});
+
 test("Keyv", async () => {
     const keyvStorage = new Keyv({ store: storage.base });
     await keyvStorage.set("a", 1);

@@ -138,7 +138,7 @@ export default abstract class MotionTickerBase<
         if (typeof tickerIdToResume === "string") {
             tickerIdToResume = [tickerIdToResume];
         }
-        canvas.onTickerComplete(id, {
+        canvas.tickers.onComplete(id, {
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
             tickerIdToResume: tickerIdToResume,

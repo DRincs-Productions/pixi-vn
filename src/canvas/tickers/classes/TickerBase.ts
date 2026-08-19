@@ -10,7 +10,7 @@ import type TickerValue from "./TickerValue";
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.
- * You can use {@link canvas.addTicker()} to add this element into the application.
+ * You can use {@link canvas.tickers.add()} to add this element into the application.
  * This class should be extended and the fn method should be overridden.
  * You must use the {@link tickerDecorator} to register the ticker in the game.
  * In Ren'Py is a transform.
@@ -25,7 +25,7 @@ import type TickerValue from "./TickerValue";
  *             speed?: number,
  *         },
  *         aliases: string[], // the aliases of the canvas elements that are connected to this ticker
- *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the canvas.currentTickers
+ *         tickerId: string, // the id of the ticker. You can use this to get the ticker from the canvas.tickers.currentTickers
  *     ): void {
  *         let speed = args.speed === undefined ? 0.1 : args.speed
  *         aliases.forEach((alias) => {
@@ -104,7 +104,7 @@ export default abstract class TickerBase<TArgs extends TickerArgs> implements Ti
      * @param _ticker The ticker that is calling this method
      * @param _args The arguments that you passed when you added the ticker
      * @param _alias The alias of the canvas elements that are connected to this ticker
-     * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.currentTickers}
+     * @param _tickerId The id of the ticker. You can use this to get the ticker from the {@link canvas.tickers.currentTickers}
      */
     abstract fn(
         _ticker: TickerValue,

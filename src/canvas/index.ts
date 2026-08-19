@@ -72,7 +72,10 @@ export type {
 } from "./interfaces/canvas-options";
 export type { CanvasBaseInterface } from "./interfaces/CanvasBaseInterface";
 export type { default as CanvasGameState } from "./interfaces/CanvasGameState";
+export type { default as CanvasHtmlLayersInterface } from "./interfaces/CanvasHtmlLayersInterface";
+export type { default as CanvasLayersInterface } from "./interfaces/CanvasLayersInterface";
 export type { default as CanvasManagerInterface } from "./interfaces/CanvasManagerInterface";
+export type { default as CanvasTickersInterface } from "./interfaces/CanvasTickersInterface";
 export type { ShakeEffectProps } from "./interfaces/effect-props";
 export type { default as CanvasBaseItemMemory } from "./interfaces/memory/CanvasBaseItemMemory";
 export type { default as ContainerMemory } from "./interfaces/memory/ContainerMemory";
@@ -114,14 +117,14 @@ GameUnifier.addOnPreContinue(async () => {
         const p1 = (async () => {
             while (tikers.length) {
                 const { id } = tikers.pop() || {};
-                id && (await canvas.forceCompletionOfTicker(id));
+                id && (await canvas.tickers.forceCompletion(id));
             }
         })();
 
         const p2 = (async () => {
             while (stepAliases.length) {
                 const { alias, id } = stepAliases.pop() || {};
-                alias && id && (await canvas.forceCompletionOfTicker(id, alias));
+                alias && id && (await canvas.tickers.forceCompletion(id, alias));
             }
         })();
 

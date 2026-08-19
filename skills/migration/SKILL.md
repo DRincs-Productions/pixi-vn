@@ -23,42 +23,342 @@ unless a project is crossing that specific boundary.
 This release removes several APIs that had been marked `@deprecated` for a while, with no
 replacement other than the one already documented at deprecation time:
 
-- `Repeat`/`Pause(duration)` and the `RepeatType`/`PauseType` types are gone. `canvas.addTickersSequence`
-  now only accepts plain `Ticker` steps — chain tickers by duration instead of pause/repeat markers:
-  ```ts
-  canvas.addTickersSequence("alien", [
-    new RotateTicker({ speed: 0.1, clockwise: true }, 2),
-    Pause(1), // [!code --]
-    new RotateTicker({ speed: 0.2, clockwise: false }, 2),
-    Repeat, // [!code --]
-  ]);
-  ```
-  See `pixi-vn-canvas`/`tickers.md` for the current sequencing API.
-- `forceCompleteBeforeNext` is gone from every transition helper (`showWithDissolve`, `moveIn`,
-  `zoomIn`, ...) and from `CommonTickerProps` — use `completeOnContinue` directly, it's no longer
-  just an alias:
-  ```ts
-  await showWithDissolve("alice", "alice", {
-    forceCompleteBeforeNext: true, // [!code --]
-    completeOnContinue: true, // [!code ++]
-  });
-  ```
-- The deprecated `AssetMemory.image` field was removed; use `AssetMemory.alias`/`url` instead.
-- `Game.restoreGameState(data, navigate)` lost its `navigate` overload — pass only `data`, and
-  configure navigation once via `Game.onNavigate` (or `Game.init({ navigate })`) instead:
-  ```ts
-  Game.restoreGameState(data, navigateTo); // [!code --]
-  Game.restoreGameState(data); // [!code ++]
-  ```
-- The singular `Game.onError(...)` handler was removed; use `Game.addOnError`/`Game.removeOnError`
-  (already the recommended API since v1.6.0):
-  ```ts
-  Game.onError((type, error, { notify, uiTransition }) => { ... }); // [!code --]
-  Game.addOnError((error, { notify, uiTransition }) => { ... }); // [!code ++]
-  ```
+`Repeat`/`Pause(duration)` and the `RepeatType`/`PauseType` types are gone. `canvas.addTickersSequence`
+now only accepts plain `Ticker` steps — chain tickers by duration instead of pause/repeat markers:
+
+```ts
+canvas.addTickersSequence("alien", [
+  new RotateTicker({ speed: 0.1, clockwise: true }, 2),
+  Pause(1), // [!code --]
+  new RotateTicker({ speed: 0.2, clockwise: false }, 2),
+  Repeat, // [!code --]
+]);
+```
+
+See `pixi-vn-canvas`/`tickers.md` for the current sequencing API.
+`forceCompleteBeforeNext` is gone from every transition helper (`showWithDissolve`, `moveIn`,
+`zoomIn`, ...) and from `CommonTickerProps` — use `completeOnContinue` directly, it's no longer
+just an alias:
+
+```ts
+await showWithDissolve("alice", "alice", {
+  forceCompleteBeforeNext: true, // [!code --]
+  completeOnContinue: true, // [!code ++]
+});
+```
+
+The deprecated `AssetMemory.image` field was removed; use `AssetMemory.alias`/`url` instead.
+`Game.restoreGameState(data, navigate)` lost its `navigate` overload — pass only `data`, and
+configure navigation once via `Game.onNavigate` (or `Game.init({ navigate })`) instead:
+
+```ts
+Game.restoreGameState(data, navigateTo); // [!code --]
+Game.restoreGameState(data); // [!code ++]
+```
+
+The singular `Game.onError(...)` handler was removed; use `Game.addOnError`/`Game.removeOnError`
+(already the recommended API since v1.6.0):
+
+```ts
+Game.onError((type, error, { notify, uiTransition }) => { ... }); // [!code --]
+Game.addOnError((error, { notify, uiTransition }) => { ... }); // [!code ++]
+```
 
 See `pixi-vn-canvas`/`tickers.md` for the current tickers/transitions API and
 `pixi-vn-getting-started` for the current `Game` API.
+
+### Manager APIs reorganized into namespaces
+
+The `canvas`, `sound`, `storage`, and `narration` managers used to expose dozens of unrelated
+methods directly on the manager (ticker methods, layer methods, and HTML-layer methods all mixed
+together on `canvas`, for example). This release groups related operations into namespaced
+sub-APIs — `canvas.tickers`/`.layers`/`.htmlLayers`, `sound.channels`/`.unsaved`,
+`storage.temp`/`.flags`, `narration.labels`/`.queries`/`.input`/`.choices` — so each manager reads
+as a short, discoverable surface instead of a flat list, and related options/overloads live next to
+each other. See `pixi-vn-canvas`, `pixi-vn-sound`, `pixi-vn-storage`, and `pixi-vn-getting-started`
+for the current shape of each namespace.
+
+Almost every old flat method still works and just forwards to its namespaced replacement — it's
+marked `@deprecated` but not removed, so migrate at your own pace. Two members are an exception:
+their **type** changed, so they break immediately rather than just warning.
+
+`sound.channels` was `AudioChannelInterface[]`; it is now an object, and the array moved to
+`.values`:
+
+```ts
+sound.channels.map((c) => c.alias); // [!code --]
+sound.channels.values.map((c) => c.alias); // [!code ++]
+```
+
+`narration.choices` (getter) was `StoredIndexedChoiceInterface[] | undefined`; it now returns a
+namespace object, and the array moved to `.list`. The *setter*, `narration.choices = [...]`, is
+unchanged — it's a shortcut for `.list`:
+
+```ts
+const choices = narration.choices; // [!code --]
+const choices = narration.choices.list; // [!code ++]
+```
+
+Every other rename below is a non-breaking, forward-compatible deprecation.
+
+`canvas`'s ticker methods moved to `canvas.tickers`:
+
+```ts
+canvas.transferTickers("old", "new"); // [!code --]
+canvas.tickers.transfer("old", "new"); // [!code ++]
+```
+
+```ts
+canvas.currentTickers; // [!code --]
+canvas.tickers.currentTickers; // [!code ++]
+```
+
+```ts
+canvas.currentTickersSteps; // [!code --]
+canvas.tickers.currentTickersSteps; // [!code ++]
+```
+
+```ts
+canvas.findTicker("t1"); // [!code --]
+canvas.tickers.find("t1"); // [!code ++]
+```
+
+```ts
+canvas.addTicker("alien", new RotateTicker({ speed: 0.2 })); // [!code --]
+canvas.tickers.add("alien", new RotateTicker({ speed: 0.2 })); // [!code ++]
+```
+
+```ts
+canvas.addTickersSequence("alien", steps); // [!code --]
+canvas.tickers.addSequence("alien", steps); // [!code ++]
+```
+
+```ts
+canvas.unlinkComponentFromTicker("alien", RotateTicker); // [!code --]
+canvas.tickers.unlinkComponent("alien", RotateTicker); // [!code ++]
+```
+
+```ts
+canvas.removeAllTickers(); // [!code --]
+canvas.tickers.removeAll(); // [!code ++]
+```
+
+```ts
+canvas.removeTicker("t1"); // [!code --]
+canvas.tickers.remove("t1"); // [!code ++]
+```
+
+```ts
+canvas.pauseTicker({ canvasAlias: "alien" }); // [!code --]
+canvas.tickers.pause({ canvasAlias: "alien" }); // [!code ++]
+```
+
+```ts
+canvas.resumeTicker({ canvasAlias: "alien" }); // [!code --]
+canvas.tickers.resume({ canvasAlias: "alien" }); // [!code ++]
+```
+
+```ts
+canvas.isTickerPaused("alien"); // [!code --]
+canvas.tickers.isPaused("alien"); // [!code ++]
+```
+
+```ts
+canvas.completeTickerOnStepEnd({ id: "t1" }); // [!code --]
+canvas.tickers.completeOnStepEnd({ id: "t1" }); // [!code ++]
+```
+
+```ts
+canvas.forceCompletionOfTicker("t1"); // [!code --]
+canvas.tickers.forceCompletion("t1"); // [!code ++]
+```
+
+```ts
+canvas.onTickerComplete("t1", options); // [!code --]
+canvas.tickers.onComplete("t1", options); // [!code ++]
+```
+
+`canvas`'s layer methods moved to `canvas.layers`:
+
+```ts
+canvas.gameLayer; // [!code --]
+canvas.layers.gameLayer; // [!code ++]
+```
+
+```ts
+canvas.addLayer("ui", uiLayer); // [!code --]
+canvas.layers.add("ui", uiLayer); // [!code ++]
+```
+
+```ts
+canvas.getLayer("ui"); // [!code --]
+canvas.layers.get("ui"); // [!code ++]
+```
+
+```ts
+canvas.removeLayer("ui"); // [!code --]
+canvas.layers.remove("ui"); // [!code ++]
+```
+
+`canvas`'s HTML-layer methods moved to `canvas.htmlLayers`:
+
+```ts
+canvas.addHtmlLayer("ui", root); // [!code --]
+canvas.htmlLayers.add("ui", root); // [!code ++]
+```
+
+```ts
+canvas.getHtmlLayer("ui"); // [!code --]
+canvas.htmlLayers.get("ui"); // [!code ++]
+```
+
+```ts
+canvas.removeHtmlLayer("ui"); // [!code --]
+canvas.htmlLayers.remove("ui"); // [!code ++]
+```
+
+`sound`'s transient/unsaved playback methods moved to `sound.unsaved`:
+
+```ts
+sound.playTransient("ui-click"); // [!code --]
+sound.unsaved.playTransient("ui-click"); // [!code ++]
+```
+
+```ts
+sound.pauseUnsavedAll(); // [!code --]
+sound.unsaved.pauseAll(); // [!code ++]
+```
+
+```ts
+sound.resumeUnsavedAll(); // [!code --]
+sound.unsaved.resumeAll(); // [!code ++]
+```
+
+```ts
+sound.stopTransientAll(); // [!code --]
+sound.unsaved.stopTransientAll(); // [!code ++]
+```
+
+`sound`'s channel creation/lookup methods moved to `sound.channels` (alongside the `.values` change
+above):
+
+```ts
+sound.addChannel("music"); // [!code --]
+sound.channels.add("music"); // [!code ++]
+```
+
+```ts
+sound.findChannel("music"); // [!code --]
+sound.channels.find("music"); // [!code ++]
+```
+
+`storage`'s temporary-variable methods moved to `storage.temp` (a new `storage.temp.deadlines` map
+is exposed alongside them):
+
+```ts
+storage.setTempVariable("key", "value"); // [!code --]
+storage.temp.set("key", "value"); // [!code ++]
+```
+
+```ts
+storage.removeTempVariable("key"); // [!code --]
+storage.temp.remove("key"); // [!code ++]
+```
+
+`storage`'s flag methods moved to `storage.flags`:
+
+```ts
+storage.setFlag("introSeen", true); // [!code --]
+storage.flags.set("introSeen", true); // [!code ++]
+```
+
+```ts
+storage.getFlag("introSeen"); // [!code --]
+storage.flags.get("introSeen"); // [!code ++]
+```
+
+`narration`'s label-stack members moved to `narration.labels`:
+
+```ts
+narration.openedLabels; // [!code --]
+narration.labels.opened; // [!code ++]
+```
+
+```ts
+narration.currentLabel; // [!code --]
+narration.labels.current; // [!code ++]
+```
+
+```ts
+narration.closeCurrentLabel(); // [!code --]
+narration.labels.closeCurrent(); // [!code ++]
+```
+
+```ts
+narration.closeAllLabels(); // [!code --]
+narration.labels.closeAll(); // [!code ++]
+```
+
+`narration`'s read-only queries moved to `narration.queries`:
+
+```ts
+narration.isLabelAlreadyCompleted(label); // [!code --]
+narration.queries.isLabelAlreadyCompleted(label); // [!code ++]
+```
+
+```ts
+narration.alreadyCurrentStepMadeChoices; // [!code --]
+narration.queries.alreadyCurrentStepMadeChoices; // [!code ++]
+```
+
+```ts
+narration.isCurrentStepAlreadyOpened; // [!code --]
+narration.queries.isCurrentStepAlreadyOpened; // [!code ++]
+```
+
+```ts
+narration.getTimesLabelOpened(label); // [!code --]
+narration.queries.timesLabelOpened(label); // [!code ++]
+```
+
+```ts
+narration.getTimesChoiceMade(index); // [!code --]
+narration.queries.timesChoiceMade(index); // [!code ++]
+```
+
+`narration`'s input-request members moved to `narration.input`:
+
+```ts
+narration.inputValue; // [!code --]
+narration.input.value; // [!code ++]
+```
+
+```ts
+narration.isRequiredInput; // [!code --]
+narration.input.isRequired; // [!code ++]
+```
+
+```ts
+narration.inputType; // [!code --]
+narration.input.type; // [!code ++]
+```
+
+```ts
+narration.requestInput({ type: "number" }); // [!code --]
+narration.input.request({ type: "number" }); // [!code ++]
+```
+
+```ts
+narration.removeInputRequest(); // [!code --]
+narration.input.removeRequest(); // [!code ++]
+```
+
+`narration`'s choice selection moved to `narration.choices` (alongside the `.list` change above):
+
+```ts
+narration.selectChoice(choices[0], {}); // [!code --]
+narration.choices.select(choices[0], {}); // [!code ++]
+```
 
 ## v1.7.x → v1.8.0 — Tone.js audio engine
 

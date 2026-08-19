@@ -12,8 +12,8 @@ namespace SoundRegistry {
     export const channels: Map<string, AudioChannelInterface> = new Map();
     export const transients: Set<Player> = new Set();
     /**
-     * Aliases of {@link mediaInstances} that were paused by `pauseUnsavedAll`.
-     * Used by `resumeUnsavedAll` to only resume the instances it paused, leaving
+     * Aliases of {@link mediaInstances} that were paused by `unsaved.pauseAll`.
+     * Used by `unsaved.resumeAll` to only resume the instances it paused, leaving
      * any previously-paused instances untouched.
      */
     export const systemPausedAliases: Set<string> = new Set();
