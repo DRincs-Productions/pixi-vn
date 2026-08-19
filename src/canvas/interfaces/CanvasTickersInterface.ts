@@ -1,6 +1,4 @@
 import type { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
-import type { PauseType } from "../types/PauseType";
-import type { RepeatType } from "../types/RepeatType";
 
 export default interface CanvasTickersInterface {
     /**
@@ -60,7 +58,7 @@ export default interface CanvasTickersInterface {
      */
     addSequence(
         alias: string,
-        steps: (Ticker<any> | RepeatType | PauseType)[],
+        steps: (Ticker<any> )[],
         currentStepNumber?: number,
     ): string | undefined;
     /**
