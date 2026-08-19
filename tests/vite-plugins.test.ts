@@ -284,9 +284,9 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).toContain(`export const labelIdsEnum = {} as const;`);
     });
 
-    test("hotUpdate returns [] for the generated type file", () => {
+    test("hotUpdate returns [] for the generated type file", async () => {
         const plugin = createConfiguredPlugin(typeFilePath);
-        const result = (plugin.hotUpdate as any)({
+        const result = await (plugin.hotUpdate as any)({
             file: typeFilePath,
             server: {},
             modules: [],
@@ -297,9 +297,9 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(result).toEqual([]);
     });
 
-    test("hotUpdate does NOT intercept unrelated files", () => {
+    test("hotUpdate does NOT intercept unrelated files", async () => {
         const plugin = createConfiguredPlugin(typeFilePath);
-        const result = (plugin.hotUpdate as any)({
+        const result = await (plugin.hotUpdate as any)({
             file: join(tmpDir, "somethingElse.ts"),
             server: {},
             modules: [],
@@ -631,7 +631,7 @@ describe("vitePluginPixivn – assetsManifest", () => {
             `export const bundleIds = ["run-1"] as const;`,
         );
 
-        const result = plugin.hotUpdate({
+        const result = await plugin.hotUpdate({
             file: join(tmpDir, "some-unrelated-file.ts"),
             server,
             modules: [],
@@ -641,7 +641,6 @@ describe("vitePluginPixivn – assetsManifest", () => {
         });
         // Doesn't suppress Vite's own default HMR handling for the unrelated file.
         expect(result).toBeUndefined();
-        await new Promise((r) => setTimeout(r, 0));
 
         expect(readFileSync(typeFilePath, "utf-8")).toContain(
             `export const bundleIds = ["run-2"] as const;`,
@@ -825,7 +824,6 @@ describe("vitePluginPixivn – dev-server state sync (regression)", () => {
             read: () => Promise.resolve(""),
             environment: {},
         });
-        await new Promise((r) => setTimeout(r, 0));
 
         const charactersRes = createRes();
         server.getHandler(PIXIVN_DEV_API_CHARACTERS)(createGetReq(), charactersRes);

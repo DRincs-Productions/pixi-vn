@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-storage
-description: Use when reading or writing persistent game variables in a @drincs/pixi-vn game — simple flags/counters via `storage`, custom persisted classes via `StoredClassModel`, temporary (label-scoped) variables, and how any of this survives save/load and history go-back. Load this before writing any `storage.set`/`storage.get`/`storage.setFlag` code or a class that extends `StoredClassModel`.
+description: Use when reading or writing persistent game variables in a @drincs/pixi-vn game — simple flags/counters via `storage`, custom persisted classes via `StoredClassModel`, temporary (label-scoped) variables, and how any of this survives save/load and history go-back. Load this before writing any `storage.set`/`storage.get`/`storage.flags.set` code or a class that extends `StoredClassModel`.
 ---
 
 # Pixi'VN Storage
@@ -52,7 +52,7 @@ instances, or Maps/Sets. For anything richer, use a `StoredClassModel` (below).
 Other `storage` methods:
 
 - `storage.remove(key)` — deletes a variable.
-- `storage.setFlag(key, value: boolean)` / `storage.getFlag(key)` — a
+- `storage.flags.set(key, value: boolean)` / `storage.flags.get(key)` — a
   dedicated boolean-flag store ([docs](https://pixi-vn.com/start/flags)), kept
   separate from `set`/`get`; flags default to `false` when never set. Keys are
   case-sensitive here too. The docs recommend flags over `storage.set` for
@@ -61,7 +61,7 @@ Other `storage` methods:
   storage entry per boolean. A documented pattern is exposing a class boolean
   property that's backed by a flag name (a string) instead of a literal
   `boolean`, so the getter/setter transparently reads/writes
-  `storage.getFlag`/`setFlag`.
+  `storage.flags.get`/`set`.
 - `storage.default = { key: value, ... }` — sets the _starting_ values used
   when the game boots or after `storage.clear()`; if you later `remove()` a
   key (or it was never `set()`), reading it falls back to this default instead
@@ -72,15 +72,15 @@ Other `storage` methods:
 ### Temporary (label-scoped) variables
 
 See [pixi-vn.com/start/temp-storage](https://pixi-vn.com/start/temp-storage).
-`storage.setTempVariable(key, value)` behaves like `storage.set` for reads —
+`storage.temp.set(key, value)` behaves like `storage.set` for reads —
 `storage.get(key)` checks temp variables first, then falls back to the
 permanent store — but the value is deleted once the `label` it was set in
 closes. It's for scratch state that should reset once the player moves on:
 
 ```ts
-storage.setTempVariable("counter", counter + 1);
+storage.temp.set("counter", counter + 1);
 // ... reads still go through storage.get("counter")
-storage.removeTempVariable("counter");
+storage.temp.remove("counter");
 ```
 
 Per the docs' own description of the lifecycle: if the label that set the
@@ -90,11 +90,11 @@ _originating_ label itself closes. But if control moves on via `jump`
 (closing the current label and starting a new one instead of nesting into
 it), the temp variable is gone immediately, since it belonged to the
 now-closed label. Implementation-wise this is tracked as a deadline against
-how many labels are open on the call stack at the moment `setTempVariable`
+how many labels are open on the call stack at the moment `temp.set`
 runs — see `tests/storage.test.ts`, `setTempVariable & getTempVariable`,
 where a temp `counter` set inside a called label keeps incrementing across
-`narration.continue()` steps but is reset once `narration.closeCurrentLabel()`
-/`closeAllLabels()` unwind the label stack. Don't rely on temp variables for
+`narration.continue()` steps but is reset once `narration.labels.closeCurrent()`
+/`closeAll()` unwind the label stack. Don't rely on temp variables for
 state that must outlive the label that set it — use `storage.set` for that.
 
 ## 2. Custom persisted classes: `StoredClassModel`

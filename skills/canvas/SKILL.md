@@ -43,7 +43,7 @@ this skill is about the underlying rendering primitives.
   normally done for you by `Game.init(...)` from the core package — see `pixi-vn-getting-started`).
 - **Elements are tracked by alias, not by variable** ([docs](https://pixi-vn.com/start/canvas-alias)).
   `canvas.add(alias, component)` inserts a component (an instance of `Container`, `Sprite`,
-  `ImageSprite`, `ImageContainer`, `Text`, or `VideoSprite`) into `canvas.gameLayer` (a single
+  `ImageSprite`, `ImageContainer`, `Text`, or `VideoSprite`) into `canvas.layers.gameLayer` (a single
   PixiJS `Container` that holds all "in-scene" elements) and sets `component.label = alias`. Use
   `canvas.find<T>(alias)` to look elements back up and `canvas.remove(alias)` to remove them.
   Aliases are also how Pixi'VN saves/restores canvas state (see `pixi-vn-storage`), so prefer the
@@ -55,7 +55,7 @@ this skill is about the underlying rendering primitives.
   as alternative ways to position an element without doing pixel math.
 - **`Layer`** is just a type alias for a plain `PIXI.Container<ContainerChild>` — there's no
   special Layer class. A separate, non-save-able PixiJS Container can be attached directly to the
-  stage as a sibling of `gameLayer` (`canvas.addLayer`/`getLayer`/`removeLayer`) — see `pixi-vn-ui`
+  stage as a sibling of `gameLayer` (`canvas.layers.add`/`get`/`remove`) — see `pixi-vn-ui`
   for that API, it's how UI layers (HTML or PixiJS) are built on top of the canvas.
 - **Tickers** are how frame-based animation and effects work under the hood; `canvas.animate(...)`
   (built on the `motion` library) is the high-level way to animate numeric properties over time,
@@ -136,7 +136,7 @@ All transition helpers take `(alias, componentOrUrl?, props?, priority?)`. If yo
 component/URL argument, the `alias` itself is used as the texture URL/alias. Each function
 replaces (or removes) whatever is currently registered under `alias`, transferring position and
 running tickers from the old element automatically. They all return a `Promise` (or array) of
-ticker ids you can pass to `canvas.forceCompletionOfTicker` if you need to await completion, but
+ticker ids you can pass to `canvas.tickers.forceCompletion` if you need to await completion, but
 usually you just call and move on.
 
 ```ts
@@ -202,15 +202,15 @@ bookkeeping and is cheaper.
 `canvas.animate` and the transition helpers above already use tickers internally — most tasks never
 need to touch the ticker API directly. For a genuinely continuous/looping custom effect (no fixed
 duration) or manual pause/resume/completion control over a running animation, see **`tickers.md`**
-in this same skill folder (registering a `Ticker`, `addTickersSequence`,
-`pauseTicker`/`resumeTicker`/`removeTicker`, `completeTickerOnStepEnd`). Docs:
+in this same skill folder (registering a `Ticker`, `tickers.addSequence`,
+`tickers.pause`/`resume`/`remove`, `tickers.completeOnStepEnd`). Docs:
 [pixi-vn.com/start/canvas-tickers](https://pixi-vn.com/start/canvas-tickers).
 
 ## UI layers
 
 Persistent UI chrome (HUD, menus) does **not** live on `gameLayer` — it lives on a separate,
-non-save-able layer built with `canvas.addLayer`/`getLayer`/`removeLayer` (PixiJS-only UI) or
-`canvas.addHtmlLayer`/`getHtmlLayer`/`removeHtmlLayer` (mounting a DOM-based UI framework like React
+non-save-able layer built with `canvas.layers.add`/`get`/`remove` (PixiJS-only UI) or
+`canvas.htmlLayers.add`/`get`/`remove` (mounting a DOM-based UI framework like React
 or Vue). That whole API, plus the official template's layer-naming conventions, `extractImage()` for
 save-file thumbnails, and how to build a UI purely out of PixiJS components, is covered by
 `pixi-vn-ui` — reach for that skill instead whenever the task is about UI rather than the game scene.

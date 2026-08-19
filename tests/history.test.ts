@@ -950,7 +950,7 @@ test("stepHistory.goBackMode 'paragraph': a `jump` (same opened-labels depth, di
         await narration.call(jumpChoiceMain, {});
         await narration.continue({}); // "Para1 line2."
         await narration.continue({}); // "Choice time." - checkpoint (has choices)
-        const choice = narration.choices![0];
+        const choice = narration.choices.list![0];
         // `jump` replaces the top of the opened-labels stack instead of pushing a new
         // frame, so its depth is unchanged from "Choice time." - only comparing depth
         // (as isCheckpointStep used to) missed this as a paragraph boundary, silently

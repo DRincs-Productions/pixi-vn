@@ -872,7 +872,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             );
         },
 
-        hotUpdate({ file, server }) {
+        async hotUpdate({ file, server }) {
             // Prevent HMR for the auto-generated keys file so that regenerating
             // it never causes a full-page reload.
             const absKeysFilePath = getAbsKeysFilePath();
@@ -881,12 +881,14 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             }
 
             if (allPatterns.length > 0 && watchedFiles.has(file)) {
-                void reloadContent(server).catch((error) => {
+                try {
+                    await reloadContent(server);
+                } catch (error) {
                     resolvedConfig?.logger.error(`${PLUGIN_PREFIX} Failed to reload content.`, {
                         error: error instanceof Error ? error : new Error(String(error)),
                         timestamp: true,
                     });
-                });
+                }
                 return [];
             }
 
@@ -897,17 +899,18 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             // practice: Vite's own SSR module cache means this only does real work when a
             // dependency of the function's own import actually changed.
             if (assetsManifestIsFunction) {
-                void refreshAssetsManifest((id) => server.ssrLoadModule(id))
-                    .then(() => tryGenerateKeysFile())
-                    .catch((error) => {
-                        resolvedConfig?.logger.error(
-                            `${PLUGIN_PREFIX} Failed to refresh the assets manifest.`,
-                            {
-                                error: error instanceof Error ? error : new Error(String(error)),
-                                timestamp: true,
-                            },
-                        );
-                    });
+                try {
+                    await refreshAssetsManifest((id) => server.ssrLoadModule(id));
+                    tryGenerateKeysFile();
+                } catch (error) {
+                    resolvedConfig?.logger.error(
+                        `${PLUGIN_PREFIX} Failed to refresh the assets manifest.`,
+                        {
+                            error: error instanceof Error ? error : new Error(String(error)),
+                            timestamp: true,
+                        },
+                    );
+                }
             }
         },
     };

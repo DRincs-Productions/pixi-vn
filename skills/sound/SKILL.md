@@ -38,7 +38,7 @@ Key distinction: **channel volume and `sound.volumeAll` are linear** in `[0, 1]`
 import { sound } from "@drincs/pixi-vn";
 
 // Create a background music channel once (e.g. right after Game.init resolves)
-sound.addChannel("music", { background: true, volume: 0.8 });
+sound.channels.add("music", { background: true, volume: 0.8 });
 
 // Start looping music through it
 await sound.play("theme-song", { channel: "music", loop: true, volume: 0.8 });
@@ -55,7 +55,7 @@ Use the two-argument-alias form when you want to reference the instance under a 
 
 Calling `play()` again with the same media alias stops the previous instance and starts a new one, carrying over its previous options unless overridden — a handy way to restart or reconfigure something already playing.
 
-Equivalently, you can call `play()` directly on a channel instead of passing `channel` in the options — `sound.findChannel("music").play("theme-song", { loop: true })` — the two forms are interchangeable; the docs show both.
+Equivalently, you can call `play()` directly on a channel instead of passing `channel` in the options — `sound.channels.find("music").play("theme-song", { loop: true })` — the two forms are interchangeable; the docs show both.
 
 ### Fade in / fade out
 
@@ -74,16 +74,16 @@ sound.stop("theme-song"); // fades out over the 3s configured above, instead of 
 
 ## Playing a one-shot sound effect
 
-For an SFX that should just fire and not be individually tracked/paused later, use `playTransient` — it returns a raw `Tone.Player`, is not added to `sound.find()`'s registry, and disposes itself automatically when it finishes:
+For an SFX that should just fire and not be individually tracked/paused later, use `sound.unsaved.playTransient` — it returns a raw `Tone.Player`, is not added to `sound.find()`'s registry, and disposes itself automatically when it finishes:
 
 ```ts
-await sound.playTransient("click-sound", { volume: 0.5 });
+await sound.unsaved.playTransient("click-sound", { volume: 0.5 });
 ```
 
 If you do need to reference the effect later (pause it, stop it by alias, check if it's still playing), use regular `play()` on an `"sfx"` channel instead:
 
 ```ts
-sound.addChannel("sfx");
+sound.channels.add("sfx");
 await sound.play("explosion", { channel: "sfx", volume: 1 });
 ```
 
@@ -92,7 +92,7 @@ await sound.play("explosion", { channel: "sfx", volume: 1 });
 Voice is just another channel by convention — nothing special in the API distinguishes it from music/sfx, but keeping it on its own channel lets you separately mute/adjust volume for voice vs. music vs. effects (e.g. an in-game "voice volume" slider):
 
 ```ts
-sound.addChannel("voice");
+sound.channels.add("voice");
 const line = await sound.play("narrator-intro", { channel: "voice" });
 ```
 
@@ -110,8 +110,8 @@ line.paused = true;
 line.paused = false;
 
 // Everything on one channel
-sound.findChannel("voice").pauseAll();
-sound.findChannel("voice").resumeAll();
+sound.channels.find("voice").pauseAll();
+sound.channels.find("voice").resumeAll();
 
 // Everything, globally
 sound.pauseAll();
@@ -122,7 +122,7 @@ sound.resumeAll();
 
 ```ts
 // Channel volume — linear [0, 1], affects everything played through it
-const music = sound.findChannel("music");
+const music = sound.channels.find("music");
 music.volume = 0.4;
 
 // Smooth channel-wide fade using the raw Tone.js Param (decibels)
@@ -146,9 +146,9 @@ Muting works the same way at every level: `sound.muteAll()` / `sound.unmuteAll()
 
 ```ts
 sound.stop("narrator-intro"); // stop one instance by media alias
-sound.findChannel("music").stopAll(); // stop everything on a channel
+sound.channels.find("music").stopAll(); // stop everything on a channel
 sound.stopAll(); // stop every tracked instance, everywhere
-sound.stopTransientAll(); // stop one-shot sounds started with playTransient
+sound.unsaved.stopTransientAll(); // stop one-shot sounds started with playTransient
 ```
 
 ## Filters
@@ -170,25 +170,25 @@ await sound.play("thunder", {
 Per-channel, so every sound routed through it is affected — either at creation time or later via `chain()`:
 
 ```ts
-sound.addChannel("music", { filters: [new Tone.FeedbackDelay("8n", 0.5)] });
+sound.channels.add("music", { filters: [new Tone.FeedbackDelay("8n", 0.5)] });
 
 // or on an existing channel
-sound.findChannel("music").chain(new Tone.Reverb({ decay: 2.5 }));
+sound.channels.find("music").chain(new Tone.Reverb({ decay: 2.5 }));
 ```
 
 ## Other/menu features
 
-For settings screens or other menus, use the "unsaved" pause helpers instead of the regular ones — they don't perturb what gets restored from a save:
+For settings screens or other menus, use the `unsaved` pause helpers instead of the regular ones — they don't perturb what gets restored from a save:
 
 ```ts
 // On menu open: pause everything that isn't already paused
-sound.pauseUnsavedAll();
+sound.unsaved.pauseAll();
 
-// On menu close: resume only what pauseUnsavedAll paused (leaves already-paused media alone)
-sound.resumeUnsavedAll();
+// On menu close: resume only what pauseAll paused (leaves already-paused media alone)
+sound.unsaved.resumeAll();
 ```
 
-For transient UI sounds (button clicks, hovers) that must never leak into a save file, prefer `sound.playTransient()` (see above) and `sound.stopTransientAll()` to stop all of them at once.
+For transient UI sounds (button clicks, hovers) that must never leak into a save file, prefer `sound.unsaved.playTransient()` (see above) and `sound.unsaved.stopTransientAll()` to stop all of them at once.
 
 ## Real-world project convention (official React template)
 
@@ -209,8 +209,8 @@ import { BGM_CHANNEL_NAME, SFX_CHANNEL_NAME } from "@/constants";
 import { sound } from "@drincs/pixi-vn";
 
 Game.init(body, options).then(() => {
-  sound.addChannel(BGM_CHANNEL_NAME, { background: true }); // looping music
-  sound.addChannel(SFX_CHANNEL_NAME); // one-shot effects
+  sound.channels.add(BGM_CHANNEL_NAME, { background: true }); // looping music
+  sound.channels.add(SFX_CHANNEL_NAME); // one-shot effects
   sound.defaultChannelAlias = SFX_CHANNEL_NAME; // so play() calls needn't pass {channel: ...} every time
 });
 ```
@@ -234,15 +234,15 @@ export namespace MasterSound {
 }
 ```
 
-**Do the same per channel** (e.g. separate music/SFX sliders), keyed by channel alias via a small cache of reactive state, using `sound.findChannel(alias).volume`/`.muted` in place of the `*All` manager calls:
+**Do the same per channel** (e.g. separate music/SFX sliders), keyed by channel alias via a small cache of reactive state, using `sound.channels.find(alias).volume`/`.muted` in place of the `*All` manager calls:
 
 ```ts
 export function setVolume(alias: string, volume: number) {
-  sound.findChannel(alias).volume = volume / 100;
+  sound.channels.find(alias).volume = volume / 100;
   localStorage.setItem(`${alias}_volume`, volume.toString());
 }
 export function setMuted(alias: string, muted: boolean) {
-  sound.findChannel(alias).muted = muted;
+  sound.channels.find(alias).muted = muted;
   localStorage.setItem(`${alias}_muted`, muted.toString());
 }
 ```

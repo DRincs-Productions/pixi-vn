@@ -14,16 +14,16 @@ For continuous/looping effects (e.g. a custom rotation), register a `Ticker` cla
 to an alias:
 
 ```ts
-canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }));
+canvas.tickers.add("alien", new RotateTicker({ speed: 0.2 }));
 ```
 
 ## Sequencing tickers
 
-To chain multiple tickers one after another on the same alias, use `addTickersSequence` with a
+To chain multiple tickers one after another on the same alias, use `tickers.addSequence` with a
 plain array of `Ticker` instances — each step starts once the previous one completes:
 
 ```ts
-canvas.addTickersSequence("alien", [
+canvas.tickers.addSequence("alien", [
   new RotateTicker({ speed: 0.1, clockwise: true }, 2), // runs for 2 seconds
   new RotateTicker({ speed: 0.2, clockwise: false }, 2),
 ]);
@@ -31,11 +31,11 @@ canvas.addTickersSequence("alien", [
 
 ## Pausing, resuming, removing, and completion
 
-Use `canvas.pauseTicker(...)` / `canvas.resumeTicker(...)` to pause/resume by canvas alias or
-ticker id, and `canvas.removeTicker(id)` / `canvas.removeAllTickers()` to stop them. If a
+Use `canvas.tickers.pause(...)` / `canvas.tickers.resume(...)` to pause/resume by canvas alias or
+ticker id, and `canvas.tickers.remove(id)` / `canvas.tickers.removeAll()` to stop them. If a
 goal-directed ticker (e.g. a `MoveTicker` with a destination) must finish before the current step
 ends — rather than being interrupted by the player advancing — call
-`canvas.completeTickerOnStepEnd({ id })`; this is distinct from the `completeOnContinue` transition
+`canvas.tickers.completeOnStepEnd({ id })`; this is distinct from the `completeOnContinue` transition
 prop covered in `SKILL.md`.
 
 Note also (from `SKILL.md`'s gotchas): `canvas.remove(alias)` removes tickers bound only to that

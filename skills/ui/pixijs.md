@@ -8,7 +8,7 @@ Since the entire rendering side of Pixi'VN is built on PixiJS (see `pixi-vn-canv
 React/Vue at all to build a UI — a **PixiJS UI Layer** lets you add ordinary PixiJS components
 directly to the stage.
 
-## `addLayer` / `getLayer` / `removeLayer`
+## `layers.add` / `layers.get` / `layers.remove`
 
 `canvas.add`/`remove`/`find` (see `pixi-vn-canvas`) all operate on the single `gameLayer` — the
 save-able scene graph. A PixiJS UI Layer is different: it's a plain `PIXI.Container` (the `Layer`
@@ -18,18 +18,18 @@ PixiJS stage, a sibling of `gameLayer`, entirely outside the save system.
 ```ts
 import { canvas, Container } from "@drincs/pixi-vn";
 
-const uiLayer = canvas.addLayer("ui", new Container());
+const uiLayer = canvas.layers.add("ui", new Container());
 // ... later
-const layer = canvas.getLayer("ui");
-canvas.removeLayer("ui");
+const layer = canvas.layers.get("ui");
+canvas.layers.remove("ui");
 ```
 
-- **`canvas.addLayer(label, layer)`** — attaches a `Container` to the stage under `label` and
+- **`canvas.layers.add(label, layer)`** — attaches a `Container` to the stage under `label` and
   returns it (`Layer | undefined`).
-- **`canvas.getLayer(label)`** — returns the `Layer | null` registered under `label`.
-- **`canvas.removeLayer(label)`** — removes it from the stage.
+- **`canvas.layers.get(label)`** — returns the `Layer | null` registered under `label`.
+- **`canvas.layers.remove(label)`** — removes it from the stage.
 
-Compared to `canvas.gameLayer`, a PixiJS UI Layer:
+Compared to `canvas.layers.gameLayer`, a PixiJS UI Layer:
 
 - **Is not included in saves.** Its current state is never part of `Game.exportGameState()`/a save
   file — see `pixi-vn-saves`. Persist anything that must survive a reload through
@@ -43,7 +43,7 @@ Compared to `canvas.gameLayer`, a PixiJS UI Layer:
 - **Accepts any PixiJS-compatible component** — being a plain `Container`, anything that works with
   raw PixiJS works here, including third-party PixiJS UI component libraries.
 
-`canvas.addLayer`/`removeLayer` refuse the reserved `CANVAS_APP_GAME_LAYER_ALIAS`
+`canvas.layers.add`/`remove` refuse the reserved `CANVAS_APP_GAME_LAYER_ALIAS`
 (`"__game_layer__"`) alias, same as `canvas.add`/`remove`.
 
 ## Combining PixiJS and HTML UI layers
@@ -59,7 +59,7 @@ import { Sprite } from "pixi.js";
 
 export default function MyScreen() {
   useEffect(() => {
-    const layer = canvas.getLayer("ui");
+    const layer = canvas.layers.get("ui");
     if (layer) {
       (async () => {
         const texture = await Assets.load(
@@ -70,7 +70,7 @@ export default function MyScreen() {
     }
 
     return () => {
-      canvas.getLayer("ui")?.removeChildren();
+      canvas.layers.get("ui")?.removeChildren();
     };
   }, []);
 

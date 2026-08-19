@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-ui
-description: Use when building game UI (menus, HUD, dialogue box, settings/save screens) on top of Pixi'VN with an external JS framework (React, Vue) or with plain PixiJS components — mounting HTML or PixiJS UI layers over the canvas, navigating between UI screens/routes, theming a shadcn/ui-based template, and connecting UI components to game storage/settings. Covers `canvas.addHtmlLayer`/`getHtmlLayer`/`removeHtmlLayer` and the PixiJS-only layer helpers `canvas.addLayer`/`getLayer`/`removeLayer`.
+description: Use when building game UI (menus, HUD, dialogue box, settings/save screens) on top of Pixi'VN with an external JS framework (React, Vue) or with plain PixiJS components — mounting HTML or PixiJS UI layers over the canvas, navigating between UI screens/routes, theming a shadcn/ui-based template, and connecting UI components to game storage/settings. Covers `canvas.htmlLayers.add`/`get`/`remove` and the PixiJS-only layer helpers `canvas.layers.add`/`get`/`remove`.
 ---
 
 # Pixi'VN User Interface (UI)
@@ -58,7 +58,7 @@ const root = document.getElementById("root");
 if (!root) {
   throw new Error("root element not found");
 }
-const htmlLayer = canvas.addHtmlLayer("ui", root, {
+const htmlLayer = canvas.htmlLayers.add("ui", root, {
   position: "absolute",
   pointerEvents: "none",
   userSelect: "none",
@@ -76,12 +76,12 @@ const htmlLayer = canvas.addHtmlLayer("ui", root, {
 </html>
 ```
 
-- **`canvas.addHtmlLayer(id, element, style?)`** creates the layer and returns the `HTMLDivElement`
+- **`canvas.htmlLayers.add(id, element, style?)`** creates the layer and returns the `HTMLDivElement`
   to render into. `style` is `Partial<Pick<CSSStyleDeclaration, "position" | "pointerEvents" |
 "userSelect">>`, defaulting to `{ position: "absolute", pointerEvents: "none", userSelect: "none"
 }`.
-- **`canvas.getHtmlLayer(id)`** returns the layer's `HTMLElement | undefined`.
-- **`canvas.removeHtmlLayer(id)`** removes it.
+- **`canvas.htmlLayers.get(id)`** returns the layer's `HTMLElement | undefined`.
+- **`canvas.htmlLayers.remove(id)`** removes it.
 
 **Enabling interaction**: every HTML UI layer defaults to `pointer-events: none`, so by default none
 of its elements intercept mouse/touch — the PixiJS canvas gets all events. This matters when you
@@ -109,7 +109,7 @@ export default function NextButton() {
 You can also build a UI screen directly out of PixiJS components (no HTML framework at all), or mix
 PixiJS components into an HTML-based UI. This uses a **PixiJS UI Layer** — a plain PixiJS
 `Container` attached directly to the PixiJS stage, outside the save-able `canvas.gameLayer` — via
-`canvas.addLayer`/`getLayer`/`removeLayer`. See **`pixijs.md`** in this skill folder for the full
+`canvas.layers.add`/`get`/`remove`. See **`pixijs.md`** in this skill folder for the full
 API, the differences from `gameLayer`, combining PixiJS and HTML layers, and recommended component
 libraries (PixiUI, PixiLayout).
 
@@ -123,12 +123,12 @@ The API above is library-level; here's _one_ concrete way it's used in practice,
   `HTML_UI_LAYER_NAME`, `HTML_CANVAS_LAYER_NAME`. A separate `CANVAS_MINIGAME_LAYER_NAME` constant
   reserves a layer for future minigame content.
 - **A dedicated PixiJS UI layer**, added once at startup and kept apart from game-content elements
-  (which live in `canvas.gameLayer` via `canvas.add`): `canvas.addLayer(CANVAS_UI_LAYER_NAME, new
+  (which live in `canvas.gameLayer` via `canvas.add`): `canvas.layers.add(CANVAS_UI_LAYER_NAME, new
 Container())`.
-- **`canvas.addHtmlLayer` to mount a UI framework's root as an actual canvas layer** — not merely an
+- **`canvas.htmlLayers.add` to mount a UI framework's root as an actual canvas layer** — not merely an
   absolutely-positioned `<div>` floating outside the canvas system:
   ```ts
-  const htmlLayout = canvas.addHtmlLayer(HTML_UI_LAYER_NAME, root);
+  const htmlLayout = canvas.htmlLayers.add(HTML_UI_LAYER_NAME, root);
   createRoot(htmlLayout).render(<App />);
   ```
   Done inside `Game.init(...).then(...)`, after canvas setup, before rendering the app.
@@ -308,7 +308,7 @@ storage.setStorageHandler({
   should survive save/load and `go back`, `localStorage` if it should survive across playthroughs.
 - **The browser back/forward buttons can desync the UI route from the narration state** — see
   "Navigating between UI screens" above; most templates block them outright.
-- **`CANVAS_APP_GAME_LAYER_ALIAS` (`"__game_layer__"`) is reserved** — `canvas.addLayer` (like
+- **`CANVAS_APP_GAME_LAYER_ALIAS` (`"__game_layer__"`) is reserved** — `canvas.layers.add` (like
   `canvas.add`/`remove`) refuses that alias for a PixiJS UI layer.
 
 ## Related skills

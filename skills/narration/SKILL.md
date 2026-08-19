@@ -195,18 +195,18 @@ const choiceLabel = newLabel("choice", [
 - Other `ChoiceInterface` options available in both: `oneTime` (option disappears once chosen),
   `onlyHaveNoChoice` (shown only as a fallback if every other option has been removed), `autoSelect`
   (if it ends up being the only available option, it's chosen automatically without player input).
-- Read `narration.choices` (a `StoredChoiceInterface[]`, an indexed array — each option carries a
-  `choiceIndex`), and call `narration.selectChoice(choice, props)` when the player picks one. Pass
-  through any `StepLabelProps` the target label needs plus the option's own stored `props`:
+- Read `narration.choices.list` (a `StoredChoiceInterface[]`, an indexed array — each option carries
+  a `choiceIndex`), and call `narration.choices.select(choice, props)` when the player picks one.
+  Pass through any `StepLabelProps` the target label needs plus the option's own stored `props`:
 
 ```ts
-const item = narration.choices![0];
-await narration.selectChoice(item, { ...item.props });
+const item = narration.choices.list![0];
+await narration.choices.select(item, { ...item.props });
 ```
 
-`selectChoice` dispatches to `narration.call`/`narration.jump`/closing the menu based on the chosen
-option's `type`, and records the pick so `narration.alreadyCurrentStepMadeChoices` /
-`getTimesChoiceMade` can reflect past choices (useful for `oneTime` options across replays).
+`choices.select` dispatches to `narration.call`/`narration.jump`/closing the menu based on the chosen
+option's `type`, and records the pick so `narration.queries.alreadyCurrentStepMadeChoices` /
+`queries.timesChoiceMade` can reflect past choices (useful for `oneTime` options across replays).
 
 Docs: https://pixi-vn.com/start/choices
 
@@ -244,9 +244,9 @@ async (props) => {
 - A label closes automatically once its steps are exhausted; the previously calling label (if any)
   resumes automatically. To close explicitly from within a step (e.g. after setting state), just
   `return` — Pixi'VN advances past the label's end on the next `continue()`. Use
-  `narration.closeCurrentLabel()` / `narration.closeAllLabels()` only for lower-level manual stack
-  control (`closeAllLabels()` ends the game if nothing is called afterwards).
-- `narration.openedLabels` and `narration.currentLabel` reflect the current call stack of nested
+  `narration.labels.closeCurrent()` / `narration.labels.closeAll()` only for lower-level manual stack
+  control (`closeAll()` ends the game if nothing is called afterwards).
+- `narration.labels.opened` and `narration.labels.current` reflect the current call stack of nested
   labels, useful for debugging/branching logic.
 - **Going back a step** is handled by the history module, not `narration` — see `stepHistory.back()` /
   `stepHistory.canGoBack` in the `pixi-vn-history` skill.
@@ -256,31 +256,31 @@ async (props) => {
 Docs: https://pixi-vn.com/start/input
 
 To ask the player for a value (string, number, or an HTML element like a textarea), call
-`narration.requestInput` inside a step; the engine will not let the story continue
+`narration.input.request` inside a step; the engine will not let the story continue
 (`narration.canContinue` is `false`) until a value is provided by the UI:
 
 ```ts
 () => {
     narration.dialogue = "What is your name?";
-    narration.requestInput({ type: "string" });
+    narration.input.request({ type: "string" });
 },
 () => {
-    narration.dialogue = `My name is ${narration.inputValue}`;
+    narration.dialogue = `My name is ${narration.input.value}`;
 },
 () => {
     narration.dialogue = "How old are you?";
-    narration.requestInput({ type: "number" }, 18); // second arg is an optional default value
+    narration.input.request({ type: "number" }, 18); // second arg is an optional default value
 },
 ```
 
-- `narration.requestInput(info?, defaultValue?)` — `info` is `InputInfo` minus `isRequired` (e.g.
+- `narration.input.request(info?, defaultValue?)` — `info` is `InputInfo` minus `isRequired` (e.g.
   `{ type: "string" }`, `{ type: "number" }`, `{ type: "html textarea" }`); omit it for a plain text
   input.
-- `narration.isRequiredInput` / `narration.inputType` tell the UI layer whether a prompt is pending
+- `narration.input.isRequired` / `narration.input.type` tell the UI layer whether a prompt is pending
   and what kind, so it can render the right control.
-- `narration.inputValue` holds the submitted value once the UI resolves the prompt — read it in a
+- `narration.input.value` holds the submitted value once the UI resolves the prompt — read it in a
   later step to use what the player typed.
-- `narration.removeInputRequest()` cancels a pending request without a value (rarely needed in normal
+- `narration.input.removeRequest()` cancels a pending request without a value (rarely needed in normal
   authoring).
 
 ## 7. Conditional branching
@@ -292,7 +292,7 @@ different dialogue on a repeat visit:
 import { narration, newLabel, storage } from "@drincs/pixi-vn";
 
 const talkAliceQuest = newLabel("talk-alice-quest", () => {
-  if (storage.getFlag("test") === false) {
+  if (storage.flags.get("test") === false) {
     return [
       () => {
         narration.dialogue = {
@@ -304,7 +304,7 @@ const talkAliceQuest = newLabel("talk-alice-quest", () => {
         narration.dialogue = { character: "mc", text: "Ok" };
       },
       async (props) => {
-        storage.setFlag("test", true);
+        storage.flags.set("test", true);
         await narration.continue(props);
       },
     ];
@@ -331,7 +331,7 @@ Docs: https://pixi-vn.com/start/other-narrative-features
   back into a menu/loop label if the game should never truly "end".
 - `narration.getRandomNumber(...)` gives a seeded-safe random number (prefer this over raw `Math.random`
   so saves/rollback stay deterministic).
-- `narration.isLabelAlreadyCompleted(label | labelId)` checks whether a label has fully run before —
+- `narration.queries.isLabelAlreadyCompleted(label | labelId)` checks whether a label has fully run before —
   handy for "seen this scene already" branching.
 - `narration.currentStepTimesCounter` counts how many times the _current_ step has executed (only
   increments when actually read, and only once per step execution); set it to `0` to reset. Useful for
@@ -355,12 +355,12 @@ their own conventions.
   manual import list to maintain.
 - **Driving narration from the UI** (see `lib/hooks/narration-hooks.ts` and
   `lib/query/narration-query.ts`): a "next" handler guards on `narration.canContinue` before calling
-  `await narration.continue(gameProps)`; a choice handler reads `narration.choices` and calls
-  `await narration.selectChoice(item, gameProps)`; an input prompt reads
-  `narration.isRequiredInput` / `narration.inputType` / `narration.inputValue`. Real code wraps all
+  `await narration.continue(gameProps)`; a choice handler reads `narration.choices.list` and calls
+  `await narration.choices.select(item, gameProps)`; an input prompt reads
+  `narration.input.isRequired` / `narration.input.type` / `narration.input.value`. Real code wraps all
   three in a loading-state guard (e.g. a `GameStatus.setLoading(true/false)` store) so double-clicks
-  can't fire concurrent `continue()`/`selectChoice()` calls, and a combined
-  `narration.canContinue && !narration.isRequiredInput` is a convenient "can the player press next"
+  can't fire concurrent `continue()`/`choices.select()` calls, and a combined
+  `narration.canContinue && !narration.input.isRequired` is a convenient "can the player press next"
   check for enabling/disabling a next button.
 - `gameProps` above is just that project's augmented `StepLabelProps` (translation function,
   router navigate, toast, etc., declared via TS module augmentation in `pixi-vn.d.ts`) — it's plain

@@ -24,7 +24,7 @@ general app UI screens unrelated to a minigame (`pixi-vn-ui`).
 - **A minigame renders on its own PixiJS layer, not on `canvas.gameLayer`.** `gameLayer` is the
   save-able narrative scene graph (backgrounds, characters — see `pixi-vn-canvas`); a minigame's
   moving pieces (snake segments, falling blocks, ...) are transient and don't belong there. Use
-  `canvas.addLayer(name, new Container())` to get a separate, non-save-able layer for the minigame,
+  `canvas.layers.add(name, new Container())` to get a separate, non-save-able layer for the minigame,
   exactly like a PixiJS UI layer (`pixi-vn-ui`) — the official template even reserves a constant for
   it, `CANVAS_MINIGAME_LAYER_NAME`.
 - **The minigame's HUD/menus (score, game-over overlay, control buttons) should be regular UI**, not
@@ -119,7 +119,7 @@ export function useMinigame(
 
   useEffect(() => {
     loading.current = true;
-    const layer = canvas.addLayer(CANVAS_MINIGAME_LAYER_NAME, new Container());
+    const layer = canvas.layers.add(CANVAS_MINIGAME_LAYER_NAME, new Container());
     if (!layer) {
       console.error("Failed to create UI layer for minigame");
       return;
@@ -134,7 +134,7 @@ export function useMinigame(
 
     return () => {
       cancelled = true;
-      canvas.removeLayer(CANVAS_MINIGAME_LAYER_NAME);
+      canvas.layers.remove(CANVAS_MINIGAME_LAYER_NAME);
       props?.onExit?.(layer);
     };
   }, [game]);
@@ -226,7 +226,7 @@ function MiniGame() {
 ## Gotchas
 
 - **Adding game content to `canvas.gameLayer` instead of a dedicated layer** makes it save-able and
-  mixes it with narrative elements — use `canvas.addLayer` for the minigame instead (`pixi-vn-canvas`
+  mixes it with narrative elements — use `canvas.layers.add` for the minigame instead (`pixi-vn-canvas`
   has the full `gameLayer` vs. layer distinction).
 - **An unstable `game`/`onExit` reference restarts the minigame on every render** — see the
   `useCallback`/`useMemo` note above; this is the single most common bug when porting the pattern.
@@ -240,7 +240,7 @@ function MiniGame() {
 
 - pixi-vn-canvas: the PixiJS rendering primitives (`Graphics`, `Sprite`, `Text`, tickers,
   `canvas.animate`) a minigame is built from, and the `gameLayer`/layer distinction.
-- pixi-vn-ui: `canvas.addLayer`/`addHtmlLayer`, hotkeys, and navigating between UI screens/routes —
+- pixi-vn-ui: `canvas.layers.add`/`htmlLayers.add`, hotkeys, and navigating between UI screens/routes —
   how the minigame's HUD and route linkage actually work.
 - pixi-vn-storage: persisting minigame progress (score, board state) in game storage if it needs to
   survive a save/reload.
