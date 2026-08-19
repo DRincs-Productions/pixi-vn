@@ -48,17 +48,15 @@ export default interface CanvasTickersInterface {
      * @example
      * ```ts
      * canvas.tickers.addSequence("alien", [
-     *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // 2 seconds
-     *     Pause(1), // 1 second
+     *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // runs for 2 seconds
      *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
-     *     Repeat,
      * ])
      * ```
      * @deprecated
      */
     addSequence(
         alias: string,
-        steps: (Ticker<any> )[],
+        steps: Ticker<any>[],
         currentStepNumber?: number,
     ): string | undefined;
     /**
@@ -70,7 +68,6 @@ export default interface CanvasTickersInterface {
      * ```ts
      * canvas.tickers.unlinkComponent("alien", RotateTicker)
      * ```
-     * @deprecated
      */
     unlinkComponent(alias: string | string[], ticker?: { new (): Ticker<any> } | string): void;
     /**
