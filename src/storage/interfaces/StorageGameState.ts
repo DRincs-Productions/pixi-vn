@@ -8,7 +8,7 @@ export interface StorageGameStateItem<T = StorageElementType> {
 /**
  * Interface exported storage data
  */
-type StorageGameState = {
+export default interface StorageGameState {
     /**
      * @deprecated
      */
@@ -23,5 +23,4 @@ type StorageGameState = {
      */
     flags?: string[];
     main: StorageGameStateItem[];
-};
-export default StorageGameState;
+}

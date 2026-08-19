@@ -202,7 +202,7 @@ bookkeeping and is cheaper.
 `canvas.animate` and the transition helpers above already use tickers internally — most tasks never
 need to touch the ticker API directly. For a genuinely continuous/looping custom effect (no fixed
 duration) or manual pause/resume/completion control over a running animation, see **`tickers.md`**
-in this same skill folder (registering a `Ticker`, `addTickersSequence` with `Repeat`/`Pause`,
+in this same skill folder (registering a `Ticker`, `addTickersSequence`,
 `pauseTicker`/`resumeTicker`/`removeTicker`, `completeTickerOnStepEnd`). Docs:
 [pixi-vn.com/start/canvas-tickers](https://pixi-vn.com/start/canvas-tickers).
 

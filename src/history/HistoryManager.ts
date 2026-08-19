@@ -87,6 +87,21 @@ export default class HistoryManager implements HistoryManagerInterface {
                 this.delete(key);
             });
     }
+    /** The key of the checkpoint immediately before `beforeKey` - i.e. the diff boundary
+     * that the restored state actually lands on. In "step" mode this is always
+     * `beforeKey - 1` (every step is its own checkpoint); in "paragraph" mode a checkpoint's
+     * diff can span several merged steps, so the restored state's true step count is this
+     * boundary, not `beforeKey` itself. Falls back to 0 (index 0 is always an implicit
+     * checkpoint, but never stored in `_diffHistory`) when there's no earlier one. */
+    private previousCheckpointKey(beforeKey: number): number {
+        let max = 0;
+        for (const key of HistoryManagerStatic._diffHistory.keys()) {
+            if (key < beforeKey && key > max) {
+                max = key;
+            }
+        }
+        return max;
+    }
     private getOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
         if (steps <= 0) {
             return restoredStep;
@@ -105,8 +120,13 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (diff) {
             try {
                 const result = restoreDiffChanges(restoredStep, diff);
-                GameUnifier.stepCounter = targetKey;
-                this.deleteFromKeyOnward(targetKey);
+                // The diff at `targetKey` undoes everything merged into it since the
+                // PREVIOUS checkpoint - so that previous checkpoint's key (+1), not
+                // `targetKey` itself, is both the restored state's true step count and
+                // where every now-invalidated step (merged or not) needs deleting from.
+                const fromKey = this.previousCheckpointKey(targetKey) + 1;
+                GameUnifier.stepCounter = fromKey;
+                this.deleteFromKeyOnward(fromKey);
                 return this.getOldGameState(steps - 1, result);
             } catch (e) {
                 logger.error("Error applying diff", e);
@@ -172,9 +192,18 @@ export default class HistoryManager implements HistoryManagerInterface {
     }
     /**
      * Whether this step should get its own go-back diff. In "step" mode every step
-     * does; in "paragraph" mode only a new paragraph (opened labels count changed vs
-     * the previous step), a proposed choice, or a requested input counts - everything
-     * else is merged into the diff of the next step that does qualify.
+     * does; in "paragraph" mode only a new paragraph (the opened-labels stack changed
+     * vs the previous step - either its depth, or which label sits at any level of it),
+     * a proposed choice, or a requested input counts - everything else is merged into
+     * the diff of the next step that does qualify.
+     *
+     * Comparing only the stack's LENGTH (as this used to) misses a `jump`: it replaces
+     * the top label instead of pushing a new frame, so the stack depth stays the same
+     * even though the player has moved into an entirely different label. That silently
+     * merged the jump target's steps into the SAME paragraph as whatever step triggered
+     * the jump (most commonly a choice) - so going back from inside the jumped-to label
+     * skipped past it entirely, landing at the paragraph before the choice instead of at
+     * the choice itself.
      */
     private isCheckpointStep(
         historyInfo: HistoryInfo,
@@ -189,9 +218,12 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (historyInfo.isRequiredInput) {
             return true;
         }
-        const currentLabelsCount = historyInfo.openedLabels?.length ?? 0;
-        const lastLabelsCount = lastStepHistory?.openedLabels?.length ?? 0;
-        return currentLabelsCount !== lastLabelsCount;
+        const currentLabels = historyInfo.openedLabels ?? [];
+        const lastLabels = lastStepHistory?.openedLabels ?? [];
+        if (currentLabels.length !== lastLabels.length) {
+            return true;
+        }
+        return currentLabels.some((opened, i) => opened.label !== lastLabels[i]?.label);
     }
     add(
         historyInfo: HistoryInfo,

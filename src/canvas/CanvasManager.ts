@@ -20,9 +20,7 @@ import {
 } from "@canvas/tickers";
 import type { TickersStep } from "@canvas/tickers/interfaces/TickersSequence";
 import { aliasToRemoveAfter } from "@canvas/tickers/types/AliasToRemoveAfterType";
-import type { PauseType } from "@canvas/types/PauseType";
-import type { RepeatType } from "@canvas/types/RepeatType";
-import { CANVAS_APP_GAME_LAYER_ALIAS, Repeat } from "@constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS } from "@constants";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import type {
     AnimationOptions,
@@ -33,8 +31,8 @@ import type {
 } from "@drincs/pixi-vn/motion";
 import type {
     ApplicationOptions,
-    Container as PixiContainer,
     ImageLike,
+    Container as PixiContainer,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -326,21 +324,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         }
         return id;
     }
-    /**
-     * @deprecated Use {@link tickers}.addSequence instead.
-     */
-    addTickersSequence(
-        alias: string,
-        steps: (Ticker<any> | RepeatType | PauseType)[],
-        currentStepNumber = 0,
-    ) {
-        return this.addTickersSequenceInternal(alias, steps, currentStepNumber);
-    }
-    private addTickersSequenceInternal(
-        alias: string,
-        steps: (Ticker<any> | RepeatType | PauseType)[],
-        currentStepNumber = 0,
-    ) {
+    addTickersSequence(alias: string, steps: Ticker<any>[], currentStepNumber = 0) {
         if (steps.length === 0) {
             logger.warn("The steps of the tickers is empty");
             return;
@@ -351,12 +335,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         const step: TickersSequence = {
             currentStepNumber: currentStepNumber,
             steps: steps.map((step) => {
-                if (step === Repeat) {
-                    return step;
-                }
-                if (Object.hasOwn(step, "type") && (step as PauseType).type === "pause") {
-                    return step as PauseType;
-                }
                 const tickerId = (step as Ticker<any>).alias;
                 return {
                     ticker: tickerId,
@@ -375,33 +353,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         if (!aliasMap?.has(key)) {
             return;
         }
-        let step = aliasMap.get(key)!.steps[aliasMap.get(key)!.currentStepNumber];
-        if (step === Repeat) {
-            step = aliasMap.get(key)!.steps[0];
-            aliasMap.get(key)!.currentStepNumber = 0;
-            if (step === Repeat) {
-                logger.error("TikersSteps has a RepeatType in the first step");
-                return;
-            }
-        }
-        if (Object.hasOwn(step, "type") && (step as PauseType).type === "pause") {
-            const timeout = setTimeout(
-                () => {
-                    const tickerTimeoutInfo = CanvasManagerStatic._currentTickersTimeouts.get(
-                        timeout.toString(),
-                    );
-                    if (tickerTimeoutInfo) {
-                        tickerTimeoutInfo.aliases.forEach((alias) => {
-                            this.nextTickerStep(alias, key);
-                        });
-                    }
-                    CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
-                },
-                (step as PauseType).duration * 1000,
-            );
-            CanvasManagerStatic.addTickerTimeoutInfo(alias, "steps", timeout.toString(), false);
-            return;
-        }
+        const step = aliasMap.get(key)!.steps[aliasMap.get(key)!.currentStepNumber];
         const ticker = RegisteredTickers.getInstance<TArgs>(
             (step as TickersStep<TArgs>).ticker,
             (step as TickersStep<TArgs>).args,
@@ -938,31 +890,24 @@ export default class CanvasManager implements CanvasManagerInterface {
             const tickers = CanvasManagerStatic._currentTickersSequence.get(alias);
             const tickerStep = tickers?.get(id);
             if (tickers && tickerStep) {
-                if (tickerStep.steps.includes(Repeat)) {
-                    logger.error(
-                        `The ticker alias: ${alias} id: ${id} contains a RepeatType, so it can't be forced to complete`,
-                        tickerStep,
-                    );
-                } else {
-                    const promises = tickerStep.steps.map((step) => {
-                        if (typeof step === "object" && "ticker" in step) {
-                            const ticker = RegisteredTickers.getInstance<any>(
-                                (step as TickersStep<any>).ticker,
-                                (step as TickersStep<any>).args,
-                                {
-                                    duration: (step as TickersStep<any>).duration,
-                                    canvasElementAliases: [alias],
-                                    priority: (step as TickersStep<any>).priority,
-                                },
-                            );
-                            if (ticker) {
-                                return ticker.complete();
-                            }
+                const promises = tickerStep.steps.map((step) => {
+                    if (typeof step === "object" && "ticker" in step) {
+                        const ticker = RegisteredTickers.getInstance<any>(
+                            (step as TickersStep<any>).ticker,
+                            (step as TickersStep<any>).args,
+                            {
+                                duration: (step as TickersStep<any>).duration,
+                                canvasElementAliases: [alias],
+                                priority: (step as TickersStep<any>).priority,
+                            },
+                        );
+                        if (ticker) {
+                            return ticker.complete();
                         }
-                        return Promise.resolve();
-                    });
-                    await Promise.all(promises);
-                }
+                    }
+                    return Promise.resolve();
+                });
+                await Promise.all(promises);
             }
         }
     }
@@ -979,7 +924,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         find: (tickerId) => this.findTickerInternal(tickerId),
         add: (canvasElementAlias, ticker) => this.addTickerInternal(canvasElementAlias, ticker),
         addSequence: (alias, steps, currentStepNumber) =>
-            this.addTickersSequenceInternal(alias, steps, currentStepNumber),
+            this.addTickersSequence(alias, steps, currentStepNumber),
         unlinkComponent: (alias, ticker) => this.unlinkComponentFromTickerInternal(alias, ticker),
         removeAll: () => this.removeAllTickersInternal(),
         remove: (tickerId) => this.removeTickerInternal(tickerId),

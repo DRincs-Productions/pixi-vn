@@ -1,22 +1,4 @@
-import type { PauseType, RepeatType } from "./canvas";
-
 export { version as PIXIVN_VERSION } from "../package.json";
-/**
- * @deprecated
- */
-export const Repeat: RepeatType = "repeat";
-/**
- * Pause the tickers for a duration.
- * @param duration Duration in seconds
- * @returns The pause object
- * @deprecated
- */
-export function Pause(duration: number): PauseType {
-    return {
-        type: "pause",
-        duration: duration,
-    };
-}
 
 /**
  * Is a special alias to indicate the game layer.

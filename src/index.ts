@@ -20,9 +20,7 @@ export * from "@drincs/pixi-vn/storage";
 export * from "./classes";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
-    Pause,
     PIXIVN_VERSION,
-    Repeat,
     SYSTEM_RESERVED_STORAGE_KEYS,
 } from "./constants";
 export * from "./interfaces";
@@ -39,7 +37,7 @@ import type { ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
 import type { Devtools } from "@pixi/devtools";
-import { CANVAS_APP_GAME_LAYER_ALIAS, Pause, PIXIVN_VERSION, Repeat } from "./constants";
+import { CANVAS_APP_GAME_LAYER_ALIAS, PIXIVN_VERSION } from "./constants";
 import * as pixivninterface from "./interfaces";
 import * as functions from "./utils";
 import { asciiArtLog } from "./utils/easter-egg";
@@ -123,7 +121,9 @@ export namespace Game {
                 // Canvas usage is optional - when Game.init() was never given a canvas element,
                 // canvas.export() would throw (and log an error) on every single step just to be
                 // caught here. Skip it entirely instead of relying on the throw/catch for control flow.
-                const canvasData = canvasUtils.canvas.isInitialized ? canvasUtils.canvas.export() : {};
+                const canvasData = canvasUtils.canvas.isInitialized
+                    ? canvasUtils.canvas.export()
+                    : {};
                 return {
                     path: getGamePath(),
                     storage: storageUtils.storage.export(),
@@ -234,28 +234,9 @@ export namespace Game {
 
     /**
      * Load the save data
-     * @param data The save data
+     * @param data The save data object to restore the game state from.
      */
-    export async function restoreGameState(data: pixivninterface.GameState): Promise<void>;
-    /**
-     * @deprecated Use `restoreGameState(data)` (without the `navigate` argument) and configure navigation via `Game.init({ navigate })` or `Game.onNavigate(...)`.
-     * @param data The save data
-     * @param navigate Navigation function to use for this restore call.
-     */
-    export async function restoreGameState(
-        data: pixivninterface.GameState,
-        navigate: (path: string) => void | Promise<void>,
-    ): Promise<void>;
-    /**
-     * Load the save data. If `navigate` is not provided, the function registered with {@link Game.onNavigate}
-     * (or the one passed to {@link Game.init}) will be used.
-     * @param data The save data
-     * @param navigate Optional navigation function.
-     */
-    export async function restoreGameState(
-        data: pixivninterface.GameState,
-        navigate?: (path: string) => void | Promise<void>,
-    ) {
+    export async function restoreGameState(data: pixivninterface.GameState): Promise<void> {
         historyUtils.stepHistory.restore(data.historyData);
         const lastHistoryKey = historyUtils.stepHistory.lastKey;
         if (typeof lastHistoryKey === "number") {
@@ -269,11 +250,7 @@ export namespace Game {
             }
             await soundUtils.sound.restore(data.soundData);
         } catch (_e) {}
-        if (navigate) {
-            await navigate(data.path);
-        } else {
-            await GameUnifier.navigate(data.path);
-        }
+        await GameUnifier.navigate(data.path);
     }
 
     /**
@@ -310,22 +287,6 @@ export namespace Game {
      */
     export function onEnd(value: narrationUtils.StepLabelType) {
         GameUnifier.onEnd = value;
-    }
-    /**
-     * @deprecated Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.
-     */
-    export function onError(
-        handler: (
-            type: "step",
-            error: any,
-            props: narrationUtils.StepLabelPropsType,
-        ) => void | Promise<void>,
-    ) {
-        logger.warn(
-            "Game.onError is deprecated. Use Game.addOnError / Game.removeOnError to register multiple handlers.",
-        );
-        // Maintain backwards compatibility by setting the single onError handler.
-        return GameUnifier.addOnError((error, props) => handler("step", error, props));
     }
 
     /**
@@ -442,9 +403,7 @@ export namespace Game {
                 type: string;
             },
             defaultStart: () => Promise<narrationUtils.StepLabelResultType>,
-        ) =>
-            | narrationUtils.StepLabelResultType
-            | Promise<narrationUtils.StepLabelResultType>,
+        ) => narrationUtils.StepLabelResultType | Promise<narrationUtils.StepLabelResultType>,
     ) {
         narrationUtils.NarrationManagerStatic.onLabelStarting = value;
     }
@@ -473,9 +432,7 @@ export namespace Game {
             labelId: narrationUtils.LabelIdType,
             props: narrationUtils.StepLabelPropsType,
             defaultClose: () => Promise<narrationUtils.StepLabelResultType>,
-        ) =>
-            | narrationUtils.StepLabelResultType
-            | Promise<narrationUtils.StepLabelResultType>,
+        ) => narrationUtils.StepLabelResultType | Promise<narrationUtils.StepLabelResultType>,
     ) {
         narrationUtils.NarrationManagerStatic.onLabelClosing = value;
     }
@@ -513,8 +470,6 @@ export default {
     narrationUtils,
     soundUtils,
     CANVAS_APP_GAME_LAYER_ALIAS,
-    Pause,
-    Repeat,
     PIXIVN_VERSION,
     ...functions,
     ...pixivninterface,

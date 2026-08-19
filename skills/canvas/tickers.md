@@ -17,19 +17,15 @@ to an alias:
 canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }));
 ```
 
-## Sequencing tickers, pauses, and repeats
+## Sequencing tickers
 
-To chain multiple tickers, pauses, and repeats, use `addTickersSequence` with `Repeat`/`Pause`
-(imported from the main `@drincs/pixi-vn` package, not the canvas subpath):
+To chain multiple tickers one after another on the same alias, use `addTickersSequence` with a
+plain array of `Ticker` instances — each step starts once the previous one completes:
 
 ```ts
-import { Pause, Repeat } from "@drincs/pixi-vn";
-
 canvas.addTickersSequence("alien", [
   new RotateTicker({ speed: 0.1, clockwise: true }, 2), // runs for 2 seconds
-  Pause(1), // wait 1 second
   new RotateTicker({ speed: 0.2, clockwise: false }, 2),
-  Repeat,
 ]);
 ```
 

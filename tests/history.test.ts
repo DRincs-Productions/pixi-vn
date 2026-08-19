@@ -918,3 +918,54 @@ test("stepHistory.goBackMode 'paragraph' only checkpoints at paragraph boundarie
         stepHistory.goBackMode = "step";
     }
 });
+
+const jumpChoiceTarget = newLabel("jumpChoiceTarget", [
+    async () => {
+        narration.dialogue = "Target line 1.";
+    },
+    async () => {
+        narration.dialogue = "Target line 2.";
+    },
+]);
+
+const jumpChoiceMain = newLabel("jumpChoiceMain", [
+    async () => {
+        narration.dialogue = "Para1 line1.";
+    },
+    async () => {
+        narration.dialogue = "Para1 line2.";
+    },
+    async () => {
+        narration.dialogue = "Choice time.";
+        narration.choices = [newChoiceOption("Go", jumpChoiceTarget, {}, { type: "jump" })];
+    },
+]);
+
+test("stepHistory.goBackMode 'paragraph': a `jump` (same opened-labels depth, different label) still starts a new paragraph, so back() from inside the jumped-to label stops at the choice instead of skipping past it", async () => {
+    narration.clear();
+    storage.clear();
+    stepHistory.clear();
+    stepHistory.goBackMode = "paragraph";
+    try {
+        await narration.call(jumpChoiceMain, {});
+        await narration.continue({}); // "Para1 line2."
+        await narration.continue({}); // "Choice time." - checkpoint (has choices)
+        const choice = narration.choices![0];
+        // `jump` replaces the top of the opened-labels stack instead of pushing a new
+        // frame, so its depth is unchanged from "Choice time." - only comparing depth
+        // (as isCheckpointStep used to) missed this as a paragraph boundary, silently
+        // merging the jumped-to label's own steps into the SAME paragraph as the choice.
+        await narration.selectChoice(choice, {}); // "Target line 1." - must still be its own checkpoint
+        expect(stepHistory.diffMap.has(stepHistory.lastKey!)).toEqual(true);
+
+        await narration.continue({}); // "Target line 2." - same paragraph as "Target line 1.", not a checkpoint
+        expect(narration.dialogue?.text).toEqual("Target line 2.");
+
+        await stepHistory.back({});
+        // Lands right at the choice - not two paragraphs back at "Para1 line1." - so the
+        // player can reconsider their choice instead of losing it entirely.
+        expect(narration.dialogue?.text).toEqual("Choice time.");
+    } finally {
+        stepHistory.goBackMode = "step";
+    }
+});
