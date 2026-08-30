@@ -159,7 +159,9 @@ import { Assets } from "@drincs/pixi-vn";
 let assetsInitialized = false;
 export async function defineAssets() {
   if (!assetsInitialized) {
-    await Assets.init({ manifest });
+    const origin = `${location.protocol}//${location.host}/`;
+    Assets.resolver.rootPath = origin;
+    await Assets.init({ manifest, basePath: `${origin}assets/` });
     assetsInitialized = true;
   }
   await Assets.loadBundle("/"); // block on what the first screen needs
