@@ -15,6 +15,16 @@ import {
 
 const PLUGIN_PREFIX = pc.cyan("(pixi-vn)");
 
+/**
+ * Virtual module id for the {@link VitePluginPixivnOptions.testing} auto-injection. Referenced from
+ * `index.html` as `/@id/${VITE_PIXIVN_TESTING_VIRTUAL_ID}` so the browser requests it as a real
+ * module URL — Vite only rewrites bare-specifier imports (like `@drincs/pixi-vn` below) inside
+ * modules it serves through its own transform pipeline, not inside an inline `<script>` body
+ * embedded directly in the HTML.
+ */
+const VITE_PIXIVN_TESTING_VIRTUAL_ID = "virtual:pixi-vn-testing";
+const RESOLVED_VITE_PIXIVN_TESTING_VIRTUAL_ID = `\0${VITE_PIXIVN_TESTING_VIRTUAL_ID}`;
+
 function asArray(value: string | string[] | undefined): string[] {
     if (!value) return [];
     return Array.isArray(value) ? value : [value];
@@ -215,6 +225,28 @@ export interface VitePluginPixivnOptions {
      * ```
      */
     assetsManifest?: AssetsManifestOption;
+
+    /**
+     * Auto-enables `Game.testing` (see the `pixi-vn-testing` skill) for as long as the dev server
+     * keeps running, by injecting a small module into `index.html` that calls
+     * `Game.testing.enable(...)` on page load — no app code required for this part. **Never
+     * injected during `vite build`**, regardless of this option.
+     *
+     * This only turns the `window` bridge on/off. Every action it exposes still needs the app's
+     * real `StepLabelProps` (`navigate`/`t`/`toast`/etc.) to work — the app must separately call
+     * `Game.testing.setProps(props)` wherever it already builds those props (e.g. the end of a
+     * `useGameProps()`-style hook), unconditionally, since `setProps` is cheap and safe to call
+     * whether or not testing happens to be enabled.
+     *
+     * Pass `false` to opt out entirely (e.g. a shared dev server you don't want remote-controllable).
+     * @default true
+     */
+    testing?:
+        | boolean
+        | {
+              /** The `window` property the testing API is attached under. @default "pixiVN" */
+              windowKey?: string;
+          };
 }
 
 /**
@@ -334,6 +366,10 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
     const reloadCallbacks: Array<() => void> = [];
 
     const assetsManifestIsFunction = typeof options?.assetsManifest === "function";
+
+    const testingDisabled = options?.testing === false;
+    const testingWindowKey =
+        typeof options?.testing === "object" ? options.testing.windowKey : undefined;
 
     // Holds whatever the `assetsManifest` option (or `api.setAssetsManifest`) most recently
     // resolved to. When `assetsManifest` is a plain value, this never changes after the initial
@@ -775,6 +811,36 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
                 state.manifest = manifest;
                 tryGenerateKeysFile();
             },
+        },
+
+        resolveId(id) {
+            if (id === VITE_PIXIVN_TESTING_VIRTUAL_ID) {
+                return RESOLVED_VITE_PIXIVN_TESTING_VIRTUAL_ID;
+            }
+        },
+
+        load(id) {
+            if (id === RESOLVED_VITE_PIXIVN_TESTING_VIRTUAL_ID) {
+                const enableArgs = testingWindowKey
+                    ? JSON.stringify({ windowKey: testingWindowKey })
+                    : "";
+                return `import { Game } from "@drincs/pixi-vn";\nGame.testing.enable(${enableArgs});\n`;
+            }
+        },
+
+        transformIndexHtml() {
+            // See VITE_PIXIVN_TESTING_VIRTUAL_ID's own doc comment for why this goes through a
+            // virtual module referenced by `src` instead of an inline script body.
+            if (testingDisabled || resolvedConfig?.command !== "serve") {
+                return;
+            }
+            return [
+                {
+                    tag: "script",
+                    attrs: { type: "module", src: `/@id/${VITE_PIXIVN_TESTING_VIRTUAL_ID}` },
+                    injectTo: "head-prepend",
+                },
+            ];
         },
 
         config(_, env) {

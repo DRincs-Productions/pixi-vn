@@ -462,6 +462,266 @@ export namespace Game {
     export function removeOnPreContinue(handler: () => Promise<void> | void) {
         return GameUnifier.removeOnPreContinue(handler);
     }
+
+    /**
+     * Lets an AI agent (or any external script/browser console) drive and inspect a running game
+     * through `window`, without needing to know the app's own UI wiring. Not enabled by default —
+     * something must opt in, typically only in development. Two pieces are needed:
+     * - `enable()`/`disable()` turn the `window` bridge on/off — the `@drincs/pixi-vn/vite` plugin's
+     *   `testing` option does this automatically while its dev server is running, with no extra code.
+     * - `setProps(props)` keeps the live app props (`navigate`/`t`/`toast`/etc.) available to every
+     *   action — call it unconditionally from wherever your app builds those props (e.g. at the end
+     *   of a `useGameProps()`-style hook), since every action needs up-to-date props whether or not
+     *   testing happens to be enabled right now.
+     * See the `pixi-vn-testing` skill for the full guide (activation patterns, the complete command
+     * surface, and cookbook snippets for a browser-driven test session).
+     */
+    export namespace testing {
+        /**
+         * One error captured by {@link enable} while testing is active, via {@link Game.addOnError}.
+         */
+        export interface GameTestingErrorEntry {
+            error: unknown;
+            timestamp: number;
+        }
+
+        /**
+         * A read-only snapshot of everything a test session typically needs to decide its next
+         * action, gathered from {@link narrationUtils.narration} and {@link historyUtils.stepHistory}
+         * in a single call instead of reading several properties one by one.
+         */
+        export interface GameTestingState {
+            dialogue: narrationUtils.DialogueInterface | undefined;
+            dialogueGlue: boolean;
+            choices: narrationUtils.StoredIndexedChoiceInterface[] | undefined;
+            input: {
+                isRequired: boolean;
+                type: string | undefined;
+                value: storageUtils.StorageElementType;
+            };
+            canContinue: boolean;
+            canGoBack: boolean;
+            labelsOpened: narrationUtils.OpenedLabel[];
+            currentLabelId: string | undefined;
+            stepCounter: number;
+        }
+
+        /**
+         * The object attached to `window` (and returned) by {@link enable}. Every action method
+         * merges the most recent props passed to {@link setProps} with any `extraProps` given here,
+         * then delegates to the matching narration/history call — so calling these behaves exactly
+         * like a real player action (the same `navigate`/`t`/`toast`/etc. the real UI uses).
+         *
+         * `narration`, `storage`, `stepHistory` and `Game` are also exposed directly for anything not
+         * covered by the action methods (e.g. `storage.set(...)`, `Game.exportGameState()`).
+         */
+        export interface GameTestingAPI<T extends {} = {}> {
+            readonly Game: typeof Game;
+            readonly narration: narrationUtils.NarrationManagerInterface;
+            readonly storage: storageUtils.StorageManagerInterface;
+            readonly stepHistory: historyUtils.HistoryManagerInterface;
+            /**
+             * The most recent props passed to {@link setProps} — whatever your app's `StepLabelProps`
+             * augmentation defines (e.g. `navigate`, `toast`). Useful to drive the app's UI directly
+             * during a test session — e.g. `pixiVN.props.navigate("/settings")` — not just narration,
+             * for full control over what's on screen.
+             */
+            readonly props: narrationUtils.StepLabelPropsType<T>;
+            /** {@link Game.start} using the live props plus any `extraProps`. */
+            start(
+                label: narrationUtils.LabelAbstract<any, T> | narrationUtils.LabelIdType,
+                extraProps?: Partial<T>,
+            ): Promise<narrationUtils.StepLabelResultType>;
+            /** {@link narrationUtils.NarrationManagerInterface.continue} using the live props plus any `extraProps`. */
+            continue(
+                extraProps?: Partial<T>,
+                options?: { steps?: number; runNow?: boolean },
+            ): Promise<narrationUtils.StepLabelResultType>;
+            /** {@link narrationUtils.NarrationManagerInterface.call} using the live props plus any `extraProps`. */
+            call(
+                label: narrationUtils.LabelAbstract<any, T> | narrationUtils.LabelIdType,
+                extraProps?: Partial<T>,
+            ): Promise<narrationUtils.StepLabelResultType>;
+            /** {@link narrationUtils.NarrationManagerInterface.jump} using the live props plus any `extraProps`. */
+            jump(
+                label: narrationUtils.LabelAbstract<any, T> | narrationUtils.LabelIdType,
+                extraProps?: Partial<T>,
+            ): Promise<narrationUtils.StepLabelResultType>;
+            /**
+             * Selects the currently open choice with this `choiceIndex` (as seen in
+             * `getState().choices`), using the live props plus any `extraProps`.
+             * @throws when no open choice has that index.
+             */
+            selectChoice(
+                choiceIndex: number,
+                extraProps?: Partial<T>,
+            ): Promise<narrationUtils.StepLabelResultType>;
+            /** Resolves a pending `narration.input.request(...)` with `value`, exactly like the player typing an answer and confirming. */
+            setInput(value: storageUtils.StorageElementType): void;
+            /** {@link historyUtils.HistoryManagerInterface.back} using the live props plus any `extraProps`. */
+            goBack(
+                extraProps?: Partial<T>,
+                options?: { steps?: number },
+            ): Promise<narrationUtils.StepLabelResultType>;
+            /** {@link narrationUtils.NarrationLabelsInterface.closeCurrent} */
+            closeCurrentLabel(): void;
+            /** {@link narrationUtils.NarrationLabelsInterface.closeAll}. **Can end the game.** */
+            closeAllLabels(): void;
+            /** A snapshot of dialogue/choices/input/canContinue/canGoBack/labels — see {@link GameTestingState}. */
+            getState(): GameTestingState;
+            /** Errors caught via {@link Game.addOnError} since `enable()` was called (or since the last {@link clearErrors}). */
+            readonly errors: GameTestingErrorEntry[];
+            clearErrors(): void;
+        }
+
+        interface ActiveSession {
+            api: GameTestingAPI<any>;
+            windowKey: string;
+            errorHandler: OnErrorHandler;
+        }
+
+        let active: ActiveSession | undefined;
+
+        /**
+         * The most recent props passed to {@link setProps}, used by every {@link GameTestingAPI}
+         * action. Kept even while disabled, so a session started later already has fresh props.
+         */
+        let currentProps: {} = {};
+
+        /**
+         * Updates the live props every {@link GameTestingAPI} action merges `extraProps` on top of.
+         * Call this unconditionally from wherever your app builds its `StepLabelProps` (e.g. the end
+         * of a `useGameProps()`-style hook that already runs throughout the app) — it's a cheap
+         * assignment, safe to call whether or not testing is currently {@link enable}d.
+         * @param props The app's current `StepLabelProps` (the same object your UI passes to
+         * `narration.continue`/`Game.start`).
+         */
+        export function setProps<T extends {} = {}>(
+            props: narrationUtils.StepLabelPropsType<T>,
+        ): void {
+            currentProps = props;
+        }
+
+        /**
+         * Enables the testing API: builds it, attaches it to `window[windowKey]` (default
+         * `"pixiVN"`), and returns it. Calling this again replaces the previous session.
+         * @param options.windowKey The property name to attach the API under on `window`. @default "pixiVN"
+         */
+        export function enable<T extends {} = {}>(options?: {
+            windowKey?: string;
+        }): GameTestingAPI<T> {
+            if (active) {
+                disable();
+            }
+
+            const windowKey = options?.windowKey ?? "pixiVN";
+            const errors: GameTestingErrorEntry[] = [];
+            const mergeProps = (extraProps?: Partial<T>) =>
+                ({
+                    ...currentProps,
+                    ...extraProps,
+                }) as narrationUtils.StepLabelPropsType<T>;
+
+            const api: GameTestingAPI<T> = {
+                Game,
+                narration: narrationUtils.narration,
+                storage: storageUtils.storage,
+                stepHistory: historyUtils.stepHistory,
+                get props() {
+                    return currentProps as narrationUtils.StepLabelPropsType<T>;
+                },
+                start: (label, extraProps) => Game.start(label, mergeProps(extraProps)),
+                continue: (extraProps, options) =>
+                    narrationUtils.narration.continue(mergeProps(extraProps), options),
+                call: (label, extraProps) =>
+                    narrationUtils.narration.call(label, mergeProps(extraProps)),
+                jump: (label, extraProps) =>
+                    narrationUtils.narration.jump(label, mergeProps(extraProps)),
+                selectChoice: (choiceIndex, extraProps) => {
+                    const item = narrationUtils.narration.choices.list?.find(
+                        (choice) => choice.choiceIndex === choiceIndex,
+                    );
+                    if (!item) {
+                        const available =
+                            narrationUtils.narration.choices.list
+                                ?.map((choice) => choice.choiceIndex)
+                                .join(", ") ?? "none (no choice menu is open)";
+                        throw new Error(
+                            `Game.testing: no open choice with index ${choiceIndex}. Available: ${available}`,
+                        );
+                    }
+                    return narrationUtils.narration.choices.select(item, mergeProps(extraProps));
+                },
+                setInput: (value) => {
+                    narrationUtils.narration.input.value = value;
+                },
+                goBack: (extraProps, options) =>
+                    historyUtils.stepHistory.back(mergeProps(extraProps), options),
+                closeCurrentLabel: () => narrationUtils.narration.labels.closeCurrent(),
+                closeAllLabels: () => narrationUtils.narration.labels.closeAll(),
+                getState: () => ({
+                    dialogue: narrationUtils.narration.dialogue,
+                    dialogueGlue: narrationUtils.narration.dialogGlue,
+                    choices: narrationUtils.narration.choices.list,
+                    input: {
+                        isRequired: narrationUtils.narration.input.isRequired,
+                        type: narrationUtils.narration.input.type,
+                        value: narrationUtils.narration.input.value,
+                    },
+                    canContinue: narrationUtils.narration.canContinue,
+                    canGoBack: historyUtils.stepHistory.canGoBack,
+                    labelsOpened: narrationUtils.narration.labels.opened,
+                    currentLabelId: narrationUtils.narration.labels.current?.id,
+                    stepCounter: narrationUtils.narration.stepCounter,
+                }),
+                get errors() {
+                    return errors.slice();
+                },
+                clearErrors: () => {
+                    errors.length = 0;
+                },
+            };
+
+            const errorHandler: OnErrorHandler = (error) => {
+                errors.push({ error, timestamp: Date.now() });
+            };
+            Game.addOnError(errorHandler);
+
+            if (typeof window !== "undefined") {
+                (window as unknown as Record<string, unknown>)[windowKey] = api;
+            } else {
+                logger.warn(
+                    `Game.testing.enable(): "window" is not defined, so the API was not attached globally (it was still returned).`,
+                );
+            }
+
+            active = { api, windowKey, errorHandler };
+            return api;
+        }
+
+        /**
+         * Disables a session started with {@link enable}: removes the error handler and, if it's
+         * still the current value, deletes `window[windowKey]`. No-op if testing isn't enabled.
+         */
+        export function disable() {
+            if (!active) {
+                return;
+            }
+            Game.removeOnError(active.errorHandler);
+            if (
+                typeof window !== "undefined" &&
+                (window as unknown as Record<string, unknown>)[active.windowKey] === active.api
+            ) {
+                delete (window as unknown as Record<string, unknown>)[active.windowKey];
+            }
+            active = undefined;
+        }
+
+        /** Whether a testing session is currently active. */
+        export function isEnabled(): boolean {
+            return active !== undefined;
+        }
+    }
 }
 
 export default {
