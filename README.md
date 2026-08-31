@@ -18,8 +18,6 @@ You can only use narrative languages that are able to take full advantage of the
 
 - [_ink_](https://pixi-vn.com/ink/ink)
 
-Pixi’VN does not provide built-in components to create the game UI. Instead, you should use external JavaScript frameworks to build your UI. This allows you to leverage systems such as React, Vue, etc., to create complex and high-performance **UI screens**.
-
 ## Templates
 
 For a quick start, various project templates are available, built with React. Less experienced developers can use these templates without much knowledge of JavaScript/TypeScript.
