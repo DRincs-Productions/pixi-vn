@@ -14,7 +14,7 @@ Pixi’VN is a very versatile and powerful story-driven engine. It is based on J
 
 Pixi’VN aims to be an innovative and fast engine, and puts a strong emphasis on AI-assisted development: an AI agent can start your game, gain all the knowledge it needs about your project through [Agent Skills](#agent-skills), and test the game by launching it in a browser — with the ability to keep driving it from the outside while it plays.
 
-You can only use narrative languages that are able to take full advantage of the engine's features, as well as any custom features you add to your project. Currently supported:
+You can use narrative languages that are able to take full advantage of the engine's features, as well as any custom features you add to your project. Currently supported:
 
 - [_ink_](https://pixi-vn.com/ink/ink)
 
