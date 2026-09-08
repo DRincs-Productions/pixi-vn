@@ -41,7 +41,7 @@ Pixi’VN is independent of any distribution technology, but strong emphasis is 
 | Windows | ✅ | ✅ | ✅ |
 | macOS | ✅ | ✅ | ✅ |
 | Linux | ✅ | ✅ | ✅ |
-| Android | 🚧 | ✅ | ❌ |
+| Android | ✅ | ✅ | ❌ |
 | iOS | 🚧 | ✅ | ❌ |
 | Nintendo | 🚧 | ❌ | ❌ |
 | PlayStation | 🚧 | ❌ | ❌ |
