@@ -61,12 +61,6 @@ export default class CanvasManager implements CanvasManagerInterface {
     get height() {
         return CanvasManagerStatic.canvasHeight;
     }
-    set width(value: number) {
-        CanvasManagerStatic.canvasWidth = value;
-    }
-    set height(value: number) {
-        CanvasManagerStatic.canvasHeight = value;
-    }
     get screen() {
         return this.app.screen;
     }

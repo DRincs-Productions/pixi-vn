@@ -42,11 +42,11 @@ export default interface CanvasManagerInterface {
     /**
      * The width of the canvas.
      */
-    width: number;
+    readonly width: number;
     /**
      * The height of the canvas.
      */
-    height: number;
+    readonly height: number;
     /**
      * The screen of the canvas ({@link Application.screen}).
      */
