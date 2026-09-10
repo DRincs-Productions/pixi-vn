@@ -6,6 +6,7 @@ import {
     newChoiceOption,
     newCloseChoiceOption,
     newLabel,
+    stepHistory,
     storage,
     type StepLabelPropsType,
 } from "../src";
@@ -40,11 +41,13 @@ beforeEach(() => {
     Game.testing.disable();
     Game.clear();
     Game.testing.setProps(baseProps);
+    Game.testing.setActions({});
     GameUnifier.clearOnErrorHandlers();
 });
 
 afterEach(() => {
     Game.testing.disable();
+    Game.testing.setActions({});
     GameUnifier.clearOnErrorHandlers();
 });
 
@@ -194,4 +197,87 @@ test("disable: stops capturing further errors", async () => {
 
     await GameUnifier.runOnError(new Error("after disable"), baseProps);
     expect(api.errors).toEqual([]);
+});
+
+test("setActions: continue/back/start/jump/call route through the registered overrides instead of narration/stepHistory", async () => {
+    const calls: string[] = [];
+    Game.testing.setActions<TestProps>({
+        start: async (label, props) => {
+            calls.push(`start:${props?.marker}`);
+            await Game.start(label, { ...baseProps, ...props });
+        },
+        continue: async () => {
+            calls.push("continue");
+            await narration.continue(baseProps);
+        },
+        back: async () => {
+            calls.push("back");
+            await stepHistory.back(baseProps);
+        },
+        jump: async (label, props) => {
+            calls.push(`jump:${props?.marker}`);
+            return narration.jump(label, { ...baseProps, ...props });
+        },
+        call: async (label, props) => {
+            calls.push(`call:${props?.marker}`);
+            return narration.call(label, { ...baseProps, ...props });
+        },
+    });
+    const api = Game.testing.enable<TestProps>();
+
+    await api.start(gameTestingLabel, { marker: "started" });
+    expect(narration.dialogue?.text).toBe("hello started");
+
+    await api.continue();
+    expect(narration.dialogue?.text).toBe("what do you choose?");
+
+    await api.goBack();
+    expect(narration.dialogue?.text).toBe("hello started");
+
+    expect(calls).toEqual(["start:started", "continue", "back"]);
+});
+
+test("setActions: selectChoice receives the resolved choice item, not the raw index", async () => {
+    let receivedChoiceIndex: number | undefined;
+    Game.testing.setActions<TestProps>({
+        selectChoice: async (item) => {
+            receivedChoiceIndex = item.choiceIndex;
+            await narration.choices.select(item, baseProps);
+        },
+    });
+    const api = Game.testing.enable<TestProps>();
+    await api.start(gameTestingLabel, {});
+    await api.continue();
+
+    await api.selectChoice(1); // "Close"
+    expect(receivedChoiceIndex).toBe(1);
+    expect(api.getState().choices).toBeUndefined();
+});
+
+test("setActions: an action left undefined keeps calling narration/stepHistory directly", async () => {
+    Game.testing.setActions<TestProps>({
+        continue: async () => {
+            await narration.continue(baseProps);
+        },
+    });
+    const api = Game.testing.enable<TestProps>();
+    await api.start(gameTestingLabel, {});
+    expect(narration.dialogue?.text).toBe("hello live");
+
+    await api.continue();
+    expect(narration.dialogue?.text).toBe("what do you choose?");
+});
+
+test("setActions: persists across disable/enable, same as setProps", async () => {
+    Game.testing.setActions<TestProps>({
+        start: async (label, props) => {
+            await Game.start(label, { ...baseProps, marker: `wrapped-${props?.marker}` });
+        },
+    });
+    Game.testing.enable();
+    Game.testing.disable();
+    const api = Game.testing.enable<TestProps>();
+
+    await api.start(gameTestingLabel, { marker: "override" });
+    expect(narration.dialogue?.text).toBe("hello wrapped-override");
 });

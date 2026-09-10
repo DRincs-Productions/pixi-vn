@@ -63,8 +63,8 @@ yourself, gated behind your own dev-only check:
 import { Game } from "@drincs/pixi-vn";
 
 if (import.meta.env.DEV) {
-    // or process.env.NODE_ENV !== "production", a Webpack DefinePlugin flag, etc.
-    Game.testing.enable();
+  // or process.env.NODE_ENV !== "production", a Webpack DefinePlugin flag, etc.
+  Game.testing.enable();
 }
 ```
 
@@ -89,10 +89,10 @@ right now, and every `Game.testing` action reads through whatever was passed her
 import { Game, type StepLabelProps } from "@drincs/pixi-vn";
 
 function useGameProps(): StepLabelProps {
-    // ... build props the same way your app always has ...
-    const props = { navigate, t, toast /* ... */ };
-    Game.testing.setProps(props); // [!code focus]
-    return props;
+  // ... build props the same way your app always has ...
+  const props = { navigate, t, toast /* ... */ };
+  Game.testing.setProps(props); // [!code focus]
+  return props;
 }
 ```
 
@@ -103,6 +103,51 @@ The official React template's `useGameProps()` (`src/lib/hooks/props-hooks.ts` �
 `vite.config.ts`'s `vitePluginPixivn(...)` call needs no extra option — `testing` defaults to `true`.
 Since `useGameProps()` already runs on every render of every component that needs game props, this is
 the only line the template needs: no dedicated bridge component, no manual `enable()` call.
+
+### Routing through the app's own narration functions: `setActions`
+
+Most real apps don't call `narration.continue`/`stepHistory.back`/etc. straight from a "next" button —
+they wrap them in their own functions that also handle UI-only concerns a test session should trigger
+too: a loading indicator, refusing to advance while a menu/dialog is open, refreshing cached interface
+data after the step resolves, and so on. By default `Game.testing`'s actions skip all of that and call
+`narration`/`stepHistory` directly, so an agent driving the game through `window.pixiVN` can get out of
+sync with what the real UI would have done (e.g. it never sees the loading state, or advances past a
+guard the real "next" button respects).
+
+`Game.testing.setActions(actions)` fixes this: register the app's own functions once, and
+`continue()`/`goBack()`/`selectChoice()`/`start()`/`jump()`/`call()` call them instead. Any action left
+out keeps calling `narration`/`stepHistory` directly, so this is opt-in per action:
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+Game.testing.setActions({
+  continue: () => goNext(),
+  back: () => goBack(),
+  selectChoice: (item) => selectChoice(item),
+  start: (label, props) => async () => {
+    await props.navigate("/game");
+    return await startNewGame(label, props);
+  },
+  jump: (label, props) => jump(label, props),
+  call: (label, props) => call(label, props),
+});
+```
+
+Mount that hook once near the app root (same idea as `useGameProps()` always calling `setProps`) and
+`window.pixiVN.continue()` now runs the exact same code path as a player clicking "next".
+
+A few things follow from `continue`/`back` taking no arguments themselves:
+
+- The `extraProps`/`options` a caller passes to `window.pixiVN.continue(...)` /
+  `window.pixiVN.goBack(...)` are **ignored** once an override is registered — the override manages its
+  own props (typically via `setProps`) and usually has no notion of `{ steps, runNow }`. Drive those
+  through `window.pixiVN.props`/`narration`/`stepHistory` directly if you need that level of control.
+- `selectChoice`'s override receives the already-resolved choice item (the same shape as
+  `getState().choices[i]`), not the raw `choiceIndex` — the lookup (and the "no open choice with that
+  index" error) still happens before the override runs.
+- `setActions` is safe to call whether or not testing is enabled yet, safe to call again to update the
+  registered functions, and persists across `disable()`/`enable()` — same as `setProps`.
 
 ## 3. Driving the game
 
@@ -144,7 +189,9 @@ live props for that one call — useful to override just one field (e.g. a fake 
 where the game tried to go) without touching the app's real wiring:
 
 ```js
-await window.pixiVN.continue({ navigate: (to) => console.log("would navigate to", to) });
+await window.pixiVN.continue({
+  navigate: (to) => console.log("would navigate to", to),
+});
 ```
 
 ### Reading state before deciding the next action
@@ -206,8 +253,8 @@ window.pixiVN.storage.flags.set("met_liam", true);
 window.pixiVN.storage.get("gold"); // 100
 
 // Reset between test scenarios.
-window.pixiVN.storage.clear();       // back to storage.default
-window.pixiVN.Game.clear();          // wipes storage + narration + history + canvas + sound
+window.pixiVN.storage.clear(); // back to storage.default
+window.pixiVN.Game.clear(); // wipes storage + narration + history + canvas + sound
 
 // Snapshot / restore full game state instead of replaying steps to get back to a scenario.
 const snapshot = window.pixiVN.Game.exportGameState();
