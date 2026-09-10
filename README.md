@@ -24,7 +24,7 @@ For a quick start, various project templates are available, built with React. Le
 
 - **[Visual Novel](https://pixi-vn.com/start/make-visual-novel)**: a classic dialogue-driven experience, with characters, backgrounds, and choices.
 - **[Point & Click Adventure](https://pixi-vn.com/nqtr/make-point-and-click)**: an adventure game where the player explores scenes and interacts with objects and characters.
-- **Interactive Fiction**: feels like reading a book. Unlike a visual novel, images are shown as vignettes, just as illustrations would appear on a page.
+- **[Interactive Fiction](https://pixi-vn.com/start/make-interactive-fiction)**: feels like reading a book. Unlike a visual novel, images are shown as vignettes, just as illustrations would appear on a page.
 
 To create a new project from a template, run:
 
@@ -36,16 +36,16 @@ npm create pixi-vn@latest
 
 Pixi’VN is independent of any distribution technology, but strong emphasis is being placed on [Roves](https://roves.pixi-vn.com/), built by the same team behind Pixi’VN.
 
-| Platform | [Roves](https://roves.pixi-vn.com/) | [Tauri](https://v2.tauri.app/) | [Electron](https://www.electronjs.org/) |
-| -------- | -- | -- | -- |
-| Windows | ✅ | ✅ | ✅ |
-| macOS | ✅ | ✅ | ✅ |
-| Linux | ✅ | ✅ | ✅ |
-| Android | ✅ | ✅ | ❌ |
-| iOS | 🚧 | ✅ | ❌ |
-| Nintendo | 🚧 | ❌ | ❌ |
-| PlayStation | 🚧 | ❌ | ❌ |
-| Xbox | 🚧 | ❌ | ❌ |
+| Platform    | [Roves](https://roves.pixi-vn.com/) | [Tauri](https://v2.tauri.app/) | [Electron](https://www.electronjs.org/) |
+| ----------- | ----------------------------------- | ------------------------------ | --------------------------------------- |
+| Windows     | ✅                                  | ✅                             | ✅                                      |
+| macOS       | ✅                                  | ✅                             | ✅                                      |
+| Linux       | ✅                                  | ✅                             | ✅                                      |
+| Android     | ✅                                  | ✅                             | ❌                                      |
+| iOS         | 🚧                                  | ✅                             | ❌                                      |
+| Nintendo    | 🚧                                  | ❌                             | ❌                                      |
+| PlayStation | 🚧                                  | ❌                             | ❌                                      |
+| Xbox        | 🚧                                  | ❌                             | ❌                                      |
 
 ## Wiki
 
