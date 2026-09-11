@@ -159,9 +159,11 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         GameUnifier.runningStepsCount++;
         try {
-            const restoredStep = createExportableElement(
-                this.getOldGameState(steps, HistoryManagerStatic.originalStepData),
-            );
+            // getOldGameState() already returns a fresh clone (restoreDiffChanges() clones
+            // internally before applying each diff) - wrapping it in another
+            // createExportableElement() here cloned the entire game state a second time for
+            // no reason, doubling the cost of every back() call.
+            const restoredStep = this.getOldGameState(steps, HistoryManagerStatic.originalStepData);
             if (restoredStep) {
                 await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
                 const stepCounter = GameUnifier.stepCounter - 1;
