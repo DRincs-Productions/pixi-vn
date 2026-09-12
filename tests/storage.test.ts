@@ -234,7 +234,7 @@ test("import & export", async () => {
     expect(storage.get("d")).toBe(false);
     expect(storage.get("e")).toBe(null);
     expect(storage.get("f")).toBe(undefined);
-    const exported = storage.export();
+    const exported = await storage.export();
     expect(exported).toEqual({
         main: [
             {

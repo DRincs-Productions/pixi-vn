@@ -1,3 +1,5 @@
+import type OnErrorHandler from "@core/OnErrorHandler";
+import PixiError from "@core/PixiError";
 import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
@@ -5,11 +7,9 @@ import type {
     StepLabelPropsType,
     StepLabelResultType,
     StepLabelType,
-} from "../narration/types/StepLabelType";
-import type { StorageElementType } from "../storage/types/StorageElementType";
-import { logger } from "../utils/log-utility";
-import type OnErrorHandler from "./OnErrorHandler";
-import PixiError from "./PixiError";
+} from "@narration/types/StepLabelType";
+import type { StorageElementType } from "@storage/types/StorageElementType";
+import { logger } from "@utils/log-utility";
 
 export default class GameUnifier {
     static init(options: {
@@ -36,7 +36,7 @@ export default class GameUnifier {
          *
          * If your game engine does not have a history of steps, you can return an empty object.
          */
-        getCurrentGameStepState: () => GameStepState;
+        getCurrentGameStepState: () => GameStepState | Promise<GameStepState>;
         /**
          * This function restores the game step state.
          *
@@ -117,7 +117,7 @@ export default class GameUnifier {
                  */
                 ignoreSameStep?: boolean;
             },
-        ): void;
+        ): void | Promise<void>;
         /**
          * This function returns the character by its id.
          * @param id The id of the character.
@@ -201,7 +201,7 @@ export default class GameUnifier {
     static set stepCounter(value: number) {
         GameUnifier._setStepCounter(value);
     }
-    private static _getCurrentGameStepState: () => GameStepState = () => {
+    private static _getCurrentGameStepState: () => GameStepState | Promise<GameStepState> = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError(
             "not_implemented",
@@ -449,7 +449,7 @@ export default class GameUnifier {
              */
             ignoreSameStep?: boolean;
         },
-    ) => void = () => {
+    ) => void | Promise<void> = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError(
             "not_implemented",

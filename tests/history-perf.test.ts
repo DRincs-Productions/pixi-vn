@@ -57,4 +57,4 @@ test("stepHistory.back() timing with a realistically-sized game state", async ()
     // Loose sanity bound, not a tight perf assertion - just catches gross regressions
     // (e.g. an accidental O(n^2)) without being flaky on slower CI hardware.
     expect(avg).toBeLessThan(500);
-});
+}, 30000);

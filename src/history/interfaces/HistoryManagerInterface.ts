@@ -103,7 +103,7 @@ export default interface HistoryManagerInterface {
              */
             ignoreSameStep?: boolean;
         },
-    ): void;
+    ): Promise<void>;
     /**
      * Clear the history.
      */
@@ -160,7 +160,7 @@ export default interface HistoryManagerInterface {
      * Export the history to an object.
      * @returns The history in an object.
      */
-    export(): HistoryGameState;
+    export(): Promise<HistoryGameState>;
     /**
      * Restore the history from an object.
      * @param data The history in an object.

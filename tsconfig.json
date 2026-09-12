@@ -41,6 +41,7 @@
       "@sound/*": ["./src/sound/*"],
       "@characters/*": ["./src/characters/*"],
       "@motion/*": ["./src/motion/*"],
+      "@worker/*": ["./src/worker/*"],
       /* Specify a set of entries that re-map imports to additional lookup locations. */
       "@drincs/pixi-vn/core": ["./src/core/index.ts"],
       "@drincs/pixi-vn/narration": ["./src/narration/index.ts"],
@@ -50,7 +51,8 @@
       "@drincs/pixi-vn/canvas": ["./src/canvas/index.ts"],
       "@drincs/pixi-vn/sound": ["./src/sound/index.ts"],
       "@drincs/pixi-vn/characters": ["./src/characters/index.ts"],
-      "@drincs/pixi-vn/motion": ["./src/motion/index.ts"]
+      "@drincs/pixi-vn/motion": ["./src/motion/index.ts"],
+      "@drincs/pixi-vn/worker": ["./src/worker/index.ts"]
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */
     // "typeRoots": [],                                  /* Specify multiple folders that act like './node_modules/@types'. */
