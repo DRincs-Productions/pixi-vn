@@ -5,6 +5,7 @@ import {
     TEMP_STORAGE_KEY,
 } from "@constants";
 import { GameUnifier } from "@drincs/pixi-vn/core";
+import { cloneMaybeOffloaded } from "@drincs/pixi-vn/worker";
 import type StorageExternalStoreHandler from "@storage/interfaces/StorageExternalStoreHandler";
 import type StorageFlagsInterface from "@storage/interfaces/StorageFlagsInterface";
 import type StorageGameState from "@storage/interfaces/StorageGameState";
@@ -111,7 +112,7 @@ export default class StorageManager implements StorageManagerInterface {
         this.cache.clear();
         this.temp.deadlines.clear();
     }
-    public export(): StorageGameState {
+    public async export(): Promise<StorageGameState> {
         const main: StorageGameStateItem[] = [];
         [...this.base.keys()].forEach((key) => {
             main.push({ key, value: this.base.get(key) });
@@ -120,7 +121,7 @@ export default class StorageManager implements StorageManagerInterface {
         [...this.temp.deadlines.keys()].forEach((key) => {
             tempDeadlines.push({ key, value: this.temp.deadlines.get(key)! });
         });
-        return createExportableElement({
+        return cloneMaybeOffloaded({
             main,
             tempDeadlines,
         });

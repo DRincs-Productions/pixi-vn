@@ -17,6 +17,7 @@ export type {
 } from "@drincs/pixi-vn/pixi.js";
 export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
+export * from "@drincs/pixi-vn/worker";
 export * from "./classes";
 export {
     CANVAS_APP_GAME_LAYER_ALIAS,
@@ -42,6 +43,7 @@ import * as narrationUtils from "@drincs/pixi-vn/narration";
 import type { ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
+import { GameWorkerManager } from "@drincs/pixi-vn/worker";
 import type { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, PIXIVN_VERSION } from "./constants";
 import { createGameTesting } from "./core/testing";
@@ -124,7 +126,7 @@ export namespace Game {
     ): Promise<void> {
         GameUnifier.init({
             navigate: options?.navigate,
-            getCurrentGameStepState: () => {
+            getCurrentGameStepState: async () => {
                 // Canvas usage is optional - when Game.init() was never given a canvas element,
                 // canvas.export() would throw (and log an error) on every single step just to be
                 // caught here. Skip it entirely instead of relying on the throw/catch for control flow.
@@ -133,7 +135,7 @@ export namespace Game {
                     : {};
                 return {
                     path: getGamePath(),
-                    storage: storageUtils.storage.export(),
+                    storage: await storageUtils.storage.export(),
                     canvas: canvasData,
                     sound: soundUtils.sound.export(),
                     labelIndex: narrationUtils.NarrationManagerStatic.currentLabelStepIndex || 0,
@@ -224,17 +226,17 @@ export namespace Game {
      * Get all the game data. It can be used to save the game.
      * @returns The game data
      */
-    export function exportGameState(): pixivninterface.GameState {
+    export async function exportGameState(): Promise<pixivninterface.GameState> {
         // Canvas usage is optional - when Game.init() was never given a canvas element,
         // canvas.export() would throw (and log an error) just to be caught here.
         const canvasData = canvasUtils.canvas.isInitialized ? canvasUtils.canvas.export() : {};
         return {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
-            storageData: storageUtils.storage.export(),
+            storageData: await storageUtils.storage.export(),
             canvasData: canvasData as canvasUtils.CanvasGameState,
             soundData: soundUtils.sound.export(),
-            historyData: historyUtils.stepHistory.export(),
+            historyData: await historyUtils.stepHistory.export(),
             path: getGamePath(),
         };
     }
@@ -469,6 +471,45 @@ export namespace Game {
     export function removeOnPreContinue(handler: () => Promise<void> | void) {
         return GameUnifier.removeOnPreContinue(handler);
     }
+
+    /**
+     * Optional integration point for offloading Pixi'VN's own heavy, pure computations (state
+     * diffing/restoring/cloning for `stepHistory.back()`/`add()`/`export()`) to a Worker the game
+     * project provides. Pixi'VN never creates a Worker itself, decides on its own which eligible
+     * work actually goes through it, and falls back to computing the same thing synchronously
+     * on the main thread whenever none is registered - so projects that can't or don't want to
+     * use Workers (SSR, certain embeds, ...) are unaffected either way.
+     *
+     * The game project stays in control of the actual `new Worker(...)` call (bundler-specific
+     * URL/`type: "module"` handling, CSP, lifecycle) and only needs to point that worker's
+     * message handling at `handleGameWorkerMessage` from `@drincs/pixi-vn/worker`:
+     *
+     * ```ts
+     * // main thread
+     * import { Game } from "@drincs/pixi-vn";
+     * const worker = new Worker(new URL("./game-worker.ts", import.meta.url), { type: "module" });
+     * Game.worker.register(worker);
+     *
+     * // game-worker.ts
+     * import { handleGameWorkerMessage } from "@drincs/pixi-vn/worker";
+     * self.onmessage = async (event) => {
+     *     const response = await handleGameWorkerMessage(event.data);
+     *     if (response) self.postMessage(response);
+     * };
+     * ```
+     *
+     * A third-party library built on top of Pixi'VN (one with `@drincs/pixi-vn` as a peer
+     * dependency) can share this same worker for its own heavy, pure computations instead of
+     * needing one of its own - see `registerGameWorkerHandler` (worker side) and
+     * `GameWorkerManager.custom` (main-thread side), both from `@drincs/pixi-vn/worker`.
+     */
+    export const worker = {
+        register: (worker: Worker) => GameWorkerManager.register(worker),
+        unregister: () => GameWorkerManager.unregister(),
+        get isAvailable() {
+            return GameWorkerManager.isAvailable;
+        },
+    };
 
     /**
      * Lets an AI agent (or any external script/browser console) drive and inspect a running game

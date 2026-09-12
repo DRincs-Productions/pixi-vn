@@ -7,13 +7,15 @@ import type {
     StepLabelPropsType,
 } from "@drincs/pixi-vn/narration";
 import type { StorageElementType } from "@drincs/pixi-vn/storage";
+import {
+    cloneMaybeOffloaded,
+    diffMaybeOffloaded,
+    restoreDiffMaybeOffloaded,
+} from "@drincs/pixi-vn/worker";
 import HistoryManagerStatic, { type HistoryGoBackModeType } from "@history/HistoryManagerStatic";
 import type HistoryGameState from "@history/interfaces/HistoryGameState";
 import type HistoryManagerInterface from "@history/interfaces/HistoryManagerInterface";
-import { restoreDiffChanges } from "@utils/diff-utility";
-import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
-import diff from "microdiff";
 
 /**
  * This class is a class that manages the steps and labels of the game.
@@ -102,7 +104,10 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         return max;
     }
-    private getOldGameState(steps: number, restoredStep: GameStepState): GameStepState {
+    private async getOldGameState(
+        steps: number,
+        restoredStep: GameStepState,
+    ): Promise<GameStepState> {
         if (steps <= 0) {
             return restoredStep;
         }
@@ -119,7 +124,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         const diff = HistoryManagerStatic._diffHistory.get(targetKey);
         if (diff) {
             try {
-                const result = restoreDiffChanges(restoredStep, diff);
+                const result = await restoreDiffMaybeOffloaded(restoredStep, diff);
                 // The diff at `targetKey` undoes everything merged into it since the
                 // PREVIOUS checkpoint - so that previous checkpoint's key (+1), not
                 // `targetKey` itself, is both the restored state's true step count and
@@ -163,7 +168,10 @@ export default class HistoryManager implements HistoryManagerInterface {
             // internally before applying each diff) - wrapping it in another
             // createExportableElement() here cloned the entire game state a second time for
             // no reason, doubling the cost of every back() call.
-            const restoredStep = this.getOldGameState(steps, HistoryManagerStatic.originalStepData);
+            const restoredStep = await this.getOldGameState(
+                steps,
+                HistoryManagerStatic.originalStepData,
+            );
             if (restoredStep) {
                 await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
                 const stepCounter = GameUnifier.stepCounter - 1;
@@ -227,7 +235,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         return currentLabels.some((opened, i) => opened.label !== lastLabels[i]?.label);
     }
-    add(
+    async add(
         historyInfo: HistoryInfo,
         options: {
             ignoreSameStep?: boolean;
@@ -235,7 +243,7 @@ export default class HistoryManager implements HistoryManagerInterface {
     ) {
         const originalStepData = HistoryManagerStatic.originalStepData;
         const { ignoreSameStep } = options;
-        const currentStepData: GameStepState = GameUnifier.currentGameStepState;
+        const currentStepData: GameStepState = await GameUnifier.currentGameStepState;
         if (!ignoreSameStep && this.isSameStep(originalStepData, currentStepData)) {
             return;
         }
@@ -248,16 +256,38 @@ export default class HistoryManager implements HistoryManagerInterface {
         // always treated as a checkpoint (there's no earlier step to merge it into).
         const isCheckpoint =
             historyInfo.index === 0 || this.isCheckpointStep(historyInfo, lastStepHistory);
-        const asyncFunction = async () => {
-            try {
-                const lastNarrativeHistory =
-                    typeof lastKey === "number"
-                        ? HistoryManagerStatic._narrationHistory.get(lastKey)
-                        : undefined;
+        try {
+            const lastNarrativeHistory =
+                typeof lastKey === "number"
+                    ? HistoryManagerStatic._narrationHistory.get(lastKey)
+                    : undefined;
 
-                HistoryManagerStatic._stepsInfoHistory.set(historyInfo.index, historyInfo);
-                if (historyInfo.index !== 0 && isCheckpoint) {
-                    const data = diff(originalStepData, currentStepData);
+            HistoryManagerStatic._stepsInfoHistory.set(historyInfo.index, historyInfo);
+            const previousItem = {};
+            const narrativeHistory = this.itemMapper(
+                {
+                    step: historyInfo,
+                },
+                previousItem,
+            );
+            HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
+            if (lastStepHistory && lastNarrativeHistory && typeof lastKey === "number") {
+                const previousNarrativeHistory = this.itemMapper(
+                    {
+                        ...previousItem,
+                        step: lastStepHistory,
+                    },
+                    {},
+                );
+                HistoryManagerStatic._narrationHistory.set(lastKey, previousNarrativeHistory);
+            }
+        } catch (e) {
+            logger.error("Error adding history step", e);
+        }
+        if (historyInfo.index !== 0 && isCheckpoint) {
+            (async () => {
+                try {
+                    const data = await diffMaybeOffloaded(originalStepData, currentStepData);
                     if (data) {
                         HistoryManagerStatic._diffHistory.set(historyInfo.index, data);
                     } else {
@@ -265,30 +295,11 @@ export default class HistoryManager implements HistoryManagerInterface {
                             "It was not possible to create the difference between the two steps",
                         );
                     }
+                } catch (e) {
+                    logger.error("Error adding history step", e);
                 }
-                const previousItem = {};
-                const narrativeHistory = this.itemMapper(
-                    {
-                        step: historyInfo,
-                    },
-                    previousItem,
-                );
-                HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
-                if (lastStepHistory && lastNarrativeHistory && typeof lastKey === "number") {
-                    const previousNarrativeHistory = this.itemMapper(
-                        {
-                            ...previousItem,
-                            step: lastStepHistory,
-                        },
-                        {},
-                    );
-                    HistoryManagerStatic._narrationHistory.set(lastKey, previousNarrativeHistory);
-                }
-            } catch (e) {
-                logger.error("Error adding history step", e);
-            }
-        };
-        asyncFunction();
+            })();
+        }
         // Only move the diffing baseline forward at a checkpoint - a skipped step's
         // changes stay pending against the last checkpoint's baseline, so the next
         // checkpoint's diff naturally captures everything accumulated since then.
@@ -516,7 +527,7 @@ export default class HistoryManager implements HistoryManagerInterface {
 
     /* Export and Import Methods */
 
-    public export(): HistoryGameState {
+    public async export(): Promise<HistoryGameState> {
         let keys = Array.from(this.keys()).sort((a, b) => a - b);
         // take only last the this.stepLimitSaved steps
         if (keys.length > this.stepLimitSaved) {
@@ -533,9 +544,14 @@ export default class HistoryManager implements HistoryManagerInterface {
                 });
             }
         });
+        const originalStepData = HistoryManagerStatic._originalStepData;
+        const [clonedStepsHistory, clonedOriginalStepData] = await Promise.all([
+            cloneMaybeOffloaded(stepsHistory),
+            originalStepData ? cloneMaybeOffloaded(originalStepData) : undefined,
+        ]);
         return {
-            stepsHistory: createExportableElement(stepsHistory),
-            originalStepData: createExportableElement(HistoryManagerStatic._originalStepData),
+            stepsHistory: clonedStepsHistory,
+            originalStepData: clonedOriginalStepData,
         };
     }
     restoreNarrativeHistory() {

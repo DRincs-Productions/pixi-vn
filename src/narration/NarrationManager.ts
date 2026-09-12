@@ -57,7 +57,7 @@ export default class NarrationManager implements NarrationManagerInterface {
      * @param stepSha The sha1 of the step.
      * @param options The options.
      */
-    private addStepHistory(
+    private async addStepHistory(
         stepSha: string,
         options: {
             choiceMade?: number;
@@ -122,7 +122,11 @@ export default class NarrationManager implements NarrationManagerInterface {
             openedLabels: openedLabels,
         };
         NarrationManagerStatic.originalOpenedLabels = openedLabels;
-        GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
+        // Awaited so the step is actually recorded (and readable from currentPageParagraphs)
+        // before this call returns - runCurrentStep awaits addStepHistory in turn, so by the
+        // time continue() resolves and the caller's invalidateInterfaceData() runs, this
+        // step's dialogue is guaranteed to be there instead of racing a still-pending write.
+        await GameUnifier.addHistoryItem(historyInfo, { ignoreSameStep });
         NarrationManagerStatic.lastHistoryStep = historyInfo;
         NarrationManagerStatic.increaseStepCounter();
     }
@@ -462,7 +466,7 @@ export default class NarrationManager implements NarrationManagerInterface {
                             currentLabel.id,
                             currentLabelStepIndex,
                         );
-                        this.addStepHistory(stepSha, {
+                        await this.addStepHistory(stepSha, {
                             ...options,
                             choiceMade: NarrationManagerStatic.choiceMadeTemp,
                         });
