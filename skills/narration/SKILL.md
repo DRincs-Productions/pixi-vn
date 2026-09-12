@@ -22,6 +22,36 @@ https://pixi-vn.com/start/labels and https://pixi-vn.com/start/labels-flow (labe
 https://pixi-vn.com/start/labels-advanced (hooks, dynamic steps), https://pixi-vn.com/start/dialogue,
 https://pixi-vn.com/start/choices, https://pixi-vn.com/start/input.
 
+## Optional runtime AI: `@drincs/pixi-vn-ai`
+
+For dialogue or images generated during play, install the separate `@drincs/pixi-vn-ai`
+package and its required peers; import its `ai` singleton from that package. This API is
+experimental: check the installed types before implementing provider-specific options.
+
+Await `ai.init(...)` once during startup. Without options it downloads a local WebLLM text
+model in the browser; image generation still needs an external provider. Configure
+`textProvider` and/or `imageProvider` for AI SDK models, or use `ComfyUIImageModel` from
+`@drincs/pixi-vn-ai/comfyui` with a ComfyUI API-format workflow for images.
+
+In an async label step, generate the text and assign it to the usual dialogue state:
+
+```ts
+import { narration } from "@drincs/pixi-vn";
+import { ai } from "@drincs/pixi-vn-ai";
+
+// Inside an async step, after startup has awaited ai.init(...):
+narration.dialogue = await ai.text.generateDialog(
+  "Describe the empty station as the last train leaves.",
+  { scene: "A rural station at dusk", language: "English", history: true },
+);
+```
+
+`ai.image.generateBackground` and `ai.image.generateElement` generate scene imagery;
+the library builds prompts from the request and structured context. Consult the
+[AI guide](https://pixi-vn.com/start/ai-generated-content) and
+[plugin README](https://github.com/DRincs-Productions/pixi-vn-ai) for dependencies,
+provider configuration, image results, and display helpers before wiring images into canvas.
+
 ## 1. Defining a label
 
 A **label** is the Pixi'VN equivalent of a Ren'Py "bookmark"/landmark in the story (the same concept

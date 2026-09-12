@@ -206,6 +206,66 @@ in this same skill folder (registering a `Ticker`, `tickers.addSequence`,
 `tickers.pause`/`resume`/`remove`, `tickers.completeOnStepEnd`). Docs:
 [pixi-vn.com/start/canvas-tickers](https://pixi-vn.com/start/canvas-tickers).
 
+## External rendering plugins
+
+These optional packages are installed separately from `@drincs/pixi-vn`; their component
+classes must be imported from the plugin, not the engine. Check the installed package's peer
+dependencies and types before adapting examples to a project's PixiJS/Pixi'VN versions.
+
+### Live2D: `@drincs/pixi-vn-live2d`
+
+Use this wrapper around `untitled-pixi-live2d-engine` for Live2D models. Register its render
+plugin **before** `Game.init()` (or `canvas.init()`):
+
+```ts
+import { extensions } from "pixi.js";
+import { Live2DPlugin } from "@drincs/pixi-vn-live2d/core";
+
+extensions.add(Live2DPlugin);
+// Initialize the game/canvas after registering the plugin.
+```
+
+Once the canvas is initialized, register the model asset and await model readiness before
+controlling it:
+
+```ts
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Live2D } from "@drincs/pixi-vn-live2d";
+
+Assets.add({ alias: "hero-model", src: "/models/hero/model3.json" });
+const model = new Live2D({ source: "hero-model" });
+await model.ready;
+model.motion("Idle"); // Use a motion group present in this model.
+canvas.add("hero", model);
+```
+
+Consult the [plugin README](https://github.com/DRincs-Productions/pixi-vn-live2d) for setup
+and its [API reference](https://pixi-vn.com/jsdoc/pixi-vn-live2d/index/interfaces/Live2DOptions)
+for model options. Do not substitute `ImageSprite.load()` for `Live2D.ready`.
+
+### Spine: `@drincs/pixi-vn-spine`
+
+Use this wrapper around `@esotericsoftware/spine-pixi-v8` for skeletal animation. Add
+`import "@drincs/pixi-vn-spine";` to the app entry point: importing the package registers
+the serializable component. A lazy scene import alone is insufficient when a save is restored
+before that scene has ever loaded.
+
+Register the skeleton and atlas in the asset manifest, then load both before construction:
+
+```ts
+import { Assets, canvas } from "@drincs/pixi-vn";
+import { Spine } from "@drincs/pixi-vn-spine";
+
+await Assets.load(["hero-skeleton", "hero-atlas"]);
+const model = new Spine({ skeleton: "hero-skeleton", atlas: "hero-atlas" });
+model.setAnimation(0, "idle", true); // Animation names come from the skeleton.
+canvas.add("hero", model);
+```
+
+See the [Spine guide](https://pixi-vn.com/start/canvas-spine2d) for skins and tracks and the
+[package README](https://www.npmjs.com/package/@drincs/pixi-vn-spine) for save-registration
+details. Keep the Pixi'VN wrapper when adding saved scene elements.
+
 ## UI layers
 
 Persistent UI chrome (HUD, menus) does **not** live on `gameLayer` — it lives on a separate,

@@ -371,6 +371,21 @@ declare module "@drincs/pixi-vn" {
 
 Whatever is added here becomes available on the `props` argument of every narration step, `Game.onEnd`, and `Game.addOnError` alike — a single place to inject router/i18n/toast/anything-else a project's narration layer needs. `t` vs `uiTransition` splits narration-text translations from UI-chrome translations; `invalidateInterfaceData` is a template-specific hook that forces UI data (e.g. a React Query cache) to refetch after a step changes something the interface depends on.
 
+## Optional external plugins
+
+Install only the integrations the game uses; these are separate npm packages, not exports
+of `@drincs/pixi-vn`:
+
+- `@drincs/pixi-vn-ai`: runtime dialogue/image generation. Await its `ai.init(...)` during
+  startup; see [narration's AI notes](../narration/SKILL.md#optional-runtime-ai-drincspixi-vn-ai).
+- `@drincs/pixi-vn-live2d`: Live2D models. Register `Live2DPlugin` before initializing the
+  canvas; see [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
+- `@drincs/pixi-vn-spine`: Spine skeletal animation. Import the package in the app entry
+  point so saved components can be restored even before lazy scenes load; see
+  [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
+
+Check each plugin's installed peer dependencies against the project's engine/PixiJS version.
+
 ## Related skills
 
 - **pixi-vn-assets** — registering local/online assets, the manifest/bundle/alias system, and when to load them.
