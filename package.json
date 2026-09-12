@@ -36,6 +36,12 @@
       "require": "./dist/core.cjs",
       "default": "./dist/core.mjs"
     },
+    "./worker": {
+      "types": "./dist/worker.d.ts",
+      "import": "./dist/worker.mjs",
+      "require": "./dist/worker.cjs",
+      "default": "./dist/worker.mjs"
+    },
     "./pixi.js": {
       "types": "./dist/pixi/index.d.ts",
       "import": "./dist/pixi/index.js",
