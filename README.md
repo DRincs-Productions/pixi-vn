@@ -1,6 +1,6 @@
 # Pixi’VN - PixiJS Game Engine
 
-![pixi-vn-cover](https://github.com/user-attachments/assets/6a4951d3-459f-4f8d-ae3d-1342a55570e9)
+![pixi-vn-cover](https://github.com/user-attachments/assets/dee5f258-d589-44bb-a818-bbe93ece7160)
 
 <p align="center">
   <a href="https://www.npmjs.com/package/@drincs/pixi-vn" rel="noopener noreferrer nofollow"><img src="https://img.shields.io/npm/v/@drincs/pixi-vn?label=version" alt="npm version"></a>
