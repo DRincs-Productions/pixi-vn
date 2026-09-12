@@ -134,7 +134,7 @@ export default interface StorageManagerInterface {
      * Export the storage to an object
      * @returns The object
      */
-    export(): StorageGameState;
+    export(): Promise<StorageGameState>;
     /**
      * Restore the storage from an object
      * @param data The object
