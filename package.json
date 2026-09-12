@@ -200,8 +200,10 @@
     "novel",
     "pixi",
     "pixi-js",
+    "pixi-vn",
     "visual",
     "visual-novel",
+    "vn",
     "webgl"
   ]
 }
