@@ -44,10 +44,10 @@ try {
 
 GameUnifier.init({
     navigate: (path: string) => window.history.pushState({}, "test", path),
-    getCurrentGameStepState: () => {
+    getCurrentGameStepState: async () => {
         return {
             path: getGamePath(),
-            storage: storage.export(),
+            storage: await storage.export(),
             canvas: {} as any,
             sound: sound.export(),
             labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,

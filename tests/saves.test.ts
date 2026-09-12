@@ -34,13 +34,13 @@ function clear() {
     stepHistory.clear();
 }
 
-function exportGameState() {
+async function exportGameState() {
     return {
         pixivn_version: PIXIVN_VERSION,
         stepData: narration.export(),
-        storageData: storage.export(),
+        storageData: await storage.export(),
         soundData: sound.export(),
-        historyData: stepHistory.export(),
+        historyData: await stepHistory.export(),
         path: getGamePath(),
     };
 }
@@ -72,7 +72,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
     await narration.continue({});
     await narration.continue({});
 
-    const data = exportGameState();
+    const data = await exportGameState();
     expect(data).toEqual({
         pixivn_version: PIXIVN_VERSION,
         stepData: {
@@ -548,7 +548,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
     });
 
     clear();
-    const tempdata = exportGameState();
+    const tempdata = await exportGameState();
     expect(tempdata).toEqual({
         pixivn_version: PIXIVN_VERSION,
         stepData: {
@@ -571,7 +571,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
 
     await restoreGameState(data, () => {});
 
-    expect(exportGameState()).toEqual(data);
+    expect(await exportGameState()).toEqual(data);
 });
 
 test("Game.restoreGameState uses configured navigate when navigate argument is omitted", async () => {
@@ -581,7 +581,7 @@ test("Game.restoreGameState uses configured navigate when navigate argument is o
 
     try {
         Game.clear();
-        const data = Game.exportGameState();
+        const data = await Game.exportGameState();
         data.path = "/restore-fallback";
 
         await Game.restoreGameState(data);
