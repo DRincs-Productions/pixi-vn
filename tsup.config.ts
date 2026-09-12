@@ -27,6 +27,7 @@ export default defineConfig((options) => {
             target: "es2022",
             entry: {
                 core: "src/core/index.ts",
+                worker: "src/worker/index.ts",
             },
             format: ["cjs", "esm"],
             dts: false,
@@ -87,6 +88,7 @@ export default defineConfig((options) => {
             external: [
                 "@drincs/pixi-vn/core",
                 "@drincs/pixi-vn/pixi.js",
+                "@drincs/pixi-vn/worker",
                 // external dependencies
                 "tone",
                 "@pixi/devtools",
@@ -112,6 +114,7 @@ export default defineConfig((options) => {
             external: [
                 "@drincs/pixi-vn/core",
                 "@drincs/pixi-vn/pixi.js",
+                "@drincs/pixi-vn/worker",
                 // submodules
                 "@drincs/pixi-vn/narration",
                 "@drincs/pixi-vn/history",
@@ -145,6 +148,7 @@ export default defineConfig((options) => {
             external: [
                 "@drincs/pixi-vn/core",
                 "@drincs/pixi-vn/pixi.js",
+                "@drincs/pixi-vn/worker",
                 // submodules
                 "@drincs/pixi-vn/narration",
                 "@drincs/pixi-vn/history",
@@ -167,6 +171,7 @@ export default defineConfig((options) => {
             target: "es2022",
             entry: {
                 core: "src/core/index.ts",
+                worker: "src/worker/index.ts",
                 "pixi/index": "src/pixi-js/index.ts",
                 narration: "src/narration/index.ts",
                 history: "src/history/index.ts",
@@ -186,6 +191,7 @@ export default defineConfig((options) => {
                 "pixi.js",
                 "@drincs/pixi-vn/core",
                 "@drincs/pixi-vn/pixi.js",
+                "@drincs/pixi-vn/worker",
                 "@drincs/pixi-vn/narration",
                 "@drincs/pixi-vn/history",
                 "@drincs/pixi-vn/storage",
