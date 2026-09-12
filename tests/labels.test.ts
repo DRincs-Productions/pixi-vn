@@ -152,7 +152,7 @@ test("addCurrentStepToHistory", async () => {
     await narration.continue({});
     await narration.continue({});
     expect(narration.stepCounter).toBe(4);
-    narration.addCurrentStepToHistory();
+    await narration.addCurrentStepToHistory();
     expect(narration.stepCounter).toBe(5);
 });
 

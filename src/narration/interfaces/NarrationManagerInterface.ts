@@ -111,8 +111,9 @@ export default interface NarrationManagerInterface {
     getTimesChoiceMade(index: number): number;
     /**
      * Save the current step to the history.
+     * @returns A promise that resolves once the history is saved and the step counter is updated.
      */
-    addCurrentStepToHistory(): void;
+    addCurrentStepToHistory(): Promise<void>;
     /**
      * Namespace for operations on the input requested to the player.
      */

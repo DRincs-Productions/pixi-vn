@@ -256,8 +256,8 @@ export default class NarrationManager implements NarrationManagerInterface {
             timesChoiceMade: (index: number) => self.getTimesChoiceMade(index),
         };
     })();
-    addCurrentStepToHistory(): void {
-        this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
+    addCurrentStepToHistory(): Promise<void> {
+        return this.addStepHistory(AdditionalShaSpetsEnum.DEVELOPER, { ignoreSameStep: true });
     }
 
     /* Run Methods */

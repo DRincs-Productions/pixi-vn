@@ -23,17 +23,17 @@ describe("vitePluginPixivn: Game.testing auto-injection", () => {
     test("build: never injects, regardless of the testing option", () => {
         const plugin = vitePluginPixivn();
         resolve(plugin, "build");
-        expect((plugin.transformIndexHtml as any)()).toBeUndefined();
+        expect((plugin.transformIndexHtml as any)()).toEqual([]);
 
         const plugin2 = vitePluginPixivn({ testing: true });
         resolve(plugin2, "build");
-        expect((plugin2.transformIndexHtml as any)()).toBeUndefined();
+        expect((plugin2.transformIndexHtml as any)()).toEqual([]);
     });
 
     test("testing: false: never injects, even while serving", () => {
         const plugin = vitePluginPixivn({ testing: false });
         resolve(plugin, "serve");
-        expect((plugin.transformIndexHtml as any)()).toBeUndefined();
+        expect((plugin.transformIndexHtml as any)()).toEqual([]);
     });
 
     test("virtual module resolves and loads to a Game.testing.enable() call", () => {
