@@ -173,7 +173,7 @@ const currentLabelStepIndexLabel = newLabel("currentLabelStepIndex", [
         narration.dialogue = `He thrusts out his hand.`;
     },
     async () => {
-        narration.requestInput({ type: "string" }, "Peter");
+        narration.input.request({ type: "string" }, "Peter");
         narration.dialogue = `What is your name?`;
     },
     async () => {
@@ -552,7 +552,7 @@ test("back navigation with history containing errors", async () => {
 const inputRequest = newLabel("inputRequest", [
     async () => (narration.dialogue = "Hello!"),
     async () => {
-        narration.requestInput({ type: "string" });
+        narration.input.request({ type: "string" });
         await narration.continue({}, { runNow: true });
     },
     () => (narration.dialogue = "What is your name?"),
@@ -567,8 +567,8 @@ test("runNow input request", async () => {
     expect(narration.dialogue).toEqual({ text: "Hello!" });
     await narration.continue({});
     expect(narration.dialogue).toEqual({ text: "What is your name?" });
-    expect(narration.isRequiredInput).toBe(true);
-    narration.inputValue = "Alice";
-    expect(narration.inputValue).toBe("Alice");
-    expect(narration.isRequiredInput).toBe(false);
+    expect(narration.input.isRequired).toBe(true);
+    narration.input.value = "Alice";
+    expect(narration.input.value).toBe("Alice");
+    expect(narration.input.isRequired).toBe(false);
 });

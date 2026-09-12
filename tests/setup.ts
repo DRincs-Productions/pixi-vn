@@ -51,7 +51,7 @@ GameUnifier.init({
             canvas: {} as any,
             sound: sound.export(),
             labelIndex: NarrationManagerStatic.currentLabelStepIndex || 0,
-            openedLabels: narration.openedLabels,
+            openedLabels: narration.labels.opened,
         };
     },
     restoreGameStepState: async (state, navigate) => {
@@ -67,7 +67,7 @@ GameUnifier.init({
     setStepCounter: (value) => {
         NarrationManagerStatic._stepCounter = value;
     },
-    getOpenedLabels: () => narration.openedLabels.length,
+    getOpenedLabels: () => narration.labels.opened.length,
     addHistoryItem: (historyInfo, options) => {
         return stepHistory.add(historyInfo, options);
     },
@@ -93,8 +93,8 @@ GameUnifier.init({
     getVariable: (prefix, key) => StorageRegistry.getVariable(prefix, key),
     setVariable: (prefix, key, value) => StorageRegistry.setVariable(prefix, key, value),
     removeVariable: (prefix, key) => StorageRegistry.removeVariable(prefix, key),
-    getFlag: (key) => storage.getFlag(key),
-    setFlag: (name, value) => storage.setFlag(name, value),
+    getFlag: (key) => storage.flags.get(key),
+    setFlag: (name, value) => storage.flags.set(name, value),
     onLabelClosing: (openedLabelsNumber) =>
         StorageRegistry.clearOldTempVariables(openedLabelsNumber),
     // animations

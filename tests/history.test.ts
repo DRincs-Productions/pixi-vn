@@ -237,7 +237,7 @@ test("choice test", async () => {
         },
     ]);
     const choice = narration.choices.list![0];
-    await narration.selectChoice(choice, {});
+    await narration.choices.select(choice, {});
     expect(stepHistory.narrativeHistory).toEqual([
         {
             dialogue: {
@@ -955,7 +955,7 @@ test("stepHistory.goBackMode 'paragraph': a `jump` (same opened-labels depth, di
         // frame, so its depth is unchanged from "Choice time." - only comparing depth
         // (as isCheckpointStep used to) missed this as a paragraph boundary, silently
         // merging the jumped-to label's own steps into the SAME paragraph as the choice.
-        await narration.selectChoice(choice, {}); // "Target line 1." - must still be its own checkpoint
+        await narration.choices.select(choice, {}); // "Target line 1." - must still be its own checkpoint
         expect(stepHistory.diffMap.has(stepHistory.lastKey!)).toEqual(true);
 
         await narration.continue({}); // "Target line 2." - same paragraph as "Target line 1.", not a checkpoint

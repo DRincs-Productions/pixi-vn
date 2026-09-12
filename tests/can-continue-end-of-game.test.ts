@@ -19,7 +19,7 @@ test("canContinue becomes false once the last opened label runs out of steps", a
     expect(narration.canContinue).toEqual(true);
 
     await narration.continue({}); // drains openedLabels to []
-    expect(narration.openedLabels).toEqual([]);
+    expect(narration.labels.opened).toEqual([]);
 
     // with no label left to run, there is nothing further to continue into -
     // a `while (canContinue) await continue()` caller must be able to stop here.
