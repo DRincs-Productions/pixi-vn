@@ -893,8 +893,10 @@ export default class NarrationManager implements NarrationManagerInterface {
     private readonly choicesObj: NarrationChoicesInterface = (() => {
         const self = this;
         const obj = {
-            select: <T extends {}>(item: StoredIndexedChoiceInterface, props: StepLabelPropsType<T>) =>
-                self.selectChoice(item, props),
+            select: <T extends {}>(
+                item: StoredIndexedChoiceInterface,
+                props: StepLabelPropsType<T>,
+            ) => self.selectChoice(item, props),
         };
         // list has a read type (StoredIndexedChoiceInterface[]) narrower than its write type
         // (StoredChoiceInterface[]); TS can't infer that asymmetry from an object literal getter/setter pair.
