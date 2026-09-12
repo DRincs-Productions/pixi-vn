@@ -72,7 +72,7 @@ test("choice A", async () => {
     });
     const choices = narration.choices.list;
     expect(choices).toHaveLength(3);
-    await narration.selectChoice(choices![0], {});
+    await narration.choices.select(choices![0], {});
     expect(narration.dialogue).toEqual({
         text: "This is a A label",
     });
@@ -104,7 +104,7 @@ test("choice B", async () => {
     });
     const choices = narration.choices.list;
     expect(choices).toHaveLength(3);
-    await narration.selectChoice(choices![1], {});
+    await narration.choices.select(choices![1], {});
     expect(narration.dialogue).toEqual({
         text: "This is a B label",
     });
@@ -136,7 +136,7 @@ test("choice close", async () => {
     });
     const choices = narration.choices.list;
     expect(choices).toHaveLength(3);
-    await narration.selectChoice(choices![2], {});
+    await narration.choices.select(choices![2], {});
     expect(narration.dialogue).toEqual({
         text: "end",
     });

@@ -47,7 +47,7 @@ test("onLabelStarting can defer a nested call without running any of its side ef
     let pendingStart: (() => Promise<unknown>) | null = null;
     NarrationManagerStatic.onLabelStarting = (_labelId, _props, _options, defaultStart) => {
         // only defer nested calls (paragraph-opening); let the page-opening call run immediately
-        if (narration.openedLabels.length > 0) {
+        if (narration.labels.opened.length > 0) {
             pendingStart = defaultStart;
             return undefined;
         }
@@ -61,7 +61,7 @@ test("onLabelStarting can defer a nested call without running any of its side ef
     expect(pendingStart).not.toBeNull();
     expect(sideEffects).toEqual([]);
     expect(narration.dialogue?.text).toEqual("line2.");
-    expect(narration.openedLabels).toEqual([{ label: "ls_page1", currentStepIndex: 2 }]);
+    expect(narration.labels.opened).toEqual([{ label: "ls_page1", currentStepIndex: 2 }]);
     expect(stepHistory.currentLabelHistory.map((item) => item.dialogue?.text)).toEqual([
         "line1.",
         "line2.",
@@ -72,7 +72,7 @@ test("onLabelStarting can defer a nested call without running any of its side ef
 
     expect(sideEffects).toEqual(["sound:sub-enter"]);
     expect(narration.dialogue?.text).toEqual("Sub line 1.");
-    expect(narration.openedLabels).toEqual([
+    expect(narration.labels.opened).toEqual([
         { label: "ls_page1", currentStepIndex: 2 },
         { label: "ls_sub", currentStepIndex: 0 },
     ]);
@@ -123,7 +123,7 @@ test("onLabelStarting can queue up label starts (with their props) and run them 
     await narration.call(page1, {});
 
     // nothing actually ran: it was only queued
-    expect(narration.openedLabels).toEqual([]);
+    expect(narration.labels.opened).toEqual([]);
     expect(narration.dialogue).toBeUndefined();
     expect(queue.map(({ labelId, props }) => ({ labelId, props }))).toEqual([
         { labelId: "ls_page1", props: {} },
@@ -134,7 +134,7 @@ test("onLabelStarting can queue up label starts (with their props) and run them 
     await page1Entry.start();
 
     expect(narration.dialogue?.text).toEqual("line1.");
-    expect(narration.openedLabels).toEqual([{ label: "ls_page1", currentStepIndex: 0 }]);
+    expect(narration.labels.opened).toEqual([{ label: "ls_page1", currentStepIndex: 0 }]);
 
     await narration.continue({}); // "line2." (a plain step, no label starting involved)
 
@@ -143,7 +143,7 @@ test("onLabelStarting can queue up label starts (with their props) and run them 
     await narration.jump(page2, {});
 
     expect(narration.dialogue?.text).toEqual("line2."); // still unchanged: the jump hasn't run yet
-    expect(narration.openedLabels).toEqual([{ label: "ls_page1", currentStepIndex: 1 }]);
+    expect(narration.labels.opened).toEqual([{ label: "ls_page1", currentStepIndex: 1 }]);
     expect(queue.map(({ labelId, props }) => ({ labelId, props }))).toEqual([
         { labelId: "ls_page2", props: {} },
     ]);
@@ -153,6 +153,6 @@ test("onLabelStarting can queue up label starts (with their props) and run them 
     await page2Entry.start();
 
     expect(narration.dialogue?.text).toEqual("page2 line1.");
-    expect(narration.openedLabels).toEqual([{ label: "ls_page2", currentStepIndex: 0 }]);
+    expect(narration.labels.opened).toEqual([{ label: "ls_page2", currentStepIndex: 0 }]);
     expect(queue).toEqual([]);
 });

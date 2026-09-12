@@ -2,7 +2,7 @@ import { afterEach, beforeEach, expect, test, vi } from "vitest";
 import { narration, newLabel, stepHistory, storage } from "../src";
 
 const talkAliceQuest = newLabel("talk-alice-cond", () => {
-    if (storage.getFlag("test") === false) {
+    if (storage.flags.get("test") === false) {
         return [
             async () => {
                 narration.dialogue = {
@@ -17,11 +17,11 @@ const talkAliceQuest = newLabel("talk-alice-cond", () => {
                 narration.dialogue = { character: "alice", text: "Thanks" };
             },
             async (props) => {
-                storage.setFlag("test", true);
+                storage.flags.set("test", true);
                 await narration.continue(props);
             },
         ];
-    } else if (storage.getFlag("test") === true) {
+    } else if (storage.flags.get("test") === true) {
         return [
             async () => {
                 narration.dialogue = {
@@ -65,10 +65,10 @@ test("first visit plays all 4 steps, sets flag, and closes the label automatical
 
     // Step 3 sets the flag and queues a continue; the label should auto-close.
     await narration.continue({});
-    expect(narration.openedLabels).toEqual([]);
+    expect(narration.labels.opened).toEqual([]);
     // Dialogue stays at the last visible line
     expect(narration.dialogue?.text).toBe("Thanks");
-    expect(storage.getFlag("test")).toBe(true);
+    expect(storage.flags.get("test")).toBe(true);
 
     // No "stepSha not found" warning should have fired
     const stepShaWarnings = warnSpy.mock.calls.filter((args) =>
@@ -79,7 +79,7 @@ test("first visit plays all 4 steps, sets flag, and closes the label automatical
 
 test("second visit shows the second branch", async () => {
     // Seed flag so we enter the second branch directly
-    storage.setFlag("test", true);
+    storage.flags.set("test", true);
 
     await narration.call(talkAliceQuest, {});
     expect(narration.dialogue?.text).toBe("What book do you want me to order?");
@@ -89,7 +89,7 @@ test("second visit shows the second branch", async () => {
 
     // Label ends after the second step
     await narration.continue({});
-    expect(narration.openedLabels).toEqual([]);
+    expect(narration.labels.opened).toEqual([]);
 });
 
 test("back navigation within first branch restores dialogue correctly", async () => {
@@ -118,7 +118,7 @@ test("full playthrough: first visit then second visit, no stepSha warnings", asy
     await narration.continue({});
     await narration.continue({});
     await narration.continue({});
-    expect(narration.openedLabels).toEqual([]);
+    expect(narration.labels.opened).toEqual([]);
 
     // Second visit
     await narration.call(talkAliceQuest, {});
@@ -126,7 +126,7 @@ test("full playthrough: first visit then second visit, no stepSha warnings", asy
     await narration.continue({});
     expect(narration.dialogue?.text).toBe("For me it is the same.");
     await narration.continue({});
-    expect(narration.openedLabels).toEqual([]);
+    expect(narration.labels.opened).toEqual([]);
 
     const stepShaWarnings = warnSpy.mock.calls.filter((args) =>
         String(args[0]).includes("stepSha not found"),

@@ -1,3 +1,4 @@
+import { NARRATION_STORAGE_KEY, SYSTEM_RESERVED_STORAGE_KEYS } from "@constants";
 import type { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import type {
@@ -104,6 +105,24 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         return max;
     }
+    /** Set by {@link getOldGameState} while a `back()` call is in flight, to the value the
+     * player previously answered a pending input request with, if `back()` is about to land
+     * exactly on that (still-pending) request step. `undefined` when there's nothing to restore. */
+    private pendingInputRestoreValue?: StorageElementType;
+    /**
+     * If the step `back()` is about to land on (index `fromKey - 1`) was a pending input
+     * request, looks up what the player answered it with - recorded on the very next step
+     * (index `fromKey`), which is about to be deleted as now-invalidated future. Without this,
+     * re-presenting the request after going back would offer only its original default (or
+     * nothing, since most callers don't pass one), silently losing what the player had typed.
+     */
+    private findPreviousInputAnswer(fromKey: number): StorageElementType | undefined {
+        const landedStep = HistoryManagerStatic._stepsInfoHistory.get(fromKey - 1);
+        if (!landedStep?.isRequiredInput) {
+            return undefined;
+        }
+        return HistoryManagerStatic._stepsInfoHistory.get(fromKey)?.inputValue;
+    }
     private async getOldGameState(
         steps: number,
         restoredStep: GameStepState,
@@ -131,6 +150,11 @@ export default class HistoryManager implements HistoryManagerInterface {
                 // where every now-invalidated step (merged or not) needs deleting from.
                 const fromKey = this.previousCheckpointKey(targetKey) + 1;
                 GameUnifier.stepCounter = fromKey;
+                // Only the final landing spot matters here - do this before deleting the
+                // now-invalidated steps below, since that's what erases the answer.
+                if (steps === 1) {
+                    this.pendingInputRestoreValue = this.findPreviousInputAnswer(fromKey);
+                }
                 this.deleteFromKeyOnward(fromKey);
                 return this.getOldGameState(steps - 1, result);
             } catch (e) {
@@ -164,6 +188,7 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         GameUnifier.runningStepsCount++;
         try {
+            this.pendingInputRestoreValue = undefined;
             // getOldGameState() already returns a fresh clone (restoreDiffChanges() clones
             // internally before applying each diff) - wrapping it in another
             // createExportableElement() here cloned the entire game state a second time for
@@ -174,19 +199,26 @@ export default class HistoryManager implements HistoryManagerInterface {
             );
             if (restoredStep) {
                 await GameUnifier.restoreGameStepState(restoredStep, GameUnifier.navigate);
+                if (this.pendingInputRestoreValue !== undefined) {
+                    GameUnifier.setVariable(
+                        NARRATION_STORAGE_KEY,
+                        SYSTEM_RESERVED_STORAGE_KEYS.CURRENT_INPUT_VALUE_MEMORY_KEY,
+                        this.pendingInputRestoreValue,
+                    );
+                }
                 const stepCounter = GameUnifier.stepCounter - 1;
+                const historyInfo = HistoryManagerStatic._stepsInfoHistory.get(stepCounter);
                 const item = HistoryManagerStatic._narrationHistory.get(stepCounter);
-                if (item && Object.keys(item).length === 1 && item.stepIndex !== undefined) {
-                    const historyInfo = HistoryManagerStatic._stepsInfoHistory.get(stepCounter);
-                    if (historyInfo) {
-                        const narrativeHistory = this.itemMapper({
-                            step: historyInfo,
-                        });
-                        HistoryManagerStatic._narrationHistory.set(
-                            historyInfo.index,
-                            narrativeHistory,
-                        );
-                    }
+                const isPlaceholder =
+                    item && Object.keys(item).length === 1 && item.stepIndex !== undefined;
+                if (historyInfo && (isPlaceholder || historyInfo.isRequiredInput)) {
+                    const narrativeHistory = this.itemMapper({
+                        step: historyInfo,
+                        inputValue: historyInfo.isRequiredInput
+                            ? this.pendingInputRestoreValue
+                            : undefined,
+                    });
+                    HistoryManagerStatic._narrationHistory.set(historyInfo.index, narrativeHistory);
                 }
             } else {
                 logger.error("Error going back");
