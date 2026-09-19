@@ -57,10 +57,13 @@ actual audio playback, real browser ticker/RAF behavior, visual layout. For thos
    automatically shows up as a choice in the sandbox's start menu. See
    [sandbox/src/labels/canvas-text-example.ts](sandbox/src/labels/canvas-text-example.ts) as a
    template.
+
 2. **Run the sandbox:**
+
    ```bash
    npm run sandbox   # builds the library, syncs dist/ into sandbox/node_modules, starts the CRA dev server
    ```
+
 3. **Open the browser** at the printed URL (default `http://localhost:3000`). The sandbox boots
    straight into the start menu label, which lists every registered test label as a choice.
 4. **Drive/inspect it through `Game.testing`** (exposed on `window.pixiVN` in the sandbox — enabled
@@ -73,9 +76,16 @@ actual audio playback, real browser ticker/RAF behavior, visual layout. For thos
    the right position, does the transition look right, does the animation run smoothly) — `Game.testing`
    tells you *what state the engine thinks it's in*, not what it looks like on screen.
 
-The sandbox intentionally has no dialogue/choice UI of its own (`sandbox/src/App.tsx` is an empty
-mount point) — it's a scratchpad for exercising engine internals, not a game. Reading state and
-driving choices happens through `window.pixiVN`, not by building UI to click through.
+The sandbox is a scratchpad for exercising engine internals, not a game. Its React console is only
+for test control; labels remain responsible for exercising the engine behavior. Browser-driven
+scripts can use `window.pixiVN`, while a human can use the same actions through the console.
+
+The sandbox currently includes a small React testing console in `sandbox/src/App.tsx`. It lists
+registered test labels and provides controls for starting a label, continuing, going back, closing
+the current label, and selecting open choices. The console uses the same `Game.testing` bridge as
+browser-driven tests; `window.pixiVN.canvas` and `window.pixiVN.sound` are also exposed in dev
+mode so visual and audio state can be inspected directly. Keep the console focused on test control,
+not game UI.
 
 Keep sandbox test labels small and focused on one feature each — they're throwaway verification
 tools, not sample content. It's fine (and expected) for `sandbox/src/labels/` to accumulate one file
