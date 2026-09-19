@@ -41,7 +41,7 @@ export {
     setMemoryContainer,
 } from "./decorators/canvas-element-decorator";
 export { eventDecorator, default as RegisteredEvents } from "./decorators/event-decorator";
-export { shakeEffect } from "./functions/canvas-effect";
+export { effects, shakeEffect } from "./functions/canvas-effect";
 export { CanvasPropertyUtility } from "./functions/canvas-property-utility";
 export {
     moveIn,
@@ -52,6 +52,7 @@ export {
     removeWithFade,
     showWithDissolve,
     showWithFade,
+    transitions,
     zoomIn,
     zoomOut,
 } from "./functions/canvas-transition";

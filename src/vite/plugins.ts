@@ -5,7 +5,7 @@ import type { IncomingMessage, ServerResponse } from "node:http";
 import { dirname, isAbsolute, resolve } from "node:path";
 import pc from "picocolors";
 import { glob } from "tinyglobby";
-import type { Plugin, ResolvedConfig, ViteDevServer } from "vite";
+import { normalizePath, type Plugin, type ResolvedConfig, type ViteDevServer } from "vite";
 import {
     PIXIVN_DEV_API_ASSETS_MANIFEST,
     PIXIVN_DEV_API_CANVAS_OPTIONS,
@@ -734,7 +734,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             onlyFiles: true,
         });
         for (const file of earlyFiles) {
-            watchedFiles.add(file);
+            watchedFiles.add(normalizePath(file));
             try {
                 await ssrLoadModule(file);
             } catch {
@@ -750,7 +750,7 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
             onlyFiles: true,
         });
         for (const file of contentFiles) {
-            watchedFiles.add(file);
+            watchedFiles.add(normalizePath(file));
             try {
                 await ssrLoadModule(file);
             } catch {
@@ -1093,14 +1093,16 @@ export function vitePluginPixivn(options?: VitePluginPixivnOptions): Plugin {
         },
 
         async hotUpdate({ file, server }) {
+            // Glob results and native Windows paths can use different separators.
+            const normalizedFile = normalizePath(file);
             // Prevent HMR for the auto-generated keys file so that regenerating
             // it never causes a full-page reload.
             const absKeysFilePath = getAbsKeysFilePath();
-            if (absKeysFilePath && file === absKeysFilePath) {
+            if (absKeysFilePath && normalizedFile === normalizePath(absKeysFilePath)) {
                 return [];
             }
 
-            if (allPatterns.length > 0 && watchedFiles.has(file)) {
+            if (allPatterns.length > 0 && watchedFiles.has(normalizedFile)) {
                 try {
                     await reloadContent(server);
                 } catch (error) {

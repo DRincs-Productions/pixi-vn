@@ -18,6 +18,33 @@ at runtime — see `pixi-vn-getting-started`), then walk forward through only th
 below that fall between the installed version and the target — most of these changes don't apply
 unless a project is crossing that specific boundary.
 
+## v1.9.4 → v1.9.5 — canvas transitions and effects namespaces
+
+Canvas transition helpers and canvas effects are now also grouped under discoverable namespaces:
+`transitions` contains `showWithDissolve`, `showWithFade`, `moveIn`, `moveOut`, `zoomIn`, `zoomOut`,
+`pushIn`, `pushOut`, `removeWithDissolve`, and `removeWithFade`; `effects` contains `shakeEffect`.
+
+The previous flat exports remain available in v1.9.5 for compatibility, but are deprecated. Update
+imports and calls when migrating:
+
+```ts
+import { moveIn, shakeEffect, zoomIn } from "@drincs/pixi-vn"; // [!code --]
+import { effects, transitions } from "@drincs/pixi-vn"; // [!code ++]
+
+await zoomIn("alice", "alice"); // [!code --]
+await transitions.zoomIn("alice", "alice"); // [!code ++]
+
+await moveIn("alice", "alice"); // [!code --]
+await transitions.moveIn("alice", "alice"); // [!code ++]
+
+shakeEffect("alice"); // [!code --]
+effects.shakeEffect("alice"); // [!code ++]
+```
+
+The transition and effect behavior and their options are unchanged. This is an organizational API
+change intended to make canvas helpers easier to discover. The existing module entry points remain
+valid; the same namespaces are available from `@drincs/pixi-vn/canvas`.
+
 ## v1.8.x → v1.9.0 — long-deprecated APIs removed
 
 This release removes several APIs that had been marked `@deprecated` for a while, with no

@@ -284,10 +284,10 @@ describe("vitePluginPixivn – type file generation", () => {
         expect(content).toContain(`export const labelIdsEnum = {} as const;`);
     });
 
-    test("hotUpdate returns [] for the generated type file", async () => {
+    test.each(["native", "forward slashes"])("hotUpdate returns [] for the generated type file with %s paths", async (pathStyle) => {
         const plugin = createConfiguredPlugin(typeFilePath);
         const result = await (plugin.hotUpdate as any)({
-            file: typeFilePath,
+            file: pathStyle === "native" ? typeFilePath : typeFilePath.replaceAll("\\", "/"),
             server: {},
             modules: [],
             timestamp: Date.now(),
@@ -793,7 +793,7 @@ describe("vitePluginPixivn – dev-server state sync (regression)", () => {
         expect(JSON.parse(res.body)).toEqual([]);
     });
 
-    test("reloadContent (hot-reload) keeps GET /__pixi-vn/characters and /labels in sync", async () => {
+    test.each(["native", "forward slashes"])("reloadContent with %s paths keeps GET /__pixi-vn/characters and /labels in sync", async (pathStyle) => {
         writeFileSync(join(tmpDir, "characters.ts"), "// characters");
         const registered = { characters: [{ id: "mc" }], labels: ["start"] };
         const plugin: any = configure(vitePluginPixivn({ characters: "./characters.ts" }));
@@ -817,7 +817,9 @@ describe("vitePluginPixivn – dev-server state sync (regression)", () => {
         registered.characters = [{ id: "mc" }, { id: "james" }];
         registered.labels = ["start", "second_part"];
         await plugin.hotUpdate({
-            file: join(tmpDir, "characters.ts"),
+            file: pathStyle === "native"
+                ? join(tmpDir, "characters.ts")
+                : join(tmpDir, "characters.ts").replaceAll("\\", "/"),
             server,
             modules: [],
             timestamp: Date.now(),

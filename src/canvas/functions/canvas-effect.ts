@@ -3,84 +3,97 @@ import { canvas, type ShakeEffectProps } from "..";
 import { logger } from "../../utils/log-utility";
 
 /**
- * Shake the canvas element.
- * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
- * @param alias The alias to identify the component.
- * @param options Animation options, matching the `options` of animate function.
- * @param priority The priority of the PixiJS ticker. This parameter sets the ticker's priority.
- * @returns
+ * @deprecated Use `effects.shakeEffect` instead.
  */
 export async function shakeEffect(
     alias: string,
     options: ShakeEffectProps = {},
     priority?: UPDATE_PRIORITY,
 ): Promise<string[] | undefined> {
-    const elemet = canvas.find(alias);
-    if (!elemet) {
-        logger.error(
-            `The element with the alias ${alias} does not exist. So the shake effect can't be applied.`,
-        );
-        return;
-    }
-    const position = { x: elemet.position.x, y: elemet.position.y };
-    const {
-        shakeType = "horizontal",
-        maxShockSize = 10,
-        shocksNumber: shocksNumberTemp = 10,
-        ...rest
-    } = options;
-    const shocksNumber = shocksNumberTemp - 1;
-    if (shocksNumber < 2) {
-        logger.error("The number of shocks must be at least 3.");
-        return;
-    }
-    const upshocksNumber = Math.floor(shocksNumber / 2);
-    const downshocksNumber = Math.ceil(shocksNumber / 2);
+    return effects.shakeEffect(alias, options, priority);
+}
 
-    const array: number[] = [];
-    for (let i = 0; i < upshocksNumber; i++) {
-        const shockSize = (maxShockSize * (i + 1)) / upshocksNumber;
-        if (shakeType === "horizontal") {
-            if (i % 2 !== 0) {
-                array.push(position.x + shockSize);
+export namespace effects {
+    /**
+     * Shake the canvas element.
+     * If there is a/more ticker(s) with the same alias, then the ticker(s) is/are paused.
+     * @param alias The alias to identify the component.
+     * @param options Animation options, matching the `options` of animate function.
+     * @param priority The priority of the PixiJS ticker. This parameter sets the ticker's priority.
+     * @returns
+     */
+    export async function shakeEffect(
+        alias: string,
+        options: ShakeEffectProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        const elemet = canvas.find(alias);
+        if (!elemet) {
+            logger.error(
+                `The element with the alias ${alias} does not exist. So the shake effect can't be applied.`,
+            );
+            return;
+        }
+        const position = { x: elemet.position.x, y: elemet.position.y };
+        const {
+            shakeType = "horizontal",
+            maxShockSize = 10,
+            shocksNumber: shocksNumberTemp = 10,
+            ...rest
+        } = options;
+        const shocksNumber = shocksNumberTemp - 1;
+        if (shocksNumber < 2) {
+            logger.error("The number of shocks must be at least 3.");
+            return;
+        }
+        const upshocksNumber = Math.floor(shocksNumber / 2);
+        const downshocksNumber = Math.ceil(shocksNumber / 2);
+
+        const array: number[] = [];
+        for (let i = 0; i < upshocksNumber; i++) {
+            const shockSize = (maxShockSize * (i + 1)) / upshocksNumber;
+            if (shakeType === "horizontal") {
+                if (i % 2 !== 0) {
+                    array.push(position.x + shockSize);
+                } else {
+                    array.push(position.x - shockSize);
+                }
             } else {
-                array.push(position.x - shockSize);
-            }
-        } else {
-            if (i % 2 !== 0) {
-                array.push(position.y + shockSize);
-            } else {
-                array.push(position.y - shockSize);
+                if (i % 2 !== 0) {
+                    array.push(position.y + shockSize);
+                } else {
+                    array.push(position.y - shockSize);
+                }
             }
         }
-    }
-    const lastItemIsLeft = upshocksNumber % 2 === 0;
-    for (let i = downshocksNumber; i > 0; i--) {
-        const shockSize = (maxShockSize * (i + 1)) / (downshocksNumber - 1);
-        if (shakeType === "horizontal") {
-            if ((i % 2 === 0 && !lastItemIsLeft) || (i % 2 !== 0 && lastItemIsLeft)) {
-                array.push(position.x - shockSize);
+        const lastItemIsLeft = upshocksNumber % 2 === 0;
+        for (let i = downshocksNumber; i > 0; i--) {
+            const shockSize = (maxShockSize * (i + 1)) / (downshocksNumber - 1);
+            if (shakeType === "horizontal") {
+                if ((i % 2 === 0 && !lastItemIsLeft) || (i % 2 !== 0 && lastItemIsLeft)) {
+                    array.push(position.x - shockSize);
+                } else {
+                    array.push(position.x + shockSize);
+                }
             } else {
-                array.push(position.x + shockSize);
-            }
-        } else {
-            if ((i % 2 === 0 && !lastItemIsLeft) || (i % 2 !== 0 && lastItemIsLeft)) {
-                array.push(position.y - shockSize);
-            } else {
-                array.push(position.y + shockSize);
+                if ((i % 2 === 0 && !lastItemIsLeft) || (i % 2 !== 0 && lastItemIsLeft)) {
+                    array.push(position.y - shockSize);
+                } else {
+                    array.push(position.y + shockSize);
+                }
             }
         }
-    }
 
-    let id: string | undefined;
-    if (shakeType === "horizontal") {
-        array.push(position.x);
-        id = canvas.animate(alias, { x: array }, rest, priority);
-    } else {
-        array.push(position.y);
-        id = canvas.animate(alias, { y: array }, rest, priority);
-    }
-    if (id) {
-        return [id];
+        let id: string | undefined;
+        if (shakeType === "horizontal") {
+            array.push(position.x);
+            id = canvas.animate(alias, { x: array }, rest, priority);
+        } else {
+            array.push(position.y);
+            id = canvas.animate(alias, { y: array }, rest, priority);
+        }
+        if (id) {
+            return [id];
+        }
     }
 }
