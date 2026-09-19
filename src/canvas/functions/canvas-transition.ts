@@ -63,16 +63,26 @@ function addComponent(
     canvasElement: TComponent,
     options: {
         zIndex?: number;
+        properties?: Partial<ImageSpriteOptions & ImageContainerOptions>;
     },
 ): CanvasBaseInterface<any> {
     if (typeof canvasElement === "string") {
         if (checkIfVideo(canvasElement)) {
-            return addVideo(alias, canvasElement, options);
+            return addVideo(alias, canvasElement, {
+                ...options.properties,
+                zIndex: options.zIndex,
+            });
         } else {
-            return addImage(alias, canvasElement, options);
+            return addImage(alias, canvasElement, {
+                ...options.properties,
+                zIndex: options.zIndex,
+            });
         }
     } else if (Array.isArray(canvasElement)) {
-        return addImageCointainer(alias, canvasElement, options);
+        return addImageCointainer(alias, canvasElement, {
+            ...options.properties,
+            zIndex: options.zIndex,
+        } as any);
     } else if (
         typeof canvasElement === "object" &&
         "value" in canvasElement &&
@@ -82,23 +92,42 @@ function addComponent(
             if (checkIfVideo(canvasElement.value)) {
                 return addVideo(alias, canvasElement.value, {
                     ...canvasElement.options,
+                    ...options.properties,
                     zIndex: options.zIndex,
                 });
             } else {
                 return addImage(alias, canvasElement.value, {
                     ...canvasElement.options,
+                    ...options.properties,
                     zIndex: options.zIndex,
                 });
             }
         } else if (Array.isArray(canvasElement.value)) {
             return addImageCointainer(alias, canvasElement.value, {
                 ...canvasElement.options,
+                ...options.properties,
                 zIndex: options.zIndex,
             } as any);
         }
     }
     canvas.add(alias, canvasElement as CanvasBaseInterface<any>, options);
     return canvasElement as CanvasBaseInterface<any>;
+}
+
+function getInitialComponentProperties(
+    component: CanvasBaseInterface<any>,
+): Partial<ImageSpriteOptions & ImageContainerOptions> {
+    const visualComponent = component as unknown as Partial<ImageSpriteOptions>;
+    return {
+        x: visualComponent.x,
+        y: visualComponent.y,
+        anchor: visualComponent.anchor,
+        scale: visualComponent.scale,
+        pivot: visualComponent.pivot,
+        skew: visualComponent.skew,
+        rotation: visualComponent.rotation,
+        angle: visualComponent.angle,
+    };
 }
 
 /**
@@ -137,6 +166,7 @@ export async function showWithDissolve(
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
+        properties: oldComponent ? getInitialComponentProperties(oldComponent) : undefined,
     });
     oldComponent?.parent?.setChildIndex(
         oldComponent,
@@ -259,6 +289,7 @@ export async function showWithFade(
     // add the new component and transfer the properties of the old component to the new component
     component = addComponent(alias, component, {
         zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
+        properties: getInitialComponentProperties(oldComponent),
     });
     oldComponent?.parent?.setChildIndex(
         oldComponent,

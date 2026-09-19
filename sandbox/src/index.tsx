@@ -36,6 +36,8 @@ Game.init(body, {}).then(async () => {
     // can drive/inspect the sandbox. Never enable this in a production build.
     if (process.env.NODE_ENV !== "production") {
         Game.testing.enable();
+        (window as any).pixiVN.canvas = canvas;
+        (window as any).pixiVN.sound = sound;
     }
 
     // Boots the sandbox menu (sandbox/src/labels/start.ts), which lists every registered

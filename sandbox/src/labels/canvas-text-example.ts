@@ -1,4 +1,5 @@
-import { canvas, narration, Text } from "@drincs/pixi-vn";
+import { canvas, showText } from "@drincs/pixi-vn/canvas";
+import { narration } from "@drincs/pixi-vn/narration";
 import { registerTestLabel } from "./registry";
 
 /**
@@ -11,12 +12,11 @@ registerTestLabel("canvas-text-example", "Canvas: show a Text element", [
     (props) => {
         canvas.clear();
 
-        const text = new Text();
-        text.text = "Hello from the sandbox!";
-        text.anchor = 0.5;
-        text.x = canvas.width / 2;
-        text.y = canvas.height / 2;
-        canvas.add("sandbox-text", text);
+        showText("sandbox-text", "Hello from the sandbox!", {
+            anchor: 0.5,
+            x: canvas.width / 2,
+            y: canvas.height / 2,
+        });
 
         narration.dialogue = {
             text: "A Text element should now be centered on the canvas. Close this label to go back to the menu.",
