@@ -425,6 +425,12 @@ export async function moveIn(
     );
     oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
     oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "move");
+    if (
+        (component instanceof ImageSprite || component instanceof ImageContainer) &&
+        component.haveEmptyTexture
+    ) {
+        await component.load();
+    }
     // edit the properties of the new component
     if (!destination) {
         if (component instanceof ImageSprite || component instanceof ImageContainer) {
@@ -448,13 +454,6 @@ export async function moveIn(
         } else {
             aliasToRemoveAfter.push(oldComponentAlias);
         }
-    }
-    // load the image if the image is not loaded
-    if (
-        (component instanceof ImageSprite || component instanceof ImageContainer) &&
-        component.haveEmptyTexture
-    ) {
-        await component.load();
     }
     // edit the properties of the new component
     switch (direction) {
@@ -686,11 +685,11 @@ export async function zoomIn(
     const idShow = canvas.animate(
         alias,
         {
-            ...(mapDestination(destination) as any),
             pivotX: pivot.x,
             pivotY: pivot.y,
             scaleX: scale.x,
             scaleY: scale.y,
+            ...(mapDestination(destination) as any),
         },
         {
             ...options,
