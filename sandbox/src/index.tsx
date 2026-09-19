@@ -1,6 +1,7 @@
 import { Container, Game, canvas, sound } from "@drincs/pixi-vn";
 import { createRoot } from "react-dom/client";
 import App from "./App";
+import { START_LABEL_ID } from "./labels";
 
 // Canvas setup with PIXI
 const body = document.body;
@@ -8,7 +9,7 @@ if (!body) {
     throw new Error("body element not found");
 }
 
-Game.init(body, {}).then(() => {
+Game.init(body, {}).then(async () => {
     // Pixi.JS UI Layer
     canvas.layers.add("ui", new Container());
 
@@ -30,4 +31,14 @@ Game.init(body, {}).then(() => {
     const reactRoot = createRoot(htmlLayout);
 
     reactRoot.render(<App />);
+
+    // Exposes window.pixiVN so a browser-driven test session (see the `pixi-vn-testing` skill)
+    // can drive/inspect the sandbox. Never enable this in a production build.
+    if (process.env.NODE_ENV !== "production") {
+        Game.testing.enable();
+    }
+
+    // Boots the sandbox menu (sandbox/src/labels/start.ts), which lists every registered
+    // test label as a choice.
+    await Game.start(START_LABEL_ID, {});
 });
