@@ -45,30 +45,44 @@ export default class FilterProgressTicker extends TickerBase<FilterProgressTicke
     private finished = false;
     private readonly ctx: FilterTransitionContext = {};
 
-    fn(
-        _ticker: TickerValue,
-        args: FilterProgressTickerArgs,
-        aliases: string[],
-        tickerId: string,
-    ): void {
-        if (this.finished) {
-            return;
-        }
-        this.elapsedMs += _ticker.deltaMS;
+    /**
+     * `PIXI.Ticker.add()` (called by {@link TickerBase.start}) only schedules `fn` for the *next* tick,
+     * it never invokes it synchronously. Without this override, the component `swapComponentForEffect`
+     * just added to the stage would render fully unmasked/unfiltered - i.e. in its final, "transition
+     * complete" state - for that one frame before `fn` ever runs and applies the `from` value. Applying
+     * the current value synchronously here, before `super.start()` hands off to the ticker, closes that
+     * gap: the mask/filter is already in its starting state by the time this component is first rendered.
+     */
+    override start(): void {
+        this.applyValue(this.elapsedMs);
+        super.start();
+    }
+
+    private applyValue(elapsedMs: number): number {
+        const args = this.args;
         const delayMs = (args.delay ?? 0) * 1000;
         const durationMs = Math.max(args.duration, 0) * 1000;
         let linear = 0;
-        if (this.elapsedMs >= delayMs) {
-            linear = durationMs <= 0 ? 1 : Math.min((this.elapsedMs - delayMs) / durationMs, 1);
+        if (elapsedMs >= delayMs) {
+            linear = durationMs <= 0 ? 1 : Math.min((elapsedMs - delayMs) / durationMs, 1);
         }
         const eased = resolveEasing(args.ease)(linear);
         const value = args.from + (args.to - args.from) * eased;
-        aliases.forEach((alias) => {
+        this.canvasElementAliases.forEach((alias) => {
             const component = canvas.find(alias);
             if (component) {
                 applyFilterTransition(component, args.config, value, this.ctx);
             }
         });
+        return linear;
+    }
+
+    fn(_ticker: TickerValue, args: FilterProgressTickerArgs, aliases: string[], tickerId: string): void {
+        if (this.finished) {
+            return;
+        }
+        this.elapsedMs += _ticker.deltaMS;
+        const linear = this.applyValue(this.elapsedMs);
         if (linear >= 1) {
             this.finish(tickerId, args, aliases);
         }
