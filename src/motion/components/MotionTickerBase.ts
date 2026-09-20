@@ -83,6 +83,30 @@ export default abstract class MotionTickerBase<
      * See: https://github.com/motiondivision/motion/issues/3336
      */
     private _paused: boolean = false;
+    /**
+     * Runs `fn` with the {@link createItem} proxy's writes suppressed (the same guard `pause()` uses),
+     * without affecting the ticker's actual paused state once `fn` returns.
+     *
+     * `motion`'s `animate()` applies the first keyframe to its target(s) synchronously, as part of
+     * constructing the animation - before any `animation.time = ...` seek can run. When resuming a
+     * ticker transferred mid-animation (see the `time` hack in {@link MotionTicker}/
+     * {@link MotionSequenceTicker}), that premature synchronous write would flash the real canvas
+     * component to the animation's *first* keyframe value for a frame or two, before the seek (and the
+     * driver's own subsequent ticks) correct it - e.g. a looping `xAlign`/`yAlign` animation transferred
+     * to a new component by a transition would flash to alias 0 regardless of where in its loop it
+     * actually was. Suppressing writes for the duration of the `animate()` call itself prevents that
+     * flash from ever reaching the real component; the seek then happens against state nothing has
+     * rendered yet.
+     */
+    protected suppressWritesDuring<T>(fn: () => T): T {
+        const wasPaused = this._paused;
+        this._paused = true;
+        try {
+            return fn();
+        } finally {
+            this._paused = wasPaused;
+        }
+    }
     canvasElementAliases: string[] = [];
     protected getItemByAlias(alias: string): CanvasBaseInterface<any> | undefined {
         if (!this.canvasElementAliases.includes(alias)) {
@@ -122,7 +146,24 @@ export default abstract class MotionTickerBase<
             return;
         }
         this._paused = false;
-        this.animation.play();
+        const animation = this.animation;
+        // When resuming a transferred ticker (`_args.time` set - see MotionTicker/MotionSequenceTicker),
+        // `suppressWritesDuring` above only covers the *synchronous* construction of the animation; the
+        // underlying `motion` driver's own first real tick (triggered by `.play()` below, via its
+        // `ticker.add(...)` inside `driver.start()`) still lands on `this.ticker` and can write one more
+        // premature value before the `.time` seek has fully "settled" into the interpolation, causing a
+        // one-frame flash even with construction-time writes suppressed. Keeping writes suppressed
+        // through that first post-play tick too - unsuppressing via a listener added *after* `.play()`
+        // registers the driver's own listener, so it runs right after it each tick - eliminates it.
+        if (typeof (this._args as { time?: number }).time === "number") {
+            this._paused = true;
+            animation.play();
+            this.ticker.addOnce(() => {
+                this._paused = false;
+            });
+        } else {
+            animation.play();
+        }
     }
     protected onComplete = () => {
         const id = this.id;

@@ -53,9 +53,18 @@ export default class MotionSequenceTicker extends MotionTickerBase<TArgs> {
                 },
             ];
         });
-        animation = animate(sequence, this._args.options);
-        if (this._args.time) {
-            this.animation.time = this._args.time;
+        // See `suppressWritesDuring`'s doc comment in MotionTickerBase.ts: while resuming
+        // (`this._args.time` set), constructing the animation must not be allowed to write the
+        // sequence's first segment to the real component before the `.time` seek below runs. Also note
+        // this reads the local `animation` variable, not `this.animation` - going through the getter
+        // here would recurse (`this._animation` isn't assigned yet) and silently create a second,
+        // orphaned animation.
+        const isResuming = typeof this._args.time === "number";
+        animation = isResuming
+            ? this.suppressWritesDuring(() => animate(sequence, this._args.options))
+            : animate(sequence, this._args.options);
+        if (isResuming) {
+            animation.time = this._args.time as number;
         }
         this._animation = animation;
         return animation;

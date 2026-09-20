@@ -3,6 +3,7 @@
 import "./canvas-text-example";
 import "./canvas-transition-position";
 import "./start";
+import "./transferred-ticker-position";
 import "./zoomin-position";
 
 export { START_LABEL_ID } from "./start";
