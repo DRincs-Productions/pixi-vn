@@ -41,6 +41,10 @@ export {
     setMemoryContainer,
 } from "./decorators/canvas-element-decorator";
 export { eventDecorator, default as RegisteredEvents } from "./decorators/event-decorator";
+export {
+    default as PixelateFilter,
+    type PixelateFilterOptions,
+} from "./classes/filters/PixelateFilter";
 export { effects, shakeEffect } from "./functions/canvas-effect";
 export { CanvasPropertyUtility } from "./functions/canvas-property-utility";
 export {
@@ -86,10 +90,17 @@ export type { SpriteBaseMemory, default as SpriteMemory } from "./interfaces/mem
 export type { default as TextMemory } from "./interfaces/memory/TextMemory";
 export type { default as VideoSpriteMemory } from "./interfaces/memory/VideoSpriteMemory";
 export type {
+    BlurInOutProps,
+    FlashInOutProps,
+    IrisInOutProps,
+    MaskTransitionProps,
     MoveInOutProps,
+    PixelateInOutProps,
     PushInOutProps,
     ShowWithDissolveTransitionProps,
     ShowWithFadeTransitionProps,
+    SplitInOutProps,
+    WipeInOutProps,
     ZoomInOutProps,
 } from "./interfaces/transition-props";
 export * from "./tickers";

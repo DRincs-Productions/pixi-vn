@@ -1,20 +1,39 @@
-import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { resolveEasing, type EasingInput } from "@canvas/functions/canvas-easing-utility";
+import {
+    snapshotLocalBounds,
+    type BlurFilterConfig,
+    type FilterTransitionConfig,
+    type IrisFilterConfig,
+    type PixelateFilterConfig,
+    type SplitFilterConfig,
+    type WipeFilterConfig,
+} from "@canvas/functions/canvas-filter-transition-utility";
+import PixiContainer from "@canvas/components/Container";
+import FilterProgressTicker from "@canvas/tickers/classes/FilterProgressTicker";
+import { logger } from "@utils/log-utility";
+import type { Container as PixiJsContainer, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import {
     canvas,
     type CanvasBaseInterface,
     type ImageContainerOptions,
     type ImageSpriteOptions,
 } from "..";
-import { logger } from "../../utils/log-utility";
 import ImageContainer from "../components/ImageContainer";
 import ImageSprite from "../components/ImageSprite";
 import VideoSprite from "../components/VideoSprite";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import type {
+    BlurInOutProps,
+    FlashInOutProps,
+    IrisInOutProps,
     MoveInOutProps,
+    PixelateInOutProps,
     PushInOutProps,
     ShowWithDissolveTransitionProps,
     ShowWithFadeTransitionProps,
+    SplitInOutProps,
+    WipeInOutProps,
     ZoomInOutProps,
 } from "../interfaces/transition-props";
 import { checkIfVideo } from "./canvas-utility";
@@ -257,6 +276,125 @@ export namespace transitions {
             rotation: visualComponent.rotation,
             angle: visualComponent.angle,
         };
+    }
+
+    /**
+     * Shared swap logic for the mask/filter-based transitions below (wipe/iris/split/blur/pixelate):
+     * replaces whatever is under `alias` with `component`, transferring the old element's tickers and
+     * properties the same way {@link moveIn}/{@link zoomIn} do, but without any position/scale change.
+     */
+    function swapComponentForEffect(
+        alias: string,
+        component: TComponent,
+        tag: string,
+    ): { component: CanvasBaseInterface<any>; oldComponentAlias?: string } {
+        let oldComponentAlias: string | undefined;
+        const oldComponent = canvas.find(alias);
+        if (oldComponent) {
+            oldComponentAlias = `${alias}_temp_${tag}`;
+            canvas.editAlias(alias, oldComponentAlias);
+        }
+        const newComponent = addComponent(alias, component, {
+            zIndex: oldComponent ? oldComponent.parent?.getChildIndex(oldComponent) : undefined,
+            properties: oldComponent ? getInitialComponentProperties(oldComponent) : undefined,
+        });
+        oldComponent?.parent?.setChildIndex(
+            oldComponent,
+            oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+        );
+        oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+        oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
+        return { component: newComponent, oldComponentAlias };
+    }
+
+    /**
+     * Maps the `direction` shorthand shared by {@link WipeInOutProps} to the generic `angle` it's
+     * equivalent to.
+     */
+    function directionToAngle(direction: "up" | "down" | "left" | "right"): number {
+        switch (direction) {
+            case "up":
+                return 90;
+            case "down":
+                return 270;
+            case "left":
+                return 180;
+            default:
+                return 0;
+        }
+    }
+
+    /**
+     * Creates and starts a {@link FilterProgressTicker} for `alias`, wiring up `completeOnContinue` the
+     * same way {@link motion.animate} does for the other transitions. This is the single place every
+     * mask/filter-based transition (wipe/iris/split/blur/pixelate) goes through.
+     */
+    function addFilterProgressTicker(
+        alias: string,
+        args: {
+            config: FilterTransitionConfig;
+            from: number;
+            to: number;
+            duration?: number;
+            /** `motion`'s `delay` also allows a per-target `(index, total) => number`; resolved as a single target (index 0 of 1). */
+            delay?: number | ((index: number, total: number) => number);
+            /** Accepts `motion`'s richer `ease` type too - narrowed to {@link EasingInput} by {@link resolveEasing}. */
+            ease?: unknown;
+            completeOnContinue?: boolean;
+            aliasToRemoveAfter?: string[];
+            tickerIdToResume?: string[];
+        },
+        priority?: UPDATE_PRIORITY,
+    ): string | undefined {
+        const delay = typeof args.delay === "function" ? args.delay(0, 1) : args.delay;
+        const ticker = new FilterProgressTicker(
+            {
+                config: args.config,
+                from: args.from,
+                to: args.to,
+                duration: args.duration ?? 1,
+                delay,
+                ease: args.ease as EasingInput,
+                aliasToRemoveAfter: args.aliasToRemoveAfter,
+                tickerIdToResume: args.tickerIdToResume,
+            },
+            { priority, canvasElementAliases: [alias] },
+        );
+        const id = canvas.tickers.add(alias, ticker);
+        if (id && (args.completeOnContinue ?? true)) {
+            canvas.tickers.completeOnStepEnd({ id });
+        }
+        return id;
+    }
+
+    /**
+     * Builds the `alpha` keyframes/`times` pair for {@link flashIn}/{@link flashOut}'s color overlay:
+     * `pulses` repetitions of fade-in (`fadeDuration`) -> hold (`holdDuration`) -> fade-out
+     * (`fadeDuration`), using the same multi-stop keyframe-array idiom {@link effects.shakeEffect} uses.
+     */
+    function buildFlashKeyframes(
+        maxAlpha: number,
+        fadeDuration: number,
+        holdDuration: number,
+        pulses: number,
+    ): { values: number[]; times: number[]; total: number } {
+        const perPulse = fadeDuration * 2 + holdDuration;
+        const total = Math.max(perPulse * Math.max(pulses, 1), 0.001);
+        const values: number[] = [0];
+        const times: number[] = [0];
+        let t = 0;
+        for (let i = 0; i < Math.max(pulses, 1); i++) {
+            t += fadeDuration;
+            values.push(maxAlpha);
+            times.push(t / total);
+            t += holdDuration;
+            values.push(maxAlpha);
+            times.push(t / total);
+            t += fadeDuration;
+            values.push(0);
+            times.push(Math.min(t / total, 1));
+        }
+        return { values, times, total };
     }
 
     /**
@@ -1051,5 +1189,714 @@ export namespace transitions {
         priority?: UPDATE_PRIORITY,
     ): string[] | undefined {
         return moveOut(alias, props, priority);
+    }
+
+    /**
+     * Show a image in the canvas with a wipe effect: the image is progressively revealed by a moving
+     * boundary. The direction/angle, edge softness, and inversion are all configurable, so the same
+     * primitive can produce horizontal, vertical, or diagonal reveals - see {@link WipeInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+     * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+     * If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function wipeIn(
+        alias: string,
+        component?: TComponent,
+        props: WipeInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        const {
+            angle,
+            direction = "right",
+            softness = 0,
+            invert = false,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (!component) {
+            component = alias;
+        }
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "wipe",
+        );
+        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const config: WipeFilterConfig = {
+            kind: "wipe",
+            angle: angle ?? directionToAngle(direction),
+            softness,
+            invert,
+            bounds: snapshotLocalBounds(newComponent),
+        };
+        const id = addFilterProgressTicker(
+            alias,
+            { config, from: 0, to: 1, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Remove a image from the canvas with a wipe effect: the image is progressively concealed by a
+     * moving boundary. See {@link wipeIn} and {@link WipeInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function wipeOut(
+        alias: string,
+        props: WipeInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        const {
+            angle,
+            direction = "right",
+            softness = 0,
+            invert = false,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        aliasToRemoveAfter.push(alias);
+        const component = canvas.find(alias);
+        if (!component) {
+            logger.warn(`The canvas component "${alias}" is not found.`);
+            return;
+        }
+        const config: WipeFilterConfig = {
+            kind: "wipe",
+            angle: angle ?? directionToAngle(direction),
+            softness,
+            invert,
+            bounds: snapshotLocalBounds(component),
+        };
+        const id = addFilterProgressTicker(
+            alias,
+            { config, from: 1, to: 0, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Show a image in the canvas with an iris effect: the image is progressively revealed by an
+     * expanding radial mask. Moving {@link IrisInOutProps.origin} off-center makes the same primitive
+     * useful as a focus/reveal effect (e.g. centered on a character).
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+     * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+     * If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function irisIn(
+        alias: string,
+        component?: TComponent,
+        props: IrisInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        const {
+            origin = {},
+            aspect = 1,
+            softness = 0,
+            invert = false,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (!component) {
+            component = alias;
+        }
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "iris",
+        );
+        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const config: IrisFilterConfig = {
+            kind: "iris",
+            originX: origin.x ?? 0.5,
+            originY: origin.y ?? 0.5,
+            aspect,
+            softness,
+            invert,
+            bounds: snapshotLocalBounds(newComponent),
+        };
+        const id = addFilterProgressTicker(
+            alias,
+            { config, from: 0, to: 1, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Remove a image from the canvas with an iris effect: the image is progressively concealed by a
+     * contracting radial mask. See {@link irisIn} and {@link IrisInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function irisOut(
+        alias: string,
+        props: IrisInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        const {
+            origin = {},
+            aspect = 1,
+            softness = 0,
+            invert = false,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        aliasToRemoveAfter.push(alias);
+        const component = canvas.find(alias);
+        if (!component) {
+            logger.warn(`The canvas component "${alias}" is not found.`);
+            return;
+        }
+        const config: IrisFilterConfig = {
+            kind: "iris",
+            originX: origin.x ?? 0.5,
+            originY: origin.y ?? 0.5,
+            aspect,
+            softness,
+            invert,
+            bounds: snapshotLocalBounds(component),
+        };
+        const id = addFilterProgressTicker(
+            alias,
+            { config, from: 1, to: 0, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Show a image in the canvas with a split effect: two mask panels retract apart to progressively
+     * reveal the image. A configured {@link SplitInOutProps} covers "curtain"-like effects without a
+     * story-specific API.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+     * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+     * If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function splitIn(
+        alias: string,
+        component?: TComponent,
+        props: SplitInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        const {
+            orientation = "vertical",
+            origin = 0.5,
+            softness = 0,
+            invert = false,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (!component) {
+            component = alias;
+        }
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "split",
+        );
+        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const config: SplitFilterConfig = {
+            kind: "split",
+            orientation,
+            origin,
+            softness,
+            invert,
+            bounds: snapshotLocalBounds(newComponent),
+        };
+        const id = addFilterProgressTicker(
+            alias,
+            { config, from: 0, to: 1, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Remove a image from the canvas with a split effect: two mask panels close together to
+     * progressively conceal the image. See {@link splitIn} and {@link SplitInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function splitOut(
+        alias: string,
+        props: SplitInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        const {
+            orientation = "vertical",
+            origin = 0.5,
+            softness = 0,
+            invert = false,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        aliasToRemoveAfter.push(alias);
+        const component = canvas.find(alias);
+        if (!component) {
+            logger.warn(`The canvas component "${alias}" is not found.`);
+            return;
+        }
+        const config: SplitFilterConfig = {
+            kind: "split",
+            orientation,
+            origin,
+            softness,
+            invert,
+            bounds: snapshotLocalBounds(component),
+        };
+        const id = addFilterProgressTicker(
+            alias,
+            { config, from: 1, to: 0, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Show a image in the canvas with a blur effect: the image appears already blurred and sharpens
+     * into focus. A generic blur, not a "dream"/"flashback" transition specifically - combine it with
+     * {@link showWithFade} for that recipe. See {@link BlurInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+     * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+     * If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function blurIn(
+        alias: string,
+        component?: TComponent,
+        props: BlurInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        const { strength = 32, quality = 4, duration, delay, ease, completeOnContinue = true } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (!component) {
+            component = alias;
+        }
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "blur",
+        );
+        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const config: BlurFilterConfig = { kind: "blur", quality };
+        const id = addFilterProgressTicker(
+            alias,
+            {
+                config,
+                from: strength,
+                to: 0,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Remove a image from the canvas with a blur effect: the image blurs out of focus before being
+     * removed. See {@link blurIn} and {@link BlurInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function blurOut(
+        alias: string,
+        props: BlurInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        const { strength = 32, quality = 4, duration, delay, ease, completeOnContinue = true } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        aliasToRemoveAfter.push(alias);
+        const component = canvas.find(alias);
+        if (!component) {
+            logger.warn(`The canvas component "${alias}" is not found.`);
+            return;
+        }
+        const config: BlurFilterConfig = { kind: "blur", quality };
+        const id = addFilterProgressTicker(
+            alias,
+            {
+                config,
+                from: 0,
+                to: strength,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Show a image in the canvas with a pixelate effect: the image appears pixelated and resolves into
+     * focus. Useful for retro effects, digital transitions, censorship/stylization, or scene changes -
+     * not only "glitch" scenes. See {@link PixelateInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+     * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+     * If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function pixelateIn(
+        alias: string,
+        component?: TComponent,
+        props: PixelateInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        const { pixelSize = 32, duration, delay, ease, completeOnContinue = true } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (!component) {
+            component = alias;
+        }
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "pixelate",
+        );
+        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const config: PixelateFilterConfig = { kind: "pixelate" };
+        const id = addFilterProgressTicker(
+            alias,
+            {
+                config,
+                from: pixelSize,
+                to: 1,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Remove a image from the canvas with a pixelate effect: the image pixelates before being removed.
+     * See {@link pixelateIn} and {@link PixelateInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function pixelateOut(
+        alias: string,
+        props: PixelateInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        const { pixelSize = 32, duration, delay, ease, completeOnContinue = true } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        aliasToRemoveAfter.push(alias);
+        const component = canvas.find(alias);
+        if (!component) {
+            logger.warn(`The canvas component "${alias}" is not found.`);
+            return;
+        }
+        const config: PixelateFilterConfig = { kind: "pixelate" };
+        const id = addFilterProgressTicker(
+            alias,
+            {
+                config,
+                from: 1,
+                to: pixelSize,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
+            priority,
+        );
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Show a image in the canvas with a flash effect: the new image appears immediately, with a
+     * configurable solid-color overlay (not limited to a white flash) fading in and out over it. White
+     * reads as a camera/explosion-like flash, black as a blink/cut, and arbitrary colors work for
+     * damage/magic/memory/UI transitions. See {@link FlashInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
+     * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
+     * If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function flashIn(
+        alias: string,
+        component?: TComponent,
+        props: FlashInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        const {
+            color = 0xffffff,
+            maxAlpha = 1,
+            duration: fadeDuration = 0.3,
+            holdDuration = 0,
+            pulses = 1,
+            completeOnContinue = true,
+            ...rest
+        } = props;
+        if (!component) {
+            component = alias;
+        }
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "flash",
+        );
+        const aliasToRemoveAfter: string[] = oldComponentAlias ? [oldComponentAlias] : [];
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const res: string[] = [];
+        const overlayId = addFlashOverlay(newComponent, {
+            color,
+            maxAlpha,
+            fadeDuration,
+            holdDuration,
+            pulses,
+            completeOnContinue,
+            aliasToRemoveAfter,
+            rest,
+            priority,
+        });
+        overlayId && res.push(overlayId);
+        if (res.length > 0) {
+            return res;
+        }
+    }
+
+    /**
+     * Remove a image from the canvas with a flash effect: a configurable solid-color overlay fades in
+     * and out over the image, which is then removed. See {@link flashIn} and {@link FlashInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function flashOut(
+        alias: string,
+        props: FlashInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        const {
+            color = 0xffffff,
+            maxAlpha = 1,
+            duration: fadeDuration = 0.3,
+            holdDuration = 0,
+            pulses = 1,
+            completeOnContinue = true,
+            ...rest
+        } = props;
+        const component = canvas.find(alias);
+        if (!component) {
+            logger.warn(`The canvas component "${alias}" is not found.`);
+            return;
+        }
+        const id = addFlashOverlay(component, {
+            color,
+            maxAlpha,
+            fadeDuration,
+            holdDuration,
+            pulses,
+            completeOnContinue,
+            aliasToRemoveAfter: [alias],
+            rest,
+            priority,
+        });
+        if (id) {
+            return [id];
+        }
+    }
+
+    /**
+     * Shared implementation for {@link flashIn}/{@link flashOut}: adds a temporary color overlay sized
+     * to `target`'s current bounds and fades its alpha in/out via `canvas.animate`, the exact multi-stop
+     * keyframe idiom {@link effects.shakeEffect} already uses - no filter or mask is needed for flash.
+     */
+    function addFlashOverlay(
+        target: CanvasBaseInterface<any>,
+        options: {
+            color: number | string;
+            maxAlpha: number;
+            fadeDuration: number;
+            holdDuration: number;
+            pulses: number;
+            completeOnContinue: boolean;
+            aliasToRemoveAfter: string[];
+            rest: Omit<
+                FlashInOutProps,
+                "color" | "maxAlpha" | "duration" | "holdDuration" | "pulses" | "completeOnContinue"
+            >;
+            priority?: UPDATE_PRIORITY;
+        },
+    ): string | undefined {
+        const bounds = target.getBounds();
+        const overlay = new PixiContainer();
+        const rect = new PIXI.Graphics();
+        rect.rect(0, 0, bounds.width, bounds.height).fill(options.color);
+        // `rect` is a plain, ephemeral PIXI.Graphics (not a pixi-vn CanvasBaseItem), so it's added via
+        // the underlying PixiJS Container API rather than the stricter pixi-vn-component-only typing.
+        (overlay as unknown as PixiJsContainer).addChild(rect);
+        overlay.position.set(bounds.x, bounds.y);
+        const overlayAlias = `${target.label}_flash_${Math.random().toString(36).slice(2)}`;
+        canvas.add(overlayAlias, overlay, { zIndex: (target.zIndex ?? 0) + 1 });
+        const { values, times, total } = buildFlashKeyframes(
+            options.maxAlpha,
+            options.fadeDuration,
+            options.holdDuration,
+            options.pulses,
+        );
+        const aliasToRemoveAfter = [...options.aliasToRemoveAfter, overlayAlias];
+        return canvas.animate(
+            overlayAlias,
+            { alpha: values },
+            {
+                ...options.rest,
+                duration: total,
+                times,
+                aliasToRemoveAfter,
+                completeOnContinue: options.completeOnContinue,
+            } as any,
+            options.priority,
+        );
     }
 }
