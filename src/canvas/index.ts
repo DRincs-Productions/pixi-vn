@@ -41,10 +41,6 @@ export {
     setMemoryContainer,
 } from "./decorators/canvas-element-decorator";
 export { eventDecorator, default as RegisteredEvents } from "./decorators/event-decorator";
-export {
-    default as PixelateFilter,
-    type PixelateFilterOptions,
-} from "./classes/filters/PixelateFilter";
 export { effects, shakeEffect } from "./functions/canvas-effect";
 export { CanvasPropertyUtility } from "./functions/canvas-property-utility";
 export {

@@ -17,8 +17,8 @@ Pixi'VN is a general-purpose engine, not a specific game. Every module under `sr
   looks like "my game's logic" belongs in the sandbox (§3) or a template, never in `src/`.
 - **Independently of a specific bundler/framework where feasible.** Bundler-specific integrations
   (e.g. `src/vite/`) are opt-in extras layered on top of a core that itself does not require Vite,
-  React, or any particular tool. `pixi.js`, `tone`, `motion`, `@pixi/devtools`, and `vite` are peer
-  dependencies for this reason — see `skills/game-init/SKILL.md`.
+  React, or any particular tool. `pixi.js`, `pixi-filters`, `tone`, `motion`, `@pixi/devtools`, and
+  `vite` are peer dependencies for this reason — see `skills/game-init/SKILL.md`.
 - **Every public symbol is exported through an `index.ts`** (root `src/index.ts` plus the per-module
   subpath entry points, e.g. `src/narration/index.ts`) — see `CONTRIBUTING.md`'s folder list
   (`managers`/`functions`/`classes`/`decorators`/`interface`/`types`/`labels`). Adding a feature

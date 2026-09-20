@@ -1,14 +1,12 @@
-import type {
-    ContainerOptions,
-    Container as PixiContainer,
-    PointData,
-} from "@drincs/pixi-vn/pixi.js";
+import type { Filter, Container as PixiContainer, PointData } from "@drincs/pixi-vn/pixi.js";
 import { canvas } from "..";
 import { CachedMap } from "../../classes";
 import { logger } from "../../utils/log-utility";
 import type CanvasBaseItem from "../classes/CanvasBaseItem";
 import { setListenerMemory } from "../components/ListenerExtension";
+import { RegisteredFilters } from "@drincs/pixi-vn/filters";
 import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
+import type ContainerMemory from "@canvas/interfaces/memory/ContainerMemory";
 import type { CanvasElementAliasType } from "../types/CanvasElementAliasType";
 
 const registeredCanvasComponent = new CachedMap<CanvasElementAliasType, typeof CanvasBaseItem<any>>(
@@ -85,7 +83,7 @@ export function canvasComponentDecorator<
 
 export async function setMemoryContainer<T extends PixiContainer>(
     element: T | PixiContainer,
-    memory: ContainerOptions | {},
+    memory: Partial<ContainerMemory> | {},
     options?: {
         ignoreScale?: boolean;
         end?: () => Promise<void> | void;
@@ -136,6 +134,12 @@ export async function setMemoryContainer<T extends PixiContainer>(
         element.interactiveChildren = memory.interactiveChildren;
     if ("hitArea" in memory && memory.hitArea !== undefined) element.hitArea = memory.hitArea;
     setListenerMemory(element, memory);
+    if ("pixivnFilters" in memory && memory.pixivnFilters !== undefined) {
+        const filters = memory.pixivnFilters
+            .map((f) => RegisteredFilters.getInstance(f.filterId, f.args))
+            .filter((f): f is Filter => !!f);
+        element.filters = filters.length > 0 ? filters : null;
+    }
 
     // "anchor" in memory && memory.anchor !== undefined && (element.anchor = memory.anchor as number | PointData);
     if ("align" in memory && memory.align !== undefined && "align" in element)

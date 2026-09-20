@@ -20,6 +20,7 @@ import type AssetMemory from "../interfaces/AssetMemory";
 import type { CanvasBaseInterface } from "../interfaces/CanvasBaseInterface";
 import type CanvasBaseItemMemory from "../interfaces/memory/CanvasBaseItemMemory";
 import type ContainerMemory from "../interfaces/memory/ContainerMemory";
+import { RegisteredFilters, type FilterMemory } from "@drincs/pixi-vn/filters";
 import type SpriteMemory from "../interfaces/memory/SpriteMemory";
 import type TextMemory from "../interfaces/memory/TextMemory";
 
@@ -75,7 +76,37 @@ function extractCommonMemoryProperties<T extends PixiContainer>(
         index: parent?.getChildIndex(element),
         parentLabel: parent?.label,
         label: element.label,
+        pixivnFilters: getFiltersMemory(element.filters),
     };
+}
+
+/**
+ * Convert a container's `.filters` into a serializable {@link FilterMemory} array, using each filter's
+ * own registration (see {@link filterDecorator}/{@link RegisteredFilters}). A filter that was never
+ * registered can't be identified back to a class on restore, so it's skipped with a warning rather than
+ * failing the whole export.
+ */
+function getFiltersMemory(filters: PixiContainer["filters"]): FilterMemory[] | undefined {
+    if (!filters) {
+        return undefined;
+    }
+    const list = Array.isArray(filters) ? filters : [filters];
+    const result: FilterMemory[] = [];
+    for (const filter of list) {
+        const filterId = (filter as any).pixivnFilterId;
+        if (!filterId) {
+            logger.warn(
+                "A Filter instance without a registered pixivnFilterId can't be saved and will be skipped. Register it with filterDecorator/RegisteredFilters to make it save-compatible.",
+                filter,
+            );
+            continue;
+        }
+        const memory = RegisteredFilters.toMemory(filterId, filter);
+        if (memory) {
+            result.push(memory);
+        }
+    }
+    return result;
 }
 
 /**

@@ -74,6 +74,7 @@ export default defineConfig((options) => {
                 narration: "src/narration/index.ts",
                 history: "src/history/index.ts",
                 storage: "src/storage/index.ts",
+                filters: "src/filters/index.ts",
                 canvas: "src/canvas/index.ts",
                 sound: "src/sound/index.ts",
                 characters: "src/characters/index.ts",
@@ -89,9 +90,12 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/core",
                 "@drincs/pixi-vn/pixi.js",
                 "@drincs/pixi-vn/worker",
+                // submodules
+                "@drincs/pixi-vn/filters",
                 // external dependencies
                 "tone",
                 "@pixi/devtools",
+                "pixi-filters",
             ],
             outExtension({ format }) {
                 return {
@@ -156,10 +160,12 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/canvas",
                 "@drincs/pixi-vn/sound",
                 "@drincs/pixi-vn/characters",
+                "@drincs/pixi-vn/filters",
                 // animation
                 "@drincs/pixi-vn/motion",
                 // peer dep — must not be bundled
                 "vite",
+                "pixi-filters",
             ],
             outExtension({ format }) {
                 return {
@@ -179,6 +185,7 @@ export default defineConfig((options) => {
                 canvas: "src/canvas/index.ts",
                 sound: "src/sound/index.ts",
                 characters: "src/characters/index.ts",
+                filters: "src/filters/index.ts",
                 motion: "src/motion/index.ts",
                 index: "src/index.ts",
                 vite: "src/vite/index.ts",
@@ -198,10 +205,12 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/canvas",
                 "@drincs/pixi-vn/sound",
                 "@drincs/pixi-vn/characters",
+                "@drincs/pixi-vn/filters",
                 "@drincs/pixi-vn/motion",
                 "tone",
                 "@pixi/devtools",
                 "motion",
+                "pixi-filters",
                 "vite",
             ],
         }),

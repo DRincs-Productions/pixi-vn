@@ -12,7 +12,7 @@ import {
     type SplitFilterConfig,
     type WipeFilterConfig,
 } from "../src/canvas/functions/canvas-filter-transition-utility";
-import PixelateFilter from "../src/canvas/classes/filters/PixelateFilter";
+import { PixelateFilter } from "pixi-filters";
 import FilterProgressTicker from "../src/canvas/tickers/classes/FilterProgressTicker";
 import { canvas } from "../src/canvas";
 
@@ -173,7 +173,7 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
         expect(target.filters).toEqual([preexisting]);
     });
 
-    test("pixelate: attaches a PixelateFilter and drives its pixelSize, removing it on cleanup", () => {
+    test("pixelate: attaches a PixelateFilter and drives its size, removing it on cleanup", () => {
         const target = createTarget();
         const ctx: FilterTransitionContext = {};
         const config: PixelateFilterConfig = { kind: "pixelate" };
@@ -182,7 +182,8 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
         expect(target.filters).toHaveLength(1);
         const filter = target.filters![0] as PixelateFilter;
         expect(filter).toBeInstanceOf(PixelateFilter);
-        expect(filter.pixelSize).toBe(20);
+        expect(filter.sizeX).toBe(20);
+        expect(filter.sizeY).toBe(20);
 
         cleanupFilterTransition(target, config, ctx);
         expect(target.filters).toBeNull();

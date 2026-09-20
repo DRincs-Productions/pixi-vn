@@ -1,7 +1,7 @@
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
-import PixelateFilter from "@canvas/classes/filters/PixelateFilter";
 import { BlurFilter, Graphics } from "@drincs/pixi-vn/pixi.js";
 import type { Filter } from "@drincs/pixi-vn/pixi.js";
+import { PixelateFilter } from "pixi-filters";
 
 /**
  * A snapshot of a component's own (untransformed) bounds, captured once when a mask/filter transition
@@ -234,10 +234,10 @@ export function applyFilterTransition(
         }
         case "pixelate": {
             if (!ctx.filter) {
-                ctx.filter = new PixelateFilter({ pixelSize: value });
+                ctx.filter = new PixelateFilter(value);
                 attachFilter(component, ctx.filter);
             }
-            (ctx.filter as PixelateFilter).pixelSize = value;
+            (ctx.filter as PixelateFilter).size = value;
             break;
         }
     }
