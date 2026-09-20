@@ -28,6 +28,13 @@ Pixi'VN is a general-purpose engine, not a specific game. Every module under `sr
 Before adding an abstraction, ask whether it's genuinely reusable across arbitrary Pixi'VN projects.
 If it only serves one narrow use case, it likely doesn't belong in `src/`.
 
+**Use path aliases for new imports, not parent-relative paths.** In new files, and for any new import
+line added to an existing file, prefer `@canvas/...`, `@motion/...`, `@utils/...`, `@classes/...`, etc.
+(see `tsconfig.json`'s `paths`) over `../` / `../../` traversal. Same-directory imports (`./sibling`)
+are fine as-is. This is a forward-looking convention, not a mandate to rewrite existing relative
+imports you happen to be near — leave a file's pre-existing imports alone unless you're already
+rewriting that exact line for another reason.
+
 ## 2. Testing policy
 
 **If it can be tested with Vitest, it must be tested with Vitest.** This covers the large majority of
