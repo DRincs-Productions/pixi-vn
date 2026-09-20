@@ -66,6 +66,14 @@ actual audio playback, real browser ticker/RAF behavior, visual layout. For thos
 
 3. **Open the browser** at the printed URL (default `http://localhost:3000`). The sandbox boots
    straight into the start menu label, which lists every registered test label as a choice.
+   **If the Chrome DevTools MCP server is available, use it** to drive this step yourself
+   (`new_page`/`navigate_page`, `click`/`take_snapshot` to click through labels and the
+   `Continue`/`Indietro` controls, `take_screenshot` to actually look at the canvas, and
+   `list_console_messages` to check for errors/warnings after each step) instead of only asking the
+   human to click around — it has already caught real bugs (e.g. a PixiJS deprecation warning) that a
+   headless Playwright script missed because it wasn't checking console output as closely. Fall back
+   to a Playwright/`chromium-cli` script, or asking the human to drive the browser, only when Chrome
+   DevTools MCP isn't available.
 4. **Drive/inspect it through `Game.testing`** (exposed on `window.pixiVN` in the sandbox — enabled
    automatically for non-production builds, see `sandbox/src/index.tsx`) instead of clicking blindly:
    read `window.pixiVN.getState()` to see the current dialogue/choices, `selectChoice(i)` to enter a

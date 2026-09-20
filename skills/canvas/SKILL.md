@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-canvas
-description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying transitions (dissolve, fade, move, zoom, push), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
+description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
 ---
 
 # Pixi'VN Canvas
@@ -25,7 +25,7 @@ Load this skill whenever a task involves:
 
 - Showing, replacing, or removing an image/sprite/video/text on screen.
 - Building a composite character sprite out of several image layers.
-- Applying a transition (dissolve, fade, move, zoom, push) when a background or sprite changes.
+- Applying a transition (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate) when a background or sprite changes.
 - Adding a shake effect or a custom PixiJS-ticker-driven animation.
 - Reading or modifying canvas element position/anchor/alpha/zIndex.
 
@@ -167,6 +167,50 @@ zoomOut("liam", { direction: "right", duration: 0.5 });
 `completeOnContinue` flag (default `true`) that finishes the transition immediately when the
 player advances the narration before the animation ends — leave this at its default unless you
 specifically want an animation to be interruptible/ignored.
+
+### Generic reveal/filter transitions: wipe, iris, split, flash, blur, pixelate
+
+These six are only exposed through the `transitions` namespace (no flat top-level export like the
+older `moveIn`/`showWithDissolve`), each as a matched `xIn`/`xOut` pair with the same
+`(alias, componentOrUrl?, props?, priority?)` / `(alias, props?, priority?)` shapes as above.
+They favor a handful of configurable options over narrative-specific variants — e.g. there's one
+`wipeIn`, not `wipeLeft`/`wipeRight`.
+
+```ts
+import { transitions } from "@drincs/pixi-vn";
+
+// wipe: a moving boundary reveals/conceals the image. `angle` in degrees (0 = left-to-right, 90 =
+// bottom-to-top, ...); `direction` ("up"/"down"/"left"/"right") is a shorthand for the 4 cardinal angles.
+await transitions.wipeIn("background", "bg-forest", { direction: "left", duration: 1 });
+await transitions.wipeIn("background", "bg-night", { angle: 45, softness: 30, duration: 1 }); // diagonal, feathered edge
+transitions.wipeOut("background", { angle: 180, invert: true, duration: 1 });
+
+// iris: an expanding/contracting radial mask. `origin` is normalized (0-1) to the element's own bounds.
+await transitions.irisIn("liam", "liam-happy", { origin: { x: 0.5, y: 0.3 }, softness: 20, duration: 0.8 });
+transitions.irisOut("liam", { aspect: 2, duration: 0.8 }); // aspect > 1 = wide ellipse instead of a circle
+
+// split: two mask panels move apart/together - covers "curtain" effects without a dedicated API.
+await transitions.splitIn("background", "bg-forest", { orientation: "horizontal", duration: 1 });
+transitions.splitOut("background", { orientation: "vertical", origin: 0.3, duration: 1 });
+
+// flash: a configurable color overlay (not just white) fades in/hold/out, optionally pulsing.
+await transitions.flashIn("background", "bg-forest", { duration: 0.15 }); // white camera-flash reveal
+transitions.flashOut("liam", { color: 0xff0033, holdDuration: 0.05, pulses: 3, duration: 0.1 }); // red damage flash
+
+// blur / pixelate: the image is shown already blurred/pixelated and resolves into focus (or the reverse for *Out).
+await transitions.blurIn("liam", "liam-happy", { strength: 40, duration: 1 });
+transitions.blurOut("liam", { duration: 1 });
+await transitions.pixelateIn("background", "bg-forest", { pixelSize: 48, duration: 1 });
+transitions.pixelateOut("background", { duration: 1 });
+```
+
+They compose freely since each drives its own mask (`wipe`/`iris`/`split`) or filter
+(`blur`/`pixelate`) independently — e.g. call `blurIn` and then `wipeIn` on the same alias to
+combine both. Common narrative effects are just **recipes** built from these primitives rather than
+dedicated functions: a "blink"/eyes-opening effect is a color overlay plus an iris reveal, a
+"dream"/flashback is `blurIn` + `showWithFade`, a memory transition is a color overlay plus
+`blurIn`, a "curtain" is a configured `splitOut`, and a diagonal wipe is just `wipeIn`/`wipeOut`
+with a non-cardinal `angle`.
 
 ## Shake and custom animation
 

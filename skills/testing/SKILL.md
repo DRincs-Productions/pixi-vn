@@ -153,8 +153,16 @@ A few things follow from `continue`/`back` taking no arguments themselves:
 
 Every action below reads through `window.pixiVN` (or your custom `windowKey`), evaluated in the page —
 e.g. via a browser automation tool's "evaluate script" capability, or by pasting into the devtools
-console by hand. All of them are `async` except `setInput`, `closeCurrentLabel`/`closeAllLabels`, and
-`getState`.
+console by hand. **If the Chrome DevTools MCP server is available, prefer it over any other browser
+automation for this**: `evaluate_script` runs the snippets below directly in the page, `navigate_page`/
+`click`/`take_snapshot` drive UI the game itself doesn't expose through `window.pixiVN` (e.g. a login
+screen), `take_screenshot` lets you actually look at the canvas instead of only trusting `getState()`,
+and `list_console_messages` surfaces errors/warnings a script-only check would miss — checking console
+output after every meaningful step, not just at the end, has caught real bugs (e.g. a framework
+deprecation warning) that a headless script relying only on `errors`/return values missed. Fall back to
+a Playwright/`chromium-cli` script, or another MCP browser tool, only when Chrome DevTools MCP isn't
+available. All of the actions below are `async` except `setInput`, `closeCurrentLabel`/
+`closeAllLabels`, and `getState`.
 
 ```js
 // Start the game from a label (id or Label object). Clears all game data first, like a real "New Game".
