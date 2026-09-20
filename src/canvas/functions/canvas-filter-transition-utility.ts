@@ -188,6 +188,11 @@ export function applyFilterTransition(
         }
         case "split": {
             const progress = config.invert ? 1 - value : value;
+            // `progress` is 0 (hidden) -> 1 (fully shown), same convention as "wipe"/"iris". The two
+            // mask panels start pulled apart past the component's own edges (no overlap, nothing
+            // visible) and slide toward each other as progress grows, meeting exactly at the split line
+            // - "closed" - once progress reaches 1, at which point they cover the component completely.
+            const retreat = 1 - progress;
             const { bounds } = config;
             const graphics = getOrCreateMaskGraphics(component, ctx);
             graphics.clear();
@@ -195,8 +200,8 @@ export function applyFilterTransition(
                 const splitX = bounds.x + bounds.width * config.origin;
                 const leftWidth = splitX - bounds.x;
                 const rightWidth = bounds.x + bounds.width - splitX;
-                const leftX = bounds.x - progress * leftWidth;
-                const rightX = splitX + progress * rightWidth;
+                const leftX = bounds.x - retreat * leftWidth;
+                const rightX = splitX + retreat * rightWidth;
                 if (leftWidth > 0) {
                     graphics.rect(leftX, bounds.y, leftWidth, bounds.height).fill(0xffffff);
                 }
@@ -207,8 +212,8 @@ export function applyFilterTransition(
                 const splitY = bounds.y + bounds.height * config.origin;
                 const topHeight = splitY - bounds.y;
                 const bottomHeight = bounds.y + bounds.height - splitY;
-                const topY = bounds.y - progress * topHeight;
-                const bottomY = splitY + progress * bottomHeight;
+                const topY = bounds.y - retreat * topHeight;
+                const bottomY = splitY + retreat * bottomHeight;
                 if (topHeight > 0) {
                     graphics.rect(bounds.x, topY, bounds.width, topHeight).fill(0xffffff);
                 }

@@ -1424,9 +1424,9 @@ export namespace transitions {
     }
 
     /**
-     * Show a image in the canvas with a split effect: two mask panels retract apart to progressively
-     * reveal the image. A configured {@link SplitInOutProps} covers "curtain"-like effects without a
-     * story-specific API.
+     * Show a image in the canvas with a split effect: two mask panels slide together from the edges to
+     * progressively reveal the image, meeting at the split line once fully shown. A configured
+     * {@link SplitInOutProps} covers "curtain"-like effects without a story-specific API.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
      * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
@@ -1489,8 +1489,8 @@ export namespace transitions {
     }
 
     /**
-     * Remove a image from the canvas with a split effect: two mask panels close together to
-     * progressively conceal the image. See {@link splitIn} and {@link SplitInOutProps}.
+     * Remove a image from the canvas with a split effect: two mask panels retract apart toward the
+     * edges to progressively conceal the image. See {@link splitIn} and {@link SplitInOutProps}.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param props The properties of the effect
      * @param priority The priority of the effect

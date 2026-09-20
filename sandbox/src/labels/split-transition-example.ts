@@ -17,7 +17,7 @@ registerTestLabel("split-transition-example", "Canvas: split transition", [
         canvas.clear();
         await transitions.splitIn("split-image", imageA, { duration: 1.5 });
         narration.dialogue = {
-            text: "splitIn (vertical, centered): two panels should retract up/down to reveal the orange image. Continue for a horizontal, off-center split.",
+            text: "splitIn (vertical, centered): two panels should slide together from the top/bottom edges to reveal the orange image. Continue for a horizontal, off-center split.",
         };
     },
     async () => {
@@ -28,13 +28,13 @@ registerTestLabel("split-transition-example", "Canvas: split transition", [
             duration: 1.5,
         });
         narration.dialogue = {
-            text: "splitIn (horizontal, origin 0.25, soft edge): panels should retract left/right from a line a quarter of the way across, with feathered edges. Continue to test splitOut.",
+            text: "splitIn (horizontal, origin 0.25, soft edge): panels should slide together from the left/right edges toward a line a quarter of the way across, with feathered edges. Continue to test splitOut.",
         };
     },
     async () => {
         transitions.splitOut("split-image", { duration: 1.5 });
         narration.dialogue = {
-            text: "splitOut (vertical, centered, curtain-like): two panels should close together to conceal the image, which is then removed.",
+            text: "splitOut (vertical, centered, curtain-like): two panels should retract apart toward the top/bottom edges to conceal the image, which is then removed.",
         };
     },
 ]);

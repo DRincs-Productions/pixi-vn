@@ -122,7 +122,7 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
         expect(target.mask).toBeUndefined();
     });
 
-    test("split: attaches two panels that retract apart as progress grows", () => {
+    test("split: attaches two panels that slide together as progress grows", () => {
         const target = createTarget();
         const ctx: FilterTransitionContext = {};
         const config: SplitFilterConfig = {
