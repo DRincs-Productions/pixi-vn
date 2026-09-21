@@ -30,9 +30,9 @@ registerTestLabel("flash-transition-example", "Canvas: flash transition", [
         };
     },
     async () => {
-        transitions.flashOut("flash-image", { color: 0x000000, duration: 0.4 });
+        transitions.flashOut("flash-image", { color: 0xff0000, duration: 0.4 });
         narration.dialogue = {
-            text: "flashOut (black): the blue image should fade to solid black, then disappear immediately at the peak - no fading back to normal first.",
+            text: "flashOut (red): the blue image should fade to solid red, fade back to normal, then disappear immediately with a hard cut - no additional dissolve.",
         };
     },
 ]);

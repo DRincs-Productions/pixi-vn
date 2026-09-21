@@ -274,7 +274,7 @@ describe("blurOut/pixelateOut: use canvas.animateFilter (MotionFilterTicker)", (
     });
 });
 
-describe("flashOut: overlay ends at its peak color instead of fading back to normal", () => {
+describe("flashOut: overlay runs the full up/down cycle, then the element is removed with a hard cut", () => {
     function createSprite() {
         const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
         return sprite as unknown as import("../src/canvas").CanvasBaseInterface<any>;
@@ -291,7 +291,7 @@ describe("flashOut: overlay ends at its peak color instead of fading back to nor
         return vi.spyOn(canvas, "animate").mockReturnValue("ticker-id");
     }
 
-    test("a single pulse fades 0 -> maxAlpha and stops there, removing the overlay and the target together", () => {
+    test("a single pulse fades 0 -> maxAlpha -> 0, then removes the overlay and the target together", () => {
         const target = createSprite();
         const animateSpy = spyOnCanvas(target);
 
@@ -300,21 +300,21 @@ describe("flashOut: overlay ends at its peak color instead of fading back to nor
         expect(ids).toEqual(["ticker-id"]);
         expect(animateSpy).toHaveBeenCalledTimes(1);
         const [, keyframes, options] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
-        // [0 (start), maxAlpha (after fadeDuration), maxAlpha (after holdDuration=0)] - held at the peak,
-        // with no trailing fade back down to 0.
-        expect(keyframes.alpha).toEqual([0, 1, 1]);
+        // Full cycle: fades up to the peak, holds (holdDuration=0, so a duplicate value/no-op hold), then
+        // fades back down to 0 (normal) before the ticker completes and the element is removed - the
+        // removal itself (via aliasToRemoveAfter) is a direct, non-animated cut, not a further dissolve.
+        expect(keyframes.alpha).toEqual([0, 1, 1, 0]);
         expect(options.aliasToRemoveAfter).toEqual(expect.arrayContaining(["alias"]));
     });
 
-    test("multiple pulses flicker normally, but the last one still ends at maxAlpha instead of 0", () => {
+    test("multiple pulses flicker normally, and the last one also fades back down before removal", () => {
         const target = createSprite();
         const animateSpy = spyOnCanvas(target);
 
         transitions.flashOut("alias", { maxAlpha: 1, duration: 0.1, pulses: 3 });
 
         const [, keyframes] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
-        // 2 full warm-up pulses (0 -> 1 -> 0 each) plus a final pulse that stops at the peak.
-        expect(keyframes.alpha).toEqual([0, 1, 1, 0, 1, 1, 0, 1, 1]);
+        expect(keyframes.alpha).toEqual([0, 1, 1, 0, 1, 1, 0, 1, 1, 0]);
     });
 
     test("warns and no-ops when the alias isn't found", () => {

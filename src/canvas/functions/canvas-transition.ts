@@ -434,9 +434,10 @@ export namespace transitions {
      * color overlay: `pulses` repetitions of fade-in (`fadeDuration`) -> hold (`holdDuration`) ->
      * fade-out (`fadeDuration`), using the same multi-stop keyframe-array idiom {@link effects.shakeEffect}
      * uses. When `endAtPeak` is true, the very last pulse skips its fade-out, leaving the overlay held at
-     * `maxAlpha` when the animation completes - used by `flashOut` (so the element disappears right at
-     * the flash's peak, not after fading back to normal) and by `flashReplace`'s "fade the old content up"
-     * half (so the content swap happens while the screen is solid `color`).
+     * `maxAlpha` when the animation completes - used by {@link flashReplace}'s "fade the old content up"
+     * half, so the content swap happens while the screen is a solid `color`. `flashOut` always runs the
+     * full cycle (fade up -> hold -> fade back down to normal) and only removes the element once that's
+     * done - the removal itself is a hard cut, not an additional dissolve.
      */
     function buildFlashKeyframes(
         maxAlpha: number,
@@ -1938,9 +1939,10 @@ export namespace transitions {
     }
 
     /**
-     * Remove a image from the canvas with a flash effect: a configurable solid-color overlay fades up
-     * to `color` and the image is removed the instant it's fully covered - it disappears right at the
-     * flash's peak, not after fading back to normal. See {@link flashIn} and {@link FlashInOutProps}.
+     * Remove a image from the canvas with a flash effect: a configurable solid-color overlay fades up to
+     * `color` and back down to normal, and the image is removed the instant that finishes - the removal
+     * itself is a hard cut, never an additional fade/dissolve. See {@link flashIn} and
+     * {@link FlashInOutProps}.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param props The properties of the effect
      * @param priority The priority of the effect
@@ -1973,7 +1975,6 @@ export namespace transitions {
             pulses,
             completeOnContinue,
             aliasToRemoveAfter: [alias],
-            endAtPeak: true,
             rest,
             priority,
         });
