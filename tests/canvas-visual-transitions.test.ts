@@ -273,3 +273,52 @@ describe("blurOut/pixelateOut: use canvas.animateFilter (MotionFilterTicker)", (
         expect(transitions.pixelateOut("missing")).toBeUndefined();
     });
 });
+
+describe("flashOut: overlay ends at its peak color instead of fading back to normal", () => {
+    function createSprite() {
+        const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+        return sprite as unknown as import("../src/canvas").CanvasBaseInterface<any>;
+    }
+
+    /** `flashOut` never needs the overlay to actually resolve through the canvas registry to be
+     * exercised: everything worth asserting on is the keyframes/options it hands to `canvas.animate`,
+     * so `add`/`animate` are stubbed rather than left to run for real (which - like `flashIn`'s own
+     * asset-loading path - would need a live canvas registry this test file doesn't otherwise set up;
+     * see the `blurOut`/`pixelateOut` tests above for the same reasoning). */
+    function spyOnCanvas(target: import("../src/canvas").CanvasBaseInterface<any> | undefined) {
+        vi.spyOn(canvas, "find").mockReturnValue(target);
+        vi.spyOn(canvas, "add").mockImplementation(() => {});
+        return vi.spyOn(canvas, "animate").mockReturnValue("ticker-id");
+    }
+
+    test("a single pulse fades 0 -> maxAlpha and stops there, removing the overlay and the target together", () => {
+        const target = createSprite();
+        const animateSpy = spyOnCanvas(target);
+
+        const ids = transitions.flashOut("alias", { color: 0x00ff00, maxAlpha: 1, duration: 0.2 });
+
+        expect(ids).toEqual(["ticker-id"]);
+        expect(animateSpy).toHaveBeenCalledTimes(1);
+        const [, keyframes, options] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
+        // [0 (start), maxAlpha (after fadeDuration), maxAlpha (after holdDuration=0)] - held at the peak,
+        // with no trailing fade back down to 0.
+        expect(keyframes.alpha).toEqual([0, 1, 1]);
+        expect(options.aliasToRemoveAfter).toEqual(expect.arrayContaining(["alias"]));
+    });
+
+    test("multiple pulses flicker normally, but the last one still ends at maxAlpha instead of 0", () => {
+        const target = createSprite();
+        const animateSpy = spyOnCanvas(target);
+
+        transitions.flashOut("alias", { maxAlpha: 1, duration: 0.1, pulses: 3 });
+
+        const [, keyframes] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
+        // 2 full warm-up pulses (0 -> 1 -> 0 each) plus a final pulse that stops at the peak.
+        expect(keyframes.alpha).toEqual([0, 1, 1, 0, 1, 1, 0, 1, 1]);
+    });
+
+    test("warns and no-ops when the alias isn't found", () => {
+        spyOnCanvas(undefined);
+        expect(transitions.flashOut("missing")).toBeUndefined();
+    });
+});

@@ -430,31 +430,41 @@ export namespace transitions {
     }
 
     /**
-     * Builds the `alpha` keyframes/`times` pair for {@link flashIn}/{@link flashOut}'s color overlay:
-     * `pulses` repetitions of fade-in (`fadeDuration`) -> hold (`holdDuration`) -> fade-out
-     * (`fadeDuration`), using the same multi-stop keyframe-array idiom {@link effects.shakeEffect} uses.
+     * Builds the `alpha` keyframes/`times` pair for {@link flashIn}/{@link flashOut}/{@link flashReplace}'s
+     * color overlay: `pulses` repetitions of fade-in (`fadeDuration`) -> hold (`holdDuration`) ->
+     * fade-out (`fadeDuration`), using the same multi-stop keyframe-array idiom {@link effects.shakeEffect}
+     * uses. When `endAtPeak` is true, the very last pulse skips its fade-out, leaving the overlay held at
+     * `maxAlpha` when the animation completes - used by `flashOut` (so the element disappears right at
+     * the flash's peak, not after fading back to normal) and by `flashReplace`'s "fade the old content up"
+     * half (so the content swap happens while the screen is solid `color`).
      */
     function buildFlashKeyframes(
         maxAlpha: number,
         fadeDuration: number,
         holdDuration: number,
         pulses: number,
+        endAtPeak: boolean = false,
     ): { values: number[]; times: number[]; total: number } {
-        const perPulse = fadeDuration * 2 + holdDuration;
-        const total = Math.max(perPulse * Math.max(pulses, 1), 0.001);
+        const cycles = Math.max(pulses, 1);
+        const perCycle = fadeDuration * 2 + holdDuration;
+        const lastCycle = endAtPeak ? fadeDuration + holdDuration : perCycle;
+        const total = Math.max(perCycle * (cycles - 1) + lastCycle, 0.001);
         const values: number[] = [0];
         const times: number[] = [0];
         let t = 0;
-        for (let i = 0; i < Math.max(pulses, 1); i++) {
+        for (let i = 0; i < cycles; i++) {
+            const isLastCycle = i === cycles - 1;
             t += fadeDuration;
             values.push(maxAlpha);
             times.push(t / total);
             t += holdDuration;
             values.push(maxAlpha);
             times.push(t / total);
-            t += fadeDuration;
-            values.push(0);
-            times.push(Math.min(t / total, 1));
+            if (!isLastCycle || !endAtPeak) {
+                t += fadeDuration;
+                values.push(0);
+                times.push(Math.min(t / total, 1));
+            }
         }
         return { values, times, total };
     }
@@ -1850,10 +1860,15 @@ export namespace transitions {
     }
 
     /**
-     * Show a image in the canvas with a flash effect: the new image appears immediately, with a
-     * configurable solid-color overlay (not limited to a white flash) fading in and out over it. White
-     * reads as a camera/explosion-like flash, black as a blink/cut, and arbitrary colors work for
-     * damage/magic/memory/UI transitions. See {@link FlashInOutProps}.
+     * Show a image in the canvas with a flash effect, with a configurable solid-color overlay (not
+     * limited to a white flash). White reads as a camera/explosion-like flash, black as a blink/cut, and
+     * arbitrary colors work for damage/magic/memory/UI transitions. See {@link FlashInOutProps}.
+     *
+     * If `alias` has no existing component, the new image appears immediately and the overlay fades in
+     * and back out over it. If `alias` already has a component, the *current* content fades up to
+     * `color` first, is swapped for the new content at the exact moment the screen is a solid `color`
+     * (so the content change itself is invisible), and the new content then fades back down from `color`
+     * to normal - see {@link flashReplace}.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
      * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
@@ -1880,12 +1895,24 @@ export namespace transitions {
         if (!component) {
             component = alias;
         }
-        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
-            alias,
-            component,
-            "flash",
-        );
-        const aliasToRemoveAfter: string[] = oldComponentAlias ? [oldComponentAlias] : [];
+        const existingComponent = canvas.find(alias);
+        if (existingComponent) {
+            const ids = flashReplace(alias, existingComponent, component, {
+                color,
+                maxAlpha,
+                fadeDuration,
+                holdDuration,
+                pulses,
+                completeOnContinue,
+                rest,
+                priority,
+            });
+            if (ids) {
+                return ids;
+            }
+            return;
+        }
+        const { component: newComponent } = swapComponentForEffect(alias, component, "flash");
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
@@ -1900,7 +1927,7 @@ export namespace transitions {
             holdDuration,
             pulses,
             completeOnContinue,
-            aliasToRemoveAfter,
+            aliasToRemoveAfter: [],
             rest,
             priority,
         });
@@ -1911,8 +1938,9 @@ export namespace transitions {
     }
 
     /**
-     * Remove a image from the canvas with a flash effect: a configurable solid-color overlay fades in
-     * and out over the image, which is then removed. See {@link flashIn} and {@link FlashInOutProps}.
+     * Remove a image from the canvas with a flash effect: a configurable solid-color overlay fades up
+     * to `color` and the image is removed the instant it's fully covered - it disappears right at the
+     * flash's peak, not after fading back to normal. See {@link flashIn} and {@link FlashInOutProps}.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param props The properties of the effect
      * @param priority The priority of the effect
@@ -1945,6 +1973,7 @@ export namespace transitions {
             pulses,
             completeOnContinue,
             aliasToRemoveAfter: [alias],
+            endAtPeak: true,
             rest,
             priority,
         });
@@ -1954,9 +1983,33 @@ export namespace transitions {
     }
 
     /**
-     * Shared implementation for {@link flashIn}/{@link flashOut}: adds a temporary color overlay sized
-     * to `target`'s current bounds and fades its alpha in/out via `canvas.animate`, the exact multi-stop
-     * keyframe idiom {@link effects.shakeEffect} already uses - no filter or mask is needed for flash.
+     * Creates the solid-`color` overlay {@link addFlashOverlay}/{@link flashReplace} animate the alpha
+     * of: a `Graphics` rect sized and positioned to `target`'s current bounds, layered just above it.
+     */
+    function createFlashOverlay(
+        target: CanvasBaseInterface<any>,
+        color: number | string,
+        initialAlpha: number = 0,
+    ): string {
+        const bounds = target.getBounds();
+        const overlay = new PixiContainer();
+        const rect = new PIXI.Graphics();
+        rect.rect(0, 0, bounds.width, bounds.height).fill(color);
+        // `rect` is a plain, ephemeral PIXI.Graphics (not a pixi-vn CanvasBaseItem), so it's added via
+        // the underlying PixiJS Container API rather than the stricter pixi-vn-component-only typing.
+        (overlay as unknown as PixiJsContainer).addChild(rect);
+        overlay.position.set(bounds.x, bounds.y);
+        overlay.alpha = initialAlpha;
+        const overlayAlias = `${target.label}_flash_${Math.random().toString(36).slice(2)}`;
+        canvas.add(overlayAlias, overlay, { zIndex: (target.zIndex ?? 0) + 1 });
+        return overlayAlias;
+    }
+
+    /**
+     * Shared implementation for {@link flashIn} (fresh element)/{@link flashOut}: adds a
+     * {@link createFlashOverlay} over `target` and fades its alpha via `canvas.animate`, the exact
+     * multi-stop keyframe idiom {@link effects.shakeEffect} already uses - no filter or mask is needed
+     * for flash.
      */
     function addFlashOverlay(
         target: CanvasBaseInterface<any>,
@@ -1968,6 +2021,8 @@ export namespace transitions {
             pulses: number;
             completeOnContinue: boolean;
             aliasToRemoveAfter: string[];
+            /** @default false */
+            endAtPeak?: boolean;
             rest: Omit<
                 FlashInOutProps,
                 "color" | "maxAlpha" | "duration" | "holdDuration" | "pulses" | "completeOnContinue"
@@ -1975,21 +2030,13 @@ export namespace transitions {
             priority?: UPDATE_PRIORITY;
         },
     ): string | undefined {
-        const bounds = target.getBounds();
-        const overlay = new PixiContainer();
-        const rect = new PIXI.Graphics();
-        rect.rect(0, 0, bounds.width, bounds.height).fill(options.color);
-        // `rect` is a plain, ephemeral PIXI.Graphics (not a pixi-vn CanvasBaseItem), so it's added via
-        // the underlying PixiJS Container API rather than the stricter pixi-vn-component-only typing.
-        (overlay as unknown as PixiJsContainer).addChild(rect);
-        overlay.position.set(bounds.x, bounds.y);
-        const overlayAlias = `${target.label}_flash_${Math.random().toString(36).slice(2)}`;
-        canvas.add(overlayAlias, overlay, { zIndex: (target.zIndex ?? 0) + 1 });
+        const overlayAlias = createFlashOverlay(target, options.color);
         const { values, times, total } = buildFlashKeyframes(
             options.maxAlpha,
             options.fadeDuration,
             options.holdDuration,
             options.pulses,
+            options.endAtPeak ?? false,
         );
         const aliasToRemoveAfter = [...options.aliasToRemoveAfter, overlayAlias];
         return canvas.animate(
@@ -2004,5 +2051,88 @@ export namespace transitions {
             } as any,
             options.priority,
         );
+    }
+
+    /**
+     * Handles {@link flashIn} when `alias` already has a component under it: fades the *current* content
+     * up to `color` (the same up-ramp {@link addFlashOverlay} uses, via {@link buildFlashKeyframes}'
+     * `endAtPeak`, so it holds at `color` instead of fading back down), then - once the screen is a solid
+     * `color` - swaps in the new content and fades a fresh, identically-colored overlay back down to
+     * reveal it. Both sides look the same (solid `color`) at the instant of the swap, so the content
+     * change itself is invisible; only the color washes through.
+     *
+     * The swap is scheduled with a plain `setTimeout` matched to the up-ramp's own duration, rather than
+     * through an animation-completion callback: `canvas.animate`'s public options deliberately omit
+     * `onComplete` (a callback isn't serializable - see `AnimationOptions`). This means a save made mid
+     * flash won't perfectly resume the pending swap - the same already-accepted limitation the
+     * mask/filter transitions have for their own live, non-persisted state.
+     */
+    function flashReplace(
+        alias: string,
+        oldComponent: CanvasBaseInterface<any>,
+        component: TComponent,
+        options: {
+            color: number | string;
+            maxAlpha: number;
+            fadeDuration: number;
+            holdDuration: number;
+            pulses: number;
+            completeOnContinue: boolean;
+            rest: Omit<
+                FlashInOutProps,
+                "color" | "maxAlpha" | "duration" | "holdDuration" | "pulses" | "completeOnContinue"
+            >;
+            priority?: UPDATE_PRIORITY;
+        },
+    ): string[] | undefined {
+        const oldOverlayAlias = createFlashOverlay(oldComponent, options.color);
+        const { values, times, total } = buildFlashKeyframes(
+            options.maxAlpha,
+            options.fadeDuration,
+            options.holdDuration,
+            options.pulses,
+            true,
+        );
+        const upId = canvas.animate(
+            oldOverlayAlias,
+            { alpha: values },
+            { ...options.rest, duration: total, times, completeOnContinue: false } as any,
+            options.priority,
+        );
+        setTimeout(() => {
+            void (async () => {
+                const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+                    alias,
+                    component,
+                    "flash",
+                );
+                // The old content and its now-stale, still-opaque overlay are no longer needed - remove
+                // both right away rather than waiting for the down-phase ticker below to complete, since
+                // the old overlay's zIndex (old.zIndex + 1) would otherwise sit above the new content and
+                // its own fresh overlay, hiding the fade-down entirely.
+                canvas.remove(oldComponentAlias ? [oldOverlayAlias, oldComponentAlias] : [oldOverlayAlias]);
+                if (
+                    (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+                    newComponent.haveEmptyTexture
+                ) {
+                    await newComponent.load();
+                }
+                const newOverlayAlias = createFlashOverlay(newComponent, options.color, options.maxAlpha);
+                canvas.animate(
+                    newOverlayAlias,
+                    { alpha: [options.maxAlpha, 0] },
+                    {
+                        ...options.rest,
+                        duration: options.fadeDuration,
+                        aliasToRemoveAfter: [newOverlayAlias],
+                        completeOnContinue: options.completeOnContinue,
+                    } as any,
+                    options.priority,
+                );
+            })();
+        }, total * 1000);
+        if (upId) {
+            return [upId];
+        }
     }
 }
