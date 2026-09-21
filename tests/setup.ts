@@ -101,4 +101,7 @@ GameUnifier.init({
     animate: (target, animationProps, options, priority) => {
         motion.animate(target, animationProps, options, priority);
     },
+    animateFilter: (target, filter, keyframes, options, priority, cleanup) => {
+        return motion.animateFilter(target, filter, keyframes, options, priority, cleanup);
+    },
 });

@@ -2,7 +2,7 @@ import type OnErrorHandler from "@core/OnErrorHandler";
 import PixiError from "@core/PixiError";
 import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
-import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import type {
     StepLabelPropsType,
     StepLabelResultType,
@@ -139,6 +139,26 @@ export default class GameUnifier {
             options?: any,
             priority?: UPDATE_PRIORITY,
         ) => string | undefined;
+        /**
+         * This function is called to animate a `Filter`'s own properties (as opposed to {@link animate},
+         * which animates a canvas element's properties).
+         * @param components - The canvas element alias(es) the filter is attached to (kept alive/cleaned
+         * up alongside them), not the animation target itself.
+         * @param filter - The `Filter` instance to animate.
+         * @param keyframes - The keyframes to animate the filter's properties with.
+         * @param options - Additional options for the animation, including duration, easing, and ticker.
+         * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+         * @param cleanup - Called once, right before completion handling, to detach/destroy the filter.
+         * @returns The id of the ticker.
+         */
+        animateFilter: (
+            components: string | string[],
+            filter: Filter,
+            keyframes: any,
+            options?: any,
+            priority?: UPDATE_PRIORITY,
+            cleanup?: (filter: Filter) => void,
+        ) => string | undefined;
     }) {
         if (options.navigate) GameUnifier._navigate = options.navigate;
         GameUnifier._getStepCounter = options.getStepCounter;
@@ -156,6 +176,7 @@ export default class GameUnifier {
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._getCharacter = options.getCharacter;
         GameUnifier._animate = options.animate;
+        GameUnifier._animateFilter = options.animateFilter;
     }
     private static _navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
@@ -533,5 +554,27 @@ export default class GameUnifier {
      */
     static get animate() {
         return GameUnifier._animate;
+    }
+    private static _animateFilter: (
+        components: string | string[],
+        filter: Filter,
+        keyframes: any,
+        options?: any,
+        priority?: UPDATE_PRIORITY,
+        cleanup?: (filter: Filter) => void,
+    ) => string | undefined = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
+    };
+    /**
+     * This function is called to animate a `Filter`'s own properties. See {@link animate} for animating
+     * a canvas element's properties instead.
+     * @returns The id of the ticker.
+     */
+    static get animateFilter() {
+        return GameUnifier._animateFilter;
     }
 }

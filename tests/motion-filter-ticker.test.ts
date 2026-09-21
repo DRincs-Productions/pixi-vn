@@ -15,8 +15,8 @@ import MotionFilterTicker from "../src/motion/components/MotionFilterTicker";
 describe("MotionFilterTicker", () => {
     function createTicker(filter: PIXI.BlurFilter) {
         return new MotionFilterTicker(
-            { filter, keyframes: { strength: [0, 10] }, options: { duration: 1 } },
-            { canvasElementAliases: [] },
+            { keyframes: { strength: [0, 10] }, options: { duration: 1 } },
+            { filter, canvasElementAliases: [] },
         );
     }
 
@@ -49,12 +49,11 @@ describe("MotionFilterTicker", () => {
         const filter = new PIXI.BlurFilter();
         const ticker = new MotionFilterTicker(
             {
-                filter,
                 keyframes: { strength: [0, 10] },
                 options: { duration: 1, repeat: Infinity },
                 time: 3.5,
             },
-            { canvasElementAliases: [] },
+            { filter, canvasElementAliases: [] },
         );
 
         expect(ticker.animation.time).toBe(3.5);
@@ -84,6 +83,14 @@ describe("MotionFilterTicker", () => {
 
         void ticker.animation;
         expect(() => ticker.stop()).not.toThrow();
+    });
+
+    test("args never exposes the live filter instance (must stay JSON-serializable)", () => {
+        const filter = new PIXI.BlurFilter();
+        const ticker = createTicker(filter);
+
+        expect("filter" in ticker.args).toBe(false);
+        expect(() => JSON.stringify(ticker.args)).not.toThrow();
     });
 
     test("pause()/play() toggle the paused state", () => {

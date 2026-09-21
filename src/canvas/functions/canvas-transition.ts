@@ -1,17 +1,21 @@
 import { resolveEasing, type EasingInput } from "@canvas/functions/canvas-easing-utility";
 import {
     snapshotLocalBounds,
-    type BlurFilterConfig,
     type FilterTransitionConfig,
     type IrisFilterConfig,
-    type PixelateFilterConfig,
     type SplitFilterConfig,
     type WipeFilterConfig,
 } from "@canvas/functions/canvas-filter-transition-utility";
 import PixiContainer from "@canvas/components/Container";
 import FilterProgressTicker from "@canvas/tickers/classes/FilterProgressTicker";
 import { logger } from "@utils/log-utility";
-import type { Container as PixiJsContainer, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { Filters } from "@drincs/pixi-vn/filters";
+import type { AnimationOptions } from "@drincs/pixi-vn/motion";
+import type {
+    Container as PixiJsContainer,
+    Filter,
+    UPDATE_PRIORITY,
+} from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import {
     canvas,
@@ -327,7 +331,9 @@ export namespace transitions {
     /**
      * Creates and starts a {@link FilterProgressTicker} for `alias`, wiring up `completeOnContinue` the
      * same way {@link motion.animate} does for the other transitions. This is the single place every
-     * mask/filter-based transition (wipe/iris/split/blur/pixelate) goes through.
+     * mask-based transition (wipe/iris/split) goes through - `blurIn`/`blurOut`/`pixelateIn`/
+     * `pixelateOut` use {@link addMotionFilterEffect} instead, since they animate a `Filter`'s own
+     * properties rather than mask geometry.
      */
     function addFilterProgressTicker(
         alias: string,
@@ -361,6 +367,62 @@ export namespace transitions {
             { priority, canvasElementAliases: [alias] },
         );
         const id = canvas.tickers.add(alias, ticker);
+        if (id && (args.completeOnContinue ?? true)) {
+            canvas.tickers.completeOnStepEnd({ id });
+        }
+        return id;
+    }
+
+    /**
+     * Attaches `filter` to `component.filters` (preserving any filters already there) and drives
+     * `keyframes` on the filter's own properties via {@link canvas.animateFilter} (`MotionFilterTicker`,
+     * `motion`-backed - see {@link blurIn}/{@link pixelateIn}), detaching and destroying it once the
+     * animation completes. The same "never leave the component in a different state than before the
+     * transition" guarantee {@link addFilterProgressTicker}'s mask cleanup gives wipe/iris/split.
+     */
+    function addMotionFilterEffect(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        filter: Filter,
+        keyframes: Record<string, number[]>,
+        args: {
+            duration?: number;
+            delay?: number | ((index: number, total: number) => number);
+            ease?: unknown;
+            completeOnContinue?: boolean;
+            aliasToRemoveAfter?: string[];
+        },
+        priority?: UPDATE_PRIORITY,
+    ): string | undefined {
+        const existingFilters = component.filters
+            ? Array.isArray(component.filters)
+                ? component.filters
+                : [component.filters]
+            : [];
+        component.filters = [...existingFilters, filter];
+        const id = canvas.animateFilter(
+            alias,
+            filter,
+            keyframes,
+            {
+                duration: args.duration ?? 1,
+                delay: args.delay,
+                ease: args.ease as AnimationOptions["ease"],
+                aliasToRemoveAfter: args.aliasToRemoveAfter,
+            },
+            priority,
+            (f) => {
+                const remaining = (
+                    component.filters
+                        ? Array.isArray(component.filters)
+                            ? component.filters
+                            : [component.filters]
+                        : []
+                ).filter((existing) => existing !== f);
+                component.filters = remaining.length > 0 ? remaining : null;
+                f.destroy();
+            },
+        );
         if (id && (args.completeOnContinue ?? true)) {
             canvas.tickers.completeOnStepEnd({ id });
         }
@@ -1247,7 +1309,16 @@ export namespace transitions {
         };
         const id = addFilterProgressTicker(
             alias,
-            { config, from: 0, to: 1, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            {
+                config,
+                from: 0,
+                to: 1,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
             priority,
         );
         if (id) {
@@ -1297,7 +1368,16 @@ export namespace transitions {
         };
         const id = addFilterProgressTicker(
             alias,
-            { config, from: 1, to: 0, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            {
+                config,
+                from: 1,
+                to: 0,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
             priority,
         );
         if (id) {
@@ -1363,7 +1443,16 @@ export namespace transitions {
         };
         const id = addFilterProgressTicker(
             alias,
-            { config, from: 0, to: 1, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            {
+                config,
+                from: 0,
+                to: 1,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
             priority,
         );
         if (id) {
@@ -1415,7 +1504,16 @@ export namespace transitions {
         };
         const id = addFilterProgressTicker(
             alias,
-            { config, from: 1, to: 0, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            {
+                config,
+                from: 1,
+                to: 0,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
             priority,
         );
         if (id) {
@@ -1480,7 +1578,16 @@ export namespace transitions {
         };
         const id = addFilterProgressTicker(
             alias,
-            { config, from: 0, to: 1, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            {
+                config,
+                from: 0,
+                to: 1,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
             priority,
         );
         if (id) {
@@ -1531,7 +1638,16 @@ export namespace transitions {
         };
         const id = addFilterProgressTicker(
             alias,
-            { config, from: 1, to: 0, duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            {
+                config,
+                from: 1,
+                to: 0,
+                duration,
+                delay,
+                ease,
+                completeOnContinue,
+                aliasToRemoveAfter,
+            },
             priority,
         );
         if (id) {
@@ -1557,7 +1673,14 @@ export namespace transitions {
         props: BlurInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        const { strength = 32, quality = 4, duration, delay, ease, completeOnContinue = true } = props;
+        const {
+            strength = 32,
+            quality = 4,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
             component = alias;
@@ -1577,19 +1700,13 @@ export namespace transitions {
         ) {
             await newComponent.load();
         }
-        const config: BlurFilterConfig = { kind: "blur", quality };
-        const id = addFilterProgressTicker(
+        const filter = new Filters.BlurFilter({ strength, quality });
+        const id = addMotionFilterEffect(
             alias,
-            {
-                config,
-                from: strength,
-                to: 0,
-                duration,
-                delay,
-                ease,
-                completeOnContinue,
-                aliasToRemoveAfter,
-            },
+            newComponent,
+            filter,
+            { strength: [strength, 0] },
+            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
@@ -1610,7 +1727,14 @@ export namespace transitions {
         props: BlurInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): string[] | undefined {
-        const { strength = 32, quality = 4, duration, delay, ease, completeOnContinue = true } = props;
+        const {
+            strength = 32,
+            quality = 4,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+        } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter];
@@ -1621,19 +1745,13 @@ export namespace transitions {
             logger.warn(`The canvas component "${alias}" is not found.`);
             return;
         }
-        const config: BlurFilterConfig = { kind: "blur", quality };
-        const id = addFilterProgressTicker(
+        const filter = new Filters.BlurFilter({ strength: 0, quality });
+        const id = addMotionFilterEffect(
             alias,
-            {
-                config,
-                from: 0,
-                to: strength,
-                duration,
-                delay,
-                ease,
-                completeOnContinue,
-                aliasToRemoveAfter,
-            },
+            component,
+            filter,
+            { strength: [0, strength] },
+            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
@@ -1679,19 +1797,13 @@ export namespace transitions {
         ) {
             await newComponent.load();
         }
-        const config: PixelateFilterConfig = { kind: "pixelate" };
-        const id = addFilterProgressTicker(
+        const filter = new Filters.PixelateFilter(pixelSize);
+        const id = addMotionFilterEffect(
             alias,
-            {
-                config,
-                from: pixelSize,
-                to: 1,
-                duration,
-                delay,
-                ease,
-                completeOnContinue,
-                aliasToRemoveAfter,
-            },
+            newComponent,
+            filter,
+            { sizeX: [pixelSize, 1], sizeY: [pixelSize, 1] },
+            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
@@ -1723,19 +1835,13 @@ export namespace transitions {
             logger.warn(`The canvas component "${alias}" is not found.`);
             return;
         }
-        const config: PixelateFilterConfig = { kind: "pixelate" };
-        const id = addFilterProgressTicker(
+        const filter = new Filters.PixelateFilter(1);
+        const id = addMotionFilterEffect(
             alias,
-            {
-                config,
-                from: 1,
-                to: pixelSize,
-                duration,
-                delay,
-                ease,
-                completeOnContinue,
-                aliasToRemoveAfter,
-            },
+            component,
+            filter,
+            { sizeX: [1, pixelSize], sizeY: [1, pixelSize] },
+            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {

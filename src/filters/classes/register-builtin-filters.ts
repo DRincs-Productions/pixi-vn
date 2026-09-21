@@ -1,4 +1,4 @@
-import { BlurFilter } from "@drincs/pixi-vn/pixi.js";
+import { AlphaFilter, BlurFilter, NoiseFilter } from "@drincs/pixi-vn/pixi.js";
 import {
     AdjustmentFilter,
     AdvancedBloomFilter,
@@ -48,14 +48,23 @@ function pt(x: number, y: number) {
  * can round-trip through save/restore out of the box, without every project having to register them
  * itself. Imported once (for its side effect) from `filters/index.ts`.
  *
- * Not registered, deliberately:
- * - `ColorMapFilter`, `SimpleLightmapFilter` - their constructors require a `Texture`/`TextureSource`
- *   (`colorMap`/`lightMap`), which isn't itself JSON-serializable by this registry. A project using
- *   these can still register them manually with its own `toMemory` (e.g. storing an asset alias/URL and
- *   re-loading the texture on restore).
- * - `TiltShiftAxisFilter` - exposes no getters at all for any of its constructor options (`blur`,
- *   `gradientBlur`, `start`, `end`, `axis` are all write-only), so no `toMemory` could read anything
- *   back. Its subclass `TiltShiftFilter`, which *is* fully readable, is registered instead.
+ * Not registered, deliberately - see the `filters` skill doc/wiki page for the up-to-date list surfaced
+ * to consumers:
+ * - `ColorMapFilter`, `SimpleLightmapFilter` (`pixi-filters`) - their constructors require a
+ *   `Texture`/`TextureSource` (`colorMap`/`lightMap`), which isn't itself JSON-serializable by this
+ *   registry. A project using these can still register them manually with its own `toMemory` (e.g.
+ *   storing an asset alias/URL and re-loading the texture on restore).
+ * - `TiltShiftAxisFilter` (`pixi-filters`) - exposes no getters at all for any of its constructor
+ *   options (`blur`, `gradientBlur`, `start`, `end`, `axis` are all write-only), so no `toMemory` could
+ *   read anything back. Its subclass `TiltShiftFilter`, which *is* fully readable, is registered
+ *   instead.
+ * - `ColorMatrixFilter` (`pixi.js` core) - its state (`matrix`, `alpha`) is entirely set through
+ *   instance methods/setters after construction; the constructor itself only accepts generic
+ *   `FilterOptions`, with no way to seed `matrix`/`alpha` at construction time.
+ * - `DisplacementFilter` (`pixi.js` core) - requires a live `Sprite` (used as the displacement map) as
+ *   a constructor option, same non-serializability problem as `ColorMapFilter`/`SimpleLightmapFilter`.
+ * - `MaskFilter`, `BlendModeFilter`, `PassthroughFilter` (`pixi.js` core) - all marked `@internal` in
+ *   `pixi.js` itself; not meant to be attached directly by a game.
  *
  * A few filters have individual constructor options with no corresponding getter either (noted inline
  * below) - those are simply omitted from `toMemory`'s output, so restoring falls back to that option's
@@ -69,6 +78,16 @@ RegisteredFilters.add(BlurFilter, {
         quality: filter.quality,
         repeatEdgePixels: filter.repeatEdgePixels,
     }),
+});
+
+RegisteredFilters.add(AlphaFilter, {
+    name: "AlphaFilter",
+    toMemory: (filter) => ({ alpha: filter.alpha }),
+});
+
+RegisteredFilters.add(NoiseFilter, {
+    name: "NoiseFilter",
+    toMemory: (filter) => ({ noise: filter.noise, seed: filter.seed }),
 });
 
 RegisteredFilters.add(PixelateFilter, {

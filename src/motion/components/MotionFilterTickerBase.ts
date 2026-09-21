@@ -21,7 +21,6 @@ import type { AnimationPlaybackControlsWithThen } from "motion";
  */
 export default abstract class MotionFilterTickerBase<
     TArgs extends TickerArgs & {
-        filter: Filter;
         startState?: object;
         time?: number;
         options?: Omit<CommonTickerProps, "startOnlyIfHaveTexture"> & {
@@ -38,6 +37,25 @@ export default abstract class MotionFilterTickerBase<
         args: TArgs,
         options?: {
             /**
+             * The `Filter` instance this ticker animates. Deliberately a constructor option, not part of
+             * `TArgs`: `TArgs` is what {@link args} exposes as this ticker's serializable save data (see
+             * {@link MotionTickerBase}, which instead references its target only by alias, looked up fresh
+             * each frame) - a live `Filter` instance isn't JSON-serializable (it holds GPU program/resource
+             * references that produce circular structures), so embedding it in `TArgs` broke
+             * `createExportableElement()` any time a ticker's `args` were serialized (e.g.
+             * `CanvasManager.export()`, called on every history step) while a `blurIn`/`pixelateIn`
+             * animation was in flight. Mirrors {@link FilterProgressTicker}'s own `ctx.graphics`, which is
+             * kept out of its persisted `config` the same way.
+             *
+             * Optional only for structural compatibility with {@link RegisteredTickers}' generic
+             * constructor shape (which has no slot for a filter); genuinely required to actually use the
+             * ticker, so a missing value throws immediately. In practice this means a `MotionFilterTicker`
+             * cannot be reconstructed through `RegisteredTickers.getInstance` (alias-transfer, save
+             * restore) - an already-inherent limitation, since a live `Filter` was never serializable to
+             * begin with.
+             */
+            filter?: Filter;
+            /**
              * The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
              */
             duration?: number;
@@ -52,27 +70,51 @@ export default abstract class MotionFilterTickerBase<
             /**
              * The aliases of the canvas elements that are connected to this ticker. Unlike
              * {@link MotionTickerBase}, this base class never looks elements up through these - the
-             * animation target is always {@link TArgs.filter} directly - but they're kept so the ticker
+             * animation target is always {@link filter} directly - but they're kept so the ticker
              * still participates in the same canvas-element-driven cleanup/transfer bookkeeping (e.g. a
              * subclass's own {@link onComplete} handling, or a future save/restore integration). @default []
              */
             canvasElementAliases?: string[];
+            /**
+             * Called once, right before completion handling (`canvas.tickers.onComplete`) - the natural
+             * place to detach/destroy {@link filter} from whatever component it was attached to,
+             * mirroring what {@link FilterProgressTicker}'s own `finish()` does for mask/filter-based
+             * transitions. Not called on a manual {@link stop} (only on the animation's own completion),
+             * matching `TickerBase.stop()`'s existing behavior of never running cleanup.
+             *
+             * Deliberately a constructor option, not part of `TArgs`, for the same reason as {@link filter}.
+             */
+            cleanup?: (filter: Filter) => void;
         },
     ) {
         const {
+            filter,
             duration,
             priority,
-            id = this.generateTickerId(options),
+            // Hashes `args` (already required to be JSON-serializable), not `options` - the latter
+            // carries the live, non-serializable `filter` instance.
+            id = this.generateTickerId(args),
             canvasElementAliases = [],
+            cleanup,
         } = options || {};
+        if (!filter) {
+            throw new PixiError(
+                "not_implemented",
+                "MotionFilterTicker requires a `filter` instance; it cannot be reconstructed from saved/serialized ticker args.",
+            );
+        }
         this._args = args;
+        this.filter = filter;
         this.duration = duration;
         this.priority = priority;
         this.id = id;
         this.canvasElementAliases = canvasElementAliases;
+        this.cleanup = cleanup;
     }
     abstract alias: string;
     readonly id: string;
+    protected readonly filter: Filter;
+    protected readonly cleanup?: (filter: Filter) => void;
     protected _args: TArgs;
     get args(): TArgs {
         return { ...this._args, time: this._animation?.time };
@@ -147,6 +189,17 @@ export default abstract class MotionFilterTickerBase<
         }
     }
     protected onComplete = () => {
+        const cleanup = this.cleanup;
+        if (cleanup) {
+            // `motion` can still have a trailing "snap to the exact final value" write of its own queued
+            // on `this.ticker` (the very driver we handed it) for the *next* tick after `onComplete`
+            // fires - calling `cleanup` (which typically destroys the filter) synchronously here would
+            // null out its internal resources before that write lands, crashing with "Cannot read
+            // properties of null". Queuing through the same `this.ticker` - rather than a microtask or an
+            // unrelated ticker like `PIXI.Ticker.system` - guarantees our callback runs after any such
+            // pending write, since both share the same per-tick callback order.
+            this.ticker.addOnce(() => cleanup(this.filter));
+        }
         const id = this.id;
         let aliasToRemoveAfter = this._args.options?.aliasToRemoveAfter || [];
         if (typeof aliasToRemoveAfter === "string") {
@@ -177,7 +230,7 @@ export default abstract class MotionFilterTickerBase<
      * defines, so this stays fully generic.
      */
     protected createItem(): Filter {
-        const filter = this._args.filter;
+        const filter = this.filter;
         return new Proxy(filter, {
             set: (target, p, newValue) => {
                 if (this.stopped || this._paused) {

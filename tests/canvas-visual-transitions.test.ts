@@ -5,16 +5,13 @@ import {
     applyFilterTransition,
     cleanupFilterTransition,
     snapshotLocalBounds,
-    type BlurFilterConfig,
     type FilterTransitionContext,
     type IrisFilterConfig,
-    type PixelateFilterConfig,
     type SplitFilterConfig,
     type WipeFilterConfig,
 } from "../src/canvas/functions/canvas-filter-transition-utility";
-import { PixelateFilter } from "pixi-filters";
 import FilterProgressTicker from "../src/canvas/tickers/classes/FilterProgressTicker";
-import { canvas } from "../src/canvas";
+import { canvas, transitions } from "../src/canvas";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -139,55 +136,6 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
         expect(target.mask).toBeUndefined();
     });
 
-    test("blur: attaches a BlurFilter and drives its strength, removing it on cleanup", () => {
-        const target = createTarget();
-        const ctx: FilterTransitionContext = {};
-        const config: BlurFilterConfig = { kind: "blur", quality: 4 };
-
-        applyFilterTransition(target, config, 12, ctx);
-        expect(target.filters).toHaveLength(1);
-        const filter = target.filters![0] as PIXI.BlurFilter;
-        expect(filter).toBeInstanceOf(PIXI.BlurFilter);
-        expect(filter.strength).toBe(12);
-
-        applyFilterTransition(target, config, 4, ctx);
-        expect(target.filters).toHaveLength(1);
-        expect(filter.strength).toBe(4);
-
-        cleanupFilterTransition(target, config, ctx);
-        expect(target.filters).toBeNull();
-    });
-
-    test("blur: preserves any filters already on the component", () => {
-        const target = createTarget();
-        const preexisting = new PIXI.AlphaFilter();
-        target.filters = [preexisting];
-        const ctx: FilterTransitionContext = {};
-        const config: BlurFilterConfig = { kind: "blur", quality: 4 };
-
-        applyFilterTransition(target, config, 8, ctx);
-        expect(target.filters).toHaveLength(2);
-        expect(target.filters).toContain(preexisting);
-
-        cleanupFilterTransition(target, config, ctx);
-        expect(target.filters).toEqual([preexisting]);
-    });
-
-    test("pixelate: attaches a PixelateFilter and drives its size, removing it on cleanup", () => {
-        const target = createTarget();
-        const ctx: FilterTransitionContext = {};
-        const config: PixelateFilterConfig = { kind: "pixelate" };
-
-        applyFilterTransition(target, config, 20, ctx);
-        expect(target.filters).toHaveLength(1);
-        const filter = target.filters![0] as PixelateFilter;
-        expect(filter).toBeInstanceOf(PixelateFilter);
-        expect(filter.sizeX).toBe(20);
-        expect(filter.sizeY).toBe(20);
-
-        cleanupFilterTransition(target, config, ctx);
-        expect(target.filters).toBeNull();
-    });
 });
 
 describe("FilterProgressTicker", () => {
@@ -195,26 +143,31 @@ describe("FilterProgressTicker", () => {
         return { deltaMS: ms } as PIXI.Ticker;
     }
 
+    function wipeConfig(): WipeFilterConfig {
+        return { kind: "wipe", angle: 0, softness: 0, invert: false, bounds: BOUNDS };
+    }
+
     test("interpolates from `from` to `to` over `duration` and cleans up on completion", () => {
         const target = createTarget();
         vi.spyOn(canvas, "find").mockReturnValue(target);
         const onComplete = vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
 
-        const config: BlurFilterConfig = { kind: "blur", quality: 4 };
         const ticker = new FilterProgressTicker(
-            { config, from: 0, to: 20, duration: 1 },
+            { config: wipeConfig(), from: 0, to: 1, duration: 1 },
             { canvasElementAliases: ["alias"] },
         );
 
-        // Halfway through the duration, the filter is attached and driven to the halfway value.
+        // Halfway through the duration, the mask is attached and revealing about half the width.
         ticker.fn(tick(500), ticker.args, ["alias"], ticker.id);
-        expect((target.filters![0] as PIXI.BlurFilter).strength).toBeCloseTo(10, 0);
+        expect(target.mask).toBeInstanceOf(PIXI.Graphics);
+        const halfwayWidth = (target.mask as PIXI.Graphics).getLocalBounds().width;
+        expect(halfwayWidth).toBeGreaterThan(0);
         expect(onComplete).not.toHaveBeenCalled();
 
         // Once `duration` has fully elapsed, the transition applies the final value and immediately
-        // cleans up in the same frame - it must never leave a lingering filter behind.
+        // cleans up in the same frame - it must never leave a lingering mask behind.
         ticker.fn(tick(500), ticker.args, ["alias"], ticker.id);
-        expect(target.filters).toBeNull();
+        expect(target.mask).toBeUndefined();
         expect(onComplete).toHaveBeenCalledWith(ticker.id, {
             aliasToRemoveAfter: [],
             tickerAliasToResume: [],
@@ -228,14 +181,14 @@ describe("FilterProgressTicker", () => {
         vi.spyOn(canvas, "find").mockReturnValue(target);
         vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
 
-        const config: BlurFilterConfig = { kind: "blur", quality: 4 };
         const ticker = new FilterProgressTicker(
-            { config, from: 0, to: 10, duration: 1, delay: 0.5 },
+            { config: wipeConfig(), from: 0, to: 1, duration: 1, delay: 0.5 },
             { canvasElementAliases: ["alias"] },
         );
 
         ticker.fn(tick(400), ticker.args, ["alias"], ticker.id);
-        expect((target.filters![0] as PIXI.BlurFilter).strength).toBe(0);
+        // Still before the delay has elapsed: nothing revealed yet.
+        expect((target.mask as PIXI.Graphics).getLocalBounds().width).toBe(0);
     });
 
     test("passes aliasToRemoveAfter/tickerIdToResume through on completion", () => {
@@ -243,11 +196,10 @@ describe("FilterProgressTicker", () => {
         vi.spyOn(canvas, "find").mockReturnValue(target);
         const onComplete = vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
 
-        const config: PixelateFilterConfig = { kind: "pixelate" };
         const ticker = new FilterProgressTicker(
             {
-                config,
-                from: 32,
+                config: wipeConfig(),
+                from: 0,
                 to: 1,
                 duration: 0.1,
                 aliasToRemoveAfter: ["old_temp"],
@@ -270,19 +222,54 @@ describe("FilterProgressTicker", () => {
         vi.spyOn(canvas, "find").mockReturnValue(target);
         const onComplete = vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
 
-        const config: BlurFilterConfig = { kind: "blur", quality: 4 };
         const ticker = new FilterProgressTicker(
-            { config, from: 0, to: 10, duration: 5 },
+            { config: wipeConfig(), from: 0, to: 1, duration: 5 },
             { canvasElementAliases: ["alias"] },
         );
 
         ticker.fn(tick(16), ticker.args, ["alias"], ticker.id);
         ticker.complete();
         expect(onComplete).toHaveBeenCalledTimes(1);
-        expect(target.filters).toBeNull();
+        expect(target.mask).toBeUndefined();
 
         // A late frame after completion must be a no-op (no double cleanup/onComplete).
         ticker.fn(tick(16), ticker.args, ["alias"], ticker.id);
         expect(onComplete).toHaveBeenCalledTimes(1);
+    });
+});
+
+describe("blurOut/pixelateOut: use canvas.animateFilter (MotionFilterTicker)", () => {
+    function createSprite() {
+        const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+        return sprite as unknown as import("../src/canvas").CanvasBaseInterface<any>;
+    }
+
+    test("blurOut attaches a BlurFilter to the component's filters", () => {
+        const target = createSprite();
+        vi.spyOn(canvas, "find").mockReturnValue(target);
+
+        const id = transitions.blurOut("alias", { strength: 20, completeOnContinue: false });
+
+        expect(id).toBeDefined();
+        expect(target.filters).toHaveLength(1);
+        expect(target.filters![0]).toBeInstanceOf(PIXI.BlurFilter);
+    });
+
+    test("pixelateOut attaches a PixelateFilter to the component's filters", async () => {
+        const target = createSprite();
+        vi.spyOn(canvas, "find").mockReturnValue(target);
+        const { PixelateFilter } = await import("pixi-filters");
+
+        const id = transitions.pixelateOut("alias", { pixelSize: 16, completeOnContinue: false });
+
+        expect(id).toBeDefined();
+        expect(target.filters).toHaveLength(1);
+        expect(target.filters![0]).toBeInstanceOf(PixelateFilter);
+    });
+
+    test("blurOut/pixelateOut warn and no-op when the alias isn't found", () => {
+        vi.spyOn(canvas, "find").mockReturnValue(undefined);
+        expect(transitions.blurOut("missing")).toBeUndefined();
+        expect(transitions.pixelateOut("missing")).toBeUndefined();
     });
 });

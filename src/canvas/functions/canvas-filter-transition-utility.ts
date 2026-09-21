@@ -1,7 +1,5 @@
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
 import { BlurFilter, Graphics } from "@drincs/pixi-vn/pixi.js";
-import type { Filter } from "@drincs/pixi-vn/pixi.js";
-import { PixelateFilter } from "pixi-filters";
 
 /**
  * A snapshot of a component's own (untransformed) bounds, captured once when a mask/filter transition
@@ -44,42 +42,16 @@ export interface SplitFilterConfig {
     invert: boolean;
     bounds: BoundsSnapshot;
 }
-export interface BlurFilterConfig {
-    kind: "blur";
-    quality: number;
-}
-export interface PixelateFilterConfig {
-    kind: "pixelate";
-}
-export type FilterTransitionConfig =
-    | WipeFilterConfig
-    | IrisFilterConfig
-    | SplitFilterConfig
-    | BlurFilterConfig
-    | PixelateFilterConfig;
+export type FilterTransitionConfig = WipeFilterConfig | IrisFilterConfig | SplitFilterConfig;
 
 /**
- * Per-ticker-instance, non-serializable scratch space: the actual `Graphics`/`Filter` objects a
- * transition is driving. A fresh, empty context is created whenever a {@link FilterProgressTicker} is
- * (re)constructed - including when a save is restored - so the mask/filter is always lazily recreated
- * on the first `apply()` call rather than persisted.
+ * Per-ticker-instance, non-serializable scratch space: the actual `Graphics` mask a transition is
+ * driving. A fresh, empty context is created whenever a {@link FilterProgressTicker} is (re)constructed
+ * - including when a save is restored - so the mask is always lazily recreated on the first `apply()`
+ * call rather than persisted.
  */
 export interface FilterTransitionContext {
     graphics?: Graphics;
-    filter?: Filter;
-}
-
-function toArray(filters: CanvasBaseInterface<any>["filters"]): Filter[] {
-    return filters ? [...filters] : [];
-}
-
-function attachFilter(component: CanvasBaseInterface<any>, filter: Filter) {
-    component.filters = [...toArray(component.filters), filter];
-}
-
-function detachFilter(component: CanvasBaseInterface<any>, filter: Filter) {
-    const remaining = toArray(component.filters).filter((f) => f !== filter);
-    component.filters = remaining.length > 0 ? remaining : null;
 }
 
 /**
@@ -137,10 +109,12 @@ function cleanupMask(component: CanvasBaseInterface<any>, ctx: FilterTransitionC
 }
 
 /**
- * Applies a single {@link FilterTransitionConfig} at the given `value` (the animated quantity: a `0`-`1`
- * reveal fraction for the mask-based kinds, a raw blur strength / pixel size for the filter-based
- * kinds). This is the one place that knows how to turn "one animated number" into a visual effect - the
- * generic mechanism the transitions in `canvas-transition.ts` are built on.
+ * Applies a single {@link FilterTransitionConfig} at the given `value` (a `0`-`1` reveal fraction). This
+ * is the one place that knows how to turn "one animated number" into mask geometry - the generic
+ * mechanism `wipeIn`/`wipeOut`/`irisIn`/`irisOut`/`splitIn`/`splitOut` in `canvas-transition.ts` are
+ * built on. `blurIn`/`blurOut`/`pixelateIn`/`pixelateOut` don't go through this - they animate a
+ * `Filter`'s own properties directly via `canvas.animateFilter`/`MotionFilterTicker`, since (unlike
+ * these three) they have no mask geometry to compute, just a filter property to drive.
  */
 export function applyFilterTransition(
     component: CanvasBaseInterface<any>,
@@ -224,22 +198,6 @@ export function applyFilterTransition(
             applySoftness(graphics, config.softness);
             break;
         }
-        case "blur": {
-            if (!ctx.filter) {
-                ctx.filter = new BlurFilter({ strength: value, quality: config.quality });
-                attachFilter(component, ctx.filter);
-            }
-            (ctx.filter as BlurFilter).strength = value;
-            break;
-        }
-        case "pixelate": {
-            if (!ctx.filter) {
-                ctx.filter = new PixelateFilter(value);
-                attachFilter(component, ctx.filter);
-            }
-            (ctx.filter as PixelateFilter).size = value;
-            break;
-        }
     }
 }
 
@@ -258,14 +216,6 @@ export function cleanupFilterTransition(
         case "iris":
         case "split":
             cleanupMask(component, ctx);
-            break;
-        case "blur":
-        case "pixelate":
-            if (ctx.filter) {
-                detachFilter(component, ctx.filter);
-                ctx.filter.destroy();
-                ctx.filter = undefined;
-            }
             break;
     }
 }

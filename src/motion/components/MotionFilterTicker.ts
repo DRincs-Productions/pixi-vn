@@ -5,7 +5,6 @@ import { animate } from "@motion/utils";
 import MotionFilterTickerBase from "./MotionFilterTickerBase";
 
 interface TArgs {
-    filter: Filter;
     keyframes: ObjectTarget<Filter>;
     options: AnimationOptions;
     /**

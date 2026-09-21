@@ -1,8 +1,9 @@
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import { canvas } from "@drincs/pixi-vn/canvas";
-import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
+import MotionFilterTicker from "./components/MotionFilterTicker";
 import MotionSequenceTicker from "./components/MotionSequenceTicker";
 import MotionTicker from "./components/MotionTicker";
 import type AnimationOptions from "./interfaces/AnimationOptions";
@@ -94,6 +95,52 @@ namespace motion {
                 },
             );
         }
+        const id = canvas.tickers.add<any>(aliases, ticker);
+        const { completeOnContinue } = options || {};
+        if (id && completeOnContinue) {
+            canvas.tickers.completeOnStepEnd({
+                id: id,
+            });
+        }
+        return id;
+    }
+
+    /**
+     * Animate a `Filter`'s own properties (as opposed to {@link animate}, which animates a canvas
+     * element's properties) - see {@link MotionFilterTicker}.
+     * @param components The canvas element alias(es) the filter is attached to.
+     * @param filter The `Filter` instance to animate.
+     * @param keyframes The keyframes to animate the filter's properties with.
+     * @param options The animation options.
+     * @param priority The update priority of the ticker.
+     * @param cleanup Called once, right before completion handling, to detach/destroy the filter.
+     * @returns The id of the ticker, or `undefined` if the ticker was not added.
+     */
+    export function animateFilter(
+        components: string | string[],
+        filter: Filter,
+        keyframes: Record<string, any>,
+        options?: AnimationOptions,
+        priority?: UPDATE_PRIORITY,
+        cleanup?: (filter: Filter) => void,
+    ): string | undefined {
+        try {
+            keyframes = createExportableElement(keyframes);
+        } catch (e) {
+            logger.error("animateFilter keyframes cannot contain functions or classes");
+            throw e;
+        }
+        try {
+            options = createExportableElement(options);
+        } catch (e) {
+            logger.error("animateFilter options cannot contain functions or classes");
+            throw e;
+        }
+        const aliases = Array.isArray(components) ? components : [components];
+        const ticker = new MotionFilterTicker(
+            { keyframes, options: options as AnimationOptions },
+            { filter, priority, canvasElementAliases: aliases, cleanup },
+        );
         const id = canvas.tickers.add<any>(aliases, ticker);
         const { completeOnContinue } = options || {};
         if (id && completeOnContinue) {
