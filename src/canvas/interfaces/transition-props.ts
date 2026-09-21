@@ -1,3 +1,4 @@
+import type { ColorType } from "@canvas/types/ColorType";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
 import type { PointData } from "@drincs/pixi-vn/pixi.js";
 
@@ -93,10 +94,10 @@ export interface SplitInOutProps extends MaskTransitionProps {
 }
 export interface FlashInOutProps extends BaseTransitionProps, AnimationOptions {
     /**
-     * The overlay color.
+     * The overlay color. See {@link ColorType}.
      * @default 0xffffff
      */
-    color?: number | string;
+    color?: ColorType;
     /**
      * The peak alpha the overlay reaches.
      * @default 1

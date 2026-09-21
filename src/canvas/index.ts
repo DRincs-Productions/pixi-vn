@@ -102,6 +102,15 @@ export type {
 export * from "./tickers";
 export type { AssetAliasIdType, PixivnAssetAliasIds } from "./types/AssetAliasIdType";
 export type { BundleIdType, PixivnBundleIds } from "./types/BundleIdType";
+export type {
+    ColorType,
+    HslaColorType,
+    HslColorType,
+    HsvaColorType,
+    HsvColorType,
+    RgbaColorType,
+    RgbColorType,
+} from "./types/ColorType";
 export type { default as ContainerChild } from "./types/ContainerChild";
 
 const canvas: CanvasManagerInterface = new CanvasManager();

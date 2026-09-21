@@ -8,6 +8,7 @@ import {
 } from "@canvas/functions/canvas-filter-transition-utility";
 import PixiContainer from "@canvas/components/Container";
 import FilterProgressTicker from "@canvas/tickers/classes/FilterProgressTicker";
+import type { ColorType } from "@canvas/types/ColorType";
 import { logger } from "@utils/log-utility";
 import { Filters } from "@drincs/pixi-vn/filters";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
@@ -1989,7 +1990,7 @@ export namespace transitions {
      */
     function createFlashOverlay(
         target: CanvasBaseInterface<any>,
-        color: number | string,
+        color: ColorType,
         initialAlpha: number = 0,
     ): string {
         const bounds = target.getBounds();
@@ -2015,7 +2016,7 @@ export namespace transitions {
     function addFlashOverlay(
         target: CanvasBaseInterface<any>,
         options: {
-            color: number | string;
+            color: ColorType;
             maxAlpha: number;
             fadeDuration: number;
             holdDuration: number;
@@ -2073,7 +2074,7 @@ export namespace transitions {
         oldComponent: CanvasBaseInterface<any>,
         component: TComponent,
         options: {
-            color: number | string;
+            color: ColorType;
             maxAlpha: number;
             fadeDuration: number;
             holdDuration: number;
