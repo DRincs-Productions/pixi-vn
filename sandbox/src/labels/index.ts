@@ -3,9 +3,12 @@
 import "./blur-transition-example";
 import "./canvas-text-example";
 import "./canvas-transition-position";
+import "./dissolve-fade-transition-example";
 import "./flash-transition-example";
 import "./iris-transition-example";
+import "./move-transition-example";
 import "./pixelate-transition-example";
+import "./push-transition-example";
 import "./split-transition-example";
 import "./start";
 import "./transferred-ticker-position";
