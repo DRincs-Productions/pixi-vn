@@ -1,13 +1,14 @@
-import { resolveEasing, type EasingInput } from "@canvas/functions/canvas-easing-utility";
 import {
+    applyFilterTransition,
+    cleanupFilterTransition,
     snapshotLocalBounds,
     type FilterTransitionConfig,
+    type FilterTransitionContext,
     type IrisFilterConfig,
     type SplitFilterConfig,
     type WipeFilterConfig,
 } from "@canvas/functions/canvas-filter-transition-utility";
 import PixiContainer from "@canvas/components/Container";
-import FilterProgressTicker from "@canvas/tickers/classes/FilterProgressTicker";
 import type { ColorType } from "@canvas/types/ColorType";
 import { logger } from "@utils/log-utility";
 import { Filters } from "@drincs/pixi-vn/filters";
@@ -330,22 +331,20 @@ export namespace transitions {
     }
 
     /**
-     * Creates and starts a {@link FilterProgressTicker} for `alias`, wiring up `completeOnContinue` the
-     * same way {@link motion.animate} does for the other transitions. This is the single place every
-     * mask-based transition (wipe/iris/split) goes through - `blurIn`/`blurOut`/`pixelateIn`/
+     * Creates and starts a {@link canvas.animateValue}-driven progress animation for `alias`, wiring up
+     * `completeOnContinue` the same way {@link addMotionFilterEffect} does. This is the single place
+     * every mask-based transition (wipe/iris/split) goes through - `blurIn`/`blurOut`/`pixelateIn`/
      * `pixelateOut` use {@link addMotionFilterEffect} instead, since they animate a `Filter`'s own
      * properties rather than mask geometry.
      */
-    function addFilterProgressTicker(
+    function addMotionValueEffect(
         alias: string,
         args: {
             config: FilterTransitionConfig;
             from: number;
             to: number;
             duration?: number;
-            /** `motion`'s `delay` also allows a per-target `(index, total) => number`; resolved as a single target (index 0 of 1). */
             delay?: number | ((index: number, total: number) => number);
-            /** Accepts `motion`'s richer `ease` type too - narrowed to {@link EasingInput} by {@link resolveEasing}. */
             ease?: unknown;
             completeOnContinue?: boolean;
             aliasToRemoveAfter?: string[];
@@ -353,21 +352,39 @@ export namespace transitions {
         },
         priority?: UPDATE_PRIORITY,
     ): string | undefined {
-        const delay = typeof args.delay === "function" ? args.delay(0, 1) : args.delay;
-        const ticker = new FilterProgressTicker(
+        const ctx: FilterTransitionContext = {};
+        const apply = (value: number) => {
+            const component = canvas.find(alias);
+            if (component) {
+                applyFilterTransition(component, args.config, value, ctx);
+            }
+        };
+        const id = canvas.animateValue(
+            alias,
+            { value: [args.from, args.to] },
             {
-                config: args.config,
-                from: args.from,
-                to: args.to,
                 duration: args.duration ?? 1,
-                delay,
-                ease: args.ease as EasingInput,
+                delay: args.delay,
+                ease: args.ease as AnimationOptions["ease"],
                 aliasToRemoveAfter: args.aliasToRemoveAfter,
                 tickerIdToResume: args.tickerIdToResume,
             },
-            { priority, canvasElementAliases: [alias] },
+            priority,
+            apply,
+            () => {
+                const component = canvas.find(alias);
+                if (component) {
+                    cleanupFilterTransition(component, args.config, ctx);
+                }
+            },
         );
-        const id = canvas.tickers.add(alias, ticker);
+        if (id) {
+            // Applies `from` immediately, the same frame the component is first rendered, mirroring what
+            // `FilterProgressTicker`'s own `start()` override used to guarantee explicitly - it doesn't
+            // rely on `motion`'s own synchronous first-keyframe write reaching `onUpdate` before the
+            // ticker's first real tick, closing any gap where the component would render unmasked.
+            apply(args.from);
+        }
         if (id && (args.completeOnContinue ?? true)) {
             canvas.tickers.completeOnStepEnd({ id });
         }
@@ -379,7 +396,7 @@ export namespace transitions {
      * `keyframes` on the filter's own properties via {@link canvas.animateFilter} (`MotionFilterTicker`,
      * `motion`-backed - see {@link blurIn}/{@link pixelateIn}), detaching and destroying it once the
      * animation completes. The same "never leave the component in a different state than before the
-     * transition" guarantee {@link addFilterProgressTicker}'s mask cleanup gives wipe/iris/split.
+     * transition" guarantee {@link addMotionValueEffect}'s mask cleanup gives wipe/iris/split.
      */
     function addMotionFilterEffect(
         alias: string,
@@ -1319,7 +1336,7 @@ export namespace transitions {
             invert,
             bounds: snapshotLocalBounds(newComponent),
         };
-        const id = addFilterProgressTicker(
+        const id = addMotionValueEffect(
             alias,
             {
                 config,
@@ -1378,7 +1395,7 @@ export namespace transitions {
             invert,
             bounds: snapshotLocalBounds(component),
         };
-        const id = addFilterProgressTicker(
+        const id = addMotionValueEffect(
             alias,
             {
                 config,
@@ -1453,7 +1470,7 @@ export namespace transitions {
             invert,
             bounds: snapshotLocalBounds(newComponent),
         };
-        const id = addFilterProgressTicker(
+        const id = addMotionValueEffect(
             alias,
             {
                 config,
@@ -1514,7 +1531,7 @@ export namespace transitions {
             invert,
             bounds: snapshotLocalBounds(component),
         };
-        const id = addFilterProgressTicker(
+        const id = addMotionValueEffect(
             alias,
             {
                 config,
@@ -1588,7 +1605,7 @@ export namespace transitions {
             invert,
             bounds: snapshotLocalBounds(newComponent),
         };
-        const id = addFilterProgressTicker(
+        const id = addMotionValueEffect(
             alias,
             {
                 config,
@@ -1648,7 +1665,7 @@ export namespace transitions {
             invert,
             bounds: snapshotLocalBounds(component),
         };
-        const id = addFilterProgressTicker(
+        const id = addMotionValueEffect(
             alias,
             {
                 config,

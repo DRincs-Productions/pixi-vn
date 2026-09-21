@@ -6,6 +6,7 @@ import { logger } from "../utils/log-utility";
 import MotionFilterTicker from "./components/MotionFilterTicker";
 import MotionSequenceTicker from "./components/MotionSequenceTicker";
 import MotionTicker from "./components/MotionTicker";
+import MotionValueTicker from "./components/MotionValueTicker";
 import type AnimationOptions from "./interfaces/AnimationOptions";
 import type {
     KeyframesType,
@@ -140,6 +141,57 @@ namespace motion {
         const ticker = new MotionFilterTicker(
             { keyframes, options: options as AnimationOptions },
             { filter, priority, canvasElementAliases: aliases, cleanup },
+        );
+        const id = canvas.tickers.add<any>(aliases, ticker);
+        const { completeOnContinue } = options || {};
+        if (id && completeOnContinue) {
+            canvas.tickers.completeOnStepEnd({
+                id: id,
+            });
+        }
+        return id;
+    }
+
+    /**
+     * Animate a plain numeric "progress" value (as opposed to {@link animate}, which animates a canvas
+     * element's properties, or {@link animateFilter}, a `Filter`'s) - see {@link MotionValueTicker}. The
+     * generic mechanism behind the mask-based transitions (`wipeIn`/`wipeOut`, `irisIn`/`irisOut`,
+     * `splitIn`/`splitOut`): they have no canvas element or Filter property to write directly, just a
+     * number and a side effect (redrawing mask geometry).
+     * @param components The canvas element alias(es) associated with this animation (kept for the same
+     * cleanup/transfer bookkeeping every other ticker participates in - `apply` decides what to do with
+     * the animated value, independently of these).
+     * @param keyframes The keyframes to animate the value with, e.g. `{ value: [0, 1] }`.
+     * @param options The animation options.
+     * @param priority The update priority of the ticker.
+     * @param apply Called on every frame with the current interpolated value.
+     * @param cleanup Called once, right before completion handling.
+     * @returns The id of the ticker, or `undefined` if the ticker was not added.
+     */
+    export function animateValue(
+        components: string | string[],
+        keyframes: Record<string, any>,
+        options?: AnimationOptions,
+        priority?: UPDATE_PRIORITY,
+        apply?: (value: number) => void,
+        cleanup?: () => void,
+    ): string | undefined {
+        try {
+            keyframes = createExportableElement(keyframes);
+        } catch (e) {
+            logger.error("animateValue keyframes cannot contain functions or classes");
+            throw e;
+        }
+        try {
+            options = createExportableElement(options);
+        } catch (e) {
+            logger.error("animateValue options cannot contain functions or classes");
+            throw e;
+        }
+        const aliases = Array.isArray(components) ? components : [components];
+        const ticker = new MotionValueTicker(
+            { keyframes, options: options as AnimationOptions },
+            { apply, priority, canvasElementAliases: aliases, cleanup },
         );
         const id = canvas.tickers.add<any>(aliases, ticker);
         const { completeOnContinue } = options || {};

@@ -46,7 +46,8 @@ export type FilterTransitionConfig = WipeFilterConfig | IrisFilterConfig | Split
 
 /**
  * Per-ticker-instance, non-serializable scratch space: the actual `Graphics` mask a transition is
- * driving. A fresh, empty context is created whenever a {@link FilterProgressTicker} is (re)constructed
+ * driving. A fresh, empty context is created whenever the `MotionValueTicker` driving a mask-based
+ * transition (wipe/iris/split - see `addMotionValueEffect` in `canvas-transition.ts`) is (re)constructed
  * - including when a save is restored - so the mask is always lazily recreated on the first `apply()`
  * call rather than persisted.
  */

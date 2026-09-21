@@ -1,6 +1,5 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { afterEach, describe, expect, test, vi } from "vitest";
-import { resolveEasing } from "../src/canvas/functions/canvas-easing-utility";
 import {
     applyFilterTransition,
     cleanupFilterTransition,
@@ -10,7 +9,6 @@ import {
     type SplitFilterConfig,
     type WipeFilterConfig,
 } from "../src/canvas/functions/canvas-filter-transition-utility";
-import FilterProgressTicker from "../src/canvas/tickers/classes/FilterProgressTicker";
 import { canvas, transitions } from "../src/canvas";
 
 afterEach(() => vi.restoreAllMocks());
@@ -21,30 +19,6 @@ const BOUNDS = { x: 0, y: 0, width: 100, height: 50 };
 function createTarget() {
     return new PIXI.Container() as unknown as import("../src/canvas").CanvasBaseInterface<any>;
 }
-
-describe("resolveEasing", () => {
-    test("resolves named eases", () => {
-        expect(resolveEasing("linear")(0.5)).toBeCloseTo(0.5);
-        expect(resolveEasing("easeIn")(0.5)).toBeCloseTo(0.25);
-        expect(resolveEasing(undefined)(0.5)).toBeCloseTo(0.5);
-    });
-
-    test("resolves a cubic-bezier array, clamping the endpoints", () => {
-        const ease = resolveEasing([0.42, 0, 0.58, 1]);
-        expect(ease(0)).toBeCloseTo(0);
-        expect(ease(1)).toBeCloseTo(1);
-    });
-
-    test("resolves a custom function and unwraps a single-element array", () => {
-        const custom = (t: number) => t * t;
-        expect(resolveEasing(custom)(0.5)).toBeCloseTo(0.25);
-        expect(resolveEasing([custom])(0.5)).toBeCloseTo(0.25);
-    });
-
-    test("falls back to linear for unrecognized input", () => {
-        expect(resolveEasing("not-a-real-ease")(0.3)).toBeCloseTo(0.3);
-    });
-});
 
 describe("snapshotLocalBounds", () => {
     test("reads x/y/width/height off the component's own local bounds", () => {
@@ -138,103 +112,54 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
 
 });
 
-describe("FilterProgressTicker", () => {
-    function tick(ms: number) {
-        return { deltaMS: ms } as PIXI.Ticker;
-    }
-
-    function wipeConfig(): WipeFilterConfig {
-        return { kind: "wipe", angle: 0, softness: 0, invert: false, bounds: BOUNDS };
-    }
-
-    test("interpolates from `from` to `to` over `duration` and cleans up on completion", () => {
-        const target = createTarget();
+describe("wipeOut/irisOut/splitOut: use canvas.animateValue (MotionValueTicker)", () => {
+    function spyOnCanvas(target: import("../src/canvas").CanvasBaseInterface<any> | undefined) {
         vi.spyOn(canvas, "find").mockReturnValue(target);
-        const onComplete = vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
+        return vi.spyOn(canvas, "animateValue").mockReturnValue("ticker-id");
+    }
 
-        const ticker = new FilterProgressTicker(
-            { config: wipeConfig(), from: 0, to: 1, duration: 1 },
-            { canvasElementAliases: ["alias"] },
-        );
+    test("wipeOut passes [1, 0] keyframes to canvas.animateValue and attaches the mask synchronously at `from`", () => {
+        const target = createTarget();
+        const animateValueSpy = spyOnCanvas(target);
 
-        // Halfway through the duration, the mask is attached and revealing about half the width.
-        ticker.fn(tick(500), ticker.args, ["alias"], ticker.id);
+        const ids = transitions.wipeOut("alias", { duration: 1, completeOnContinue: false });
+
+        expect(ids).toEqual(["ticker-id"]);
+        expect(animateValueSpy).toHaveBeenCalledTimes(1);
+        const [aliasArg, keyframes, options] = animateValueSpy.mock.calls[0] as [
+            string,
+            { value: number[] },
+            any,
+        ];
+        expect(aliasArg).toBe("alias");
+        expect(keyframes).toEqual({ value: [1, 0] });
+        expect(options.aliasToRemoveAfter).toEqual(expect.arrayContaining(["alias"]));
+        // `addMotionValueEffect` applies `from` synchronously right after registering the ticker, the
+        // same frame the component is (re)rendered - mirrors what `FilterProgressTicker`'s own `start()`
+        // override used to guarantee explicitly, so the mask never lags a frame behind.
         expect(target.mask).toBeInstanceOf(PIXI.Graphics);
-        const halfwayWidth = (target.mask as PIXI.Graphics).getLocalBounds().width;
-        expect(halfwayWidth).toBeGreaterThan(0);
-        expect(onComplete).not.toHaveBeenCalled();
-
-        // Once `duration` has fully elapsed, the transition applies the final value and immediately
-        // cleans up in the same frame - it must never leave a lingering mask behind.
-        ticker.fn(tick(500), ticker.args, ["alias"], ticker.id);
-        expect(target.mask).toBeUndefined();
-        expect(onComplete).toHaveBeenCalledWith(ticker.id, {
-            aliasToRemoveAfter: [],
-            tickerAliasToResume: [],
-            tickerIdToResume: [],
-            stopTicker: true,
-        });
+        expect((target.mask as PIXI.Graphics).getLocalBounds().width).toBeGreaterThan(0);
     });
 
-    test("honors delay before the value starts changing", () => {
-        const target = createTarget();
-        vi.spyOn(canvas, "find").mockReturnValue(target);
-        vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
+    test("irisOut/splitOut also attach a mask synchronously and pass [1, 0] keyframes", () => {
+        const irisTarget = createTarget();
+        const irisSpy = spyOnCanvas(irisTarget);
+        transitions.irisOut("alias", { duration: 1, completeOnContinue: false });
+        expect((irisSpy.mock.calls[0][1] as { value: number[] }).value).toEqual([1, 0]);
+        expect(irisTarget.mask).toBeInstanceOf(PIXI.Graphics);
 
-        const ticker = new FilterProgressTicker(
-            { config: wipeConfig(), from: 0, to: 1, duration: 1, delay: 0.5 },
-            { canvasElementAliases: ["alias"] },
-        );
-
-        ticker.fn(tick(400), ticker.args, ["alias"], ticker.id);
-        // Still before the delay has elapsed: nothing revealed yet.
-        expect((target.mask as PIXI.Graphics).getLocalBounds().width).toBe(0);
+        const splitTarget = createTarget();
+        const splitSpy = spyOnCanvas(splitTarget);
+        transitions.splitOut("alias", { duration: 1, completeOnContinue: false });
+        expect((splitSpy.mock.calls[0][1] as { value: number[] }).value).toEqual([1, 0]);
+        expect(splitTarget.mask).toBeInstanceOf(PIXI.Graphics);
     });
 
-    test("passes aliasToRemoveAfter/tickerIdToResume through on completion", () => {
-        const target = createTarget();
-        vi.spyOn(canvas, "find").mockReturnValue(target);
-        const onComplete = vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
-
-        const ticker = new FilterProgressTicker(
-            {
-                config: wipeConfig(),
-                from: 0,
-                to: 1,
-                duration: 0.1,
-                aliasToRemoveAfter: ["old_temp"],
-                tickerIdToResume: ["paused-ticker"],
-            },
-            { canvasElementAliases: ["alias"] },
-        );
-
-        ticker.fn(tick(200), ticker.args, ["alias"], ticker.id);
-        expect(onComplete).toHaveBeenCalledWith(ticker.id, {
-            aliasToRemoveAfter: ["old_temp"],
-            tickerAliasToResume: [],
-            tickerIdToResume: ["paused-ticker"],
-            stopTicker: true,
-        });
-    });
-
-    test("complete() forces immediate finish exactly once", () => {
-        const target = createTarget();
-        vi.spyOn(canvas, "find").mockReturnValue(target);
-        const onComplete = vi.spyOn(canvas.tickers, "onComplete").mockImplementation(() => {});
-
-        const ticker = new FilterProgressTicker(
-            { config: wipeConfig(), from: 0, to: 1, duration: 5 },
-            { canvasElementAliases: ["alias"] },
-        );
-
-        ticker.fn(tick(16), ticker.args, ["alias"], ticker.id);
-        ticker.complete();
-        expect(onComplete).toHaveBeenCalledTimes(1);
-        expect(target.mask).toBeUndefined();
-
-        // A late frame after completion must be a no-op (no double cleanup/onComplete).
-        ticker.fn(tick(16), ticker.args, ["alias"], ticker.id);
-        expect(onComplete).toHaveBeenCalledTimes(1);
+    test("wipeOut/irisOut/splitOut warn and no-op when the alias isn't found", () => {
+        spyOnCanvas(undefined);
+        expect(transitions.wipeOut("missing")).toBeUndefined();
+        expect(transitions.irisOut("missing")).toBeUndefined();
+        expect(transitions.splitOut("missing")).toBeUndefined();
     });
 });
 

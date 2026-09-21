@@ -159,6 +159,28 @@ export default class GameUnifier {
             priority?: UPDATE_PRIORITY,
             cleanup?: (filter: Filter) => void,
         ) => string | undefined;
+        /**
+         * This function is called to animate a plain numeric "progress" value (as opposed to
+         * {@link animate}, which animates a canvas element's properties, or {@link animateFilter}, a
+         * `Filter`'s) - the generic mechanism behind the mask-based transitions (wipe/iris/split).
+         * @param components - The canvas element alias(es) associated with this animation (kept for the
+         * same cleanup/transfer bookkeeping every other ticker participates in), not the animation target
+         * itself.
+         * @param keyframes - The keyframes to animate the value with, e.g. `{ value: [0, 1] }`.
+         * @param options - Additional options for the animation, including duration, easing, and ticker.
+         * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+         * @param apply - Called on every frame with the current interpolated value.
+         * @param cleanup - Called once, right before completion handling.
+         * @returns The id of the ticker.
+         */
+        animateValue: (
+            components: string | string[],
+            keyframes: any,
+            options?: any,
+            priority?: UPDATE_PRIORITY,
+            apply?: (value: number) => void,
+            cleanup?: () => void,
+        ) => string | undefined;
     }) {
         if (options.navigate) GameUnifier._navigate = options.navigate;
         GameUnifier._getStepCounter = options.getStepCounter;
@@ -177,6 +199,7 @@ export default class GameUnifier {
         GameUnifier._getCharacter = options.getCharacter;
         GameUnifier._animate = options.animate;
         GameUnifier._animateFilter = options.animateFilter;
+        GameUnifier._animateValue = options.animateValue;
     }
     private static _navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
@@ -576,5 +599,27 @@ export default class GameUnifier {
      */
     static get animateFilter() {
         return GameUnifier._animateFilter;
+    }
+    private static _animateValue: (
+        components: string | string[],
+        keyframes: any,
+        options?: any,
+        priority?: UPDATE_PRIORITY,
+        apply?: (value: number) => void,
+        cleanup?: () => void,
+    ) => string | undefined = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
+    };
+    /**
+     * This function is called to animate a plain numeric "progress" value. See {@link animate}/
+     * {@link animateFilter} for animating a canvas element's/Filter's properties instead.
+     * @returns The id of the ticker.
+     */
+    static get animateValue() {
+        return GameUnifier._animateValue;
     }
 }

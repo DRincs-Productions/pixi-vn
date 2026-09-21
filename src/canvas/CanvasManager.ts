@@ -963,6 +963,17 @@ export default class CanvasManager implements CanvasManagerInterface {
         return GameUnifier.animateFilter(components, filter, keyframes, options, priority, cleanup);
     }
 
+    animateValue(
+        components: string | string[],
+        keyframes: Record<string, any>,
+        options?: AnimationOptions,
+        priority?: UPDATE_PRIORITY,
+        apply?: (value: number) => void,
+        cleanup?: () => void,
+    ): string | undefined {
+        return GameUnifier.animateValue(components, keyframes, options, priority, apply, cleanup);
+    }
+
     /* Layers Methods */
 
     private addLayerInternal(label: string, layer: PixiContainer) {

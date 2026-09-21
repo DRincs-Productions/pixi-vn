@@ -199,6 +199,9 @@ export namespace Game {
                     cleanup,
                 );
             },
+            animateValue: (components, keyframes, options, priority, apply, cleanup) => {
+                return motion.animateValue(components, keyframes, options, priority, apply, cleanup);
+            },
             // storage
             getVariable: (prefix, key) => storageUtils.StorageRegistry.getVariable(prefix, key),
             setVariable: (prefix, key, value) =>

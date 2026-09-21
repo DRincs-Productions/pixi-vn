@@ -44,8 +44,9 @@ export default abstract class MotionFilterTickerBase<
              * references that produce circular structures), so embedding it in `TArgs` broke
              * `createExportableElement()` any time a ticker's `args` were serialized (e.g.
              * `CanvasManager.export()`, called on every history step) while a `blurIn`/`pixelateIn`
-             * animation was in flight. Mirrors {@link FilterProgressTicker}'s own `ctx.graphics`, which is
-             * kept out of its persisted `config` the same way.
+             * animation was in flight. Mirrors `MotionValueTickerBase`'s own mask-transition `ctx.graphics`
+             * (see `addMotionValueEffect` in `canvas-transition.ts`), which is kept out of its persisted
+             * `config` the same way.
              *
              * Optional only for structural compatibility with {@link RegisteredTickers}' generic
              * constructor shape (which has no slot for a filter); genuinely required to actually use the
@@ -78,8 +79,8 @@ export default abstract class MotionFilterTickerBase<
             /**
              * Called once, right before completion handling (`canvas.tickers.onComplete`) - the natural
              * place to detach/destroy {@link filter} from whatever component it was attached to,
-             * mirroring what {@link FilterProgressTicker}'s own `finish()` does for mask/filter-based
-             * transitions. Not called on a manual {@link stop} (only on the animation's own completion),
+             * mirroring what `MotionValueTickerBase`'s own `onComplete` does for mask-based transitions.
+             * Not called on a manual {@link stop} (only on the animation's own completion),
              * matching `TickerBase.stop()`'s existing behavior of never running cleanup.
              *
              * Deliberately a constructor option, not part of `TArgs`, for the same reason as {@link filter}.
