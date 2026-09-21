@@ -34,4 +34,6 @@ registerTestLabel("transferred-ticker-position", "Canvas: transferred ticker kee
             text: "Regression check for issue #610: the blue square must keep animating smoothly through the swap - it must NOT flash back to the top-left corner (align 0,0) for a frame, however briefly. If you see a jump/flash, the ticker-transfer fix in MotionTickerBase regressed.",
         };
     },
-]);
+],
+    "Canvas regressions",
+);

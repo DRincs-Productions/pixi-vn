@@ -32,4 +32,6 @@ registerTestLabel("pixelate-transition-example", "Canvas: pixelate transition", 
             text: "pixelateOut (pixel size 48): the image should pixelate into blocks, then be removed.",
         };
     },
-]);
+],
+    "Canvas transitions",
+);

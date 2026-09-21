@@ -37,4 +37,6 @@ registerTestLabel("split-transition-example", "Canvas: split transition", [
             text: "splitOut (vertical, centered, curtain-like): two panels should retract apart toward the top/bottom edges to conceal the image, which is then removed.",
         };
     },
-]);
+],
+    "Canvas transitions",
+);

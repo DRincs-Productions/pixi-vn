@@ -36,4 +36,6 @@ registerTestLabel("wipe-transition-example", "Canvas: wipe transition", [
         transitions.wipeOut("wipe-image", { angle: 180, duration: 1.5 });
         narration.dialogue = { text: "wipeOut (angle 180): the image should wipe away and be removed." };
     },
-]);
+],
+    "Canvas transitions",
+);

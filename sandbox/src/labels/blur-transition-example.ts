@@ -32,4 +32,6 @@ registerTestLabel("blur-transition-example", "Canvas: blur transition", [
             text: "blurOut (strength 40): the image should blur out of focus, then be removed.",
         };
     },
-]);
+],
+    "Canvas transitions",
+);

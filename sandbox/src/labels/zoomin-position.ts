@@ -19,4 +19,6 @@ registerTestLabel("zoomin-position", "Canvas: zoomIn preserves alignment", [
             text: "zoomIn should finish aligned at xAlign 0.7. Continue to inspect the final position.",
         };
     },
-]);
+],
+    "Canvas regressions",
+);

@@ -36,4 +36,6 @@ registerTestLabel("iris-transition-example", "Canvas: iris transition", [
             text: "irisOut (aspect 2, wide ellipse): the image should shrink away through a wide elliptical mask and be removed.",
         };
     },
-]);
+],
+    "Canvas transitions",
+);
