@@ -173,7 +173,13 @@ describe("blurOut/pixelateOut: use canvas.animateFilter (MotionFilterTicker)", (
         const target = createSprite();
         vi.spyOn(canvas, "find").mockReturnValue(target);
 
-        const id = transitions.blurOut("alias", { strength: 20, completeOnContinue: false });
+        // fadeComponent defaults to true for blur, which would otherwise also fire a real,
+        // unmocked canvas.animate() here - see the dedicated fadeComponent tests below instead.
+        const id = transitions.blurOut("alias", {
+            strength: 20,
+            completeOnContinue: false,
+            fadeComponent: false,
+        });
 
         expect(id).toBeDefined();
         expect(target.filters).toHaveLength(1);
@@ -185,6 +191,7 @@ describe("blurOut/pixelateOut: use canvas.animateFilter (MotionFilterTicker)", (
         vi.spyOn(canvas, "find").mockReturnValue(target);
         const { PixelateFilter } = await import("pixi-filters");
 
+        // fadeComponent defaults to false for pixelate, so no extra canvas.animate() call here.
         const id = transitions.pixelateOut("alias", { pixelSize: 16, completeOnContinue: false });
 
         expect(id).toBeDefined();
@@ -196,6 +203,89 @@ describe("blurOut/pixelateOut: use canvas.animateFilter (MotionFilterTicker)", (
         vi.spyOn(canvas, "find").mockReturnValue(undefined);
         expect(transitions.blurOut("missing")).toBeUndefined();
         expect(transitions.pixelateOut("missing")).toBeUndefined();
+    });
+});
+
+describe("fadeComponent: softens the pop-in/pop-out for blur/flash (default true) and pixelate (default false)", () => {
+    function createSprite() {
+        const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
+        return sprite as unknown as import("../src/canvas").CanvasBaseInterface<any>;
+    }
+
+    function spyOnCanvas(target: import("../src/canvas").CanvasBaseInterface<any> | undefined) {
+        vi.spyOn(canvas, "find").mockReturnValue(target);
+        return vi.spyOn(canvas, "animate").mockReturnValue("fade-ticker-id");
+    }
+
+    test("blurOut fades the component's own alpha out by default, timed against the last quarter of duration", () => {
+        const target = createSprite();
+        const animateSpy = spyOnCanvas(target);
+
+        transitions.blurOut("alias", { strength: 20, duration: 1, completeOnContinue: false });
+
+        expect(animateSpy).toHaveBeenCalledTimes(1);
+        const [aliasArg, keyframes, options] = animateSpy.mock.calls[0] as [
+            string,
+            { alpha: number[] },
+            any,
+        ];
+        expect(aliasArg).toBe("alias");
+        expect(keyframes).toEqual({ alpha: [1, 0] });
+        expect(options.duration).toBeCloseTo(0.25);
+        expect(options.delay).toBeCloseTo(0.75);
+    });
+
+    // blurIn/pixelateIn/flashIn's "fresh element" fade-in path aren't independently Vitest-tested here,
+    // the same established scope boundary as the rest of this file: they need `swapComponentForEffect`
+    // to actually build/register a new component (real asset loading via `canvas.add`), which needs a
+    // live canvas registry this test file doesn't set up - see the `blurOut`/`pixelateOut` tests above
+    // for the identical reasoning. Verified in the sandbox instead (see CLAUDE.md §3).
+
+    test("pixelateOut does not fade the component by default (fadeComponent defaults to false)", () => {
+        const target = createSprite();
+        const animateSpy = spyOnCanvas(target);
+
+        transitions.pixelateOut("alias", { pixelSize: 16, duration: 1, completeOnContinue: false });
+
+        expect(animateSpy).not.toHaveBeenCalled();
+    });
+
+    test("pixelateOut fades the component when fadeComponent is explicitly true", () => {
+        const target = createSprite();
+        const animateSpy = spyOnCanvas(target);
+
+        transitions.pixelateOut("alias", {
+            pixelSize: 16,
+            duration: 1,
+            completeOnContinue: false,
+            fadeComponent: true,
+        });
+
+        expect(animateSpy).toHaveBeenCalledTimes(1);
+        const [, keyframes] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
+        expect(keyframes).toEqual({ alpha: [1, 0] });
+    });
+
+    test("fadeComponent: false suppresses blurOut's extra fade call entirely", () => {
+        const target = createSprite();
+        const animateSpy = spyOnCanvas(target);
+
+        transitions.blurOut("alias", { strength: 20, duration: 1, fadeComponent: false });
+
+        expect(animateSpy).not.toHaveBeenCalled();
+    });
+
+    test("fadeComponent: false makes flashOut call canvas.animate only once, for its own overlay", () => {
+        const target = createSprite();
+        vi.spyOn(canvas, "add").mockImplementation(() => {});
+        const animateSpy = spyOnCanvas(target);
+
+        transitions.flashOut("alias", { duration: 0.2, fadeComponent: false });
+
+        expect(animateSpy).toHaveBeenCalledTimes(1);
+        const [, keyframes] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
+        // The overlay's own multi-stop cycle, not the 2-value component fade.
+        expect(keyframes.alpha).toEqual([0, 1, 1, 0]);
     });
 });
 
@@ -220,7 +310,14 @@ describe("flashOut: overlay runs the full up/down cycle, then the element is rem
         const target = createSprite();
         const animateSpy = spyOnCanvas(target);
 
-        const ids = transitions.flashOut("alias", { color: 0x00ff00, maxAlpha: 1, duration: 0.2 });
+        // fadeComponent defaults to true for flash, which would otherwise also fire a canvas.animate()
+        // call for the component's own fade-out - see the dedicated fadeComponent tests above.
+        const ids = transitions.flashOut("alias", {
+            color: 0x00ff00,
+            maxAlpha: 1,
+            duration: 0.2,
+            fadeComponent: false,
+        });
 
         expect(ids).toEqual(["ticker-id"]);
         expect(animateSpy).toHaveBeenCalledTimes(1);
@@ -236,7 +333,7 @@ describe("flashOut: overlay runs the full up/down cycle, then the element is rem
         const target = createSprite();
         const animateSpy = spyOnCanvas(target);
 
-        transitions.flashOut("alias", { maxAlpha: 1, duration: 0.1, pulses: 3 });
+        transitions.flashOut("alias", { maxAlpha: 1, duration: 0.1, pulses: 3, fadeComponent: false });
 
         const [, keyframes] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
         expect(keyframes.alpha).toEqual([0, 1, 1, 0, 1, 1, 0, 1, 1, 0]);

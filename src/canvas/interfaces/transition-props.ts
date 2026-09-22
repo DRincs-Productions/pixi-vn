@@ -113,6 +113,15 @@ export interface FlashInOutProps extends BaseTransitionProps, AnimationOptions {
      * @default 1
      */
     pulses?: number;
+    /**
+     * Whether the component itself also briefly fades in (`flashIn`) or out (`flashOut`) alongside the
+     * color flash, softening what would otherwise be an instant pop-in/pop-out - the fade runs at a
+     * quarter of the flash's own duration, mirrored to the start of `flashIn`'s cycle or the end of
+     * `flashOut`'s. Ignored when `flashIn` replaces an existing component (both sides are already
+     * hidden under a solid `color` at the moment of the swap, so there's no pop to soften).
+     * @default true
+     */
+    fadeComponent?: boolean;
 }
 export interface BlurInOutProps extends BaseTransitionProps, AnimationOptions {
     /**
@@ -125,6 +134,13 @@ export interface BlurInOutProps extends BaseTransitionProps, AnimationOptions {
      * @default 4
      */
     quality?: number;
+    /**
+     * Whether the component itself also briefly fades in (`blurIn`) or out (`blurOut`) alongside the
+     * blur, softening what would otherwise be an instant pop-in/pop-out - the fade runs at a quarter of
+     * the effect's own duration, mirrored to the start of `blurIn` or the end of `blurOut`.
+     * @default true
+     */
+    fadeComponent?: boolean;
 }
 export interface PixelateInOutProps extends BaseTransitionProps, AnimationOptions {
     /**
@@ -132,4 +148,13 @@ export interface PixelateInOutProps extends BaseTransitionProps, AnimationOption
      * @default 32
      */
     pixelSize?: number;
+    /**
+     * Whether the component itself also briefly fades in (`pixelateIn`) or out (`pixelateOut`) alongside
+     * the pixelation, softening what would otherwise be an instant pop-in/pop-out - the fade runs at a
+     * quarter of the effect's own duration, mirrored to the start of `pixelateIn` or the end of
+     * `pixelateOut`. Off by default: pixelation itself already reads as a deliberate, blocky
+     * appear/disappear, so a softening fade is less often wanted here than for blur/flash.
+     * @default false
+     */
+    fadeComponent?: boolean;
 }

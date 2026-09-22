@@ -448,6 +448,50 @@ export namespace transitions {
     }
 
     /**
+     * Optionally softens what would otherwise be an instant pop-in/pop-out by fading `component`'s own
+     * alpha, at a quarter of `mainDuration`, mirrored to the start (`"in"`) or end (`"out"`) of the main
+     * effect - used by `blurIn`/`blurOut`, `flashIn` (fresh element only, see {@link flashReplace} for
+     * the "replace" case, which never needs this)/`flashOut`, and `pixelateIn`/`pixelateOut` when their
+     * `fadeComponent` prop is true.
+     *
+     * A separate, short-lived `canvas.animate` call rather than folding into the main effect's own
+     * ticker: the two animate different objects (the component vs. the filter/overlay) with different
+     * keyframe curves, and `motion`'s own sequence support only stages multiple keyframe segments
+     * against a single shared target, not different targets within one ticker.
+     */
+    function fadeComponentAlongsideEffect(
+        alias: string,
+        component: CanvasBaseInterface<any> | undefined,
+        phase: "in" | "out",
+        mainDuration: number,
+        priority?: UPDATE_PRIORITY,
+    ): void {
+        const fadeDuration = Math.max(mainDuration, 0) / 4;
+        if (phase === "in") {
+            if (component) {
+                component.alpha = 0;
+            }
+            canvas.animate(
+                alias,
+                { alpha: [0, 1] },
+                { duration: fadeDuration, completeOnContinue: false },
+                priority,
+            );
+        } else {
+            canvas.animate(
+                alias,
+                { alpha: [1, 0] },
+                {
+                    duration: fadeDuration,
+                    delay: Math.max(mainDuration - fadeDuration, 0),
+                    completeOnContinue: false,
+                },
+                priority,
+            );
+        }
+    }
+
+    /**
      * Builds the `alpha` keyframes/`times` pair for {@link flashIn}/{@link flashOut}/{@link flashReplace}'s
      * color overlay: `pulses` repetitions of fade-in (`fadeDuration`) -> hold (`holdDuration`) ->
      * fade-out (`fadeDuration`), using the same multi-stop keyframe-array idiom {@link effects.shakeEffect}
@@ -1709,6 +1753,7 @@ export namespace transitions {
             delay,
             ease,
             completeOnContinue = true,
+            fadeComponent = true,
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
@@ -1729,13 +1774,17 @@ export namespace transitions {
         ) {
             await newComponent.load();
         }
+        const resolvedDuration = duration ?? 1;
+        if (fadeComponent) {
+            fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
+        }
         const filter = new Filters.BlurFilter({ strength, quality });
         const id = addMotionFilterEffect(
             alias,
             newComponent,
             filter,
             { strength: [strength, 0] },
-            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
@@ -1763,6 +1812,7 @@ export namespace transitions {
             delay,
             ease,
             completeOnContinue = true,
+            fadeComponent = true,
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (typeof aliasToRemoveAfter === "string") {
@@ -1774,13 +1824,17 @@ export namespace transitions {
             logger.warn(`The canvas component "${alias}" is not found.`);
             return;
         }
+        const resolvedDuration = duration ?? 1;
+        if (fadeComponent) {
+            fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
+        }
         const filter = new Filters.BlurFilter({ strength: 0, quality });
         const id = addMotionFilterEffect(
             alias,
             component,
             filter,
             { strength: [0, strength] },
-            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
@@ -1806,7 +1860,14 @@ export namespace transitions {
         props: PixelateInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        const { pixelSize = 32, duration, delay, ease, completeOnContinue = true } = props;
+        const {
+            pixelSize = 32,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+            fadeComponent = false,
+        } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
             component = alias;
@@ -1826,13 +1887,17 @@ export namespace transitions {
         ) {
             await newComponent.load();
         }
+        const resolvedDuration = duration ?? 1;
+        if (fadeComponent) {
+            fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
+        }
         const filter = new Filters.PixelateFilter(pixelSize);
         const id = addMotionFilterEffect(
             alias,
             newComponent,
             filter,
             { sizeX: [pixelSize, 1], sizeY: [pixelSize, 1] },
-            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
@@ -1853,7 +1918,14 @@ export namespace transitions {
         props: PixelateInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): string[] | undefined {
-        const { pixelSize = 32, duration, delay, ease, completeOnContinue = true } = props;
+        const {
+            pixelSize = 32,
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+            fadeComponent = false,
+        } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter];
@@ -1864,13 +1936,17 @@ export namespace transitions {
             logger.warn(`The canvas component "${alias}" is not found.`);
             return;
         }
+        const resolvedDuration = duration ?? 1;
+        if (fadeComponent) {
+            fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
+        }
         const filter = new Filters.PixelateFilter(1);
         const id = addMotionFilterEffect(
             alias,
             component,
             filter,
             { sizeX: [1, pixelSize], sizeY: [1, pixelSize] },
-            { duration, delay, ease, completeOnContinue, aliasToRemoveAfter },
+            { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
@@ -1909,6 +1985,7 @@ export namespace transitions {
             holdDuration = 0,
             pulses = 1,
             completeOnContinue = true,
+            fadeComponent = true,
             ...rest
         } = props;
         if (!component) {
@@ -1916,6 +1993,8 @@ export namespace transitions {
         }
         const existingComponent = canvas.find(alias);
         if (existingComponent) {
+            // `flashReplace` never needs `fadeComponent`: both sides are already hidden under a solid
+            // `color` at the moment of the swap, so there's no pop to soften.
             const ids = flashReplace(alias, existingComponent, component, {
                 color,
                 maxAlpha,
@@ -1937,6 +2016,9 @@ export namespace transitions {
             newComponent.haveEmptyTexture
         ) {
             await newComponent.load();
+        }
+        if (fadeComponent) {
+            fadeComponentAlongsideEffect(alias, newComponent, "in", fadeDuration, priority);
         }
         const res: string[] = [];
         const overlayId = addFlashOverlay(newComponent, {
@@ -1978,12 +2060,20 @@ export namespace transitions {
             holdDuration = 0,
             pulses = 1,
             completeOnContinue = true,
+            fadeComponent = true,
             ...rest
         } = props;
         const component = canvas.find(alias);
         if (!component) {
             logger.warn(`The canvas component "${alias}" is not found.`);
             return;
+        }
+        if (fadeComponent) {
+            // Mirrors `flashIn`'s own fade-in, but timed against the *whole* flash cycle (all pulses),
+            // not just a single ramp, so the component finishes fading out exactly when the last pulse's
+            // color has faded back to normal.
+            const { total } = buildFlashKeyframes(maxAlpha, fadeDuration, holdDuration, pulses);
+            fadeComponentAlongsideEffect(alias, component, "out", total, priority);
         }
         const id = addFlashOverlay(component, {
             color,
