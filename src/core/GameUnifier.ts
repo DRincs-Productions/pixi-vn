@@ -140,41 +140,29 @@ export default class GameUnifier {
             priority?: UPDATE_PRIORITY,
         ) => string | undefined;
         /**
-         * This function is called to animate a `Filter`'s own properties (as opposed to {@link animate},
-         * which animates a canvas element's properties).
-         * @param components - The canvas element alias(es) the filter is attached to (kept alive/cleaned
-         * up alongside them), not the animation target itself.
-         * @param filter - The `Filter` instance to animate.
-         * @param keyframes - The keyframes to animate the filter's properties with.
+         * This function is called to animate either a `Filter`'s own properties, or a plain numeric
+         * "progress" value with no live target (as opposed to {@link animate}, which animates a canvas
+         * element's properties). The latter is the generic mechanism behind the mask-based transitions
+         * (wipe/iris/split): they have no canvas element or Filter property to write directly, just a
+         * number and a side effect.
+         * @param components - The canvas element alias(es) the filter is attached to, or otherwise
+         * associated with this animation (kept alive/cleaned up alongside them), not the animation
+         * target itself.
+         * @param filter - The `Filter` instance to animate, or `undefined` to animate a plain value
+         * instead (in which case `keyframes` describes that value, e.g. `{ value: [0, 1] }`, and `apply`
+         * is required).
+         * @param keyframes - The keyframes to animate the filter's properties (or the plain value) with.
          * @param options - Additional options for the animation, including duration, easing, and ticker.
          * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
-         * @param cleanup - Called once, right before completion handling, to detach/destroy the filter.
+         * @param apply - Called on every frame with the current interpolated value - required when
+         * `filter` is `undefined`, ignored otherwise.
+         * @param cleanup - Called once, right before completion handling, to detach/destroy the filter or
+         * tear down whatever `apply` was driving.
          * @returns The id of the ticker.
          */
         animateFilter: (
             components: string | string[],
-            filter: Filter,
-            keyframes: any,
-            options?: any,
-            priority?: UPDATE_PRIORITY,
-            cleanup?: (filter: Filter) => void,
-        ) => string | undefined;
-        /**
-         * This function is called to animate a plain numeric "progress" value (as opposed to
-         * {@link animate}, which animates a canvas element's properties, or {@link animateFilter}, a
-         * `Filter`'s) - the generic mechanism behind the mask-based transitions (wipe/iris/split).
-         * @param components - The canvas element alias(es) associated with this animation (kept for the
-         * same cleanup/transfer bookkeeping every other ticker participates in), not the animation target
-         * itself.
-         * @param keyframes - The keyframes to animate the value with, e.g. `{ value: [0, 1] }`.
-         * @param options - Additional options for the animation, including duration, easing, and ticker.
-         * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
-         * @param apply - Called on every frame with the current interpolated value.
-         * @param cleanup - Called once, right before completion handling.
-         * @returns The id of the ticker.
-         */
-        animateValue: (
-            components: string | string[],
+            filter: Filter | undefined,
             keyframes: any,
             options?: any,
             priority?: UPDATE_PRIORITY,
@@ -199,7 +187,6 @@ export default class GameUnifier {
         GameUnifier._getCharacter = options.getCharacter;
         GameUnifier._animate = options.animate;
         GameUnifier._animateFilter = options.animateFilter;
-        GameUnifier._animateValue = options.animateValue;
     }
     private static _navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
@@ -580,28 +567,7 @@ export default class GameUnifier {
     }
     private static _animateFilter: (
         components: string | string[],
-        filter: Filter,
-        keyframes: any,
-        options?: any,
-        priority?: UPDATE_PRIORITY,
-        cleanup?: (filter: Filter) => void,
-    ) => string | undefined = () => {
-        logger.error("Method not implemented, you should initialize the Game: Game.init()");
-        throw new PixiError(
-            "not_implemented",
-            "Method not implemented, you should initialize the Game: Game.init()",
-        );
-    };
-    /**
-     * This function is called to animate a `Filter`'s own properties. See {@link animate} for animating
-     * a canvas element's properties instead.
-     * @returns The id of the ticker.
-     */
-    static get animateFilter() {
-        return GameUnifier._animateFilter;
-    }
-    private static _animateValue: (
-        components: string | string[],
+        filter: Filter | undefined,
         keyframes: any,
         options?: any,
         priority?: UPDATE_PRIORITY,
@@ -615,11 +581,12 @@ export default class GameUnifier {
         );
     };
     /**
-     * This function is called to animate a plain numeric "progress" value. See {@link animate}/
-     * {@link animateFilter} for animating a canvas element's/Filter's properties instead.
+     * This function is called to animate a `Filter`'s own properties, or a plain numeric "progress"
+     * value when no `filter` is given. See {@link animate} for animating a canvas element's properties
+     * instead.
      * @returns The id of the ticker.
      */
-    static get animateValue() {
-        return GameUnifier._animateValue;
+    static get animateFilter() {
+        return GameUnifier._animateFilter;
     }
 }

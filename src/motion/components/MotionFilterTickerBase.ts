@@ -7,17 +7,24 @@ import sha1 from "crypto-js/sha1";
 import type { AnimationPlaybackControlsWithThen } from "motion";
 
 /**
- * Twin of {@link MotionTickerBase}, driving a `motion` animation against a PixiJS `Filter`'s own
- * properties instead of a canvas element's. Which filter to manipulate is entirely decided from the
- * outside - `TArgs.filter` is just whatever `Filter` instance the caller passes in when constructing a
- * subclass instance (a `BlurFilter`, the library's own `PixelateFilter`, or any custom one) - this base
- * class doesn't know or care about its concrete type, so any (numeric/color) property on it can be
- * animated the same way `canvas.animate` already does for canvas elements.
+ * Twin of `MotionTickerBase`, driving a `motion` animation against either a PixiJS `Filter`'s own
+ * properties, or a plain numeric "progress" value with no live target at all - the two cases
+ * `filters.animate` unifies (see `MotionFilterTicker`):
  *
- * Reuses the same `_paused`/`suppressWritesDuring`/resuming-`time` handling as {@link MotionTickerBase}
+ * - **`filter` provided**: which filter to manipulate is entirely decided from the outside - `filter`
+ *   is just whatever `Filter` instance the caller passes in (a `BlurFilter`, the library's own
+ *   `PixelateFilter`, or any custom one). This base class doesn't know or care about its concrete
+ *   type, so any (numeric/color) property on it can be animated. {@link createItem} wraps it in a
+ *   `motion`-compatible proxy that writes property changes directly onto the real filter.
+ * - **`filter` omitted**: there's nothing to write to - `motion` animates a private plain `{ value }`
+ *   object instead, and {@link createUpdateHandler} forwards each frame's interpolated value to
+ *   {@link apply}. Used by the mask-based transitions (wipe/iris/split), which have no filter property
+ *   to drive, just a number that `applyFilterTransition` turns into mask geometry.
+ *
+ * Reuses the same `_paused`/`suppressWritesDuring`/resuming-`time` handling as `MotionTickerBase`
  * verbatim: `motion`'s `animate()` writes its first keyframe to the target synchronously during
- * construction, which would prematurely mutate the filter before a resumed ticker's `.time` seek can
- * run - see that class's doc comments for the full explanation.
+ * construction, which would prematurely mutate the filter (or fire `apply`) before a resumed ticker's
+ * `.time` seek can run - see that class's doc comments for the full explanation.
  */
 export default abstract class MotionFilterTickerBase<
     TArgs extends TickerArgs & {
@@ -37,25 +44,30 @@ export default abstract class MotionFilterTickerBase<
         args: TArgs,
         options?: {
             /**
-             * The `Filter` instance this ticker animates. Deliberately a constructor option, not part of
+             * The `Filter` instance this ticker animates, or `undefined` to animate a plain numeric
+             * value instead (see {@link apply}). Deliberately a constructor option, not part of
              * `TArgs`: `TArgs` is what {@link args} exposes as this ticker's serializable save data (see
-             * {@link MotionTickerBase}, which instead references its target only by alias, looked up fresh
+             * `MotionTickerBase`, which instead references its target only by alias, looked up fresh
              * each frame) - a live `Filter` instance isn't JSON-serializable (it holds GPU program/resource
              * references that produce circular structures), so embedding it in `TArgs` broke
              * `createExportableElement()` any time a ticker's `args` were serialized (e.g.
              * `CanvasManager.export()`, called on every history step) while a `blurIn`/`pixelateIn`
-             * animation was in flight. Mirrors `MotionValueTickerBase`'s own mask-transition `ctx.graphics`
-             * (see `addMotionValueEffect` in `canvas-transition.ts`), which is kept out of its persisted
-             * `config` the same way.
+             * animation was in flight.
              *
-             * Optional only for structural compatibility with {@link RegisteredTickers}' generic
-             * constructor shape (which has no slot for a filter); genuinely required to actually use the
-             * ticker, so a missing value throws immediately. In practice this means a `MotionFilterTicker`
-             * cannot be reconstructed through `RegisteredTickers.getInstance` (alias-transfer, save
-             * restore) - an already-inherent limitation, since a live `Filter` was never serializable to
-             * begin with.
+             * At least one of `filter`/`apply` is genuinely required to actually use the ticker (a
+             * missing pair throws immediately), and both are optional only for structural compatibility
+             * with `RegisteredTickers`' generic constructor shape. In practice this means a
+             * `MotionFilterTicker` cannot be reconstructed through `RegisteredTickers.getInstance`
+             * (alias-transfer, save restore) - an already-inherent limitation, since neither a live
+             * `Filter` nor a function reference was ever serializable to begin with.
              */
             filter?: Filter;
+            /**
+             * Called on every frame with the current interpolated value, when no {@link filter} is
+             * provided - required in that case (a missing pair with `filter` throws immediately).
+             * Ignored when `filter` is provided (the proxy writes land directly on the filter instead).
+             */
+            apply?: (value: number) => void;
             /**
              * The duration of the ticker in seconds. If is undefined, the step will end only when the animation is finished (if the animation doesn't have a goal to reach then it won't finish). @default undefined
              */
@@ -70,42 +82,46 @@ export default abstract class MotionFilterTickerBase<
             id?: string;
             /**
              * The aliases of the canvas elements that are connected to this ticker. Unlike
-             * {@link MotionTickerBase}, this base class never looks elements up through these - the
-             * animation target is always {@link filter} directly - but they're kept so the ticker
-             * still participates in the same canvas-element-driven cleanup/transfer bookkeeping (e.g. a
-             * subclass's own {@link onComplete} handling, or a future save/restore integration). @default []
+             * `MotionTickerBase`, this base class never looks elements up through these - the animation
+             * target is always {@link filter} (or nothing, when animating a plain value) - but they're
+             * kept so the ticker still participates in the same canvas-element-driven cleanup/transfer
+             * bookkeeping (e.g. a subclass's own {@link onComplete} handling, or a future save/restore
+             * integration). @default []
              */
             canvasElementAliases?: string[];
             /**
              * Called once, right before completion handling (`canvas.tickers.onComplete`) - the natural
-             * place to detach/destroy {@link filter} from whatever component it was attached to,
-             * mirroring what `MotionValueTickerBase`'s own `onComplete` does for mask-based transitions.
-             * Not called on a manual {@link stop} (only on the animation's own completion),
-             * matching `TickerBase.stop()`'s existing behavior of never running cleanup.
+             * place to detach/destroy {@link filter} from whatever component it was attached to, or to
+             * tear down whatever {@link apply} was driving (e.g. a mask). Not called on a manual
+             * {@link stop} (only on the animation's own completion), matching `TickerBase.stop()`'s
+             * existing behavior of never running cleanup.
              *
-             * Deliberately a constructor option, not part of `TArgs`, for the same reason as {@link filter}.
+             * Deliberately a constructor option, not part of `TArgs`, for the same reason as
+             * {@link filter}/{@link apply}.
              */
-            cleanup?: (filter: Filter) => void;
+            cleanup?: () => void;
         },
     ) {
         const {
             filter,
+            apply,
             duration,
             priority,
             // Hashes `args` (already required to be JSON-serializable), not `options` - the latter
-            // carries the live, non-serializable `filter` instance.
+            // carries the live, non-serializable `filter` instance and/or `apply`/`cleanup` functions.
             id = this.generateTickerId(args),
             canvasElementAliases = [],
             cleanup,
         } = options || {};
-        if (!filter) {
+        if (!filter && !apply) {
             throw new PixiError(
                 "not_implemented",
-                "MotionFilterTicker requires a `filter` instance; it cannot be reconstructed from saved/serialized ticker args.",
+                "MotionFilterTicker requires either a `filter` instance or an `apply` callback; it cannot be reconstructed from saved/serialized ticker args.",
             );
         }
         this._args = args;
         this.filter = filter;
+        this.apply = apply;
         this.duration = duration;
         this.priority = priority;
         this.id = id;
@@ -114,8 +130,9 @@ export default abstract class MotionFilterTickerBase<
     }
     abstract alias: string;
     readonly id: string;
-    protected readonly filter: Filter;
-    protected readonly cleanup?: (filter: Filter) => void;
+    protected readonly filter?: Filter;
+    protected readonly apply?: (value: number) => void;
+    protected readonly cleanup?: () => void;
     protected _args: TArgs;
     get args(): TArgs {
         return { ...this._args, time: this._animation?.time };
@@ -131,12 +148,12 @@ export default abstract class MotionFilterTickerBase<
     private stopped = false;
     /**
      * Tracks the paused state independently of the underlying `motion` playback controls. See
-     * {@link MotionTickerBase._paused} for the full explanation - identical reasoning applies here.
+     * `MotionTickerBase._paused` for the full explanation - identical reasoning applies here.
      */
     private _paused: boolean = false;
     /**
-     * See {@link MotionTickerBase.suppressWritesDuring}'s doc comment - identical purpose, applied to the
-     * filter proxy instead of a canvas element proxy.
+     * See `MotionTickerBase.suppressWritesDuring`'s doc comment - identical purpose, applied to the
+     * filter proxy (or {@link createUpdateHandler}'s callback) instead of a canvas element proxy.
      */
     protected suppressWritesDuring<T>(fn: () => T): T {
         const wasPaused = this._paused;
@@ -194,12 +211,13 @@ export default abstract class MotionFilterTickerBase<
         if (cleanup) {
             // `motion` can still have a trailing "snap to the exact final value" write of its own queued
             // on `this.ticker` (the very driver we handed it) for the *next* tick after `onComplete`
-            // fires - calling `cleanup` (which typically destroys the filter) synchronously here would
-            // null out its internal resources before that write lands, crashing with "Cannot read
-            // properties of null". Queuing through the same `this.ticker` - rather than a microtask or an
-            // unrelated ticker like `PIXI.Ticker.system` - guarantees our callback runs after any such
-            // pending write, since both share the same per-tick callback order.
-            this.ticker.addOnce(() => cleanup(this.filter));
+            // fires - calling `cleanup` (which typically destroys the filter, or tears down whatever
+            // `apply` was driving) synchronously here could observe that write mid-flight (e.g. a
+            // destroyed filter's internal resources already nulled out). Queuing through the same
+            // `this.ticker` - rather than a microtask or an unrelated ticker like `PIXI.Ticker.system` -
+            // guarantees our callback runs after any such pending write, since both share the same
+            // per-tick callback order.
+            this.ticker.addOnce(() => cleanup());
         }
         const id = this.id;
         let aliasToRemoveAfter = this._args.options?.aliasToRemoveAfter || [];
@@ -222,16 +240,16 @@ export default abstract class MotionFilterTickerBase<
         });
     };
     /**
-     * Wraps {@link TArgs.filter} in a `motion`-compatible proxy: unlike
-     * {@link MotionTickerBase.createItem}, there's no alias to re-resolve every access with (the filter
-     * instance is fixed for the ticker's lifetime, decided once by whoever constructed it), so the real
-     * filter object is the proxy's own target and `get`/`set` are the only traps that need overriding -
-     * `has`/`ownKeys`/etc. fall back to the real filter automatically. No property is special-cased the
-     * way `pivotX`/`scaleX` are for canvas elements: a `Filter`'s own properties are whatever its class
-     * defines, so this stays fully generic.
+     * Wraps {@link filter} in a `motion`-compatible proxy: unlike `MotionTickerBase.createItem`, there's
+     * no alias to re-resolve every access with (the filter instance is fixed for the ticker's lifetime,
+     * decided once by whoever constructed it), so the real filter object is the proxy's own target and
+     * `get`/`set` are the only traps that need overriding - `has`/`ownKeys`/etc. fall back to the real
+     * filter automatically. No property is special-cased the way `pivotX`/`scaleX` are for canvas
+     * elements: a `Filter`'s own properties are whatever its class defines, so this stays fully generic.
+     * Only called when {@link filter} is set - see {@link createUpdateHandler} for the other case.
      */
     protected createItem(): Filter {
-        const filter = this.filter;
+        const filter = this.filter as Filter;
         return new Proxy(filter, {
             set: (target, p, newValue) => {
                 if (this.stopped || this._paused) {
@@ -258,6 +276,20 @@ export default abstract class MotionFilterTickerBase<
                 return res;
             },
         });
+    }
+    /**
+     * Returns the `onUpdate` handler `motion` is given when no {@link filter} is provided: forwards the
+     * interpolated `value` to {@link apply}, unless writes are currently suppressed (see
+     * {@link suppressWritesDuring}) or the ticker has been {@link stop}ped - the same guards
+     * {@link createItem}'s proxy applies to property writes.
+     */
+    protected createUpdateHandler(): (latest: { value: number }) => void {
+        return (latest) => {
+            if (this.stopped || this._paused) {
+                return;
+            }
+            this.apply?.(latest.value);
+        };
     }
     pause() {
         if (!this.animation) {

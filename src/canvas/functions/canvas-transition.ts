@@ -11,7 +11,7 @@ import {
 import PixiContainer from "@canvas/components/Container";
 import type { ColorType } from "@canvas/types/ColorType";
 import { logger } from "@utils/log-utility";
-import { Filters } from "@drincs/pixi-vn/filters";
+import { filters } from "@drincs/pixi-vn/filters";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
 import type {
     Container as PixiJsContainer,
@@ -331,11 +331,12 @@ export namespace transitions {
     }
 
     /**
-     * Creates and starts a {@link canvas.animateValue}-driven progress animation for `alias`, wiring up
-     * `completeOnContinue` the same way {@link addMotionFilterEffect} does. This is the single place
-     * every mask-based transition (wipe/iris/split) goes through - `blurIn`/`blurOut`/`pixelateIn`/
-     * `pixelateOut` use {@link addMotionFilterEffect} instead, since they animate a `Filter`'s own
-     * properties rather than mask geometry.
+     * Creates and starts a `filters.animate`-driven progress animation for `alias` (no `filter` - a
+     * plain value forwarded through `apply`), wiring up `completeOnContinue` the same way
+     * {@link addMotionFilterEffect} does. This is the single place every mask-based transition
+     * (wipe/iris/split) goes through - `blurIn`/`blurOut`/`pixelateIn`/`pixelateOut` use
+     * {@link addMotionFilterEffect} instead, since they animate a `Filter`'s own properties rather than
+     * mask geometry.
      */
     function addMotionValueEffect(
         alias: string,
@@ -359,8 +360,9 @@ export namespace transitions {
                 applyFilterTransition(component, args.config, value, ctx);
             }
         };
-        const id = canvas.animateValue(
+        const id = filters.animate(
             alias,
+            undefined,
             { value: [args.from, args.to] },
             {
                 duration: args.duration ?? 1,
@@ -393,7 +395,7 @@ export namespace transitions {
 
     /**
      * Attaches `filter` to `component.filters` (preserving any filters already there) and drives
-     * `keyframes` on the filter's own properties via {@link canvas.animateFilter} (`MotionFilterTicker`,
+     * `keyframes` on the filter's own properties via `filters.animate` (`MotionFilterTicker`,
      * `motion`-backed - see {@link blurIn}/{@link pixelateIn}), detaching and destroying it once the
      * animation completes. The same "never leave the component in a different state than before the
      * transition" guarantee {@link addMotionValueEffect}'s mask cleanup gives wipe/iris/split.
@@ -418,7 +420,7 @@ export namespace transitions {
                 : [component.filters]
             : [];
         component.filters = [...existingFilters, filter];
-        const id = canvas.animateFilter(
+        const id = filters.animate(
             alias,
             filter,
             keyframes,
@@ -429,16 +431,17 @@ export namespace transitions {
                 aliasToRemoveAfter: args.aliasToRemoveAfter,
             },
             priority,
-            (f) => {
+            undefined,
+            () => {
                 const remaining = (
                     component.filters
                         ? Array.isArray(component.filters)
                             ? component.filters
                             : [component.filters]
                         : []
-                ).filter((existing) => existing !== f);
+                ).filter((existing) => existing !== filter);
                 component.filters = remaining.length > 0 ? remaining : null;
-                f.destroy();
+                filter.destroy();
             },
         );
         if (id && (args.completeOnContinue ?? true)) {
@@ -1778,7 +1781,7 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
         }
-        const filter = new Filters.BlurFilter({ strength, quality });
+        const filter = new filters.BlurFilter({ strength, quality });
         const id = addMotionFilterEffect(
             alias,
             newComponent,
@@ -1828,7 +1831,7 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
         }
-        const filter = new Filters.BlurFilter({ strength: 0, quality });
+        const filter = new filters.BlurFilter({ strength: 0, quality });
         const id = addMotionFilterEffect(
             alias,
             component,
@@ -1891,7 +1894,7 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
         }
-        const filter = new Filters.PixelateFilter(pixelSize);
+        const filter = new filters.PixelateFilter(pixelSize);
         const id = addMotionFilterEffect(
             alias,
             newComponent,
@@ -1940,7 +1943,7 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
         }
-        const filter = new Filters.PixelateFilter(1);
+        const filter = new filters.PixelateFilter(1);
         const id = addMotionFilterEffect(
             alias,
             component,

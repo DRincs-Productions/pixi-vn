@@ -9,7 +9,6 @@ import type {
     Application,
     ApplicationOptions,
     ContainerChild,
-    Filter,
     Container as PixiContainer,
     Rectangle,
     UPDATE_PRIORITY,
@@ -425,50 +424,6 @@ export default interface CanvasManagerInterface {
         options?: SequenceOptions,
         priority?: UPDATE_PRIORITY,
     ): string | undefined;
-    /**
-     * Animate a `Filter`'s own properties (as opposed to {@link animate}, which animates a canvas
-     * element's properties) using [motion's animate](https://motion.dev/docs/animate) function.
-     * @param components The canvas element alias(es) the filter is attached to (kept alive/cleaned up
-     * alongside them), not the animation target itself.
-     * @param filter The `Filter` instance to animate.
-     * @param keyframes This is an object containing the filter's own properties to animate and the values to reach.
-     * @param options [`motion` options](https://motion.dev/docs/animate#options) for the animation, including duration, `easing`, and ticker.
-     * @param priority The priority of the PixiJS ticker. This parameter sets the ticker's priority. @default UPDATE_PRIORITY.NORMAL
-     * @param cleanup Called once, right before completion handling, to detach/destroy the filter.
-     * @returns The function returns the ID of the ticker created to animate the filter.
-     */
-    animateFilter(
-        components: string | string[],
-        filter: Filter,
-        keyframes: Record<string, any>,
-        options?: AnimationOptions,
-        priority?: UPDATE_PRIORITY,
-        cleanup?: (filter: Filter) => void,
-    ): string | undefined;
-    /**
-     * Animate a plain numeric "progress" value (as opposed to {@link animate}, which animates a canvas
-     * element's properties, or {@link animateFilter}, a `Filter`'s) using
-     * [motion's animate](https://motion.dev/docs/animate) function. This is the generic mechanism behind
-     * the mask-based transitions (wipe/iris/split): they have no canvas element or Filter property to
-     * write directly, just a number and a side effect (redrawing mask geometry).
-     * @param components The canvas element alias(es) associated with this animation (kept for the same
-     * cleanup/transfer bookkeeping every other ticker participates in), not the animation target itself.
-     * @param keyframes This is an object containing the value's keyframes, e.g. `{ value: [0, 1] }`.
-     * @param options [`motion` options](https://motion.dev/docs/animate#options) for the animation, including duration, `easing`, and ticker.
-     * @param priority The priority of the PixiJS ticker. This parameter sets the ticker's priority. @default UPDATE_PRIORITY.NORMAL
-     * @param apply Called on every frame with the current interpolated value.
-     * @param cleanup Called once, right before completion handling.
-     * @returns The function returns the ID of the ticker created to animate the value.
-     */
-    animateValue(
-        components: string | string[],
-        keyframes: Record<string, any>,
-        options?: AnimationOptions,
-        priority?: UPDATE_PRIORITY,
-        apply?: (value: number) => void,
-        cleanup?: () => void,
-    ): string | undefined;
-
     /* Layers Methods */
 
     /**

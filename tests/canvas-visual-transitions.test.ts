@@ -10,6 +10,7 @@ import {
     type WipeFilterConfig,
 } from "../src/canvas/functions/canvas-filter-transition-utility";
 import { canvas, transitions } from "../src/canvas";
+import { filters } from "../src/filters";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -112,26 +113,28 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
 
 });
 
-describe("wipeOut/irisOut/splitOut: use canvas.animateValue (MotionValueTicker)", () => {
+describe("wipeOut/irisOut/splitOut: use filters.animate with no filter (MotionFilterTicker)", () => {
     function spyOnCanvas(target: import("../src/canvas").CanvasBaseInterface<any> | undefined) {
         vi.spyOn(canvas, "find").mockReturnValue(target);
-        return vi.spyOn(canvas, "animateValue").mockReturnValue("ticker-id");
+        return vi.spyOn(filters, "animate").mockReturnValue("ticker-id");
     }
 
-    test("wipeOut passes [1, 0] keyframes to canvas.animateValue and attaches the mask synchronously at `from`", () => {
+    test("wipeOut passes [1, 0] keyframes to filters.animate (no filter) and attaches the mask synchronously at `from`", () => {
         const target = createTarget();
-        const animateValueSpy = spyOnCanvas(target);
+        const animateSpy = spyOnCanvas(target);
 
         const ids = transitions.wipeOut("alias", { duration: 1, completeOnContinue: false });
 
         expect(ids).toEqual(["ticker-id"]);
-        expect(animateValueSpy).toHaveBeenCalledTimes(1);
-        const [aliasArg, keyframes, options] = animateValueSpy.mock.calls[0] as [
+        expect(animateSpy).toHaveBeenCalledTimes(1);
+        const [aliasArg, filterArg, keyframes, options] = animateSpy.mock.calls[0] as [
             string,
+            unknown,
             { value: number[] },
             any,
         ];
         expect(aliasArg).toBe("alias");
+        expect(filterArg).toBeUndefined();
         expect(keyframes).toEqual({ value: [1, 0] });
         expect(options.aliasToRemoveAfter).toEqual(expect.arrayContaining(["alias"]));
         // `addMotionValueEffect` applies `from` synchronously right after registering the ticker, the
@@ -145,13 +148,13 @@ describe("wipeOut/irisOut/splitOut: use canvas.animateValue (MotionValueTicker)"
         const irisTarget = createTarget();
         const irisSpy = spyOnCanvas(irisTarget);
         transitions.irisOut("alias", { duration: 1, completeOnContinue: false });
-        expect((irisSpy.mock.calls[0][1] as { value: number[] }).value).toEqual([1, 0]);
+        expect((irisSpy.mock.calls[0][2] as { value: number[] }).value).toEqual([1, 0]);
         expect(irisTarget.mask).toBeInstanceOf(PIXI.Graphics);
 
         const splitTarget = createTarget();
         const splitSpy = spyOnCanvas(splitTarget);
         transitions.splitOut("alias", { duration: 1, completeOnContinue: false });
-        expect((splitSpy.mock.calls[0][1] as { value: number[] }).value).toEqual([1, 0]);
+        expect((splitSpy.mock.calls[0][2] as { value: number[] }).value).toEqual([1, 0]);
         expect(splitTarget.mask).toBeInstanceOf(PIXI.Graphics);
     });
 
@@ -163,7 +166,7 @@ describe("wipeOut/irisOut/splitOut: use canvas.animateValue (MotionValueTicker)"
     });
 });
 
-describe("blurOut/pixelateOut: use canvas.animateFilter (MotionFilterTicker)", () => {
+describe("blurOut/pixelateOut: use filters.animate with a live filter (MotionFilterTicker)", () => {
     function createSprite() {
         const sprite = new PIXI.Sprite(PIXI.Texture.WHITE);
         return sprite as unknown as import("../src/canvas").CanvasBaseInterface<any>;

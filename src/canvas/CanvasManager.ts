@@ -31,7 +31,6 @@ import type {
 } from "@drincs/pixi-vn/motion";
 import type {
     ApplicationOptions,
-    Filter,
     ImageLike,
     Container as PixiContainer,
     UPDATE_PRIORITY,
@@ -950,28 +949,6 @@ export default class CanvasManager implements CanvasManagerInterface {
         priority?: UPDATE_PRIORITY,
     ): string | undefined {
         return GameUnifier.animate(components, keyframes, options, priority);
-    }
-
-    animateFilter(
-        components: string | string[],
-        filter: Filter,
-        keyframes: Record<string, any>,
-        options?: AnimationOptions,
-        priority?: UPDATE_PRIORITY,
-        cleanup?: (filter: Filter) => void,
-    ): string | undefined {
-        return GameUnifier.animateFilter(components, filter, keyframes, options, priority, cleanup);
-    }
-
-    animateValue(
-        components: string | string[],
-        keyframes: Record<string, any>,
-        options?: AnimationOptions,
-        priority?: UPDATE_PRIORITY,
-        apply?: (value: number) => void,
-        cleanup?: () => void,
-    ): string | undefined {
-        return GameUnifier.animateValue(components, keyframes, options, priority, apply, cleanup);
     }
 
     /* Layers Methods */

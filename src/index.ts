@@ -189,18 +189,16 @@ export namespace Game {
             animate: (components, keyframes, options, priority) => {
                 return motion.animate(components, keyframes, options, priority);
             },
-            animateFilter: (components, filter, keyframes, options, priority, cleanup) => {
+            animateFilter: (components, filter, keyframes, options, priority, apply, cleanup) => {
                 return motion.animateFilter(
                     components,
                     filter,
                     keyframes,
                     options,
                     priority,
+                    apply,
                     cleanup,
                 );
-            },
-            animateValue: (components, keyframes, options, priority, apply, cleanup) => {
-                return motion.animateValue(components, keyframes, options, priority, apply, cleanup);
             },
             // storage
             getVariable: (prefix, key) => storageUtils.StorageRegistry.getVariable(prefix, key),
