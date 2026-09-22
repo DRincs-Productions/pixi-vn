@@ -48,7 +48,7 @@ export default class MotionFilterTicker extends MotionFilterTickerBase<TArgs> {
             const target: ValueTarget = { value: 0 };
             return animate(target, this._args.keyframes, {
                 ...this._args.options,
-                onUpdate: this.createUpdateHandler(),
+                onUpdate: this.createUpdateHandler(target),
                 onComplete: () => this.onComplete(),
                 ticker: this.ticker,
             });

@@ -282,13 +282,21 @@ export default abstract class MotionFilterTickerBase<
      * interpolated `value` to {@link apply}, unless writes are currently suppressed (see
      * {@link suppressWritesDuring}) or the ticker has been {@link stop}ped - the same guards
      * {@link createItem}'s proxy applies to property writes.
+     *
+     * Reads `target.value` directly rather than trusting `onUpdate`'s own callback argument: for a
+     * single-property target/keyframes pair (`{ value: [...] }`), `motion` calls `onUpdate` with the
+     * bare interpolated number itself, not a `{ value }`-shaped object - so `latest.value` was always
+     * `undefined`, silently keeping the mask/progress stuck at its initial value the entire animation.
+     * `motion` still writes the real number onto `target.value` synchronously before calling `onUpdate`
+     * (the same guarantee {@link createItem}'s proxy relies on for filter properties), so reading it
+     * back off `target` sidesteps that argument-shape quirk entirely.
      */
-    protected createUpdateHandler(): (latest: { value: number }) => void {
-        return (latest) => {
+    protected createUpdateHandler(target: { value: number }): () => void {
+        return () => {
             if (this.stopped || this._paused) {
                 return;
             }
-            this.apply?.(latest.value);
+            this.apply?.(target.value);
         };
     }
     pause() {
