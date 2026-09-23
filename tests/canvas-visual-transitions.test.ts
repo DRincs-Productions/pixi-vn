@@ -11,10 +11,42 @@ import {
 } from "../src/canvas/functions/canvas-filter-transition-utility";
 import { canvas, transitions } from "../src/canvas";
 import { filters } from "../src/filters";
+import type { FilterTransitionConfig } from "@canvas/functions/canvas-filter-transition-utility";
 
 afterEach(() => vi.restoreAllMocks());
 
 const BOUNDS = { x: 0, y: 0, width: 100, height: 50 };
+
+const maskConfigs: FilterTransitionConfig[] = [
+    { kind: "wipe", angle: 45, invert: false, bounds: BOUNDS },
+    { kind: "iris", originX: 0.2, originY: 0.8, aspect: 1, invert: false, bounds: BOUNDS },
+    { kind: "split", orientation: "horizontal", origin: 0.25, invert: false, bounds: BOUNDS },
+];
+
+describe.each(maskConfigs)("$kind mask regressions", (config) => {
+    test("keeps local mask geometry aligned with a transformed replacement sprite", () => {
+        const parent = new PIXI.Container();
+        const target = new PIXI.Sprite(PIXI.Texture.WHITE) as unknown as import("../src/canvas").CanvasBaseInterface<any>;
+        parent.addChild(target);
+        target.position.set(210, 95);
+        target.scale.set(1.5, 0.7);
+        target.pivot.set(13, 8);
+        target.skew.set(0.1, -0.2);
+        target.rotation = 0.4;
+        const ctx: FilterTransitionContext = {};
+        applyFilterTransition(target, config, 0.5, ctx);
+        target.updateLocalTransform();
+        ctx.graphics!.updateLocalTransform();
+        expect(ctx.graphics!.parent).toBe(parent);
+        expect(ctx.graphics!.localTransform).toEqual(target.localTransform);
+        target.position.set(330, 145);
+        applyFilterTransition(target, config, 0.75, ctx);
+        expect(ctx.graphics!.position.x).toBe(330);
+        expect(ctx.graphics!.position.y).toBe(145);
+        cleanupFilterTransition(target, config, ctx);
+        expect(parent.children).toEqual([target]);
+    });
+});
 
 /** A bare PixiJS Container is enough to exercise `.mask`/`.filters`/`.getLocalBounds()` without a real app. */
 function createTarget() {
@@ -38,7 +70,6 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
         const config: WipeFilterConfig = {
             kind: "wipe",
             angle: 0,
-            softness: 0,
             invert: false,
             bounds: BOUNDS,
         };
@@ -61,7 +92,6 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
         const base: WipeFilterConfig = {
             kind: "wipe",
             angle: 0,
-            softness: 0,
             invert: false,
             bounds: BOUNDS,
         };
@@ -84,7 +114,6 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
             originX: 0.5,
             originY: 0.5,
             aspect: 1,
-            softness: 0,
             invert: false,
             bounds: BOUNDS,
         };
@@ -101,7 +130,6 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
             kind: "split",
             orientation: "vertical",
             origin: 0.5,
-            softness: 0,
             invert: false,
             bounds: BOUNDS,
         };

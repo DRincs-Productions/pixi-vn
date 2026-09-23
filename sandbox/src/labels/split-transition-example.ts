@@ -24,11 +24,10 @@ registerTestLabel("split-transition-example", "Canvas: split transition", [
         await transitions.splitIn("split-image", imageB, {
             orientation: "horizontal",
             origin: 0.25,
-            softness: 20,
             duration: 1.5,
         });
         narration.dialogue = {
-            text: "splitIn (horizontal, origin 0.25, soft edge): panels should slide together from the left/right edges toward a line a quarter of the way across, with feathered edges. Continue to test splitOut.",
+            text: "splitIn (horizontal, origin 0.25): panels should slide together from the left/right edges toward a line a quarter of the way across. Continue to test splitOut.",
         };
     },
     async () => {

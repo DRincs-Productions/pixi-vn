@@ -1331,8 +1331,8 @@ export namespace transitions {
 
     /**
      * Show a image in the canvas with a wipe effect: the image is progressively revealed by a moving
-     * boundary. The direction/angle, edge softness, and inversion are all configurable, so the same
-     * primitive can produce horizontal, vertical, or diagonal reveals - see {@link WipeInOutProps}.
+     * boundary. The direction/angle and inversion are all configurable, so the same primitive can
+     * produce horizontal, vertical, or diagonal reveals - see {@link WipeInOutProps}.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
      * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
@@ -1350,7 +1350,6 @@ export namespace transitions {
         const {
             angle,
             direction = "right",
-            softness = 0,
             invert = false,
             duration,
             delay,
@@ -1379,7 +1378,6 @@ export namespace transitions {
         const config: WipeFilterConfig = {
             kind: "wipe",
             angle: angle ?? directionToAngle(direction),
-            softness,
             invert,
             bounds: snapshotLocalBounds(newComponent),
         };
@@ -1418,7 +1416,6 @@ export namespace transitions {
         const {
             angle,
             direction = "right",
-            softness = 0,
             invert = false,
             duration,
             delay,
@@ -1438,7 +1435,6 @@ export namespace transitions {
         const config: WipeFilterConfig = {
             kind: "wipe",
             angle: angle ?? directionToAngle(direction),
-            softness,
             invert,
             bounds: snapshotLocalBounds(component),
         };
@@ -1482,7 +1478,6 @@ export namespace transitions {
         const {
             origin = {},
             aspect = 1,
-            softness = 0,
             invert = false,
             duration,
             delay,
@@ -1513,7 +1508,6 @@ export namespace transitions {
             originX: origin.x ?? 0.5,
             originY: origin.y ?? 0.5,
             aspect,
-            softness,
             invert,
             bounds: snapshotLocalBounds(newComponent),
         };
@@ -1552,7 +1546,6 @@ export namespace transitions {
         const {
             origin = {},
             aspect = 1,
-            softness = 0,
             invert = false,
             duration,
             delay,
@@ -1574,7 +1567,6 @@ export namespace transitions {
             originX: origin.x ?? 0.5,
             originY: origin.y ?? 0.5,
             aspect,
-            softness,
             invert,
             bounds: snapshotLocalBounds(component),
         };
@@ -1618,7 +1610,6 @@ export namespace transitions {
         const {
             orientation = "vertical",
             origin = 0.5,
-            softness = 0,
             invert = false,
             duration,
             delay,
@@ -1648,7 +1639,6 @@ export namespace transitions {
             kind: "split",
             orientation,
             origin,
-            softness,
             invert,
             bounds: snapshotLocalBounds(newComponent),
         };
@@ -1687,7 +1677,6 @@ export namespace transitions {
         const {
             orientation = "vertical",
             origin = 0.5,
-            softness = 0,
             invert = false,
             duration,
             delay,
@@ -1708,7 +1697,6 @@ export namespace transitions {
             kind: "split",
             orientation,
             origin,
-            softness,
             invert,
             bounds: snapshotLocalBounds(component),
         };

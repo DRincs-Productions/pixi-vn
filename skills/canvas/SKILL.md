@@ -182,11 +182,11 @@ import { transitions } from "@drincs/pixi-vn";
 // wipe: a moving boundary reveals/conceals the image. `angle` in degrees (0 = left-to-right, 90 =
 // bottom-to-top, ...); `direction` ("up"/"down"/"left"/"right") is a shorthand for the 4 cardinal angles.
 await transitions.wipeIn("background", "bg-forest", { direction: "left", duration: 1 });
-await transitions.wipeIn("background", "bg-night", { angle: 45, softness: 30, duration: 1 }); // diagonal, feathered edge
+await transitions.wipeIn("background", "bg-night", { angle: 45, duration: 1 }); // diagonal wipe
 transitions.wipeOut("background", { angle: 180, invert: true, duration: 1 });
 
 // iris: an expanding/contracting radial mask. `origin` is normalized (0-1) to the element's own bounds.
-await transitions.irisIn("liam", "liam-happy", { origin: { x: 0.5, y: 0.3 }, softness: 20, duration: 0.8 });
+await transitions.irisIn("liam", "liam-happy", { origin: { x: 0.5, y: 0.3 }, duration: 0.8 });
 transitions.irisOut("liam", { aspect: 2, duration: 0.8 }); // aspect > 1 = wide ellipse instead of a circle
 
 // split: two mask panels move apart/together - covers "curtain" effects without a dedicated API.

@@ -41,12 +41,6 @@ export interface PushInOutProps extends BaseTransitionProps, AnimationOptions {
  */
 export interface MaskTransitionProps extends BaseTransitionProps, AnimationOptions {
     /**
-     * How soft the edge of the mask is, as a blur strength applied to the mask itself.
-     * `0` (the default) is a hard edge.
-     * @default 0
-     */
-    softness?: number;
-    /**
      * If true, the effect is inverted: a "reveal" mask conceals instead, and vice versa.
      * @default false
      */

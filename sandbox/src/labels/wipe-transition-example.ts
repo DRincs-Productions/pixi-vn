@@ -17,13 +17,13 @@ registerTestLabel("wipe-transition-example", "Canvas: wipe transition", [
         canvas.clear();
         await transitions.wipeIn("wipe-image", imageA, { duration: 1.5 });
         narration.dialogue = {
-            text: "wipeIn (angle 0, hard edge): the orange image should sweep in left-to-right. Continue for a soft diagonal wipe.",
+            text: "wipeIn (angle 0): the orange image should sweep in left-to-right. Continue for a diagonal wipe.",
         };
     },
     async () => {
-        await transitions.wipeIn("wipe-image", imageB, { angle: 45, softness: 30, duration: 1.5 });
+        await transitions.wipeIn("wipe-image", imageB, { angle: 45, duration: 1.5 });
         narration.dialogue = {
-            text: "wipeIn (angle 45, softness 30): the blue image should sweep in diagonally with a feathered edge. Continue for an inverted wipe.",
+            text: "wipeIn (angle 45): the blue image should sweep in diagonally. Continue for an inverted wipe.",
         };
     },
     async () => {

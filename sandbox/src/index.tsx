@@ -10,6 +10,27 @@ if (!body) {
 }
 
 Game.init(body, {}).then(async () => {
+    // Match the backing buffer to the displayed size. Upscaling the default 800x600
+    // canvas in CSS otherwise softens every outer edge, including unmasked images.
+    const syncRenderResolution = () => {
+        const app = canvas.app;
+        const element = app.canvas;
+        const rect = element.getBoundingClientRect();
+        const resolution = (rect.width / app.screen.width) * window.devicePixelRatio;
+        if (resolution <= 0 || Math.abs(app.renderer.resolution - resolution) < 0.001) {
+            return;
+        }
+        // Pixi's autoDensity rewrites the CSS dimensions when resizing the buffer;
+        // retain the contain layout already calculated by the engine.
+        const { width, height } = element.style;
+        app.renderer.resize(app.screen.width, app.screen.height, resolution);
+        element.style.width = width;
+        element.style.height = height;
+    };
+    new ResizeObserver(syncRenderResolution).observe(canvas.app.canvas);
+    window.addEventListener("resize", syncRenderResolution);
+    syncRenderResolution();
+
     // Pixi.JS UI Layer
     canvas.layers.add("ui", new Container());
 

@@ -17,17 +17,16 @@ registerTestLabel("iris-transition-example", "Canvas: iris transition", [
         canvas.clear();
         await transitions.irisIn("iris-image", imageA, { duration: 1.5 });
         narration.dialogue = {
-            text: "irisIn (centered): a circular mask should expand from the center to reveal the orange image. Continue for an off-center soft iris.",
+            text: "irisIn (centered): a circular mask should expand from the center to reveal the orange image. Continue for an off-center iris.",
         };
     },
     async () => {
         await transitions.irisIn("iris-image", imageB, {
             origin: { x: 0.2, y: 0.8 },
-            softness: 25,
             duration: 1.5,
         });
         narration.dialogue = {
-            text: "irisIn (origin near bottom-left, soft edge): the reveal should start from that corner with a feathered edge. Continue to test irisOut.",
+            text: "irisIn (origin near bottom-left): the reveal should start from that corner. Continue to test irisOut.",
         };
     },
     async () => {

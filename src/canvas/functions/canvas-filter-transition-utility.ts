@@ -1,5 +1,5 @@
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
-import { BlurFilter, Graphics } from "@drincs/pixi-vn/pixi.js";
+import { Graphics } from "@drincs/pixi-vn/pixi.js";
 
 /**
  * A snapshot of a component's own (untransformed) bounds, captured once when a mask/filter transition
@@ -21,7 +21,6 @@ export function snapshotLocalBounds(component: CanvasBaseInterface<any>): Bounds
 export interface WipeFilterConfig {
     kind: "wipe";
     angle: number;
-    softness: number;
     invert: boolean;
     bounds: BoundsSnapshot;
 }
@@ -30,7 +29,6 @@ export interface IrisFilterConfig {
     originX: number;
     originY: number;
     aspect: number;
-    softness: number;
     invert: boolean;
     bounds: BoundsSnapshot;
 }
@@ -38,7 +36,6 @@ export interface SplitFilterConfig {
     kind: "split";
     orientation: "horizontal" | "vertical";
     origin: number;
-    softness: number;
     invert: boolean;
     bounds: BoundsSnapshot;
 }
@@ -46,7 +43,7 @@ export type FilterTransitionConfig = WipeFilterConfig | IrisFilterConfig | Split
 
 /**
  * Per-ticker-instance, non-serializable scratch space: the actual `Graphics` mask a transition is
- * driving. A fresh, empty context is created whenever the `MotionValueTicker` driving a mask-based
+ * driving. A fresh, empty context is created whenever the `MotionFilterTicker` driving a mask-based
  * transition (wipe/iris/split - see `addMotionValueEffect` in `canvas-transition.ts`) is (re)constructed
  * - including when a save is restored - so the mask is always lazily recreated on the first `apply()`
  * call rather than persisted.
@@ -86,20 +83,6 @@ function syncMaskTransform(component: CanvasBaseInterface<any>, graphics: Graphi
     graphics.rotation = component.rotation;
 }
 
-function applySoftness(graphics: Graphics, softness: number) {
-    if (softness > 0) {
-        const existing = graphics.filters;
-        const blur =
-            Array.isArray(existing) && existing[0] instanceof BlurFilter
-                ? (existing[0] as BlurFilter)
-                : new BlurFilter({ strength: softness, quality: 2 });
-        blur.strength = softness;
-        graphics.filters = [blur];
-    } else if (graphics.filters) {
-        graphics.filters = null;
-    }
-}
-
 function cleanupMask(component: CanvasBaseInterface<any>, ctx: FilterTransitionContext) {
     if (ctx.graphics) {
         component.mask = null;
@@ -135,11 +118,16 @@ export function applyFilterTransition(
             const angleRad = (config.angle * Math.PI) / 180;
             graphics.clear();
             if (revealLength > 0) {
-                graphics.rect(-diag, -diag, revealLength, diag * 2).fill(0xffffff);
+                const cos = Math.cos(-angleRad);
+                const sin = Math.sin(-angleRad);
+                const points = [
+                    [-diag, -diag],
+                    [-diag + revealLength, -diag],
+                    [-diag + revealLength, diag],
+                    [-diag, diag],
+                ].flatMap(([x, y]) => [cx + x * cos - y * sin, cy + x * sin + y * cos]);
+                graphics.poly(points).fill(0xffffff);
             }
-            graphics.position.set(cx, cy);
-            graphics.rotation = -angleRad;
-            applySoftness(graphics, config.softness);
             break;
         }
         case "iris": {
@@ -155,10 +143,8 @@ export function applyFilterTransition(
             const aspect = config.aspect > 0 ? config.aspect : 1;
             graphics.clear();
             if (radius > 0) {
-                graphics.ellipse(0, 0, radius * aspect, radius).fill(0xffffff);
+                graphics.ellipse(cx, cy, radius * aspect, radius).fill(0xffffff);
             }
-            graphics.position.set(cx, cy);
-            applySoftness(graphics, config.softness);
             break;
         }
         case "split": {
@@ -196,16 +182,15 @@ export function applyFilterTransition(
                     graphics.rect(bounds.x, bottomY, bounds.width, bottomHeight).fill(0xffffff);
                 }
             }
-            applySoftness(graphics, config.softness);
             break;
         }
     }
 }
 
 /**
- * Removes whatever mask/filter {@link applyFilterTransition} attached, restoring the component to
- * exactly the state it was in before the transition - transitions must never permanently change
- * unrelated component state once they complete.
+ * Removes whatever mask {@link applyFilterTransition} attached, restoring the component to exactly the
+ * state it was in before the transition - transitions must never permanently change unrelated component
+ * state once they complete.
  */
 export function cleanupFilterTransition(
     component: CanvasBaseInterface<any>,
