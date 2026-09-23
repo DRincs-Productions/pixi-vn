@@ -40,12 +40,13 @@ Two paths, depending on whether a project already exists:
 | Package          | Required version                                                                                                  |
 | ---------------- | ----------------------------------------------------------------------------------------------------------------- |
 | `pixi.js`        | `>=8.17.0`                                                                                                        |
+| `pixi-filters`   | `>=6.1.0` (PixiJS's extended filter collection, usable by canvas filter-based transitions/effects)               |
 | `tone`           | `>=15.1.0` (audio engine used by the sound module)                                                                |
 | `motion`         | `>=12.38.0` (used internally for canvas animations, e.g. `Game.GameUnifier.animate`)                              |
 | `@pixi/devtools` | `>=2.0.0` (enables the PixiJS Devtools browser extension integration)                                             |
 | `vite`           | `>=5.0.0` — **optional** peer dependency (only needed if you use Vite as your bundler; the official templates do) |
 
-With npm 7+, `npm install @drincs/pixi-vn` auto-installs these peer dependencies too — no separate install step is needed in the common case. If a developer is on an older npm, or uses a package manager that doesn't auto-install peers (e.g. pnpm, or yarn in strict mode), they'll need to install them explicitly (`npm install pixi.js tone motion @pixi/devtools`). If a developer reports errors about missing modules like `pixi.js`, `tone`, or `motion`, check their package manager/version and whether these ended up installed before looking elsewhere.
+With npm 7+, `npm install @drincs/pixi-vn` auto-installs these peer dependencies too — no separate install step is needed in the common case. If a developer is on an older npm, or uses a package manager that doesn't auto-install peers (e.g. pnpm, or yarn in strict mode), they'll need to install them explicitly (`npm install pixi.js pixi-filters tone motion @pixi/devtools`). If a developer reports errors about missing modules like `pixi.js`, `tone`, or `motion`, check their package manager/version and whether these ended up installed before looking elsewhere.
 
 ### Import paths: `@drincs/pixi-vn` vs subpaths
 

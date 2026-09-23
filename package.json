@@ -1,6 +1,6 @@
 {
   "name": "@drincs/pixi-vn",
-  "version": "1.9.5",
+  "version": "1.9.4",
   "type": "module",
   "description": "Pixi'VN is a very versatile and powerful game/story-driven engine.",
   "main": "./dist/index.cjs",
@@ -84,6 +84,12 @@
       "require": "./dist/characters.cjs",
       "default": "./dist/characters.mjs"
     },
+    "./filters": {
+      "types": "./dist/filters.d.ts",
+      "import": "./dist/filters.mjs",
+      "require": "./dist/filters.cjs",
+      "default": "./dist/filters.mjs"
+    },
     "./vite": {
       "types": "./dist/vite.d.ts",
       "import": "./dist/vite.mjs",
@@ -129,6 +135,9 @@
       "characters": [
         "./dist/characters.d.ts"
       ],
+      "filters": [
+        "./dist/filters.d.ts"
+      ],
       "vite": [
         "./dist/vite.d.ts"
       ],
@@ -157,6 +166,7 @@
   "peerDependencies": {
     "@pixi/devtools": ">=2.0.0",
     "motion": ">=12.38.0",
+    "pixi-filters": ">=6.1.0",
     "pixi.js": ">=8.17.0",
     "tone": ">=15.1.0",
     "vite": ">=5.0.0"

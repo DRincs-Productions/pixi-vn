@@ -37,4 +37,6 @@ registerTestLabel("canvas-transition-position", "Canvas: transition preserves po
             text: "Fade should keep the image at the same position.",
         };
     },
-]);
+],
+    "Canvas regressions",
+);

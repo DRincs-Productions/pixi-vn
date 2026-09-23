@@ -17,8 +17,8 @@ Pixi'VN is a general-purpose engine, not a specific game. Every module under `sr
   looks like "my game's logic" belongs in the sandbox (§3) or a template, never in `src/`.
 - **Independently of a specific bundler/framework where feasible.** Bundler-specific integrations
   (e.g. `src/vite/`) are opt-in extras layered on top of a core that itself does not require Vite,
-  React, or any particular tool. `pixi.js`, `tone`, `motion`, `@pixi/devtools`, and `vite` are peer
-  dependencies for this reason — see `skills/game-init/SKILL.md`.
+  React, or any particular tool. `pixi.js`, `pixi-filters`, `tone`, `motion`, `@pixi/devtools`, and
+  `vite` are peer dependencies for this reason — see `skills/game-init/SKILL.md`.
 - **Every public symbol is exported through an `index.ts`** (root `src/index.ts` plus the per-module
   subpath entry points, e.g. `src/narration/index.ts`) — see `CONTRIBUTING.md`'s folder list
   (`managers`/`functions`/`classes`/`decorators`/`interface`/`types`/`labels`). Adding a feature
@@ -27,6 +27,13 @@ Pixi'VN is a general-purpose engine, not a specific game. Every module under `sr
 
 Before adding an abstraction, ask whether it's genuinely reusable across arbitrary Pixi'VN projects.
 If it only serves one narrow use case, it likely doesn't belong in `src/`.
+
+**Use path aliases for new imports, not parent-relative paths.** In new files, and for any new import
+line added to an existing file, prefer `@canvas/...`, `@motion/...`, `@utils/...`, `@classes/...`, etc.
+(see `tsconfig.json`'s `paths`) over `../` / `../../` traversal. Same-directory imports (`./sibling`)
+are fine as-is. This is a forward-looking convention, not a mandate to rewrite existing relative
+imports you happen to be near — leave a file's pre-existing imports alone unless you're already
+rewriting that exact line for another reason.
 
 ## 2. Testing policy
 
@@ -66,6 +73,14 @@ actual audio playback, real browser ticker/RAF behavior, visual layout. For thos
 
 3. **Open the browser** at the printed URL (default `http://localhost:3000`). The sandbox boots
    straight into the start menu label, which lists every registered test label as a choice.
+   **If the Chrome DevTools MCP server is available, use it** to drive this step yourself
+   (`new_page`/`navigate_page`, `click`/`take_snapshot` to click through labels and the
+   `Continue`/`Indietro` controls, `take_screenshot` to actually look at the canvas, and
+   `list_console_messages` to check for errors/warnings after each step) instead of only asking the
+   human to click around — it has already caught real bugs (e.g. a PixiJS deprecation warning) that a
+   headless Playwright script missed because it wasn't checking console output as closely. Fall back
+   to a Playwright/`chromium-cli` script, or asking the human to drive the browser, only when Chrome
+   DevTools MCP isn't available.
 4. **Drive/inspect it through `Game.testing`** (exposed on `window.pixiVN` in the sandbox — enabled
    automatically for non-production builds, see `sandbox/src/index.tsx`) instead of clicking blindly:
    read `window.pixiVN.getState()` to see the current dialogue/choices, `selectChoice(i)` to enter a

@@ -7,14 +7,26 @@ afterEach(() => vi.restoreAllMocks());
 describe("canvas transition and effect namespaces", () => {
     test("exposes every transition through transitions", () => {
         expect(Object.keys(transitions).sort()).toEqual([
+            "blurIn",
+            "blurOut",
+            "flashIn",
+            "flashOut",
+            "irisIn",
+            "irisOut",
             "moveIn",
             "moveOut",
+            "pixelateIn",
+            "pixelateOut",
             "pushIn",
             "pushOut",
             "removeWithDissolve",
             "removeWithFade",
             "showWithDissolve",
             "showWithFade",
+            "splitIn",
+            "splitOut",
+            "wipeIn",
+            "wipeOut",
             "zoomIn",
             "zoomOut",
         ]);

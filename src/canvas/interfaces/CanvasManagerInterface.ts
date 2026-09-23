@@ -424,7 +424,6 @@ export default interface CanvasManagerInterface {
         options?: SequenceOptions,
         priority?: UPDATE_PRIORITY,
     ): string | undefined;
-
     /* Layers Methods */
 
     /**

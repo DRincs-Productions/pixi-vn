@@ -1,4 +1,5 @@
 import { RegisteredTickers } from "@drincs/pixi-vn/canvas";
+import MotionFilterTicker from "./components/MotionFilterTicker";
 import MotionSequenceTicker from "./components/MotionSequenceTicker";
 import MotionTicker from "./components/MotionTicker";
 
@@ -18,3 +19,4 @@ export type { SegmentOptions } from "./utils";
 
 RegisteredTickers.add(MotionTicker, "motion");
 RegisteredTickers.add(MotionSequenceTicker, "motion-sequence");
+RegisteredTickers.add(MotionFilterTicker, "motion-filter");

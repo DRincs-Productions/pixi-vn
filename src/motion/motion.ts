@@ -1,8 +1,9 @@
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import { canvas } from "@drincs/pixi-vn/canvas";
-import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
+import MotionFilterTicker from "./components/MotionFilterTicker";
 import MotionSequenceTicker from "./components/MotionSequenceTicker";
 import MotionTicker from "./components/MotionTicker";
 import type AnimationOptions from "./interfaces/AnimationOptions";
@@ -94,6 +95,62 @@ namespace motion {
                 },
             );
         }
+        const id = canvas.tickers.add<any>(aliases, ticker);
+        const { completeOnContinue } = options || {};
+        if (id && completeOnContinue) {
+            canvas.tickers.completeOnStepEnd({
+                id: id,
+            });
+        }
+        return id;
+    }
+
+    /**
+     * Animate either a `Filter`'s own properties, or a plain numeric "progress" value with no live
+     * target (as opposed to {@link animate}, which animates a canvas element's properties) - see
+     * {@link MotionFilterTicker}. The latter is the generic mechanism behind the mask-based transitions
+     * (`wipeIn`/`wipeOut`, `irisIn`/`irisOut`, `splitIn`/`splitOut`): they have no canvas element or
+     * Filter property to write directly, just a number and a side effect (redrawing mask geometry).
+     * @param components The canvas element alias(es) the filter is attached to, or otherwise associated
+     * with this animation (kept for the same cleanup/transfer bookkeeping every other ticker
+     * participates in).
+     * @param filter The `Filter` instance to animate, or `undefined` to animate a plain value instead
+     * (in which case `keyframes` describes that value, e.g. `{ value: [0, 1] }`, and `apply` is required).
+     * @param keyframes The keyframes to animate the filter's properties (or the plain value) with.
+     * @param options The animation options.
+     * @param priority The update priority of the ticker.
+     * @param apply Called on every frame with the current interpolated value - required when `filter` is
+     * `undefined`, ignored otherwise (the filter's own properties are written to directly instead).
+     * @param cleanup Called once, right before completion handling, to detach/destroy the filter or tear
+     * down whatever `apply` was driving.
+     * @returns The id of the ticker, or `undefined` if the ticker was not added.
+     */
+    export function animateFilter(
+        components: string | string[],
+        filter: Filter | undefined,
+        keyframes: Record<string, any>,
+        options?: AnimationOptions,
+        priority?: UPDATE_PRIORITY,
+        apply?: (value: number) => void,
+        cleanup?: () => void,
+    ): string | undefined {
+        try {
+            keyframes = createExportableElement(keyframes);
+        } catch (e) {
+            logger.error("animateFilter keyframes cannot contain functions or classes");
+            throw e;
+        }
+        try {
+            options = createExportableElement(options);
+        } catch (e) {
+            logger.error("animateFilter options cannot contain functions or classes");
+            throw e;
+        }
+        const aliases = Array.isArray(components) ? components : [components];
+        const ticker = new MotionFilterTicker(
+            { keyframes, options: options as AnimationOptions },
+            { filter, apply, priority, canvasElementAliases: aliases, cleanup },
+        );
         const id = canvas.tickers.add<any>(aliases, ticker);
         const { completeOnContinue } = options || {};
         if (id && completeOnContinue) {

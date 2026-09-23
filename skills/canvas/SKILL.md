@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-canvas
-description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying transitions (dissolve, fade, move, zoom, push), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
+description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying or creating transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate, or a custom one built on `canvas.animate`/`filters.animate`), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
 ---
 
 # Pixi'VN Canvas
@@ -25,7 +25,7 @@ Load this skill whenever a task involves:
 
 - Showing, replacing, or removing an image/sprite/video/text on screen.
 - Building a composite character sprite out of several image layers.
-- Applying a transition (dissolve, fade, move, zoom, push) when a background or sprite changes.
+- Applying a transition (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate) when a background or sprite changes.
 - Adding a shake effect or a custom PixiJS-ticker-driven animation.
 - Reading or modifying canvas element position/anchor/alpha/zIndex.
 
@@ -167,6 +167,145 @@ zoomOut("liam", { direction: "right", duration: 0.5 });
 `completeOnContinue` flag (default `true`) that finishes the transition immediately when the
 player advances the narration before the animation ends — leave this at its default unless you
 specifically want an animation to be interruptible/ignored.
+
+### Generic reveal/filter transitions: wipe, iris, split, flash, blur, pixelate
+
+These six are only exposed through the `transitions` namespace (no flat top-level export like the
+older `moveIn`/`showWithDissolve`), each as a matched `xIn`/`xOut` pair with the same
+`(alias, componentOrUrl?, props?, priority?)` / `(alias, props?, priority?)` shapes as above.
+They favor a handful of configurable options over narrative-specific variants — e.g. there's one
+`wipeIn`, not `wipeLeft`/`wipeRight`.
+
+```ts
+import { transitions } from "@drincs/pixi-vn";
+
+// wipe: a moving boundary reveals/conceals the image. `angle` in degrees (0 = left-to-right, 90 =
+// bottom-to-top, ...); `direction` ("up"/"down"/"left"/"right") is a shorthand for the 4 cardinal angles.
+await transitions.wipeIn("background", "bg-forest", { direction: "left", duration: 1 });
+await transitions.wipeIn("background", "bg-night", { angle: 45, duration: 1 }); // diagonal wipe
+transitions.wipeOut("background", { angle: 180, invert: true, duration: 1 });
+
+// iris: an expanding/contracting radial mask. `origin` is normalized (0-1) to the element's own bounds.
+await transitions.irisIn("liam", "liam-happy", { origin: { x: 0.5, y: 0.3 }, duration: 0.8 });
+transitions.irisOut("liam", { aspect: 2, duration: 0.8 }); // aspect > 1 = wide ellipse instead of a circle
+
+// split: two mask panels move apart/together - covers "curtain" effects without a dedicated API.
+await transitions.splitIn("background", "bg-forest", { orientation: "horizontal", duration: 1 });
+transitions.splitOut("background", { orientation: "vertical", origin: 0.3, duration: 1 });
+
+// flash: a configurable color overlay (not just white) fades in/hold/out, optionally pulsing.
+await transitions.flashIn("background", "bg-forest", { duration: 0.15 }); // white camera-flash reveal
+transitions.flashOut("liam", { color: 0xff0033, holdDuration: 0.05, pulses: 3, duration: 0.1 }); // red damage flash
+
+// blur / pixelate: the image is shown already blurred/pixelated and resolves into focus (or the reverse for *Out).
+await transitions.blurIn("liam", "liam-happy", { strength: 40, duration: 1 });
+transitions.blurOut("liam", { duration: 1 });
+await transitions.pixelateIn("background", "bg-forest", { pixelSize: 48, duration: 1 });
+transitions.pixelateOut("background", { duration: 1 });
+```
+
+They compose freely since each drives its own mask (`wipe`/`iris`/`split`) or filter
+(`blur`/`pixelate`) independently — e.g. call `blurIn` and then `wipeIn` on the same alias to
+combine both. Common narrative effects are just **recipes** built from these primitives rather than
+dedicated functions: a "blink"/eyes-opening effect is a color overlay plus an iris reveal, a
+"dream"/flashback is `blurIn` + `showWithFade`, a memory transition is a color overlay plus
+`blurIn`, a "curtain" is a configured `splitOut`, and a diagonal wipe is just `wipeIn`/`wipeOut`
+with a non-cardinal `angle`.
+
+### Creating custom transitions
+
+Docs: [pixi-vn.com/start/canvas-transition#custom-functionality](https://pixi-vn.com/start/canvas-transition#custom-functionality).
+
+A custom transition is just a plain function that adds/replaces a component and drives it with
+`canvas.animate` — the same primitive `showWithDissolve`, `moveIn`, etc. are built on:
+
+```ts
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function showWithDissolve(
+  alias: string,
+  component: ImageSprite,
+  props: AnimationOptions = {},
+  priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+  const { completeOnContinue = true, ...options } = props;
+  canvas.add(alias, component);
+  component.alpha = 0;
+  const id = canvas.animate(alias, { alpha: 1 }, { ...options, completeOnContinue }, priority);
+  if (component.haveEmptyTexture) await component.load();
+  if (id) return [id];
+}
+```
+
+If a component under the same alias may already exist, either let `canvas.add` replace it
+outright (per the heredity-factor gotcha above), or explicitly swap it in first — rename the old
+component's alias, add the new one, restore z-order, then transfer its properties/tickers — so an
+in-flight animation on the old element carries over instead of snapping:
+
+```ts
+let oldComponentAlias: string | undefined;
+const oldComponent = canvas.find(alias);
+if (oldComponent) {
+  oldComponentAlias = `${alias}_temp`;
+  canvas.editAlias(alias, oldComponentAlias);
+}
+canvas.add(alias, component);
+oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
+```
+
+To remove the old component only once the new one's transition finishes, pass
+`aliasToRemoveAfter: oldComponentAlias` in `canvas.animate`'s `options` instead of removing it
+manually. To have the old component run its own transition-out (instead of a hard cut), give it a
+second `canvas.animate` call paused with `tickers.pause({ id })` and resumed via the new call's
+`tickerIdToResume` option — see the wiki's own two worked examples for the exact sequencing.
+
+**Animating a filter's own property instead of a component property** — for effects like blur,
+pixelate, glow, or color grading, use `filters.animate` (from `@drincs/pixi-vn/filters`, available
+since **v1.9.4**) instead of `canvas.animate`. It mirrors the same
+`(alias, keyframes, options, priority)` shape with the `Filter` instance inserted as the second
+argument; you attach the filter to `component.filters` yourself before animating, and detach +
+destroy it in the `cleanup` callback (the 7th argument) once the animation completes — this is
+exactly how `transitions.blurIn`/`blurOut`/`pixelateIn`/`pixelateOut` are implemented:
+
+```ts
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { filters } from "@drincs/pixi-vn/filters";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function blurIn(
+  alias: string,
+  component: ImageSprite,
+  props: AnimationOptions & { strength?: number } = {},
+  priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+  const { strength = 32, completeOnContinue = true, ...options } = props;
+  canvas.add(alias, component);
+  const filter = new filters.BlurFilter({ strength });
+  component.filters = [filter];
+  const id = filters.animate(
+    alias,
+    filter,
+    { strength: [strength, 0] },
+    { ...options, completeOnContinue },
+    priority,
+    undefined, // apply - only needed when filter is undefined (see below)
+    () => {
+      component.filters = null;
+      filter.destroy();
+    },
+  );
+  if (component.haveEmptyTexture) await component.load();
+  if (id) return [id];
+}
+```
+
+`filters.animate` can also drive a plain numeric value with no live filter — pass `undefined` as
+the filter and an `apply` callback (called every frame with the interpolated value) instead. This
+is how `wipeIn`/`irisIn`/`splitIn` animate their mask geometry (a growing radius, a moving
+boundary), since a mask has no filter property to write directly.
 
 ## Shake and custom animation
 

@@ -2,7 +2,7 @@ import type OnErrorHandler from "@core/OnErrorHandler";
 import PixiError from "@core/PixiError";
 import type { CharacterInterface, GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
-import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import type {
     StepLabelPropsType,
     StepLabelResultType,
@@ -139,6 +139,36 @@ export default class GameUnifier {
             options?: any,
             priority?: UPDATE_PRIORITY,
         ) => string | undefined;
+        /**
+         * This function is called to animate either a `Filter`'s own properties, or a plain numeric
+         * "progress" value with no live target (as opposed to {@link animate}, which animates a canvas
+         * element's properties). The latter is the generic mechanism behind the mask-based transitions
+         * (wipe/iris/split): they have no canvas element or Filter property to write directly, just a
+         * number and a side effect.
+         * @param components - The canvas element alias(es) the filter is attached to, or otherwise
+         * associated with this animation (kept alive/cleaned up alongside them), not the animation
+         * target itself.
+         * @param filter - The `Filter` instance to animate, or `undefined` to animate a plain value
+         * instead (in which case `keyframes` describes that value, e.g. `{ value: [0, 1] }`, and `apply`
+         * is required).
+         * @param keyframes - The keyframes to animate the filter's properties (or the plain value) with.
+         * @param options - Additional options for the animation, including duration, easing, and ticker.
+         * @param priority - The priority of the ticker. @default UPDATE_PRIORITY.NORMAL
+         * @param apply - Called on every frame with the current interpolated value - required when
+         * `filter` is `undefined`, ignored otherwise.
+         * @param cleanup - Called once, right before completion handling, to detach/destroy the filter or
+         * tear down whatever `apply` was driving.
+         * @returns The id of the ticker.
+         */
+        animateFilter: (
+            components: string | string[],
+            filter: Filter | undefined,
+            keyframes: any,
+            options?: any,
+            priority?: UPDATE_PRIORITY,
+            apply?: (value: number) => void,
+            cleanup?: () => void,
+        ) => string | undefined;
     }) {
         if (options.navigate) GameUnifier._navigate = options.navigate;
         GameUnifier._getStepCounter = options.getStepCounter;
@@ -156,6 +186,7 @@ export default class GameUnifier {
         GameUnifier._addHistoryItem = options.addHistoryItem;
         GameUnifier._getCharacter = options.getCharacter;
         GameUnifier._animate = options.animate;
+        GameUnifier._animateFilter = options.animateFilter;
     }
     private static _navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
@@ -533,5 +564,29 @@ export default class GameUnifier {
      */
     static get animate() {
         return GameUnifier._animate;
+    }
+    private static _animateFilter: (
+        components: string | string[],
+        filter: Filter | undefined,
+        keyframes: any,
+        options?: any,
+        priority?: UPDATE_PRIORITY,
+        apply?: (value: number) => void,
+        cleanup?: () => void,
+    ) => string | undefined = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
+    };
+    /**
+     * This function is called to animate a `Filter`'s own properties, or a plain numeric "progress"
+     * value when no `filter` is given. See {@link animate} for animating a canvas element's properties
+     * instead.
+     * @returns The id of the ticker.
+     */
+    static get animateFilter() {
+        return GameUnifier._animateFilter;
     }
 }

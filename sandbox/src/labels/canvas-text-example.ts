@@ -16,10 +16,15 @@ registerTestLabel("canvas-text-example", "Canvas: show a Text element", [
             anchor: 0.5,
             x: canvas.width / 2,
             y: canvas.height / 2,
+            // PixiJS' default text fill is black, invisible against the sandbox's black canvas
+            // background - set explicitly so the text is actually visible.
+            style: { fill: 0xffffff },
         });
 
         narration.dialogue = {
             text: "A Text element should now be centered on the canvas. Close this label to go back to the menu.",
         };
     },
-]);
+],
+    "Canvas regressions",
+);
