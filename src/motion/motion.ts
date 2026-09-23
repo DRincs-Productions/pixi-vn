@@ -1,6 +1,6 @@
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
-import { canvas } from "@drincs/pixi-vn/canvas";
 import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
+import { tickers } from "@drincs/pixi-vn/tickers";
 import { createExportableElement } from "../utils/export-utility";
 import { logger } from "../utils/log-utility";
 import MotionFilterTicker from "./components/MotionFilterTicker";
@@ -95,10 +95,10 @@ namespace motion {
                 },
             );
         }
-        const id = canvas.tickers.add<any>(aliases, ticker);
+        const id = tickers.add<any>(aliases, ticker);
         const { completeOnContinue } = options || {};
         if (id && completeOnContinue) {
-            canvas.tickers.completeOnStepEnd({
+            tickers.completeOnStepEnd({
                 id: id,
             });
         }
@@ -151,10 +151,10 @@ namespace motion {
             { keyframes, options: options as AnimationOptions },
             { filter, apply, priority, canvasElementAliases: aliases, cleanup },
         );
-        const id = canvas.tickers.add<any>(aliases, ticker);
+        const id = tickers.add<any>(aliases, ticker);
         const { completeOnContinue } = options || {};
         if (id && completeOnContinue) {
-            canvas.tickers.completeOnStepEnd({
+            tickers.completeOnStepEnd({
                 id: id,
             });
         }

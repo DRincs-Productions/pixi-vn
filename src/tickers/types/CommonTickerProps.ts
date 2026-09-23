@@ -1,4 +1,3 @@
-import { narration } from "../../..";
 export type CommonTickerProps = {
     /**
      * An array of strings containing the aliases of the canvas components to remove after the animation completes.
@@ -22,7 +21,7 @@ export type CommonTickerProps = {
     tickerIdToResume?: string[] | string;
     /**
      * A boolean indicating whether the animation must complete before the next `step` of the game. If `true`, the game will force the animation to finish before proceeding.
-     * When true, calling {@link narration.continue()} forces the current content to complete before advancing to the next narrative step.
+     * When true, calling `narration.continue()` forces the current content to complete before advancing to the next narrative step.
      * @default false
      */
     completeOnContinue?: boolean;

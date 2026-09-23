@@ -1,10 +1,4 @@
 import additionalPositionsProperties from "@canvas/pixi-devtools/additionalPositionsProperties";
-import type {
-    TickerHistory,
-    TickerInfo,
-    TickersSequence,
-    TickerTimeoutHistory,
-} from "@canvas/tickers";
 import { CANVAS_APP_GAME_LAYER_ALIAS } from "@constants";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { Application, ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
@@ -12,7 +6,6 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { type Devtools, initDevtools } from "@pixi/devtools";
 import { logger } from "@utils/log-utility";
 import { throttle } from "@utils/time-utility";
-import sha1 from "crypto-js/sha1";
 /**
  * This class is responsible for managing the canvas, the tickers, the events, and the window size and the children of the window.
  */
@@ -226,92 +219,5 @@ export default class CanvasManagerStatic {
                     CanvasManagerStatic.gameLayer.getChildIndex(b),
             )
             .map((item) => item.label);
-    }
-
-    /** Edit Tickers Methods */
-
-    static get currentTickersWithoutCreatedBySteps(): {
-        [k: string]: TickerHistory<any>;
-    } {
-        return Object.fromEntries(
-            Array.from(CanvasManagerStatic._currentTickers.entries())
-                .filter(([_, info]) => !info.createdByTicketSteps)
-                .map(([id, info]) => [
-                    id,
-                    {
-                        id: info.ticker.alias,
-                        args: info.ticker.args,
-                        canvasElementAliases: info.ticker.canvasElementAliases,
-                        priority: info.ticker.priority,
-                        duration: info.ticker.duration,
-                        paused: info.ticker.paused,
-                    },
-                ]),
-        );
-    }
-    static readonly _currentTickers: Map<string, TickerInfo<any>> = new Map();
-    static readonly _currentTickersSequence: Map<string, Map<string, TickersSequence>> = new Map();
-    static get currentTickersSequence(): {
-        [alias: string]: { [tickerId: string]: TickersSequence };
-    } {
-        return Object.fromEntries(
-            Array.from(CanvasManagerStatic._currentTickersSequence.entries()).map(
-                ([alias, stepsMap]) => [alias, Object.fromEntries(stepsMap)],
-            ),
-        );
-    }
-    static readonly _currentTickersTimeouts: Map<string, TickerTimeoutHistory> = new Map();
-    static readonly _tickersToCompleteOnStepEnd: {
-        tikersIds: { id: string }[];
-        stepAlias: { id: string; alias: string }[];
-    } = { tikersIds: [], stepAlias: [] };
-    static generateTickerId(...args: any[]): string {
-        try {
-            return `${sha1(JSON.stringify(args)).toString()}_${Math.random().toString(36).substring(7)}`;
-        } catch (e) {
-            throw new PixiError("not_json_serializable", `Error to generate ticker id: ${e}`);
-        }
-    }
-    static addTickerTimeoutInfo(
-        aliases: string | string[],
-        ticker: string,
-        timeout: string,
-        canBeDeletedBeforeEnd: boolean,
-    ) {
-        if (typeof aliases === "string") {
-            aliases = [aliases];
-        }
-        CanvasManagerStatic._currentTickersTimeouts.set(timeout, {
-            aliases: aliases,
-            ticker: ticker,
-            canBeDeletedBeforeEnd: canBeDeletedBeforeEnd,
-        });
-    }
-    static removeTickerTimeoutInfo(timeout: NodeJS.Timeout | string) {
-        if (typeof timeout !== "string") {
-            timeout = timeout.toString();
-        }
-        CanvasManagerStatic._currentTickersTimeouts.delete(timeout);
-    }
-    static removeTickerTimeout(timeout: NodeJS.Timeout | string) {
-        if (typeof timeout !== "string") {
-            timeout = timeout.toString();
-        }
-        clearTimeout(Number(timeout));
-        CanvasManagerStatic.removeTickerTimeoutInfo(timeout);
-    }
-    static removeTickerTimeoutsByAlias(alias: string, checkCanBeDeletedBeforeEnd: boolean) {
-        // todo
-        CanvasManagerStatic._currentTickersTimeouts.forEach((tickerTimeout, timeout) => {
-            const aliasesWithoutAliasToRemove = tickerTimeout.aliases.filter((t) => t !== alias);
-            if (aliasesWithoutAliasToRemove.length === 0) {
-                const canBeDeletedBeforeEnd = tickerTimeout.canBeDeletedBeforeEnd;
-                if (!checkCanBeDeletedBeforeEnd || canBeDeletedBeforeEnd) {
-                    CanvasManagerStatic.removeTickerTimeout(timeout);
-                }
-            } else {
-                tickerTimeout.aliases = aliasesWithoutAliasToRemove;
-            }
-        });
     }
 }

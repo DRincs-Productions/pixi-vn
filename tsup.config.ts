@@ -75,6 +75,7 @@ export default defineConfig((options) => {
                 history: "src/history/index.ts",
                 storage: "src/storage/index.ts",
                 filters: "src/filters/index.ts",
+                tickers: "src/tickers/index.ts",
                 canvas: "src/canvas/index.ts",
                 sound: "src/sound/index.ts",
                 characters: "src/characters/index.ts",
@@ -92,6 +93,7 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/worker",
                 // submodules
                 "@drincs/pixi-vn/filters",
+                "@drincs/pixi-vn/tickers",
                 // external dependencies
                 "tone",
                 "@pixi/devtools",
@@ -126,6 +128,7 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/canvas",
                 "@drincs/pixi-vn/sound",
                 "@drincs/pixi-vn/characters",
+                "@drincs/pixi-vn/tickers",
                 // external dependencies
                 "motion",
             ],
@@ -161,6 +164,7 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/sound",
                 "@drincs/pixi-vn/characters",
                 "@drincs/pixi-vn/filters",
+                "@drincs/pixi-vn/tickers",
                 // animation
                 "@drincs/pixi-vn/motion",
                 // peer dep — must not be bundled
@@ -186,6 +190,7 @@ export default defineConfig((options) => {
                 sound: "src/sound/index.ts",
                 characters: "src/characters/index.ts",
                 filters: "src/filters/index.ts",
+                tickers: "src/tickers/index.ts",
                 motion: "src/motion/index.ts",
                 index: "src/index.ts",
                 vite: "src/vite/index.ts",
@@ -206,6 +211,7 @@ export default defineConfig((options) => {
                 "@drincs/pixi-vn/sound",
                 "@drincs/pixi-vn/characters",
                 "@drincs/pixi-vn/filters",
+                "@drincs/pixi-vn/tickers",
                 "@drincs/pixi-vn/motion",
                 "tone",
                 "@pixi/devtools",

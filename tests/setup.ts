@@ -3,6 +3,7 @@
 // static imports so its body executes before Tone.js is loaded, ensuring
 // window.AudioContext is defined when Tone.js evaluates hasAudioContext.
 
+import { canvas } from "@drincs/pixi-vn/canvas";
 import { motion } from "@drincs/pixi-vn/motion";
 // Avoid real network/file loading in tests: stub PIXI.Assets.load to a no-op
 import PIXI from "@drincs/pixi-vn/pixi.js";
@@ -103,5 +104,13 @@ GameUnifier.init({
     },
     animateFilter: (target, filter, keyframes, options, priority, apply, cleanup) => {
         return motion.animateFilter(target, filter, keyframes, options, priority, apply, cleanup);
+    },
+    removeCanvasComponent: (alias) => {
+        if (canvas.isInitialized) {
+            canvas.remove(alias);
+        }
+    },
+    canvasComponentExists: (alias) => {
+        return canvas.isInitialized ? canvas.find(alias) !== undefined : false;
     },
 });

@@ -1,8 +1,8 @@
-import type { CommonTickerProps, Ticker, TickerArgs } from "@drincs/pixi-vn/canvas";
-import { canvas } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { tickers } from "@drincs/pixi-vn/tickers";
+import type { CommonTickerProps, Ticker, TickerArgs } from "@drincs/pixi-vn/tickers";
 import sha1 from "crypto-js/sha1";
 import type { AnimationPlaybackControlsWithThen } from "motion";
 
@@ -91,7 +91,7 @@ export default abstract class MotionFilterTickerBase<
              */
             canvasElementAliases?: string[];
             /**
-             * Called once, right before completion handling (`canvas.tickers.onComplete`) - the natural
+             * Called once, right before completion handling (`tickers.onComplete`) - the natural
              * place to detach/destroy {@link filter} from whatever component it was attached to, or to
              * tear down whatever {@link apply} was driving (e.g. a mask). Not called on a manual
              * {@link stop} (only on the animation's own completion), matching `TickerBase.stop()`'s
@@ -233,7 +233,7 @@ export default abstract class MotionFilterTickerBase<
         if (typeof tickerIdToResume === "string") {
             tickerIdToResume = [tickerIdToResume];
         }
-        canvas.tickers.onComplete(id, {
+        tickers.onComplete(id, {
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
             tickerIdToResume: tickerIdToResume,

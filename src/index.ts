@@ -200,6 +200,16 @@ export namespace Game {
                     cleanup,
                 );
             },
+            removeCanvasComponent: (alias) => {
+                if (canvasUtils.canvas.isInitialized) {
+                    canvasUtils.canvas.remove(alias);
+                }
+            },
+            canvasComponentExists: (alias) => {
+                return canvasUtils.canvas.isInitialized
+                    ? canvasUtils.canvas.find(alias) !== undefined
+                    : false;
+            },
             // storage
             getVariable: (prefix, key) => storageUtils.StorageRegistry.getVariable(prefix, key),
             setVariable: (prefix, key, value) =>
