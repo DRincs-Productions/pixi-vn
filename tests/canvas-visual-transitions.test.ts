@@ -1,7 +1,9 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import {
-    applyFilterTransition,
+    applyIrisTransition,
+    applySplitTransition,
+    applyWipeTransition,
     cleanupFilterTransition,
     snapshotLocalBounds,
     type FilterTransitionContext,
@@ -23,6 +25,25 @@ const maskConfigs: FilterTransitionConfig[] = [
     { kind: "split", orientation: "horizontal", origin: 0.25, invert: false, bounds: BOUNDS },
 ];
 
+/** Test-only dispatcher for the `describe.each` cases below, which run generically across all three
+ * mask kinds - production code calls the kind-specific function directly instead (see `addMotionValueEffect`
+ * in `canvas-transition.ts`), since it already knows its `config`'s kind statically. */
+function applyMaskConfig(
+    component: import("../src/canvas").CanvasBaseInterface<any>,
+    config: FilterTransitionConfig,
+    value: number,
+    ctx: FilterTransitionContext,
+) {
+    switch (config.kind) {
+        case "wipe":
+            return applyWipeTransition(component, config, value, ctx);
+        case "iris":
+            return applyIrisTransition(component, config, value, ctx);
+        case "split":
+            return applySplitTransition(component, config, value, ctx);
+    }
+}
+
 describe.each(maskConfigs)("$kind mask regressions", (config) => {
     test("keeps local mask geometry aligned with a transformed replacement sprite", () => {
         const parent = new PIXI.Container();
@@ -34,13 +55,13 @@ describe.each(maskConfigs)("$kind mask regressions", (config) => {
         target.skew.set(0.1, -0.2);
         target.rotation = 0.4;
         const ctx: FilterTransitionContext = {};
-        applyFilterTransition(target, config, 0.5, ctx);
+        applyMaskConfig(target, config, 0.5, ctx);
         target.updateLocalTransform();
         ctx.graphics!.updateLocalTransform();
         expect(ctx.graphics!.parent).toBe(parent);
         expect(ctx.graphics!.localTransform).toEqual(target.localTransform);
         target.position.set(330, 145);
-        applyFilterTransition(target, config, 0.75, ctx);
+        applyMaskConfig(target, config, 0.75, ctx);
         expect(ctx.graphics!.position.x).toBe(330);
         expect(ctx.graphics!.position.y).toBe(145);
         cleanupFilterTransition(target, config, ctx);
@@ -63,7 +84,7 @@ describe("snapshotLocalBounds", () => {
     });
 });
 
-describe("applyFilterTransition / cleanupFilterTransition", () => {
+describe("applyWipeTransition/applyIrisTransition/applySplitTransition / cleanupFilterTransition", () => {
     test("wipe: attaches a mask that grows with progress and is fully removed on cleanup", () => {
         const target = createTarget();
         const ctx: FilterTransitionContext = {};
@@ -74,11 +95,11 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
             bounds: BOUNDS,
         };
 
-        applyFilterTransition(target, config, 0, ctx);
+        applyWipeTransition(target, config, 0, ctx);
         expect(target.mask).toBe(ctx.graphics);
         expect(ctx.graphics).toBeInstanceOf(PIXI.Graphics);
 
-        applyFilterTransition(target, config, 1, ctx);
+        applyWipeTransition(target, config, 1, ctx);
         expect(target.mask).toBe(ctx.graphics);
 
         cleanupFilterTransition(target, config, ctx);
@@ -95,11 +116,11 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
             invert: false,
             bounds: BOUNDS,
         };
-        applyFilterTransition(target, base, 0.25, ctx);
+        applyWipeTransition(target, base, 0.25, ctx);
         const normalBounds = ctx.graphics!.getLocalBounds();
 
         const ctxInverted: FilterTransitionContext = {};
-        applyFilterTransition(target, { ...base, invert: true }, 0.75, ctxInverted);
+        applyWipeTransition(target, { ...base, invert: true }, 0.75, ctxInverted);
         const invertedBounds = ctxInverted.graphics!.getLocalBounds();
 
         // invert=true at 0.75 should draw the same size mask as invert=false at (1 - 0.75) = 0.25.
@@ -117,7 +138,7 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
             invert: false,
             bounds: BOUNDS,
         };
-        applyFilterTransition(target, config, 0.5, ctx);
+        applyIrisTransition(target, config, 0.5, ctx);
         expect(target.mask).toBe(ctx.graphics);
         cleanupFilterTransition(target, config, ctx);
         expect(target.mask).toBeUndefined();
@@ -133,7 +154,7 @@ describe("applyFilterTransition / cleanupFilterTransition", () => {
             invert: false,
             bounds: BOUNDS,
         };
-        applyFilterTransition(target, config, 0, ctx);
+        applySplitTransition(target, config, 0, ctx);
         expect(target.mask).toBe(ctx.graphics);
         cleanupFilterTransition(target, config, ctx);
         expect(target.mask).toBeUndefined();

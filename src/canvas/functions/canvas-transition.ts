@@ -1,5 +1,8 @@
+import PixiContainer from "@canvas/components/Container";
 import {
-    applyFilterTransition,
+    applyIrisTransition,
+    applySplitTransition,
+    applyWipeTransition,
     cleanupFilterTransition,
     snapshotLocalBounds,
     type FilterTransitionConfig,
@@ -8,17 +11,16 @@ import {
     type SplitFilterConfig,
     type WipeFilterConfig,
 } from "@canvas/functions/canvas-filter-transition-utility";
-import PixiContainer from "@canvas/components/Container";
 import type { ColorType } from "@canvas/types/ColorType";
-import { logger } from "@utils/log-utility";
 import { filters } from "@drincs/pixi-vn/filters";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
 import type {
-    Container as PixiJsContainer,
     Filter,
+    Container as PixiJsContainer,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { logger } from "@utils/log-utility";
 import {
     canvas,
     type CanvasBaseInterface,
@@ -342,6 +344,7 @@ export namespace transitions {
         alias: string,
         args: {
             config: FilterTransitionConfig;
+            apply: (component: CanvasBaseInterface<any>, value: number, ctx: FilterTransitionContext) => void;
             from: number;
             to: number;
             duration?: number;
@@ -357,7 +360,7 @@ export namespace transitions {
         const apply = (value: number) => {
             const component = canvas.find(alias);
             if (component) {
-                applyFilterTransition(component, args.config, value, ctx);
+                args.apply(component, value, ctx);
             }
         };
         const id = filters.animate(
@@ -1385,6 +1388,7 @@ export namespace transitions {
             alias,
             {
                 config,
+                apply: (component, value, ctx) => applyWipeTransition(component, config, value, ctx),
                 from: 0,
                 to: 1,
                 duration,
@@ -1442,6 +1446,7 @@ export namespace transitions {
             alias,
             {
                 config,
+                apply: (component, value, ctx) => applyWipeTransition(component, config, value, ctx),
                 from: 1,
                 to: 0,
                 duration,
@@ -1515,6 +1520,7 @@ export namespace transitions {
             alias,
             {
                 config,
+                apply: (component, value, ctx) => applyIrisTransition(component, config, value, ctx),
                 from: 0,
                 to: 1,
                 duration,
@@ -1574,6 +1580,7 @@ export namespace transitions {
             alias,
             {
                 config,
+                apply: (component, value, ctx) => applyIrisTransition(component, config, value, ctx),
                 from: 1,
                 to: 0,
                 duration,
@@ -1646,6 +1653,7 @@ export namespace transitions {
             alias,
             {
                 config,
+                apply: (component, value, ctx) => applySplitTransition(component, config, value, ctx),
                 from: 0,
                 to: 1,
                 duration,
@@ -1704,6 +1712,7 @@ export namespace transitions {
             alias,
             {
                 config,
+                apply: (component, value, ctx) => applySplitTransition(component, config, value, ctx),
                 from: 1,
                 to: 0,
                 duration,
@@ -2210,14 +2219,21 @@ export namespace transitions {
                 // both right away rather than waiting for the down-phase ticker below to complete, since
                 // the old overlay's zIndex (old.zIndex + 1) would otherwise sit above the new content and
                 // its own fresh overlay, hiding the fade-down entirely.
-                canvas.remove(oldComponentAlias ? [oldOverlayAlias, oldComponentAlias] : [oldOverlayAlias]);
+                canvas.remove(
+                    oldComponentAlias ? [oldOverlayAlias, oldComponentAlias] : [oldOverlayAlias],
+                );
                 if (
-                    (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+                    (newComponent instanceof ImageSprite ||
+                        newComponent instanceof ImageContainer) &&
                     newComponent.haveEmptyTexture
                 ) {
                     await newComponent.load();
                 }
-                const newOverlayAlias = createFlashOverlay(newComponent, options.color, options.maxAlpha);
+                const newOverlayAlias = createFlashOverlay(
+                    newComponent,
+                    options.color,
+                    options.maxAlpha,
+                );
                 canvas.animate(
                     newOverlayAlias,
                     { alpha: [options.maxAlpha, 0] },

@@ -19,7 +19,8 @@ import type { AnimationPlaybackControlsWithThen } from "motion";
  * - **`filter` omitted**: there's nothing to write to - `motion` animates a private plain `{ value }`
  *   object instead, and {@link createUpdateHandler} forwards each frame's interpolated value to
  *   {@link apply}. Used by the mask-based transitions (wipe/iris/split), which have no filter property
- *   to drive, just a number that `applyFilterTransition` turns into mask geometry.
+ *   to drive, just a number that `applyWipeTransition`/`applyIrisTransition`/`applySplitTransition`
+ *   turns into mask geometry.
  *
  * Reuses the same `_paused`/`suppressWritesDuring`/resuming-`time` handling as `MotionTickerBase`
  * verbatim: `motion`'s `animate()` writes its first keyframe to the target synchronously during

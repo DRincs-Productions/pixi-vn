@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-canvas
-description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
+description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying or creating transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate, or a custom one built on `canvas.animate`/`filters.animate`), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
 ---
 
 # Pixi'VN Canvas
@@ -211,6 +211,101 @@ dedicated functions: a "blink"/eyes-opening effect is a color overlay plus an ir
 "dream"/flashback is `blurIn` + `showWithFade`, a memory transition is a color overlay plus
 `blurIn`, a "curtain" is a configured `splitOut`, and a diagonal wipe is just `wipeIn`/`wipeOut`
 with a non-cardinal `angle`.
+
+### Creating custom transitions
+
+Docs: [pixi-vn.com/start/canvas-transition#custom-functionality](https://pixi-vn.com/start/canvas-transition#custom-functionality).
+
+A custom transition is just a plain function that adds/replaces a component and drives it with
+`canvas.animate` — the same primitive `showWithDissolve`, `moveIn`, etc. are built on:
+
+```ts
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function showWithDissolve(
+  alias: string,
+  component: ImageSprite,
+  props: AnimationOptions = {},
+  priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+  const { completeOnContinue = true, ...options } = props;
+  canvas.add(alias, component);
+  component.alpha = 0;
+  const id = canvas.animate(alias, { alpha: 1 }, { ...options, completeOnContinue }, priority);
+  if (component.haveEmptyTexture) await component.load();
+  if (id) return [id];
+}
+```
+
+If a component under the same alias may already exist, either let `canvas.add` replace it
+outright (per the heredity-factor gotcha above), or explicitly swap it in first — rename the old
+component's alias, add the new one, restore z-order, then transfer its properties/tickers — so an
+in-flight animation on the old element carries over instead of snapping:
+
+```ts
+let oldComponentAlias: string | undefined;
+const oldComponent = canvas.find(alias);
+if (oldComponent) {
+  oldComponentAlias = `${alias}_temp`;
+  canvas.editAlias(alias, oldComponentAlias);
+}
+canvas.add(alias, component);
+oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
+oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
+```
+
+To remove the old component only once the new one's transition finishes, pass
+`aliasToRemoveAfter: oldComponentAlias` in `canvas.animate`'s `options` instead of removing it
+manually. To have the old component run its own transition-out (instead of a hard cut), give it a
+second `canvas.animate` call paused with `tickers.pause({ id })` and resumed via the new call's
+`tickerIdToResume` option — see the wiki's own two worked examples for the exact sequencing.
+
+**Animating a filter's own property instead of a component property** — for effects like blur,
+pixelate, glow, or color grading, use `filters.animate` (from `@drincs/pixi-vn/filters`, available
+since **v1.9.4**) instead of `canvas.animate`. It mirrors the same
+`(alias, keyframes, options, priority)` shape with the `Filter` instance inserted as the second
+argument; you attach the filter to `component.filters` yourself before animating, and detach +
+destroy it in the `cleanup` callback (the 7th argument) once the animation completes — this is
+exactly how `transitions.blurIn`/`blurOut`/`pixelateIn`/`pixelateOut` are implemented:
+
+```ts
+import { canvas, ImageSprite, UPDATE_PRIORITY } from "@drincs/pixi-vn";
+import { filters } from "@drincs/pixi-vn/filters";
+import { AnimationOptions } from "@drincs/pixi-vn/motion";
+
+export default async function blurIn(
+  alias: string,
+  component: ImageSprite,
+  props: AnimationOptions & { strength?: number } = {},
+  priority?: UPDATE_PRIORITY,
+): Promise<string[] | undefined> {
+  const { strength = 32, completeOnContinue = true, ...options } = props;
+  canvas.add(alias, component);
+  const filter = new filters.BlurFilter({ strength });
+  component.filters = [filter];
+  const id = filters.animate(
+    alias,
+    filter,
+    { strength: [strength, 0] },
+    { ...options, completeOnContinue },
+    priority,
+    undefined, // apply - only needed when filter is undefined (see below)
+    () => {
+      component.filters = null;
+      filter.destroy();
+    },
+  );
+  if (component.haveEmptyTexture) await component.load();
+  if (id) return [id];
+}
+```
+
+`filters.animate` can also drive a plain numeric value with no live filter — pass `undefined` as
+the filter and an `apply` callback (called every frame with the interpolated value) instead. This
+is how `wipeIn`/`irisIn`/`splitIn` animate their mask geometry (a growing radius, a moving
+boundary), since a mask has no filter property to write directly.
 
 ## Shake and custom animation
 
