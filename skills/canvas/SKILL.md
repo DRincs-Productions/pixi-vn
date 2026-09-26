@@ -38,8 +38,7 @@ this skill is about the underlying rendering primitives.
 ## Core mental model
 
 - **`canvas`** (from `@drincs/pixi-vn`) is the single entry-point object developers use. It wraps
-  a PixiJS `Application` and exposes methods to manage canvas elements, tickers (frame-by-frame
-  animation), and layers. Call `await canvas.init(element, options)` once at startup (this is
+  a PixiJS `Application` and exposes methods to manage canvas elements and layers. Call `await canvas.init(element, options)` once at startup (this is
   normally done for you by `Game.init(...)` from the core package — see `pixi-vn-getting-started`).
 - **Elements are tracked by alias, not by variable** ([docs](https://pixi-vn.com/start/canvas-alias)).
   `canvas.add(alias, component)` inserts a component (an instance of `Container`, `Sprite`,
@@ -59,7 +58,9 @@ this skill is about the underlying rendering primitives.
   for that API, it's how UI layers (HTML or PixiJS) are built on top of the canvas.
 - **Tickers** are how frame-based animation and effects work under the hood; `canvas.animate(...)`
   (built on the `motion` library) is the high-level way to animate numeric properties over time,
-  and it is what all the built-in transition helpers use internally.
+  and it is what all the built-in transition helpers use internally. Running tickers are managed
+  through the separate **`tickers`** singleton (also from `@drincs/pixi-vn`, not a member of
+  `canvas` — the old `canvas.tickers` is a deprecated alias of it).
 
 ## Showing and removing an image
 
@@ -136,7 +137,7 @@ All transition helpers take `(alias, componentOrUrl?, props?, priority?)`. If yo
 component/URL argument, the `alias` itself is used as the texture URL/alias. Each function
 replaces (or removes) whatever is currently registered under `alias`, transferring position and
 running tickers from the old element automatically. They all return a `Promise` (or array) of
-ticker ids you can pass to `canvas.tickers.forceCompletion` if you need to await completion, but
+ticker ids you can pass to `tickers.forceCompletion` if you need to await completion, but
 usually you just call and move on.
 
 ```ts
@@ -253,7 +254,7 @@ if (oldComponent) {
 canvas.add(alias, component);
 oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
 oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
+oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "duplicate");
 ```
 
 To remove the old component only once the new one's transition finishes, pass

@@ -107,6 +107,12 @@
       "import": "./dist/motion.mjs",
       "require": "./dist/motion.cjs",
       "default": "./dist/motion.mjs"
+    },
+    "./tickers": {
+      "types": "./dist/tickers.d.ts",
+      "import": "./dist/tickers.mjs",
+      "require": "./dist/tickers.cjs",
+      "default": "./dist/tickers.mjs"
     }
   },
   "typesVersions": {
@@ -146,6 +152,9 @@
       ],
       "motion": [
         "./dist/motion.d.ts"
+      ],
+      "tickers": [
+        "./dist/tickers.d.ts"
       ]
     }
   },

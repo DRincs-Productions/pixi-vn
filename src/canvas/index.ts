@@ -1,7 +1,7 @@
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { drainCompleteOnStepEndQueue, tickers } from "@drincs/pixi-vn/tickers";
 import CanvasManager from "./CanvasManager";
-import { default as CanvasManagerStatic } from "./CanvasManagerStatic";
 import CanvasUtilitiesStatic from "./CanvasUtilitiesStatic";
 import type CanvasManagerInterface from "./interfaces/CanvasManagerInterface";
 
@@ -76,7 +76,8 @@ export type { default as CanvasGameState } from "./interfaces/CanvasGameState";
 export type { default as CanvasHtmlLayersInterface } from "./interfaces/CanvasHtmlLayersInterface";
 export type { default as CanvasLayersInterface } from "./interfaces/CanvasLayersInterface";
 export type { default as CanvasManagerInterface } from "./interfaces/CanvasManagerInterface";
-export type { default as CanvasTickersInterface } from "./interfaces/CanvasTickersInterface";
+/** @deprecated Use `TickersInterface` from `@drincs/pixi-vn` instead. */
+export type { TickersInterface as CanvasTickersInterface } from "@drincs/pixi-vn/tickers";
 export type { ShakeEffectProps } from "./interfaces/effect-props";
 export type { default as CanvasBaseItemMemory } from "./interfaces/memory/CanvasBaseItemMemory";
 export type { default as ContainerMemory } from "./interfaces/memory/ContainerMemory";
@@ -99,7 +100,7 @@ export type {
     WipeInOutProps,
     ZoomInOutProps,
 } from "./interfaces/transition-props";
-export * from "./tickers";
+export * from "@drincs/pixi-vn/tickers";
 export type { AssetAliasIdType, PixivnAssetAliasIds } from "./types/AssetAliasIdType";
 export type { BundleIdType, PixivnBundleIds } from "./types/BundleIdType";
 export type {
@@ -126,29 +127,24 @@ GameUnifier.addOnPreContinue(async () => {
         // tickers are completed first (LIFO). Keep that semantic: process
         // newest tickers before older ones. Using `pop()` is more
         // performant and avoids creating/ mutating a reversed array.
-        const tikers = CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds;
-        const stepAliases = CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias;
+        const { tikersIds: tikers, stepAlias: stepAliases } = drainCompleteOnStepEndQueue();
 
-        // Process `tikersIds` and `stepAlias` in parallel (separate async flows)
-        // and wait for both to finish before clearing `_tickersToCompleteOnStepEnd`.
+        // Process `tikersIds` and `stepAlias` in parallel (separate async flows).
         const p1 = (async () => {
             while (tikers.length) {
                 const { id } = tikers.pop() || {};
-                id && (await canvas.tickers.forceCompletion(id));
+                id && (await tickers.forceCompletion(id));
             }
         })();
 
         const p2 = (async () => {
             while (stepAliases.length) {
                 const { alias, id } = stepAliases.pop() || {};
-                alias && id && (await canvas.tickers.forceCompletion(id, alias));
+                alias && id && (await tickers.forceCompletion(id, alias));
             }
         })();
 
         await Promise.all([p1, p2]);
-
-        CanvasManagerStatic._tickersToCompleteOnStepEnd.tikersIds.length = 0;
-        CanvasManagerStatic._tickersToCompleteOnStepEnd.stepAlias.length = 0;
     } catch (e) {}
 });
 

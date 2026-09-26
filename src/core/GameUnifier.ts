@@ -169,6 +169,20 @@ export default class GameUnifier {
             apply?: (value: number) => void,
             cleanup?: () => void,
         ) => string | undefined;
+        /**
+         * This function removes one or more canvas components by alias. Used by the `tickers` module's
+         * `onComplete` to honor `aliasToRemoveAfter` without importing `@drincs/pixi-vn/canvas` directly
+         * (which would close an import cycle, since `canvas` depends on `tickers`).
+         * @param alias - The alias(es) of the canvas component(s) to remove.
+         */
+        removeCanvasComponent: (alias: string | string[]) => void;
+        /**
+         * This function checks whether a canvas component with the given alias currently exists. Used by
+         * the `tickers` module to prune ticker/alias associations for components no longer on the canvas,
+         * without importing `@drincs/pixi-vn/canvas` directly (see {@link removeCanvasComponent}).
+         * @param alias - The alias of the canvas component to check.
+         */
+        canvasComponentExists: (alias: string) => boolean;
     }) {
         if (options.navigate) GameUnifier._navigate = options.navigate;
         GameUnifier._getStepCounter = options.getStepCounter;
@@ -187,6 +201,8 @@ export default class GameUnifier {
         GameUnifier._getCharacter = options.getCharacter;
         GameUnifier._animate = options.animate;
         GameUnifier._animateFilter = options.animateFilter;
+        GameUnifier._removeCanvasComponent = options.removeCanvasComponent;
+        GameUnifier._canvasComponentExists = options.canvasComponentExists;
     }
     private static _navigate: (path: string) => void | Promise<void> = () => {
         logger.warn(
@@ -588,5 +604,33 @@ export default class GameUnifier {
      */
     static get animateFilter() {
         return GameUnifier._animateFilter;
+    }
+    private static _removeCanvasComponent: (alias: string | string[]) => void = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
+    };
+    /**
+     * Removes one or more canvas components by alias. See the `removeCanvasComponent` option of
+     * {@link init} for why this exists.
+     */
+    static get removeCanvasComponent() {
+        return GameUnifier._removeCanvasComponent;
+    }
+    private static _canvasComponentExists: (alias: string) => boolean = () => {
+        logger.error("Method not implemented, you should initialize the Game: Game.init()");
+        throw new PixiError(
+            "not_implemented",
+            "Method not implemented, you should initialize the Game: Game.init()",
+        );
+    };
+    /**
+     * Checks whether a canvas component with the given alias currently exists. See the
+     * `canvasComponentExists` option of {@link init} for why this exists.
+     */
+    static get canvasComponentExists() {
+        return GameUnifier._canvasComponentExists;
     }
 }

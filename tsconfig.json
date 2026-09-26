@@ -42,6 +42,7 @@
       "@characters/*": ["./src/characters/*"],
       "@motion/*": ["./src/motion/*"],
       "@filters/*": ["./src/filters/*"],
+      "@tickers/*": ["./src/tickers/*"],
       "@worker/*": ["./src/worker/*"],
       /* Specify a set of entries that re-map imports to additional lookup locations. */
       "@drincs/pixi-vn/core": ["./src/core/index.ts"],
@@ -54,6 +55,7 @@
       "@drincs/pixi-vn/characters": ["./src/characters/index.ts"],
       "@drincs/pixi-vn/motion": ["./src/motion/index.ts"],
       "@drincs/pixi-vn/filters": ["./src/filters/index.ts"],
+      "@drincs/pixi-vn/tickers": ["./src/tickers/index.ts"],
       "@drincs/pixi-vn/worker": ["./src/worker/index.ts"]
     },
     // "rootDirs": [],                                   /* Allow multiple folders to be treated as one when resolving modules. */

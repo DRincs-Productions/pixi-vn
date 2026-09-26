@@ -1,6 +1,9 @@
-import type { Ticker, TickerArgs, TickerInfo, TickersSequence } from "../tickers";
+import type Ticker from "@tickers/interfaces/Ticker";
+import type TickerArgs from "@tickers/interfaces/TickerArgs";
+import type TickerInfo from "@tickers/interfaces/TickerInfo";
+import type TickersSequence from "@tickers/interfaces/TickersSequence";
 
-export default interface CanvasTickersInterface {
+export default interface TickersInterface {
     /**
      * Transfer the tickers from an old alias to a new alias.
      * @param oldAlias Old alias
@@ -32,7 +35,7 @@ export default interface CanvasTickersInterface {
      * @returns The id of the ticker that was added.
      * @example
      * ```ts
-     * canvas.tickers.add("alien", new RotateTicker({ speed: 0.2 }))
+     * tickers.add("alien", new RotateTicker({ speed: 0.2 }))
      * ```
      */
     add<TArgs extends TickerArgs>(
@@ -47,7 +50,7 @@ export default interface CanvasTickersInterface {
      * @returns The id of tickers.
      * @example
      * ```ts
-     * canvas.tickers.addSequence("alien", [
+     * tickers.addSequence("alien", [
      *     new RotateTicker({ speed: 0.1, clockwise: true }, 2), // runs for 2 seconds
      *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
      * ])
@@ -66,7 +69,7 @@ export default interface CanvasTickersInterface {
      * @param ticker The ticker class to be removed.
      * @example
      * ```ts
-     * canvas.tickers.unlinkComponent("alien", RotateTicker)
+     * tickers.unlinkComponent("alien", RotateTicker)
      * ```
      */
     unlinkComponent(alias: string | string[], ticker?: { new (): Ticker<any> } | string): void;

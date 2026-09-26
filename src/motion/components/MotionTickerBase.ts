@@ -1,13 +1,10 @@
-import type {
-    CanvasBaseInterface,
-    CommonTickerProps,
-    Ticker,
-    TickerArgs,
-} from "@drincs/pixi-vn/canvas";
+import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import { canvas } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { tickers } from "@drincs/pixi-vn/tickers";
+import type { CommonTickerProps, Ticker, TickerArgs } from "@drincs/pixi-vn/tickers";
 import sha1 from "crypto-js/sha1";
 import type { AnimationPlaybackControlsWithThen } from "motion";
 
@@ -179,7 +176,7 @@ export default abstract class MotionTickerBase<
         if (typeof tickerIdToResume === "string") {
             tickerIdToResume = [tickerIdToResume];
         }
-        canvas.tickers.onComplete(id, {
+        tickers.onComplete(id, {
             aliasToRemoveAfter: aliasToRemoveAfter,
             tickerAliasToResume: tickerAliasToResume,
             tickerIdToResume: tickerIdToResume,

@@ -1,4 +1,5 @@
-import type { CanvasBaseInterface, CommonTickerProps } from "@drincs/pixi-vn/canvas";
+import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
+import type { CommonTickerProps } from "@drincs/pixi-vn/tickers";
 import {
     At,
     type AnimationOptions as MotionAnimationOptions,

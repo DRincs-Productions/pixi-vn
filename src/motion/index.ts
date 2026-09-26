@@ -1,4 +1,4 @@
-import { RegisteredTickers } from "@drincs/pixi-vn/canvas";
+import { RegisteredTickers } from "@drincs/pixi-vn/tickers";
 import MotionFilterTicker from "./components/MotionFilterTicker";
 import MotionSequenceTicker from "./components/MotionSequenceTicker";
 import MotionTicker from "./components/MotionTicker";

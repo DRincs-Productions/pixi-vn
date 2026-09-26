@@ -1,6 +1,6 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import type Ticker from "./Ticker";
-import type TickerArgs from "./TickerArgs";
+import type Ticker from "@tickers/interfaces/Ticker";
+import type TickerArgs from "@tickers/interfaces/TickerArgs";
 
 /**
  * TickerHistory is a class that contains the name of a class and the arguments that were used to create it.

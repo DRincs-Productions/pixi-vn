@@ -20,6 +20,7 @@ import type {
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { tickers } from "@drincs/pixi-vn/tickers";
 import { logger } from "@utils/log-utility";
 import {
     canvas,
@@ -311,7 +312,7 @@ export namespace transitions {
             oldComponent.parent.getChildIndex(oldComponent) - 0.1,
         );
         oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-        oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
+        oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "duplicate");
         return { component: newComponent, oldComponentAlias };
     }
 
@@ -391,7 +392,7 @@ export namespace transitions {
             apply(args.from);
         }
         if (id && (args.completeOnContinue ?? true)) {
-            canvas.tickers.completeOnStepEnd({ id });
+            tickers.completeOnStepEnd({ id });
         }
         return id;
     }
@@ -448,7 +449,7 @@ export namespace transitions {
             },
         );
         if (id && (args.completeOnContinue ?? true)) {
-            canvas.tickers.completeOnStepEnd({ id });
+            tickers.completeOnStepEnd({ id });
         }
         return id;
     }
@@ -581,7 +582,7 @@ export namespace transitions {
             oldComponent.parent.getChildIndex(oldComponent) - 0.1,
         );
         oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-        oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
+        oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "duplicate");
         // edit the properties of the new component
         component.alpha = 0;
         // remove the old component
@@ -704,7 +705,7 @@ export namespace transitions {
             oldComponent.parent.getChildIndex(oldComponent) - 0.1,
         );
         oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-        oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "duplicate");
+        oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "duplicate");
         // edit the properties of the new component
         component.alpha = 0;
         // create the ticker and play it
@@ -737,7 +738,7 @@ export namespace transitions {
 
             res.push(idShow);
             // pause the ticker
-            canvas.tickers.pause({ id: idShow });
+            tickers.pause({ id: idShow });
         }
         // load the image if the image is not loaded
         if (
@@ -834,7 +835,7 @@ export namespace transitions {
             oldComponent.parent.getChildIndex(oldComponent) - 0.1,
         );
         oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-        oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "move");
+        oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "move");
         if (
             (component instanceof ImageSprite || component instanceof ImageContainer) &&
             component.haveEmptyTexture
@@ -880,7 +881,7 @@ export namespace transitions {
                 component.x = -component.width;
                 break;
         }
-        const ids = canvas.tickers.pause({ canvasAlias: alias });
+        const ids = tickers.pause({ canvasAlias: alias });
         tickerIdToResume.push(...ids);
         // create the ticker and play it
         const idShow = canvas.animate(
@@ -946,7 +947,7 @@ export namespace transitions {
                 break;
         }
         // create the ticker and play it
-        canvas.tickers.pause({ canvasAlias: alias });
+        tickers.pause({ canvasAlias: alias });
         const id = canvas.animate(
             alias,
             destination,
@@ -1026,7 +1027,7 @@ export namespace transitions {
             oldComponent.parent.getChildIndex(oldComponent) - 0.1,
         );
         oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-        oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "move");
+        oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "move");
         // edit the properties of the new component
         if (!destination) {
             if (component instanceof ImageSprite || component instanceof ImageContainer) {
@@ -1091,7 +1092,7 @@ export namespace transitions {
         component.pivot = PropsUtils.getPointBySuperPoint(component.pivot, component.angle);
         component.scale.set(0);
         // pause the ticker
-        const ids = canvas.tickers.pause({ canvasAlias: alias });
+        const ids = tickers.pause({ canvasAlias: alias });
         tickerIdToResume.push(...ids);
         // create the ticker and play it
         const idShow = canvas.animate(
@@ -1175,7 +1176,7 @@ export namespace transitions {
         }
         pivot = PropsUtils.getPointBySuperPoint(pivot, component.angle);
         // create the ticker and play it
-        canvas.tickers.pause({ canvasAlias: alias });
+        tickers.pause({ canvasAlias: alias });
         const id = canvas.animate(
             alias,
             {
@@ -1251,7 +1252,7 @@ export namespace transitions {
             oldComponent.parent.getChildIndex(oldComponent) - 0.1,
         );
         oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
-        oldComponentAlias && canvas.tickers.transfer(oldComponentAlias, alias, "move");
+        oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "move");
         // edit the properties of the new component
         if (!destination) {
             if (
@@ -1285,7 +1286,7 @@ export namespace transitions {
                 component.x = -component.width;
                 break;
         }
-        const ids = canvas.tickers.pause({ canvasAlias: alias });
+        const ids = tickers.pause({ canvasAlias: alias });
         tickerIdToResume.push(...ids);
         // remove the old component
         if (oldComponentAlias) {

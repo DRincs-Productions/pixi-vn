@@ -17,6 +17,7 @@ export type {
 } from "@drincs/pixi-vn/pixi.js";
 export * from "@drincs/pixi-vn/sound";
 export * from "@drincs/pixi-vn/storage";
+export * from "@drincs/pixi-vn/tickers";
 export * from "@drincs/pixi-vn/worker";
 export * from "./classes";
 export {
@@ -43,6 +44,7 @@ import * as narrationUtils from "@drincs/pixi-vn/narration";
 import type { ApplicationOptions } from "@drincs/pixi-vn/pixi.js";
 import * as soundUtils from "@drincs/pixi-vn/sound";
 import * as storageUtils from "@drincs/pixi-vn/storage";
+import { tickers } from "@drincs/pixi-vn/tickers";
 import { GameWorkerManager } from "@drincs/pixi-vn/worker";
 import type { Devtools } from "@pixi/devtools";
 import { CANVAS_APP_GAME_LAYER_ALIAS, PIXIVN_VERSION } from "./constants";
@@ -199,6 +201,16 @@ export namespace Game {
                     apply,
                     cleanup,
                 );
+            },
+            removeCanvasComponent: (alias) => {
+                if (canvasUtils.canvas.isInitialized) {
+                    canvasUtils.canvas.remove(alias);
+                }
+            },
+            canvasComponentExists: (alias) => {
+                return canvasUtils.canvas.isInitialized
+                    ? canvasUtils.canvas.find(alias) !== undefined
+                    : false;
             },
             // storage
             getVariable: (prefix, key) => storageUtils.StorageRegistry.getVariable(prefix, key),
@@ -556,6 +568,7 @@ export default {
     narration: narrationUtils.narration,
     sound: soundUtils.sound,
     storage: storageUtils.storage,
+    tickers,
     history: historyUtils.stepHistory,
     Game,
     GameUnifier,
