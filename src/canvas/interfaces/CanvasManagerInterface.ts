@@ -116,7 +116,7 @@ export default interface CanvasManagerInterface {
      * @param oldAlias Old alias
      * @param newAlias New alias
      * @param mode If "move", the old alias will be removed from the ticker. If "duplicate", the old alias will be kept in the ticker.
-     * @deprecated Use `tickers.transfer` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.transfer` from `@drincs/pixi-vn` instead.
      */
     transferTickers(oldAlias: string, newAlias: string, mode?: "move" | "duplicate"): void;
     /**
@@ -212,12 +212,12 @@ export default interface CanvasManagerInterface {
 
     /**
      * Currently tickers that are running.
-     * @deprecated Use `tickers.currentTickers` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.currentTickers` from `@drincs/pixi-vn` instead.
      */
     readonly currentTickers: Map<string, TickerInfo<any>>;
     /**
      * The steps of the tickers
-     * @deprecated Use `tickers.currentTickersSteps` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.currentTickersSteps` from `@drincs/pixi-vn` instead.
      */
     readonly currentTickersSteps: Map<string, Map<string, TickersSequence>>;
     /**
@@ -225,7 +225,7 @@ export default interface CanvasManagerInterface {
      * @param tickerId The id of the ticker to be found.
      * @param args The args of the ticker.
      * @returns The ticker if found, undefined otherwise.
-     * @deprecated Use `tickers.find` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.find` from `@drincs/pixi-vn` instead.
      */
     findTicker<TArgs extends TickerArgs>(tickerId: string, args?: TArgs): Ticker<TArgs> | undefined;
     /**
@@ -239,7 +239,7 @@ export default interface CanvasManagerInterface {
      * ```ts
      * canvas.addTicker("alien", new RotateTicker({ speed: 0.2 }))
      * ```
-     * @deprecated Use `tickers.add` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.add` from `@drincs/pixi-vn` instead.
      */
     addTicker<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
@@ -258,7 +258,7 @@ export default interface CanvasManagerInterface {
      *     new RotateTicker({ speed: 0.2, clockwise: false }, 2),
      * ])
      * ```
-     * @deprecated Use `tickers.addSequence` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.addSequence` from `@drincs/pixi-vn` instead.
      */
     addTickersSequence(
         alias: string,
@@ -274,7 +274,7 @@ export default interface CanvasManagerInterface {
      * ```ts
      * canvas.unlinkComponentFromTicker("alien", RotateTicker)
      * ```
-     * @deprecated Use `tickers.unlinkComponent` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.unlinkComponent` from `@drincs/pixi-vn` instead.
      */
     unlinkComponentFromTicker(
         alias: string | string[],
@@ -282,20 +282,20 @@ export default interface CanvasManagerInterface {
     ): void;
     /**
      * Remove all tickers from the canvas.
-     * @deprecated Use `tickers.removeAll` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.removeAll` from `@drincs/pixi-vn` instead.
      */
     removeAllTickers(): void;
     /**
      * Remove a ticker by the id.
      * @param tickerId The id or an array of ids of the ticker to be removed.
-     * @deprecated Use `tickers.remove` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.remove` from `@drincs/pixi-vn` instead.
      */
     removeTicker(tickerId: string | string[]): void;
     /**
      * Pause a ticker. If a paused ticker have a time to be removed, it will be removed after the time.
      * @param filters The filters to pause the ticker.
      * @returns The ids of the paused tickers.
-     * @deprecated Use `tickers.pause` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.pause` from `@drincs/pixi-vn` instead.
      */
     pauseTicker(
         filters:
@@ -320,7 +320,7 @@ export default interface CanvasManagerInterface {
     /**
      * Resume a ticker.
      * @param filters The filters to resume the ticker.
-     * @deprecated Use `tickers.resume` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.resume` from `@drincs/pixi-vn` instead.
      */
     resumeTicker(
         filters:
@@ -339,7 +339,7 @@ export default interface CanvasManagerInterface {
               },
     ): void;
     /**
-     * @deprecated Use `tickers.isPaused` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.isPaused` from `@drincs/pixi-vn` instead.
      * Check if a ticker is paused.
      * @param alias The alias of the canvas element that will use the ticker.
      * @param tickerId The ticker that will be checked.
@@ -348,7 +348,7 @@ export default interface CanvasManagerInterface {
     isTickerPaused(alias: string, tickerId?: string): boolean;
     /**
      * Namespace for operations on canvas tickers.
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     readonly tickers: TickersInterface;
     /**
@@ -366,7 +366,7 @@ export default interface CanvasManagerInterface {
      * Add a ticker that must be completed before the next step.
      * This method is used for example into a transition between scenes.
      * @param step The step that the ticker must be completed before the next step.
-     * @deprecated Use `tickers.completeOnStepEnd` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.completeOnStepEnd` from `@drincs/pixi-vn` instead.
      */
     completeTickerOnStepEnd(step: {
         /**
@@ -383,7 +383,7 @@ export default interface CanvasManagerInterface {
      * This funcions is called in the next step.
      * @param id The id of the ticker. If the alias provided, the id is the id of the sequence of tickers.
      * @param alias The alias of the sequence of tickers.
-     * @deprecated Use `tickers.forceCompletion` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.forceCompletion` from `@drincs/pixi-vn` instead.
      */
     forceCompletionOfTicker(id: string, alias?: string): Promise<void>;
     /**
@@ -534,7 +534,7 @@ export default interface CanvasManagerInterface {
      */
     restore(data: object): Promise<void>;
     /**
-     * @deprecated Use `tickers.onComplete` from `@drincs/pixi-vn/tickers` instead.
+     * @deprecated Use `tickers.onComplete` from `@drincs/pixi-vn` instead.
      */
     onTickerComplete(
         tickerId: string,

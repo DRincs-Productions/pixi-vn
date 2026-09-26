@@ -76,7 +76,7 @@ export type { default as CanvasGameState } from "./interfaces/CanvasGameState";
 export type { default as CanvasHtmlLayersInterface } from "./interfaces/CanvasHtmlLayersInterface";
 export type { default as CanvasLayersInterface } from "./interfaces/CanvasLayersInterface";
 export type { default as CanvasManagerInterface } from "./interfaces/CanvasManagerInterface";
-/** @deprecated Use `TickersInterface` from `@drincs/pixi-vn/tickers` instead. */
+/** @deprecated Use `TickersInterface` from `@drincs/pixi-vn` instead. */
 export type { TickersInterface as CanvasTickersInterface } from "@drincs/pixi-vn/tickers";
 export type { ShakeEffectProps } from "./interfaces/effect-props";
 export type { default as CanvasBaseItemMemory } from "./interfaces/memory/CanvasBaseItemMemory";

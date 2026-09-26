@@ -18,13 +18,15 @@ at runtime — see `pixi-vn-getting-started`), then walk forward through only th
 below that fall between the installed version and the target — most of these changes don't apply
 unless a project is crossing that specific boundary.
 
-## v1.9.4 → v1.9.5 — canvas transitions and effects namespaces
+## v1.9.3 → v1.9.4 — canvas transitions/effects namespaces, top-level `tickers`
+
+### Canvas transitions and effects namespaces
 
 Canvas transition helpers and canvas effects are now also grouped under discoverable namespaces:
 `transitions` contains `showWithDissolve`, `showWithFade`, `moveIn`, `moveOut`, `zoomIn`, `zoomOut`,
 `pushIn`, `pushOut`, `removeWithDissolve`, and `removeWithFade`; `effects` contains `shakeEffect`.
 
-The previous flat exports remain available in v1.9.5 for compatibility, but are deprecated. Update
+The previous flat exports remain available in v1.9.4 for compatibility, but are deprecated. Update
 imports and calls when migrating:
 
 ```ts
@@ -44,6 +46,57 @@ effects.shakeEffect("alice"); // [!code ++]
 The transition and effect behavior and their options are unchanged. This is an organizational API
 change intended to make canvas helpers easier to discover. The existing module entry points remain
 valid; the same namespaces are available from `@drincs/pixi-vn/canvas`.
+
+### `canvas.tickers` → top-level `tickers`
+
+Ticker management is no longer part of the canvas manager: it's its own `tickers` singleton,
+exported from `@drincs/pixi-vn` next to `canvas`, `sound`, etc. `canvas.tickers` still works in
+v1.9.4 — it just forwards to `tickers` — but it's deprecated. The methods and their arguments are
+unchanged; only the receiver changes:
+
+```ts
+import { canvas } from "@drincs/pixi-vn"; // [!code --]
+import { tickers } from "@drincs/pixi-vn"; // [!code ++]
+
+canvas.tickers.add("alien", new RotateTicker({ speed: 0.2 })); // [!code --]
+tickers.add("alien", new RotateTicker({ speed: 0.2 })); // [!code ++]
+
+canvas.tickers.pause({ canvasAlias: "alien" }); // [!code --]
+tickers.pause({ canvasAlias: "alien" }); // [!code ++]
+
+await canvas.tickers.forceCompletion(id); // [!code --]
+await tickers.forceCompletion(id); // [!code ++]
+```
+
+The same applies to every other member (`addSequence`, `find`, `remove`, `removeAll`, `resume`,
+`isPaused`, `unlinkComponent`, `transfer`, `completeOnStepEnd`, `onComplete`, `currentTickers`,
+`currentTickersSteps`). The type `CanvasTickersInterface` is likewise a deprecated alias of the new
+`TickersInterface`:
+
+```ts
+import type { CanvasTickersInterface } from "@drincs/pixi-vn"; // [!code --]
+import type { TickersInterface } from "@drincs/pixi-vn"; // [!code ++]
+```
+
+`TickerBase`, `tickerDecorator`, `RegisteredTickers`, and the `Ticker*` types are still exported
+from `@drincs/pixi-vn` exactly as before. Saves are unaffected: tickers are still serialized as part
+of the canvas state.
+
+Only code that reached into canvas internals breaks: the ticker bookkeeping on
+`CanvasManagerStatic` (`_currentTickers`, `_currentTickersSequence`, `_currentTickersTimeouts`,
+`_tickersToCompleteOnStepEnd`, `currentTickersWithoutCreatedBySteps`, `currentTickersSequence`,
+`generateTickerId`, `addTickerTimeoutInfo`, `removeTickerTimeout*`) moved to the
+`TickersManagerStatic` namespace, where the two former getters are now functions:
+
+```ts
+CanvasManagerStatic._currentTickers; // [!code --]
+TickersManagerStatic._currentTickers; // [!code ++]
+
+CanvasManagerStatic.currentTickersSequence; // [!code --]
+TickersManagerStatic.currentTickersSequence(); // [!code ++]
+```
+
+Prefer the public `tickers.currentTickers` / `tickers.currentTickersSteps` over either.
 
 ## v1.8.x → v1.9.0 — long-deprecated APIs removed
 
@@ -128,7 +181,9 @@ const choices = narration.choices.list; // [!code ++]
 
 Every other rename below is a non-breaking, forward-compatible deprecation.
 
-`canvas`'s ticker methods moved to `canvas.tickers`:
+`canvas`'s ticker methods moved to `canvas.tickers` (since v1.9.4 that is itself a deprecated alias
+of the top-level `tickers` — if you are migrating past v1.9.4, go straight to `tickers.*`, see
+v1.9.3 → v1.9.4 above):
 
 ```ts
 canvas.transferTickers("old", "new"); // [!code --]

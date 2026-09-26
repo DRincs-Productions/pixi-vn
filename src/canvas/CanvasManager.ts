@@ -245,25 +245,25 @@ export default class CanvasManager implements CanvasManagerInterface {
     /** Edit Tickers Methods */
 
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     public get currentTickers() {
         return this.tickers.currentTickers;
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     public get currentTickersSteps() {
         return this.tickers.currentTickersSteps;
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     findTicker<TArgs extends TickerArgs>(tickerId: string): Ticker<TArgs> | undefined {
         return tickers.find<TArgs>(tickerId);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     addTicker<TArgs extends TickerArgs>(
         canvasElementAlias: string | string[],
@@ -272,13 +272,13 @@ export default class CanvasManager implements CanvasManagerInterface {
         return tickers.add(canvasElementAlias, ticker);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     addTickersSequence(alias: string, steps: Ticker<any>[], currentStepNumber = 0) {
         return tickers.addSequence(alias, steps, currentStepNumber);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     public onTickerComplete(
         tickerId: string,
@@ -293,7 +293,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         return tickers.onComplete(tickerId, options);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     public unlinkComponentFromTicker(
         alias: string | string[],
@@ -304,13 +304,13 @@ export default class CanvasManager implements CanvasManagerInterface {
         return tickers.unlinkComponent(alias, ticker as { new (): Ticker<any> } | string | undefined);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     public removeAllTickers() {
         return tickers.removeAll();
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     removeTicker(
         tickerId: string | string[],
@@ -321,7 +321,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         return removeTickerFromTickers(tickerId, options);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     pauseTicker(
         filters:
@@ -336,7 +336,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         return tickers.pause(filters);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     resumeTicker(
         filters:
@@ -350,7 +350,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         return tickers.resume(filters);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     isTickerPaused(_alias: string, _tickerId?: string): boolean {
         return tickers.isPaused(_alias, _tickerId);
@@ -378,13 +378,13 @@ export default class CanvasManager implements CanvasManagerInterface {
         this.tickersPausedByGameLayerRender = [];
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     transferTickers(oldAlias: string, newAlias: string, mode: "move" | "duplicate" = "move") {
         return tickers.transfer(oldAlias, newAlias, mode);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     completeTickerOnStepEnd(step: {
         /**
@@ -399,7 +399,7 @@ export default class CanvasManager implements CanvasManagerInterface {
         return tickers.completeOnStepEnd(step);
     }
     /**
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     async forceCompletionOfTicker(id: string, alias?: string) {
         return tickers.forceCompletion(id, alias);
@@ -407,7 +407,7 @@ export default class CanvasManager implements CanvasManagerInterface {
 
     /**
      * Namespace for operations on canvas tickers.
-     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn/tickers`) instead.
+     * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
      */
     public readonly tickers: TickersInterface = tickers;
 

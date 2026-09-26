@@ -8,13 +8,24 @@ pause/resume/completion control over a specific running animation.
 
 Docs: [pixi-vn.com/start/canvas-tickers](https://pixi-vn.com/start/canvas-tickers).
 
+## The `tickers` singleton
+
+Ticker management lives on its own `tickers` object, imported from `@drincs/pixi-vn` like `canvas`:
+
+```ts
+import { tickers } from "@drincs/pixi-vn";
+```
+
+`canvas.tickers` is a deprecated alias of the same object — use `tickers` directly in new code (see
+`pixi-vn-migration`, v1.9.3 → v1.9.4).
+
 ## Registering a ticker
 
 For continuous/looping effects (e.g. a custom rotation), register a `Ticker` class and attach it
 to an alias:
 
 ```ts
-canvas.tickers.add("alien", new RotateTicker({ speed: 0.2 }));
+tickers.add("alien", new RotateTicker({ speed: 0.2 }));
 ```
 
 ## Sequencing tickers
@@ -23,7 +34,7 @@ To chain multiple tickers one after another on the same alias, use `tickers.addS
 plain array of `Ticker` instances — each step starts once the previous one completes:
 
 ```ts
-canvas.tickers.addSequence("alien", [
+tickers.addSequence("alien", [
   new RotateTicker({ speed: 0.1, clockwise: true }, 2), // runs for 2 seconds
   new RotateTicker({ speed: 0.2, clockwise: false }, 2),
 ]);
@@ -31,12 +42,11 @@ canvas.tickers.addSequence("alien", [
 
 ## Pausing, resuming, removing, and completion
 
-Use `canvas.tickers.pause(...)` / `canvas.tickers.resume(...)` to pause/resume by canvas alias or
-ticker id, and `canvas.tickers.remove(id)` / `canvas.tickers.removeAll()` to stop them. If a
-goal-directed ticker (e.g. a `MoveTicker` with a destination) must finish before the current step
-ends — rather than being interrupted by the player advancing — call
-`canvas.tickers.completeOnStepEnd({ id })`; this is distinct from the `completeOnContinue` transition
-prop covered in `SKILL.md`.
+Use `tickers.pause(...)` / `tickers.resume(...)` to pause/resume by canvas alias or ticker id, and
+`tickers.remove(id)` / `tickers.removeAll()` to stop them. If a goal-directed ticker (e.g. a
+`MoveTicker` with a destination) must finish before the current step ends — rather than being
+interrupted by the player advancing — call `tickers.completeOnStepEnd({ id })`; this is distinct
+from the `completeOnContinue` transition prop covered in `SKILL.md`.
 
 Note also (from `SKILL.md`'s gotchas): `canvas.remove(alias)` removes tickers bound only to that
 alias by default — pass `{ ignoreTickers: true }` if you intend to reattach them elsewhere first.

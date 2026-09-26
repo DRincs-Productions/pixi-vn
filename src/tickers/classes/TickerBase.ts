@@ -10,7 +10,7 @@ import type TickerValue from "@tickers/classes/TickerValue";
 
 /**
  * A class is used to create a ticker element to add into a Pixi Application.
- * You can use `tickers.add()` (from `@drincs/pixi-vn/tickers`) to add this element into the application.
+ * You can use `tickers.add()` (from `@drincs/pixi-vn`) to add this element into the application.
  * This class should be extended and the fn method should be overridden.
  * You must use the {@link tickerDecorator} to register the ticker in the game.
  * In Ren'Py is a transform.
