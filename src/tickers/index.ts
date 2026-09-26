@@ -9,9 +9,9 @@ export type {
     TickerProgrationLinear,
     default as TickerProgrationType,
 } from "./interfaces/TickerProgrationType";
+export type { default as TickersInterface } from "./interfaces/TickersInterface";
 export type { default as TickersSequence } from "./interfaces/TickersSequence";
 export type { default as TickerTimeoutHistory } from "./interfaces/TickerTimeoutHistory";
-export type { default as TickersInterface } from "./interfaces/TickersInterface";
 export type { CommonTickerProps } from "./types/CommonTickerProps";
 
 import { GameUnifier } from "@drincs/pixi-vn/core";
@@ -24,7 +24,7 @@ import type TickerInfo from "./interfaces/TickerInfo";
 import type TickersInterface from "./interfaces/TickersInterface";
 import type TickersSequence from "./interfaces/TickersSequence";
 import type { TickersStep } from "./interfaces/TickersSequence";
-import TickersManagerStatic from "./TickersManagerStatic";
+import { TickersManagerStatic } from "./TickersManagerStatic";
 import { aliasToRemoveAfter } from "./types/AliasToRemoveAfterType";
 
 function findTicker<TArgs extends TickerArgs>(tickerId: string): Ticker<TArgs> | undefined {
@@ -185,7 +185,12 @@ function onComplete(
         stopTicker?: boolean;
     },
 ) {
-    const { stopTicker = true, aliasToRemoveAfter, tickerAliasToResume, tickerIdToResume } = options;
+    const {
+        stopTicker = true,
+        aliasToRemoveAfter,
+        tickerAliasToResume,
+        tickerIdToResume,
+    } = options;
     const info = TickersManagerStatic._currentTickers.get(tickerId);
     const ignoreTickerSteps = options.ignoreTickerSteps || false;
     GameUnifier.removeCanvasComponent(aliasToRemoveAfter);
@@ -196,7 +201,10 @@ function onComplete(
     if (info) {
         removeTicker(tickerId, { stopTicker: stopTicker });
         if (!ignoreTickerSteps && info.ticker.duration === undefined && info.createdByTicketSteps) {
-            nextTickerStep(info.createdByTicketSteps.canvasElementAlias, info.createdByTicketSteps.id);
+            nextTickerStep(
+                info.createdByTicketSteps.canvasElementAlias,
+                info.createdByTicketSteps.id,
+            );
         }
     }
 }
@@ -259,7 +267,9 @@ function unlinkComponent(
     });
     TickersManagerStatic._currentTickersTimeouts.forEach((tickerTimeout) => {
         if (tickerTimeout.ticker === tickerId && tickerTimeout.canBeDeletedBeforeEnd) {
-            tickerTimeout.aliases = tickerTimeout.aliases.filter((t) => !(alias as string[]).includes(t));
+            tickerTimeout.aliases = tickerTimeout.aliases.filter(
+                (t) => !(alias as string[]).includes(t),
+            );
         }
     });
     removeTickersWithoutAssociatedCanvasElement();
@@ -325,9 +335,7 @@ export function removeTicker(
 }
 
 function pause(
-    filters:
-        | { canvasAlias: string; tickerIdsExcluded?: string[] }
-        | { id: string | string[] },
+    filters: { canvasAlias: string; tickerIdsExcluded?: string[] } | { id: string | string[] },
 ): string[] {
     const ids: string[] = [];
     if ("canvasAlias" in filters) {
@@ -428,7 +436,8 @@ function transfer(oldAlias: string, newAlias: string, mode: "move" | "duplicate"
             }
 
             if (Object.hasOwn(info.ticker.args, aliasToRemoveAfter)) {
-                let aliasToRemoveAfterValue: string | string[] = info.ticker.args.aliasToRemoveAfter;
+                let aliasToRemoveAfterValue: string | string[] =
+                    info.ticker.args.aliasToRemoveAfter;
                 if (typeof aliasToRemoveAfterValue === "string") {
                     aliasToRemoveAfterValue = [aliasToRemoveAfterValue];
                 }
@@ -567,4 +576,4 @@ export const tickers: TickersInterface = {
     onComplete,
 };
 
-export { default as TickersManagerStatic } from "./TickersManagerStatic";
+export { TickersManagerStatic } from "./TickersManagerStatic";
