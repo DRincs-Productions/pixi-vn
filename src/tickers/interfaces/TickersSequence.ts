@@ -1,5 +1,5 @@
 import type { UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import type TickerArgs from "./TickerArgs";
+import type TickerArgs from "@tickers/interfaces/TickerArgs";
 
 export interface TickersStep<TArgs extends TickerArgs> {
     /**

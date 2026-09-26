@@ -1,6 +1,8 @@
 import { PixiError } from "@drincs/pixi-vn/core";
 import sha1 from "crypto-js/sha1";
-import type { TickerHistory, TickerInfo, TickersSequence, TickerTimeoutHistory } from "./index";
+import type { TickerHistory, default as TickerInfo } from "@tickers/interfaces/TickerInfo";
+import type TickersSequence from "@tickers/interfaces/TickersSequence";
+import type TickerTimeoutHistory from "@tickers/interfaces/TickerTimeoutHistory";
 
 /**
  * Static, module-scoped ticker bookkeeping - moved out of `CanvasManagerStatic` (formerly

@@ -1,31 +1,31 @@
-export { default as TickerBase } from "./classes/TickerBase";
-export type { default as TickerValue } from "./classes/TickerValue";
-export { default as RegisteredTickers, tickerDecorator } from "./decorators/RegisteredTickers";
-export type { default as Ticker } from "./interfaces/Ticker";
-export type { default as TickerArgs } from "./interfaces/TickerArgs";
-export type { TickerHistory, default as TickerInfo } from "./interfaces/TickerInfo";
+export { default as TickerBase } from "@tickers/classes/TickerBase";
+export type { default as TickerValue } from "@tickers/classes/TickerValue";
+export { default as RegisteredTickers, tickerDecorator } from "@tickers/decorators/RegisteredTickers";
+export type { default as Ticker } from "@tickers/interfaces/Ticker";
+export type { default as TickerArgs } from "@tickers/interfaces/TickerArgs";
+export type { TickerHistory, default as TickerInfo } from "@tickers/interfaces/TickerInfo";
 export type {
     TickerProgrationExponential,
     TickerProgrationLinear,
     default as TickerProgrationType,
-} from "./interfaces/TickerProgrationType";
-export type { default as TickersInterface } from "./interfaces/TickersInterface";
-export type { default as TickersSequence } from "./interfaces/TickersSequence";
-export type { default as TickerTimeoutHistory } from "./interfaces/TickerTimeoutHistory";
-export type { CommonTickerProps } from "./types/CommonTickerProps";
+} from "@tickers/interfaces/TickerProgrationType";
+export type { default as TickersInterface } from "@tickers/interfaces/TickersInterface";
+export type { default as TickersSequence } from "@tickers/interfaces/TickersSequence";
+export type { default as TickerTimeoutHistory } from "@tickers/interfaces/TickerTimeoutHistory";
+export type { CommonTickerProps } from "@tickers/types/CommonTickerProps";
 
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { createExportableElement } from "@utils/export-utility";
 import { logger } from "@utils/log-utility";
-import RegisteredTickers from "./decorators/RegisteredTickers";
-import type Ticker from "./interfaces/Ticker";
-import type TickerArgs from "./interfaces/TickerArgs";
-import type TickerInfo from "./interfaces/TickerInfo";
-import type TickersInterface from "./interfaces/TickersInterface";
-import type TickersSequence from "./interfaces/TickersSequence";
-import type { TickersStep } from "./interfaces/TickersSequence";
-import { TickersManagerStatic } from "./TickersManagerStatic";
-import { aliasToRemoveAfter } from "./types/AliasToRemoveAfterType";
+import RegisteredTickers from "@tickers/decorators/RegisteredTickers";
+import type Ticker from "@tickers/interfaces/Ticker";
+import type TickerArgs from "@tickers/interfaces/TickerArgs";
+import type TickerInfo from "@tickers/interfaces/TickerInfo";
+import type TickersInterface from "@tickers/interfaces/TickersInterface";
+import type TickersSequence from "@tickers/interfaces/TickersSequence";
+import type { TickersStep } from "@tickers/interfaces/TickersSequence";
+import { TickersManagerStatic } from "@tickers/TickersManagerStatic";
+import { aliasToRemoveAfter } from "@tickers/types/AliasToRemoveAfterType";
 
 function findTicker<TArgs extends TickerArgs>(tickerId: string): Ticker<TArgs> | undefined {
     const ticker = TickersManagerStatic._currentTickers.get(tickerId);
@@ -576,4 +576,4 @@ export const tickers: TickersInterface = {
     onComplete,
 };
 
-export { TickersManagerStatic } from "./TickersManagerStatic";
+export { TickersManagerStatic } from "@tickers/TickersManagerStatic";

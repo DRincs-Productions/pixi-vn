@@ -1,7 +1,7 @@
-import type Ticker from "./Ticker";
-import type TickerArgs from "./TickerArgs";
-import type TickerInfo from "./TickerInfo";
-import type TickersSequence from "./TickersSequence";
+import type Ticker from "@tickers/interfaces/Ticker";
+import type TickerArgs from "@tickers/interfaces/TickerArgs";
+import type TickerInfo from "@tickers/interfaces/TickerInfo";
+import type TickersSequence from "@tickers/interfaces/TickersSequence";
 
 export default interface TickersInterface {
     /**
