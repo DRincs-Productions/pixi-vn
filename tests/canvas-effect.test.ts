@@ -18,6 +18,11 @@ function spyOnCanvas(target: import("../src/canvas").CanvasBaseInterface<any> | 
     return vi.spyOn(canvas, "animate").mockReturnValue("ticker-id");
 }
 
+function expectCloseArray(actual: number[], expected: number[]) {
+    expect(actual).toHaveLength(expected.length);
+    actual.forEach((v, i) => expect(v).toBeCloseTo(expected[i]));
+}
+
 function spyOnFilters(target: import("../src/canvas").CanvasBaseInterface<any> | undefined) {
     vi.spyOn(canvas, "find").mockReturnValue(target);
     return vi.spyOn(filters, "animate").mockReturnValue("ticker-id");
@@ -237,16 +242,46 @@ describe("glitchEffect", () => {
 
         const ids = await effects.glitchEffect("alias", { strength: 40, bursts: 2, decay: 0.5 });
 
-        expect(ids).toEqual(["ticker-id"]);
-        const [alias, filter, keyframes] = animateSpy.mock.calls[0] as [
+        // One ticker for the slice displacement, one for the matching RGB split.
+        expect(ids).toEqual(["ticker-id", "ticker-id"]);
+        expect(animateSpy).toHaveBeenCalledTimes(2);
+        const [alias, glitch, glitchKeyframes, glitchOptions] = animateSpy.mock.calls[0] as [
             string,
             InstanceType<typeof filters.GlitchFilter>,
             { offset: number[] },
-            any,
+            { ease: unknown },
         ];
         expect(alias).toBe("alias");
-        expect(filter).toBeInstanceOf(filters.GlitchFilter);
-        expect(keyframes.offset).toEqual([0, 40, 0, 20, 0]);
+        expect(glitch).toBeInstanceOf(filters.GlitchFilter);
+        // Each burst snaps, kicks back the other way, twitches and settles; the next burst is halved.
+        expectCloseArray(glitchKeyframes.offset, [0, 40, -24, 12, 0, 20, -12, 6, 0]);
+        expect(glitchOptions.ease).toBe("linear");
+
+        const [, split, splitKeyframes] = animateSpy.mock.calls[1] as [
+            string,
+            InstanceType<typeof filters.RGBSplitFilter>,
+            { redX: number[]; blueX: number[] },
+            any,
+        ];
+        expect(split).toBeInstanceOf(filters.RGBSplitFilter);
+        expectCloseArray(splitKeyframes.redX, [0, 6, -3.6, 1.8, 0, 3, -1.8, 0.9, 0]);
+        expectCloseArray(splitKeyframes.blueX, [0, -6, 3.6, -1.8, 0, -3, 1.8, -0.9, 0]);
+        expect(target.filters).toHaveLength(2);
+    });
+
+    test("rgbSplit: 0 skips the channel-split filter entirely", async () => {
+        vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+            clearRect: () => {},
+            fillRect: () => {},
+            set fillStyle(_: unknown) {},
+        } as unknown as CanvasRenderingContext2D);
+        const target = createSprite();
+        const animateSpy = spyOnFilters(target);
+
+        const ids = await effects.glitchEffect("alias", { rgbSplit: 0 });
+
+        expect(ids).toEqual(["ticker-id"]);
+        expect(animateSpy).toHaveBeenCalledTimes(1);
         expect(target.filters).toHaveLength(1);
     });
 });
@@ -288,7 +323,7 @@ describe("chromaticAberrationEffect", () => {
 });
 
 describe("shockwaveEffect", () => {
-    test("animates a single ripple's own 'time' from 0, defaulting strength from radius/speed", async () => {
+    test("animates a single ripple's own 'time' from 0, capped by radius/speed when a radius is set", async () => {
         const target = createSprite();
         const animateSpy = spyOnFilters(target);
 
@@ -305,14 +340,30 @@ describe("shockwaveEffect", () => {
         expect(keyframes.time).toEqual([0, 0.6]);
     });
 
-    test("an infinite radius (the default) defaults strength to 1", async () => {
+    test("converts the normalized origin into the pixel center the filter's shader expects", async () => {
         const target = createSprite();
         const animateSpy = spyOnFilters(target);
+        const { width, height } = target.getBounds();
 
-        await effects.shockwaveEffect("alias");
+        await effects.shockwaveEffect("alias", { origin: { x: 0.25, y: 1 } });
+
+        const [, filter] = animateSpy.mock.calls[0] as [string, InstanceType<typeof filters.ShockwaveFilter>];
+        expect(filter.center.x).toBeCloseTo(0.25 * width);
+        expect(filter.center.y).toBeCloseTo(height);
+    });
+
+    test("by default the ripple runs until it has fully left the component", async () => {
+        const target = createSprite();
+        const animateSpy = spyOnFilters(target);
+        const { width, height } = target.getBounds();
+
+        await effects.shockwaveEffect("alias", { wavelength: 160, speed: 500 });
 
         const [, , keyframes] = animateSpy.mock.calls[0] as [string, any, { time: number[] }, any];
-        expect(keyframes.time).toEqual([0, 1]);
+        // Centered origin: farthest corner is half the diagonal away, plus half a wavelength.
+        const expected = (Math.hypot(width / 2, height / 2) + 80) / 500;
+        expect(keyframes.time[0]).toBe(0);
+        expect(keyframes.time[1]).toBeCloseTo(expected);
     });
 });
 
@@ -332,6 +383,18 @@ describe("radialBlurEffect", () => {
         ];
         expect(filter).toBeInstanceOf(filters.ZoomBlurFilter);
         expect(keyframes.strength).toEqual([0, 0.5, 0]);
+    });
+
+    test("converts the normalized origin into the pixel center the filter's shader expects", async () => {
+        const target = createSprite();
+        const animateSpy = spyOnFilters(target);
+        const { width, height } = target.getBounds();
+
+        await effects.radialBlurEffect("alias", { origin: { x: 0.5, y: 0.5 } });
+
+        const [, filter] = animateSpy.mock.calls[0] as [string, InstanceType<typeof filters.ZoomBlurFilter>];
+        expect(filter.center.x).toBeCloseTo(width / 2);
+        expect(filter.center.y).toBeCloseTo(height / 2);
     });
 });
 

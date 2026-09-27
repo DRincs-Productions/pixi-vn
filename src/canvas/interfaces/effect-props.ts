@@ -163,7 +163,7 @@ export interface PunchEffectProps extends BaseTransitionProps, AnimationOptions 
 export interface GlitchEffectProps extends DecayingEffectProps {
     /**
      * The peak slice-displacement amount (pixels) of the first, largest burst.
-     * @default 30
+     * @default 40
      */
     strength?: number;
     /**
@@ -173,7 +173,7 @@ export interface GlitchEffectProps extends DecayingEffectProps {
     bursts?: number;
     /**
      * The number of glitch slices.
-     * @default 5
+     * @default 8
      */
     slices?: number;
     /**
@@ -181,6 +181,12 @@ export interface GlitchEffectProps extends DecayingEffectProps {
      * @default 0
      */
     direction?: number;
+    /**
+     * The peak red/blue channel separation (pixels) layered on top of the slice displacement,
+     * following the same jittery envelope. `0` disables it.
+     * @default 6
+     */
+    rgbSplit?: number;
 }
 
 export interface ChromaticAberrationEffectProps extends DecayingEffectProps {
@@ -235,9 +241,10 @@ export interface ShockwaveEffectProps extends BaseTransitionProps, AnimationOpti
      */
     speed?: number;
     /**
-     * How far the ripple's own internal "time" advances by the end of the animation - the effect
-     * settles once this exceeds the ripple's own travel time, so the default is derived from
-     * {@link radius}/{@link speed} (or `1` when {@link radius} is infinite).
+     * How far the ripple's own internal "time" advances by the end of the animation (the ring's
+     * radius is `time * speed` pixels). By default it's just enough for the ring to fully leave the
+     * component - origin to farthest corner plus half a {@link wavelength} - or {@link radius} when set,
+     * divided by {@link speed}.
      */
     strength?: number;
 }

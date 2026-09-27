@@ -369,17 +369,19 @@ above.
 ```ts
 import { effects } from "@drincs/pixi-vn";
 
-// glitch: a decaying burst of digital-corruption slice displacement
-await effects.glitchEffect("liam", { strength: 30, bursts: 3 });
+// glitch: jittery, decaying bursts of slice displacement with a matching red/blue channel split
+// (returns two ticker ids; `rgbSplit: 0` drops the channel split)
+await effects.glitchEffect("liam", { strength: 40, bursts: 3, rgbSplit: 6 });
 
 // chromaticAberration: red/blue channels split apart and snap back, in a decaying burst
 await effects.chromaticAberrationEffect("liam", { strength: 8, axis: "horizontal" });
 
-// shockwave: a single ripple distortion travels outward from an origin point and fades
-await effects.shockwaveEffect("liam", { origin: { x: 0.5, y: 0.5 }, radius: 300, speed: 500 });
+// shockwave: a single ripple distortion travels outward from `origin` (normalized to the element's
+// bounds) - by default until it has fully left the element
+await effects.shockwaveEffect("liam", { origin: { x: 0.5, y: 0.5 } });
 
-// radialBlur: a decaying burst of zoom-blur radiating from an origin point
-await effects.radialBlurEffect("liam", { strength: 0.5, bursts: 1 });
+// radialBlur: a decaying burst of zoom-blur radiating from `origin` (normalized to the element's bounds)
+await effects.radialBlurEffect("liam", { strength: 0.3, bursts: 1 });
 
 // blurPulse: a repeated, decaying blur bump (distinct from blurIn/blurOut, which are one-shot
 // reveal/conceal transitions, not a repeated pulse)
@@ -396,7 +398,9 @@ await effects.glowPulseEffect("liam", { strength: 4, pulses: 3, color: 0xffee00 
 ```
 
 All 8 are per-component (same `alias` pattern as everything else here) - there's no screen-wide/global
-filter effect yet. Build a custom one the same way: construct any `filters.*` class, attach it to
+filter effect yet. Distortion effects (glitch, chromatic aberration, shockwave, radial blur) move
+pixels around, so they only read on an image with detail/edges - on a flat, single-color element they
+look like nothing happened. Build a custom one the same way: construct any `filters.*` class, attach it to
 `component.filters` yourself, and drive it with `filters.animate` (see the low-level example just above
 this section) - `AdjustmentFilter`/`HslAdjustmentFilter` (color grading), `CRTFilter`/`OldFilmFilter`
 (retro looks), and `BloomFilter`/`AdvancedBloomFilter` (glow) are good starting points not covered above.

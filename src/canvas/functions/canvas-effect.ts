@@ -85,6 +85,36 @@ function buildDecayingPulses(rest: number, peakDelta: number, decay: number, cyc
     return values;
 }
 
+/**
+ * Builds a jittery `[0, a, -0.6a, 0.3a, 0, ...]` envelope for {@link effects.glitchEffect}: each burst
+ * snaps to `a`, kicks back the other way, twitches and settles, with `a` shrinking by `decay` per burst.
+ * The sign flips reverse the slice displacement mid-burst, which reads as a glitch rather than a smooth
+ * slide.
+ */
+function buildGlitchJitter(peak: number, decay: number, bursts: number): number[] {
+    const values: number[] = [0];
+    let amplitude = peak;
+    for (let i = 0; i < bursts; i++) {
+        values.push(amplitude, -amplitude * 0.6, amplitude * 0.3, 0);
+        amplitude *= decay;
+    }
+    return values;
+}
+
+/**
+ * Converts an `origin` normalized (0-1) to the component's own bounds into the pixel coordinates
+ * `ShockwaveFilter`/`ZoomBlurFilter` expect for `center`: their shaders divide `uCenter` by
+ * `uInputSize`, i.e. `center` is in pixels relative to the filter's input area - the component's
+ * global bounds - not normalized.
+ */
+function originToFilterCenter(
+    component: { getBounds(): { width: number; height: number } },
+    origin: { x: number; y: number },
+): { x: number; y: number; width: number; height: number } {
+    const { width, height } = component.getBounds();
+    return { x: origin.x * width, y: origin.y * height, width, height };
+}
+
 export namespace effects {
     /**
      * Shake the canvas element.
@@ -443,9 +473,12 @@ export namespace effects {
     }
 
     /**
-     * Glitch the canvas element: a decaying burst of digital-corruption slice displacement
-     * ({@link https://pixijs.io/filters/docs/GlitchFilter.html GlitchFilter}), settling back to no
-     * displacement between and after each burst.
+     * Glitch the canvas element: decaying, jittery bursts of digital-corruption slice displacement
+     * ({@link https://pixijs.io/filters/docs/GlitchFilter.html GlitchFilter}) - each burst snaps,
+     * kicks back the other way and settles - with a matching red/blue channel split layered on top
+     * ({@link https://pixijs.io/filters/docs/RGBSplitFilter.html RGBSplitFilter}, see
+     * {@link GlitchEffectProps.rgbSplit}). Both filters are removed once done. Returns one ticker id
+     * per filter.
      *
      * Known cosmetic quirk: `GlitchFilter`'s own `destroy()` (called once this effect completes, to
      * clean up its displacement texture) can log a harmless `PixiJS Warning: [BindGroup] a
@@ -468,14 +501,42 @@ export namespace effects {
             );
             return;
         }
-        const { strength = 30, bursts = 3, slices = 5, direction = 0, decay = 0.5, ...rest } = options;
+        const {
+            strength = 40,
+            bursts = 3,
+            slices = 8,
+            direction = 0,
+            rgbSplit = 6,
+            decay = 0.5,
+            ease = "linear",
+            ...rest
+        } = options;
         const glitchFilter = new filters.GlitchFilter({ slices, direction, offset: 0 });
         glitchFilter.refresh();
-        const filter: Filter = glitchFilter;
-        const offsetArray = buildDecayingPulses(0, strength, decay, bursts);
-        const id = addMotionFilterEffect(alias, component, filter, { offset: offsetArray }, rest, priority);
-        if (id) {
-            return [id];
+        const ids: string[] = [];
+        const glitchId = addMotionFilterEffect(
+            alias,
+            component,
+            glitchFilter as Filter,
+            { offset: buildGlitchJitter(strength, decay, bursts) },
+            { ease, ...rest },
+            priority,
+        );
+        glitchId && ids.push(glitchId);
+        if (rgbSplit !== 0) {
+            const envelope = buildGlitchJitter(rgbSplit, decay, bursts);
+            const splitId = addMotionFilterEffect(
+                alias,
+                component,
+                new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } }),
+                { redX: envelope, blueX: envelope.map((v) => -v) },
+                { ease, ...rest },
+                priority,
+            );
+            splitId && ids.push(splitId);
+        }
+        if (ids.length > 0) {
+            return ids;
         }
     }
 
@@ -544,11 +605,19 @@ export namespace effects {
             brightness = 1,
             radius = -1,
             speed = 500,
-            strength = radius > 0 ? radius / speed : 1,
+            strength: strengthOption,
             ...rest
         } = options;
+        const { x, y, width, height } = originToFilterCenter(component, origin);
+        // By default the ripple runs until it has fully left the component: from the origin to its
+        // farthest corner, plus half a wavelength (or just `radius`, when the ripple is capped).
+        const travel =
+            radius > 0
+                ? radius
+                : Math.hypot(Math.max(x, width - x), Math.max(y, height - y)) + wavelength / 2;
+        const strength = strengthOption ?? travel / speed;
         const filter: Filter = new filters.ShockwaveFilter({
-            center: origin,
+            center: { x, y },
             amplitude,
             wavelength,
             brightness,
@@ -591,7 +660,8 @@ export namespace effects {
             decay = 0.5,
             ...rest
         } = options;
-        const filter: Filter = new filters.ZoomBlurFilter({ center: origin, innerRadius, radius, strength: 0 });
+        const { x, y } = originToFilterCenter(component, origin);
+        const filter: Filter = new filters.ZoomBlurFilter({ center: { x, y }, innerRadius, radius, strength: 0 });
         const array = buildDecayingPulses(0, strength, decay, bursts);
         const id = addMotionFilterEffect(alias, component, filter, { strength: array }, rest, priority);
         if (id) {
