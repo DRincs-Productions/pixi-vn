@@ -152,7 +152,7 @@ namespace motion {
         // reconstructed ticker (e.g. after `CanvasManager.restore()`) can resolve a real `Filter`
         // instance instead of requiring one to be passed in from outside - see
         // `MotionFilterTicker`'s `TArgs.filterRef` doc comment.
-        let filterRef: { alias: string; index: number } | undefined;
+        let filterRef: { alias: string; index: number; detach?: boolean } | undefined;
         if (filter) {
             const targetAlias = aliases[0];
             const component = targetAlias ? canvas.find(targetAlias) : undefined;
@@ -163,7 +163,7 @@ namespace motion {
                 : [];
             const index = componentFilters.indexOf(filter);
             if (index !== -1) {
-                filterRef = { alias: targetAlias, index };
+                filterRef = { alias: targetAlias, index, detach: cleanup ? true : undefined };
             }
         }
         const ticker = new MotionFilterTicker(

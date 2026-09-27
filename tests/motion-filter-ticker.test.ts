@@ -199,6 +199,42 @@ describe("MotionFilterTicker: reconstructing without a live filter (filterRef)",
         const proxy = (ticker as any).createItem();
         expect(proxy.strength).toBe(12);
     });
+
+    test("with filterRef.detach, a reconstructed ticker detaches and destroys its filter on completion", () => {
+        const other = new PIXI.BlurFilter();
+        const filter = new PIXI.BlurFilter();
+        const destroySpy = vi.spyOn(filter, "destroy");
+        const component: { filters: PIXI.Filter[] | null } = { filters: [other, filter] };
+        vi.spyOn(canvas, "find").mockReturnValue(component as any);
+
+        const ticker = new MotionFilterTicker(
+            {
+                keyframes: { strength: [0, 10] },
+                options: { duration: 1 },
+                filterRef: { alias: "alias", index: 1, detach: true },
+            },
+            { canvasElementAliases: ["alias"] },
+        );
+        // `detach` survives the args getter, so it survives the next save too.
+        expect(ticker.args.filterRef).toEqual({ alias: "alias", index: 1, detach: true });
+
+        (ticker as any).cleanup();
+
+        expect(component.filters).toEqual([other]);
+        expect(destroySpy).toHaveBeenCalledOnce();
+    });
+
+    test("without filterRef.detach, reconstruction installs no cleanup", () => {
+        const filter = new PIXI.BlurFilter();
+        vi.spyOn(canvas, "find").mockReturnValue({ filters: [filter] } as any);
+
+        const ticker = new MotionFilterTicker(
+            { keyframes: { strength: [0, 10] }, options: { duration: 1 }, filterRef: { alias: "alias", index: 0 } },
+            { canvasElementAliases: ["alias"] },
+        );
+
+        expect((ticker as any).cleanup).toBeUndefined();
+    });
 });
 
 /**

@@ -24,9 +24,11 @@ interface TArgs {
      * reconstructed from saved/serialized args (see `MotionFilterTickerBase`'s constructor) can resolve
      * a real `Filter` instance instead of requiring one to be passed in from outside. Set by
      * `motion.animateFilter` whenever a live `filter` is provided; left `undefined` for the
-     * `apply`-only case (no filter to key off).
+     * `apply`-only case (no filter to key off). `detach` records that the original ticker had a
+     * `cleanup` (which can't be serialized): a reconstructed one then detaches and destroys the filter
+     * on completion instead - what every built-in filter transition/effect's cleanup does.
      */
-    filterRef?: { alias: string; index: number };
+    filterRef?: { alias: string; index: number; detach?: boolean };
 }
 
 /**

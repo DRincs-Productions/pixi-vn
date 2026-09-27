@@ -39,7 +39,7 @@ export default abstract class MotionFilterTickerBase<
          * See `MotionFilterTicker`'s own `TArgs.filterRef` doc comment - resolved in the constructor
          * (see {@link resolveFilterRef}) when no live `filter`/`apply` was passed in via `options`.
          */
-        filterRef?: { alias: string; index: number };
+        filterRef?: { alias: string; index: number; detach?: boolean };
     },
 > implements Ticker<TArgs>
 {
@@ -124,7 +124,8 @@ export default abstract class MotionFilterTickerBase<
         // `Filter` instance never survives (de)serialization) - resolve it from `args.filterRef`
         // instead, which just needs the target component's filters to already be in place (true during
         // `CanvasManager.restore()`: elements/filters are rebuilt before tickers are reconstructed).
-        const filter = providedFilter ?? MotionFilterTickerBase.resolveFilterRef(args.filterRef);
+        const resolvedFilter = providedFilter ? undefined : MotionFilterTickerBase.resolveFilterRef(args.filterRef);
+        const filter = providedFilter ?? resolvedFilter;
         if (!filter && !apply) {
             throw new PixiError(
                 "not_implemented",
@@ -138,7 +139,13 @@ export default abstract class MotionFilterTickerBase<
         this.priority = priority;
         this.id = id;
         this.canvasElementAliases = canvasElementAliases;
-        this.cleanup = cleanup;
+        // The original `cleanup` didn't survive serialization - see `TArgs.filterRef.detach`.
+        const detachAlias = resolvedFilter && args.filterRef?.detach ? args.filterRef.alias : undefined;
+        this.cleanup =
+            cleanup ??
+            (detachAlias && resolvedFilter
+                ? () => MotionFilterTickerBase.detachFilter(detachAlias, resolvedFilter)
+                : undefined);
     }
     abstract alias: string;
     readonly id: string;
@@ -155,28 +162,32 @@ export default abstract class MotionFilterTickerBase<
         if (!filterRef) {
             return undefined;
         }
-        const component = canvas.find(filterRef.alias);
-        const componentFilters = component?.filters
-            ? Array.isArray(component.filters)
-                ? component.filters
-                : [component.filters]
-            : [];
-        return componentFilters[filterRef.index] as Filter | undefined;
+        return MotionFilterTickerBase.componentFilters(filterRef.alias)[filterRef.index];
+    }
+    private static componentFilters(alias: string): Filter[] {
+        const filters = canvas.find(alias)?.filters;
+        if (!filters) {
+            return [];
+        }
+        return Array.isArray(filters) ? [...(filters as readonly Filter[])] : [filters as unknown as Filter];
+    }
+    /** Removes `filter` from the component's filters (by identity) and destroys it. */
+    private static detachFilter(alias: string, filter: Filter): void {
+        const component = canvas.find(alias);
+        if (component) {
+            const remaining = MotionFilterTickerBase.componentFilters(alias).filter((f) => f !== filter);
+            component.filters = remaining.length > 0 ? remaining : null;
+        }
+        filter.destroy();
     }
     get args(): TArgs {
         let filterRef = this._args.filterRef;
         if (filterRef && this.filter) {
             // Re-derive the index fresh rather than trusting whatever was baked in at construction
             // time - other code may have added/removed filters on the same component since then.
-            const component = canvas.find(filterRef.alias);
-            const componentFilters = component?.filters
-                ? Array.isArray(component.filters)
-                    ? component.filters
-                    : [component.filters]
-                : [];
-            const index = componentFilters.indexOf(this.filter);
+            const index = MotionFilterTickerBase.componentFilters(filterRef.alias).indexOf(this.filter);
             if (index !== -1) {
-                filterRef = { alias: filterRef.alias, index };
+                filterRef = { ...filterRef, index };
             }
         }
         return { ...this._args, filterRef, time: this._animation?.time };
