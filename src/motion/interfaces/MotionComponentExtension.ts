@@ -1,8 +1,8 @@
 export default interface MotionComponentExtension {
-    pivot?: number;
-    pivotX?: number;
-    pivotY?: number;
-    scale?: number;
-    scaleX?: number;
-    scaleY?: number;
+    pivot?: number | number[];
+    pivotX?: number | number[];
+    pivotY?: number | number[];
+    scale?: number | number[];
+    scaleX?: number | number[];
+    scaleY?: number | number[];
 }

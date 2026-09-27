@@ -34,8 +34,25 @@ describe("canvas transition and effect namespaces", () => {
     });
 
     test("exposes canvas effects through effects", () => {
-        expect(Object.keys(effects)).toEqual(["shakeEffect"]);
-        expect(typeof effects.shakeEffect).toBe("function");
+        expect(Object.keys(effects).sort()).toEqual([
+            "blurPulseEffect",
+            "bounceEffect",
+            "chromaticAberrationEffect",
+            "desaturateEffect",
+            "glitchEffect",
+            "glowPulseEffect",
+            "hopEffect",
+            "nodEffect",
+            "pulseEffect",
+            "punchEffect",
+            "radialBlurEffect",
+            "shakeEffect",
+            "shockwaveEffect",
+            "swayEffect",
+            "vignettePulseEffect",
+            "wiggleEffect",
+        ]);
+        expect(Object.values(effects).every((effect) => typeof effect === "function")).toBe(true);
     });
 });
 

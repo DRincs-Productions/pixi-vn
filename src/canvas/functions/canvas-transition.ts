@@ -190,6 +190,70 @@ export function pushOut(
     return transitions.pushOut(alias, props, priority);
 }
 
+/**
+ * Attaches `filter` to `component.filters` (preserving any filters already there) and drives
+ * `keyframes` on the filter's own properties via `filters.animate` (`MotionFilterTicker`,
+ * `motion`-backed - see {@link transitions.blurIn}/{@link transitions.pixelateIn}), detaching and
+ * destroying it once the animation completes. The same "never leave the component in a different
+ * state than before the effect" guarantee `addMotionValueEffect` gives wipe/iris/split's mask cleanup.
+ *
+ * A plain module-level export (not part of the `transitions` namespace, so it isn't part of the
+ * package's public API) - reused by both `transitions` (this file) and the filter-based primitives in
+ * `effects` (`canvas-effect.ts`), which need the exact same attach/animate/detach dance.
+ */
+export function addMotionFilterEffect(
+    alias: string,
+    component: CanvasBaseInterface<any>,
+    filter: Filter,
+    keyframes: Record<string, number[]>,
+    args: {
+        duration?: number;
+        delay?: number | ((index: number, total: number) => number);
+        ease?: unknown;
+        /** Normalized (0-1) keyframe offsets, forwarded to `filters.animate` as-is - see `motion`'s own `times`. */
+        times?: number[];
+        completeOnContinue?: boolean;
+        aliasToRemoveAfter?: string[] | string;
+    },
+    priority?: UPDATE_PRIORITY,
+): string | undefined {
+    const existingFilters = component.filters
+        ? Array.isArray(component.filters)
+            ? component.filters
+            : [component.filters]
+        : [];
+    component.filters = [...existingFilters, filter];
+    const id = filters.animate(
+        alias,
+        filter,
+        keyframes,
+        {
+            duration: args.duration ?? 1,
+            delay: args.delay,
+            ease: args.ease as AnimationOptions["ease"],
+            times: args.times,
+            aliasToRemoveAfter: args.aliasToRemoveAfter,
+        },
+        priority,
+        undefined,
+        () => {
+            const remaining = (
+                component.filters
+                    ? Array.isArray(component.filters)
+                        ? component.filters
+                        : [component.filters]
+                    : []
+            ).filter((existing) => existing !== filter);
+            component.filters = remaining.length > 0 ? remaining : null;
+            filter.destroy();
+        },
+    );
+    if (id && (args.completeOnContinue ?? true)) {
+        tickers.completeOnStepEnd({ id });
+    }
+    return id;
+}
+
 export namespace transitions {
     function mapDestination(destination: {
         type?: "pixel" | "percentage" | "align";
@@ -391,63 +455,6 @@ export namespace transitions {
             // ticker's first real tick, closing any gap where the component would render unmasked.
             apply(args.from);
         }
-        if (id && (args.completeOnContinue ?? true)) {
-            tickers.completeOnStepEnd({ id });
-        }
-        return id;
-    }
-
-    /**
-     * Attaches `filter` to `component.filters` (preserving any filters already there) and drives
-     * `keyframes` on the filter's own properties via `filters.animate` (`MotionFilterTicker`,
-     * `motion`-backed - see {@link blurIn}/{@link pixelateIn}), detaching and destroying it once the
-     * animation completes. The same "never leave the component in a different state than before the
-     * transition" guarantee {@link addMotionValueEffect}'s mask cleanup gives wipe/iris/split.
-     */
-    function addMotionFilterEffect(
-        alias: string,
-        component: CanvasBaseInterface<any>,
-        filter: Filter,
-        keyframes: Record<string, number[]>,
-        args: {
-            duration?: number;
-            delay?: number | ((index: number, total: number) => number);
-            ease?: unknown;
-            completeOnContinue?: boolean;
-            aliasToRemoveAfter?: string[];
-        },
-        priority?: UPDATE_PRIORITY,
-    ): string | undefined {
-        const existingFilters = component.filters
-            ? Array.isArray(component.filters)
-                ? component.filters
-                : [component.filters]
-            : [];
-        component.filters = [...existingFilters, filter];
-        const id = filters.animate(
-            alias,
-            filter,
-            keyframes,
-            {
-                duration: args.duration ?? 1,
-                delay: args.delay,
-                ease: args.ease as AnimationOptions["ease"],
-                aliasToRemoveAfter: args.aliasToRemoveAfter,
-            },
-            priority,
-            undefined,
-            () => {
-                const remaining = (
-                    component.filters
-                        ? Array.isArray(component.filters)
-                            ? component.filters
-                            : [component.filters]
-                        : []
-                ).filter((existing) => existing !== filter);
-                component.filters = remaining.length > 0 ? remaining : null;
-                filter.destroy();
-            },
-        );
         if (id && (args.completeOnContinue ?? true)) {
             tickers.completeOnStepEnd({ id });
         }

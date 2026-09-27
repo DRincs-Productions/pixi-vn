@@ -308,25 +308,98 @@ the filter and an `apply` callback (called every frame with the interpolated val
 is how `wipeIn`/`irisIn`/`splitIn` animate their mask geometry (a growing radius, a moving
 boundary), since a mask has no filter property to write directly.
 
-## Shake and custom animation
+## Shake and other articulated animations
 
-`shakeEffect` is an "articulated animation" — a helper built on top of `canvas.animate`
-(docs: [canvas-articulated-animations-effects](https://pixi-vn.com/start/canvas-articulated-animations-effects),
-[canvas-motion](https://pixi-vn.com/start/canvas-motion)):
+The `effects` namespace holds "articulated animations" — helpers built on top of `canvas.animate`
+that bake a full keyframe array once and animate it in a single call (docs:
+[canvas-articulated-animations-effects](https://pixi-vn.com/start/canvas-articulated-animations-effects),
+[canvas-motion](https://pixi-vn.com/start/canvas-motion)). Like the transitions above, these are
+generic primitives — the effect describes *how* a component moves, the game decides *what* that
+means (a hit reaction, an idle fidget, an emphasis beat, ...).
 
 ```ts
-import { shakeEffect, canvas } from "@drincs/pixi-vn";
+import { effects, canvas } from "@drincs/pixi-vn";
 
 // shake a canvas element horizontally
-await shakeEffect("screen-flash-target", {
+await effects.shakeEffect("screen-flash-target", {
   shakeType: "horizontal",
   maxShockSize: 15,
   shocksNumber: 10,
 });
 
+// bounce: one-directional decaying displacement, e.g. a character landing a jump
+await effects.bounceEffect("liam", { direction: "up", distance: 30, bounces: 3 });
+
+// pulse: decaying scale bump, e.g. emphasizing a UI element or a heartbeat
+await effects.pulseEffect("liam", { scale: 1.3, pulses: 2 });
+
+// hop: a single displacement-and-return, optionally with smaller decaying follow-up hops
+await effects.hopEffect("liam", { direction: "up", distance: 40, secondaryHops: 2 });
+
+// wiggle: decaying rotation oscillation, e.g. a "no" head-shake or a nervous tic
+await effects.wiggleEffect("liam", { angle: 15, repetitions: 3 });
+
+// nod: decaying positional oscillation along one axis, e.g. a "yes" nod or a flinch
+await effects.nodEffect("liam", { axis: "vertical", distance: 10, repetitions: 3 });
+
+// sway: smooth combined position+rotation drift, e.g. an idle breathing/swaying loop
+// (decay defaults to 0 = constant amplitude, unlike the other primitives above)
+await effects.swayEffect("liam", { distance: 8, angle: 3, repetitions: 4 });
+
+// punch: a single fast impulse with a settle-back overshoot, e.g. taking a hit
+await effects.punchEffect("liam", { mode: "scale", strength: 0.3, overshoot: 0.3 });
+await effects.punchEffect("liam", { mode: "rotation", strength: 20 });
+
 // low-level: animate arbitrary numeric properties with motion-style keyframes
 canvas.animate("liam", { alpha: [0, 1], y: [50, 0] }, { duration: 0.8 });
 ```
+
+There's no separate "tremble"/"vibration" primitive — that's just `shakeEffect` configured with a
+small `maxShockSize` and a high `shocksNumber` (high-frequency, low-amplitude shaking).
+
+## Filter-based articulated animations
+
+The same `effects` namespace also has primitives built on the `filters` module (raw `pixi-filters`/
+`pixi.js` filter classes, re-exported as `filters.*` - see `@drincs/pixi-vn/filters`) instead of
+`canvas.animate`: each one attaches a filter to the component, drives one of the filter's own
+properties through a decaying (or one-shot) keyframe array via `filters.animate`, and detaches/destroys
+the filter once done - the component is left exactly as it was before, same guarantee as every effect
+above.
+
+```ts
+import { effects } from "@drincs/pixi-vn";
+
+// glitch: a decaying burst of digital-corruption slice displacement
+await effects.glitchEffect("liam", { strength: 30, bursts: 3 });
+
+// chromaticAberration: red/blue channels split apart and snap back, in a decaying burst
+await effects.chromaticAberrationEffect("liam", { strength: 8, axis: "horizontal" });
+
+// shockwave: a single ripple distortion travels outward from an origin point and fades
+await effects.shockwaveEffect("liam", { origin: { x: 0.5, y: 0.5 }, radius: 300, speed: 500 });
+
+// radialBlur: a decaying burst of zoom-blur radiating from an origin point
+await effects.radialBlurEffect("liam", { strength: 0.5, bursts: 1 });
+
+// blurPulse: a repeated, decaying blur bump (distinct from blurIn/blurOut, which are one-shot
+// reveal/conceal transitions, not a repeated pulse)
+await effects.blurPulseEffect("liam", { strength: 8, pulses: 3 });
+
+// vignettePulse: the edges darken and recover, in a repeated, decaying pulse
+await effects.vignettePulseEffect("liam", { strength: 1, pulses: 1 });
+
+// desaturate: color drains out and recovers - a single dip, not a repeated pulse
+await effects.desaturateEffect("liam", { amount: 0, holdDuration: 0.2 });
+
+// glowPulse: a repeated, decaying outward glow
+await effects.glowPulseEffect("liam", { strength: 4, pulses: 3, color: 0xffee00 });
+```
+
+All 8 are per-component (same `alias` pattern as everything else here) - there's no screen-wide/global
+filter effect yet. Build a custom one the same way: construct any `filters.*` class, attach it to
+`component.filters` yourself, and drive it with `filters.animate` (see the low-level example just above
+this section) - `AdjustmentFilter`/`HslAdjustmentFilter` (color grading), `CRTFilter`/`OldFilmFilter`
+(retro looks), and `BloomFilter`/`AdvancedBloomFilter` (glow) are good starting points not covered above.
 
 `canvas.animate(componentOrAlias, keyframes, options, priority)` is the primitive all transition
 helpers are built on ([motion's `animate`](https://motion.dev/docs/animate) semantics: keyframes
