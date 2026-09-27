@@ -169,9 +169,9 @@ zoomOut("liam", { direction: "right", duration: 0.5 });
 player advances the narration before the animation ends — leave this at its default unless you
 specifically want an animation to be interruptible/ignored.
 
-### Generic reveal/filter transitions: wipe, iris, split, flash, blur, pixelate
+### Generic reveal/filter transitions: wipe, iris, split, flash, blur, pixelate, glitch, twist, warp, ripple, noiseDissolve, tv, pinch
 
-These six are only exposed through the `transitions` namespace (no flat top-level export like the
+These are only exposed through the `transitions` namespace (no flat top-level export like the
 older `moveIn`/`showWithDissolve`), each as a matched `xIn`/`xOut` pair with the same
 `(alias, componentOrUrl?, props?, priority?)` / `(alias, props?, priority?)` shapes as above.
 They favor a handful of configurable options over narrative-specific variants — e.g. there's one
@@ -203,10 +203,31 @@ await transitions.blurIn("liam", "liam-happy", { strength: 40, duration: 1 });
 transitions.blurOut("liam", { duration: 1 });
 await transitions.pixelateIn("background", "bg-forest", { pixelSize: 48, duration: 1 });
 transitions.pixelateOut("background", { duration: 1 });
+
+// glitch: jittery slices + red/blue split, settling on *In, building up on *Out.
+await transitions.glitchIn("liam", "liam-happy", { strength: 40, bursts: 3 });
+// twist: unwinds out of (or winds into) a swirl - `angle` in degrees, `origin` normalized.
+transitions.twistOut("liam", { angle: 540 });
+// warp: radial zoom-blur streaks, like dropping out of / jumping into hyperspace.
+await transitions.warpIn("background", "bg-space", { strength: 0.6 });
+// ripple: fades in/out through a spreading water ring - dreams, magic, memories.
+await transitions.rippleIn("liam", "liam-dream", { origin: { x: 0.5, y: 0.3 } });
+// noiseDissolve: the classic VN image dissolve - organic noise blotches (`edge: "soft"` for a cloudy fade).
+await transitions.noiseDissolveIn("background", "bg-night", { edge: "hard", noiseScale: 8 });
+// tv: old TV switching on (dot -> glowing line -> image) / off; scales around the anchor (center it).
+transitions.tvOut("liam", { lineThickness: 0.02, brightness: 3 });
+// pinch: emerges from / is sucked into a point (`mode: "bulge"` puffs out instead).
+transitions.pinchOut("liam", { mode: "pinch" });
+
+// move/push also take an optional motion-blur trail (true = 40px, or a length in pixels).
+await transitions.moveIn("liam", "liam-happy", { direction: "right", duration: 0.6, motionBlur: true });
 ```
 
+Distortion transitions (glitch, twist, warp, ripple, pinch) move pixels around, so they read best on
+images with detail - on a flat, single-color element they're much less visible.
+
 They compose freely since each drives its own mask (`wipe`/`iris`/`split`) or filter
-(`blur`/`pixelate`) independently — e.g. call `blurIn` and then `wipeIn` on the same alias to
+(`blur`/`pixelate`/`glitch`/...) independently — e.g. call `blurIn` and then `wipeIn` on the same alias to
 combine both. Common narrative effects are just **recipes** built from these primitives rather than
 dedicated functions: a "blink"/eyes-opening effect is a color overlay plus an iris reveal, a
 "dream"/flashback is `blurIn` + `showWithFade`, a memory transition is a color overlay plus

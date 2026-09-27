@@ -19,6 +19,11 @@ import {
     type VignettePulseEffectProps,
     type WiggleEffectProps,
 } from "..";
+import {
+    buildGlitchJitter,
+    originToFilterCenter,
+    shockwaveTravel,
+} from "@canvas/functions/filter-effect-utility";
 import { logger } from "../../utils/log-utility";
 import { addMotionFilterEffect } from "./canvas-transition";
 
@@ -83,36 +88,6 @@ function buildDecayingPulses(rest: number, peakDelta: number, decay: number, cyc
         delta *= decay;
     }
     return values;
-}
-
-/**
- * Builds a jittery `[0, a, -0.6a, 0.3a, 0, ...]` envelope for {@link effects.glitchEffect}: each burst
- * snaps to `a`, kicks back the other way, twitches and settles, with `a` shrinking by `decay` per burst.
- * The sign flips reverse the slice displacement mid-burst, which reads as a glitch rather than a smooth
- * slide.
- */
-function buildGlitchJitter(peak: number, decay: number, bursts: number): number[] {
-    const values: number[] = [0];
-    let amplitude = peak;
-    for (let i = 0; i < bursts; i++) {
-        values.push(amplitude, -amplitude * 0.6, amplitude * 0.3, 0);
-        amplitude *= decay;
-    }
-    return values;
-}
-
-/**
- * Converts an `origin` normalized (0-1) to the component's own bounds into the pixel coordinates
- * `ShockwaveFilter`/`ZoomBlurFilter` expect for `center`: their shaders divide `uCenter` by
- * `uInputSize`, i.e. `center` is in pixels relative to the filter's input area - the component's
- * global bounds - not normalized.
- */
-function originToFilterCenter(
-    component: { getBounds(): { width: number; height: number } },
-    origin: { x: number; y: number },
-): { x: number; y: number; width: number; height: number } {
-    const { width, height } = component.getBounds();
-    return { x: origin.x * width, y: origin.y * height, width, height };
 }
 
 export namespace effects {
@@ -609,13 +584,8 @@ export namespace effects {
             ...rest
         } = options;
         const { x, y, width, height } = originToFilterCenter(component, origin);
-        // By default the ripple runs until it has fully left the component: from the origin to its
-        // farthest corner, plus half a wavelength (or just `radius`, when the ripple is capped).
-        const travel =
-            radius > 0
-                ? radius
-                : Math.hypot(Math.max(x, width - x), Math.max(y, height - y)) + wavelength / 2;
-        const strength = strengthOption ?? travel / speed;
+        const strength =
+            strengthOption ?? shockwaveTravel({ x, y }, { width, height }, wavelength, radius) / speed;
         const filter: Filter = new filters.ShockwaveFilter({
             center: { x, y },
             amplitude,

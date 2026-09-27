@@ -6,6 +6,7 @@ import "./canvas-transition-position";
 import "./dissolve-fade-transition-example";
 import "./effects-example";
 import "./filter-effects-example";
+import "./filter-transition-examples";
 import "./flash-transition-example";
 import "./iris-transition-example";
 import "./move-transition-example";

@@ -106,15 +106,23 @@ export type { default as TextMemory } from "./interfaces/memory/TextMemory";
 export type { default as VideoSpriteMemory } from "./interfaces/memory/VideoSpriteMemory";
 export type {
     BlurInOutProps,
+    FilterFadeTransitionProps,
     FlashInOutProps,
+    GlitchInOutProps,
     IrisInOutProps,
     MaskTransitionProps,
     MoveInOutProps,
+    NoiseDissolveInOutProps,
+    PinchInOutProps,
     PixelateInOutProps,
     PushInOutProps,
+    RippleInOutProps,
     ShowWithDissolveTransitionProps,
     ShowWithFadeTransitionProps,
     SplitInOutProps,
+    TvInOutProps,
+    TwistInOutProps,
+    WarpInOutProps,
     WipeInOutProps,
     ZoomInOutProps,
 } from "./interfaces/transition-props";

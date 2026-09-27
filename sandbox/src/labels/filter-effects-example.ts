@@ -1,27 +1,19 @@
 import { Assets, canvas, effects, showImage } from "@drincs/pixi-vn/canvas";
 import { narration } from "@drincs/pixi-vn/narration";
 import { registerTestLabel } from "./registry";
+import { stripedTriangleSvg } from "./targets";
 
 const image = "filter-effects-example-target";
-
-// Distortion filters (glitch, RGB split, shockwave, zoom blur) only show where the image has detail -
-// on a flat color they move pixels of the same color around and look like nothing happened. A striped
-// triangle with a high-contrast white/black target makes every effect readable.
-const targetSvg = `<svg xmlns="http://www.w3.org/2000/svg" width="320" height="280">
-<defs><pattern id="s" width="24" height="24" patternUnits="userSpaceOnUse">
-<rect width="24" height="12" fill="#ef8354"/><rect y="12" width="24" height="12" fill="#2f6690"/>
-</pattern></defs>
-<polygon points="160,12 308,268 12,268" fill="url(#s)" stroke="#ffffff" stroke-width="8" stroke-linejoin="round"/>
-<circle cx="160" cy="180" r="46" fill="#ffffff"/>
-<circle cx="160" cy="180" r="22" fill="#000000"/>
-</svg>`;
 
 registerTestLabel(
     "filter-effects-example",
     "Canvas: filter-based animation effects",
     [
         async () => {
-            Assets.add({ alias: image, src: `data:image/svg+xml,${encodeURIComponent(targetSvg)}` });
+            Assets.add({
+                alias: image,
+                src: `data:image/svg+xml,${encodeURIComponent(stripedTriangleSvg("#ef8354", "#2f6690"))}`,
+            });
             canvas.clear();
             await showImage(image, undefined, {
                 x: canvas.width / 2,
