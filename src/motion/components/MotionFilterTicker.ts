@@ -18,6 +18,15 @@ interface TArgs {
      * This is a hack to fix this [issue](https://github.com/motiondivision/motion/discussions/3330)
      */
     time?: number;
+    /**
+     * Identifies which live filter this ticker drives - "the `index`-th entry of
+     * `canvas.find(alias).filters`" - entirely in plain, JSON-serializable data, so a ticker
+     * reconstructed from saved/serialized args (see `MotionFilterTickerBase`'s constructor) can resolve
+     * a real `Filter` instance instead of requiring one to be passed in from outside. Set by
+     * `motion.animateFilter` whenever a live `filter` is provided; left `undefined` for the
+     * `apply`-only case (no filter to key off).
+     */
+    filterRef?: { alias: string; index: number };
 }
 
 /**

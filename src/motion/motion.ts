@@ -1,3 +1,4 @@
+import { canvas } from "@drincs/pixi-vn/canvas";
 import type { CanvasBaseInterface } from "@drincs/pixi-vn/canvas";
 import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { tickers } from "@drincs/pixi-vn/tickers";
@@ -147,8 +148,26 @@ namespace motion {
             throw e;
         }
         const aliases = Array.isArray(components) ? components : [components];
+        // Identifies which live filter this ticker drives, in plain serializable data, so a
+        // reconstructed ticker (e.g. after `CanvasManager.restore()`) can resolve a real `Filter`
+        // instance instead of requiring one to be passed in from outside - see
+        // `MotionFilterTicker`'s `TArgs.filterRef` doc comment.
+        let filterRef: { alias: string; index: number } | undefined;
+        if (filter) {
+            const targetAlias = aliases[0];
+            const component = targetAlias ? canvas.find(targetAlias) : undefined;
+            const componentFilters = component?.filters
+                ? Array.isArray(component.filters)
+                    ? component.filters
+                    : [component.filters]
+                : [];
+            const index = componentFilters.indexOf(filter);
+            if (index !== -1) {
+                filterRef = { alias: targetAlias, index };
+            }
+        }
         const ticker = new MotionFilterTicker(
-            { keyframes, options: options as AnimationOptions },
+            { keyframes, options: options as AnimationOptions, filterRef },
             { filter, apply, priority, canvasElementAliases: aliases, cleanup },
         );
         const id = tickers.add<any>(aliases, ticker);

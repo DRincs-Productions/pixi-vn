@@ -1,3 +1,4 @@
+import { canvas } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -34,6 +35,11 @@ export default abstract class MotionFilterTickerBase<
         options?: Omit<CommonTickerProps, "startOnlyIfHaveTexture"> & {
             autoplay?: boolean;
         };
+        /**
+         * See `MotionFilterTicker`'s own `TArgs.filterRef` doc comment - resolved in the constructor
+         * (see {@link resolveFilterRef}) when no live `filter`/`apply` was passed in via `options`.
+         */
+        filterRef?: { alias: string; index: number };
     },
 > implements Ticker<TArgs>
 {
@@ -104,7 +110,7 @@ export default abstract class MotionFilterTickerBase<
         },
     ) {
         const {
-            filter,
+            filter: providedFilter,
             apply,
             duration,
             priority,
@@ -114,10 +120,15 @@ export default abstract class MotionFilterTickerBase<
             canvasElementAliases = [],
             cleanup,
         } = options || {};
+        // No live `filter` passed in (e.g. reconstructing from a saved/serialized ticker, where a
+        // `Filter` instance never survives (de)serialization) - resolve it from `args.filterRef`
+        // instead, which just needs the target component's filters to already be in place (true during
+        // `CanvasManager.restore()`: elements/filters are rebuilt before tickers are reconstructed).
+        const filter = providedFilter ?? MotionFilterTickerBase.resolveFilterRef(args.filterRef);
         if (!filter && !apply) {
             throw new PixiError(
                 "not_implemented",
-                "MotionFilterTicker requires either a `filter` instance or an `apply` callback; it cannot be reconstructed from saved/serialized ticker args.",
+                "MotionFilterTicker requires either a `filter` instance, an `apply` callback, or a resolvable `filterRef`; it cannot be reconstructed from saved/serialized ticker args.",
             );
         }
         this._args = args;
@@ -135,8 +146,40 @@ export default abstract class MotionFilterTickerBase<
     protected readonly apply?: (value: number) => void;
     protected readonly cleanup?: () => void;
     protected _args: TArgs;
+    /**
+     * Resolves a `filterRef` (see `MotionFilterTicker`'s `TArgs.filterRef` doc comment) to the live
+     * `Filter` instance it identifies, or `undefined` if the component/filter isn't currently found
+     * (e.g. `filterRef` absent, its component was removed, or the index is out of range).
+     */
+    private static resolveFilterRef(filterRef?: { alias: string; index: number }): Filter | undefined {
+        if (!filterRef) {
+            return undefined;
+        }
+        const component = canvas.find(filterRef.alias);
+        const componentFilters = component?.filters
+            ? Array.isArray(component.filters)
+                ? component.filters
+                : [component.filters]
+            : [];
+        return componentFilters[filterRef.index] as Filter | undefined;
+    }
     get args(): TArgs {
-        return { ...this._args, time: this._animation?.time };
+        let filterRef = this._args.filterRef;
+        if (filterRef && this.filter) {
+            // Re-derive the index fresh rather than trusting whatever was baked in at construction
+            // time - other code may have added/removed filters on the same component since then.
+            const component = canvas.find(filterRef.alias);
+            const componentFilters = component?.filters
+                ? Array.isArray(component.filters)
+                    ? component.filters
+                    : [component.filters]
+                : [];
+            const index = componentFilters.indexOf(this.filter);
+            if (index !== -1) {
+                filterRef = { alias: filterRef.alias, index };
+            }
+        }
+        return { ...this._args, filterRef, time: this._animation?.time };
     }
     duration?: number;
     priority?: UPDATE_PRIORITY;
