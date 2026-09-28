@@ -13,8 +13,10 @@ import {
 } from "@canvas/functions/canvas-filter-transition-utility";
 import {
     buildGlitchJitter,
-    originToFilterCenter,
+    circleOverhang,
+    filterAreaCenter,
     shockwaveTravel,
+    zoomBlurPadding,
 } from "@canvas/functions/filter-effect-utility";
 import type { ColorType } from "@canvas/types/ColorType";
 import { filters } from "@drincs/pixi-vn/filters";
@@ -269,6 +271,28 @@ export function addMotionFilterEffect(
         tickers.completeOnStepEnd({ id });
     }
     return id;
+}
+
+/**
+ * {@link filterAreaCenter} for `component` as it is right now: its current filters (so call it once
+ * the effect's own filters are attached) and the renderer's viewport, when there is one.
+ */
+export function componentFilterCenter(
+    component: CanvasBaseInterface<any>,
+    origin: { x: number; y: number },
+): ReturnType<typeof filterAreaCenter> {
+    const current = component.filters
+        ? Array.isArray(component.filters)
+            ? component.filters
+            : [component.filters]
+        : [];
+    let viewport: { width: number; height: number } | undefined;
+    try {
+        viewport = canvas.screen;
+    } catch {
+        viewport = undefined;
+    }
+    return filterAreaCenter(component.getBounds(), origin, current as Filter[], viewport);
 }
 
 export namespace transitions {
@@ -2464,6 +2488,8 @@ export namespace transitions {
         const args = { ...timing, ease: timing.ease ?? "linear" };
         const glitch = new filters.GlitchFilter({ slices, offset: 0 });
         glitch.refresh();
+        // Room for slices shifted past the component's edges (otherwise they're cut off).
+        glitch.padding = Math.ceil(Math.abs(strength));
         const ids = [
             addMotionFilterEffect(
                 alias,
@@ -2476,11 +2502,13 @@ export namespace transitions {
         ];
         if (rgbSplit !== 0) {
             const envelope = shape(rgbSplit);
+            const split = new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } });
+            split.padding = Math.ceil(Math.abs(rgbSplit));
             ids.push(
                 addMotionFilterEffect(
                     alias,
                     component,
-                    new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } }),
+                    split,
                     { redX: envelope, blueX: envelope.map((v) => -v) },
                     args,
                     priority,
@@ -2539,16 +2567,29 @@ export namespace transitions {
         priority?: UPDATE_PRIORITY,
     ): (string | undefined)[] {
         const { angle = 540, radius = halfDiagonal(component), origin } = props;
+        const center = resolveOrigin(origin);
         const wound = (angle * Math.PI) / 180;
         const keyframes = phase === "in" ? [wound, 0] : [0, wound];
         const filter = new filters.TwistFilter({ radius, angle: keyframes[0] });
-        // TwistFilter's `offset` is in pixels relative to its filter area, which includes its padding.
-        const { x, y } = originToFilterCenter(component, resolveOrigin(origin), filter.padding);
+        // The swirl rotates content within `radius` of the center - room for the part of that circle
+        // that overhangs the component, so it isn't cut off (never less than TwistFilter's own default).
+        const { width, height } = component.getBounds();
+        filter.padding = Math.max(
+            filter.padding,
+            circleOverhang({ x: center.x * width, y: center.y * height }, radius, width, height),
+        );
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { angle: keyframes },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        const { x, y } = componentFilterCenter(component, center);
         filter.offsetX = x;
         filter.offsetY = y;
-        return [
-            addMotionFilterEffect(alias, component, filter, { angle: keyframes }, { ...timing, aliasToRemoveAfter }, priority),
-        ];
+        return [id];
     }
 
     /**
@@ -2599,12 +2640,22 @@ export namespace transitions {
         priority?: UPDATE_PRIORITY,
     ): (string | undefined)[] {
         const { strength = 0.6, origin } = props;
+        const center = resolveOrigin(origin);
         const keyframes = phase === "in" ? [strength, 0] : [0, strength];
-        const { x, y } = originToFilterCenter(component, resolveOrigin(origin));
-        const filter = new filters.ZoomBlurFilter({ center: { x, y }, strength: keyframes[0] });
-        return [
-            addMotionFilterEffect(alias, component, filter, { strength: keyframes }, { ...timing, aliasToRemoveAfter }, priority),
-        ];
+        const filter = new filters.ZoomBlurFilter({ center: { x: 0, y: 0 }, strength: keyframes[0] });
+        const { width, height } = component.getBounds();
+        filter.padding = zoomBlurPadding({ x: center.x * width, y: center.y * height }, strength, width, height);
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { strength: keyframes },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        const { x, y } = componentFilterCenter(component, center);
+        filter.center = { x, y };
+        return [id];
     }
 
     /**
@@ -2654,12 +2705,24 @@ export namespace transitions {
         priority?: UPDATE_PRIORITY,
     ): (string | undefined)[] {
         const { origin, amplitude = 30, wavelength = 160, speed = 500 } = props;
-        const { x, y, width, height } = originToFilterCenter(component, resolveOrigin(origin));
-        const filter = new filters.ShockwaveFilter({ center: { x, y }, amplitude, wavelength, speed, time: 0 });
-        const time = shockwaveTravel({ x, y }, { width, height }, wavelength, -1) / speed;
-        return [
-            addMotionFilterEffect(alias, component, filter, { time: [0, time] }, { ...timing, aliasToRemoveAfter }, priority),
-        ];
+        const center = resolveOrigin(origin);
+        const { width, height } = component.getBounds();
+        const filter = new filters.ShockwaveFilter({ center: { x: 0, y: 0 }, amplitude, wavelength, speed, time: 0 });
+        // The shader displaces by up to 1.25x `amplitude` - room for edges pushed past the bounds.
+        filter.padding = Math.ceil(Math.abs(amplitude) * 1.25);
+        const time =
+            shockwaveTravel({ x: center.x * width, y: center.y * height }, { width, height }, wavelength, -1) / speed;
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { time: [0, time] },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        const { x, y } = componentFilterCenter(component, center);
+        filter.center = { x, y };
+        return [id];
     }
 
     /**
@@ -2879,12 +2942,27 @@ export namespace transitions {
     ): (string | undefined)[] {
         const { strength = 1, mode = "pinch", radius = halfDiagonal(component), origin } = props;
         const peak = (mode === "bulge" ? 1 : -1) * strength;
+        const center = resolveOrigin(origin);
         const keyframes = phase === "in" ? [peak, 0] : [0, peak];
-        // BulgePinchFilter's `center` is already normalized to the filter area (`uCenter * uDimensions`).
-        const filter = new filters.BulgePinchFilter({ center: resolveOrigin(origin), radius, strength: keyframes[0] });
-        return [
-            addMotionFilterEffect(alias, component, filter, { strength: keyframes }, { ...timing, aliasToRemoveAfter }, priority),
-        ];
+        const filter = new filters.BulgePinchFilter({ center, radius, strength: keyframes[0] });
+        if (mode === "bulge") {
+            // A bulge pushes content outward, up to `radius` from the center; a pinch only pulls inward.
+            const { width, height } = component.getBounds();
+            filter.padding = circleOverhang({ x: center.x * width, y: center.y * height }, radius, width, height);
+        }
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { strength: keyframes },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        // BulgePinchFilter's `center` is normalized to the filter area (`uCenter * uDimensions`), which
+        // padding and viewport clipping make differ from the component's own bounds.
+        const { x, y, area } = componentFilterCenter(component, center);
+        filter.center = { x: x / area.width, y: y / area.height };
+        return [id];
     }
 
     /**

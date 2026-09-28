@@ -348,8 +348,8 @@ describe("shockwaveEffect", () => {
         await effects.shockwaveEffect("alias", { origin: { x: 0.25, y: 1 } });
 
         const [, filter] = animateSpy.mock.calls[0] as [string, InstanceType<typeof filters.ShockwaveFilter>];
-        expect(filter.center.x).toBeCloseTo(0.25 * width);
-        expect(filter.center.y).toBeCloseTo(height);
+        expect(filter.center.x).toBeCloseTo(filter.padding + 0.25 * width);
+        expect(filter.center.y).toBeCloseTo(filter.padding + height);
     });
 
     test("by default the ripple runs until it has fully left the component", async () => {
@@ -393,8 +393,8 @@ describe("radialBlurEffect", () => {
         await effects.radialBlurEffect("alias", { origin: { x: 0.5, y: 0.5 } });
 
         const [, filter] = animateSpy.mock.calls[0] as [string, InstanceType<typeof filters.ZoomBlurFilter>];
-        expect(filter.center.x).toBeCloseTo(width / 2);
-        expect(filter.center.y).toBeCloseTo(height / 2);
+        expect(filter.center.x).toBeCloseTo(filter.padding + width / 2);
+        expect(filter.center.y).toBeCloseTo(filter.padding + height / 2);
     });
 });
 

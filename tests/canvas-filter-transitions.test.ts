@@ -2,8 +2,10 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest";
 import {
     buildGlitchJitter,
-    originToFilterCenter,
+    circleOverhang,
+    filterAreaCenter,
     shockwaveTravel,
+    zoomBlurPadding,
 } from "../src/canvas/functions/filter-effect-utility";
 import { canvas, transitions, type CanvasBaseInterface } from "../src/canvas";
 import { filters } from "../src/filters";
@@ -49,10 +51,36 @@ function expectCloseArray(actual: number[], expected: number[]) {
 }
 
 describe("filter-effect-utility", () => {
-    test("originToFilterCenter scales by the bounds and adds the filter's padding", () => {
-        const component = { getBounds: () => ({ width: 200, height: 100 }) };
-        expect(originToFilterCenter(component, { x: 0.25, y: 1 })).toEqual({ x: 50, y: 100, width: 200, height: 100 });
-        expect(originToFilterCenter(component, { x: 0.5, y: 0.5 }, 20)).toMatchObject({ x: 120, y: 70 });
+    const bounds = { x: 100, y: 50, width: 200, height: 100 };
+    const padded = (padding: number) => ({ padding, enabled: true });
+
+    test("filterAreaCenter: pixels from the area's corner, which is grown by the SUM of the paddings", () => {
+        expect(filterAreaCenter(bounds, { x: 0.25, y: 1 }, [])).toMatchObject({ x: 50, y: 100 });
+        const { x, y, area } = filterAreaCenter(bounds, { x: 0.5, y: 0.5 }, [padded(20), padded(5)]);
+        expect({ x, y }).toEqual({ x: 125, y: 75 });
+        expect(area).toEqual({ x: 75, y: 25, width: 250, height: 150 });
+    });
+
+    test("filterAreaCenter ignores disabled filters and clips to the viewport before padding", () => {
+        const offscreen = { x: -50, y: 0, width: 200, height: 100 };
+        const { x, area } = filterAreaCenter(offscreen, { x: 0.5, y: 0.5 }, [padded(10), { padding: 99, enabled: false }], {
+            width: 800,
+            height: 600,
+        });
+        // Clipped to x=0 first, then padded: the area starts at -10, so the element's center (x=50) is 60 in.
+        expect(area.x).toBe(-10);
+        expect(x).toBe(60);
+    });
+
+    test("circleOverhang: how far a circle around the center sticks out of the bounds", () => {
+        expect(circleOverhang({ x: 100, y: 50 }, 80, 200, 100)).toBe(30);
+        expect(circleOverhang({ x: 100, y: 50 }, 20, 200, 100)).toBe(0);
+    });
+
+    test("zoomBlurPadding: content at distance D reaches D / (1 - strength), strength capped at 0.5", () => {
+        // Centered 60x80: farthest corner at 50.
+        expect(zoomBlurPadding({ x: 30, y: 40 }, 0.2, 60, 80)).toBe(Math.ceil((50 * 0.2) / 0.8));
+        expect(zoomBlurPadding({ x: 30, y: 40 }, 0.9, 60, 80)).toBe(50);
     });
 
     test("shockwaveTravel reaches the farthest corner plus half a wavelength, or stops at radius", () => {
@@ -157,7 +185,7 @@ describe("warpIn/warpOut", () => {
 
         const [[, inFilter, inKeyframes], [, , outKeyframes]] = filterCalls(animateFilter);
         expect(inFilter).toBeInstanceOf(filters.ZoomBlurFilter);
-        expect(inFilter.center.x).toBeCloseTo(width / 2);
+        expect(inFilter.center.x).toBeCloseTo(inFilter.padding + width / 2);
         expect(inKeyframes.strength).toEqual([0.4, 0]);
         expect(outKeyframes.strength).toEqual([0, 0.4]);
     });

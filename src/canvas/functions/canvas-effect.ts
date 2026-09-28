@@ -19,13 +19,9 @@ import {
     type VignettePulseEffectProps,
     type WiggleEffectProps,
 } from "..";
-import {
-    buildGlitchJitter,
-    originToFilterCenter,
-    shockwaveTravel,
-} from "@canvas/functions/filter-effect-utility";
+import { buildGlitchJitter, shockwaveTravel, zoomBlurPadding } from "@canvas/functions/filter-effect-utility";
 import { logger } from "../../utils/log-utility";
-import { addMotionFilterEffect } from "./canvas-transition";
+import { addMotionFilterEffect, componentFilterCenter } from "./canvas-transition";
 
 /**
  * @deprecated Use `effects.shakeEffect` instead.
@@ -488,6 +484,8 @@ export namespace effects {
         } = options;
         const glitchFilter = new filters.GlitchFilter({ slices, direction, offset: 0 });
         glitchFilter.refresh();
+        // Room for slices shifted past the component's edges (otherwise they're cut off).
+        glitchFilter.padding = Math.ceil(Math.abs(strength));
         const ids: string[] = [];
         const glitchId = addMotionFilterEffect(
             alias,
@@ -500,10 +498,12 @@ export namespace effects {
         glitchId && ids.push(glitchId);
         if (rgbSplit !== 0) {
             const envelope = buildGlitchJitter(rgbSplit, decay, bursts);
+            const split = new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } });
+            split.padding = Math.ceil(Math.abs(rgbSplit));
             const splitId = addMotionFilterEffect(
                 alias,
                 component,
-                new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } }),
+                split,
                 { redX: envelope, blueX: envelope.map((v) => -v) },
                 { ease, ...rest },
                 priority,
@@ -541,6 +541,8 @@ export namespace effects {
             green: { x: 0, y: 0 },
             blue: { x: 0, y: 0 },
         });
+        // Room for the channels shifted past the component's edges (otherwise they're cut off).
+        filter.padding = Math.ceil(Math.abs(strength));
         const redProp = axis === "horizontal" ? "redX" : "redY";
         const blueProp = axis === "horizontal" ? "blueX" : "blueY";
         const keyframes = {
@@ -583,11 +585,13 @@ export namespace effects {
             strength: strengthOption,
             ...rest
         } = options;
-        const { x, y, width, height } = originToFilterCenter(component, origin);
+        const { width, height } = component.getBounds();
         const strength =
-            strengthOption ?? shockwaveTravel({ x, y }, { width, height }, wavelength, radius) / speed;
-        const filter: Filter = new filters.ShockwaveFilter({
-            center: { x, y },
+            strengthOption ??
+            shockwaveTravel({ x: origin.x * width, y: origin.y * height }, { width, height }, wavelength, radius) /
+                speed;
+        const shockwave = new filters.ShockwaveFilter({
+            center: { x: 0, y: 0 },
             amplitude,
             wavelength,
             brightness,
@@ -595,7 +599,11 @@ export namespace effects {
             speed,
             time: 0,
         });
-        const id = addMotionFilterEffect(alias, component, filter, { time: [0, strength] }, rest, priority);
+        // The shader displaces by up to 1.25x `amplitude` - room for edges pushed past the bounds.
+        shockwave.padding = Math.ceil(Math.abs(amplitude) * 1.25);
+        const id = addMotionFilterEffect(alias, component, shockwave, { time: [0, strength] }, rest, priority);
+        const { x, y } = componentFilterCenter(component, origin);
+        shockwave.center = { x, y };
         if (id) {
             return [id];
         }
@@ -630,10 +638,13 @@ export namespace effects {
             decay = 0.5,
             ...rest
         } = options;
-        const { x, y } = originToFilterCenter(component, origin);
-        const filter: Filter = new filters.ZoomBlurFilter({ center: { x, y }, innerRadius, radius, strength: 0 });
+        const zoom = new filters.ZoomBlurFilter({ center: { x: 0, y: 0 }, innerRadius, radius, strength: 0 });
+        const { width, height } = component.getBounds();
+        zoom.padding = zoomBlurPadding({ x: origin.x * width, y: origin.y * height }, strength, width, height);
         const array = buildDecayingPulses(0, strength, decay, bursts);
-        const id = addMotionFilterEffect(alias, component, filter, { strength: array }, rest, priority);
+        const id = addMotionFilterEffect(alias, component, zoom, { strength: array }, rest, priority);
+        const { x, y } = componentFilterCenter(component, origin);
+        zoom.center = { x, y };
         if (id) {
             return [id];
         }
