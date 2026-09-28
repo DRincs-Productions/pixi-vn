@@ -14,10 +14,10 @@ import {
 import {
     buildGlitchJitter,
     circleOverhang,
-    filterAreaCenter,
     shockwaveTravel,
     zoomBlurPadding,
 } from "@canvas/functions/filter-effect-utility";
+import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
 import type { ColorType } from "@canvas/types/ColorType";
 import { filters } from "@drincs/pixi-vn/filters";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
@@ -204,95 +204,6 @@ export function pushOut(
     priority?: UPDATE_PRIORITY,
 ): string[] | undefined {
     return transitions.pushOut(alias, props, priority);
-}
-
-/**
- * Attaches `filter` to `component.filters` (preserving any filters already there) and drives
- * `keyframes` on the filter's own properties via `filters.animate` (`MotionFilterTicker`,
- * `motion`-backed - see {@link transitions.blurIn}/{@link transitions.pixelateIn}), detaching and
- * destroying it once the animation completes. The same "never leave the component in a different
- * state than before the effect" guarantee `addMotionValueEffect` gives wipe/iris/split's mask cleanup.
- *
- * A plain module-level export (not part of the `transitions` namespace, so it isn't part of the
- * package's public API) - reused by both `transitions` (this file) and the filter-based primitives in
- * `effects` (`canvas-effect.ts`), which need the exact same attach/animate/detach dance.
- */
-export function addMotionFilterEffect(
-    alias: string,
-    component: CanvasBaseInterface<any>,
-    filter: Filter,
-    keyframes: Record<string, number[]>,
-    args: {
-        duration?: number;
-        delay?: number | ((index: number, total: number) => number);
-        ease?: unknown;
-        /** Normalized (0-1) keyframe offsets, forwarded to `filters.animate` as-is - see `motion`'s own `times`. */
-        times?: number[];
-        completeOnContinue?: boolean;
-        aliasToRemoveAfter?: string[] | string;
-        /** `false` creates the ticker paused, to be resumed by another ticker's `tickerIdToResume`. */
-        autoplay?: boolean;
-    },
-    priority?: UPDATE_PRIORITY,
-): string | undefined {
-    const existingFilters = component.filters
-        ? Array.isArray(component.filters)
-            ? component.filters
-            : [component.filters]
-        : [];
-    component.filters = [...existingFilters, filter];
-    const id = filters.animate(
-        alias,
-        filter,
-        keyframes,
-        {
-            duration: args.duration ?? 1,
-            delay: args.delay,
-            ease: args.ease as AnimationOptions["ease"],
-            times: args.times,
-            aliasToRemoveAfter: args.aliasToRemoveAfter,
-            autoplay: args.autoplay,
-        },
-        priority,
-        undefined,
-        () => {
-            const remaining = (
-                component.filters
-                    ? Array.isArray(component.filters)
-                        ? component.filters
-                        : [component.filters]
-                    : []
-            ).filter((existing) => existing !== filter);
-            component.filters = remaining.length > 0 ? remaining : null;
-            filter.destroy();
-        },
-    );
-    if (id && (args.completeOnContinue ?? true)) {
-        tickers.completeOnStepEnd({ id });
-    }
-    return id;
-}
-
-/**
- * {@link filterAreaCenter} for `component` as it is right now: its current filters (so call it once
- * the effect's own filters are attached) and the renderer's viewport, when there is one.
- */
-export function componentFilterCenter(
-    component: CanvasBaseInterface<any>,
-    origin: { x: number; y: number },
-): ReturnType<typeof filterAreaCenter> {
-    const current = component.filters
-        ? Array.isArray(component.filters)
-            ? component.filters
-            : [component.filters]
-        : [];
-    let viewport: { width: number; height: number } | undefined;
-    try {
-        viewport = canvas.screen;
-    } catch {
-        viewport = undefined;
-    }
-    return filterAreaCenter(component.getBounds(), origin, current as Filter[], viewport);
 }
 
 export namespace transitions {

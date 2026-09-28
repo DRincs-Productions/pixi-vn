@@ -10,6 +10,7 @@ import "./filter-transition-examples";
 import "./flash-transition-example";
 import "./iris-transition-example";
 import "./move-transition-example";
+import "./persistent-filters-example";
 import "./pixelate-transition-example";
 import "./push-transition-example";
 import "./split-transition-example";

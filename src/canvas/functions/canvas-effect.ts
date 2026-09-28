@@ -21,7 +21,7 @@ import {
 } from "..";
 import { buildGlitchJitter, shockwaveTravel, zoomBlurPadding } from "@canvas/functions/filter-effect-utility";
 import { logger } from "../../utils/log-utility";
-import { addMotionFilterEffect, componentFilterCenter } from "./canvas-transition";
+import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
 
 /**
  * @deprecated Use `effects.shakeEffect` instead.
