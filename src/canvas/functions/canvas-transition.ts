@@ -11,12 +11,20 @@ import {
     type SplitFilterConfig,
     type WipeFilterConfig,
 } from "@canvas/functions/canvas-filter-transition-utility";
+import {
+    buildGlitchJitter,
+    circleOverhang,
+    shockwaveTravel,
+    zoomBlurPadding,
+} from "@canvas/functions/filter-effect-utility";
+import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
 import type { ColorType } from "@canvas/types/ColorType";
 import { filters } from "@drincs/pixi-vn/filters";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
 import type {
     Filter,
     Container as PixiJsContainer,
+    PointData,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -34,14 +42,22 @@ import VideoSprite from "../components/VideoSprite";
 import { CanvasPropertyUtility as PropsUtils } from "../functions/canvas-property-utility";
 import type {
     BlurInOutProps,
+    FilterFadeTransitionProps,
     FlashInOutProps,
+    GlitchInOutProps,
     IrisInOutProps,
     MoveInOutProps,
+    NoiseDissolveInOutProps,
+    PinchInOutProps,
     PixelateInOutProps,
     PushInOutProps,
+    RippleInOutProps,
     ShowWithDissolveTransitionProps,
     ShowWithFadeTransitionProps,
     SplitInOutProps,
+    TvInOutProps,
+    TwistInOutProps,
+    WarpInOutProps,
     WipeInOutProps,
     ZoomInOutProps,
 } from "../interfaces/transition-props";
@@ -398,63 +414,6 @@ export namespace transitions {
     }
 
     /**
-     * Attaches `filter` to `component.filters` (preserving any filters already there) and drives
-     * `keyframes` on the filter's own properties via `filters.animate` (`MotionFilterTicker`,
-     * `motion`-backed - see {@link blurIn}/{@link pixelateIn}), detaching and destroying it once the
-     * animation completes. The same "never leave the component in a different state than before the
-     * transition" guarantee {@link addMotionValueEffect}'s mask cleanup gives wipe/iris/split.
-     */
-    function addMotionFilterEffect(
-        alias: string,
-        component: CanvasBaseInterface<any>,
-        filter: Filter,
-        keyframes: Record<string, number[]>,
-        args: {
-            duration?: number;
-            delay?: number | ((index: number, total: number) => number);
-            ease?: unknown;
-            completeOnContinue?: boolean;
-            aliasToRemoveAfter?: string[];
-        },
-        priority?: UPDATE_PRIORITY,
-    ): string | undefined {
-        const existingFilters = component.filters
-            ? Array.isArray(component.filters)
-                ? component.filters
-                : [component.filters]
-            : [];
-        component.filters = [...existingFilters, filter];
-        const id = filters.animate(
-            alias,
-            filter,
-            keyframes,
-            {
-                duration: args.duration ?? 1,
-                delay: args.delay,
-                ease: args.ease as AnimationOptions["ease"],
-                aliasToRemoveAfter: args.aliasToRemoveAfter,
-            },
-            priority,
-            undefined,
-            () => {
-                const remaining = (
-                    component.filters
-                        ? Array.isArray(component.filters)
-                            ? component.filters
-                            : [component.filters]
-                        : []
-                ).filter((existing) => existing !== filter);
-                component.filters = remaining.length > 0 ? remaining : null;
-                filter.destroy();
-            },
-        );
-        if (id && (args.completeOnContinue ?? true)) {
-            tickers.completeOnStepEnd({ id });
-        }
-        return id;
-    }
-
-    /**
      * Optionally softens what would otherwise be an instant pop-in/pop-out by fading `component`'s own
      * alpha, at a quarter of `mainDuration`, mirrored to the start (`"in"`) or end (`"out"`) of the main
      * effect - used by `blurIn`/`blurOut`, `flashIn` (fresh element only, see {@link flashReplace} for
@@ -799,6 +758,7 @@ export namespace transitions {
             tickerIdToResume = [],
             aliasToRemoveAfter = [],
             removeOldComponentWithMoveOut,
+            motionBlur,
             ...options
         } = props;
         const res: string[] = [];
@@ -896,6 +856,15 @@ export namespace transitions {
             priority,
         );
         idShow && res.push(idShow);
+        const idBlur = addMoveMotionBlur(
+            alias,
+            component,
+            direction,
+            motionBlur,
+            { ...options, completeOnContinue },
+            priority,
+        );
+        idBlur && res.push(idBlur);
         // return the ids of the tickers
         if (res.length > 0) {
             return res;
@@ -919,6 +888,7 @@ export namespace transitions {
             direction = "right",
             completeOnContinue = true,
             aliasToRemoveAfter = [],
+            motionBlur,
             ...options
         } = props;
         if (typeof aliasToRemoveAfter === "string") {
@@ -958,9 +928,15 @@ export namespace transitions {
             },
             priority,
         );
-        if (id) {
-            return [id];
-        }
+        const idBlur = addMoveMotionBlur(
+            alias,
+            component,
+            direction,
+            motionBlur,
+            { ...options, completeOnContinue },
+            priority,
+        );
+        return collectTickerIds([id, idBlur]);
     }
 
     /**
@@ -1219,6 +1195,7 @@ export namespace transitions {
             direction = "right",
             completeOnContinue = true,
             tickerIdToResume = [],
+            motionBlur,
             ...options
         } = props;
         const res: string[] = [];
@@ -1311,6 +1288,15 @@ export namespace transitions {
             priority,
         );
         idShow && res.push(idShow);
+        const idBlur = addMoveMotionBlur(
+            alias,
+            component,
+            direction,
+            motionBlur,
+            { ...options, completeOnContinue },
+            priority,
+        );
+        idBlur && res.push(idBlur);
         // return the ids of the tickers
         if (res.length > 0) {
             return res;
@@ -2251,5 +2237,680 @@ export namespace transitions {
         if (upId) {
             return [upId];
         }
+    }
+
+    /**
+     * Adds the optional motion-blur trail of the move/push transitions ({@link MoveInOutProps.motionBlur}):
+     * a `MotionBlurFilter` whose velocity ramps up along the movement axis and back to 0, so the
+     * component always ends sharp. Without an explicit `duration` it assumes `motion`'s default 0.3s
+     * tween; a mismatch only shifts when the trail peaks, never leaves it blurred.
+     */
+    function addMoveMotionBlur(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        direction: "up" | "down" | "left" | "right",
+        motionBlur: boolean | number | undefined,
+        options: AnimationOptions,
+        priority?: UPDATE_PRIORITY,
+    ): string | undefined {
+        if (!motionBlur) {
+            return;
+        }
+        const length = motionBlur === true ? 40 : motionBlur;
+        const axis = direction === "up" || direction === "down" ? "velocityY" : "velocityX";
+        const sign = direction === "up" || direction === "left" ? -1 : 1;
+        const filter = new filters.MotionBlurFilter({ velocity: { x: 0, y: 0 }, kernelSize: 15 });
+        return addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { [axis]: [0, sign * length, 0] },
+            {
+                duration: options.duration ?? 0.3,
+                delay: options.delay,
+                ease: options.ease,
+                completeOnContinue: options.completeOnContinue,
+                autoplay: options.autoplay,
+            },
+            priority,
+        );
+    }
+
+    /** Timing shared by every ticker of one filter-based transition (see {@link filterTransitionIn}). */
+    interface FilterTransitionTiming {
+        duration: number;
+        delay?: AnimationOptions["delay"];
+        ease?: AnimationOptions["ease"];
+        completeOnContinue: boolean;
+    }
+
+    /** Callback adding a filter-based transition's ticker(s); `aliasToRemoveAfter` belongs on its main ticker. */
+    type AttachFilterTransition = (
+        component: CanvasBaseInterface<any>,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+    ) => (string | undefined)[];
+
+    function collectTickerIds(ids: (string | undefined)[]): string[] | undefined {
+        const res = ids.filter((id): id is string => !!id);
+        return res.length > 0 ? res : undefined;
+    }
+
+    /**
+     * Shared scaffolding for the filter-based `xIn` transitions - the same steps {@link blurIn} spells
+     * out: swaps in the new component (the replaced one is removed once the effect ends), loads its
+     * texture, optionally fades it in alongside, then lets `attach` add the actual filter ticker(s).
+     */
+    async function filterTransitionIn(
+        alias: string,
+        component: TComponent | undefined,
+        tag: string,
+        props: FilterFadeTransitionProps,
+        defaultFadeComponent: boolean,
+        priority: UPDATE_PRIORITY | undefined,
+        attach: AttachFilterTransition,
+    ): Promise<string[] | undefined> {
+        const { duration, delay, ease, completeOnContinue = true, fadeComponent = defaultFadeComponent } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component ?? alias,
+            tag,
+        );
+        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const resolvedDuration = duration ?? 1;
+        if (fadeComponent) {
+            fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
+        }
+        return collectTickerIds(
+            attach(
+                newComponent,
+                { duration: resolvedDuration, delay, ease, completeOnContinue },
+                aliasToRemoveAfter,
+            ),
+        );
+    }
+
+    /**
+     * Shared scaffolding for the filter-based `xOut` transitions - the same steps {@link blurOut}
+     * spells out: optionally fades the component out alongside, lets `attach` add the filter ticker(s),
+     * and the component is removed once the main ticker completes.
+     */
+    function filterTransitionOut(
+        alias: string,
+        props: FilterFadeTransitionProps,
+        defaultFadeComponent: boolean,
+        priority: UPDATE_PRIORITY | undefined,
+        attach: AttachFilterTransition,
+    ): string[] | undefined {
+        const { duration, delay, ease, completeOnContinue = true, fadeComponent = defaultFadeComponent } = props;
+        let { aliasToRemoveAfter = [] } = props;
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
+        }
+        aliasToRemoveAfter.push(alias);
+        const component = canvas.find(alias);
+        if (!component) {
+            logger.warn(`The canvas component "${alias}" is not found.`);
+            return;
+        }
+        const resolvedDuration = duration ?? 1;
+        if (fadeComponent) {
+            fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
+        }
+        return collectTickerIds(
+            attach(component, { duration: resolvedDuration, delay, ease, completeOnContinue }, aliasToRemoveAfter),
+        );
+    }
+
+    function halfDiagonal(component: CanvasBaseInterface<any>): number {
+        const { width, height } = component.getBounds();
+        return Math.hypot(width, height) / 2;
+    }
+
+    function resolveOrigin(origin?: Partial<PointData>): { x: number; y: number } {
+        return { x: origin?.x ?? 0.5, y: origin?.y ?? 0.5 };
+    }
+
+    function addGlitchTickers(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        phase: "in" | "out",
+        props: GlitchInOutProps,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+        priority?: UPDATE_PRIORITY,
+    ): (string | undefined)[] {
+        const { strength = 40, bursts = 3, slices = 8, rgbSplit = 6 } = props;
+        // `glitchIn` starts at its strongest and settles; `glitchOut` builds up towards removal.
+        const shape = (peak: number) => {
+            const values = buildGlitchJitter(peak, 0.5, bursts);
+            return phase === "in" ? values : values.reverse();
+        };
+        const args = { ...timing, ease: timing.ease ?? "linear" };
+        const glitch = new filters.GlitchFilter({ slices, offset: 0 });
+        glitch.refresh();
+        // Room for slices shifted past the component's edges (otherwise they're cut off).
+        glitch.padding = Math.ceil(Math.abs(strength));
+        const ids = [
+            addMotionFilterEffect(
+                alias,
+                component,
+                glitch as Filter,
+                { offset: shape(strength) },
+                { ...args, aliasToRemoveAfter },
+                priority,
+            ),
+        ];
+        if (rgbSplit !== 0) {
+            const envelope = shape(rgbSplit);
+            const split = new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } });
+            split.padding = Math.ceil(Math.abs(rgbSplit));
+            ids.push(
+                addMotionFilterEffect(
+                    alias,
+                    component,
+                    split,
+                    { redX: envelope, blueX: envelope.map((v) => -v) },
+                    args,
+                    priority,
+                ),
+            );
+        }
+        return ids;
+    }
+
+    /**
+     * Show a image in the canvas with a glitch effect: the image materializes out of jittery bursts of
+     * digital-corruption slices with red/blue fringing, which settle as it appears. See
+     * {@link GlitchInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function glitchIn(
+        alias: string,
+        component?: TComponent,
+        props: GlitchInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        return filterTransitionIn(alias, component, "glitch", props, true, priority, (target, timing, remove) =>
+            addGlitchTickers(alias, target, "in", props, timing, remove, priority),
+        );
+    }
+
+    /**
+     * Remove a image from the canvas with a glitch effect: digital-corruption bursts build up until the
+     * image is removed. See {@link glitchIn} and {@link GlitchInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function glitchOut(
+        alias: string,
+        props: GlitchInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        return filterTransitionOut(alias, props, true, priority, (target, timing, remove) =>
+            addGlitchTickers(alias, target, "out", props, timing, remove, priority),
+        );
+    }
+
+    function addTwistTicker(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        phase: "in" | "out",
+        props: TwistInOutProps,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+        priority?: UPDATE_PRIORITY,
+    ): (string | undefined)[] {
+        const { angle = 540, radius = halfDiagonal(component), origin } = props;
+        const center = resolveOrigin(origin);
+        const wound = (angle * Math.PI) / 180;
+        const keyframes = phase === "in" ? [wound, 0] : [0, wound];
+        const filter = new filters.TwistFilter({ radius, angle: keyframes[0] });
+        // The swirl rotates content within `radius` of the center - room for the part of that circle
+        // that overhangs the component, so it isn't cut off (never less than TwistFilter's own default).
+        const { width, height } = component.getBounds();
+        filter.padding = Math.max(
+            filter.padding,
+            circleOverhang({ x: center.x * width, y: center.y * height }, radius, width, height),
+        );
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { angle: keyframes },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        const { x, y } = componentFilterCenter(component, center);
+        filter.offsetX = x;
+        filter.offsetY = y;
+        return [id];
+    }
+
+    /**
+     * Show a image in the canvas with a twist effect: the image unwinds out of a swirl, like coming
+     * through a vortex or portal. See {@link TwistInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function twistIn(
+        alias: string,
+        component?: TComponent,
+        props: TwistInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        return filterTransitionIn(alias, component, "twist", props, true, priority, (target, timing, remove) =>
+            addTwistTicker(alias, target, "in", props, timing, remove, priority),
+        );
+    }
+
+    /**
+     * Remove a image from the canvas with a twist effect: the image winds up into a swirl before being
+     * removed. See {@link twistIn} and {@link TwistInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function twistOut(
+        alias: string,
+        props: TwistInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        return filterTransitionOut(alias, props, true, priority, (target, timing, remove) =>
+            addTwistTicker(alias, target, "out", props, timing, remove, priority),
+        );
+    }
+
+    function addWarpTicker(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        phase: "in" | "out",
+        props: WarpInOutProps,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+        priority?: UPDATE_PRIORITY,
+    ): (string | undefined)[] {
+        const { strength = 0.6, origin } = props;
+        const center = resolveOrigin(origin);
+        const keyframes = phase === "in" ? [strength, 0] : [0, strength];
+        const filter = new filters.ZoomBlurFilter({ center: { x: 0, y: 0 }, strength: keyframes[0] });
+        const { width, height } = component.getBounds();
+        filter.padding = zoomBlurPadding({ x: center.x * width, y: center.y * height }, strength, width, height);
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { strength: keyframes },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        const { x, y } = componentFilterCenter(component, center);
+        filter.center = { x, y };
+        return [id];
+    }
+
+    /**
+     * Show a image in the canvas with a warp effect: the image arrives out of radial zoom-blur streaks,
+     * like dropping out of hyperspace. See {@link WarpInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function warpIn(
+        alias: string,
+        component?: TComponent,
+        props: WarpInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        return filterTransitionIn(alias, component, "warp", props, true, priority, (target, timing, remove) =>
+            addWarpTicker(alias, target, "in", props, timing, remove, priority),
+        );
+    }
+
+    /**
+     * Remove a image from the canvas with a warp effect: the image streaks away in a radial zoom blur
+     * before being removed. See {@link warpIn} and {@link WarpInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function warpOut(
+        alias: string,
+        props: WarpInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        return filterTransitionOut(alias, props, true, priority, (target, timing, remove) =>
+            addWarpTicker(alias, target, "out", props, timing, remove, priority),
+        );
+    }
+
+    function addRippleTicker(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        props: RippleInOutProps,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+        priority?: UPDATE_PRIORITY,
+    ): (string | undefined)[] {
+        const { origin, amplitude = 30, wavelength = 160, speed = 500 } = props;
+        const center = resolveOrigin(origin);
+        const { width, height } = component.getBounds();
+        const filter = new filters.ShockwaveFilter({ center: { x: 0, y: 0 }, amplitude, wavelength, speed, time: 0 });
+        // The shader displaces by up to 1.25x `amplitude` - room for edges pushed past the bounds.
+        filter.padding = Math.ceil(Math.abs(amplitude) * 1.25);
+        const time =
+            shockwaveTravel({ x: center.x * width, y: center.y * height }, { width, height }, wavelength, -1) / speed;
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { time: [0, time] },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        const { x, y } = componentFilterCenter(component, center);
+        filter.center = { x, y };
+        return [id];
+    }
+
+    /**
+     * Show a image in the canvas with a ripple effect: the image fades in through a ring of water-like
+     * distortion spreading outward from an origin point - for dreams, magic or memories. See
+     * {@link RippleInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function rippleIn(
+        alias: string,
+        component?: TComponent,
+        props: RippleInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        return filterTransitionIn(alias, component, "ripple", props, true, priority, (target, timing, remove) =>
+            addRippleTicker(alias, target, props, timing, remove, priority),
+        );
+    }
+
+    /**
+     * Remove a image from the canvas with a ripple effect: a ring of water-like distortion spreads over
+     * the image as it fades out and is removed. See {@link rippleIn} and {@link RippleInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function rippleOut(
+        alias: string,
+        props: RippleInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        return filterTransitionOut(alias, props, true, priority, (target, timing, remove) =>
+            addRippleTicker(alias, target, props, timing, remove, priority),
+        );
+    }
+
+    function addNoiseDissolveTicker(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        phase: "in" | "out",
+        props: NoiseDissolveInOutProps,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+        priority?: UPDATE_PRIORITY,
+    ): (string | undefined)[] {
+        const { edge = "hard", noiseScale = 8, seed = Math.random() * 1000 } = props;
+        // SimplexNoiseFilter outputs `texture * clamp(noise + 2 * strength - 1)`, thresholded at `step`
+        // when `step > 0`: fully hidden -> fully shown spans strength 0 -> 1 soft, 0.25 -> 0.75 hard.
+        const [hidden, shown] = edge === "hard" ? [0.25, 0.75] : [0, 1];
+        const keyframes = phase === "in" ? [hidden, shown] : [shown, hidden];
+        const filter = new filters.SimplexNoiseFilter({
+            strength: keyframes[0],
+            noiseScale,
+            offsetZ: seed,
+            step: edge === "hard" ? 0.5 : 0,
+        });
+        return [
+            addMotionFilterEffect(alias, component, filter, { strength: keyframes }, { ...timing, aliasToRemoveAfter }, priority),
+        ];
+    }
+
+    /**
+     * Show a image in the canvas with a noise dissolve: the image appears in organic, noise-shaped
+     * blotches (or a cloudy fade with `edge: "soft"`) - the classic visual-novel image dissolve. See
+     * {@link NoiseDissolveInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function noiseDissolveIn(
+        alias: string,
+        component?: TComponent,
+        props: NoiseDissolveInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        return filterTransitionIn(alias, component, "noise", props, false, priority, (target, timing, remove) =>
+            addNoiseDissolveTicker(alias, target, "in", props, timing, remove, priority),
+        );
+    }
+
+    /**
+     * Remove a image from the canvas with a noise dissolve: the image disappears in noise-shaped
+     * blotches and is then removed. See {@link noiseDissolveIn} and {@link NoiseDissolveInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function noiseDissolveOut(
+        alias: string,
+        props: NoiseDissolveInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        return filterTransitionOut(alias, props, false, priority, (target, timing, remove) =>
+            addNoiseDissolveTicker(alias, target, "out", props, timing, remove, priority),
+        );
+    }
+
+    function addTvTickers(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        phase: "in" | "out",
+        props: TvInOutProps,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+        priority?: UPDATE_PRIORITY,
+    ): (string | undefined)[] {
+        const { lineThickness = 0.02, brightness = 3, scanlines = true } = props;
+        const sx = component.scale.x;
+        const sy = component.scale.y;
+        const line = sy * lineThickness;
+        // Out: collapse to a bright horizontal line, then to a dot. In: the same, reversed.
+        const times = phase === "in" ? [0, 0.45, 1] : [0, 0.55, 1];
+        const scaleX = phase === "in" ? [0, sx, sx] : [sx, sx, 0];
+        const scaleY = phase === "in" ? [line, line, sy] : [sy, line, line];
+        const glow = phase === "in" ? [brightness, brightness, 1] : [1, brightness, brightness];
+        if (phase === "in") {
+            component.scale.set(0, line);
+        }
+        const ids = [
+            canvas.animate(
+                alias,
+                { scaleX, scaleY },
+                {
+                    duration: timing.duration,
+                    delay: timing.delay,
+                    ease: timing.ease,
+                    times,
+                    completeOnContinue: timing.completeOnContinue,
+                    aliasToRemoveAfter,
+                },
+                priority,
+            ),
+            addMotionFilterEffect(
+                alias,
+                component,
+                new filters.AdjustmentFilter({ brightness: glow[0] }),
+                { brightness: glow },
+                { ...timing, times },
+                priority,
+            ),
+        ];
+        if (scanlines) {
+            const lines = phase === "in" ? [0.5, 0.5, 0] : [0, 0.5, 0.5];
+            ids.push(
+                addMotionFilterEffect(
+                    alias,
+                    component,
+                    new filters.CRTFilter({
+                        curvature: 0,
+                        vignettingAlpha: 0,
+                        lineWidth: 3,
+                        lineContrast: lines[0],
+                        noise: lines[0],
+                    }),
+                    { lineContrast: lines, noise: lines },
+                    { ...timing, times },
+                    priority,
+                ),
+            );
+        }
+        return ids;
+    }
+
+    /**
+     * Show a image in the canvas like an old TV turning on: a bright dot stretches into a glowing
+     * horizontal line, which then opens up into the full image, with CRT scanlines. The scale animates
+     * around the component's own anchor/pivot, so a centered anchor looks best. See
+     * {@link TvInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function tvIn(
+        alias: string,
+        component?: TComponent,
+        props: TvInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        return filterTransitionIn(alias, component, "tv", props, false, priority, (target, timing, remove) =>
+            addTvTickers(alias, target, "in", props, timing, remove, priority),
+        );
+    }
+
+    /**
+     * Remove a image from the canvas like an old TV turning off: the image collapses into a glowing
+     * horizontal line, then into a dot, and is removed. The scale animates around the component's own
+     * anchor/pivot, so a centered anchor looks best. See {@link tvIn} and {@link TvInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function tvOut(alias: string, props: TvInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
+        return filterTransitionOut(alias, props, false, priority, (target, timing, remove) =>
+            addTvTickers(alias, target, "out", props, timing, remove, priority),
+        );
+    }
+
+    function addPinchTicker(
+        alias: string,
+        component: CanvasBaseInterface<any>,
+        phase: "in" | "out",
+        props: PinchInOutProps,
+        timing: FilterTransitionTiming,
+        aliasToRemoveAfter: string[],
+        priority?: UPDATE_PRIORITY,
+    ): (string | undefined)[] {
+        const { strength = 1, mode = "pinch", radius = halfDiagonal(component), origin } = props;
+        const peak = (mode === "bulge" ? 1 : -1) * strength;
+        const center = resolveOrigin(origin);
+        const keyframes = phase === "in" ? [peak, 0] : [0, peak];
+        const filter = new filters.BulgePinchFilter({ center, radius, strength: keyframes[0] });
+        if (mode === "bulge") {
+            // A bulge pushes content outward, up to `radius` from the center; a pinch only pulls inward.
+            const { width, height } = component.getBounds();
+            filter.padding = circleOverhang({ x: center.x * width, y: center.y * height }, radius, width, height);
+        }
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { strength: keyframes },
+            { ...timing, aliasToRemoveAfter },
+            priority,
+        );
+        // BulgePinchFilter's `center` is normalized to the filter area (`uCenter * uDimensions`), which
+        // padding and viewport clipping make differ from the component's own bounds.
+        const { x, y, area } = componentFilterCenter(component, center);
+        filter.center = { x: x / area.width, y: y / area.height };
+        return [id];
+    }
+
+    /**
+     * Show a image in the canvas with a pinch effect: the image emerges from a single point, deforming
+     * outward as it settles (or puffs out of it with `mode: "bulge"`). See {@link PinchInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns A promise that contains the ids of the tickers that are used in the effect. The promise is resolved when the image is loaded.
+     */
+    export async function pinchIn(
+        alias: string,
+        component?: TComponent,
+        props: PinchInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): Promise<string[] | undefined> {
+        return filterTransitionIn(alias, component, "pinch", props, true, priority, (target, timing, remove) =>
+            addPinchTicker(alias, target, "in", props, timing, remove, priority),
+        );
+    }
+
+    /**
+     * Remove a image from the canvas with a pinch effect: the image is sucked into a single point (or
+     * puffs out with `mode: "bulge"`) and removed. See {@link pinchIn} and {@link PinchInOutProps}.
+     * @param alias The unique alias of the image. You can use this alias to refer to this image
+     * @param props The properties of the effect
+     * @param priority The priority of the effect
+     * @returns The ids of the tickers that are used in the effect.
+     */
+    export function pinchOut(
+        alias: string,
+        props: PinchInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
+        return filterTransitionOut(alias, props, true, priority, (target, timing, remove) =>
+            addPinchTicker(alias, target, "out", props, timing, remove, priority),
+        );
     }
 }

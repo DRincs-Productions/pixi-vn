@@ -11,20 +11,34 @@ describe("canvas transition and effect namespaces", () => {
             "blurOut",
             "flashIn",
             "flashOut",
+            "glitchIn",
+            "glitchOut",
             "irisIn",
             "irisOut",
             "moveIn",
             "moveOut",
+            "noiseDissolveIn",
+            "noiseDissolveOut",
+            "pinchIn",
+            "pinchOut",
             "pixelateIn",
             "pixelateOut",
             "pushIn",
             "pushOut",
             "removeWithDissolve",
             "removeWithFade",
+            "rippleIn",
+            "rippleOut",
             "showWithDissolve",
             "showWithFade",
             "splitIn",
             "splitOut",
+            "tvIn",
+            "tvOut",
+            "twistIn",
+            "twistOut",
+            "warpIn",
+            "warpOut",
             "wipeIn",
             "wipeOut",
             "zoomIn",
@@ -34,8 +48,25 @@ describe("canvas transition and effect namespaces", () => {
     });
 
     test("exposes canvas effects through effects", () => {
-        expect(Object.keys(effects)).toEqual(["shakeEffect"]);
-        expect(typeof effects.shakeEffect).toBe("function");
+        expect(Object.keys(effects).sort()).toEqual([
+            "blurPulseEffect",
+            "bounceEffect",
+            "chromaticAberrationEffect",
+            "desaturateEffect",
+            "glitchEffect",
+            "glowPulseEffect",
+            "hopEffect",
+            "nodEffect",
+            "pulseEffect",
+            "punchEffect",
+            "radialBlurEffect",
+            "shakeEffect",
+            "shockwaveEffect",
+            "swayEffect",
+            "vignettePulseEffect",
+            "wiggleEffect",
+        ]);
+        expect(Object.values(effects).every((effect) => typeof effect === "function")).toBe(true);
     });
 });
 

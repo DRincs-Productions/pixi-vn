@@ -32,7 +32,13 @@ registerTestLabel(
         async () => {
             pushOut("push-image", { direction: "up", duration: 1 });
             narration.dialogue = {
-                text: "pushOut (to top): the blue image should be pushed off the top of the canvas and removed.",
+                text: "pushOut (to top): the blue image should be pushed off the top of the canvas and removed. Continue for motionBlur.",
+            };
+        },
+        async () => {
+            await pushIn("push-image", imageA, { direction: "left", duration: 1, motionBlur: true });
+            narration.dialogue = {
+                text: "pushIn with motionBlur: the orange image should push in from the left with a horizontal smear, ending sharp.",
             };
         },
     ],

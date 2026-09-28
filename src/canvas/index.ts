@@ -78,7 +78,25 @@ export type { default as CanvasLayersInterface } from "./interfaces/CanvasLayers
 export type { default as CanvasManagerInterface } from "./interfaces/CanvasManagerInterface";
 /** @deprecated Use `TickersInterface` from `@drincs/pixi-vn` instead. */
 export type { TickersInterface as CanvasTickersInterface } from "@drincs/pixi-vn/tickers";
-export type { ShakeEffectProps } from "./interfaces/effect-props";
+export type {
+    BlurPulseEffectProps,
+    BounceEffectProps,
+    ChromaticAberrationEffectProps,
+    DecayingEffectProps,
+    DesaturateEffectProps,
+    GlitchEffectProps,
+    GlowPulseEffectProps,
+    HopEffectProps,
+    NodEffectProps,
+    PulseEffectProps,
+    PunchEffectProps,
+    RadialBlurEffectProps,
+    ShakeEffectProps,
+    ShockwaveEffectProps,
+    SwayEffectProps,
+    VignettePulseEffectProps,
+    WiggleEffectProps,
+} from "./interfaces/effect-props";
 export type { default as CanvasBaseItemMemory } from "./interfaces/memory/CanvasBaseItemMemory";
 export type { default as ContainerMemory } from "./interfaces/memory/ContainerMemory";
 export type { default as ImageContainerMemory } from "./interfaces/memory/ImageContainerMemory";
@@ -88,15 +106,23 @@ export type { default as TextMemory } from "./interfaces/memory/TextMemory";
 export type { default as VideoSpriteMemory } from "./interfaces/memory/VideoSpriteMemory";
 export type {
     BlurInOutProps,
+    FilterFadeTransitionProps,
     FlashInOutProps,
+    GlitchInOutProps,
     IrisInOutProps,
     MaskTransitionProps,
     MoveInOutProps,
+    NoiseDissolveInOutProps,
+    PinchInOutProps,
     PixelateInOutProps,
     PushInOutProps,
+    RippleInOutProps,
     ShowWithDissolveTransitionProps,
     ShowWithFadeTransitionProps,
     SplitInOutProps,
+    TvInOutProps,
+    TwistInOutProps,
+    WarpInOutProps,
     WipeInOutProps,
     ZoomInOutProps,
 } from "./interfaces/transition-props";

@@ -1,6 +1,11 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { describe, expect, test, vi } from "vitest";
+import { afterEach, describe, expect, test, vi } from "vitest";
+import { canvas } from "../src/canvas";
 import MotionFilterTicker from "../src/motion/components/MotionFilterTicker";
+// Side-effect import: registers "motion-filter" (and friends) with RegisteredTickers, exactly as
+// CanvasManager.restore() relies on happening before it calls RegisteredTickers.getInstance().
+import "../src/motion";
+import RegisteredTickers from "../src/tickers/decorators/RegisteredTickers";
 
 /**
  * `motion`'s own synchronous "write the first keyframe during construction" behavior (the root cause
@@ -102,6 +107,133 @@ describe("MotionFilterTicker", () => {
         expect(ticker.paused).toBe(true);
         ticker.play();
         expect(ticker.paused).toBe(false);
+    });
+});
+
+/**
+ * Regression coverage for a real bug: `MotionFilterTicker` could never survive
+ * `CanvasManager.export()`/`restore()` (e.g. going "back" through history) because its constructor
+ * required a live `Filter` instance, and a `Filter` isn't JSON-serializable - reconstruction always
+ * threw, was silently swallowed by `RegisteredTickers.getInstance()`, and the animation was dropped,
+ * leaving the filter frozen mid-animation (confirmed live in the sandbox: `blurIn` stuck fully
+ * blurred after going back). `filterRef` (a plain `{alias, index}` pointing at
+ * `canvas.find(alias).filters[index]`) lets the ticker resolve a real filter instance on
+ * reconstruction, since the target component's filters are already rebuilt by the time
+ * `CanvasManager.restore()` gets to reconstructing tickers.
+ */
+describe("MotionFilterTicker: reconstructing without a live filter (filterRef)", () => {
+    afterEach(() => vi.restoreAllMocks());
+
+    test("resolves the filter from canvas.find(alias).filters[index] when no filter/apply is passed", () => {
+        const otherFilter = new PIXI.BlurFilter({ strength: 1 });
+        const filter = new PIXI.BlurFilter({ strength: 7 });
+        const component = { filters: [otherFilter, filter] };
+        vi.spyOn(canvas, "find").mockReturnValue(component as any);
+
+        const ticker = new MotionFilterTicker(
+            {
+                keyframes: { strength: [0, 10] },
+                options: { duration: 1 },
+                filterRef: { alias: "alias", index: 1 },
+            },
+            { canvasElementAliases: ["alias"] },
+        );
+
+        const proxy = (ticker as any).createItem();
+        expect(proxy.strength).toBe(7);
+        proxy.strength = 20;
+        expect(filter.strength).toBe(20);
+    });
+
+    test("throws when filterRef doesn't resolve to anything and no filter/apply was given", () => {
+        vi.spyOn(canvas, "find").mockReturnValue(undefined);
+
+        expect(
+            () =>
+                new MotionFilterTicker(
+                    {
+                        keyframes: { strength: [0, 10] },
+                        options: { duration: 1 },
+                        filterRef: { alias: "missing", index: 0 },
+                    },
+                    { canvasElementAliases: ["missing"] },
+                ),
+        ).toThrow();
+    });
+
+    test("args getter re-derives filterRef.index if the filter's position in .filters changes", () => {
+        const filter = new PIXI.BlurFilter({ strength: 7 });
+        const component: { filters: PIXI.Filter[] } = { filters: [filter] };
+        vi.spyOn(canvas, "find").mockReturnValue(component as any);
+
+        const ticker = new MotionFilterTicker(
+            {
+                keyframes: { strength: [0, 10] },
+                options: { duration: 1 },
+                filterRef: { alias: "alias", index: 0 },
+            },
+            { filter, canvasElementAliases: ["alias"] },
+        );
+
+        // Something else prepends a filter on the same component, shifting ours to index 1.
+        component.filters = [new PIXI.BlurFilter(), filter];
+        expect(ticker.args.filterRef).toEqual({ alias: "alias", index: 1 });
+    });
+
+    test("RegisteredTickers.getInstance() - the exact call CanvasManager.restore() makes - reconstructs the ticker instead of returning undefined", () => {
+        const filter = new PIXI.BlurFilter({ strength: 12 });
+        const component = { filters: [filter] };
+        vi.spyOn(canvas, "find").mockReturnValue(component as any);
+
+        const ticker = RegisteredTickers.getInstance(
+            "motion-filter",
+            {
+                keyframes: { strength: [0, 10] },
+                options: { duration: 1 },
+                filterRef: { alias: "alias", index: 0 },
+            },
+            { canvasElementAliases: ["alias"] },
+        );
+
+        expect(ticker).toBeDefined();
+        const proxy = (ticker as any).createItem();
+        expect(proxy.strength).toBe(12);
+    });
+
+    test("with filterRef.detach, a reconstructed ticker detaches and destroys its filter on completion", () => {
+        const other = new PIXI.BlurFilter();
+        const filter = new PIXI.BlurFilter();
+        const destroySpy = vi.spyOn(filter, "destroy");
+        const component: { filters: PIXI.Filter[] | null } = { filters: [other, filter] };
+        vi.spyOn(canvas, "find").mockReturnValue(component as any);
+
+        const ticker = new MotionFilterTicker(
+            {
+                keyframes: { strength: [0, 10] },
+                options: { duration: 1 },
+                filterRef: { alias: "alias", index: 1, detach: true },
+            },
+            { canvasElementAliases: ["alias"] },
+        );
+        // `detach` survives the args getter, so it survives the next save too.
+        expect(ticker.args.filterRef).toEqual({ alias: "alias", index: 1, detach: true });
+
+        (ticker as any).cleanup();
+
+        expect(component.filters).toEqual([other]);
+        expect(destroySpy).toHaveBeenCalledOnce();
+    });
+
+    test("without filterRef.detach, reconstruction installs no cleanup", () => {
+        const filter = new PIXI.BlurFilter();
+        vi.spyOn(canvas, "find").mockReturnValue({ filters: [filter] } as any);
+
+        const ticker = new MotionFilterTicker(
+            { keyframes: { strength: [0, 10] }, options: { duration: 1 }, filterRef: { alias: "alias", index: 0 } },
+            { canvasElementAliases: ["alias"] },
+        );
+
+        expect((ticker as any).cleanup).toBeUndefined();
     });
 });
 

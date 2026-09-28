@@ -36,7 +36,19 @@ registerTestLabel(
         async () => {
             moveOut("move-image", { direction: "down", duration: 1 });
             narration.dialogue = {
-                text: "moveOut (to bottom): the blue image should slide down off the canvas and be removed.",
+                text: "moveOut (to bottom): the blue image should slide down off the canvas and be removed. Continue for motionBlur.",
+            };
+        },
+        async () => {
+            await moveIn("move-image", imageA, { direction: "left", duration: 1, motionBlur: true });
+            narration.dialogue = {
+                text: "moveIn with motionBlur: the orange image should slide in from the left with a horizontal smear that fades out as it stops, ending sharp. Continue to move it out with motionBlur.",
+            };
+        },
+        async () => {
+            moveOut("move-image", { direction: "up", duration: 1, motionBlur: 60 });
+            narration.dialogue = {
+                text: "moveOut with motionBlur: 60: the image should slide up with a strong vertical smear and be removed.",
             };
         },
     ],
