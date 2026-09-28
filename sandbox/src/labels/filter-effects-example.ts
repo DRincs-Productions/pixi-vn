@@ -4,6 +4,7 @@ import { registerTestLabel } from "./registry";
 import { stripedTriangleSvg } from "./targets";
 
 const image = "filter-effects-example-target";
+const background = "filter-effects-example-background";
 
 registerTestLabel(
     "filter-effects-example",
@@ -55,12 +56,23 @@ registerTestLabel(
             };
         },
         async () => {
-            await effects.vignettePulseEffect(image, { strength: 1, pulses: 2 });
+            // A vignette darkens the corners of the element's own rectangle, so it's shown on a
+            // full-canvas background (the triangle's corners are transparent - nothing to darken).
+            const { width, height } = canvas;
+            const bg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${height}">
+<defs><pattern id="d" width="40" height="40" patternUnits="userSpaceOnUse" patternTransform="rotate(45)">
+<rect width="40" height="40" fill="#efe4cf"/><rect width="20" height="40" fill="#d9c7a3"/></pattern></defs>
+<rect width="${width}" height="${height}" fill="url(#d)"/></svg>`;
+            Assets.add({ alias: background, src: `data:image/svg+xml,${encodeURIComponent(bg)}` });
+            // `zIndex` is the child index here: 0 puts the background under the triangle.
+            await showImage(background, undefined, { zIndex: 0 });
+            await effects.vignettePulseEffect(background, { pulses: 2, duration: 2 });
             narration.dialogue = {
-                text: "vignettePulseEffect: darkened edges should pulse in and out around the image. Continue to run desaturateEffect.",
+                text: "vignettePulseEffect (on a full-canvas background): the corners and edges of the background should darken towards black and recover, twice. Continue to run desaturateEffect.",
             };
         },
         async () => {
+            canvas.remove(background);
             await effects.desaturateEffect(image, { amount: 0, duration: 0.4, holdDuration: 0.3 });
             narration.dialogue = {
                 text: "desaturateEffect: the image's colors should drain to grayscale, hold briefly, then recover to full color. Continue to run glowPulseEffect.",

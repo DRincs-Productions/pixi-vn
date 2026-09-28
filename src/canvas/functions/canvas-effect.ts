@@ -682,6 +682,10 @@ export namespace effects {
      * Pulse a vignette on the canvas element: the edges darken and recover, in a repeated, decaying
      * pulse - built on {@link https://pixijs.io/filters/docs/CRTFilter.html CRTFilter} with its
      * scanline/noise features turned off, isolating just the vignette.
+     *
+     * The vignette darkens the corners of the element's own bounding rectangle, so it's meant for
+     * backgrounds and other full-frame images; on a sprite with transparent corners (a character, a
+     * shape) there's little to darken and it barely shows.
      * @param alias The alias to identify the component.
      * @param options Animation options.
      * @param priority The priority of the PixiJS ticker.
@@ -698,7 +702,7 @@ export namespace effects {
             );
             return;
         }
-        const { strength = 1, pulses = 1, radius = 0.3, blur = 0.3, decay = 0.5, ...rest } = options;
+        const { strength = 1, pulses = 1, radius = 0.5, blur = 0.5, decay = 0.5, ...rest } = options;
         const filter: Filter = new filters.CRTFilter({
             curvature: 0,
             lineWidth: 0,

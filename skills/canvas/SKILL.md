@@ -408,8 +408,9 @@ await effects.radialBlurEffect("liam", { strength: 0.3, bursts: 1 });
 // reveal/conceal transitions, not a repeated pulse)
 await effects.blurPulseEffect("liam", { strength: 8, pulses: 3 });
 
-// vignettePulse: the edges darken and recover, in a repeated, decaying pulse
-await effects.vignettePulseEffect("liam", { strength: 1, pulses: 1 });
+// vignettePulse: the edges darken and recover, in a repeated, decaying pulse - it darkens the corners
+// of the element's own rectangle, so use it on backgrounds/full-frame images, not on characters
+await effects.vignettePulseEffect("background", { strength: 1, pulses: 1, radius: 0.5 });
 
 // desaturate: color drains out and recovers - a single dip, not a repeated pulse
 await effects.desaturateEffect("liam", { amount: 0, holdDuration: 0.2 });

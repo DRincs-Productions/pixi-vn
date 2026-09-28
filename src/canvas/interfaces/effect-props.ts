@@ -308,13 +308,14 @@ export interface VignettePulseEffectProps extends DecayingEffectProps {
      */
     pulses?: number;
     /**
-     * The radius of the vignette - smaller values produce a smaller (more closed-in) vignette.
-     * @default 0.3
+     * How far the darkening reaches in from the corners, from `0` (none) to `1` (the whole element) -
+     * `0.5` darkens roughly the outer half.
+     * @default 0.5
      */
     radius?: number;
     /**
-     * The blur intensity of the vignette's edge.
-     * @default 0.3
+     * How soft the transition from the clear center to the dark edges is (`0` = a hard edge).
+     * @default 0.5
      */
     blur?: number;
 }
