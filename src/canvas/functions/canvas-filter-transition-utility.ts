@@ -1,3 +1,4 @@
+import { canvas } from "@canvas/index";
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
 import { Graphics } from "@drincs/pixi-vn/pixi.js";
 
@@ -26,6 +27,8 @@ export interface WipeFilterConfig {
 }
 export interface IrisFilterConfig {
     kind: "iris";
+    /** If true the image is seen around the circle (a hole in the mask) instead of through it. */
+    outside?: boolean;
     originX: number;
     originY: number;
     aspect: number;
@@ -138,7 +141,16 @@ export function applyIrisTransition(
     const radius = Math.max(progress, 0) * maxRadius;
     const aspect = config.aspect > 0 ? config.aspect : 1;
     graphics.clear();
-    if (radius > 0) {
+    if (config.outside) {
+        // The whole component minus a circular hole.
+        const pad = maxRadius * Math.max(aspect, 1) * 2;
+        graphics
+            .rect(bounds.x - pad, bounds.y - pad, bounds.width + pad * 2, bounds.height + pad * 2)
+            .fill(0xffffff);
+        if (radius > 0) {
+            graphics.ellipse(cx, cy, radius * aspect, radius).cut();
+        }
+    } else if (radius > 0) {
         graphics.ellipse(cx, cy, radius * aspect, radius).fill(0xffffff);
     }
 }
@@ -202,4 +214,45 @@ export function cleanupFilterTransition(
             cleanupMask(component, ctx);
             break;
     }
+}
+
+export function applyFilterTransition(
+    component: CanvasBaseInterface<any>,
+    config: FilterTransitionConfig,
+    value: number,
+    ctx: FilterTransitionContext,
+) {
+    switch (config.kind) {
+        case "wipe":
+            return applyWipeTransition(component, config, value, ctx);
+        case "iris":
+            return applyIrisTransition(component, config, value, ctx);
+        case "split":
+            return applySplitTransition(component, config, value, ctx);
+    }
+}
+
+/**
+ * Builds the `apply`/`cleanup` pair that drives a mask-based transition (wipe/iris/split) on the
+ * component registered under `alias`, from nothing but plain, serializable data. It's the single place
+ * both the live transition and a ticker reconstructed after a save/restore (or a step back) get their
+ * callbacks from - which is what lets the animation resume instead of being lost. The mask `Graphics` is
+ * lazily recreated on the first `apply()` call, so a restored ticker needs nothing else.
+ */
+export function createFilterTransitionApplier(alias: string, config: FilterTransitionConfig) {
+    const ctx: FilterTransitionContext = {};
+    return {
+        apply(value: number) {
+            const component = canvas.find(alias);
+            if (component) {
+                applyFilterTransition(component, config, value, ctx);
+            }
+        },
+        cleanup() {
+            const component = canvas.find(alias);
+            if (component) {
+                cleanupFilterTransition(component, config, ctx);
+            }
+        },
+    };
 }

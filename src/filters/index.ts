@@ -69,6 +69,9 @@ export type { default as FilterMemory } from "./interfaces/FilterMemory";
  * `undefined`, ignored otherwise.
  * @param cleanup Called once, right before completion handling, to detach/destroy the filter or tear
  * down whatever `apply` was driving.
+ * @param valueRef Plain, serializable description of what `apply`/`cleanup` drive (`{ alias, config }` of a
+ * mask-based transition), saved with the ticker so it can be rebuilt after a save restore or a step back -
+ * without it an `apply`-only ticker cannot be reconstructed.
  * @returns The id of the ticker, or `undefined` if the ticker was not added.
  */
 function animate(
@@ -79,8 +82,9 @@ function animate(
     priority?: UPDATE_PRIORITY,
     apply?: (value: number) => void,
     cleanup?: () => void,
+    valueRef?: { alias: string; config: unknown },
 ): string | undefined {
-    return GameUnifier.animateFilter(components, filter, keyframes, options, priority, apply, cleanup);
+    return GameUnifier.animateFilter(components, filter, keyframes, options, priority, apply, cleanup, valueRef);
 }
 
 /**

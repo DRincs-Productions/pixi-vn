@@ -11,9 +11,26 @@ export interface BaseTransitionProps {
     completeOnContinue?: boolean;
 }
 
+/**
+ * Shared by every `xIn` transition that can replace an existing component (same alias): whether the
+ * replaced component leaves with its own out animation, started together with the new component's in.
+ */
+export interface OldComponentOutProps {
+    /**
+     * If true, the component being replaced leaves with the matching out animation (`moveOut`, `wipeOut`,
+     * ...), started at the same time as the in animation. If false, it stays untouched under the new
+     * component and is removed once the in animation is done.
+     * The default depends on the transition: `false` for `moveIn`/`zoomIn`, `true` for the others.
+     */
+    animateOldComponentOut?: boolean;
+}
+
 export interface ShowWithDissolveTransitionProps extends BaseTransitionProps, AnimationOptions {}
 export interface ShowWithFadeTransitionProps extends BaseTransitionProps, AnimationOptions {}
-export interface MoveInOutProps extends BaseTransitionProps, AnimationOptions {
+export interface MoveInOutProps
+    extends BaseTransitionProps,
+        OldComponentOutProps,
+        AnimationOptions {
     /**
      * The direction of the movement.
      * @default "right"
@@ -26,14 +43,20 @@ export interface MoveInOutProps extends BaseTransitionProps, AnimationOptions {
      */
     motionBlur?: boolean | number;
 }
-export interface ZoomInOutProps extends BaseTransitionProps, AnimationOptions {
+export interface ZoomInOutProps
+    extends BaseTransitionProps,
+        OldComponentOutProps,
+        AnimationOptions {
     /**
      * The direction of the zoom effect.
      * @default "right"
      */
     direction?: "up" | "down" | "left" | "right";
 }
-export interface PushInOutProps extends BaseTransitionProps, AnimationOptions {
+export interface PushInOutProps
+    extends BaseTransitionProps,
+        OldComponentOutProps,
+        AnimationOptions {
     /**
      * The direction of the push effect.
      * @default "right"
@@ -51,7 +74,10 @@ export interface PushInOutProps extends BaseTransitionProps, AnimationOptions {
  * Shared options for the mask-based reveal/conceal transitions ({@link WipeInOutProps},
  * {@link IrisInOutProps}, {@link SplitInOutProps}).
  */
-export interface MaskTransitionProps extends BaseTransitionProps, AnimationOptions {
+export interface MaskTransitionProps
+    extends BaseTransitionProps,
+        OldComponentOutProps,
+        AnimationOptions {
     /**
      * If true, the effect is inverted: a "reveal" mask conceals instead, and vice versa.
      * @default false
@@ -84,6 +110,13 @@ export interface IrisInOutProps extends MaskTransitionProps {
      * @default 1
      */
     aspect?: number;
+    /**
+     * `"expand"`: the image is seen *through* the circle (`irisIn` grows it, `irisOut` shrinks it).
+     * `"contract"`: the image is seen *around* the circle, which is a hole (`irisIn` shrinks it until the
+     * whole image is shown, `irisOut` grows it until the image is gone).
+     * @default "expand"
+     */
+    direction?: "expand" | "contract";
 }
 export interface SplitInOutProps extends MaskTransitionProps {
     /**
@@ -129,7 +162,10 @@ export interface FlashInOutProps extends BaseTransitionProps, AnimationOptions {
      */
     fadeComponent?: boolean;
 }
-export interface BlurInOutProps extends BaseTransitionProps, AnimationOptions {
+export interface BlurInOutProps
+    extends BaseTransitionProps,
+        OldComponentOutProps,
+        AnimationOptions {
     /**
      * The blur strength the effect starts from (`blurIn`) or ends at (`blurOut`).
      * @default 32
@@ -148,7 +184,10 @@ export interface BlurInOutProps extends BaseTransitionProps, AnimationOptions {
      */
     fadeComponent?: boolean;
 }
-export interface PixelateInOutProps extends BaseTransitionProps, AnimationOptions {
+export interface PixelateInOutProps
+    extends BaseTransitionProps,
+        OldComponentOutProps,
+        AnimationOptions {
     /**
      * The pixel size the effect starts from (`pixelateIn`) or ends at (`pixelateOut`).
      * @default 32
@@ -170,7 +209,10 @@ export interface PixelateInOutProps extends BaseTransitionProps, AnimationOption
  * {@link TwistInOutProps}, {@link WarpInOutProps}, {@link RippleInOutProps},
  * {@link NoiseDissolveInOutProps}, {@link PinchInOutProps}).
  */
-export interface FilterFadeTransitionProps extends BaseTransitionProps, AnimationOptions {
+export interface FilterFadeTransitionProps
+    extends BaseTransitionProps,
+        OldComponentOutProps,
+        AnimationOptions {
     /**
      * Whether the component itself also fades in (`xIn`) or out (`xOut`) alongside the filter effect,
      * at a quarter of the effect's own duration, mirrored to the start of `xIn` or the end of `xOut`
@@ -270,7 +312,7 @@ export interface NoiseDissolveInOutProps extends FilterFadeTransitionProps {
      */
     seed?: number;
 }
-export interface TvInOutProps extends BaseTransitionProps, AnimationOptions {
+export interface TvInOutProps extends BaseTransitionProps, OldComponentOutProps, AnimationOptions {
     /**
      * The height of the collapsed bright line, as a fraction of the component's own height.
      * @default 0.02

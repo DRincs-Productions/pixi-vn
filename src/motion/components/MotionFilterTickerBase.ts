@@ -1,4 +1,4 @@
-import { canvas } from "@drincs/pixi-vn/canvas";
+import { canvas, createFilterTransitionApplier, type FilterTransitionConfig } from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -40,6 +40,8 @@ export default abstract class MotionFilterTickerBase<
          * (see {@link resolveFilterRef}) when no live `filter`/`apply` was passed in via `options`.
          */
         filterRef?: { alias: string; index: number; detach?: boolean };
+        /** See `MotionFilterTicker`'s `TArgs.valueRef` doc comment. */
+        valueRef?: { alias: string; config: any };
     },
 > implements Ticker<TArgs>
 {
@@ -111,14 +113,14 @@ export default abstract class MotionFilterTickerBase<
     ) {
         const {
             filter: providedFilter,
-            apply,
+            apply: providedApply,
             duration,
             priority,
             // Hashes `args` (already required to be JSON-serializable), not `options` - the latter
             // carries the live, non-serializable `filter` instance and/or `apply`/`cleanup` functions.
             id = this.generateTickerId(args),
             canvasElementAliases = [],
-            cleanup,
+            cleanup: providedCleanup,
         } = options || {};
         // No live `filter` passed in (e.g. reconstructing from a saved/serialized ticker, where a
         // `Filter` instance never survives (de)serialization) - resolve it from `args.filterRef`
@@ -126,6 +128,24 @@ export default abstract class MotionFilterTickerBase<
         // `CanvasManager.restore()`: elements/filters are rebuilt before tickers are reconstructed).
         const resolvedFilter = providedFilter ? undefined : MotionFilterTickerBase.resolveFilterRef(args.filterRef);
         const filter = providedFilter ?? resolvedFilter;
+        // Reconstructing an `apply`-only ticker (save restore, step back): rebuild its callbacks from the
+        // serializable `valueRef` instead of requiring them to be passed in from outside.
+        const restored =
+            !filter && !providedApply && args.valueRef
+                ? createFilterTransitionApplier(args.valueRef.alias, args.valueRef.config as FilterTransitionConfig)
+                : undefined;
+        const apply = providedApply ?? restored?.apply;
+        // Put the restored mask in place right now, before anything renders: otherwise the element would
+        // show fully unmasked until the first animation tick, and then jump to hidden.
+        const initialValue = ((args as { keyframes?: { value?: number[] } }).keyframes)?.value?.[0];
+        if (restored && typeof initialValue === "number") {
+            try {
+                restored.apply(initialValue);
+            } catch {
+                // No canvas to mask (headless): nothing to show, the ticker still works.
+            }
+        }
+        const cleanup = providedCleanup ?? restored?.cleanup;
         if (!filter && !apply) {
             throw new PixiError(
                 "not_implemented",
