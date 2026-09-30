@@ -2079,7 +2079,7 @@ export namespace transitions {
         if (existingComponent) {
             // `flashReplace` never needs `fadeComponent`: both sides are already hidden under a solid
             // `color` at the moment of the swap, so there's no pop to soften.
-            const ids = flashReplace(alias, existingComponent, component, {
+            return flashReplace(alias, existingComponent, component, {
                 color,
                 maxAlpha,
                 fadeDuration,
@@ -2089,10 +2089,6 @@ export namespace transitions {
                 rest,
                 priority,
             });
-            if (ids) {
-                return ids;
-            }
-            return;
         }
         const { component: newComponent } = swapComponentForEffect(alias, component, "flash");
         if (
@@ -2227,20 +2223,11 @@ export namespace transitions {
     }
 
     /**
-     * Handles {@link flashIn} when `alias` already has a component under it: fades the *current* content
-     * up to `color` (the same up-ramp {@link addFlashOverlay} uses, via {@link buildFlashKeyframes}'
-     * `endAtPeak`, so it holds at `color` instead of fading back down), then - once the screen is a solid
-     * `color` - swaps in the new content and fades a fresh, identically-colored overlay back down to
-     * reveal it. Both sides look the same (solid `color`) at the instant of the swap, so the content
-     * change itself is invisible; only the color washes through.
-     *
-     * The swap is scheduled with a plain `setTimeout` matched to the up-ramp's own duration, rather than
-     * through an animation-completion callback: `canvas.animate`'s public options deliberately omit
-     * `onComplete` (a callback isn't serializable - see `AnimationOptions`). This means a save made mid
-     * flash won't perfectly resume the pending swap - the same already-accepted limitation the
-     * mask/filter transitions have for their own live, non-persisted state.
+     * Stages both images before starting the flash. A shared timeline switches their alpha at the
+     * last color peak, then reveals the new image. Every part is a registered ticker, so going back
+     * cancels the entire transition and a saved replacement resumes without a delayed callback.
      */
-    function flashReplace(
+    async function flashReplace(
         alias: string,
         oldComponent: CanvasBaseInterface<any>,
         component: TComponent,
@@ -2257,63 +2244,90 @@ export namespace transitions {
             >;
             priority?: UPDATE_PRIORITY;
         },
-    ): string[] | undefined {
-        const { values, times, total } = buildFlashKeyframes(
+    ): Promise<string[] | undefined> {
+        // Copy the old image's properties before attaching the temporary flash overlay, otherwise
+        // the new image inherits a second, unanimated color filter and stays tinted after the flash.
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "flash",
+        );
+        if (!oldComponentAlias) {
+            return;
+        }
+        const newAlpha = newComponent.alpha;
+        const oldAlpha = oldComponent.alpha;
+        newComponent.alpha = 0;
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const { values, times, total: upDuration } = buildFlashKeyframes(
             options.maxAlpha,
             options.fadeDuration,
             options.holdDuration,
             options.pulses,
             true,
         );
-        const upId = addMotionFilterEffect(
-            alias,
+        const duration = upDuration + options.fadeDuration;
+        const swapTime = upDuration / duration;
+        const timing = {
+            duration,
+            delay: options.rest.delay,
+            ease: options.rest.ease,
+            completeOnContinue: options.completeOnContinue,
+        };
+        const oldOverlayId = addMotionFilterEffect(
+            oldComponentAlias,
             oldComponent,
             new filters.ColorOverlayFilter({ color: options.color as any, alpha: 0 }),
-            { alpha: values },
+            { alpha: [...values, options.maxAlpha] },
             {
-                duration: total,
-                times,
-                delay: options.rest.delay,
-                ease: options.rest.ease,
-                completeOnContinue: false,
+                ...timing,
+                times: [...times.map((time) => time * swapTime), 1],
+                aliasToRemoveAfter: [oldComponentAlias],
             },
             options.priority,
         );
-        setTimeout(() => {
-            void (async () => {
-                const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
-                    alias,
-                    component,
-                    "flash",
-                );
-                // The old content is no longer needed - remove it right away rather than waiting for the
-                // fade-down ticker below to complete.
-                oldComponentAlias && canvas.remove(oldComponentAlias);
-                if (
-                    (newComponent instanceof ImageSprite ||
-                        newComponent instanceof ImageContainer) &&
-                    newComponent.haveEmptyTexture
-                ) {
-                    await newComponent.load();
-                }
-                addMotionFilterEffect(
-                    alias,
-                    newComponent,
-                    new filters.ColorOverlayFilter({ color: options.color as any, alpha: options.maxAlpha }),
-                    { alpha: [options.maxAlpha, 0] },
-                    {
-                        duration: options.fadeDuration,
-                        delay: options.rest.delay,
-                        ease: options.rest.ease,
-                        completeOnContinue: options.completeOnContinue,
-                    },
-                    options.priority,
-                );
-            })();
-        }, total * 1000);
-        if (upId) {
-            return [upId];
+        const newOverlayId = addMotionFilterEffect(
+            alias,
+            newComponent,
+            new filters.ColorOverlayFilter({ color: options.color as any, alpha: options.maxAlpha }),
+            { alpha: [options.maxAlpha, options.maxAlpha, 0] },
+            {
+                ...timing,
+                times: [0, swapTime, 1],
+                aliasToRemoveAfter: options.rest.aliasToRemoveAfter,
+            },
+            options.priority,
+        );
+        // Repeated offsets make this a hard cut at the final peak, not a crossfade. Using the same
+        // duration and delay as the overlays keeps the cut in sync through pause, restore and skip.
+        const visibilityTiming = {
+            duration,
+            delay: options.rest.delay,
+            times: [0, swapTime, swapTime, 1],
+            ease: "linear" as const,
+        };
+        const oldVisibilityId = canvas.animate(
+            oldComponentAlias,
+            { alpha: [oldAlpha, oldAlpha, 0, 0] },
+            visibilityTiming,
+            options.priority,
+        );
+        const newVisibilityId = canvas.animate(
+            alias,
+            { alpha: [0, 0, newAlpha, newAlpha] },
+            visibilityTiming,
+            options.priority,
+        );
+        if (options.completeOnContinue) {
+            oldVisibilityId && tickers.completeOnStepEnd({ id: oldVisibilityId });
+            newVisibilityId && tickers.completeOnStepEnd({ id: newVisibilityId });
         }
+        return collectTickerIds([oldOverlayId, newOverlayId, oldVisibilityId, newVisibilityId]);
     }
 
     /**

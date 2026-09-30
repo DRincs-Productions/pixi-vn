@@ -40,6 +40,43 @@ describe("animateOldComponentOut", () => {
         return vi.spyOn(filters, "animate").mockImplementation(() => `ticker-${n++}`);
     }
 
+    test("flash replacement stages clean filters and a serializable cut instead of a timeout", async () => {
+        const spy = spyFilters();
+        const animate = vi.spyOn(canvas, "animate").mockReturnValue("visibility-ticker");
+        const timeout = vi.spyOn(globalThis, "setTimeout");
+        const old = elements.get("alias");
+        old.alpha = 0.7;
+        const next = sprite();
+        const ids = await transitions.flashIn("alias", next, { color: 0xff0033, duration: 0.3, holdDuration: 0.05, pulses: 3, delay: 0.4 });
+        expect(ids).toHaveLength(4);
+        expect(timeout).not.toHaveBeenCalled();
+        expect(old.filters).toHaveLength(1);
+        expect(next.filters).toHaveLength(1);
+        expect(next.alpha).toBe(0);
+        expect(vi.mocked(canvas.copyCanvasElementProperty).mock.invocationCallOrder[0]).toBeLessThan(spy.mock.invocationCallOrder[0]);
+        const outgoing = spy.mock.calls.find((c) => c[0] === "alias_temp_flash")!;
+        const incoming = spy.mock.calls.find((c) => c[0] === "alias")!;
+        expect((outgoing[3] as any).aliasToRemoveAfter).toEqual(["alias_temp_flash"]);
+        expect((incoming[2] as any).alpha).toEqual([1, 1, 0]);
+        const timing = incoming[3] as any;
+        expect(timing.duration).toBeCloseTo(1.95);
+        expect(timing.delay).toBe(0.4);
+        expect(animate).toHaveBeenCalledTimes(2);
+        const visibility = animate.mock.calls[1][2] as any;
+        expect(visibility.times[1]).toBe(visibility.times[2]);
+        expect(visibility.times[1]).toBeCloseTo(timing.times[1]);
+        expect(visibility.duration).toBe(timing.duration);
+        expect(visibility.delay).toBe(timing.delay);
+        expect(tickers.completeOnStepEnd).toHaveBeenCalledTimes(4);
+    });
+
+    test("flash replacement respects completeOnContinue false", async () => {
+        spyFilters();
+        vi.spyOn(canvas, "animate").mockReturnValue("visibility-ticker");
+        await transitions.flashIn("alias", sprite(), { completeOnContinue: false });
+        expect(tickers.completeOnStepEnd).not.toHaveBeenCalled();
+    });
+
     test.each([undefined, 180, -180, 0])("twistIn angle %s: replacement rotates both images in the same sense", async (angle) => {
         const spy = spyFilters();
         await transitions.twistIn("alias", sprite(), { angle, fadeComponent: false });
