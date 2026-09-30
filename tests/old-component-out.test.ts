@@ -16,6 +16,12 @@ describe("animateOldComponentOut", () => {
     }
 
     beforeEach(() => {
+        // GlitchFilter draws its displacement texture; jsdom has no 2D canvas context.
+        vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
+            clearRect: () => {},
+            fillRect: () => {},
+            set fillStyle(_: unknown) {},
+        } as unknown as CanvasRenderingContext2D);
         elements.clear();
         elements.set("alias", sprite());
         vi.spyOn(canvas, "find").mockImplementation((alias: string) => elements.get(alias));
@@ -39,6 +45,50 @@ describe("animateOldComponentOut", () => {
         let n = 0;
         return vi.spyOn(filters, "animate").mockImplementation(() => `ticker-${n++}`);
     }
+
+    test.each(["glitchIn", "warpIn"] as const)("%s holds the new image until the exit finishes, including its delay", async (transition) => {
+        const spy = spyFilters();
+        const animate = vi.spyOn(canvas, "animate").mockReturnValue("visibility");
+        const next = sprite();
+        await transitions[transition]("alias", next, { duration: 2, delay: 0.3 });
+        expect(next.alpha).toBe(0);
+        const visibility = animate.mock.calls.find(c => c[0] === "alias")!;
+        expect(visibility[2]).toMatchObject({ duration: 0.5, delay: 2.3 });
+        const oldFade = animate.mock.calls.find(c => c[0] !== "alias")!;
+        expect(oldFade[2]).toMatchObject({ duration: 0.5, delay: 1.8 });
+        for (const call of spy.mock.calls.filter(c => c[0] === "alias")) {
+            expect(call[3]).toMatchObject({ duration: 2, delay: 2.3 });
+        }
+        expect(tickers.completeOnStepEnd).toHaveBeenCalledWith({ id: "visibility" });
+    });
+
+    test.each(["glitchIn", "warpIn"] as const)("%s still waits with fadeComponent false", async (transition) => {
+        spyFilters();
+        const animate = vi.spyOn(canvas, "animate").mockReturnValue("visibility");
+        const next = sprite();
+        next.alpha = 0.6;
+        const delay = (index: number, total: number) => index + total;
+        await transitions[transition]("alias", next, { duration: 2, delay, fadeComponent: false });
+        expect(next.alpha).toBe(0);
+        const call = animate.mock.calls[0];
+        expect(call[1]).toEqual({ alpha: [0, 0.6] });
+        expect((call[2] as any).duration).toBe(0);
+        expect((call[2] as any).delay(0, 1)).toBe(3);
+    });
+
+    test.each(["glitchIn", "warpIn"] as const)("%s does not wait without an exit animation", async (transition) => {
+        const spy = spyFilters();
+        vi.spyOn(canvas, "animate").mockReturnValue("visibility");
+        for (const fresh of [false, true]) {
+            if (fresh) elements.clear();
+            spy.mockClear();
+            await transitions[transition]("alias", sprite(), { duration: 2, delay: 0.3, animateOldComponentOut: false });
+            for (const call of spy.mock.calls) {
+                expect(call[0]).toBe("alias");
+                expect(call[3]).toMatchObject({ delay: 0.3 });
+            }
+        }
+    });
 
     test("flash replacement stages clean filters and a serializable cut instead of a timeout", async () => {
         const spy = spyFilters();

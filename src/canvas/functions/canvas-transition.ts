@@ -449,6 +449,7 @@ export namespace transitions {
         phase: "in" | "out",
         mainDuration: number,
         priority?: UPDATE_PRIORITY,
+        delay?: AnimationOptions["delay"],
     ): void {
         const fadeDuration = Math.max(mainDuration, 0) / 4;
         if (phase === "in") {
@@ -458,7 +459,7 @@ export namespace transitions {
             canvas.animate(
                 alias,
                 { alpha: [0, 1] },
-                { duration: fadeDuration, completeOnContinue: false },
+                { duration: fadeDuration, delay, completeOnContinue: false },
                 priority,
             );
         } else {
@@ -467,7 +468,9 @@ export namespace transitions {
                 { alpha: [1, 0] },
                 {
                     duration: fadeDuration,
-                    delay: Math.max(mainDuration - fadeDuration, 0),
+                    delay: typeof delay === "function"
+                        ? (index, total) => delay(index, total) + Math.max(mainDuration - fadeDuration, 0)
+                        : (delay ?? 0) + Math.max(mainDuration - fadeDuration, 0),
                     completeOnContinue: false,
                 },
                 priority,
@@ -2420,17 +2423,27 @@ export namespace transitions {
             component ?? alias,
             tag,
         );
-        const oldOut = handleOldComponent(
+        const waitForOut = sequential && !!oldComponentAlias && animateOldComponentOut;
+        const targetAlpha = newComponent.alpha;
+        if (waitForOut) {
+            newComponent.alpha = 0;
+        }
+        const startOldOut = () => handleOldComponent(
             oldComponentAlias,
             animateOldComponentOut,
             aliasToRemoveAfter,
             playOldOut,
         );
+        const oldOut = waitForOut ? [] : startOldOut();
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
         ) {
             await newComponent.load();
+        }
+        // Start both clocks only after loading, so the entrance delay matches the entire exit.
+        if (waitForOut) {
+            oldOut.push(...startOldOut());
         }
         const resolvedDuration = duration ?? 1;
         // `sequential`: the new component starts once the replaced one has finished leaving.
@@ -2440,7 +2453,18 @@ export namespace transitions {
                     ? (index: number, total: number) => delay(index, total) + resolvedDuration
                     : (delay ?? 0) + resolvedDuration
                 : delay;
-        if (fadeComponent) {
+        let visibilityId: string | undefined;
+        if (waitForOut) {
+            visibilityId = canvas.animate(
+                alias,
+                { alpha: [0, targetAlpha] },
+                { duration: fadeComponent ? resolvedDuration / 4 : 0, delay: resolvedDelay },
+                priority,
+            );
+            if (visibilityId && completeOnContinue) {
+                tickers.completeOnStepEnd({ id: visibilityId });
+            }
+        } else if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
         }
         return collectTickerIds([
@@ -2450,6 +2474,7 @@ export namespace transitions {
                 aliasToRemoveAfter,
             ),
             ...oldOut,
+            visibilityId,
         ]);
     }
 
@@ -2484,7 +2509,7 @@ export namespace transitions {
         }
         const resolvedDuration = duration ?? 1;
         if (fadeComponent) {
-            fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
+            fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority, delay);
         }
         return collectTickerIds(
             attach(
@@ -2560,6 +2585,7 @@ export namespace transitions {
      * Show a image in the canvas with a glitch effect: the image materializes out of jittery bursts of
      * digital-corruption slices with red/blue fringing, which settle as it appears. See
      * {@link GlitchInOutProps}.
+     * When replacing an existing component, waits for its out animation before starting the entrance.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
      * @param props The properties of the effect
@@ -2582,6 +2608,7 @@ export namespace transitions {
             (target, timing, remove) =>
                 addGlitchTickers(alias, target, "in", props, timing, remove, priority),
             (old) => glitchOut(old, oldComponentOutProps(props), priority),
+            true,
         );
     }
 
@@ -2729,6 +2756,7 @@ export namespace transitions {
     /**
      * Show a image in the canvas with a warp effect: the image arrives out of radial zoom-blur streaks,
      * like dropping out of hyperspace. See {@link WarpInOutProps}.
+     * When replacing an existing component, waits for its out animation before starting the entrance.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
      * @param props The properties of the effect
@@ -2751,6 +2779,7 @@ export namespace transitions {
             (target, timing, remove) =>
                 addWarpTicker(alias, target, "in", props, timing, remove, priority),
             (old) => warpOut(old, oldComponentOutProps(props), priority),
+            true,
         );
     }
 
