@@ -1,4 +1,3 @@
-import PixiContainer from "@canvas/components/Container";
 import {
     createFilterTransitionApplier,
     snapshotLocalBounds,
@@ -17,13 +16,7 @@ import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/
 import type { ColorType } from "@canvas/types/ColorType";
 import { filters } from "@drincs/pixi-vn/filters";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
-import type {
-    Filter,
-    Container as PixiJsContainer,
-    PointData,
-    UPDATE_PRIORITY,
-} from "@drincs/pixi-vn/pixi.js";
-import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import type { Filter, PointData, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { tickers } from "@drincs/pixi-vn/tickers";
 import { logger } from "@utils/log-utility";
 import {
@@ -468,9 +461,11 @@ export namespace transitions {
                 { alpha: [1, 0] },
                 {
                     duration: fadeDuration,
-                    delay: typeof delay === "function"
-                        ? (index, total) => delay(index, total) + Math.max(mainDuration - fadeDuration, 0)
-                        : (delay ?? 0) + Math.max(mainDuration - fadeDuration, 0),
+                    delay:
+                        typeof delay === "function"
+                            ? (index, total) =>
+                                  delay(index, total) + Math.max(mainDuration - fadeDuration, 0)
+                            : (delay ?? 0) + Math.max(mainDuration - fadeDuration, 0),
                     completeOnContinue: false,
                 },
                 priority,
@@ -1686,10 +1681,15 @@ export namespace transitions {
             oldComponentAlias,
             animateOldComponentOut,
             aliasToRemoveAfter,
-            (old) => splitOut(old, {
-                ...oldComponentOutProps(props),
-                direction: direction === "inward" ? "outward" : "inward",
-            }, priority),
+            (old) =>
+                splitOut(
+                    old,
+                    {
+                        ...oldComponentOutProps(props),
+                        direction: direction === "inward" ? "outward" : "inward",
+                    },
+                    priority,
+                ),
         );
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
@@ -2267,7 +2267,11 @@ export namespace transitions {
         ) {
             await newComponent.load();
         }
-        const { values, times, total: upDuration } = buildFlashKeyframes(
+        const {
+            values,
+            times,
+            total: upDuration,
+        } = buildFlashKeyframes(
             options.maxAlpha,
             options.fadeDuration,
             options.holdDuration,
@@ -2297,7 +2301,10 @@ export namespace transitions {
         const newOverlayId = addMotionFilterEffect(
             alias,
             newComponent,
-            new filters.ColorOverlayFilter({ color: options.color as any, alpha: options.maxAlpha }),
+            new filters.ColorOverlayFilter({
+                color: options.color as any,
+                alpha: options.maxAlpha,
+            }),
             { alpha: [options.maxAlpha, options.maxAlpha, 0] },
             {
                 ...timing,
@@ -2428,12 +2435,13 @@ export namespace transitions {
         if (waitForOut) {
             newComponent.alpha = 0;
         }
-        const startOldOut = () => handleOldComponent(
-            oldComponentAlias,
-            animateOldComponentOut,
-            aliasToRemoveAfter,
-            playOldOut,
-        );
+        const startOldOut = () =>
+            handleOldComponent(
+                oldComponentAlias,
+                animateOldComponentOut,
+                aliasToRemoveAfter,
+                playOldOut,
+            );
         const oldOut = waitForOut ? [] : startOldOut();
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
@@ -2509,7 +2517,14 @@ export namespace transitions {
         }
         const resolvedDuration = duration ?? 1;
         if (fadeComponent) {
-            fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority, delay);
+            fadeComponentAlongsideEffect(
+                alias,
+                component,
+                "out",
+                resolvedDuration,
+                priority,
+                delay,
+            );
         }
         return collectTickerIds(
             attach(
@@ -2646,7 +2661,11 @@ export namespace transitions {
         // `offset` must be a fresh object: TwistFilter's default one is shared by every instance, so setting
         // the center on one twist would silently move it on all the others (a small image next to a big
         // one would get the big one's center, far outside itself, and show no effect at all).
-        const filter = new filters.TwistFilter({ radius, angle: keyframes[0], offset: { x: 0, y: 0 } });
+        const filter = new filters.TwistFilter({
+            radius,
+            angle: keyframes[0],
+            offset: { x: 0, y: 0 },
+        });
         // The swirl rotates content within `radius` of the center - room for the part of that circle
         // that overhangs the component, so it isn't cut off (never less than TwistFilter's own default).
         const { width, height } = component.getBounds();
@@ -2692,10 +2711,15 @@ export namespace transitions {
             priority,
             (target, timing, remove) =>
                 addTwistTicker(alias, target, "in", props, timing, remove, priority),
-            (old) => twistOut(old, {
-                ...oldComponentOutProps(props),
-                angle: -(props.angle ?? 540),
-            }, priority),
+            (old) =>
+                twistOut(
+                    old,
+                    {
+                        ...oldComponentOutProps(props),
+                        angle: -(props.angle ?? 540),
+                    },
+                    priority,
+                ),
         );
     }
 
