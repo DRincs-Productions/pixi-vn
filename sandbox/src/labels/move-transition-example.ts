@@ -27,7 +27,7 @@ registerTestLabel(
             await moveIn("move-image", imageB, {
                 direction: "right",
                 duration: 1,
-                removeOldComponentWithMoveOut: true,
+                animateOldComponentOut: true,
             });
             narration.dialogue = {
                 text: "moveIn (from right, replace): the orange image should slide out to the left while the blue image slides in from the right. Continue to remove it.",
