@@ -40,6 +40,29 @@ describe("animateOldComponentOut", () => {
         return vi.spyOn(filters, "animate").mockImplementation(() => `ticker-${n++}`);
     }
 
+    test.each([undefined, 180, -180, 0])("twistIn angle %s: replacement rotates both images in the same sense", async (angle) => {
+        const spy = spyFilters();
+        await transitions.twistIn("alias", sprite(), { angle, fadeComponent: false });
+        const incoming = spy.mock.calls.find((c) => c[0] === "alias")!;
+        const outgoing = spy.mock.calls.find((c) => c[0] === "alias_temp_twist")!;
+        const wound = ((angle ?? 540) * Math.PI) / 180;
+        expect((incoming[2] as any).angle).toEqual([wound, 0]);
+        expect((outgoing[2] as any).angle).toEqual([0, -wound]);
+        expect((outgoing[3] as any).aliasToRemoveAfter).toContain("alias_temp_twist");
+    });
+
+    test.each([undefined, "inward", "outward"] as const)("splitIn direction %s: replacement uses complementary masks", async (direction) => {
+        const spy = spyFilters();
+        await transitions.splitIn("alias", sprite(), { direction, orientation: "horizontal", origin: 0.25 });
+        const incoming = spy.mock.calls.find((c) => c[0] === "alias")!;
+        const outgoing = spy.mock.calls.find((c) => c[0] === "alias_temp_split")!;
+        expect((incoming[7] as any).config).toMatchObject({ direction: direction ?? "inward", orientation: "horizontal", origin: 0.25 });
+        expect((outgoing[7] as any).config).toMatchObject({ direction: direction === "outward" ? "inward" : "outward", origin: 0.25 });
+        expect(incoming[2]).toEqual({ value: [0, 1] });
+        expect(outgoing[2]).toEqual({ value: [1, 0] });
+        expect((outgoing[3] as any).aliasToRemoveAfter).toContain("alias_temp_split");
+    });
+
     test.each([
         [undefined, 1, 1],
         ["up-left", 1, 1],

@@ -144,6 +144,30 @@ describe("applyWipeTransition/applyIrisTransition/applySplitTransition / cleanup
         expect(target.mask).toBeUndefined();
     });
 
+    test.each(["horizontal", "vertical"] as const)("split %s: inward and outward replacement masks cover complementary regions", (orientation) => {
+        const target = createTarget();
+        const incoming: FilterTransitionContext = {};
+        const outgoing: FilterTransitionContext = {};
+        const config: SplitFilterConfig = {
+            kind: "split", orientation, origin: 0.25, invert: false,
+            bounds: { x: 10, y: 20, width: 200, height: 100 },
+        };
+        for (const direction of ["inward", "outward"] as const) {
+            for (const progress of [0, 0.3, 0.7, 1]) {
+                applySplitTransition(target, { ...config, direction }, progress, incoming);
+                applySplitTransition(target, { ...config, direction: direction === "inward" ? "outward" : "inward" }, 1 - progress, outgoing);
+                for (let n = 0; n < 20; n++) {
+                    const point = orientation === "horizontal"
+                        ? { x: 10 + n * 10 + 2, y: 70 }
+                        : { x: 110, y: 20 + n * 5 + 1 };
+                    expect(incoming.graphics!.containsPoint(point)).not.toBe(outgoing.graphics!.containsPoint(point));
+                }
+            }
+        }
+        cleanupFilterTransition(target, config, incoming);
+        cleanupFilterTransition(target, config, outgoing);
+    });
+
     test("split: attaches two panels that slide together as progress grows", () => {
         const target = createTarget();
         const ctx: FilterTransitionContext = {};

@@ -37,6 +37,8 @@ export interface IrisFilterConfig {
 }
 export interface SplitFilterConfig {
     kind: "split";
+    /** Absent in older saves, which reveal from the edges inwards. */
+    direction?: "inward" | "outward";
     orientation: "horizontal" | "vertical";
     origin: number;
     invert: boolean;
@@ -170,6 +172,28 @@ export function applySplitTransition(
     const { bounds } = config;
     const graphics = getOrCreateMaskGraphics(component, ctx);
     graphics.clear();
+    if (config.direction === "outward") {
+        if (progress > 0) {
+            if (config.orientation === "horizontal") {
+                const splitX = bounds.x + bounds.width * config.origin;
+                graphics.rect(
+                    splitX - (splitX - bounds.x) * progress,
+                    bounds.y,
+                    bounds.width * progress,
+                    bounds.height,
+                ).fill(0xffffff);
+            } else {
+                const splitY = bounds.y + bounds.height * config.origin;
+                graphics.rect(
+                    bounds.x,
+                    splitY - (splitY - bounds.y) * progress,
+                    bounds.width,
+                    bounds.height * progress,
+                ).fill(0xffffff);
+            }
+        }
+        return;
+    }
     if (config.orientation === "horizontal") {
         const splitX = bounds.x + bounds.width * config.origin;
         const leftWidth = splitX - bounds.x;

@@ -120,6 +120,13 @@ export interface IrisInOutProps extends MaskTransitionProps {
 }
 export interface SplitInOutProps extends MaskTransitionProps {
     /**
+     * `"inward"`: reveal from the edges towards the split line; conceal from the split line outwards.
+     * `"outward"`: reveal from the split line towards the edges; conceal from the edges inwards.
+     * During replacement, the old component uses the opposite mode so its conceal follows the reveal.
+     * @default "inward"
+     */
+    direction?: "inward" | "outward";
+    /**
      * The axis the two mask panels move apart on/towards.
      * @default "vertical"
      */
@@ -253,6 +260,8 @@ export interface GlitchInOutProps extends FilterFadeTransitionProps {
 export interface TwistInOutProps extends FilterFadeTransitionProps {
     /**
      * How far (degrees) the swirl is wound up - where `twistIn` starts and `twistOut` ends.
+     * Negate the angle to reverse the rotation. During replacement the old component uses the
+     * opposite angle, so it winds up in the same rotational sense as the new component unwinds.
      * @default 540
      */
     angle?: number;
