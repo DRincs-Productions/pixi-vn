@@ -1,4 +1,8 @@
-import { canvas, createFilterTransitionApplier, type FilterTransitionConfig } from "@drincs/pixi-vn/canvas";
+import {
+    canvas,
+    createFilterTransitionApplier,
+    type FilterTransitionConfig,
+} from "@drincs/pixi-vn/canvas";
 import { PixiError } from "@drincs/pixi-vn/core";
 import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -126,18 +130,23 @@ export default abstract class MotionFilterTickerBase<
         // `Filter` instance never survives (de)serialization) - resolve it from `args.filterRef`
         // instead, which just needs the target component's filters to already be in place (true during
         // `CanvasManager.restore()`: elements/filters are rebuilt before tickers are reconstructed).
-        const resolvedFilter = providedFilter ? undefined : MotionFilterTickerBase.resolveFilterRef(args.filterRef);
+        const resolvedFilter = providedFilter
+            ? undefined
+            : MotionFilterTickerBase.resolveFilterRef(args.filterRef);
         const filter = providedFilter ?? resolvedFilter;
         // Reconstructing an `apply`-only ticker (save restore, step back): rebuild its callbacks from the
         // serializable `valueRef` instead of requiring them to be passed in from outside.
         const restored =
             !filter && !providedApply && args.valueRef
-                ? createFilterTransitionApplier(args.valueRef.alias, args.valueRef.config as FilterTransitionConfig)
+                ? createFilterTransitionApplier(
+                      args.valueRef.alias,
+                      args.valueRef.config as FilterTransitionConfig,
+                  )
                 : undefined;
         const apply = providedApply ?? restored?.apply;
         // Put the restored mask in place right now, before anything renders: otherwise the element would
         // show fully unmasked until the first animation tick, and then jump to hidden.
-        const initialValue = ((args as { keyframes?: { value?: number[] } }).keyframes)?.value?.[0];
+        const initialValue = (args as { keyframes?: { value?: number[] } }).keyframes?.value?.[0];
         if (restored && typeof initialValue === "number") {
             try {
                 restored.apply(initialValue);
@@ -160,7 +169,8 @@ export default abstract class MotionFilterTickerBase<
         this.id = id;
         this.canvasElementAliases = canvasElementAliases;
         // The original `cleanup` didn't survive serialization - see `TArgs.filterRef.detach`.
-        const detachAlias = resolvedFilter && args.filterRef?.detach ? args.filterRef.alias : undefined;
+        const detachAlias =
+            resolvedFilter && args.filterRef?.detach ? args.filterRef.alias : undefined;
         this.cleanup =
             cleanup ??
             (detachAlias && resolvedFilter
@@ -178,7 +188,10 @@ export default abstract class MotionFilterTickerBase<
      * `Filter` instance it identifies, or `undefined` if the component/filter isn't currently found
      * (e.g. `filterRef` absent, its component was removed, or the index is out of range).
      */
-    private static resolveFilterRef(filterRef?: { alias: string; index: number }): Filter | undefined {
+    private static resolveFilterRef(filterRef?: {
+        alias: string;
+        index: number;
+    }): Filter | undefined {
         if (!filterRef) {
             return undefined;
         }
@@ -189,13 +202,17 @@ export default abstract class MotionFilterTickerBase<
         if (!filters) {
             return [];
         }
-        return Array.isArray(filters) ? [...(filters as readonly Filter[])] : [filters as unknown as Filter];
+        return Array.isArray(filters)
+            ? [...(filters as readonly Filter[])]
+            : [filters as unknown as Filter];
     }
     /** Removes `filter` from the component's filters (by identity) and destroys it. */
     private static detachFilter(alias: string, filter: Filter): void {
         const component = canvas.find(alias);
         if (component) {
-            const remaining = MotionFilterTickerBase.componentFilters(alias).filter((f) => f !== filter);
+            const remaining = MotionFilterTickerBase.componentFilters(alias).filter(
+                (f) => f !== filter,
+            );
             component.filters = remaining.length > 0 ? remaining : null;
         }
         filter.destroy();
@@ -205,7 +222,9 @@ export default abstract class MotionFilterTickerBase<
         if (filterRef && this.filter) {
             // Re-derive the index fresh rather than trusting whatever was baked in at construction
             // time - other code may have added/removed filters on the same component since then.
-            const index = MotionFilterTickerBase.componentFilters(filterRef.alias).indexOf(this.filter);
+            const index = MotionFilterTickerBase.componentFilters(filterRef.alias).indexOf(
+                this.filter,
+            );
             if (index !== -1) {
                 filterRef = { ...filterRef, index };
             }

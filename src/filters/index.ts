@@ -84,7 +84,16 @@ function animate(
     cleanup?: () => void,
     valueRef?: { alias: string; config: unknown },
 ): string | undefined {
-    return GameUnifier.animateFilter(components, filter, keyframes, options, priority, apply, cleanup, valueRef);
+    return GameUnifier.animateFilter(
+        components,
+        filter,
+        keyframes,
+        options,
+        priority,
+        apply,
+        cleanup,
+        valueRef,
+    );
 }
 
 /**

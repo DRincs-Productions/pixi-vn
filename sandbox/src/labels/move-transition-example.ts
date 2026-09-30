@@ -40,7 +40,11 @@ registerTestLabel(
             };
         },
         async () => {
-            await moveIn("move-image", imageA, { direction: "left", duration: 1, motionBlur: true });
+            await moveIn("move-image", imageA, {
+                direction: "left",
+                duration: 1,
+                motionBlur: true,
+            });
             narration.dialogue = {
                 text: "moveIn with motionBlur: the orange image should slide in from the left with a horizontal smear that fades out as it stops, ending sharp. Continue to move it out with motionBlur.",
             };

@@ -1,6 +1,9 @@
 export { default as TickerBase } from "@tickers/classes/TickerBase";
 export type { default as TickerValue } from "@tickers/classes/TickerValue";
-export { default as RegisteredTickers, tickerDecorator } from "@tickers/decorators/RegisteredTickers";
+export {
+    default as RegisteredTickers,
+    tickerDecorator,
+} from "@tickers/decorators/RegisteredTickers";
 export type { default as Ticker } from "@tickers/interfaces/Ticker";
 export type { default as TickerArgs } from "@tickers/interfaces/TickerArgs";
 export type { TickerHistory, default as TickerInfo } from "@tickers/interfaces/TickerInfo";

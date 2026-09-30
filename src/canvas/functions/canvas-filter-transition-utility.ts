@@ -176,20 +176,24 @@ export function applySplitTransition(
         if (progress > 0) {
             if (config.orientation === "horizontal") {
                 const splitX = bounds.x + bounds.width * config.origin;
-                graphics.rect(
-                    splitX - (splitX - bounds.x) * progress,
-                    bounds.y,
-                    bounds.width * progress,
-                    bounds.height,
-                ).fill(0xffffff);
+                graphics
+                    .rect(
+                        splitX - (splitX - bounds.x) * progress,
+                        bounds.y,
+                        bounds.width * progress,
+                        bounds.height,
+                    )
+                    .fill(0xffffff);
             } else {
                 const splitY = bounds.y + bounds.height * config.origin;
-                graphics.rect(
-                    bounds.x,
-                    splitY - (splitY - bounds.y) * progress,
-                    bounds.width,
-                    bounds.height * progress,
-                ).fill(0xffffff);
+                graphics
+                    .rect(
+                        bounds.x,
+                        splitY - (splitY - bounds.y) * progress,
+                        bounds.width,
+                        bounds.height * progress,
+                    )
+                    .fill(0xffffff);
             }
         }
         return;

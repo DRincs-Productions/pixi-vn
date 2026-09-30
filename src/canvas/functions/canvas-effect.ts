@@ -1,27 +1,31 @@
+import {
+    buildGlitchJitter,
+    shockwaveTravel,
+    zoomBlurPadding,
+} from "@canvas/functions/filter-effect-utility";
+import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
+import { canvas } from "@canvas/index";
+import type {
+    BlurPulseEffectProps,
+    BounceEffectProps,
+    ChromaticAberrationEffectProps,
+    DesaturateEffectProps,
+    GlitchEffectProps,
+    GlowPulseEffectProps,
+    HopEffectProps,
+    NodEffectProps,
+    PulseEffectProps,
+    PunchEffectProps,
+    RadialBlurEffectProps,
+    ShakeEffectProps,
+    ShockwaveEffectProps,
+    SwayEffectProps,
+    VignettePulseEffectProps,
+    WiggleEffectProps,
+} from "@canvas/interfaces/effect-props";
 import { filters } from "@drincs/pixi-vn/filters";
 import type { Filter, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
-import {
-    canvas,
-    type BlurPulseEffectProps,
-    type BounceEffectProps,
-    type ChromaticAberrationEffectProps,
-    type DesaturateEffectProps,
-    type GlitchEffectProps,
-    type GlowPulseEffectProps,
-    type HopEffectProps,
-    type NodEffectProps,
-    type PulseEffectProps,
-    type PunchEffectProps,
-    type RadialBlurEffectProps,
-    type ShakeEffectProps,
-    type ShockwaveEffectProps,
-    type SwayEffectProps,
-    type VignettePulseEffectProps,
-    type WiggleEffectProps,
-} from "..";
-import { buildGlitchJitter, shockwaveTravel, zoomBlurPadding } from "@canvas/functions/filter-effect-utility";
-import { logger } from "../../utils/log-utility";
-import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
+import { logger } from "@utils/log-utility";
 
 /**
  * @deprecated Use `effects.shakeEffect` instead.
@@ -76,7 +80,12 @@ function buildDecayingOscillation(peak: number, decay: number, cycles: number): 
  * relative to the previous one - the shape behind every filter-driven pulse/burst effect below (their
  * filter property's own "rest" is `0` = no effect, unlike a component's position/scale).
  */
-function buildDecayingPulses(rest: number, peakDelta: number, decay: number, cycles: number): number[] {
+function buildDecayingPulses(
+    rest: number,
+    peakDelta: number,
+    decay: number,
+    cycles: number,
+): number[] {
     const values: number[] = [rest];
     let delta = peakDelta;
     for (let i = 0; i < cycles; i++) {
@@ -189,13 +198,7 @@ export namespace effects {
             );
             return;
         }
-        const {
-            direction = "up",
-            distance = 30,
-            bounces = 4,
-            decay = 0.5,
-            ...rest
-        } = options;
+        const { direction = "up", distance = 30, bounces = 4, decay = 0.5, ...rest } = options;
         const { axis, sign } = directionToAxisSign(direction);
         const restValue = axis === "x" ? component.position.x : component.position.y;
         const array: number[] = [restValue];
@@ -306,7 +309,9 @@ export namespace effects {
         const { angle = 15, repetitions = 3, decay = 0.5, ...rest } = options;
         const restRotation = component.rotation;
         const peakRad = (angle * Math.PI) / 180;
-        const array = buildDecayingOscillation(peakRad, decay, repetitions).map((v) => restRotation + v);
+        const array = buildDecayingOscillation(peakRad, decay, repetitions).map(
+            (v) => restRotation + v,
+        );
         const id = canvas.animate(alias, { rotation: array }, rest, priority);
         if (id) {
             return [id];
@@ -331,10 +336,18 @@ export namespace effects {
             );
             return;
         }
-        const { axis = "horizontal", distance = 15, repetitions = 3, decay = 0.5, ...rest } = options;
+        const {
+            axis = "horizontal",
+            distance = 15,
+            repetitions = 3,
+            decay = 0.5,
+            ...rest
+        } = options;
         const prop = axis === "horizontal" ? "x" : "y";
         const restValue = axis === "horizontal" ? component.position.x : component.position.y;
-        const array = buildDecayingOscillation(distance, decay, repetitions).map((v) => restValue + v);
+        const array = buildDecayingOscillation(distance, decay, repetitions).map(
+            (v) => restValue + v,
+        );
         const id = canvas.animate(alias, { [prop]: array }, rest, priority);
         if (id) {
             return [id];
@@ -498,7 +511,11 @@ export namespace effects {
         glitchId && ids.push(glitchId);
         if (rgbSplit !== 0) {
             const envelope = buildGlitchJitter(rgbSplit, decay, bursts);
-            const split = new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } });
+            const split = new filters.RGBSplitFilter({
+                red: { x: 0, y: 0 },
+                green: { x: 0, y: 0 },
+                blue: { x: 0, y: 0 },
+            });
             split.padding = Math.ceil(Math.abs(rgbSplit));
             const splitId = addMotionFilterEffect(
                 alias,
@@ -588,8 +605,12 @@ export namespace effects {
         const { width, height } = component.getBounds();
         const strength =
             strengthOption ??
-            shockwaveTravel({ x: origin.x * width, y: origin.y * height }, { width, height }, wavelength, radius) /
-                speed;
+            shockwaveTravel(
+                { x: origin.x * width, y: origin.y * height },
+                { width, height },
+                wavelength,
+                radius,
+            ) / speed;
         const shockwave = new filters.ShockwaveFilter({
             center: { x: 0, y: 0 },
             amplitude,
@@ -601,7 +622,14 @@ export namespace effects {
         });
         // The shader displaces by up to 1.25x `amplitude` - room for edges pushed past the bounds.
         shockwave.padding = Math.ceil(Math.abs(amplitude) * 1.25);
-        const id = addMotionFilterEffect(alias, component, shockwave, { time: [0, strength] }, rest, priority);
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            shockwave,
+            { time: [0, strength] },
+            rest,
+            priority,
+        );
         const { x, y } = componentFilterCenter(component, origin);
         shockwave.center = { x, y };
         if (id) {
@@ -638,11 +666,28 @@ export namespace effects {
             decay = 0.5,
             ...rest
         } = options;
-        const zoom = new filters.ZoomBlurFilter({ center: { x: 0, y: 0 }, innerRadius, radius, strength: 0 });
+        const zoom = new filters.ZoomBlurFilter({
+            center: { x: 0, y: 0 },
+            innerRadius,
+            radius,
+            strength: 0,
+        });
         const { width, height } = component.getBounds();
-        zoom.padding = zoomBlurPadding({ x: origin.x * width, y: origin.y * height }, strength, width, height);
+        zoom.padding = zoomBlurPadding(
+            { x: origin.x * width, y: origin.y * height },
+            strength,
+            width,
+            height,
+        );
         const array = buildDecayingPulses(0, strength, decay, bursts);
-        const id = addMotionFilterEffect(alias, component, zoom, { strength: array }, rest, priority);
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            zoom,
+            { strength: array },
+            rest,
+            priority,
+        );
         const { x, y } = componentFilterCenter(component, origin);
         zoom.center = { x, y };
         if (id) {
@@ -672,7 +717,14 @@ export namespace effects {
         const { strength = 8, pulses = 3, quality, decay = 0.5, ...rest } = options;
         const filter: Filter = new filters.BlurFilter({ strength: 0, quality });
         const array = buildDecayingPulses(0, strength, decay, pulses);
-        const id = addMotionFilterEffect(alias, component, filter, { strength: array }, rest, priority);
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { strength: array },
+            rest,
+            priority,
+        );
         if (id) {
             return [id];
         }
@@ -702,7 +754,14 @@ export namespace effects {
             );
             return;
         }
-        const { strength = 1, pulses = 1, radius = 0.5, blur = 0.5, decay = 0.5, ...rest } = options;
+        const {
+            strength = 1,
+            pulses = 1,
+            radius = 0.5,
+            blur = 0.5,
+            decay = 0.5,
+            ...rest
+        } = options;
         const filter: Filter = new filters.CRTFilter({
             curvature: 0,
             lineWidth: 0,
@@ -713,7 +772,14 @@ export namespace effects {
             vignettingAlpha: 0,
         });
         const array = buildDecayingPulses(0, strength, decay, pulses);
-        const id = addMotionFilterEffect(alias, component, filter, { vignettingAlpha: array }, rest, priority);
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { vignettingAlpha: array },
+            rest,
+            priority,
+        );
         if (id) {
             return [id];
         }
@@ -784,9 +850,21 @@ export namespace effects {
             decay = 0.5,
             ...rest
         } = options;
-        const filter: Filter = new filters.GlowFilter({ outerStrength: 0, innerStrength, distance, color });
+        const filter: Filter = new filters.GlowFilter({
+            outerStrength: 0,
+            innerStrength,
+            distance,
+            color,
+        });
         const array = buildDecayingPulses(0, strength, decay, pulses);
-        const id = addMotionFilterEffect(alias, component, filter, { outerStrength: array }, rest, priority);
+        const id = addMotionFilterEffect(
+            alias,
+            component,
+            filter,
+            { outerStrength: array },
+            rest,
+            priority,
+        );
         if (id) {
             return [id];
         }

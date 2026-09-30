@@ -32,7 +32,11 @@ registerTestLabel(
             };
         },
         async () => {
-            await effects.chromaticAberrationEffect(image, { strength: 12, bursts: 2, duration: 1.5 });
+            await effects.chromaticAberrationEffect(image, {
+                strength: 12,
+                bursts: 2,
+                duration: 1.5,
+            });
             narration.dialogue = {
                 text: "chromaticAberrationEffect: red and blue ghosts should split left/right off every white/black edge and snap back, twice. Continue to run shockwaveEffect.",
             };

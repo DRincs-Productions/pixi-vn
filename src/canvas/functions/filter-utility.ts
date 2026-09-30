@@ -17,7 +17,9 @@ export function componentFilters(component: CanvasBaseInterface<any>): Filter[] 
     if (!current) {
         return [];
     }
-    return Array.isArray(current) ? [...(current as readonly Filter[])] : [current as unknown as Filter];
+    return Array.isArray(current)
+        ? [...(current as readonly Filter[])]
+        : [current as unknown as Filter];
 }
 
 /** Appends `toAdd` to the component's filters, keeping the ones already there. */

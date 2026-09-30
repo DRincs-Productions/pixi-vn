@@ -18,7 +18,13 @@ export function stripedTriangleSvg(stripeA: string, stripeB: string): string {
 
 /** Registers the orange/blue and green/purple striped-triangle assets under the given aliases. */
 export async function loadStripedTargets(aliasA: string, aliasB: string): Promise<void> {
-    Assets.add({ alias: aliasA, src: `data:image/svg+xml,${encodeURIComponent(stripedTriangleSvg("#ef8354", "#2f6690"))}` });
-    Assets.add({ alias: aliasB, src: `data:image/svg+xml,${encodeURIComponent(stripedTriangleSvg("#6ab04c", "#8e44ad"))}` });
+    Assets.add({
+        alias: aliasA,
+        src: `data:image/svg+xml,${encodeURIComponent(stripedTriangleSvg("#ef8354", "#2f6690"))}`,
+    });
+    Assets.add({
+        alias: aliasB,
+        src: `data:image/svg+xml,${encodeURIComponent(stripedTriangleSvg("#6ab04c", "#8e44ad"))}`,
+    });
     await Assets.load([aliasA, aliasB]);
 }
