@@ -194,6 +194,13 @@ export interface PixelateInOutProps
      */
     pixelSize?: number;
     /**
+     * The direction the pixel blocks drift as their size changes. Applies to both entering and
+     * exiting components, including the old component during a replacement.
+     * `"up-left"` moves from bottom-right towards top-left; the other values mirror either axis.
+     * @default "up-left"
+     */
+    direction?: "up-left" | "up-right" | "down-left" | "down-right";
+    /**
      * Whether the component itself also briefly fades in (`pixelateIn`) or out (`pixelateOut`) alongside
      * the pixelation, softening what would otherwise be an instant pop-in/pop-out - the fade runs at a
      * quarter of the effect's own duration, mirrored to the start of `pixelateIn` or the end of

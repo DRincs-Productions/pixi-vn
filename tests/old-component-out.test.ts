@@ -40,6 +40,35 @@ describe("animateOldComponentOut", () => {
         return vi.spyOn(filters, "animate").mockImplementation(() => `ticker-${n++}`);
     }
 
+    test.each([
+        [undefined, 1, 1],
+        ["up-left", 1, 1],
+        ["up-right", -1, 1],
+        ["down-left", 1, -1],
+        ["down-right", -1, -1],
+    ] as const)("pixelateIn direction %s: replacement keeps both components drifting together", async (direction, x, y) => {
+        const spy = spyFilters();
+        await transitions.pixelateIn("alias", sprite(), { direction, pixelSize: 24 });
+
+        const incoming = spy.mock.calls.find((c) => c[0] === "alias")!;
+        const outgoing = spy.mock.calls.find((c) => c[0] === "alias_temp_pixelate")!;
+        expect(incoming[2]).toEqual({ sizeX: [24 * x, x], sizeY: [24 * y, y] });
+        expect(outgoing[2]).toEqual({ sizeX: [-x, -24 * x], sizeY: [-y, -24 * y] });
+        // Filters must already have their first keyframe before any animation tick or render.
+        expect((incoming[1] as any).sizeX).toBe(24 * x);
+        expect((incoming[1] as any).sizeY).toBe(24 * y);
+        expect((outgoing[1] as any).sizeX).toBe(-x);
+        expect((outgoing[1] as any).sizeY).toBe(-y);
+        expect((outgoing[3] as any).aliasToRemoveAfter).toContain("alias_temp_pixelate");
+    });
+
+    test("pixelateIn can leave the old component untouched", async () => {
+        const spy = spyFilters();
+        await transitions.pixelateIn("alias", sprite(), { direction: "down-right", animateOldComponentOut: false });
+        expect(spy).toHaveBeenCalledTimes(1);
+        expect((spy.mock.calls[0][3] as any).aliasToRemoveAfter).toContain("alias_temp_pixelate");
+    });
+
     test("wipeIn: by default the replaced element leaves with wipeOut, from the opposite side", async () => {
         const spy = spyFilters();
         const ids = await transitions.wipeIn("alias", sprite(), { duration: 1 });

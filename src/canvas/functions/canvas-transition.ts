@@ -1909,6 +1909,7 @@ export namespace transitions {
     ): Promise<string[] | undefined> {
         const {
             pixelSize = 32,
+            direction = "up-left",
             duration,
             delay,
             ease,
@@ -1944,12 +1945,13 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
         }
-        const filter = new filters.PixelateFilter(pixelSize);
+        const keyframes = pixelateKeyframes(pixelSize, direction, "in");
+        const filter = new filters.PixelateFilter([keyframes.sizeX[0], keyframes.sizeY[0]]);
         const id = addMotionFilterEffect(
             alias,
             newComponent,
             filter,
-            { sizeX: [pixelSize, 1], sizeY: [pixelSize, 1] },
+            keyframes,
             { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
@@ -1971,6 +1973,7 @@ export namespace transitions {
     ): string[] | undefined {
         const {
             pixelSize = 32,
+            direction = "up-left",
             duration,
             delay,
             ease,
@@ -1991,18 +1994,39 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
         }
-        const filter = new filters.PixelateFilter(1);
+        const keyframes = pixelateKeyframes(pixelSize, direction, "out");
+        const filter = new filters.PixelateFilter([keyframes.sizeX[0], keyframes.sizeY[0]]);
         const id = addMotionFilterEffect(
             alias,
             component,
             filter,
-            { sizeX: [1, pixelSize], sizeY: [1, pixelSize] },
+            keyframes,
             { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
             return [id];
         }
+    }
+
+    function pixelateKeyframes(
+        pixelSize: number,
+        direction: NonNullable<PixelateInOutProps["direction"]>,
+        phase: "in" | "out",
+    ) {
+        // PixelateFilter quantizes with floor(coord / size) * size. A negative size selects
+        // ceil instead of floor, mirroring the sampling on that axis without flipping the image.
+        // Growing blocks must use the opposite sampling corner to shrinking blocks to drift in
+        // the same direction. Keep each axis's sign constant so it never crosses zero.
+        const phaseSign = phase === "in" ? 1 : -1;
+        const xSign = (direction.endsWith("left") ? 1 : -1) * phaseSign;
+        const ySign = (direction.startsWith("up") ? 1 : -1) * phaseSign;
+        const size = Math.max(1, Math.abs(pixelSize));
+        const sizes = phase === "in" ? [size, 1] : [1, size];
+        return {
+            sizeX: sizes.map((value) => value * xSign),
+            sizeY: sizes.map((value) => value * ySign),
+        };
     }
 
     /**
