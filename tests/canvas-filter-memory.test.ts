@@ -23,6 +23,8 @@ describe("canvas element filters: save/restore", () => {
             {
                 filterId: "BlurFilter",
                 args: { strengthX: 4, strengthY: 6, quality: 3, repeatEdgePixels: false },
+                // `padding` is saved next to the args (BlurFilter grows its area with the strength).
+                padding: expect.any(Number),
             },
         ]);
 
