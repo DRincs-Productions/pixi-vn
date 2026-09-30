@@ -94,7 +94,9 @@ namespace RegisteredFilters {
             return;
         }
         try {
-            const filter = new (filterType as { new (args: any): Filter })(args);
+            // Filters can retain arrays/objects from their constructor options as mutable uniforms.
+            // Keep animation writes out of the saved state, which history reuses on subsequent backs.
+            const filter = new (filterType as { new (args: any): Filter })(structuredClone(args));
             if (typeof padding === "number") {
                 filter.padding = padding;
             }
