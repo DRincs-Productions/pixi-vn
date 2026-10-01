@@ -1,12 +1,7 @@
-import PixiContainer from "@canvas/components/Container";
 import {
-    applyIrisTransition,
-    applySplitTransition,
-    applyWipeTransition,
-    cleanupFilterTransition,
+    createFilterTransitionApplier,
     snapshotLocalBounds,
     type FilterTransitionConfig,
-    type FilterTransitionContext,
     type IrisFilterConfig,
     type SplitFilterConfig,
     type WipeFilterConfig,
@@ -16,18 +11,12 @@ import {
     circleOverhang,
     shockwaveTravel,
     zoomBlurPadding,
-} from "@canvas/functions/filter-effect-utility";
+} from "@tickers/utility/filter-effect-utility";
 import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
 import type { ColorType } from "@canvas/types/ColorType";
 import { filters } from "@drincs/pixi-vn/filters";
 import type { AnimationOptions } from "@drincs/pixi-vn/motion";
-import type {
-    Filter,
-    Container as PixiJsContainer,
-    PointData,
-    UPDATE_PRIORITY,
-} from "@drincs/pixi-vn/pixi.js";
-import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import type { Filter, PointData, UPDATE_PRIORITY } from "@drincs/pixi-vn/pixi.js";
 import { tickers } from "@drincs/pixi-vn/tickers";
 import { logger } from "@utils/log-utility";
 import {
@@ -133,8 +122,7 @@ export async function moveIn(
     component?: TComponent,
     props: MoveInOutProps & {
         /**
-         * If true, then the old component is removed with a move out, after the new image is moved in.
-         * @default false
+         * @deprecated Use `animateOldComponentOut` instead.
          */
         removeOldComponentWithMoveOut?: boolean;
     } = {},
@@ -162,8 +150,7 @@ export async function zoomIn(
     component?: TComponent,
     props: ZoomInOutProps & {
         /**
-         * If true, then the old component is removed with a zoom out, after the new image is zoomed in.
-         * @default false
+         * @deprecated Use `animateOldComponentOut` instead.
          */
         removeOldComponentWithZoomOut?: boolean;
     } = {},
@@ -333,6 +320,41 @@ export namespace transitions {
     }
 
     /**
+     * Handles the component replaced by an `xIn` transition: with `animate` it leaves through `playOut`
+     * (the matching `xOut`, started together with the in animation), otherwise it stays untouched under
+     * the new component and is removed via `aliasToRemoveAfter` once the in animation is done.
+     * @returns The ids of the out ticker(s) started, if any.
+     */
+    function handleOldComponent(
+        oldComponentAlias: string | undefined,
+        animate: boolean,
+        aliasToRemoveAfter: string[],
+        playOut: (oldComponentAlias: string) => string[] | undefined,
+    ): string[] {
+        if (!oldComponentAlias) {
+            return [];
+        }
+        if (!animate) {
+            aliasToRemoveAfter.push(oldComponentAlias);
+            return [];
+        }
+        return playOut(oldComponentAlias) ?? [];
+    }
+
+    /** The props of an `xIn` call that also apply to the `xOut` of the component it replaces. */
+    function oldComponentOutProps<
+        T extends { aliasToRemoveAfter?: unknown; animateOldComponentOut?: boolean },
+    >(props: T): Omit<T, "aliasToRemoveAfter" | "animateOldComponentOut"> {
+        const { aliasToRemoveAfter, animateOldComponentOut, ...rest } = props;
+        return rest;
+    }
+
+    function withIds(id: string | undefined, extra: string[]): string[] | undefined {
+        const ids = id ? [id, ...extra] : extra;
+        return ids.length > 0 ? ids : undefined;
+    }
+
+    /**
      * Maps the `direction` shorthand shared by {@link WipeInOutProps} to the generic `angle` it's
      * equivalent to.
      */
@@ -361,7 +383,6 @@ export namespace transitions {
         alias: string,
         args: {
             config: FilterTransitionConfig;
-            apply: (component: CanvasBaseInterface<any>, value: number, ctx: FilterTransitionContext) => void;
             from: number;
             to: number;
             duration?: number;
@@ -373,13 +394,9 @@ export namespace transitions {
         },
         priority?: UPDATE_PRIORITY,
     ): string | undefined {
-        const ctx: FilterTransitionContext = {};
-        const apply = (value: number) => {
-            const component = canvas.find(alias);
-            if (component) {
-                args.apply(component, value, ctx);
-            }
-        };
+        // The `apply`/`cleanup` callbacks are rebuilt from `valueRef` whenever the ticker is
+        // reconstructed (save restore, step back), so the animation survives it.
+        const { apply, cleanup } = createFilterTransitionApplier(alias, args.config);
         const id = filters.animate(
             alias,
             undefined,
@@ -393,18 +410,12 @@ export namespace transitions {
             },
             priority,
             apply,
-            () => {
-                const component = canvas.find(alias);
-                if (component) {
-                    cleanupFilterTransition(component, args.config, ctx);
-                }
-            },
+            cleanup,
+            { alias, config: args.config },
         );
         if (id) {
-            // Applies `from` immediately, the same frame the component is first rendered, mirroring what
-            // `FilterProgressTicker`'s own `start()` override used to guarantee explicitly - it doesn't
-            // rely on `motion`'s own synchronous first-keyframe write reaching `onUpdate` before the
-            // ticker's first real tick, closing any gap where the component would render unmasked.
+            // Applies `from` immediately, the same frame the component is first rendered, so the
+            // component never renders unmasked before the ticker's first real tick.
             apply(args.from);
         }
         if (id && (args.completeOnContinue ?? true)) {
@@ -431,6 +442,7 @@ export namespace transitions {
         phase: "in" | "out",
         mainDuration: number,
         priority?: UPDATE_PRIORITY,
+        delay?: AnimationOptions["delay"],
     ): void {
         const fadeDuration = Math.max(mainDuration, 0) / 4;
         if (phase === "in") {
@@ -440,7 +452,7 @@ export namespace transitions {
             canvas.animate(
                 alias,
                 { alpha: [0, 1] },
-                { duration: fadeDuration, completeOnContinue: false },
+                { duration: fadeDuration, delay, completeOnContinue: false },
                 priority,
             );
         } else {
@@ -449,7 +461,11 @@ export namespace transitions {
                 { alpha: [1, 0] },
                 {
                     duration: fadeDuration,
-                    delay: Math.max(mainDuration - fadeDuration, 0),
+                    delay:
+                        typeof delay === "function"
+                            ? (index, total) =>
+                                  delay(index, total) + Math.max(mainDuration - fadeDuration, 0)
+                            : (delay ?? 0) + Math.max(mainDuration - fadeDuration, 0),
                     completeOnContinue: false,
                 },
                 priority,
@@ -570,13 +586,6 @@ export namespace transitions {
             priority,
         );
         idShow && res.push(idShow);
-        // load the image if the image is not loaded
-        if (
-            (component instanceof ImageSprite || component instanceof ImageContainer) &&
-            component.haveEmptyTexture
-        ) {
-            await component.load();
-        }
         // return the ids of the tickers
         if (res.length > 0) {
             return res;
@@ -745,8 +754,7 @@ export namespace transitions {
         component?: TComponent,
         props: MoveInOutProps & {
             /**
-             * If true, then the old component is removed with a move out, after the new image is moved in.
-             * @default false
+             * @deprecated Use `animateOldComponentOut` instead.
              */
             removeOldComponentWithMoveOut?: boolean;
         } = {},
@@ -758,6 +766,7 @@ export namespace transitions {
             tickerIdToResume = [],
             aliasToRemoveAfter = [],
             removeOldComponentWithMoveOut,
+            animateOldComponentOut = removeOldComponentWithMoveOut ?? false,
             motionBlur,
             ...options
         } = props;
@@ -812,10 +821,10 @@ export namespace transitions {
         }
         // remove the old component
         if (oldComponentAlias) {
-            if (removeOldComponentWithMoveOut) {
+            if (animateOldComponentOut) {
                 const ids = moveOut(
                     oldComponentAlias,
-                    { ...props, autoplay: false, completeOnContinue },
+                    { ...options, direction, motionBlur, autoplay: false, completeOnContinue },
                     priority,
                 );
                 if (ids) {
@@ -955,8 +964,7 @@ export namespace transitions {
         component?: TComponent,
         props: ZoomInOutProps & {
             /**
-             * If true, then the old component is removed with a zoom out, after the new image is zoomed in.
-             * @default false
+             * @deprecated Use `animateOldComponentOut` instead.
              */
             removeOldComponentWithZoomOut?: boolean;
         } = {},
@@ -967,6 +975,8 @@ export namespace transitions {
             completeOnContinue = true,
             tickerIdToResume = [],
             aliasToRemoveAfter = [],
+            removeOldComponentWithZoomOut,
+            animateOldComponentOut = removeOldComponentWithZoomOut ?? false,
             ...options
         } = props;
         const res: string[] = [];
@@ -1004,6 +1014,13 @@ export namespace transitions {
         );
         oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
         oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "move");
+        // load the image before reading its size: the destination/pivot depend on it
+        if (
+            (component instanceof ImageSprite || component instanceof ImageContainer) &&
+            component.haveEmptyTexture
+        ) {
+            await component.load();
+        }
         // edit the properties of the new component
         if (!destination) {
             if (component instanceof ImageSprite || component instanceof ImageContainer) {
@@ -1022,10 +1039,10 @@ export namespace transitions {
         };
         // remove the old component
         if (oldComponentAlias) {
-            if (props.removeOldComponentWithZoomOut) {
+            if (animateOldComponentOut) {
                 const ids = zoomOut(
                     oldComponentAlias,
-                    { ...props, autoplay: false, completeOnContinue },
+                    { ...options, direction, autoplay: false, completeOnContinue },
                     priority,
                 );
                 if (ids) {
@@ -1195,6 +1212,8 @@ export namespace transitions {
             direction = "right",
             completeOnContinue = true,
             tickerIdToResume = [],
+            aliasToRemoveAfter = [],
+            animateOldComponentOut = true,
             motionBlur,
             ...options
         } = props;
@@ -1207,6 +1226,9 @@ export namespace transitions {
         }
         if (typeof tickerIdToResume === "string") {
             tickerIdToResume = [tickerIdToResume];
+        }
+        if (typeof aliasToRemoveAfter === "string") {
+            aliasToRemoveAfter = [aliasToRemoveAfter];
         }
         // check if the alias is already exist
         let oldComponentAlias: string | undefined;
@@ -1267,13 +1289,18 @@ export namespace transitions {
         tickerIdToResume.push(...ids);
         // remove the old component
         if (oldComponentAlias) {
-            const ids = pushOut(oldComponentAlias, {
-                ...props,
-                direction: direction, //== "up" ? "down" : direction == "down" ? "up" : direction == "left" ? "right" : "left",
-                completeOnContinue,
-            });
-            if (ids) {
-                res.push(...ids);
+            if (animateOldComponentOut) {
+                const ids = pushOut(oldComponentAlias, {
+                    ...options,
+                    direction,
+                    motionBlur,
+                    completeOnContinue,
+                });
+                if (ids) {
+                    res.push(...ids);
+                }
+            } else {
+                aliasToRemoveAfter.push(oldComponentAlias);
             }
         }
         // create the ticker and play it
@@ -1283,6 +1310,7 @@ export namespace transitions {
             {
                 ...options,
                 tickerIdToResume,
+                aliasToRemoveAfter,
                 completeOnContinue,
             },
             priority,
@@ -1345,6 +1373,7 @@ export namespace transitions {
             delay,
             ease,
             completeOnContinue = true,
+            animateOldComponentOut = true,
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
@@ -1358,7 +1387,20 @@ export namespace transitions {
             component,
             "wipe",
         );
-        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        const oldOut = handleOldComponent(
+            oldComponentAlias,
+            animateOldComponentOut,
+            aliasToRemoveAfter,
+            (old) =>
+                wipeOut(
+                    old,
+                    {
+                        ...oldComponentOutProps(props),
+                        angle: (angle ?? directionToAngle(direction)) + 180,
+                    },
+                    priority,
+                ),
+        );
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
@@ -1375,7 +1417,6 @@ export namespace transitions {
             alias,
             {
                 config,
-                apply: (component, value, ctx) => applyWipeTransition(component, config, value, ctx),
                 from: 0,
                 to: 1,
                 duration,
@@ -1386,9 +1427,7 @@ export namespace transitions {
             },
             priority,
         );
-        if (id) {
-            return [id];
-        }
+        return withIds(id, oldOut);
     }
 
     /**
@@ -1433,7 +1472,6 @@ export namespace transitions {
             alias,
             {
                 config,
-                apply: (component, value, ctx) => applyWipeTransition(component, config, value, ctx),
                 from: 1,
                 to: 0,
                 duration,
@@ -1475,6 +1513,8 @@ export namespace transitions {
             delay,
             ease,
             completeOnContinue = true,
+            animateOldComponentOut = true,
+            direction = "expand",
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
@@ -1488,7 +1528,20 @@ export namespace transitions {
             component,
             "iris",
         );
-        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        const oldOut = handleOldComponent(
+            oldComponentAlias,
+            animateOldComponentOut,
+            aliasToRemoveAfter,
+            (old) =>
+                irisOut(
+                    old,
+                    {
+                        ...oldComponentOutProps(props),
+                        direction: direction === "contract" ? "expand" : "contract",
+                    },
+                    priority,
+                ),
+        );
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
@@ -1497,6 +1550,7 @@ export namespace transitions {
         }
         const config: IrisFilterConfig = {
             kind: "iris",
+            outside: direction === "contract",
             originX: origin.x ?? 0.5,
             originY: origin.y ?? 0.5,
             aspect,
@@ -1507,9 +1561,8 @@ export namespace transitions {
             alias,
             {
                 config,
-                apply: (component, value, ctx) => applyIrisTransition(component, config, value, ctx),
-                from: 0,
-                to: 1,
+                from: direction === "contract" ? 1 : 0,
+                to: direction === "contract" ? 0 : 1,
                 duration,
                 delay,
                 ease,
@@ -1518,9 +1571,7 @@ export namespace transitions {
             },
             priority,
         );
-        if (id) {
-            return [id];
-        }
+        return withIds(id, oldOut);
     }
 
     /**
@@ -1544,6 +1595,7 @@ export namespace transitions {
             delay,
             ease,
             completeOnContinue = true,
+            direction = "expand",
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (typeof aliasToRemoveAfter === "string") {
@@ -1557,6 +1609,7 @@ export namespace transitions {
         }
         const config: IrisFilterConfig = {
             kind: "iris",
+            outside: direction === "contract",
             originX: origin.x ?? 0.5,
             originY: origin.y ?? 0.5,
             aspect,
@@ -1567,9 +1620,8 @@ export namespace transitions {
             alias,
             {
                 config,
-                apply: (component, value, ctx) => applyIrisTransition(component, config, value, ctx),
-                from: 1,
-                to: 0,
+                from: direction === "contract" ? 0 : 1,
+                to: direction === "contract" ? 1 : 0,
                 duration,
                 delay,
                 ease,
@@ -1585,8 +1637,9 @@ export namespace transitions {
 
     /**
      * Show a image in the canvas with a split effect: two mask panels slide together from the edges to
-     * progressively reveal the image, meeting at the split line once fully shown. A configured
-     * {@link SplitInOutProps} covers "curtain"-like effects without a story-specific API.
+     * progressively reveal the image, meeting at the split line once fully shown. With
+     * `direction: "outward"`, the reveal grows from the split line towards the edges instead.
+     * During replacement, the old component's conceal follows the new component's reveal.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If imageUrl is a video, then the {@link VideoSprite} is added to the canvas.
      * If imageUrl is an array, then the {@link ImageContainer} is added to the canvas.
@@ -1603,12 +1656,14 @@ export namespace transitions {
     ): Promise<string[] | undefined> {
         const {
             orientation = "vertical",
+            direction = "inward",
             origin = 0.5,
             invert = false,
             duration,
             delay,
             ease,
             completeOnContinue = true,
+            animateOldComponentOut = true,
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
@@ -1622,7 +1677,20 @@ export namespace transitions {
             component,
             "split",
         );
-        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        const oldOut = handleOldComponent(
+            oldComponentAlias,
+            animateOldComponentOut,
+            aliasToRemoveAfter,
+            (old) =>
+                splitOut(
+                    old,
+                    {
+                        ...oldComponentOutProps(props),
+                        direction: direction === "inward" ? "outward" : "inward",
+                    },
+                    priority,
+                ),
+        );
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
@@ -1632,6 +1700,7 @@ export namespace transitions {
         const config: SplitFilterConfig = {
             kind: "split",
             orientation,
+            direction,
             origin,
             invert,
             bounds: snapshotLocalBounds(newComponent),
@@ -1640,7 +1709,6 @@ export namespace transitions {
             alias,
             {
                 config,
-                apply: (component, value, ctx) => applySplitTransition(component, config, value, ctx),
                 from: 0,
                 to: 1,
                 duration,
@@ -1651,14 +1719,13 @@ export namespace transitions {
             },
             priority,
         );
-        if (id) {
-            return [id];
-        }
+        return withIds(id, oldOut);
     }
 
     /**
      * Remove a image from the canvas with a split effect: two mask panels retract apart toward the
-     * edges to progressively conceal the image. See {@link splitIn} and {@link SplitInOutProps}.
+     * edges to progressively conceal the image. With `direction: "outward"`, the visible region
+     * shrinks from the edges towards the split line. See {@link splitIn} and {@link SplitInOutProps}.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param props The properties of the effect
      * @param priority The priority of the effect
@@ -1671,6 +1738,7 @@ export namespace transitions {
     ): string[] | undefined {
         const {
             orientation = "vertical",
+            direction = "inward",
             origin = 0.5,
             invert = false,
             duration,
@@ -1691,6 +1759,7 @@ export namespace transitions {
         const config: SplitFilterConfig = {
             kind: "split",
             orientation,
+            direction,
             origin,
             invert,
             bounds: snapshotLocalBounds(component),
@@ -1699,7 +1768,6 @@ export namespace transitions {
             alias,
             {
                 config,
-                apply: (component, value, ctx) => applySplitTransition(component, config, value, ctx),
                 from: 1,
                 to: 0,
                 duration,
@@ -1741,6 +1809,7 @@ export namespace transitions {
             ease,
             completeOnContinue = true,
             fadeComponent = true,
+            animateOldComponentOut = true,
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
@@ -1754,7 +1823,12 @@ export namespace transitions {
             component,
             "blur",
         );
-        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        const oldOut = handleOldComponent(
+            oldComponentAlias,
+            animateOldComponentOut,
+            aliasToRemoveAfter,
+            (old) => blurOut(old, oldComponentOutProps(props), priority),
+        );
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
@@ -1774,9 +1848,7 @@ export namespace transitions {
             { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
-        if (id) {
-            return [id];
-        }
+        return withIds(id, oldOut);
     }
 
     /**
@@ -1849,11 +1921,13 @@ export namespace transitions {
     ): Promise<string[] | undefined> {
         const {
             pixelSize = 32,
+            direction = "up-left",
             duration,
             delay,
             ease,
             completeOnContinue = true,
             fadeComponent = false,
+            animateOldComponentOut = true,
         } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (!component) {
@@ -1867,7 +1941,12 @@ export namespace transitions {
             component,
             "pixelate",
         );
-        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        const oldOut = handleOldComponent(
+            oldComponentAlias,
+            animateOldComponentOut,
+            aliasToRemoveAfter,
+            (old) => pixelateOut(old, oldComponentOutProps(props), priority),
+        );
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
@@ -1878,18 +1957,17 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
         }
-        const filter = new filters.PixelateFilter(pixelSize);
+        const keyframes = pixelateKeyframes(pixelSize, direction, "in");
+        const filter = new filters.PixelateFilter([keyframes.sizeX[0], keyframes.sizeY[0]]);
         const id = addMotionFilterEffect(
             alias,
             newComponent,
             filter,
-            { sizeX: [pixelSize, 1], sizeY: [pixelSize, 1] },
+            keyframes,
             { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
-        if (id) {
-            return [id];
-        }
+        return withIds(id, oldOut);
     }
 
     /**
@@ -1907,6 +1985,7 @@ export namespace transitions {
     ): string[] | undefined {
         const {
             pixelSize = 32,
+            direction = "up-left",
             duration,
             delay,
             ease,
@@ -1927,18 +2006,39 @@ export namespace transitions {
         if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
         }
-        const filter = new filters.PixelateFilter(1);
+        const keyframes = pixelateKeyframes(pixelSize, direction, "out");
+        const filter = new filters.PixelateFilter([keyframes.sizeX[0], keyframes.sizeY[0]]);
         const id = addMotionFilterEffect(
             alias,
             component,
             filter,
-            { sizeX: [1, pixelSize], sizeY: [1, pixelSize] },
+            keyframes,
             { duration: resolvedDuration, delay, ease, completeOnContinue, aliasToRemoveAfter },
             priority,
         );
         if (id) {
             return [id];
         }
+    }
+
+    function pixelateKeyframes(
+        pixelSize: number,
+        direction: NonNullable<PixelateInOutProps["direction"]>,
+        phase: "in" | "out",
+    ) {
+        // PixelateFilter quantizes with floor(coord / size) * size. A negative size selects
+        // ceil instead of floor, mirroring the sampling on that axis without flipping the image.
+        // Growing blocks must use the opposite sampling corner to shrinking blocks to drift in
+        // the same direction. Keep each axis's sign constant so it never crosses zero.
+        const phaseSign = phase === "in" ? 1 : -1;
+        const xSign = (direction.endsWith("left") ? 1 : -1) * phaseSign;
+        const ySign = (direction.startsWith("up") ? 1 : -1) * phaseSign;
+        const size = Math.max(1, Math.abs(pixelSize));
+        const sizes = phase === "in" ? [size, 1] : [1, size];
+        return {
+            sizeX: sizes.map((value) => value * xSign),
+            sizeY: sizes.map((value) => value * ySign),
+        };
     }
 
     /**
@@ -1982,7 +2082,7 @@ export namespace transitions {
         if (existingComponent) {
             // `flashReplace` never needs `fadeComponent`: both sides are already hidden under a solid
             // `color` at the moment of the swap, so there's no pop to soften.
-            const ids = flashReplace(alias, existingComponent, component, {
+            return flashReplace(alias, existingComponent, component, {
                 color,
                 maxAlpha,
                 fadeDuration,
@@ -1992,10 +2092,6 @@ export namespace transitions {
                 rest,
                 priority,
             });
-            if (ids) {
-                return ids;
-            }
-            return;
         }
         const { component: newComponent } = swapComponentForEffect(alias, component, "flash");
         if (
@@ -2079,33 +2175,11 @@ export namespace transitions {
     }
 
     /**
-     * Creates the solid-`color` overlay {@link addFlashOverlay}/{@link flashReplace} animate the alpha
-     * of: a `Graphics` rect sized and positioned to `target`'s current bounds, layered just above it.
-     */
-    function createFlashOverlay(
-        target: CanvasBaseInterface<any>,
-        color: ColorType,
-        initialAlpha: number = 0,
-    ): string {
-        const bounds = target.getBounds();
-        const overlay = new PixiContainer();
-        const rect = new PIXI.Graphics();
-        rect.rect(0, 0, bounds.width, bounds.height).fill(color);
-        // `rect` is a plain, ephemeral PIXI.Graphics (not a pixi-vn CanvasBaseItem), so it's added via
-        // the underlying PixiJS Container API rather than the stricter pixi-vn-component-only typing.
-        (overlay as unknown as PixiJsContainer).addChild(rect);
-        overlay.position.set(bounds.x, bounds.y);
-        overlay.alpha = initialAlpha;
-        const overlayAlias = `${target.label}_flash_${Math.random().toString(36).slice(2)}`;
-        canvas.add(overlayAlias, overlay, { zIndex: (target.zIndex ?? 0) + 1 });
-        return overlayAlias;
-    }
-
-    /**
-     * Shared implementation for {@link flashIn} (fresh element)/{@link flashOut}: adds a
-     * {@link createFlashOverlay} over `target` and fades its alpha via `canvas.animate`, the exact
-     * multi-stop keyframe idiom {@link effects.shakeEffect} already uses - no filter or mask is needed
-     * for flash.
+     * Shared implementation for {@link flashIn} (fresh element)/{@link flashOut}: tints `target` with a
+     * `ColorOverlayFilter` and animates its alpha via `addMotionFilterEffect`, using the multi-stop
+     * keyframe idiom {@link effects.shakeEffect} already uses. A filter (rather than a solid rectangle
+     * over the bounds) only colors the visible pixels, so the transparent parts of the image stay
+     * transparent.
      */
     function addFlashOverlay(
         target: CanvasBaseInterface<any>,
@@ -2126,7 +2200,6 @@ export namespace transitions {
             priority?: UPDATE_PRIORITY;
         },
     ): string | undefined {
-        const overlayAlias = createFlashOverlay(target, options.color);
         const { values, times, total } = buildFlashKeyframes(
             options.maxAlpha,
             options.fadeDuration,
@@ -2134,36 +2207,30 @@ export namespace transitions {
             options.pulses,
             options.endAtPeak ?? false,
         );
-        const aliasToRemoveAfter = [...options.aliasToRemoveAfter, overlayAlias];
-        return canvas.animate(
-            overlayAlias,
+        const filter = new filters.ColorOverlayFilter({ color: options.color as any, alpha: 0 });
+        return addMotionFilterEffect(
+            target.label as string,
+            target,
+            filter,
             { alpha: values },
             {
-                ...options.rest,
                 duration: total,
                 times,
-                aliasToRemoveAfter,
+                delay: options.rest.delay,
+                ease: options.rest.ease,
+                aliasToRemoveAfter: options.aliasToRemoveAfter,
                 completeOnContinue: options.completeOnContinue,
-            } as any,
+            },
             options.priority,
         );
     }
 
     /**
-     * Handles {@link flashIn} when `alias` already has a component under it: fades the *current* content
-     * up to `color` (the same up-ramp {@link addFlashOverlay} uses, via {@link buildFlashKeyframes}'
-     * `endAtPeak`, so it holds at `color` instead of fading back down), then - once the screen is a solid
-     * `color` - swaps in the new content and fades a fresh, identically-colored overlay back down to
-     * reveal it. Both sides look the same (solid `color`) at the instant of the swap, so the content
-     * change itself is invisible; only the color washes through.
-     *
-     * The swap is scheduled with a plain `setTimeout` matched to the up-ramp's own duration, rather than
-     * through an animation-completion callback: `canvas.animate`'s public options deliberately omit
-     * `onComplete` (a callback isn't serializable - see `AnimationOptions`). This means a save made mid
-     * flash won't perfectly resume the pending swap - the same already-accepted limitation the
-     * mask/filter transitions have for their own live, non-persisted state.
+     * Stages both images before starting the flash. A shared timeline switches their alpha at the
+     * last color peak, then reveals the new image. Every part is a registered ticker, so going back
+     * cancels the entire transition and a saved replacement resumes without a delayed callback.
      */
-    function flashReplace(
+    async function flashReplace(
         alias: string,
         oldComponent: CanvasBaseInterface<any>,
         component: TComponent,
@@ -2180,63 +2247,97 @@ export namespace transitions {
             >;
             priority?: UPDATE_PRIORITY;
         },
-    ): string[] | undefined {
-        const oldOverlayAlias = createFlashOverlay(oldComponent, options.color);
-        const { values, times, total } = buildFlashKeyframes(
+    ): Promise<string[] | undefined> {
+        // Copy the old image's properties before attaching the temporary flash overlay, otherwise
+        // the new image inherits a second, unanimated color filter and stays tinted after the flash.
+        const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
+            alias,
+            component,
+            "flash",
+        );
+        if (!oldComponentAlias) {
+            return;
+        }
+        const newAlpha = newComponent.alpha;
+        const oldAlpha = oldComponent.alpha;
+        newComponent.alpha = 0;
+        if (
+            (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
+            newComponent.haveEmptyTexture
+        ) {
+            await newComponent.load();
+        }
+        const {
+            values,
+            times,
+            total: upDuration,
+        } = buildFlashKeyframes(
             options.maxAlpha,
             options.fadeDuration,
             options.holdDuration,
             options.pulses,
             true,
         );
-        const upId = canvas.animate(
-            oldOverlayAlias,
-            { alpha: values },
-            { ...options.rest, duration: total, times, completeOnContinue: false } as any,
+        const duration = upDuration + options.fadeDuration;
+        const swapTime = upDuration / duration;
+        const timing = {
+            duration,
+            delay: options.rest.delay,
+            ease: options.rest.ease,
+            completeOnContinue: options.completeOnContinue,
+        };
+        const oldOverlayId = addMotionFilterEffect(
+            oldComponentAlias,
+            oldComponent,
+            new filters.ColorOverlayFilter({ color: options.color as any, alpha: 0 }),
+            { alpha: [...values, options.maxAlpha] },
+            {
+                ...timing,
+                times: [...times.map((time) => time * swapTime), 1],
+                aliasToRemoveAfter: [oldComponentAlias],
+            },
             options.priority,
         );
-        setTimeout(() => {
-            void (async () => {
-                const { component: newComponent, oldComponentAlias } = swapComponentForEffect(
-                    alias,
-                    component,
-                    "flash",
-                );
-                // The old content and its now-stale, still-opaque overlay are no longer needed - remove
-                // both right away rather than waiting for the down-phase ticker below to complete, since
-                // the old overlay's zIndex (old.zIndex + 1) would otherwise sit above the new content and
-                // its own fresh overlay, hiding the fade-down entirely.
-                canvas.remove(
-                    oldComponentAlias ? [oldOverlayAlias, oldComponentAlias] : [oldOverlayAlias],
-                );
-                if (
-                    (newComponent instanceof ImageSprite ||
-                        newComponent instanceof ImageContainer) &&
-                    newComponent.haveEmptyTexture
-                ) {
-                    await newComponent.load();
-                }
-                const newOverlayAlias = createFlashOverlay(
-                    newComponent,
-                    options.color,
-                    options.maxAlpha,
-                );
-                canvas.animate(
-                    newOverlayAlias,
-                    { alpha: [options.maxAlpha, 0] },
-                    {
-                        ...options.rest,
-                        duration: options.fadeDuration,
-                        aliasToRemoveAfter: [newOverlayAlias],
-                        completeOnContinue: options.completeOnContinue,
-                    } as any,
-                    options.priority,
-                );
-            })();
-        }, total * 1000);
-        if (upId) {
-            return [upId];
+        const newOverlayId = addMotionFilterEffect(
+            alias,
+            newComponent,
+            new filters.ColorOverlayFilter({
+                color: options.color as any,
+                alpha: options.maxAlpha,
+            }),
+            { alpha: [options.maxAlpha, options.maxAlpha, 0] },
+            {
+                ...timing,
+                times: [0, swapTime, 1],
+                aliasToRemoveAfter: options.rest.aliasToRemoveAfter,
+            },
+            options.priority,
+        );
+        // Repeated offsets make this a hard cut at the final peak, not a crossfade. Using the same
+        // duration and delay as the overlays keeps the cut in sync through pause, restore and skip.
+        const visibilityTiming = {
+            duration,
+            delay: options.rest.delay,
+            times: [0, swapTime, swapTime, 1],
+            ease: "linear" as const,
+        };
+        const oldVisibilityId = canvas.animate(
+            oldComponentAlias,
+            { alpha: [oldAlpha, oldAlpha, 0, 0] },
+            visibilityTiming,
+            options.priority,
+        );
+        const newVisibilityId = canvas.animate(
+            alias,
+            { alpha: [0, 0, newAlpha, newAlpha] },
+            visibilityTiming,
+            options.priority,
+        );
+        if (options.completeOnContinue) {
+            oldVisibilityId && tickers.completeOnStepEnd({ id: oldVisibilityId });
+            newVisibilityId && tickers.completeOnStepEnd({ id: newVisibilityId });
         }
+        return collectTickerIds([oldOverlayId, newOverlayId, oldVisibilityId, newVisibilityId]);
     }
 
     /**
@@ -2309,8 +2410,17 @@ export namespace transitions {
         defaultFadeComponent: boolean,
         priority: UPDATE_PRIORITY | undefined,
         attach: AttachFilterTransition,
+        playOldOut: (oldComponentAlias: string) => string[] | undefined,
+        sequential: boolean = false,
     ): Promise<string[] | undefined> {
-        const { duration, delay, ease, completeOnContinue = true, fadeComponent = defaultFadeComponent } = props;
+        const {
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+            fadeComponent = defaultFadeComponent,
+            animateOldComponentOut = true,
+        } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter];
@@ -2320,24 +2430,60 @@ export namespace transitions {
             component ?? alias,
             tag,
         );
-        oldComponentAlias && aliasToRemoveAfter.push(oldComponentAlias);
+        const waitForOut = sequential && !!oldComponentAlias && animateOldComponentOut;
+        const targetAlpha = newComponent.alpha;
+        if (waitForOut) {
+            newComponent.alpha = 0;
+        }
+        const startOldOut = () =>
+            handleOldComponent(
+                oldComponentAlias,
+                animateOldComponentOut,
+                aliasToRemoveAfter,
+                playOldOut,
+            );
+        const oldOut = waitForOut ? [] : startOldOut();
         if (
             (newComponent instanceof ImageSprite || newComponent instanceof ImageContainer) &&
             newComponent.haveEmptyTexture
         ) {
             await newComponent.load();
         }
+        // Start both clocks only after loading, so the entrance delay matches the entire exit.
+        if (waitForOut) {
+            oldOut.push(...startOldOut());
+        }
         const resolvedDuration = duration ?? 1;
-        if (fadeComponent) {
+        // `sequential`: the new component starts once the replaced one has finished leaving.
+        const resolvedDelay =
+            sequential && oldOut.length > 0
+                ? typeof delay === "function"
+                    ? (index: number, total: number) => delay(index, total) + resolvedDuration
+                    : (delay ?? 0) + resolvedDuration
+                : delay;
+        let visibilityId: string | undefined;
+        if (waitForOut) {
+            visibilityId = canvas.animate(
+                alias,
+                { alpha: [0, targetAlpha] },
+                { duration: fadeComponent ? resolvedDuration / 4 : 0, delay: resolvedDelay },
+                priority,
+            );
+            if (visibilityId && completeOnContinue) {
+                tickers.completeOnStepEnd({ id: visibilityId });
+            }
+        } else if (fadeComponent) {
             fadeComponentAlongsideEffect(alias, newComponent, "in", resolvedDuration, priority);
         }
-        return collectTickerIds(
-            attach(
+        return collectTickerIds([
+            ...attach(
                 newComponent,
-                { duration: resolvedDuration, delay, ease, completeOnContinue },
+                { duration: resolvedDuration, delay: resolvedDelay, ease, completeOnContinue },
                 aliasToRemoveAfter,
             ),
-        );
+            ...oldOut,
+            visibilityId,
+        ]);
     }
 
     /**
@@ -2352,7 +2498,13 @@ export namespace transitions {
         priority: UPDATE_PRIORITY | undefined,
         attach: AttachFilterTransition,
     ): string[] | undefined {
-        const { duration, delay, ease, completeOnContinue = true, fadeComponent = defaultFadeComponent } = props;
+        const {
+            duration,
+            delay,
+            ease,
+            completeOnContinue = true,
+            fadeComponent = defaultFadeComponent,
+        } = props;
         let { aliasToRemoveAfter = [] } = props;
         if (typeof aliasToRemoveAfter === "string") {
             aliasToRemoveAfter = [aliasToRemoveAfter];
@@ -2365,10 +2517,21 @@ export namespace transitions {
         }
         const resolvedDuration = duration ?? 1;
         if (fadeComponent) {
-            fadeComponentAlongsideEffect(alias, component, "out", resolvedDuration, priority);
+            fadeComponentAlongsideEffect(
+                alias,
+                component,
+                "out",
+                resolvedDuration,
+                priority,
+                delay,
+            );
         }
         return collectTickerIds(
-            attach(component, { duration: resolvedDuration, delay, ease, completeOnContinue }, aliasToRemoveAfter),
+            attach(
+                component,
+                { duration: resolvedDuration, delay, ease, completeOnContinue },
+                aliasToRemoveAfter,
+            ),
         );
     }
 
@@ -2413,7 +2576,11 @@ export namespace transitions {
         ];
         if (rgbSplit !== 0) {
             const envelope = shape(rgbSplit);
-            const split = new filters.RGBSplitFilter({ red: { x: 0, y: 0 }, green: { x: 0, y: 0 }, blue: { x: 0, y: 0 } });
+            const split = new filters.RGBSplitFilter({
+                red: { x: 0, y: 0 },
+                green: { x: 0, y: 0 },
+                blue: { x: 0, y: 0 },
+            });
             split.padding = Math.ceil(Math.abs(rgbSplit));
             ids.push(
                 addMotionFilterEffect(
@@ -2433,6 +2600,7 @@ export namespace transitions {
      * Show a image in the canvas with a glitch effect: the image materializes out of jittery bursts of
      * digital-corruption slices with red/blue fringing, which settle as it appears. See
      * {@link GlitchInOutProps}.
+     * When replacing an existing component, waits for its out animation before starting the entrance.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
      * @param props The properties of the effect
@@ -2445,8 +2613,17 @@ export namespace transitions {
         props: GlitchInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        return filterTransitionIn(alias, component, "glitch", props, true, priority, (target, timing, remove) =>
-            addGlitchTickers(alias, target, "in", props, timing, remove, priority),
+        return filterTransitionIn(
+            alias,
+            component,
+            "glitch",
+            props,
+            true,
+            priority,
+            (target, timing, remove) =>
+                addGlitchTickers(alias, target, "in", props, timing, remove, priority),
+            (old) => glitchOut(old, oldComponentOutProps(props), priority),
+            true,
         );
     }
 
@@ -2481,7 +2658,14 @@ export namespace transitions {
         const center = resolveOrigin(origin);
         const wound = (angle * Math.PI) / 180;
         const keyframes = phase === "in" ? [wound, 0] : [0, wound];
-        const filter = new filters.TwistFilter({ radius, angle: keyframes[0] });
+        // `offset` must be a fresh object: TwistFilter's default one is shared by every instance, so setting
+        // the center on one twist would silently move it on all the others (a small image next to a big
+        // one would get the big one's center, far outside itself, and show no effect at all).
+        const filter = new filters.TwistFilter({
+            radius,
+            angle: keyframes[0],
+            offset: { x: 0, y: 0 },
+        });
         // The swirl rotates content within `radius` of the center - room for the part of that circle
         // that overhangs the component, so it isn't cut off (never less than TwistFilter's own default).
         const { width, height } = component.getBounds();
@@ -2496,10 +2680,12 @@ export namespace transitions {
             { angle: keyframes },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, center);
+                filter.offsetX = x;
+                filter.offsetY = y;
+            },
         );
-        const { x, y } = componentFilterCenter(component, center);
-        filter.offsetX = x;
-        filter.offsetY = y;
         return [id];
     }
 
@@ -2518,8 +2704,24 @@ export namespace transitions {
         props: TwistInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        return filterTransitionIn(alias, component, "twist", props, true, priority, (target, timing, remove) =>
-            addTwistTicker(alias, target, "in", props, timing, remove, priority),
+        return filterTransitionIn(
+            alias,
+            component,
+            "twist",
+            props,
+            true,
+            priority,
+            (target, timing, remove) =>
+                addTwistTicker(alias, target, "in", props, timing, remove, priority),
+            (old) =>
+                twistOut(
+                    old,
+                    {
+                        ...oldComponentOutProps(props),
+                        angle: -(props.angle ?? 540),
+                    },
+                    priority,
+                ),
         );
     }
 
@@ -2553,9 +2755,17 @@ export namespace transitions {
         const { strength = 0.6, origin } = props;
         const center = resolveOrigin(origin);
         const keyframes = phase === "in" ? [strength, 0] : [0, strength];
-        const filter = new filters.ZoomBlurFilter({ center: { x: 0, y: 0 }, strength: keyframes[0] });
+        const filter = new filters.ZoomBlurFilter({
+            center: { x: 0, y: 0 },
+            strength: keyframes[0],
+        });
         const { width, height } = component.getBounds();
-        filter.padding = zoomBlurPadding({ x: center.x * width, y: center.y * height }, strength, width, height);
+        filter.padding = zoomBlurPadding(
+            { x: center.x * width, y: center.y * height },
+            strength,
+            width,
+            height,
+        );
         const id = addMotionFilterEffect(
             alias,
             component,
@@ -2563,15 +2773,18 @@ export namespace transitions {
             { strength: keyframes },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, center);
+                filter.center = { x, y };
+            },
         );
-        const { x, y } = componentFilterCenter(component, center);
-        filter.center = { x, y };
         return [id];
     }
 
     /**
      * Show a image in the canvas with a warp effect: the image arrives out of radial zoom-blur streaks,
      * like dropping out of hyperspace. See {@link WarpInOutProps}.
+     * When replacing an existing component, waits for its out animation before starting the entrance.
      * @param alias The unique alias of the image. You can use this alias to refer to this image
      * @param component The imageUrl, array of imageUrl or the canvas component. If you don't provide the component, then the alias is used as the url.
      * @param props The properties of the effect
@@ -2584,8 +2797,17 @@ export namespace transitions {
         props: WarpInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        return filterTransitionIn(alias, component, "warp", props, true, priority, (target, timing, remove) =>
-            addWarpTicker(alias, target, "in", props, timing, remove, priority),
+        return filterTransitionIn(
+            alias,
+            component,
+            "warp",
+            props,
+            true,
+            priority,
+            (target, timing, remove) =>
+                addWarpTicker(alias, target, "in", props, timing, remove, priority),
+            (old) => warpOut(old, oldComponentOutProps(props), priority),
+            true,
         );
     }
 
@@ -2618,11 +2840,22 @@ export namespace transitions {
         const { origin, amplitude = 30, wavelength = 160, speed = 500 } = props;
         const center = resolveOrigin(origin);
         const { width, height } = component.getBounds();
-        const filter = new filters.ShockwaveFilter({ center: { x: 0, y: 0 }, amplitude, wavelength, speed, time: 0 });
+        const filter = new filters.ShockwaveFilter({
+            center: { x: 0, y: 0 },
+            amplitude,
+            wavelength,
+            speed,
+            time: 0,
+        });
         // The shader displaces by up to 1.25x `amplitude` - room for edges pushed past the bounds.
         filter.padding = Math.ceil(Math.abs(amplitude) * 1.25);
         const time =
-            shockwaveTravel({ x: center.x * width, y: center.y * height }, { width, height }, wavelength, -1) / speed;
+            shockwaveTravel(
+                { x: center.x * width, y: center.y * height },
+                { width, height },
+                wavelength,
+                -1,
+            ) / speed;
         const id = addMotionFilterEffect(
             alias,
             component,
@@ -2630,9 +2863,11 @@ export namespace transitions {
             { time: [0, time] },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, center);
+                filter.center = { x, y };
+            },
         );
-        const { x, y } = componentFilterCenter(component, center);
-        filter.center = { x, y };
         return [id];
     }
 
@@ -2652,8 +2887,26 @@ export namespace transitions {
         props: RippleInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        return filterTransitionIn(alias, component, "ripple", props, true, priority, (target, timing, remove) =>
-            addRippleTicker(alias, target, props, timing, remove, priority),
+        return filterTransitionIn(
+            alias,
+            component,
+            "ripple",
+            props,
+            true,
+            priority,
+            (target, timing, remove) =>
+                addRippleTicker(alias, target, props, timing, remove, priority),
+            (old) =>
+                removeWithDissolve(
+                    old,
+                    {
+                        duration: props.duration,
+                        delay: props.delay,
+                        ease: props.ease,
+                        completeOnContinue: props.completeOnContinue,
+                    },
+                    priority,
+                ),
         );
     }
 
@@ -2696,7 +2949,14 @@ export namespace transitions {
             step: edge === "hard" ? 0.5 : 0,
         });
         return [
-            addMotionFilterEffect(alias, component, filter, { strength: keyframes }, { ...timing, aliasToRemoveAfter }, priority),
+            addMotionFilterEffect(
+                alias,
+                component,
+                filter,
+                { strength: keyframes },
+                { ...timing, aliasToRemoveAfter },
+                priority,
+            ),
         ];
     }
 
@@ -2716,8 +2976,16 @@ export namespace transitions {
         props: NoiseDissolveInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        return filterTransitionIn(alias, component, "noise", props, false, priority, (target, timing, remove) =>
-            addNoiseDissolveTicker(alias, target, "in", props, timing, remove, priority),
+        return filterTransitionIn(
+            alias,
+            component,
+            "noise",
+            props,
+            false,
+            priority,
+            (target, timing, remove) =>
+                addNoiseDissolveTicker(alias, target, "in", props, timing, remove, priority),
+            (old) => noiseDissolveOut(old, oldComponentOutProps(props), priority),
         );
     }
 
@@ -2822,8 +3090,17 @@ export namespace transitions {
         props: TvInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        return filterTransitionIn(alias, component, "tv", props, false, priority, (target, timing, remove) =>
-            addTvTickers(alias, target, "in", props, timing, remove, priority),
+        return filterTransitionIn(
+            alias,
+            component,
+            "tv",
+            props,
+            false,
+            priority,
+            (target, timing, remove) =>
+                addTvTickers(alias, target, "in", props, timing, remove, priority),
+            (old) => tvOut(old, oldComponentOutProps(props), priority),
+            true,
         );
     }
 
@@ -2836,7 +3113,11 @@ export namespace transitions {
      * @param priority The priority of the effect
      * @returns The ids of the tickers that are used in the effect.
      */
-    export function tvOut(alias: string, props: TvInOutProps = {}, priority?: UPDATE_PRIORITY): string[] | undefined {
+    export function tvOut(
+        alias: string,
+        props: TvInOutProps = {},
+        priority?: UPDATE_PRIORITY,
+    ): string[] | undefined {
         return filterTransitionOut(alias, props, false, priority, (target, timing, remove) =>
             addTvTickers(alias, target, "out", props, timing, remove, priority),
         );
@@ -2859,7 +3140,12 @@ export namespace transitions {
         if (mode === "bulge") {
             // A bulge pushes content outward, up to `radius` from the center; a pinch only pulls inward.
             const { width, height } = component.getBounds();
-            filter.padding = circleOverhang({ x: center.x * width, y: center.y * height }, radius, width, height);
+            filter.padding = circleOverhang(
+                { x: center.x * width, y: center.y * height },
+                radius,
+                width,
+                height,
+            );
         }
         const id = addMotionFilterEffect(
             alias,
@@ -2868,11 +3154,12 @@ export namespace transitions {
             { strength: keyframes },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                // BulgePinchFilter uses a normalized center in the padded filter area.
+                const { x, y, area } = componentFilterCenter(component, center);
+                filter.center = { x: x / area.width, y: y / area.height };
+            },
         );
-        // BulgePinchFilter's `center` is normalized to the filter area (`uCenter * uDimensions`), which
-        // padding and viewport clipping make differ from the component's own bounds.
-        const { x, y, area } = componentFilterCenter(component, center);
-        filter.center = { x: x / area.width, y: y / area.height };
         return [id];
     }
 
@@ -2891,8 +3178,26 @@ export namespace transitions {
         props: PinchInOutProps = {},
         priority?: UPDATE_PRIORITY,
     ): Promise<string[] | undefined> {
-        return filterTransitionIn(alias, component, "pinch", props, true, priority, (target, timing, remove) =>
-            addPinchTicker(alias, target, "in", props, timing, remove, priority),
+        return filterTransitionIn(
+            alias,
+            component,
+            "pinch",
+            props,
+            true,
+            priority,
+            (target, timing, remove) =>
+                addPinchTicker(alias, target, "in", props, timing, remove, priority),
+            (old) =>
+                removeWithDissolve(
+                    old,
+                    {
+                        duration: props.duration,
+                        delay: props.delay,
+                        ease: props.ease,
+                        completeOnContinue: props.completeOnContinue,
+                    },
+                    priority,
+                ),
         );
     }
 

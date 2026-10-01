@@ -36,7 +36,11 @@ registerTestLabel(
             };
         },
         async () => {
-            await pushIn("push-image", imageA, { direction: "left", duration: 1, motionBlur: true });
+            await pushIn("push-image", imageA, {
+                direction: "left",
+                duration: 1,
+                motionBlur: true,
+            });
             narration.dialogue = {
                 text: "pushIn with motionBlur: the orange image should push in from the left with a horizontal smear, ending sharp.",
             };

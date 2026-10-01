@@ -1,5 +1,5 @@
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
-import { AdjustmentFilter, PixelateFilter } from "pixi-filters";
+import { AdjustmentFilter, PixelateFilter, ShockwaveFilter } from "pixi-filters";
 import { afterEach, describe, expect, test, vi } from "vitest";
 import Container from "../src/canvas/components/Container";
 import RegisteredFilters, { filterDecorator } from "../src/filters/decorators/RegisteredFilters";
@@ -14,6 +14,35 @@ afterEach(() => vi.restoreAllMocks());
  * restored from that memory ends up with equivalent filters, not just the same reference.
  */
 describe("canvas element filters: save/restore", () => {
+    test("animating restored pixel sizes does not change the next restore", async () => {
+        const original = new Container();
+        original.filters = [new PixelateFilter(32)];
+        const memory = original.memory;
+
+        for (let i = 0; i < 3; i++) {
+            const restored = new Container();
+            await restored.setMemory(memory);
+            const filter = (restored.filters as PixelateFilter[])[0];
+            expect([filter.sizeX, filter.sizeY]).toEqual([32, 32]);
+            filter.sizeX = 1;
+            filter.sizeY = 1;
+            expect(memory.pixivnFilters?.[0].args).toEqual([32, 32]);
+        }
+    });
+
+    test("restored filters do not share nested options with saved memory", async () => {
+        const original = new Container();
+        original.filters = [new ShockwaveFilter({ center: { x: 40, y: 80 } })];
+        const memory = original.memory;
+        const before = JSON.parse(JSON.stringify(memory.pixivnFilters));
+        const restored = new Container();
+        await restored.setMemory(memory);
+        const filter = (restored.filters as ShockwaveFilter[])[0];
+        filter.centerX = 100;
+        filter.centerY = 200;
+        expect(memory.pixivnFilters).toEqual(before);
+    });
+
     test("round-trips a single built-in filter (BlurFilter) through memory", async () => {
         const original = new Container();
         original.filters = [new PIXI.BlurFilter({ strengthX: 4, strengthY: 6, quality: 3 })];
@@ -23,6 +52,8 @@ describe("canvas element filters: save/restore", () => {
             {
                 filterId: "BlurFilter",
                 args: { strengthX: 4, strengthY: 6, quality: 3, repeatEdgePixels: false },
+                // `padding` is saved next to the args (BlurFilter grows its area with the strength).
+                padding: expect.any(Number),
             },
         ]);
 

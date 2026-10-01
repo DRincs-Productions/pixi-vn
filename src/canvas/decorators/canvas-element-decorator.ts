@@ -136,7 +136,7 @@ export async function setMemoryContainer<T extends PixiContainer>(
     setListenerMemory(element, memory);
     if ("pixivnFilters" in memory && memory.pixivnFilters !== undefined) {
         const filters = memory.pixivnFilters
-            .map((f) => RegisteredFilters.getInstance(f.filterId, f.args))
+            .map((f) => RegisteredFilters.getInstance(f.filterId, f.args, f.padding))
             .filter((f): f is Filter => !!f);
         element.filters = filters.length > 0 ? filters : null;
     }

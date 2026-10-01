@@ -125,13 +125,25 @@ export default function App() {
             </div>
 
             <div style={{ display: "flex", gap: 8, marginTop: 12, flexWrap: "wrap" }}>
-                <button disabled={!api || busy || !state?.canContinue || showChoices} onClick={() => run(() => api?.continue())}>
+                <button
+                    disabled={!api || busy || !state?.canContinue || showChoices}
+                    onClick={() => run(() => api?.continue())}
+                >
                     Continue
                 </button>
-                <button disabled={!api || busy || !state?.canGoBack} onClick={() => run(() => api?.goBack())}>
+                <button
+                    disabled={!api || busy || !state?.canGoBack}
+                    onClick={() => run(() => api?.goBack())}
+                >
                     Indietro
                 </button>
-                <button disabled={!api || busy} onClick={() => { api?.closeCurrentLabel(); refresh(); }}>
+                <button
+                    disabled={!api || busy}
+                    onClick={() => {
+                        api?.closeCurrentLabel();
+                        refresh();
+                    }}
+                >
                     Chiudi label
                 </button>
             </div>

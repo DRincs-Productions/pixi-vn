@@ -13,7 +13,13 @@ import type {
     Rectangle,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
-import type { Ticker, TickerArgs, TickerInfo, TickersInterface, TickersSequence } from "@drincs/pixi-vn/tickers";
+import type {
+    Ticker,
+    TickerArgs,
+    TickerInfo,
+    TickersInterface,
+    TickersSequence,
+} from "@drincs/pixi-vn/tickers";
 import type { Devtools } from "@pixi/devtools";
 import type Layer from "../components/Layer";
 import type { CanvasBaseInterface } from "./CanvasBaseInterface";

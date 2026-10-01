@@ -36,14 +36,23 @@ registerTestLabel(
                 src: `data:image/svg+xml,${encodeURIComponent(stripedTriangleSvg("#ef8354", "#2f6690"))}`,
             });
             canvas.clear();
-            await showImage(image, undefined, { x: canvas.width / 2, y: canvas.height / 2, anchor: 0.5 });
+            await showImage(image, undefined, {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                anchor: 0.5,
+            });
             narration.dialogue = {
                 text: "Filters: none. The orange/blue triangle is plain. Continue to add an old-film look.",
             };
         },
         () => {
             target().filters = [
-                new filters.OldFilmFilter({ sepia: 0.8, noise: 0.25, scratch: 0.6, vignetting: 0.35 }),
+                new filters.OldFilmFilter({
+                    sepia: 0.8,
+                    noise: 0.25,
+                    scratch: 0.6,
+                    vignetting: 0.35,
+                }),
             ];
             narration.dialogue = {
                 text: "Filters: OldFilmFilter. The triangle should be sepia with grain, scratches and a vignette. Go Indietro: it must lose the look; Continue: it must get it back. Continue to add a yellow outline too.",
@@ -72,7 +81,13 @@ registerTestLabel(
             const component = target();
             component.filters = [
                 ...(component.filters ?? []),
-                new filters.HslAdjustmentFilter({ hue: 120, saturation: 0, lightness: 0, colorize: false, alpha: 1 }),
+                new filters.HslAdjustmentFilter({
+                    hue: 120,
+                    saturation: 0,
+                    lightness: 0,
+                    colorize: false,
+                    alpha: 1,
+                }),
             ];
             narration.dialogue = {
                 text: "Filters: OutlineFilter + HslAdjustmentFilter (hue +120). The stripes (and the outline) change color. Continue to remove every filter.",

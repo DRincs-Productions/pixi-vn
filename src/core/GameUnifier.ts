@@ -168,6 +168,7 @@ export default class GameUnifier {
             priority?: UPDATE_PRIORITY,
             apply?: (value: number) => void,
             cleanup?: () => void,
+            valueRef?: { alias: string; config: unknown },
         ) => string | undefined;
         /**
          * This function removes one or more canvas components by alias. Used by the `tickers` module's
@@ -589,6 +590,7 @@ export default class GameUnifier {
         priority?: UPDATE_PRIORITY,
         apply?: (value: number) => void,
         cleanup?: () => void,
+        valueRef?: { alias: string; config: unknown },
     ) => string | undefined = () => {
         logger.error("Method not implemented, you should initialize the Game: Game.init()");
         throw new PixiError(

@@ -124,6 +124,8 @@ namespace motion {
      * `undefined`, ignored otherwise (the filter's own properties are written to directly instead).
      * @param cleanup Called once, right before completion handling, to detach/destroy the filter or tear
      * down whatever `apply` was driving.
+     * @param valueRef Serializable description of what `apply`/`cleanup` drive, saved with the ticker so it
+     * can be rebuilt on restore - see `MotionFilterTicker`'s `TArgs.valueRef`.
      * @returns The id of the ticker, or `undefined` if the ticker was not added.
      */
     export function animateFilter(
@@ -134,6 +136,7 @@ namespace motion {
         priority?: UPDATE_PRIORITY,
         apply?: (value: number) => void,
         cleanup?: () => void,
+        valueRef?: { alias: string; config: unknown },
     ): string | undefined {
         try {
             keyframes = createExportableElement(keyframes);
@@ -167,7 +170,7 @@ namespace motion {
             }
         }
         const ticker = new MotionFilterTicker(
-            { keyframes, options: options as AnimationOptions, filterRef },
+            { keyframes, options: options as AnimationOptions, filterRef, valueRef },
             { filter, apply, priority, canvasElementAliases: aliases, cleanup },
         );
         const id = tickers.add<any>(aliases, ticker);

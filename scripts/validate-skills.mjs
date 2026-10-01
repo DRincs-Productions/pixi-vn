@@ -92,7 +92,9 @@ async function main() {
 
         const bodyStat = await stat(skillPath);
         if (bodyStat.size < 200) {
-            errors.push(`skills/${entry.name}/SKILL.md looks empty/too short (${bodyStat.size} bytes)`);
+            errors.push(
+                `skills/${entry.name}/SKILL.md looks empty/too short (${bodyStat.size} bytes)`,
+            );
         }
     }
 
@@ -109,7 +111,9 @@ async function main() {
         return;
     }
 
-    console.log(`Validated ${seenNames.size} skill(s) under skills/: ${[...seenNames.keys()].join(", ")}`);
+    console.log(
+        `Validated ${seenNames.size} skill(s) under skills/: ${[...seenNames.keys()].join(", ")}`,
+    );
 }
 
 await main();

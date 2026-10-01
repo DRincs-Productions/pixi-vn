@@ -301,7 +301,10 @@ export default class CanvasManager implements CanvasManagerInterface {
             | { new (args: any, duration?: number, priority?: UPDATE_PRIORITY): Ticker<any> }
             | string,
     ) {
-        return tickers.unlinkComponent(alias, ticker as { new (): Ticker<any> } | string | undefined);
+        return tickers.unlinkComponent(
+            alias,
+            ticker as { new (): Ticker<any> } | string | undefined,
+        );
     }
     /**
      * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
@@ -549,7 +552,9 @@ export default class CanvasManager implements CanvasManagerInterface {
                 tickers: createExportableElement(
                     TickersManagerStatic.currentTickersWithoutCreatedBySteps(),
                 ),
-                tickersSteps: createExportableElement(TickersManagerStatic.currentTickersSequence()),
+                tickersSteps: createExportableElement(
+                    TickersManagerStatic.currentTickersSequence(),
+                ),
                 elements: createExportableElement(currentElements),
                 stage: createExportableElement(getMemoryContainer(this.gameLayer)),
                 elementAliasesOrder: createExportableElement(

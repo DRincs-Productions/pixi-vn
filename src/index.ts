@@ -191,7 +191,16 @@ export namespace Game {
             animate: (components, keyframes, options, priority) => {
                 return motion.animate(components, keyframes, options, priority);
             },
-            animateFilter: (components, filter, keyframes, options, priority, apply, cleanup) => {
+            animateFilter: (
+                components,
+                filter,
+                keyframes,
+                options,
+                priority,
+                apply,
+                cleanup,
+                valueRef,
+            ) => {
                 return motion.animateFilter(
                     components,
                     filter,
@@ -200,6 +209,7 @@ export namespace Game {
                     priority,
                     apply,
                     cleanup,
+                    valueRef,
                 );
             },
             removeCanvasComponent: (alias) => {

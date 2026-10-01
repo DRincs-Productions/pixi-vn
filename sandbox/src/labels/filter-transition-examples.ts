@@ -10,7 +10,10 @@ import { loadStripedTargets } from "./targets";
 interface FilterTransitionExample {
     name: string;
     run: {
-        in: (alias: string, image: { value: string; options: ImageSpriteOptions }) => Promise<unknown>;
+        in: (
+            alias: string,
+            image: { value: string; options: ImageSpriteOptions },
+        ) => Promise<unknown>;
         out: (alias: string) => unknown;
     };
     looks: { in: string; replace: string; out: string };
@@ -25,7 +28,8 @@ const examples: FilterTransitionExample[] = [
         },
         looks: {
             in: "the triangle should fade in through jittery slices with red/blue fringing that settle down",
-            replace: "the green/purple triangle should glitch in over the orange one, which disappears at the end",
+            replace:
+                "the green/purple triangle should glitch in over the orange one, which disappears at the end",
             out: "glitch bursts should build up while the triangle fades out, then it's removed",
         },
     },
@@ -73,7 +77,8 @@ const examples: FilterTransitionExample[] = [
         },
         looks: {
             in: "the triangle should appear in crisp, organic noise-shaped blotches",
-            replace: "the green/purple triangle should dissolve in blotch by blotch over the orange one",
+            replace:
+                "the green/purple triangle should dissolve in blotch by blotch over the orange one",
             out: "(soft edge) the triangle should disappear in a cloudy noise fade, then it's removed",
         },
     },
@@ -120,11 +125,15 @@ for (const { name, run, looks } of examples) {
                 await loadStripedTargets(imageA, imageB);
                 canvas.clear();
                 await run.in(alias, image(imageA));
-                narration.dialogue = { text: `${name}In (new element): ${looks.in}. Continue to replace it.` };
+                narration.dialogue = {
+                    text: `${name}In (new element): ${looks.in}. Continue to replace it.`,
+                };
             },
             async () => {
                 await run.in(alias, image(imageB));
-                narration.dialogue = { text: `${name}In (replace): ${looks.replace}. Continue for ${name}Out.` };
+                narration.dialogue = {
+                    text: `${name}In (replace): ${looks.replace}. Continue for ${name}Out.`,
+                };
             },
             async () => {
                 run.out(alias);

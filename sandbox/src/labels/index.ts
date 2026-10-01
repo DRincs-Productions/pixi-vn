@@ -20,4 +20,3 @@ import "./wipe-transition-example";
 import "./zoomin-position";
 
 export { START_LABEL_ID } from "./start";
-
