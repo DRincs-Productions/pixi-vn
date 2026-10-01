@@ -148,13 +148,37 @@ body {
 
 ## Agent Skills
 
-Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants how to correctly use each part of the engine. To install all 13 skills globally for Codex, run:
+Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants how to correctly use each part of the engine.
+
+> In LM Studio Bionic, ask the agent to install skills from `https://github.com/DRincs-Productions/pixi-vn`, or add the skill files in **Settings → Skills**. To reuse skills installed for Codex or Claude Code, enable **Settings → Skills → Use skills found in other apps**.
+
+**Codex**:
 
 ```npm
 npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent codex -g
 ```
 
-To install only specific skills, pass `--skill <name>` (repeat the flag to install several, e.g. `--skill pixi-vn-canvas --skill pixi-vn-sound`). Use `--list` instead of installing to see what's available. Available skills:
+**Claude Code**:
+
+```npm
+npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent claude-code -g
+```
+
+**Ollama**:
+
+Ollama runs the model; install the skills for the coding agent you use with it. For Claude Code powered by Ollama, use the Claude Code command above, then start it with:
+
+```bash
+ollama launch claude --model <model>
+```
+
+**Other agents**:
+
+```npm
+npx skills@latest add DRincs-Productions/pixi-vn@latest --all
+```
+
+Available skills:
 
 - `pixi-vn-getting-started` — installing the package and initializing the `Game`
 - `pixi-vn-assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
