@@ -20,14 +20,14 @@ jobs:
           node-version: 24
       - run: npm run skills:validate
       - name: Check skills.sh discovery
-        run: npx --yes skills@latest add DRincs-Productions/pixi-vn --all -g --list
+        run: npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --all -g --list
       - name: Check global installation
         shell: bash
         run: |
           set -euo pipefail
           temp_home="$(mktemp -d)"
           trap 'rm -rf "$temp_home"' EXIT
-          HOME="$temp_home" USERPROFILE="$temp_home" npx --yes skills@latest add DRincs-Productions/pixi-vn --all -g --copy
+          HOME="$temp_home" USERPROFILE="$temp_home" npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --all -g --copy
           for skill in pixi-vn-assets pixi-vn-canvas pixi-vn-characters pixi-vn-getting-started pixi-vn-history pixi-vn-migration pixi-vn-minigames pixi-vn-narration pixi-vn-saves pixi-vn-sound pixi-vn-storage pixi-vn-testing pixi-vn-ui; do
             test -f "$temp_home/.agents/skills/$skill/SKILL.md"
           done
