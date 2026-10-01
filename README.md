@@ -155,13 +155,13 @@ Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI codi
 **Codex**:
 
 ```npm
-npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent codex -g
+npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent codex -g -y
 ```
 
 **Claude Code**:
 
 ```npm
-npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent claude-code -g
+npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent claude-code -g -y
 ```
 
 **Ollama**:
@@ -175,7 +175,7 @@ ollama launch claude --model <model>
 **Other agents**:
 
 ```npm
-npx skills@latest add DRincs-Productions/pixi-vn@latest --all
+npx skills@latest add DRincs-Productions/pixi-vn@latest --all -y
 ```
 
 Available skills:

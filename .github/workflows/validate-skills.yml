@@ -2,8 +2,9 @@ name: Validate Agent Skills
 
 on:
   push:
-    branches: ["**"]
-  pull_request:
+    tags: ["**"]
+  schedule:
+    - cron: "0 0 */14 * *"
   workflow_dispatch:
 
 permissions:
@@ -20,14 +21,36 @@ jobs:
           node-version: 24
       - run: npm run skills:validate
       - name: Check skills.sh discovery
-        run: npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent codex -g --list
+        run: npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent codex -g --list -y
       - name: Check global installation
         shell: bash
         run: |
           set -euo pipefail
           temp_home="$(mktemp -d)"
           trap 'rm -rf "$temp_home"' EXIT
-          HOME="$temp_home" USERPROFILE="$temp_home" npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent codex -g --copy
+          HOME="$temp_home" USERPROFILE="$temp_home" npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent codex -g --copy -y
           for skill in pixi-vn-assets pixi-vn-canvas pixi-vn-characters pixi-vn-getting-started pixi-vn-history pixi-vn-migration pixi-vn-minigames pixi-vn-narration pixi-vn-saves pixi-vn-sound pixi-vn-storage pixi-vn-testing pixi-vn-ui; do
             test -f "$temp_home/.agents/skills/$skill/SKILL.md"
+          done
+      - name: Check Claude Code global installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_home="$(mktemp -d)"
+          trap 'rm -rf "$temp_home"' EXIT
+          HOME="$temp_home" USERPROFILE="$temp_home" npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent claude-code -g --copy -y
+          for skill in pixi-vn-assets pixi-vn-canvas pixi-vn-characters pixi-vn-getting-started pixi-vn-history pixi-vn-migration pixi-vn-minigames pixi-vn-narration pixi-vn-saves pixi-vn-sound pixi-vn-storage pixi-vn-testing pixi-vn-ui; do
+            find "$temp_home" -type f -path "*/$skill/SKILL.md" -print -quit | grep -q .
+          done
+      - name: Check all agents project installation
+        shell: bash
+        run: |
+          set -euo pipefail
+          temp_root="$(mktemp -d)"
+          trap 'rm -rf "$temp_root"' EXIT
+          mkdir -p "$temp_root/home" "$temp_root/project"
+          cd "$temp_root/project"
+          HOME="$temp_root/home" USERPROFILE="$temp_root/home" npx --yes skills@latest add DRincs-Productions/pixi-vn@latest --all -y --copy
+          for skill in pixi-vn-assets pixi-vn-canvas pixi-vn-characters pixi-vn-getting-started pixi-vn-history pixi-vn-migration pixi-vn-minigames pixi-vn-narration pixi-vn-saves pixi-vn-sound pixi-vn-storage pixi-vn-testing pixi-vn-ui; do
+            test -f "$temp_root/project/.agents/skills/$skill/SKILL.md"
           done
