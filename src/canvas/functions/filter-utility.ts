@@ -1,4 +1,4 @@
-import { filterAreaCenter } from "@canvas/functions/filter-effect-utility";
+import { filterAreaCenter } from "@tickers/utility/filter-effect-utility";
 import { canvas } from "@canvas/index";
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
 import { filters } from "@drincs/pixi-vn/filters";
@@ -56,8 +56,13 @@ export function addMotionFilterEffect(
         autoplay?: boolean;
     },
     priority?: UPDATE_PRIORITY,
+    beforeStart?: () => void,
 ): string | undefined {
     attachFilters(component, [filter]);
+    // Filters such as ZoomBlur/ Shockwave derive their center from the final filter area. Configure
+    // those coordinates after attachment (so padding includes this filter), but before Motion builds
+    // the animation and applies its first keyframe synchronously.
+    beforeStart?.();
     const id = filters.animate(
         alias,
         filter,

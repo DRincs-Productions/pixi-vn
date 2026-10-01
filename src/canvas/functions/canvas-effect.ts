@@ -2,7 +2,7 @@ import {
     buildGlitchJitter,
     shockwaveTravel,
     zoomBlurPadding,
-} from "@canvas/functions/filter-effect-utility";
+} from "@tickers/utility/filter-effect-utility";
 import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
 import { canvas } from "@canvas/index";
 import type {
@@ -629,9 +629,11 @@ export namespace effects {
             { time: [0, strength] },
             rest,
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, origin);
+                shockwave.center = { x, y };
+            },
         );
-        const { x, y } = componentFilterCenter(component, origin);
-        shockwave.center = { x, y };
         if (id) {
             return [id];
         }
@@ -687,9 +689,11 @@ export namespace effects {
             { strength: array },
             rest,
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, origin);
+                zoom.center = { x, y };
+            },
         );
-        const { x, y } = componentFilterCenter(component, origin);
-        zoom.center = { x, y };
         if (id) {
             return [id];
         }

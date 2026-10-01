@@ -11,7 +11,7 @@ import {
     circleOverhang,
     shockwaveTravel,
     zoomBlurPadding,
-} from "@canvas/functions/filter-effect-utility";
+} from "@tickers/utility/filter-effect-utility";
 import { addMotionFilterEffect, componentFilterCenter } from "@canvas/functions/filter-utility";
 import type { ColorType } from "@canvas/types/ColorType";
 import { filters } from "@drincs/pixi-vn/filters";
@@ -2680,10 +2680,12 @@ export namespace transitions {
             { angle: keyframes },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, center);
+                filter.offsetX = x;
+                filter.offsetY = y;
+            },
         );
-        const { x, y } = componentFilterCenter(component, center);
-        filter.offsetX = x;
-        filter.offsetY = y;
         return [id];
     }
 
@@ -2771,9 +2773,11 @@ export namespace transitions {
             { strength: keyframes },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, center);
+                filter.center = { x, y };
+            },
         );
-        const { x, y } = componentFilterCenter(component, center);
-        filter.center = { x, y };
         return [id];
     }
 
@@ -2859,9 +2863,11 @@ export namespace transitions {
             { time: [0, time] },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                const { x, y } = componentFilterCenter(component, center);
+                filter.center = { x, y };
+            },
         );
-        const { x, y } = componentFilterCenter(component, center);
-        filter.center = { x, y };
         return [id];
     }
 
@@ -3148,11 +3154,12 @@ export namespace transitions {
             { strength: keyframes },
             { ...timing, aliasToRemoveAfter },
             priority,
+            () => {
+                // BulgePinchFilter uses a normalized center in the padded filter area.
+                const { x, y, area } = componentFilterCenter(component, center);
+                filter.center = { x: x / area.width, y: y / area.height };
+            },
         );
-        // BulgePinchFilter's `center` is normalized to the filter area (`uCenter * uDimensions`), which
-        // padding and viewport clipping make differ from the component's own bounds.
-        const { x, y, area } = componentFilterCenter(component, center);
-        filter.center = { x: x / area.width, y: y / area.height };
         return [id];
     }
 

@@ -55,6 +55,8 @@ export type FilterTransitionConfig = WipeFilterConfig | IrisFilterConfig | Split
  */
 export interface FilterTransitionContext {
     graphics?: Graphics;
+    /** Last live component used by this ticker, retained for cleanup after alias removal. */
+    component?: CanvasBaseInterface<any>;
 }
 
 /**
@@ -74,6 +76,10 @@ function getOrCreateMaskGraphics(
 ): Graphics {
     if (!ctx.graphics) {
         ctx.graphics = new Graphics();
+        // Pixi defaults Graphics.label to "Graphics". Canvas history exports every labeled child,
+        // so leave implementation masks unlabeled or a mid-transition snapshot restores them as
+        // ordinary game elements after the owning ticker has been rebuilt.
+        ctx.graphics.label = "";
         component.parent?.addChild(ctx.graphics);
         component.mask = ctx.graphics;
     }
@@ -91,7 +97,11 @@ function syncMaskTransform(component: CanvasBaseInterface<any>, graphics: Graphi
 
 function cleanupMask(component: CanvasBaseInterface<any>, ctx: FilterTransitionContext) {
     if (ctx.graphics) {
-        component.mask = null;
+        // A transition can be restored while its previous ticker is still queuing cleanup on the
+        // old Pixi ticker. Never let that stale cleanup clear a mask installed by the restored ticker.
+        if (component.mask === ctx.graphics) {
+            component.mask = null;
+        }
         ctx.graphics.parent?.removeChild(ctx.graphics);
         ctx.graphics.destroy({ children: true });
         ctx.graphics = undefined;
@@ -273,11 +283,15 @@ export function createFilterTransitionApplier(alias: string, config: FilterTrans
         apply(value: number) {
             const component = canvas.find(alias);
             if (component) {
+                ctx.component = component;
                 applyFilterTransition(component, config, value, ctx);
             }
         },
         cleanup() {
-            const component = canvas.find(alias);
+            // Out transitions remove their component as part of onComplete before the filter ticker's
+            // queued cleanup runs on the next Pixi frame. Fall back to the captured instance so its
+            // sibling mask cannot be orphaned in the game layer.
+            const component = ctx.component ?? canvas.find(alias);
             if (component) {
                 cleanupFilterTransition(component, config, ctx);
             }
