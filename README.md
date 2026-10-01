@@ -164,14 +164,6 @@ npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent code
 npx skills@latest add DRincs-Productions/pixi-vn@latest --skill '*' --agent claude-code -g -y
 ```
 
-**Ollama**:
-
-Ollama runs the model; install the skills for the coding agent you use with it. For Claude Code powered by Ollama, use the Claude Code command above, then start it with:
-
-```bash
-ollama launch claude --model <model>
-```
-
 **Other agents**:
 
 ```npm
