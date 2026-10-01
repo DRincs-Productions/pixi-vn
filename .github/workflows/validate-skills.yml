@@ -1,0 +1,23 @@
+name: Validate Agent Skills
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  validate:
+    name: Validate skills.sh installable skills
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 24
+      - run: npm run skills:validate
+      - name: Check skills.sh discovery
+        run: npx --yes skills add DRincs-Productions/pixi-vn --list

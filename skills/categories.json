@@ -1,0 +1,15 @@
+{
+    "pixi-vn-assets": "assets",
+    "pixi-vn-canvas": "canvas",
+    "pixi-vn-characters": "characters",
+    "pixi-vn-getting-started": "getting-started",
+    "pixi-vn-history": "history",
+    "pixi-vn-migration": "migration",
+    "pixi-vn-minigames": "minigames",
+    "pixi-vn-narration": "narration",
+    "pixi-vn-saves": "saves",
+    "pixi-vn-sound": "sound",
+    "pixi-vn-storage": "storage",
+    "pixi-vn-testing": "testing",
+    "pixi-vn-ui": "ui"
+}

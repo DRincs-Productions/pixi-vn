@@ -148,23 +148,23 @@ body {
 
 ## Agent Skills
 
-Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants (like Claude Code) how to correctly use each part of the engine. If you use Claude Code, you can install all of them into your project with:
+Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants (like Claude Code) how to correctly use each part of the engine. Install them for the current project with:
 
 ```npm
-npx skills add DRincs-Productions/pixi-vn --all
+npx skills add DRincs-Productions/pixi-vn --skill '*' --global
 ```
 
-This installs every skill below and prompts you to pick which ones to keep. To install only specific ones, add `--skill <name>` (repeat the flag to install several, e.g. `--skill canvas --skill sound`). Use `--list` instead of installing to just see what's available. Available skills:
+This installs all skills globally for the agents supported by `skills`. Avoid `--all --global`: `--all` also targets every agent, including agents that do not support global installation. To install only specific skills, pass `--skill <name>` (repeat the flag to install several, e.g. `--skill pixi-vn-canvas --skill pixi-vn-sound`). Use `--list` instead of installing to see what's available. Available skills:
 
-- `getting-started` — installing the package and initializing the `Game`
-- `assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
-- `canvas` — images, sprites, text, video, transitions and effects
-- `characters` — defining and registering characters
-- `history` — going back/rewinding and reading the narration backlog
-- `narration` — labels, dialogue and choices
-- `saves` — exporting/restoring game state and persisting save files
-- `sound` — music, sound effects and audio channels
-- `storage` — game variables, flags and stored classes
-- `testing` — driving/inspecting a running game from an AI agent or script via `Game.testing`, for automated play-testing
-- `ui` — mounting HTML/PixiJS UI layers over the canvas, screen navigation, theming, and connecting UI to storage
-- `migration` — upgrading an existing project to the current version
+- `pixi-vn-getting-started` — installing the package and initializing the `Game`
+- `pixi-vn-assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
+- `pixi-vn-canvas` — images, sprites, text, video, transitions and effects
+- `pixi-vn-characters` — defining and registering characters
+- `pixi-vn-history` — going back/rewinding and reading the narration backlog
+- `pixi-vn-narration` — labels, dialogue and choices
+- `pixi-vn-saves` — exporting/restoring game state and persisting save files
+- `pixi-vn-sound` — music, sound effects and audio channels
+- `pixi-vn-storage` — game variables, flags and stored classes
+- `pixi-vn-testing` — driving/inspecting a running game from an AI agent or script via `Game.testing`, for automated play-testing
+- `pixi-vn-ui` — mounting HTML/PixiJS UI layers over the canvas, screen navigation, theming, and connecting UI to storage
+- `pixi-vn-migration` — upgrading an existing project to the current version
