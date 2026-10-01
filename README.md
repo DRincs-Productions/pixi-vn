@@ -148,13 +148,13 @@ body {
 
 ## Agent Skills
 
-Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants (like Claude Code) how to correctly use each part of the engine. Install them for the current project with:
+Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants how to correctly use each part of the engine. Install all of them globally with:
 
 ```npm
-npx skills add DRincs-Productions/pixi-vn --skill '*' --global
+npx skills add DRincs-Productions/pixi-vn --all -g
 ```
 
-This installs all skills globally for the agents supported by `skills`. Avoid `--all --global`: `--all` also targets every agent, including agents that do not support global installation. To install only specific skills, pass `--skill <name>` (repeat the flag to install several, e.g. `--skill pixi-vn-canvas --skill pixi-vn-sound`). Use `--list` instead of installing to see what's available. Available skills:
+To install only specific skills, pass `--skill <name>` (repeat the flag to install several, e.g. `--skill pixi-vn-canvas --skill pixi-vn-sound`). Use `--list` instead of installing to see what's available. Available skills:
 
 - `pixi-vn-getting-started` — installing the package and initializing the `Game`
 - `pixi-vn-assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
