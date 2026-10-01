@@ -151,7 +151,7 @@ body {
 Pixi'VN ships a set of [Agent Skills](https://www.skills.sh/) that teach AI coding assistants how to correctly use each part of the engine. Install all of them globally with:
 
 ```npm
-npx skills add DRincs-Productions/pixi-vn --all -g
+npx skills@latest add DRincs-Productions/pixi-vn --all -g
 ```
 
 To install only specific skills, pass `--skill <name>` (repeat the flag to install several, e.g. `--skill pixi-vn-canvas --skill pixi-vn-sound`). Use `--list` instead of installing to see what's available. Available skills:
