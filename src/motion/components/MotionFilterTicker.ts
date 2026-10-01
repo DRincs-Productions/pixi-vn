@@ -29,6 +29,13 @@ interface TArgs {
      * on completion instead - what every built-in filter transition/effect's cleanup does.
      */
     filterRef?: { alias: string; index: number; detach?: boolean };
+    /**
+     * For the `apply`-only case (no live `filter`): a plain, serializable description of what `apply`/
+     * `cleanup` drive - today the `{ alias, config }` of a mask-based transition (wipe/iris/split). A
+     * reconstructed ticker rebuilds both callbacks from it (see `createFilterTransitionApplier`), which is
+     * what makes such a ticker survive a save restore or a step back.
+     */
+    valueRef?: { alias: string; config: any };
 }
 
 /**
@@ -57,6 +64,7 @@ export default class MotionFilterTicker extends MotionFilterTickerBase<TArgs> {
                 });
             }
             const target: ValueTarget = { value: 0 };
+            this.valueTarget = target;
             return animate(target, this._args.keyframes, {
                 ...this._args.options,
                 onUpdate: this.createUpdateHandler(target),
@@ -67,9 +75,17 @@ export default class MotionFilterTicker extends MotionFilterTickerBase<TArgs> {
         animation = isResuming ? this.suppressWritesDuring(build) : build();
         if (isResuming) {
             animation.time = this._args.time as number;
+            // Writes are suppressed while resuming, so an `apply`-only ticker (a mask) would keep showing
+            // its initial state until the first tick - apply the sought value now instead.
+            const value = this.valueTarget?.value;
+            if (!this.filter && typeof value === "number") {
+                this.apply?.(value);
+            }
         }
         this._animation = animation;
         return animation;
     }
+    /** The plain value an `apply`-only ticker animates (see {@link MotionFilterTickerBase}). */
+    private valueTarget?: ValueTarget;
     alias: string = "motion-filter";
 }

@@ -40,7 +40,9 @@ describe("RegisteredFilters: every built-in filter round-trips", () => {
             expect(restored).toBeInstanceOf(FilterClass);
 
             const secondMemory = RegisteredFilters.toMemory(filterId, restored);
-            expect(secondMemory?.args).toEqual(firstMemory?.args);
+            // Normalize realms: jsdom uses Node's structuredClone, so cloned typed arrays can have
+            // a different prototype from the original browser-realm uniforms.
+            expect(structuredClone(secondMemory?.args)).toEqual(structuredClone(firstMemory?.args));
         },
     );
 });

@@ -6,9 +6,16 @@ import {
     filterAreaCenter,
     shockwaveTravel,
     zoomBlurPadding,
-} from "../src/canvas/functions/filter-effect-utility";
+} from "@tickers/utility/filter-effect-utility";
 import { canvas, transitions, type CanvasBaseInterface } from "../src/canvas";
 import { filters } from "../src/filters";
+import {
+    applySplitTransition,
+    cleanupFilterTransition,
+    createFilterTransitionApplier,
+    type FilterTransitionContext,
+    type SplitFilterConfig,
+} from "@canvas/functions/canvas-filter-transition-utility";
 
 afterEach(() => vi.restoreAllMocks());
 
@@ -91,6 +98,82 @@ describe("filter-effect-utility", () => {
     test("buildGlitchJitter snaps, kicks back and settles per burst", () => {
         expectCloseArray(buildGlitchJitter(10, 0.5, 2), [0, 10, -6, 3, 0, 5, -3, 1.5, 0]);
     });
+});
+
+describe("filter transition mask cleanup", () => {
+    test("cleans its sibling mask after the transitioned component has been removed", () => {
+        const parent = new PIXI.Container();
+        const component = new PIXI.Container() as CanvasBaseInterface<any>;
+        parent.addChild(component);
+        const config: SplitFilterConfig = {
+            kind: "split",
+            orientation: "vertical",
+            origin: 0.5,
+            invert: false,
+            bounds: { x: 0, y: 0, width: 100, height: 80 },
+        };
+        vi.spyOn(canvas, "find").mockReturnValue(component);
+        const transition = createFilterTransitionApplier("alias", config);
+        transition.apply(0.5);
+        const mask = component.mask;
+        expect(mask?.label).toBe("");
+        parent.removeChild(component);
+        vi.mocked(canvas.find).mockReturnValue(undefined);
+
+        transition.cleanup();
+
+        expect(parent.children).not.toContain(mask);
+        expect(component.mask).toBeFalsy();
+        expect(mask?.destroyed).toBe(true);
+        parent.destroy({ children: true });
+    });
+
+    test("stale cleanup removes only its own mask and preserves a mask installed after restore", () => {
+        const parent = new PIXI.Container();
+        const component = new PIXI.Container() as CanvasBaseInterface<any>;
+        parent.addChild(component);
+        const config: SplitFilterConfig = {
+            kind: "split",
+            orientation: "vertical",
+            origin: 0.5,
+            invert: false,
+            bounds: { x: 0, y: 0, width: 100, height: 80 },
+        };
+        const staleContext: FilterTransitionContext = {};
+        const restoredContext: FilterTransitionContext = {};
+
+        applySplitTransition(component, config, 0.5, staleContext);
+        const staleMask = staleContext.graphics;
+        expect(staleMask?.renderable).toBe(true);
+        applySplitTransition(component, config, 0.75, restoredContext);
+        const restoredMask = restoredContext.graphics;
+        expect(component.mask).toBe(restoredMask);
+
+        cleanupFilterTransition(component, config, staleContext);
+
+        expect(component.mask).toBe(restoredMask);
+        expect(parent.children).not.toContain(staleMask);
+        expect(parent.children).toContain(restoredMask);
+
+        cleanupFilterTransition(component, config, restoredContext);
+        expect(component.mask).toBeFalsy();
+        expect(parent.children).not.toContain(restoredMask);
+        parent.destroy({ children: true });
+    });
+});
+
+test("warp configures its padded center before Motion constructs the animation", () => {
+    const component = createSprite();
+    vi.spyOn(canvas, "find").mockReturnValue(component);
+    const animate = vi.spyOn(filters, "animate").mockImplementation((_alias, filter) => {
+        const zoom = filter as InstanceType<typeof filters.ZoomBlurFilter>;
+        const bounds = component.getBounds();
+        expect(zoom.centerX).toBeCloseTo(bounds.width * 0.25 + zoom.padding);
+        expect(zoom.centerY).toBeCloseTo(bounds.height * 0.75 + zoom.padding);
+        return "warp-ticker";
+    });
+    transitions.warpOut("alias", { origin: { x: 0.25, y: 0.75 }, fadeComponent: false });
+    expect(animate).toHaveBeenCalledOnce();
 });
 
 const outTransitions = [

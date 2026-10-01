@@ -1,3 +1,4 @@
+import { canvas } from "@canvas/index";
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
 import { Graphics } from "@drincs/pixi-vn/pixi.js";
 
@@ -26,6 +27,8 @@ export interface WipeFilterConfig {
 }
 export interface IrisFilterConfig {
     kind: "iris";
+    /** If true the image is seen around the circle (a hole in the mask) instead of through it. */
+    outside?: boolean;
     originX: number;
     originY: number;
     aspect: number;
@@ -34,6 +37,8 @@ export interface IrisFilterConfig {
 }
 export interface SplitFilterConfig {
     kind: "split";
+    /** Absent in older saves, which reveal from the edges inwards. */
+    direction?: "inward" | "outward";
     orientation: "horizontal" | "vertical";
     origin: number;
     invert: boolean;
@@ -50,6 +55,8 @@ export type FilterTransitionConfig = WipeFilterConfig | IrisFilterConfig | Split
  */
 export interface FilterTransitionContext {
     graphics?: Graphics;
+    /** Last live component used by this ticker, retained for cleanup after alias removal. */
+    component?: CanvasBaseInterface<any>;
 }
 
 /**
@@ -69,6 +76,10 @@ function getOrCreateMaskGraphics(
 ): Graphics {
     if (!ctx.graphics) {
         ctx.graphics = new Graphics();
+        // Pixi defaults Graphics.label to "Graphics". Canvas history exports every labeled child,
+        // so leave implementation masks unlabeled or a mid-transition snapshot restores them as
+        // ordinary game elements after the owning ticker has been rebuilt.
+        ctx.graphics.label = "";
         component.parent?.addChild(ctx.graphics);
         component.mask = ctx.graphics;
     }
@@ -86,7 +97,11 @@ function syncMaskTransform(component: CanvasBaseInterface<any>, graphics: Graphi
 
 function cleanupMask(component: CanvasBaseInterface<any>, ctx: FilterTransitionContext) {
     if (ctx.graphics) {
-        component.mask = null;
+        // A transition can be restored while its previous ticker is still queuing cleanup on the
+        // old Pixi ticker. Never let that stale cleanup clear a mask installed by the restored ticker.
+        if (component.mask === ctx.graphics) {
+            component.mask = null;
+        }
         ctx.graphics.parent?.removeChild(ctx.graphics);
         ctx.graphics.destroy({ children: true });
         ctx.graphics = undefined;
@@ -138,7 +153,16 @@ export function applyIrisTransition(
     const radius = Math.max(progress, 0) * maxRadius;
     const aspect = config.aspect > 0 ? config.aspect : 1;
     graphics.clear();
-    if (radius > 0) {
+    if (config.outside) {
+        // The whole component minus a circular hole.
+        const pad = maxRadius * Math.max(aspect, 1) * 2;
+        graphics
+            .rect(bounds.x - pad, bounds.y - pad, bounds.width + pad * 2, bounds.height + pad * 2)
+            .fill(0xffffff);
+        if (radius > 0) {
+            graphics.ellipse(cx, cy, radius * aspect, radius).cut();
+        }
+    } else if (radius > 0) {
         graphics.ellipse(cx, cy, radius * aspect, radius).fill(0xffffff);
     }
 }
@@ -158,6 +182,32 @@ export function applySplitTransition(
     const { bounds } = config;
     const graphics = getOrCreateMaskGraphics(component, ctx);
     graphics.clear();
+    if (config.direction === "outward") {
+        if (progress > 0) {
+            if (config.orientation === "horizontal") {
+                const splitX = bounds.x + bounds.width * config.origin;
+                graphics
+                    .rect(
+                        splitX - (splitX - bounds.x) * progress,
+                        bounds.y,
+                        bounds.width * progress,
+                        bounds.height,
+                    )
+                    .fill(0xffffff);
+            } else {
+                const splitY = bounds.y + bounds.height * config.origin;
+                graphics
+                    .rect(
+                        bounds.x,
+                        splitY - (splitY - bounds.y) * progress,
+                        bounds.width,
+                        bounds.height * progress,
+                    )
+                    .fill(0xffffff);
+            }
+        }
+        return;
+    }
     if (config.orientation === "horizontal") {
         const splitX = bounds.x + bounds.width * config.origin;
         const leftWidth = splitX - bounds.x;
@@ -202,4 +252,49 @@ export function cleanupFilterTransition(
             cleanupMask(component, ctx);
             break;
     }
+}
+
+export function applyFilterTransition(
+    component: CanvasBaseInterface<any>,
+    config: FilterTransitionConfig,
+    value: number,
+    ctx: FilterTransitionContext,
+) {
+    switch (config.kind) {
+        case "wipe":
+            return applyWipeTransition(component, config, value, ctx);
+        case "iris":
+            return applyIrisTransition(component, config, value, ctx);
+        case "split":
+            return applySplitTransition(component, config, value, ctx);
+    }
+}
+
+/**
+ * Builds the `apply`/`cleanup` pair that drives a mask-based transition (wipe/iris/split) on the
+ * component registered under `alias`, from nothing but plain, serializable data. It's the single place
+ * both the live transition and a ticker reconstructed after a save/restore (or a step back) get their
+ * callbacks from - which is what lets the animation resume instead of being lost. The mask `Graphics` is
+ * lazily recreated on the first `apply()` call, so a restored ticker needs nothing else.
+ */
+export function createFilterTransitionApplier(alias: string, config: FilterTransitionConfig) {
+    const ctx: FilterTransitionContext = {};
+    return {
+        apply(value: number) {
+            const component = canvas.find(alias);
+            if (component) {
+                ctx.component = component;
+                applyFilterTransition(component, config, value, ctx);
+            }
+        },
+        cleanup() {
+            // Out transitions remove their component as part of onComplete before the filter ticker's
+            // queued cleanup runs on the next Pixi frame. Fall back to the captured instance so its
+            // sibling mask cannot be orphaned in the game layer.
+            const component = ctx.component ?? canvas.find(alias);
+            if (component) {
+                cleanupFilterTransition(component, config, ctx);
+            }
+        },
+    };
 }

@@ -1,6 +1,9 @@
 export { default as TickerBase } from "@tickers/classes/TickerBase";
 export type { default as TickerValue } from "@tickers/classes/TickerValue";
-export { default as RegisteredTickers, tickerDecorator } from "@tickers/decorators/RegisteredTickers";
+export {
+    default as RegisteredTickers,
+    tickerDecorator,
+} from "@tickers/decorators/RegisteredTickers";
 export type { default as Ticker } from "@tickers/interfaces/Ticker";
 export type { default as TickerArgs } from "@tickers/interfaces/TickerArgs";
 export type { TickerHistory, default as TickerInfo } from "@tickers/interfaces/TickerInfo";
@@ -13,6 +16,13 @@ export type { default as TickersInterface } from "@tickers/interfaces/TickersInt
 export type { default as TickersSequence } from "@tickers/interfaces/TickersSequence";
 export type { default as TickerTimeoutHistory } from "@tickers/interfaces/TickerTimeoutHistory";
 export type { CommonTickerProps } from "@tickers/types/CommonTickerProps";
+export {
+    buildGlitchJitter,
+    circleOverhang,
+    filterAreaCenter,
+    shockwaveTravel,
+    zoomBlurPadding,
+} from "@tickers/utility/filter-effect-utility";
 
 import { GameUnifier } from "@drincs/pixi-vn/core";
 import { createExportableElement } from "@utils/export-utility";
@@ -56,12 +66,15 @@ function addTicker<TArgs extends TickerArgs>(
     tickerHistory.ticker.start();
     if (ticker.duration) {
         const timeout = setTimeout(() => {
-            TickersManagerStatic.removeTickerTimeoutInfo(timeout);
             const tickerTimeoutInfo = TickersManagerStatic._currentTickersTimeouts.get(
                 timeout.toString(),
             );
             if (tickerTimeoutInfo) {
-                tickerHistory.ticker.complete({ ignoreTickerSteps: true });
+                TickersManagerStatic.removeTickerTimeout(timeout);
+                // A restore can reuse the same id. An expired timer must only complete its own instance.
+                if (TickersManagerStatic._currentTickers.get(id) === tickerHistory) {
+                    tickerHistory.ticker.complete({ ignoreTickerSteps: true });
+                }
             }
         }, ticker.duration * 1000);
         TickersManagerStatic.addTickerTimeoutInfo(

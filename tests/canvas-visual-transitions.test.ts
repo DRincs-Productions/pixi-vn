@@ -144,6 +144,30 @@ describe("applyWipeTransition/applyIrisTransition/applySplitTransition / cleanup
         expect(target.mask).toBeUndefined();
     });
 
+    test.each(["horizontal", "vertical"] as const)("split %s: inward and outward replacement masks cover complementary regions", (orientation) => {
+        const target = createTarget();
+        const incoming: FilterTransitionContext = {};
+        const outgoing: FilterTransitionContext = {};
+        const config: SplitFilterConfig = {
+            kind: "split", orientation, origin: 0.25, invert: false,
+            bounds: { x: 10, y: 20, width: 200, height: 100 },
+        };
+        for (const direction of ["inward", "outward"] as const) {
+            for (const progress of [0, 0.3, 0.7, 1]) {
+                applySplitTransition(target, { ...config, direction }, progress, incoming);
+                applySplitTransition(target, { ...config, direction: direction === "inward" ? "outward" : "inward" }, 1 - progress, outgoing);
+                for (let n = 0; n < 20; n++) {
+                    const point = orientation === "horizontal"
+                        ? { x: 10 + n * 10 + 2, y: 70 }
+                        : { x: 110, y: 20 + n * 5 + 1 };
+                    expect(incoming.graphics!.containsPoint(point)).not.toBe(outgoing.graphics!.containsPoint(point));
+                }
+            }
+        }
+        cleanupFilterTransition(target, config, incoming);
+        cleanupFilterTransition(target, config, outgoing);
+    });
+
     test("split: attaches two panels that slide together as progress grows", () => {
         const target = createTarget();
         const ctx: FilterTransitionContext = {};
@@ -327,16 +351,17 @@ describe("fadeComponent: softens the pop-in/pop-out for blur/flash (default true
         expect(animateSpy).not.toHaveBeenCalled();
     });
 
-    test("fadeComponent: false makes flashOut call canvas.animate only once, for its own overlay", () => {
+    test("fadeComponent: false makes flashOut skip the component's own fade, leaving only the color filter", () => {
         const target = createSprite();
-        vi.spyOn(canvas, "add").mockImplementation(() => {});
         const animateSpy = spyOnCanvas(target);
+        const filterSpy = vi.spyOn(filters, "animate").mockReturnValue("filter-ticker");
 
         transitions.flashOut("alias", { duration: 0.2, fadeComponent: false });
 
-        expect(animateSpy).toHaveBeenCalledTimes(1);
-        const [, keyframes] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
-        // The overlay's own multi-stop cycle, not the 2-value component fade.
+        expect(animateSpy).not.toHaveBeenCalled();
+        expect(filterSpy).toHaveBeenCalledTimes(1);
+        const [, , keyframes] = filterSpy.mock.calls[0] as [string, unknown, { alpha: number[] }];
+        // The color filter's own multi-stop cycle, not the 2-value component fade.
         expect(keyframes.alpha).toEqual([0, 1, 1, 0]);
     });
 });
@@ -355,7 +380,7 @@ describe("flashOut: overlay runs the full up/down cycle, then the element is rem
     function spyOnCanvas(target: import("../src/canvas").CanvasBaseInterface<any> | undefined) {
         vi.spyOn(canvas, "find").mockReturnValue(target);
         vi.spyOn(canvas, "add").mockImplementation(() => {});
-        return vi.spyOn(canvas, "animate").mockReturnValue("ticker-id");
+        return vi.spyOn(filters, "animate").mockReturnValue("ticker-id");
     }
 
     test("a single pulse fades 0 -> maxAlpha -> 0, then removes the overlay and the target together", () => {
@@ -373,7 +398,9 @@ describe("flashOut: overlay runs the full up/down cycle, then the element is rem
 
         expect(ids).toEqual(["ticker-id"]);
         expect(animateSpy).toHaveBeenCalledTimes(1);
-        const [, keyframes, options] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
+        const [, filter, keyframes, options] = animateSpy.mock.calls[0] as [string, unknown, { alpha: number[] }, any];
+        // A color filter, not a rectangle: only the visible pixels are tinted, never the transparent ones.
+        expect(filter).toBeInstanceOf(filters.ColorOverlayFilter);
         // Full cycle: fades up to the peak, holds (holdDuration=0, so a duplicate value/no-op hold), then
         // fades back down to 0 (normal) before the ticker completes and the element is removed - the
         // removal itself (via aliasToRemoveAfter) is a direct, non-animated cut, not a further dissolve.
@@ -387,7 +414,7 @@ describe("flashOut: overlay runs the full up/down cycle, then the element is rem
 
         transitions.flashOut("alias", { maxAlpha: 1, duration: 0.1, pulses: 3, fadeComponent: false });
 
-        const [, keyframes] = animateSpy.mock.calls[0] as [string, { alpha: number[] }, any];
+        const [, , keyframes] = animateSpy.mock.calls[0] as [string, unknown, { alpha: number[] }];
         expect(keyframes.alpha).toEqual([0, 1, 1, 0, 1, 1, 0, 1, 1, 0]);
     });
 

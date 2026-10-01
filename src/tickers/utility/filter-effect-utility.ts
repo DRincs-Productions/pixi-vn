@@ -68,8 +68,16 @@ export function filterAreaCenter(
  * How far (pixels) content can be pushed past the component's own bounds by a deformation confined to
  * a circle of `radius` around `center` (twist, bulge): the circle's overhang beyond the bounds.
  */
-export function circleOverhang(center: { x: number; y: number }, radius: number, width: number, height: number): number {
-    return Math.max(0, Math.ceil(radius - Math.min(center.x, center.y, width - center.x, height - center.y)));
+export function circleOverhang(
+    center: { x: number; y: number },
+    radius: number,
+    width: number,
+    height: number,
+): number {
+    return Math.max(
+        0,
+        Math.ceil(radius - Math.min(center.x, center.y, width - center.x, height - center.y)),
+    );
 }
 
 /**
@@ -78,9 +86,17 @@ export function circleOverhang(center: { x: number; y: number }, radius: number,
  * `D` reaches `D / (1 - strength)`. `strength` is capped at 0.5 (padding at most `D`) - the outermost
  * streaks are faint anyway.
  */
-export function zoomBlurPadding(center: { x: number; y: number }, strength: number, width: number, height: number): number {
+export function zoomBlurPadding(
+    center: { x: number; y: number },
+    strength: number,
+    width: number,
+    height: number,
+): number {
     const s = Math.min(Math.max(strength, 0), 0.5);
-    const farthest = Math.hypot(Math.max(center.x, width - center.x), Math.max(center.y, height - center.y));
+    const farthest = Math.hypot(
+        Math.max(center.x, width - center.x),
+        Math.max(center.y, height - center.y),
+    );
     return Math.ceil((farthest * s) / (1 - s));
 }
 
@@ -99,7 +115,10 @@ export function shockwaveTravel(
         return radius;
     }
     return (
-        Math.hypot(Math.max(center.x, bounds.width - center.x), Math.max(center.y, bounds.height - center.y)) +
+        Math.hypot(
+            Math.max(center.x, bounds.width - center.x),
+            Math.max(center.y, bounds.height - center.y),
+        ) +
         wavelength / 2
     );
 }

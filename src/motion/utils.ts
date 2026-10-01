@@ -130,8 +130,12 @@ export function timeline(
     times: SegmentOptions[],
     options?: SequenceOptions & { ticker?: PixiTicker; driver?: any },
 ): AnimationPlaybackControlsWithThen {
-    const { ticker = new PIXI.Ticker(), driver = motionDriver(ticker), repeat, ...rest } =
-        options || {};
+    const {
+        ticker = new PIXI.Ticker(),
+        driver = motionDriver(ticker),
+        repeat,
+        ...rest
+    } = options || {};
 
     const n = { x: 0 };
     const steps: {

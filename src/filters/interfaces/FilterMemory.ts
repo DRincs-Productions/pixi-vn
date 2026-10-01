@@ -17,4 +17,10 @@ export default interface FilterMemory {
      * `toMemory` function.
      */
     args: any;
+    /**
+     * The filter's `padding` (extra pixels its area grows by on every side), when set. It's a property of
+     * every `Filter`, not part of a specific filter's constructor `args`, so it's saved on its own -
+     * without it a restored distortion/blur would be clipped to the element's bounds again.
+     */
+    padding?: number;
 }

@@ -113,6 +113,7 @@ export type {
     MaskTransitionProps,
     MoveInOutProps,
     NoiseDissolveInOutProps,
+    OldComponentOutProps,
     PinchInOutProps,
     PixelateInOutProps,
     PushInOutProps,
@@ -126,6 +127,8 @@ export type {
     WipeInOutProps,
     ZoomInOutProps,
 } from "./interfaces/transition-props";
+export { createFilterTransitionApplier } from "./functions/canvas-filter-transition-utility";
+export type { FilterTransitionConfig } from "./functions/canvas-filter-transition-utility";
 export * from "@drincs/pixi-vn/tickers";
 export type { AssetAliasIdType, PixivnAssetAliasIds } from "./types/AssetAliasIdType";
 export type { BundleIdType, PixivnBundleIds } from "./types/BundleIdType";

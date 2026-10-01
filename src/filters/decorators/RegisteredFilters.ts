@@ -85,15 +85,22 @@ namespace RegisteredFilters {
      * Get a filter instance by the id, reconstructed from previously saved `args`.
      * @param filterId The id of the filter.
      * @param args The arguments to pass to the filter's constructor, as produced by a previous `toMemory` call.
+     * @param padding The filter's saved `padding`, if any (see {@link FilterMemory.padding}).
      * @returns The filter instance, or `undefined` if the filter isn't registered or construction failed.
      */
-    export function getInstance(filterId: string, args: any): Filter | undefined {
+    export function getInstance(filterId: string, args: any, padding?: number): Filter | undefined {
         const filterType = get(filterId);
         if (!filterType) {
             return;
         }
         try {
-            return new (filterType as { new (args: any): Filter })(args);
+            // Filters can retain arrays/objects from their constructor options as mutable uniforms.
+            // Keep animation writes out of the saved state, which history reuses on subsequent backs.
+            const filter = new (filterType as { new (args: any): Filter })(structuredClone(args));
+            if (typeof padding === "number") {
+                filter.padding = padding;
+            }
+            return filter;
         } catch (e) {
             logger.error(`Error while getting Filter instance "${filterId}"`, e);
             return;
@@ -110,7 +117,7 @@ namespace RegisteredFilters {
     export function toMemory(
         filterId: string,
         filter: Filter,
-    ): { filterId: string; args: any } | undefined {
+    ): { filterId: string; args: any; padding?: number } | undefined {
         const toMemoryFn = registeredFilterToMemory.get(filterId);
         if (!toMemoryFn) {
             logger.error(
@@ -119,7 +126,14 @@ namespace RegisteredFilters {
             return;
         }
         try {
-            return { filterId, args: toMemoryFn(filter) };
+            const memory: { filterId: string; args: any; padding?: number } = {
+                filterId,
+                args: toMemoryFn(filter),
+            };
+            if (typeof filter.padding === "number" && filter.padding !== 0) {
+                memory.padding = filter.padding;
+            }
+            return memory;
         } catch (e) {
             logger.error(`Error while converting Filter "${filterId}" to memory`, e);
             return;
