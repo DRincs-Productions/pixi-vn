@@ -156,4 +156,4 @@ This is the shape a backlog/scrollback panel typically wants: one row per narrat
 
 ## Related skills
 
-pixi-vn-getting-started, pixi-vn-saves, pixi-vn-narration, pixi-vn-canvas, pixi-vn-storage
+pixi-vn, pixi-vn-saves, pixi-vn-narration, pixi-vn-canvas, pixi-vn-storage

@@ -26,7 +26,7 @@ Official docs (authoritative for terminology and recommended patterns):
 import { storage, StoredClassModel } from "@drincs/pixi-vn";
 ```
 
-(Also available from the narrower `@drincs/pixi-vn/storage` subpath — see `pixi-vn-getting-started` for when to prefer that.) `storage` is a ready-made singleton (`StorageManagerInterface`) — you never instantiate `StorageManager` yourself.
+(Also available from the narrower `@drincs/pixi-vn/storage` subpath — see `pixi-vn` for when to prefer that.) `storage` is a ready-made singleton (`StorageManagerInterface`) — you never instantiate `StorageManager` yourself.
 
 ## 1. Simple variables: `storage.set` / `storage.get`
 
@@ -179,4 +179,4 @@ clean slate between scenarios.
 
 ## Related skills
 
-pixi-vn-getting-started, pixi-vn-saves, pixi-vn-characters, pixi-vn-history, pixi-vn-narration
+pixi-vn, pixi-vn-saves, pixi-vn-characters, pixi-vn-history, pixi-vn-narration

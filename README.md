@@ -172,7 +172,7 @@ npx skills@latest add DRincs-Productions/pixi-vn@latest --all -y
 
 Available skills:
 
-- `pixi-vn-getting-started` — the index/entry point of the skill set: skill map, installing the package and initializing the `Game`
+- `pixi-vn` — the index/entry point of the skill set: skill map, installing the package and initializing the `Game`
 - `pixi-vn-assets` — local vs. online assets, the manifest/bundle/alias system, and loading strategy
 - `pixi-vn-canvas` — images, sprites, text, video, transitions and effects
 - `pixi-vn-characters` — defining and registering characters

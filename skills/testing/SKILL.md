@@ -23,7 +23,7 @@ drives, not what it teaches.
 
 `narration.continue`, `.call`, `.jump`, `narration.choices.select`, and `stepHistory.back` all take a
 `props` argument typed as `StepLabelProps` — the exact object a real game passes from its UI layer.
-Most real projects augment `StepLabelProps` (via TS module augmentation, see `pixi-vn-getting-started`)
+Most real projects augment `StepLabelProps` (via TS module augmentation, see `pixi-vn`)
 with app-specific fields: a router `navigate`, an i18n `t`, a `toast`, etc. (the official React
 template does exactly this — see `pixi-vn-narration` section 9). If a step calls `props.navigate(...)`
 or `props.t(...)`, passing `{}` from a console/script call throws immediately.
@@ -232,7 +232,7 @@ window.pixiVN.getState();
 
 `window.pixiVN.props` is the same live object `setProps` was last called with — whatever your
 app's `StepLabelProps` augmentation defines. Most projects put a `navigate` function there (see
-`pixi-vn-getting-started` and the wiki's "Navigate/switch between UI screens" page) so labels can
+`pixi-vn` and the wiki's "Navigate/switch between UI screens" page) so labels can
 switch screens; that same function is reachable here for full control over what's on screen, not just
 the story — e.g. opening a settings screen, jumping to a main menu, or checking where a bugged label
 tried to send the player, all without going through a choice/label:
@@ -294,4 +294,4 @@ registers (e.g. `drawCanvasErrorHandler()`) — both run.
 
 ## Related skills
 
-pixi-vn-getting-started, pixi-vn-narration, pixi-vn-storage, pixi-vn-history, pixi-vn-saves
+pixi-vn, pixi-vn-narration, pixi-vn-storage, pixi-vn-history, pixi-vn-saves

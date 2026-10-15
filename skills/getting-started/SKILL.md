@@ -1,5 +1,5 @@
 ---
-name: pixi-vn-getting-started
+name: pixi-vn
 description: Index and entry point of the Pixi'VN skill set — start here for any task on a @drincs/pixi-vn project, then follow the skill map to the right skill (narration, canvas, characters, assets, sound, storage, saves, history, ui, minigames, testing, migration). Use when setting up a new or existing project, wiring the main.ts entry point, or calling the top-level Game API (Game.init, Game.start, Game.onEnd, Game.addOnError, Game.onNavigate, Game.clear) — every Pixi'VN project needs this before touching canvas, narration, sound, storage, or history.
 ---
 
@@ -13,7 +13,7 @@ This is the index of the Pixi'VN skill set. Find the task below, then load the m
 
 | Task | Skill |
 | --- | --- |
-| Create/set up a project, wire `main.ts`, `Game.init`/`Game.start`, Vite plugin | **pixi-vn-getting-started** (this skill) |
+| Create/set up a project, wire `main.ts`, `Game.init`/`Game.start`, Vite plugin | **pixi-vn** (this skill) |
 | Write story content: labels, dialogue, choices, jumps/calls, branching | [pixi-vn-narration](../narration/SKILL.md) |
 | Define and register characters used in dialogue | [pixi-vn-characters](../characters/SKILL.md) |
 | Show/move/remove images, sprites, text, video; transitions, effects, animations | [pixi-vn-canvas](../canvas/SKILL.md) |

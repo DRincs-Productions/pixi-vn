@@ -215,7 +215,7 @@ add any CDN/host actually used to that list. See
 
 ## Related skills
 
-- **pixi-vn-getting-started** — the `@drincs/pixi-vn/vite` plugin's `assetsManifest` option bridges
+- **pixi-vn** — the `@drincs/pixi-vn/vite` plugin's `assetsManifest` option bridges
   a manifest (often this skill's `src/assets/index.ts`) into the plugin's generated type file and
   dev-server endpoint; `Game.onLoadingLabel` is where label-scoped bundle loading is wired.
 - **pixi-vn-canvas** — displaying images/video once their alias is loaded.

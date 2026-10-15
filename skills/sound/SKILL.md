@@ -9,7 +9,7 @@ Official docs: [pixi-vn.com/start/sound](https://pixi-vn.com/start/sound). The s
 
 ## When to use this skill
 
-Use this skill whenever a task touches audio in a Pixi'VN project: starting/stopping music, playing a one-shot sound effect or a voice line, pausing/resuming playback, adjusting volume or mute state, or attaching Tone.js filters/effects. Requires `Game.init` to have already run (see `pixi-vn-getting-started`) and the `tone` peer dependency to be installed.
+Use this skill whenever a task touches audio in a Pixi'VN project: starting/stopping music, playing a one-shot sound effect or a voice line, pausing/resuming playback, adjusting volume or mute state, or attaching Tone.js filters/effects. Requires `Game.init` to have already run (see `pixi-vn`) and the `tone` peer dependency to be installed.
 
 ## Core mental model
 
@@ -19,7 +19,7 @@ Use this skill whenever a task touches audio in a Pixi'VN project: starting/stop
 import { sound } from "@drincs/pixi-vn";
 ```
 
-(Also available from the narrower `@drincs/pixi-vn/sound` subpath — see `pixi-vn-getting-started` for when to prefer that.)
+(Also available from the narrower `@drincs/pixi-vn/sound` subpath — see `pixi-vn` for when to prefer that.)
 
 The docs describe four elements, from broadest to narrowest:
 
@@ -251,7 +251,7 @@ Both `init()`s run right after the channels are created (in the `Game.init(...).
 
 ## Related skills
 
-- pixi-vn-getting-started
+- pixi-vn
 - pixi-vn-assets — registering and loading the audio files referenced here by alias
 - pixi-vn-narration
 - pixi-vn-storage

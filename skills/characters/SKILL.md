@@ -18,7 +18,7 @@ saved (see the storage skill).
 import { CharacterBaseModel, RegisteredCharacters } from "@drincs/pixi-vn";
 ```
 
-(Also available from the narrower `@drincs/pixi-vn/characters` subpath — see `pixi-vn-getting-started` for when to prefer that.)
+(Also available from the narrower `@drincs/pixi-vn/characters` subpath — see `pixi-vn` for when to prefer that.)
 
 Full reference: https://pixi-vn.com/start/character
 
@@ -316,7 +316,7 @@ narration.dialogue = { character: "liam", text: "..." };
 ```
 
 Which form to prefer depends on whether the project's `@drincs/pixi-vn/vite` plugin generates
-typed character ids (the `typeFilePath` option covered in `pixi-vn-getting-started`, which narrows
+typed character ids (the `typeFilePath` option covered in `pixi-vn`, which narrows
 `CharacterIdType` from plain `string` to a union of the actually-registered ids):
 
 - **Without it**, prefer passing the **instance** (`character: liam`) — a bare string id has no
@@ -335,4 +335,4 @@ Reading/rendering the resolved dialogue is covered by the narration skill.
 
 ## Related skills
 
-pixi-vn-getting-started, pixi-vn-narration, pixi-vn-storage
+pixi-vn, pixi-vn-narration, pixi-vn-storage

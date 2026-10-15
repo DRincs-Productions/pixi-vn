@@ -315,7 +315,7 @@ storage.setStorageHandler({
 
 - pixi-vn-canvas: the rendering primitives (images, sprites, text, transitions) the UI sits on top
   of, and the `gameLayer`/alias system the UI deliberately does _not_ use.
-- pixi-vn-getting-started: `Game.init()`, `StepLabelProps` augmentation, and how the official
+- pixi-vn: `Game.init()`, `StepLabelProps` augmentation, and how the official
   template wires layers/routing/i18n together at startup.
 - pixi-vn-storage: reading/writing the game storage variables the UI reads and writes.
 - pixi-vn-saves: what does and does not get included when exporting/restoring game state.

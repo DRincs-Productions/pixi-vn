@@ -17,7 +17,7 @@ from the main package entry point:
 import { canvas } from "@drincs/pixi-vn";
 ```
 
-(Also available from the narrower `@drincs/pixi-vn/canvas` subpath — see `pixi-vn-getting-started` for when to prefer that.)
+(Also available from the narrower `@drincs/pixi-vn/canvas` subpath — see `pixi-vn` for when to prefer that.)
 
 ## When to use this skill
 
@@ -39,7 +39,7 @@ this skill is about the underlying rendering primitives.
 
 - **`canvas`** (from `@drincs/pixi-vn`) is the single entry-point object developers use. It wraps
   a PixiJS `Application` and exposes methods to manage canvas elements and layers. Call `await canvas.init(element, options)` once at startup (this is
-  normally done for you by `Game.init(...)` from the core package — see `pixi-vn-getting-started`).
+  normally done for you by `Game.init(...)` from the core package — see `pixi-vn`).
 - **Elements are tracked by alias, not by variable** ([docs](https://pixi-vn.com/start/canvas-alias)).
   `canvas.add(alias, component)` inserts a component (an instance of `Container`, `Sprite`,
   `ImageSprite`, `ImageContainer`, `Text`, or `VideoSprite`) into `canvas.layers.gameLayer` (a single
@@ -616,7 +616,7 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
 
 ## Related skills
 
-- pixi-vn-getting-started: project setup, `Game.init()`, and how the canvas is wired up at startup.
+- pixi-vn: project setup, `Game.init()`, and how the canvas is wired up at startup.
 - pixi-vn-assets: registering images/video (local or online) and choosing when their bundle loads, before referencing them here by alias.
 - pixi-vn-characters: character/emotion definitions that use canvas images under the hood for portraits.
 - pixi-vn-narration: dialogue/step flow, and how canvas transitions integrate with `completeOnContinue`.

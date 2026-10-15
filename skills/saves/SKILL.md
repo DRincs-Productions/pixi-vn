@@ -107,7 +107,7 @@ None of this is prescribed by `@drincs/pixi-vn` — treat it as one worked examp
 
 ## Related skills
 
-- pixi-vn-getting-started — `Game.init`/`Game.onNavigate` and the rest of the top-level `Game` API.
+- pixi-vn — `Game.init`/`Game.onNavigate` and the rest of the top-level `Game` API.
 - pixi-vn-storage — variables/flags/stored classes that end up inside a save, and reserved keys.
 - pixi-vn-history — `stepHistory.stepLimitSaved` and what survives a save/load for "go back".
 - pixi-vn-canvas — `canvas.extractImage()` for save thumbnails, and what canvas state gets saved.

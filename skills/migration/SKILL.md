@@ -14,7 +14,7 @@ package (the `## pixi-vn` section of that page), since that's what this skill se
 Use this skill whenever a task is "upgrade this project's `@drincs/pixi-vn` from version X to the
 latest", or a developer hits an error that looks like a removed/renamed API. Check the currently
 installed version first (`package.json` dependency, or `PIXIVN_VERSION`/`GameState.pixivn_version`
-at runtime — see `pixi-vn-getting-started`), then walk forward through only the version sections
+at runtime — see `pixi-vn`), then walk forward through only the version sections
 below that fall between the installed version and the target — most of these changes don't apply
 unless a project is crossing that specific boundary.
 
@@ -145,7 +145,7 @@ Game.addOnError((error, { notify, uiTransition }) => { ... }); // [!code ++]
 ```
 
 See `pixi-vn-canvas`/`tickers.md` for the current tickers/transitions API and
-`pixi-vn-getting-started` for the current `Game` API.
+`pixi-vn` for the current `Game` API.
 
 ### Manager APIs reorganized into namespaces
 
@@ -155,7 +155,7 @@ together on `canvas`, for example). This release groups related operations into 
 sub-APIs — `canvas.tickers`/`.layers`/`.htmlLayers`, `sound.channels`/`.unsaved`,
 `storage.temp`/`.flags`, `narration.labels`/`.queries`/`.input`/`.choices` — so each manager reads
 as a short, discoverable surface instead of a flat list, and related options/overloads live next to
-each other. See `pixi-vn-canvas`, `pixi-vn-sound`, `pixi-vn-storage`, and `pixi-vn-getting-started`
+each other. See `pixi-vn-canvas`, `pixi-vn-sound`, `pixi-vn-storage`, and `pixi-vn`
 for the current shape of each namespace.
 
 Almost every old flat method still works and just forwards to its namespaced replacement — it's
@@ -464,7 +464,7 @@ consequences (full API in `pixi-vn-sound`):
   const htmlLayer = canvas.addHtmlLayer("ui", root, { userSelect: "auto" }); // [!code ++]
   ```
 - Navigation is now centralized: use `Game.onNavigate` once instead of passing a navigate function to
-  every call site that needs one (see `pixi-vn-getting-started`):
+  every call site that needs one (see `pixi-vn`):
 
   ```ts
   Game.onNavigate((path) => navigateTo(path)); // [!code ++]
@@ -495,7 +495,7 @@ sound.pause("bird"); // [!code ++]
 
 Other changes this version:
 
-- `Game.start(label, props)` was added as the recommended entry point (see `pixi-vn-getting-started`)
+- `Game.start(label, props)` was added as the recommended entry point (see `pixi-vn`)
   instead of the previous `Game.clear()` + `narration.call(...)` pair:
   ```ts
   Game.clear(); // [!code --]
@@ -506,7 +506,7 @@ Other changes this version:
   doesn't break existing saves or the API, just a recommended naming style (see `pixi-vn-storage`).
 - Error handling moved to `Game.addOnError` (supports multiple stacked handlers) instead of the
   singular, now-deprecated `Game.onError`, and dropped the `type` argument (see
-  `pixi-vn-getting-started`):
+  `pixi-vn`):
   ```ts
   Game.onError((type, error, { notify, uiTransition }) => { ... }); // [!code --]
   Game.addOnError((error, { toast, uiTransition }) => { ... }); // [!code ++]
@@ -518,14 +518,14 @@ Other changes this version:
   because `pixi.js` doesn't support multiple bundled instances; only relevant if something in the
   build config assumed it was bundled.
 - The canvas resizing logic changed; if upgrading an existing (pre-v1.5.4) template, update the base
-  CSS to match the current one (see `pixi-vn-getting-started`'s exact `index.html`/`styles.css`).
+  CSS to match the current one (see `pixi-vn`'s exact `index.html`/`styles.css`).
 
 ## v1.3.x → v1.4.0 — `stepHistory.back()` takes props, not a navigate function
 
 To support synchronous multi-step back/continue requests, `stepHistory.back()`'s argument changed
 from a path-navigation callback to the same `StepLabelProps`-shaped object passed to every step —
 the actual navigate function now lives on `Game.init()` instead (see `pixi-vn-history` /
-`pixi-vn-getting-started`):
+`pixi-vn`):
 
 ```ts
 stepHistory.back((_path) => {
@@ -598,12 +598,12 @@ narration.narrativeHistory; // [!code --]
 stepHistory.narrativeHistory; // [!code ++]
 ```
 
-See `pixi-vn-getting-started` for the current `Game` API, `pixi-vn-history` for `stepHistory`, and
+See `pixi-vn` for the current `Game` API, `pixi-vn-history` for `stepHistory`, and
 `pixi-vn-saves` for the current `exportGameState`/`restoreGameState` save/load flow.
 
 ## Related skills
 
-- pixi-vn-getting-started — current `Game` API, project setup.
+- pixi-vn — current `Game` API, project setup.
 - pixi-vn-saves — current save/load flow (`Game.exportGameState`/`restoreGameState`).
 - pixi-vn-history — current `stepHistory` API.
 - pixi-vn-sound — current sound/channel/media API.

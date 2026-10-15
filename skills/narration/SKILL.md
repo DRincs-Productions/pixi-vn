@@ -108,7 +108,7 @@ narration.dialogue = { character: liam, text: "Hi, I'm Liam." };
 
 Which form to prefer depends on the project's setup — see `pixi-vn-characters` for the full
 rationale, but in short: prefer the **instance** unless the `@drincs/pixi-vn/vite` plugin's
-`typeFilePath` generation (narrowing `CharacterIdType` to known ids, see `pixi-vn-getting-started`)
+`typeFilePath` generation (narrowing `CharacterIdType` to known ids, see `pixi-vn`)
 is set up, in which case prefer the **string-id form** — it's just as typo-safe then, without
 needing to import the character module in every label file.
 
@@ -398,4 +398,4 @@ their own conventions.
 
 ## Related skills
 
-pixi-vn-getting-started, pixi-vn-characters, pixi-vn-history, pixi-vn-storage
+pixi-vn, pixi-vn-characters, pixi-vn-history, pixi-vn-storage
