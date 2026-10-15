@@ -415,8 +415,10 @@ of `@drincs/pixi-vn`:
   API reference: [jsdocs.pixi-vn.com/pixi-vn-ai](https://jsdocs.pixi-vn.com/pixi-vn-ai).
 - `@drincs/pixi-vn-live2d`: Live2D models. Register `Live2DPlugin` before initializing the
   canvas; see [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
+  API reference: [jsdocs.pixi-vn.com/pixi-vn-live2d](https://jsdocs.pixi-vn.com/pixi-vn-live2d).
 - `@drincs/pixi-vn-spine`: Spine skeletal animation. Import the package in the app entry
   point so saved components can be restored even before lazy scenes load; see
   [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
+  API reference: [jsdocs.pixi-vn.com/pixi-vn-spine](https://jsdocs.pixi-vn.com/pixi-vn-spine).
 
 Check each plugin's installed peer dependencies against the project's engine/PixiJS version.

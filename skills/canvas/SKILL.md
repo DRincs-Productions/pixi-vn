@@ -544,8 +544,9 @@ canvas.add("hero", model);
 ```
 
 Consult the [plugin README](https://github.com/DRincs-Productions/pixi-vn-live2d) for setup
-and its [API reference](https://jsdocs.pixi-vn.com/pixi-vn-live2d/index/interfaces/Live2DOptions)
-for model options. Do not substitute `ImageSprite.load()` for `Live2D.ready`.
+and its [API reference](https://jsdocs.pixi-vn.com/pixi-vn-live2d)
+(e.g. [`Live2DOptions`](https://jsdocs.pixi-vn.com/pixi-vn-live2d/index/interfaces/Live2DOptions)
+for model options). Do not substitute `ImageSprite.load()` for `Live2D.ready`.
 
 ### Spine: `@drincs/pixi-vn-spine`
 
@@ -568,7 +569,8 @@ canvas.add("hero", model);
 
 See the [Spine guide](https://pixi-vn.com/start/canvas-spine2d) for skins and tracks and the
 [package README](https://www.npmjs.com/package/@drincs/pixi-vn-spine) for save-registration
-details. Keep the Pixi'VN wrapper when adding saved scene elements.
+details. Exact signatures and types are in the
+[API reference](https://jsdocs.pixi-vn.com/pixi-vn-spine). Keep the Pixi'VN wrapper when adding saved scene elements.
 
 ## UI layers
 
