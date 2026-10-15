@@ -182,26 +182,47 @@ import { transitions } from "@drincs/pixi-vn";
 
 // wipe: a moving boundary reveals/conceals the image. `angle` in degrees (0 = left-to-right, 90 =
 // bottom-to-top, ...); `direction` ("up"/"down"/"left"/"right") is a shorthand for the 4 cardinal angles.
-await transitions.wipeIn("background", "bg-forest", { direction: "left", duration: 1 });
+await transitions.wipeIn("background", "bg-forest", {
+  direction: "left",
+  duration: 1,
+});
 await transitions.wipeIn("background", "bg-night", { angle: 45, duration: 1 }); // diagonal wipe
 transitions.wipeOut("background", { angle: 180, invert: true, duration: 1 });
 
 // iris: an expanding/contracting radial mask. `origin` is normalized (0-1) to the element's own bounds.
-await transitions.irisIn("liam", "liam-happy", { origin: { x: 0.5, y: 0.3 }, duration: 0.8 });
+await transitions.irisIn("liam", "liam-happy", {
+  origin: { x: 0.5, y: 0.3 },
+  duration: 0.8,
+});
 transitions.irisOut("liam", { aspect: 2, duration: 0.8 }); // aspect > 1 = wide ellipse instead of a circle
 
 // split: two mask panels move apart/together - covers "curtain" effects without a dedicated API.
-await transitions.splitIn("background", "bg-forest", { orientation: "horizontal", duration: 1 });
-transitions.splitOut("background", { orientation: "vertical", origin: 0.3, duration: 1 });
+await transitions.splitIn("background", "bg-forest", {
+  orientation: "horizontal",
+  duration: 1,
+});
+transitions.splitOut("background", {
+  orientation: "vertical",
+  origin: 0.3,
+  duration: 1,
+});
 
 // flash: a configurable color overlay (not just white) fades in/hold/out, optionally pulsing.
 await transitions.flashIn("background", "bg-forest", { duration: 0.15 }); // white camera-flash reveal
-transitions.flashOut("liam", { color: 0xff0033, holdDuration: 0.05, pulses: 3, duration: 0.1 }); // red damage flash
+transitions.flashOut("liam", {
+  color: 0xff0033,
+  holdDuration: 0.05,
+  pulses: 3,
+  duration: 0.1,
+}); // red damage flash
 
 // blur / pixelate: the image is shown already blurred/pixelated and resolves into focus (or the reverse for *Out).
 await transitions.blurIn("liam", "liam-happy", { strength: 40, duration: 1 });
 transitions.blurOut("liam", { duration: 1 });
-await transitions.pixelateIn("background", "bg-forest", { pixelSize: 48, duration: 1 });
+await transitions.pixelateIn("background", "bg-forest", {
+  pixelSize: 48,
+  duration: 1,
+});
 transitions.pixelateOut("background", { duration: 1 });
 
 // glitch: jittery slices + red/blue split, settling on *In, building up on *Out.
@@ -211,16 +232,25 @@ transitions.twistOut("liam", { angle: 540 });
 // warp: radial zoom-blur streaks, like dropping out of / jumping into hyperspace.
 await transitions.warpIn("background", "bg-space", { strength: 0.6 });
 // ripple: fades in/out through a spreading water ring - dreams, magic, memories.
-await transitions.rippleIn("liam", "liam-dream", { origin: { x: 0.5, y: 0.3 } });
+await transitions.rippleIn("liam", "liam-dream", {
+  origin: { x: 0.5, y: 0.3 },
+});
 // noiseDissolve: the classic VN image dissolve - organic noise blotches (`edge: "soft"` for a cloudy fade).
-await transitions.noiseDissolveIn("background", "bg-night", { edge: "hard", noiseScale: 8 });
+await transitions.noiseDissolveIn("background", "bg-night", {
+  edge: "hard",
+  noiseScale: 8,
+});
 // tv: old TV switching on (dot -> glowing line -> image) / off; scales around the anchor (center it).
 transitions.tvOut("liam", { lineThickness: 0.02, brightness: 3 });
 // pinch: emerges from / is sucked into a point (`mode: "bulge"` puffs out instead).
 transitions.pinchOut("liam", { mode: "pinch" });
 
 // move/push also take an optional motion-blur trail (true = 40px, or a length in pixels).
-await transitions.moveIn("liam", "liam-happy", { direction: "right", duration: 0.6, motionBlur: true });
+await transitions.moveIn("liam", "liam-happy", {
+  direction: "right",
+  duration: 0.6,
+  motionBlur: true,
+});
 ```
 
 Distortion transitions (glitch, twist, warp, ripple, pinch) move pixels around, so they read best on
@@ -254,7 +284,12 @@ export default async function showWithDissolve(
   const { completeOnContinue = true, ...options } = props;
   canvas.add(alias, component);
   component.alpha = 0;
-  const id = canvas.animate(alias, { alpha: 1 }, { ...options, completeOnContinue }, priority);
+  const id = canvas.animate(
+    alias,
+    { alpha: 1 },
+    { ...options, completeOnContinue },
+    priority,
+  );
   if (component.haveEmptyTexture) await component.load();
   if (id) return [id];
 }
@@ -273,7 +308,10 @@ if (oldComponent) {
   canvas.editAlias(alias, oldComponentAlias);
 }
 canvas.add(alias, component);
-oldComponent?.parent?.setChildIndex(oldComponent, oldComponent.parent.getChildIndex(oldComponent) - 0.1);
+oldComponent?.parent?.setChildIndex(
+  oldComponent,
+  oldComponent.parent.getChildIndex(oldComponent) - 0.1,
+);
 oldComponentAlias && canvas.copyCanvasElementProperty(oldComponentAlias, alias);
 oldComponentAlias && tickers.transfer(oldComponentAlias, alias, "duplicate");
 ```
@@ -335,7 +373,7 @@ The `effects` namespace holds "articulated animations" — helpers built on top 
 that bake a full keyframe array once and animate it in a single call (docs:
 [canvas-articulated-animations-effects](https://pixi-vn.com/start/canvas-articulated-animations-effects),
 [canvas-motion](https://pixi-vn.com/start/canvas-motion)). Like the transitions above, these are
-generic primitives — the effect describes *how* a component moves, the game decides *what* that
+generic primitives — the effect describes _how_ a component moves, the game decides _what_ that
 means (a hit reaction, an idle fidget, an emphasis beat, ...).
 
 ```ts
@@ -349,26 +387,42 @@ await effects.shakeEffect("screen-flash-target", {
 });
 
 // bounce: one-directional decaying displacement, e.g. a character landing a jump
-await effects.bounceEffect("liam", { direction: "up", distance: 30, bounces: 3 });
+await effects.bounceEffect("liam", {
+  direction: "up",
+  distance: 30,
+  bounces: 3,
+});
 
 // pulse: decaying scale bump, e.g. emphasizing a UI element or a heartbeat
 await effects.pulseEffect("liam", { scale: 1.3, pulses: 2 });
 
 // hop: a single displacement-and-return, optionally with smaller decaying follow-up hops
-await effects.hopEffect("liam", { direction: "up", distance: 40, secondaryHops: 2 });
+await effects.hopEffect("liam", {
+  direction: "up",
+  distance: 40,
+  secondaryHops: 2,
+});
 
 // wiggle: decaying rotation oscillation, e.g. a "no" head-shake or a nervous tic
 await effects.wiggleEffect("liam", { angle: 15, repetitions: 3 });
 
 // nod: decaying positional oscillation along one axis, e.g. a "yes" nod or a flinch
-await effects.nodEffect("liam", { axis: "vertical", distance: 10, repetitions: 3 });
+await effects.nodEffect("liam", {
+  axis: "vertical",
+  distance: 10,
+  repetitions: 3,
+});
 
 // sway: smooth combined position+rotation drift, e.g. an idle breathing/swaying loop
 // (decay defaults to 0 = constant amplitude, unlike the other primitives above)
 await effects.swayEffect("liam", { distance: 8, angle: 3, repetitions: 4 });
 
 // punch: a single fast impulse with a settle-back overshoot, e.g. taking a hit
-await effects.punchEffect("liam", { mode: "scale", strength: 0.3, overshoot: 0.3 });
+await effects.punchEffect("liam", {
+  mode: "scale",
+  strength: 0.3,
+  overshoot: 0.3,
+});
 await effects.punchEffect("liam", { mode: "rotation", strength: 20 });
 
 // low-level: animate arbitrary numeric properties with motion-style keyframes
@@ -395,7 +449,10 @@ import { effects } from "@drincs/pixi-vn";
 await effects.glitchEffect("liam", { strength: 40, bursts: 3, rgbSplit: 6 });
 
 // chromaticAberration: red/blue channels split apart and snap back, in a decaying burst
-await effects.chromaticAberrationEffect("liam", { strength: 8, axis: "horizontal" });
+await effects.chromaticAberrationEffect("liam", {
+  strength: 8,
+  axis: "horizontal",
+});
 
 // shockwave: a single ripple distortion travels outward from `origin` (normalized to the element's
 // bounds) - by default until it has fully left the element
@@ -410,13 +467,21 @@ await effects.blurPulseEffect("liam", { strength: 8, pulses: 3 });
 
 // vignettePulse: the edges darken and recover, in a repeated, decaying pulse - it darkens the corners
 // of the element's own rectangle, so use it on backgrounds/full-frame images, not on characters
-await effects.vignettePulseEffect("background", { strength: 1, pulses: 1, radius: 0.5 });
+await effects.vignettePulseEffect("background", {
+  strength: 1,
+  pulses: 1,
+  radius: 0.5,
+});
 
 // desaturate: color drains out and recovers - a single dip, not a repeated pulse
 await effects.desaturateEffect("liam", { amount: 0, holdDuration: 0.2 });
 
 // glowPulse: a repeated, decaying outward glow
-await effects.glowPulseEffect("liam", { strength: 4, pulses: 3, color: 0xffee00 });
+await effects.glowPulseEffect("liam", {
+  strength: 4,
+  pulses: 3,
+  color: 0xffee00,
+});
 ```
 
 All 8 are per-component (same `alias` pattern as everything else here) - there's no screen-wide/global
@@ -479,7 +544,7 @@ canvas.add("hero", model);
 ```
 
 Consult the [plugin README](https://github.com/DRincs-Productions/pixi-vn-live2d) for setup
-and its [API reference](https://pixi-vn.com/jsdoc/pixi-vn-live2d/index/interfaces/Live2DOptions)
+and its [API reference](https://jsdocs.pixi-vn.com/pixi-vn-live2d/index/interfaces/Live2DOptions)
 for model options. Do not substitute `ImageSprite.load()` for `Live2D.ready`.
 
 ### Spine: `@drincs/pixi-vn-spine`

@@ -282,7 +282,7 @@ changes made through this same setter.
 **Keeping the UI in sync with storage changes made elsewhere**: if a label/step/anything else
 changes the same game storage variable directly, nothing tells that Store — or a `useQuery` reading
 that key — to refresh. Use
-[`storage.setStorageHandler`](https://pixi-vn.com/jsdoc/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler)
+[`storage.setStorageHandler`](https://jsdocs.pixi-vn.com/pixi-vn/index/interfaces/StorageManagerInterface#setstoragehandler)
 to catch **every** game storage write in one place:
 
 ```ts
