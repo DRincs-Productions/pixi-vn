@@ -1,11 +1,33 @@
 ---
 name: pixi-vn-getting-started
-description: Use when setting up a new or existing project on @drincs/pixi-vn, wiring the main.ts entry point, or calling the top-level Game API (Game.init, Game.start, Game.onEnd, Game.addOnError, Game.onNavigate, Game.clear) — this is the entry point every Pixi'VN project needs before touching canvas, narration, sound, storage, or history.
+description: Index and entry point of the Pixi'VN skill set — start here for any task on a @drincs/pixi-vn project, then follow the skill map to the right skill (narration, canvas, characters, assets, sound, storage, saves, history, ui, minigames, testing, migration). Use when setting up a new or existing project, wiring the main.ts entry point, or calling the top-level Game API (Game.init, Game.start, Game.onEnd, Game.addOnError, Game.onNavigate, Game.clear) — every Pixi'VN project needs this before touching canvas, narration, sound, storage, or history.
 ---
 
-# Pixi'VN project initialization and the Game API
+# Pixi'VN skill index, project initialization and the Game API
 
 Official docs: [pixi-vn.com/start](https://pixi-vn.com/start). For a full machine-readable index of every Pixi'VN doc page — useful whenever a task needs more detail than this skill set covers — see [pixi-vn.com/llms.txt](https://pixi-vn.com/llms.txt).
+
+## Skill map: which skill to load
+
+This is the index of the Pixi'VN skill set. Find the task below, then load the matching skill before writing code. Several tasks usually need more than one skill (e.g. a new scene: `pixi-vn-narration` + `pixi-vn-characters` + `pixi-vn-canvas`).
+
+| Task | Skill |
+| --- | --- |
+| Create/set up a project, wire `main.ts`, `Game.init`/`Game.start`, Vite plugin | **pixi-vn-getting-started** (this skill) |
+| Write story content: labels, dialogue, choices, jumps/calls, branching | [pixi-vn-narration](../narration/SKILL.md) |
+| Define and register characters used in dialogue | [pixi-vn-characters](../characters/SKILL.md) |
+| Show/move/remove images, sprites, text, video; transitions, effects, animations | [pixi-vn-canvas](../canvas/SKILL.md) |
+| Register and load images/audio/video (local vs. online, manifest/bundles) | [pixi-vn-assets](../assets/SKILL.md) |
+| Music, sound effects, voice, audio channels, filters | [pixi-vn-sound](../sound/SKILL.md) |
+| Game variables, flags, custom persisted classes | [pixi-vn-storage](../storage/SKILL.md) |
+| Save/load, save slots, quick-save, continue game | [pixi-vn-saves](../saves/SKILL.md) |
+| Go back/rewind, backlog/history log | [pixi-vn-history](../history/SKILL.md) |
+| Menus, HUD, dialogue box, settings screens, UI routing and theming | [pixi-vn-ui](../ui/SKILL.md) |
+| Add a minigame (snake, quiz, puzzle, ...) | [pixi-vn-minigames](../minigames/SKILL.md) |
+| Play-test the running game from an AI agent/script (`Game.testing`) | [pixi-vn-testing](../testing/SKILL.md) |
+| Upgrade a project to a newer version, fix a breaking-change error | [pixi-vn-migration](../migration/SKILL.md) |
+
+If none fits, or a task needs more detail than the skills cover, consult [pixi-vn.com/llms.txt](https://pixi-vn.com/llms.txt).
 
 ## When to use this skill
 
@@ -386,16 +408,3 @@ of `@drincs/pixi-vn`:
   [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
 
 Check each plugin's installed peer dependencies against the project's engine/PixiJS version.
-
-## Related skills
-
-- **pixi-vn-assets** — registering local/online assets, the manifest/bundle/alias system, and when to load them.
-- **pixi-vn-canvas** — adding/animating images, sprites, text, video and containers on the PixiJS canvas after `Game.init`.
-- **pixi-vn-characters** — defining and registering `Character` instances used in dialogue.
-- **pixi-vn-history** — the step history system (`stepHistory`), going back/forward through played steps, and save-checkpoint behavior.
-- **pixi-vn-narration** — labels, steps, dialogue, choices, and the `narration` object driving the story.
-- **pixi-vn-saves** — `Game.exportGameState`/`restoreGameState` and the official save-slot/quick-save convention.
-- **pixi-vn-sound** — playing music and sound effects, channels, and volume control.
-- **pixi-vn-storage** — reading/writing persistent and temporary game variables and flags.
-- **pixi-vn-ui** — building/mounting UI layers (HTML or PixiJS) on top of the canvas, screen navigation, theming, and connecting UI to storage.
-- **pixi-vn-migration** — upgrading an existing project to the current version.
