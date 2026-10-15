@@ -143,6 +143,10 @@ export type {
 } from "./types/ColorType";
 export type { default as ContainerChild } from "./types/ContainerChild";
 
+/**
+ * The global canvas manager instance. It handles the PixiJS application, the canvas elements
+ * (images, videos, text, containers), tickers, transitions, and the canvas state used for save/restore.
+ */
 const canvas: CanvasManagerInterface = new CanvasManager();
 CanvasUtilitiesStatic.init({
     getScreen: () => {

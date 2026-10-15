@@ -11,4 +11,8 @@ export { default as StorageRegistry } from "@storage/StorageRegistry";
 export type { StorageElementType, StorageObjectType } from "@storage/types/StorageElementType";
 export { storage };
 
+/**
+ * The global storage manager instance. It keeps the game variables and flags
+ * (set/get values, temporary variables) that are saved and restored with the game state.
+ */
 const storage: StorageManagerInterface = new StorageManager();

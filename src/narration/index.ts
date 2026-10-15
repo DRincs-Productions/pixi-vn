@@ -39,4 +39,8 @@ export type {
 } from "@narration/types/StepLabelType";
 export { narration };
 
+/**
+ * The global narration manager instance. It runs the story flow: labels, steps, dialogues,
+ * choices, and the current narration state used for save/restore.
+ */
 const narration: NarrationManagerInterface = new NarrationManager();
