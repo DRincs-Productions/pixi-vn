@@ -5,7 +5,7 @@ description: Index and entry point of the Pixi'VN skill set — start here for a
 
 # Pixi'VN skill index, project initialization and the Game API
 
-Official docs: [pixi-vn.com/start](https://pixi-vn.com/start). For a full machine-readable index of every Pixi'VN doc page — useful whenever a task needs more detail than this skill set covers — see [pixi-vn.com/llms.txt](https://pixi-vn.com/llms.txt).
+Official docs: [pixi-vn.com/start](https://pixi-vn.com/start). For a full machine-readable index of every Pixi'VN doc page — useful whenever a task needs more detail than this skill set covers — see [pixi-vn.com/llms.txt](https://pixi-vn.com/llms.txt). For the exact signature, parameters and types of any exported class, function or interface, use the generated JSDoc API reference: [jsdocs.pixi-vn.com/pixi-vn](https://jsdocs.pixi-vn.com/pixi-vn).
 
 ## Skill map: which skill to load
 
@@ -27,7 +27,18 @@ This is the index of the Pixi'VN skill set. Find the task below, then load the m
 | Play-test the running game from an AI agent/script (`Game.testing`) | [pixi-vn-testing](../testing/SKILL.md) |
 | Upgrade a project to a newer version, fix a breaking-change error | [pixi-vn-migration](../migration/SKILL.md) |
 
-If none fits, or a task needs more detail than the skills cover, consult [pixi-vn.com/llms.txt](https://pixi-vn.com/llms.txt).
+If none fits, or a task needs more detail than the skills cover, consult [pixi-vn.com/llms.txt](https://pixi-vn.com/llms.txt) for the docs and the [JSDoc API reference](https://jsdocs.pixi-vn.com/pixi-vn) for exact signatures and types.
+
+### Companion packages
+
+These are separate npm packages built on `@drincs/pixi-vn`; they are not covered by the skills above:
+
+| Package | Use it for | Skills / docs |
+| --- | --- | --- |
+| `@drincs/pixi-vn-ink` | Writing the story in [ink](https://github.com/inkle/ink) (`.ink` files, hashtag commands) instead of TypeScript labels | Own skill set, install it alongside this one: `npx skills@latest add DRincs-Productions/pixi-vn-ink@latest --skill '*' -g -y`. Entry point: `pixi-vn-ink`. Docs: [pixi-vn.com/ink](https://pixi-vn.com/ink) |
+| `@drincs/nqtr` | NQTR (Navigation Quest Time Routine): locations/navigation, quests, time management and game state for a not-quite-point-and-click adventure | No skills yet. Docs: [pixi-vn.com/nqtr](https://pixi-vn.com/nqtr) |
+
+When a project uses one of these, load its skills (if any) in addition to the matching skill from the map; the plain-TypeScript skills in this set still apply to everything outside the ink/nqtr-specific parts.
 
 ## When to use this skill
 
@@ -45,7 +56,7 @@ Two paths, depending on whether a project already exists:
 
   This generates a working project (index.html, entry point, bundler config) already wired to call `Game.init`, with pre-built menu/narration screens, VS Code launch configs, and (since template v2.0.0) TanStack Router for navigation. See [pixi-vn.com/start/templates](https://pixi-vn.com/start/templates) for the full generated project structure, available templates/demos, and how to run/customize one.
 
-  The wizard asks for a narrative language and **defaults/suggests _Ink + TypeScript_** (it's listed first and pre-selected in the prompt for the Visual Novel, Text-based Story, and Point & Click Adventure project types) — plain **TypeScript** narration (what every skill in this set documents) is the other option, selectable in the same prompt. Ink support is a separate narrative language with its own syntax and its own future skill; nothing in this skill set requires it.
+  The wizard asks for a narrative language and **defaults/suggests _Ink + TypeScript_** (it's listed first and pre-selected in the prompt for the Visual Novel, Text-based Story, and Point & Click Adventure project types) — plain **TypeScript** narration (what every skill in this set documents) is the other option, selectable in the same prompt. Ink support is a separate narrative language with its own syntax and its own skill set (`pixi-vn-ink`, see [Companion packages](#companion-packages)); nothing in this skill set requires it.
 
   The wizard's first question is the project/game type; the docs have a dedicated getting-started walkthrough for some of them — [pixi-vn.com/start/make-visual-novel](https://pixi-vn.com/start/make-visual-novel) for "Visual Novel", [pixi-vn.com/nqtr/make-point-and-click](https://pixi-vn.com/nqtr/make-point-and-click) for "Point & Click Adventure" — worth pointing a developer to the matching one for their project type, in addition to the general [pixi-vn.com/start/templates](https://pixi-vn.com/start/templates) page above.
 
@@ -401,6 +412,7 @@ of `@drincs/pixi-vn`:
 
 - `@drincs/pixi-vn-ai`: runtime dialogue/image generation. Await its `ai.init(...)` during
   startup; see [narration's AI notes](../narration/SKILL.md#optional-runtime-ai-drincspixi-vn-ai).
+  API reference: [jsdocs.pixi-vn.com/pixi-vn-ai](https://jsdocs.pixi-vn.com/pixi-vn-ai).
 - `@drincs/pixi-vn-live2d`: Live2D models. Register `Live2DPlugin` before initializing the
   canvas; see [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
 - `@drincs/pixi-vn-spine`: Spine skeletal animation. Import the package in the app entry

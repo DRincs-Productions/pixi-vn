@@ -51,6 +51,8 @@ the library builds prompts from the request and structured context. Consult the
 [AI guide](https://pixi-vn.com/start/ai-generated-content) and
 [plugin README](https://github.com/DRincs-Productions/pixi-vn-ai) for dependencies,
 provider configuration, image results, and display helpers before wiring images into canvas.
+For exact signatures and types, see the plugin's JSDoc reference:
+[jsdocs.pixi-vn.com/pixi-vn-ai](https://jsdocs.pixi-vn.com/pixi-vn-ai).
 
 ## 1. Defining a label
 
