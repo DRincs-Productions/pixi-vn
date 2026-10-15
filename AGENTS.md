@@ -107,6 +107,18 @@ tools, not sample content. It's fine (and expected) for `sandbox/src/labels/` to
 per feature under active development; delete a test label once the feature it covers is stable and
 adequately covered elsewhere (Vitest, or another still-relevant test label).
 
+## 4. Language: English first
+
+**English is the project's primary language.** Write everything that ships with or documents the
+library in English: source code, identifiers, comments, JSDoc, error/log messages, commit messages,
+PR and issue text, `README.md`, `CONTRIBUTING.md`, this file, and every `skills/*/SKILL.md`. Skills
+in particular are consumed by AI agents across many projects, so keep them in English even if the
+conversation with a maintainer happens in another language.
+
+Other languages are welcome in discussions and for translations of the public docs, but they are
+secondary: never make a non-English version the source of truth, and keep any translation in sync
+with the English original rather than the other way around.
+
 ## Related docs
 
 - `CONTRIBUTING.md` — project folder structure, issue/PR process.
