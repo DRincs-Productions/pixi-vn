@@ -20,6 +20,5 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
-package-lock.json
 doc
 sandbox/build
