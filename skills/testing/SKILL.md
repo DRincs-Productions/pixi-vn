@@ -295,3 +295,28 @@ registers (e.g. `drawCanvasErrorHandler()`) — both run.
 ## Related skills
 
 pixi-vn, pixi-vn-narration, pixi-vn-storage, pixi-vn-history, pixi-vn-saves
+
+## Content discovery and optional screen navigation
+
+`window.pixiVN.getLabelIds()` returns every registered label ID, including labels
+not currently open. `getAssetIds()` returns registered PixiJS resolver aliases,
+including unloaded assets from the manifest; loading an asset is not required.
+Aliases are resolver keys and can include bundle-qualified keys. This read uses
+PixiJS resolver bookkeeping because PixiJS has no public enumeration API.
+Current choices remain available in `getState().choices`.
+
+Applications can opt into router-independent screen navigation:
+
+```ts
+Game.testing.setActions({
+  navigate: async (screen) => {
+    await navigate({ to: screen });
+    await queryClient.invalidateQueries();
+  },
+  // Include the application's other action overrides here too.
+});
+```
+
+`setActions` replaces the full registration. When navigation is registered,
+`await window.pixiVN.navigate("/game/map")` waits for that callback. Otherwise
+`navigate` is undefined. No router-specific behavior is implemented by Pixi'VN.

@@ -1,3 +1,4 @@
+import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import type OnErrorHandler from "@core/OnErrorHandler";
 import * as historyUtils from "@drincs/pixi-vn/history";
 import * as narrationUtils from "@drincs/pixi-vn/narration";
@@ -97,6 +98,12 @@ export interface GameTestingAPI<TGame, T extends {} = {}> {
     closeAllLabels(): void;
     /** A snapshot of dialogue/choices/input/canContinue/canGoBack/labels — see {@link GameTestingState}. */
     getState(): GameTestingState;
+    /** All registered labels, including labels not currently open. */
+    getLabelIds(): narrationUtils.LabelIdType[];
+    /** Registered resolver aliases, including assets that have not been loaded. */
+    getAssetIds(): string[];
+    /** Present only when the application registers a screen navigation action. */
+    readonly navigate?: (screen: string) => Promise<void>;
     /** Errors caught via `Game.addOnError` since `enable()` was called (or since the last {@link clearErrors}). */
     readonly errors: GameTestingErrorEntry[];
     clearErrors(): void;
@@ -116,6 +123,8 @@ export interface GameTestingAPI<TGame, T extends {} = {}> {
  * raw `choiceIndex`, since looking it up is already handled before the override runs.
  */
 export interface GameTestingActions<T extends {} = {}> {
+    /** Optional router-independent screen navigation supplied by the application. */
+    navigate?: (screen: string) => Promise<void>;
     continue?: () => Promise<void>;
     back?: () => Promise<void>;
     selectChoice?: (item: narrationUtils.StoredIndexedChoiceInterface) => Promise<void>;
@@ -264,6 +273,23 @@ export function createGameTesting<TGame extends TestableGame>(Game: TGame) {
                     : historyUtils.stepHistory.back(mergeProps(extraProps), options),
             closeCurrentLabel: () => narrationUtils.narration.labels.closeCurrent(),
             closeAllLabels: () => narrationUtils.narration.labels.closeAll(),
+            getLabelIds: () => narrationUtils.RegisteredLabels.keys(),
+            getAssetIds: () => {
+                // PixiJS has no public resolver enumeration API. Keep this compatibility
+                // boundary isolated; resolver aliases include unloaded manifest assets.
+                const resolver = PIXI.Assets.resolver as unknown as {
+                    _assetMap?: Record<string, unknown>;
+                };
+                return Object.keys(resolver._assetMap ?? {});
+            },
+            get navigate() {
+                const navigate = currentActions.navigate;
+                return navigate
+                    ? async (screen: string) => {
+                          await navigate(screen);
+                      }
+                    : undefined;
+            },
             getState: () => ({
                 dialogue: narrationUtils.narration.dialogue,
                 dialogueGlue: narrationUtils.narration.dialogGlue,
