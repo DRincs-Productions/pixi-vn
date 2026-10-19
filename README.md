@@ -10,7 +10,7 @@
   <a target="_blank" href="https://discord.gg/E95FZWakzp" rel="noopener noreferrer nofollow"><img alt="Discord" src="https://img.shields.io/discord/1263071210011496501?color=7289da&label=discord"></a>
 </p>
 
-Pixi’VN is a very versatile and powerful story-driven engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/), and supports animated characters through [Spine 2D](https://esotericsoftware.com/) and [Live2D](https://www.live2d.com/).
+Pixi’VN is a very versatile and powerful story-driven engine. It is based on JavaScript/TypeScript and [PixiJS](https://pixijs.com/), and supports animated characters through [Spine 2D](https://esotericsoftware.com) and [Live2D](https://www.live2d.com/).
 
 Pixi’VN aims to be an innovative and fast engine, and puts a strong emphasis on AI-assisted development: an AI agent can start your game, gain all the knowledge it needs about your project through [Agent Skills](#agent-skills), and test the game by launching it in a browser — with the ability to keep driving it from the outside while it plays.
 
