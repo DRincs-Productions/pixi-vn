@@ -36,7 +36,7 @@ These are separate npm packages built on `@drincs/pixi-vn`; they are not covered
 | Package | Use it for | Skills / docs |
 | --- | --- | --- |
 | `@drincs/pixi-vn-ink` | Writing the story in [ink](https://github.com/inkle/ink) (`.ink` files, hashtag commands) instead of TypeScript labels | Own skill set, install it alongside this one: `npx skills@latest add DRincs-Productions/pixi-vn-ink@latest --skill '*' -g -y`. Entry point: `pixi-vn-ink`. Docs: [pixi-vn.com/ink](https://pixi-vn.com/ink) |
-| `@drincs/nqtr` | NQTR (Navigation Quest Time Routine): locations/navigation, quests, time management and game state for a not-quite-point-and-click adventure | No skills yet. Docs: [pixi-vn.com/nqtr](https://pixi-vn.com/nqtr) |
+| `@drincs/nqtr` | NQTR (Navigation Quest Time Routine): locations/navigation, quests, time management and game state for a not-quite-point-and-click adventure | Own skill set, install it alongside this one: `npx skills@latest add DRincs-Productions/nqtr@latest --skill '*' -g -y`. Entry point: `nqtr`. Docs: [pixi-vn.com/nqtr](https://pixi-vn.com/nqtr) |
 
 When a project uses one of these, load its skills (if any) in addition to the matching skill from the map; the plain-TypeScript skills in this set still apply to everything outside the ink/nqtr-specific parts.
 
@@ -58,7 +58,7 @@ Two paths, depending on whether a project already exists:
 
   The wizard asks for a narrative language and **defaults/suggests _Ink + TypeScript_** (it's listed first and pre-selected in the prompt for the Visual Novel, Text-based Story, and Point & Click Adventure project types) — plain **TypeScript** narration (what every skill in this set documents) is the other option, selectable in the same prompt. Ink support is a separate narrative language with its own syntax and its own skill set (`pixi-vn-ink`, see [Companion packages](#companion-packages)); nothing in this skill set requires it.
 
-  The wizard's first question is the project/game type; the docs have a dedicated getting-started walkthrough for some of them — [pixi-vn.com/start/make-visual-novel](https://pixi-vn.com/start/make-visual-novel) for "Visual Novel", [pixi-vn.com/nqtr/make-point-and-click](https://pixi-vn.com/nqtr/make-point-and-click) for "Point & Click Adventure" — worth pointing a developer to the matching one for their project type, in addition to the general [pixi-vn.com/start/templates](https://pixi-vn.com/start/templates) page above.
+  The wizard's first question is the project/game type; the docs have a dedicated getting-started walkthrough for some of them — [pixi-vn.com/start/make-visual-novel](https://pixi-vn.com/start/make-visual-novel) for "Visual Novel", [pixi-vn.com/nqtr/make-point-and-click](https://pixi-vn.com/nqtr/make-point-and-click) for "Point & Click Adventure" — worth pointing a developer to the matching one for their project type, in addition to the general [pixi-vn.com/start/templates](https://pixi-vn.com/start/templates) page above. The "Point & Click Adventure" type is built on `@drincs/nqtr`, which has its own skill set (entry point `nqtr`, see [Companion packages](#companion-packages)).
 
 - **Existing JS/TS project** — add the package directly:
 
