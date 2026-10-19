@@ -281,3 +281,23 @@ test("setActions: persists across disable/enable, same as setProps", async () =>
     await api.start(gameTestingLabel, { marker: "override" });
     expect(narration.dialogue?.text).toBe("hello wrapped-override");
 });
+
+
+test("discovery lists registered labels and unloaded asset aliases", async () => {
+    const { Assets } = await import("../src");
+    Assets.add({ alias: "testing-unloaded", src: "testing-unloaded.png" });
+    const api = Game.testing.enable();
+    expect(api.getLabelIds()).toContain("game-testing-label");
+    expect(api.getAssetIds()).toContain("testing-unloaded");
+});
+
+test("navigation is optional, live, and awaited", async () => {
+    const api = Game.testing.enable();
+    expect(api.navigate).toBeUndefined();
+    let screen = "";
+    Game.testing.setActions({ navigate: async (value) => { await Promise.resolve(); screen = value; } });
+    await api.navigate!("/settings");
+    expect(screen).toBe("/settings");
+    Game.testing.setActions({});
+    expect(api.navigate).toBeUndefined();
+});
