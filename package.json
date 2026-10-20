@@ -202,7 +202,7 @@
     "tsup": "^9.0.0",
     "typedoc": "^0.28.20",
     "typedoc-plugin-markdown": "^4.14.1",
-    "typescript": "^5.9.3",
+    "typescript": "^7.0.2",
     "vite": "^8.3.4",
     "vite-tsconfig-paths": "^6.1.1",
     "vitest": "^4.1.12"
