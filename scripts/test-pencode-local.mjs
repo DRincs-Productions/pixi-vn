@@ -43,10 +43,18 @@ function findBrowser() {
     throw new Error("Chrome/Chromium not found. Set CHROME_BIN to its executable path.");
 }
 
+const noHmrClientPlugin = {
+    name: "pencode-test-no-hmr-client",
+    transformIndexHtml(html) {
+        return html.replace(/<script type="module" src="\/@vite\/client"><\/script>/, "");
+    },
+};
+
 const server = await createServer({
     configFile: false,
     root: projectRoot,
-    server: { host: "127.0.0.1", port: 0 },
+    plugins: [noHmrClientPlugin],
+    server: { host: "127.0.0.1", port: 0, hmr: false },
 });
 
 try {
