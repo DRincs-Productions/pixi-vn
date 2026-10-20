@@ -1,4 +1,4 @@
-import { expect, test } from "vitest";
+import { expect, test, vi } from "vitest";
 import {
     GameUnifier,
     narration,
@@ -17,6 +17,14 @@ const SHORT_ASYNC_TIMEOUT = 40;
 
 // Label step timing constant (simulating async operations within labels)
 const SHORT_STEP_DELAY = 50;
+
+function createDeferred() {
+    let resolve!: () => void;
+    const promise = new Promise<void>((resolvePromise) => {
+        resolve = resolvePromise;
+    });
+    return { promise, resolve };
+}
 
 const pathLabel = newLabel("path", [
     () => {
@@ -222,6 +230,10 @@ test("currentLabelStepIndex", async () => {
     expect(NarrationManagerStatic.currentLabelStepIndex).toBe(1);
 });
 
+const rollbackAsyncStepStarted = createDeferred();
+const continueRollbackAsyncStep = createDeferred();
+const rollbackStep13Reached = createDeferred();
+
 const asyncLabel = newLabel("asyncLabel", [
     () => (narration.dialogue = "This is a sync step 0"),
     async () => {
@@ -242,10 +254,14 @@ const asyncLabel = newLabel("asyncLabel", [
     () => (narration.dialogue = "This is a sync step 10"),
     async () => {
         narration.dialogue = "This is an async step 11";
-        await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY));
+        rollbackAsyncStepStarted.resolve();
+        await continueRollbackAsyncStep.promise;
     },
     () => (narration.dialogue = "This is a sync step 12"),
-    () => (narration.dialogue = "This is a sync step 13"),
+    () => {
+        narration.dialogue = "This is a sync step 13";
+        rollbackStep13Reached.resolve();
+    },
     () => (narration.dialogue = "This is a sync step 14"),
     async () => {
         narration.dialogue = "This is an async step 15";
@@ -296,10 +312,12 @@ test("rollback rollforward", async () => {
     stepHistory.back({});
     stepHistory.back({});
     stepHistory.back({});
-    await new Promise((resolve) => setTimeout(resolve, SHORT_STEP_DELAY + 1));
+    await rollbackAsyncStepStarted.promise;
     expect(narration.stepCounter).toBe(11);
     expect(narration.dialogue).toEqual({ text: "This is an async step 11" });
-    await new Promise((resolve) => setTimeout(resolve, ASYNC_STEP_TIMEOUT));
+    continueRollbackAsyncStep.resolve();
+    await rollbackStep13Reached.promise;
+    await vi.waitFor(() => expect(narration.stepCounter).toBe(14));
     expect(narration.stepCounter).toBe(14);
     expect(narration.dialogue).toEqual({ text: "This is a sync step 13" });
     const promise = stepHistory.back({});
