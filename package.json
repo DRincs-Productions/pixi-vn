@@ -19,7 +19,9 @@
     "check": "biome check",
     "format": "biome format --write",
     "test": "vitest",
-    "test:cdn": "node scripts/test-pencode-cdn.mjs",
+    "test:cdn": "npm run test:cdn:local",
+    "test:cdn:local": "npm run build && node scripts/test-pencode-cdn.mjs local",
+    "test:cdn:public": "node scripts/test-pencode-cdn.mjs public",
     "docs": "typedoc",
     "skills:validate": "node scripts/validate-skills.mjs",
     "sandbox": "npm run build && node scripts/sync-sandbox.mjs && npm run start --workspace=sandbox"

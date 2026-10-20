@@ -4,17 +4,25 @@
         <meta charset="utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <title>Pixi'VN jsDelivr CDN smoke test</title>
+        <!-- PIXIVN_IMPORT_MAP -->
     </head>
     <body data-status="loading">
         <main id="result">Loading Pixi'VN from jsDelivr…</main>
         <script type="module">
-            const version = new URLSearchParams(window.location.search).get("version") || "latest";
+            const params = new URLSearchParams(window.location.search);
+            const source = params.get("source") || "public";
+            const version = params.get("version") || "latest";
             const result = document.querySelector("#result");
 
             try {
-                const pixiVN = await import(
-                    `https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@${encodeURIComponent(version)}/+esm`
-                );
+                const moduleUrl =
+                    source === "local"
+                        ? "@drincs/pixi-vn"
+                        : `https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@${encodeURIComponent(version)}/+esm`;
+                if (source !== "local" && source !== "public") {
+                    throw new Error(`Unknown package source: ${source}`);
+                }
+                const pixiVN = await import(moduleUrl);
 
                 if (typeof pixiVN.Game !== "object" || typeof pixiVN.Game.init !== "function") {
                     throw new Error("Game.init was not exported by the CDN module");
@@ -27,8 +35,10 @@
                 }
 
                 document.body.dataset.status = "passed";
+                document.body.dataset.source = source;
                 document.body.dataset.version = String(pixiVN.PIXIVN_VERSION);
-                result.textContent = `Loaded Pixi'VN ${pixiVN.PIXIVN_VERSION} from jsDelivr; Game.init() and storage passed.`;
+                const sourceDescription = source === "local" ? "local dist via the local import map" : "jsDelivr";
+                result.textContent = `Loaded Pixi'VN ${pixiVN.PIXIVN_VERSION} from ${sourceDescription}; Game.init() and storage passed.`;
             } catch (error) {
                 document.body.dataset.status = "failed";
                 result.textContent = error instanceof Error ? error.stack || error.message : String(error);
