@@ -68,7 +68,7 @@ Pixi’VN is independent of any distribution technology, but strong emphasis is 
 
 Before starting, you must have the following tools installed:
 
-- [Node.js](https://nodejs.org/) version 22 or higher.
+- [Node.js](https://nodejs.org/) version 22.18.0 or higher.
 - Text editor with TypeScript support, such as:
   - [Visual Studio Code](https://code.visualstudio.com/)
   - [Cursor](https://www.cursor.com/)
