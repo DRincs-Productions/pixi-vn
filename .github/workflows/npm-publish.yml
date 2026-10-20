@@ -27,15 +27,16 @@ jobs:
     if: github.event_name == 'push'
     strategy:
       matrix:
-        node-version: [22.22.2, 24]
+        node-version: ["20.19.0", "22.18.0", "24"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: ${{ matrix.node-version }}
-      - run: npm ci
+      - run: npm ci --workspaces=false
       - run: npm test
       - run: npm run test:cdn
+        if: matrix.node-version != '20.19.0'
 
   publish-npm:
     name: Publish to NPM
@@ -51,7 +52,7 @@ jobs:
           node-version: 24.15.0
           registry-url: https://registry.npmjs.org/
       - run: |
-          npm ci
+          npm ci --workspaces=false
           npm run build
       - run: npm publish -f
         env:
@@ -106,7 +107,7 @@ jobs:
           node-version: 24.15.0
 
       - name: Install deps
-        run: npm i
+        run: npm ci --workspaces=false
 
       - name: Generate docs
         run: npm run docs
