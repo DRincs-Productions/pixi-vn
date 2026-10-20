@@ -19,6 +19,7 @@
     "check": "biome check",
     "format": "biome format --write",
     "test": "vitest",
+    "test:cdn": "node scripts/test-pencode-cdn.mjs",
     "docs": "typedoc",
     "skills:validate": "node scripts/validate-skills.mjs",
     "sandbox": "npm run build && node scripts/sync-sandbox.mjs && npm run start --workspace=sandbox"
@@ -171,11 +172,6 @@
   "funding": "https://github.com/DRincs-Productions/pixi-vn?sponsor=1",
   "dependencies": {
     "tinyglobby": "^0.2.16"
-  },
-  "overrides": {
-    "react-scripts": {
-      "resolve-url-loader": "^5.0.0"
-    }
   },
   "peerDependencies": {
     "@pixi/devtools": ">=2.0.0",

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Pixi'VN jsDelivr CDN smoke test</title>
+    </head>
+    <body data-status="loading">
+        <main id="result">Loading Pixi'VN from jsDelivr…</main>
+        <script type="module">
+            const version = new URLSearchParams(window.location.search).get("version") || "latest";
+            const result = document.querySelector("#result");
+
+            try {
+                const pixiVN = await import(
+                    `https://cdn.jsdelivr.net/npm/@drincs/pixi-vn@${encodeURIComponent(version)}/+esm`
+                );
+
+                if (typeof pixiVN.Game !== "object" || typeof pixiVN.Game.init !== "function") {
+                    throw new Error("Game.init was not exported by the CDN module");
+                }
+
+                await pixiVN.Game.init();
+                pixiVN.storage.set("pencode-cdn-smoke", "ok");
+                if (pixiVN.storage.get("pencode-cdn-smoke") !== "ok") {
+                    throw new Error("Storage smoke check failed after CDN initialization");
+                }
+
+                document.body.dataset.status = "passed";
+                document.body.dataset.version = String(pixiVN.PIXIVN_VERSION);
+                result.textContent = `Loaded Pixi'VN ${pixiVN.PIXIVN_VERSION} from jsDelivr; Game.init() and storage passed.`;
+            } catch (error) {
+                document.body.dataset.status = "failed";
+                result.textContent = error instanceof Error ? error.stack || error.message : String(error);
+            }
+        </script>
+    </body>
+</html>
