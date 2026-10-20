@@ -2,6 +2,8 @@ version: 2
 updates:
   - package-ecosystem: "npm"
     directory: "/"
+    exclude-paths:
+      - "sandbox/**"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"
