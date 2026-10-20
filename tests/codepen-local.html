@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Pixi'VN local CodePen reproduction</title>
+        <style>
+            body {
+                margin: 0;
+                min-height: 100vh;
+                display: grid;
+                place-items: center;
+                background: #303030;
+                color: white;
+                font: 14px sans-serif;
+            }
+
+            #game {
+                width: 640px;
+                height: 480px;
+            }
+
+            canvas {
+                display: block;
+            }
+        </style>
+    </head>
+    <body data-status="loading">
+        <main>
+            <div id="game"></div>
+            <output id="result">Loading local CodePen reproduction…</output>
+        </main>
+        <script type="module">
+            const result = document.querySelector("#result");
+
+            try {
+                const { ImageContainer, ImageSprite, Game, canvas, PIXIVN_VERSION } = await import(
+                    "/dist/index.mjs"
+                );
+                const body = document.querySelector("#game");
+                if (!body) throw new Error("game element not found");
+
+                await Game.init(body, {
+                    height: 480,
+                    width: 640,
+                    backgroundColor: "#303030",
+                });
+
+                const container = new ImageContainer();
+                canvas.add("container", container);
+
+                for (let i = 0; i < 25; i++) {
+                    const bunny = new ImageSprite(
+                        { x: (i % 5) * 40, y: Math.floor(i / 5) * 40 },
+                        "https://pixijs.com/assets/bunny.png",
+                    );
+                    container.addChild(bunny);
+                    void bunny.load();
+                }
+
+                container.x = canvas.screen.width / 2;
+                container.y = canvas.screen.height / 2;
+                container.anchor = 0.5;
+                canvas.animate(
+                    container,
+                    { angle: 360 },
+                    { duration: 1.5, type: "spring", repeat: Infinity },
+                );
+
+                if (container.children.length !== 25) {
+                    throw new Error(`Expected 25 sprites, found ${container.children.length}`);
+                }
+                if (!document.querySelector("canvas")) {
+                    throw new Error("PixiJS did not add a canvas to the page");
+                }
+                document.body.dataset.status = "passed";
+                document.body.dataset.version = String(PIXIVN_VERSION);
+                document.body.dataset.spriteCount = String(container.children.length);
+                result.textContent = `Loaded Pixi'VN ${PIXIVN_VERSION}: canvas, 25 local sprites, and animation passed.`;
+            } catch (error) {
+                document.body.dataset.status = "failed";
+                result.textContent = error instanceof Error ? error.stack || error.message : String(error);
+            }
+        </script>
+    </body>
+</html>

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <meta charset="utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1" />
+        <title>Pixi'VN local package smoke test</title>
+    </head>
+    <body data-status="loading">
+        <main id="result">Loading the local Pixi'VN package…</main>
+        <script type="module">
+            const result = document.querySelector("#result");
+
+            try {
+                const pixiVN = await import("/dist/index.mjs");
+
+                if (typeof pixiVN.Game !== "object" || typeof pixiVN.Game.init !== "function") {
+                    throw new Error("Game.init was not exported by the local package");
+                }
+
+                await pixiVN.Game.init();
+                pixiVN.storage.set("pencode-local-smoke", "ok");
+                if (pixiVN.storage.get("pencode-local-smoke") !== "ok") {
+                    throw new Error("Storage smoke check failed after local initialization");
+                }
+
+                document.body.dataset.status = "passed";
+                document.body.dataset.version = String(pixiVN.PIXIVN_VERSION);
+                result.textContent = `Loaded local Pixi'VN ${pixiVN.PIXIVN_VERSION}; Game.init() and storage passed.`;
+            } catch (error) {
+                document.body.dataset.status = "failed";
+                result.textContent = error instanceof Error ? error.stack || error.message : String(error);
+            }
+        </script>
+    </body>
+</html>
