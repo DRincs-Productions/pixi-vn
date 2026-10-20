@@ -172,6 +172,11 @@
   "dependencies": {
     "tinyglobby": "^0.2.16"
   },
+  "overrides": {
+    "react-scripts": {
+      "resolve-url-loader": "^5.0.0"
+    }
+  },
   "peerDependencies": {
     "@pixi/devtools": ">=2.0.0",
     "motion": ">=12.38.0",
