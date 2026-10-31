@@ -3,5 +3,7 @@
   "compilerOptions": {
     "rootDir": ".."
   },
-  "include": ["../src", "."]
+  "include": ["../src", "."],
+  // Standalone consumer fixtures with their own tsconfig (see `npm run test:types`).
+  "exclude": ["types"]
 }

@@ -4,8 +4,13 @@ export default interface SoundUnsavedInterface {
     /**
      * Plays a non-persistent ("transient") sound (e.g. UI / menu sounds).
      * Transient playback is not tracked in save/export state.
+     * Pass `channel` to route the player through an audio channel. The player
+     * remains transient while using that channel's volume, mute, and filters.
      */
-    playTransient(alias: string, options?: Partial<PlayerOptions>): Promise<Player>;
+    playTransient(
+        alias: string,
+        options?: Partial<PlayerOptions> & { channel?: string },
+    ): Promise<Player>;
     /**
      * Temporarily pause all currently-playing sounds (or just those in the given
      * channel) without persisting the paused state. Useful for overlays / pause

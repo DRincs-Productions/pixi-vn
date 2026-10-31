@@ -255,15 +255,121 @@ export namespace Game {
         historyUtils.stepHistory.clear();
     }
 
+    // Save-state hook registries. Plain module-level arrays (no dependency on Game.init() or on
+    // any other module), so registering handlers before/without initialization is always safe.
+    const onExportGameStateHandlers: pixivninterface.OnExportGameStateHandler[] = [];
+    const onRestoreGameStateHandlers: {
+        handler: pixivninterface.OnRestoreGameStateHandler;
+        timing: pixivninterface.GameStateHookTiming;
+    }[] = [];
+
+    /**
+     * Register a handler that runs every time {@link exportGameState} is called. It receives the
+     * complete save-state object and can mutate it (add or update properties) before it is
+     * returned. Handlers may be async; they are awaited sequentially in registration order, and
+     * an error thrown by a handler is propagated to the {@link exportGameState} caller.
+     *
+     * Combine it with TypeScript module augmentation of the `GameState` interface to type
+     * the custom properties.
+     * @param handler The handler to register.
+     * @returns A function that removes the handler (same as {@link removeOnExportGameState}).
+     * @example
+     * ```ts
+     * declare module "@drincs/pixi-vn" {
+     *     interface GameState {
+     *         myLibraryData?: { score: number };
+     *     }
+     * }
+     *
+     * Game.addOnExportGameState(async (state) => {
+     *     state.myLibraryData = { score: await getScore() };
+     * });
+     * ```
+     */
+    export function addOnExportGameState(handler: pixivninterface.OnExportGameStateHandler) {
+        onExportGameStateHandlers.push(handler);
+        return () => removeOnExportGameState(handler);
+    }
+
+    /**
+     * Remove a handler previously registered with {@link addOnExportGameState}. Other handlers stay
+     * registered.
+     * @param handler The handler to remove.
+     */
+    export function removeOnExportGameState(handler: pixivninterface.OnExportGameStateHandler) {
+        for (let i = onExportGameStateHandlers.length - 1; i >= 0; i--) {
+            if (onExportGameStateHandlers[i] === handler) {
+                onExportGameStateHandlers.splice(i, 1);
+            }
+        }
+    }
+
+    /**
+     * Register a handler that runs every time {@link restoreGameState} is called. It receives the
+     * exact save-state object passed to {@link restoreGameState}, so an external library can read
+     * back the data it added through {@link addOnExportGameState}. Handlers may be async; handlers
+     * with the same timing are awaited sequentially in registration order, and an error thrown by
+     * a handler is propagated to the {@link restoreGameState} caller.
+     * @param handler The handler to register.
+     * @param options `timing`: `"before"` (default) runs the handler before any built-in module is
+     * restored; `"after"` runs it once the built-in restoration and navigation have completed.
+     * @returns A function that removes the handler (same as {@link removeOnRestoreGameState}).
+     * @example
+     * ```ts
+     * Game.addOnRestoreGameState((state) => {
+     *     myLibrary.load(state.myLibraryData);
+     * });
+     * Game.addOnRestoreGameState(
+     *     (state) => {
+     *         myLibrary.refreshUi();
+     *     },
+     *     { timing: "after" },
+     * );
+     * ```
+     */
+    export function addOnRestoreGameState(
+        handler: pixivninterface.OnRestoreGameStateHandler,
+        options: pixivninterface.OnRestoreGameStateOptions = {},
+    ) {
+        onRestoreGameStateHandlers.push({ handler, timing: options.timing ?? "before" });
+        return () => removeOnRestoreGameState(handler);
+    }
+
+    /**
+     * Remove a handler previously registered with {@link addOnRestoreGameState}, whatever its
+     * timing. Other handlers stay registered.
+     * @param handler The handler to remove.
+     */
+    export function removeOnRestoreGameState(handler: pixivninterface.OnRestoreGameStateHandler) {
+        for (let i = onRestoreGameStateHandlers.length - 1; i >= 0; i--) {
+            if (onRestoreGameStateHandlers[i].handler === handler) {
+                onRestoreGameStateHandlers.splice(i, 1);
+            }
+        }
+    }
+
+    async function runOnRestoreGameState(
+        data: pixivninterface.GameState,
+        timing: pixivninterface.GameStateHookTiming,
+    ) {
+        // Snapshot so (un)registrations made by a handler don't affect the current run.
+        for (const entry of onRestoreGameStateHandlers.slice()) {
+            if (entry.timing === timing) {
+                await entry.handler(data);
+            }
+        }
+    }
+
     /**
      * Get all the game data. It can be used to save the game.
+     * Handlers registered with {@link addOnExportGameState} run on the result before it is returned.
      * @returns The game data
      */
     export async function exportGameState(): Promise<pixivninterface.GameState> {
         // Canvas usage is optional - when Game.init() was never given a canvas element,
         // canvas.export() would throw (and log an error) just to be caught here.
         const canvasData = canvasUtils.canvas.isInitialized ? canvasUtils.canvas.export() : {};
-        return {
+        const state: pixivninterface.GameState = {
             pixivn_version: PIXIVN_VERSION,
             stepData: narrationUtils.narration.export(),
             storageData: await storageUtils.storage.export(),
@@ -272,13 +378,21 @@ export namespace Game {
             historyData: await historyUtils.stepHistory.export(),
             path: getGamePath(),
         };
+        // Snapshot so (un)registrations made by a handler don't affect the current run.
+        for (const handler of onExportGameStateHandlers.slice()) {
+            await handler(state);
+        }
+        return state;
     }
 
     /**
-     * Load the save data
+     * Load the save data.
+     * Handlers registered with {@link addOnRestoreGameState} run before and/or after the built-in
+     * restoration, according to their `timing`.
      * @param data The save data object to restore the game state from.
      */
     export async function restoreGameState(data: pixivninterface.GameState): Promise<void> {
+        await runOnRestoreGameState(data, "before");
         historyUtils.stepHistory.restore(data.historyData);
         const lastHistoryKey = historyUtils.stepHistory.lastKey;
         if (typeof lastHistoryKey === "number") {
@@ -293,6 +407,7 @@ export namespace Game {
             await soundUtils.sound.restore(data.soundData);
         } catch (_e) {}
         await GameUnifier.navigate(data.path);
+        await runOnRestoreGameState(data, "after");
     }
 
     /**

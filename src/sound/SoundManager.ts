@@ -138,7 +138,7 @@ export default class SoundManager implements SoundManagerInterface {
     }
     private async playTransientInternal(
         alias: string,
-        options?: Partial<Tone.PlayerOptions>,
+        options?: Partial<Tone.PlayerOptions> & { channel?: string },
     ): Promise<Tone.Player> {
         if (!SoundRegistry.bufferRegistry.has(alias)) {
             await this.load(alias);
@@ -150,8 +150,14 @@ export default class SoundManager implements SoundManagerInterface {
                 `Sound buffer for alias "${alias}" is not loaded. Call sound.load() first.`,
             );
         }
-        const { autostart = true, ...playerOptions } = options ?? {};
-        const player = new Tone.Player({ ...playerOptions, url: buffer }).toDestination();
+        const { autostart = true, channel, ...playerOptions } = options ?? {};
+        const player = new Tone.Player({ ...playerOptions, url: buffer });
+        if (channel) {
+            const audioChannel = this.findChannelInternal(channel) as AudioChannel;
+            player.connect(audioChannel.toneChannel);
+        } else {
+            player.toDestination();
+        }
         if (autostart) {
             player.start();
         }
@@ -234,7 +240,7 @@ export default class SoundManager implements SoundManagerInterface {
      */
     async playTransient(
         alias: string,
-        options?: Partial<Tone.PlayerOptions>,
+        options?: Partial<Tone.PlayerOptions> & { channel?: string },
     ): Promise<Tone.Player> {
         return this.playTransientInternal(alias, options);
     }
