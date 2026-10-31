@@ -41,9 +41,13 @@ export interface SoundManagerInterface {
     /**
      * Plays a non-persistent ("transient") sound (e.g. UI / menu sounds).
      * Transient playback is not tracked in save/export state.
+     * Pass `channel` to route the player through an audio channel.
      * @deprecated Use {@link unsaved}.playTransient instead.
      */
-    playTransient(alias: string, options?: Partial<PlayerOptions>): Promise<Player>;
+    playTransient(
+        alias: string,
+        options?: Partial<PlayerOptions> & { channel?: string },
+    ): Promise<Player>;
 
     /**
      * Find a tracked media instance by alias.

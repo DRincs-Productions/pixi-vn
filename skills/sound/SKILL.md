@@ -80,6 +80,19 @@ For an SFX that should just fire and not be individually tracked/paused later, u
 await sound.unsaved.playTransient("click-sound", { volume: 0.5 });
 ```
 
+Transient playback can also be routed through a channel. This keeps it out of save/export state while applying the channel's volume, mute, pan, and filters. The returned `Tone.Player` can be stopped directly, which is useful for looping ambience tied to a screen or room:
+
+```ts
+const ambience = await sound.unsaved.playTransient("room-ambience", {
+  channel: "bgm",
+  loop: true,
+});
+
+ambience.stop();
+```
+
+Use `sound.unsaved.stopTransientAll()` to stop all transient players when individual references are not available.
+
 If you do need to reference the effect later (pause it, stop it by alias, check if it's still playing), use regular `play()` on an `"sfx"` channel instead:
 
 ```ts

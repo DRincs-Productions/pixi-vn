@@ -487,8 +487,32 @@ describe("sound play routing and mediaInstances tracking", () => {
             });
             expect(result).toBeDefined();
             expect(SoundRegistry.mediaInstances.has("ui-click")).toBe(false);
+            expect(sound.export().mediaInstances).toEqual({});
         } finally {
             SoundRegistry.bufferRegistry.delete("ui-click");
+            loadSpy.mockRestore();
+        }
+    });
+
+    test("unsaved.playTransient routes a looping Player through the requested channel", async () => {
+        const loadSpy = vi.spyOn(sound as any, "load").mockResolvedValue(undefined);
+        const tone = await vi.importActual<typeof import("tone")>("tone");
+        const connectSpy = vi.spyOn(tone.Player.prototype, "connect");
+        SoundRegistry.bufferRegistry.set("room-ambience", {} as any);
+        try {
+            const channel = sound.channels.add("bgm");
+            const result = await sound.unsaved.playTransient("room-ambience", {
+                autostart: false,
+                channel: "bgm",
+                loop: true,
+            });
+
+            expect(connectSpy).toHaveBeenCalledWith((channel as AudioChannel).toneChannel);
+            expect(result.loop).toBe(true);
+            expect(sound.export().mediaInstances).toEqual({});
+        } finally {
+            SoundRegistry.bufferRegistry.delete("room-ambience");
+            connectSpy.mockRestore();
             loadSpy.mockRestore();
         }
     });
