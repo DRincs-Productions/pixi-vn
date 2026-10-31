@@ -1,0 +1,14 @@
+{
+  // Standalone consumer project: resolves "@drincs/pixi-vn" through the package's own "exports"
+  // (self-reference), i.e. against the built declarations in dist/. Run `npm run build` first.
+  "compilerOptions": {
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
+    "strict": true,
+    "noEmit": true,
+    "skipLibCheck": true,
+    "types": []
+  },
+  "files": ["consumer.ts"]
+}

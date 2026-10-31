@@ -19,6 +19,7 @@
     "check": "biome check",
     "format": "biome format --write",
     "test": "vitest",
+    "test:types": "tsc -p tests/types/game-state-augmentation/tsconfig.json",
     "test:cdn": "npm run build && node scripts/test-pencode-local.mjs",
     "docs": "typedoc",
     "skills:validate": "node scripts/validate-skills.mjs",

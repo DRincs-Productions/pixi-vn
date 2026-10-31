@@ -48,6 +48,41 @@ limit means for how far a player can go back after loading). `Game.exportGameSta
 `restoreGameState` is the layer application code should use — there's no need to go through any
 individual module directly for a full game save.
 
+## Extending the save state (export/restore hooks)
+
+A third-party library (or a game) that keeps its own state outside Pixi'VN's modules can add it to
+every save and read it back on load, without wrapping `exportGameState`/`restoreGameState`:
+
+```ts
+import { Game } from "@drincs/pixi-vn";
+
+// Type the custom data with module augmentation of the public GameState interface.
+declare module "@drincs/pixi-vn" {
+    interface GameState {
+        myLibraryData?: { score: number };
+    }
+}
+
+// Runs on the complete object before exportGameState() returns it; mutate it in place.
+Game.addOnExportGameState(async (state) => {
+    state.myLibraryData = { score: await getScore() };
+});
+
+// Receives the exact object passed to restoreGameState().
+// timing "before" (default): before any built-in module is restored.
+// timing "after": after built-in restoration and navigation have completed.
+Game.addOnRestoreGameState((state) => myLibrary.load(state.myLibraryData));
+Game.addOnRestoreGameState(() => myLibrary.refresh(), { timing: "after" });
+```
+
+- Handlers may be sync or async; they are awaited **sequentially in registration order**, and an
+  error thrown by a handler propagates to the `exportGameState`/`restoreGameState` caller.
+- Both `add*` methods return a function that unregisters the handler; `Game.removeOnExportGameState(handler)`
+  / `Game.removeOnRestoreGameState(handler)` do the same and leave other handlers registered.
+- Handler types are exported from the root: `OnExportGameStateHandler`, `OnRestoreGameStateHandler`,
+  `OnRestoreGameStateOptions`, `GameStateHookTiming`.
+- Make custom properties optional (`?`) — saves created before the library was added won't have them.
+
 ## Real-world persistence convention (official React template)
 
 `Game.exportGameState()` says nothing about *where* that payload lives or what metadata a save-slot

@@ -592,3 +592,211 @@ test("Game.restoreGameState uses configured navigate when navigate argument is o
         Game.onNavigate(previousHandler);
     }
 });
+
+test("Game.addOnExportGameState: handlers can add and update properties, including async", async () => {
+    const syncHandler = (state: GameState) => {
+        (state as any).customData = { value: 1 };
+        state.path = "/changed-by-hook";
+    };
+    const asyncHandler = async (state: GameState) => {
+        await new Promise((resolve) => setTimeout(resolve, 5));
+        (state as any).customData.value = 2;
+        (state as any).asyncData = "async";
+    };
+    Game.addOnExportGameState(syncHandler);
+    Game.addOnExportGameState(asyncHandler);
+    try {
+        Game.clear();
+        const data = await Game.exportGameState();
+        expect((data as any).customData).toEqual({ value: 2 });
+        expect((data as any).asyncData).toBe("async");
+        expect(data.path).toBe("/changed-by-hook");
+        expect(data.pixivn_version).toBe(PIXIVN_VERSION);
+        expect(data.historyData).toBeDefined();
+    } finally {
+        Game.removeOnExportGameState(syncHandler);
+        Game.removeOnExportGameState(asyncHandler);
+    }
+});
+
+test("Game.addOnExportGameState: async handlers run sequentially in registration order", async () => {
+    const order: string[] = [];
+    const first = async () => {
+        order.push("first:start");
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        order.push("first:end");
+    };
+    const second = () => {
+        order.push("second");
+    };
+    Game.addOnExportGameState(first);
+    Game.addOnExportGameState(second);
+    try {
+        await Game.exportGameState();
+        expect(order).toEqual(["first:start", "first:end", "second"]);
+    } finally {
+        Game.removeOnExportGameState(first);
+        Game.removeOnExportGameState(second);
+    }
+});
+
+test("Game.removeOnExportGameState removes only that handler; the returned function also removes it", async () => {
+    const removed = vi.fn();
+    const kept = vi.fn();
+    const removedByDisposer = vi.fn();
+    Game.addOnExportGameState(removed);
+    Game.addOnExportGameState(kept);
+    const dispose = Game.addOnExportGameState(removedByDisposer);
+    try {
+        Game.removeOnExportGameState(removed);
+        dispose();
+        await Game.exportGameState();
+        expect(removed).not.toHaveBeenCalled();
+        expect(removedByDisposer).not.toHaveBeenCalled();
+        expect(kept).toHaveBeenCalledOnce();
+    } finally {
+        Game.removeOnExportGameState(kept);
+    }
+});
+
+test("Game.addOnRestoreGameState: receives the exact save object, before and after restoration", async () => {
+    const previousHandler = GameUnifier.navigate;
+    const events: string[] = [];
+    Game.onNavigate((path) => {
+        events.push(`navigate:${path}`);
+    });
+    let dialogueBeforeRestore: unknown;
+    let dialogueAfterRestore: unknown;
+    const received: GameState[] = [];
+    const before = (state: GameState) => {
+        received.push(state);
+        events.push("before");
+        dialogueBeforeRestore = narration.dialogue?.text;
+    };
+    const after = (state: GameState) => {
+        received.push(state);
+        events.push("after");
+        dialogueAfterRestore = narration.dialogue?.text;
+    };
+    Game.addOnRestoreGameState(after, { timing: "after" });
+    Game.addOnRestoreGameState(before, { timing: "before" });
+    try {
+        Game.clear();
+        await narration.call(testLabel, {});
+        await narration.continue({});
+        const data = await Game.exportGameState();
+        (data as any).customData = { restored: true };
+        data.path = "/restore-hooks";
+
+        Game.clear();
+        await Game.restoreGameState(data);
+
+        expect(received).toHaveLength(2);
+        expect(received[0]).toBe(data);
+        expect(received[1]).toBe(data);
+        expect((received[0] as any).customData).toEqual({ restored: true });
+        expect(events).toEqual(["before", "navigate:/restore-hooks", "after"]);
+        // "before" runs while the game is still cleared, "after" sees the restored narration.
+        expect(dialogueBeforeRestore).toBeUndefined();
+        expect(dialogueAfterRestore).toBe("This is a test label 2");
+    } finally {
+        Game.removeOnRestoreGameState(before);
+        Game.removeOnRestoreGameState(after);
+        Game.onNavigate(previousHandler);
+    }
+});
+
+test("Game.addOnRestoreGameState: omitted timing defaults to before", async () => {
+    const previousHandler = GameUnifier.navigate;
+    const events: string[] = [];
+    Game.onNavigate(() => {
+        events.push("navigate");
+    });
+    const defaultHandler = () => {
+        events.push("default");
+    };
+    const emptyOptionsHandler = () => {
+        events.push("empty-options");
+    };
+    Game.addOnRestoreGameState(defaultHandler);
+    Game.addOnRestoreGameState(emptyOptionsHandler, {});
+    try {
+        Game.clear();
+        const data = await Game.exportGameState();
+        await Game.restoreGameState(data);
+        expect(events).toEqual(["default", "empty-options", "navigate"]);
+    } finally {
+        Game.removeOnRestoreGameState(defaultHandler);
+        Game.removeOnRestoreGameState(emptyOptionsHandler);
+        Game.onNavigate(previousHandler);
+    }
+});
+
+test("Game.addOnRestoreGameState: async handlers are awaited sequentially in registration order", async () => {
+    const previousHandler = GameUnifier.navigate;
+    const events: string[] = [];
+    Game.onNavigate(() => {
+        events.push("navigate");
+    });
+    const slowBefore = async () => {
+        events.push("before1:start");
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        events.push("before1:end");
+    };
+    const fastBefore = () => {
+        events.push("before2");
+    };
+    const slowAfter = async () => {
+        events.push("after1:start");
+        await new Promise((resolve) => setTimeout(resolve, 10));
+        events.push("after1:end");
+    };
+    const fastAfter = () => {
+        events.push("after2");
+    };
+    Game.addOnRestoreGameState(slowAfter, { timing: "after" });
+    Game.addOnRestoreGameState(slowBefore);
+    Game.addOnRestoreGameState(fastAfter, { timing: "after" });
+    Game.addOnRestoreGameState(fastBefore, { timing: "before" });
+    try {
+        Game.clear();
+        const data = await Game.exportGameState();
+        await Game.restoreGameState(data);
+        expect(events).toEqual([
+            "before1:start",
+            "before1:end",
+            "before2",
+            "navigate",
+            "after1:start",
+            "after1:end",
+            "after2",
+        ]);
+    } finally {
+        for (const h of [slowBefore, fastBefore, slowAfter, fastAfter]) {
+            Game.removeOnRestoreGameState(h);
+        }
+        Game.onNavigate(previousHandler);
+    }
+});
+
+test("Game.removeOnRestoreGameState removes only that handler; the returned function also removes it", async () => {
+    const removedBefore = vi.fn();
+    const removedAfter = vi.fn();
+    const kept = vi.fn();
+    Game.addOnRestoreGameState(removedBefore);
+    const dispose = Game.addOnRestoreGameState(removedAfter, { timing: "after" });
+    Game.addOnRestoreGameState(kept, { timing: "after" });
+    try {
+        Game.removeOnRestoreGameState(removedBefore);
+        dispose();
+        Game.clear();
+        const data = await Game.exportGameState();
+        await Game.restoreGameState(data);
+        expect(removedBefore).not.toHaveBeenCalled();
+        expect(removedAfter).not.toHaveBeenCalled();
+        expect(kept).toHaveBeenCalledOnce();
+        expect(kept).toHaveBeenCalledWith(data);
+    } finally {
+        Game.removeOnRestoreGameState(kept);
+    }
+});
