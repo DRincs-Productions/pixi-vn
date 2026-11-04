@@ -46,6 +46,7 @@ export default defineConfig((options) => {
             target: "es2022",
             entry: {
                 "pixi/index": "src/pixi-js/index.ts",
+                "pixi/node-polyfill": "src/pixi-js/node-polyfill.ts",
             },
             format: ["esm"],
             dts: false,
@@ -53,7 +54,8 @@ export default defineConfig((options) => {
             clean: false,
             minify: true,
             bundle: true,
-            external: ["pixi.js"],
+            // The Node.js polyfill is kept as a separate module so it is evaluated before pixi.js
+            external: ["pixi.js", "./node-polyfill.js"],
         }),
         createConfig({
             target: "es2022",
