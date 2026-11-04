@@ -162,8 +162,9 @@ omitted, the alias itself is used as the spritesheet alias. The source holds onl
 names, which is what gets saved: on load/go-back the frames are rebuilt from it and the current frame,
 playing state, `loop` and `animationSpeed` are restored. Building one by hand:
 `new AnimatedSprite(options, source)` then `await sprite.load()` (frame/playing state set before
-`load()`, e.g. `setFrame(3, true)`, is applied once loaded). An `AnimatedSprite` created from raw
-`Texture[]` without a `source` renders fine but can't be restored from a save.
+`load()`, e.g. `setFrame(3, true)`, is applied once loaded). Frames can only come from a `source`:
+there is no `Texture[]` constructor, and `AnimatedSprite.fromFrames`/`fromImages` throw, because raw
+textures can't be saved. Available since `@drincs/pixi-vn` 1.9.9.
 `getSpritesheet(alias)` and `getAnimatedSpriteFrames(source)` are exported for custom components.
 
 ## Transitions

@@ -14,7 +14,6 @@ import type AnimatedSpriteMemory from "@canvas/interfaces/memory/AnimatedSpriteM
 import { CANVAS_ANIMATED_SPRITE_ID } from "@constants";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
 import type {
-    AnimatedSpriteFrames,
     ContainerChild,
     ContainerEvents,
     EventEmitter,
@@ -60,19 +59,13 @@ export default class AnimatedSprite
      * @param options The options for the component.
      * @param source The description of the frames, used by {@link load}. If you have initialized the "asset matrix", you can use the aliases of the assets.
      */
-    constructor(
-        options?: AnimatedSpriteOptions | AnimatedSpriteFrames,
-        source?: AnimatedSpriteSource,
-    ) {
-        if (Array.isArray(options)) {
-            options = { textures: options };
-        }
-        const { align, percentagePosition, textures, ...restOptions } =
+    constructor(options?: AnimatedSpriteOptions, source?: AnimatedSpriteSource) {
+        const { align, percentagePosition, ...restOptions } =
             analizePositionsExtensionProps(options) || {};
         super({
             ...restOptions,
-            // PIXI.AnimatedSprite needs at least one frame
-            textures: textures && textures.length > 0 ? textures : [PIXI.Texture.EMPTY],
+            // PIXI.AnimatedSprite needs at least one frame: the real frames are set by `load()`
+            textures: [PIXI.Texture.EMPTY],
         });
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_ANIMATED_SPRITE_ID;
         if (source) {
@@ -117,11 +110,27 @@ export default class AnimatedSprite
         await setMemoryAnimatedSprite(this, value);
         this.reloadPosition();
     }
-    static override fromFrames(frames: string[]): AnimatedSprite {
-        return new AnimatedSprite(PIXI.AnimatedSprite.fromFrames(frames).textures);
+    /**
+     * Not supported: the frames of an {@link AnimatedSprite} must be described by an {@link AnimatedSpriteSource},
+     * so they can be saved. Use `new AnimatedSprite(options, { frames })` and {@link load} instead.
+     * @throws {PixiError} always.
+     */
+    static override fromFrames(_frames: string[]): AnimatedSprite {
+        throw new PixiError(
+            "invalid_usage",
+            "AnimatedSprite.fromFrames is not supported: use new AnimatedSprite(options, { spritesheet, frames }) and load()",
+        );
     }
-    static override fromImages(images: string[]): AnimatedSprite {
-        return new AnimatedSprite(PIXI.AnimatedSprite.fromImages(images).textures);
+    /**
+     * Not supported: the frames of an {@link AnimatedSprite} must be described by an {@link AnimatedSpriteSource},
+     * so they can be saved. Use `new AnimatedSprite(options, { frames })` and {@link load} instead.
+     * @throws {PixiError} always.
+     */
+    static override fromImages(_images: string[]): AnimatedSprite {
+        throw new PixiError(
+            "invalid_usage",
+            "AnimatedSprite.fromImages is not supported: use new AnimatedSprite(options, { frames }) and load()",
+        );
     }
 
     private _loadIsStarted: boolean = false;

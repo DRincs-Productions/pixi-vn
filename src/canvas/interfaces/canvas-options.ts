@@ -26,12 +26,10 @@ export interface VideoSpriteOptions extends ImageSpriteOptions {
     paused?: boolean;
     currentTime?: number;
 }
+/**
+ * The options of an {@link AnimatedSprite}. The frames are not options: they are described by an
+ * `AnimatedSpriteSource` and loaded with `load()`, so that the component can be saved and restored.
+ */
 export interface AnimatedSpriteOptions
     extends Omit<PixiAnimatedSpriteOptions, "on" | "textures">,
-        AdditionalPositionsExtensionProps {
-    /**
-     * The frames to start with. Usually you don't pass them directly: describe the frames with an
-     * `AnimatedSpriteSource` and call `load()`, so that the component can be saved and restored.
-     */
-    textures?: PixiAnimatedSpriteOptions["textures"];
-}
+        AdditionalPositionsExtensionProps {}

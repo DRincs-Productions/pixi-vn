@@ -283,10 +283,9 @@ describe("AnimatedSprite playback", () => {
         expect(sprite.haveEmptyTexture).toBe(true);
     });
 
-    test("can be created from a Texture[] like PIXI.AnimatedSprite", () => {
-        const sprite = new AnimatedSprite([PIXI.Texture.WHITE, PIXI.Texture.EMPTY]);
-        expect(sprite.totalFrames).toBe(2);
-        expect(sprite.source).toBeUndefined();
+    test("frames can't be passed as textures: fromFrames/fromImages throw", () => {
+        expect(() => AnimatedSprite.fromFrames(["a.png"])).toThrow(/not supported/);
+        expect(() => AnimatedSprite.fromImages(["a.png"])).toThrow(/not supported/);
     });
 
     test("copyProperty copies playback settings but not the source", async () => {
