@@ -4,6 +4,8 @@ declare global {
     const __webpack_require__: unknown;
 }
 
+// Must be the first import: defines `navigator` on Node.js 20 before pixi.js is evaluated
+import "./node-polyfill.js";
 import * as bundler from "pixi.js";
 import * as browser from "./browser.cjs";
 
