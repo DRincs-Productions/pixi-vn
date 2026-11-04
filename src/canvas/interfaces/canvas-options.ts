@@ -1,4 +1,5 @@
 import type {
+    AnimatedSpriteOptions as PixiAnimatedSpriteOptions,
     CanvasTextOptions,
     ContainerOptions as PixiContainerOptions,
     SpriteOptions as PixiSpriteOptions,
@@ -24,4 +25,13 @@ export interface VideoSpriteOptions extends ImageSpriteOptions {
     loop?: boolean;
     paused?: boolean;
     currentTime?: number;
+}
+export interface AnimatedSpriteOptions
+    extends Omit<PixiAnimatedSpriteOptions, "on" | "textures">,
+        AdditionalPositionsExtensionProps {
+    /**
+     * The frames to start with. Usually you don't pass them directly: describe the frames with an
+     * `AnimatedSpriteSource` and call `load()`, so that the component can be saved and restored.
+     */
+    textures?: PixiAnimatedSpriteOptions["textures"];
 }
