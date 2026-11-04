@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-canvas
-description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying or creating transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate, or a custom one built on `canvas.animate`/`filters.animate`), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
+description: Use when adding, moving, or removing images, sprites, spritesheet frame animations (AnimatedSprite), text, or video on the Pixi'VN game canvas, or when applying or creating transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate, or a custom one built on `canvas.animate`/`filters.animate`), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
 ---
 
 # Pixi'VN Canvas
@@ -42,14 +42,14 @@ this skill is about the underlying rendering primitives.
   normally done for you by `Game.init(...)` from the core package — see `pixi-vn`).
 - **Elements are tracked by alias, not by variable** ([docs](https://pixi-vn.com/start/canvas-alias)).
   `canvas.add(alias, component)` inserts a component (an instance of `Container`, `Sprite`,
-  `ImageSprite`, `ImageContainer`, `Text`, or `VideoSprite`) into `canvas.layers.gameLayer` (a single
+  `ImageSprite`, `ImageContainer`, `Text`, `VideoSprite`, or `AnimatedSprite`) into `canvas.layers.gameLayer` (a single
   PixiJS `Container` that holds all "in-scene" elements) and sets `component.label = alias`. Use
   `canvas.find<T>(alias)` to look elements back up and `canvas.remove(alias)` to remove them.
   Aliases are also how Pixi'VN saves/restores canvas state (see `pixi-vn-storage`), so prefer the
   alias-based helpers below over holding onto raw object references across steps.
 - **Every element class is a save-able extension of a PixiJS class**: `Container` extends
-  `PIXI.Container`, `Sprite`/`ImageSprite`/`VideoSprite` extend `PIXI.Sprite`, `Text` extends
-  `PIXI.Text`. They add a `.memory` getter / `.setMemory()` for serialization, plus convenience
+  `PIXI.Container`, `Sprite`/`ImageSprite`/`VideoSprite` extend `PIXI.Sprite`, `AnimatedSprite`
+  extends `PIXI.AnimatedSprite`, `Text` extends `PIXI.Text`. They add a `.memory` getter / `.setMemory()` for serialization, plus convenience
   properties (`anchor`, `align`, `percentagePosition`, `xAlign`/`yAlign`, `percentageX`/`percentageY`)
   as alternative ways to position an element without doing pixel math.
 - **`Layer`** is just a type alias for a plain `PIXI.Container<ContainerChild>` — there's no
@@ -128,6 +128,43 @@ film.loop = true;
 `addVideo`/`showVideo` mirror `addImage`/`showImage` and return a `VideoSprite` (extends
 `ImageSprite`). Files are also recognized as videos by extension automatically anywhere a
 transition helper accepts an image URL (`.mp4`, `.webm`, `.mov`, etc. — see `checkIfVideo`).
+
+## Playing a frame animation (spritesheet)
+
+```ts
+import { AnimatedSprite, canvas, showAnimatedSprite } from "@drincs/pixi-vn";
+
+// all frames of a spritesheet JSON, in natural order ("frame2" before "frame10")
+await showAnimatedSprite("explosion", "https://pixijs.com/assets/spritesheet/mc.json", {
+    anchor: 0.5,
+    align: 0.5,
+    animationSpeed: 0.5, // plays by default; pass autoPlay: false to start stopped
+});
+// a named animation of the spritesheet (its "animations" field)
+await showAnimatedSprite("hero", { spritesheet: "hero-sheet", animation: "walk" });
+// chosen frames, optionally with a duration in ms each
+await showAnimatedSprite("blink", {
+    spritesheet: "hero-sheet",
+    frames: [{ texture: "eyes_open.png", time: 2000 }, "eyes_closed.png"],
+});
+// per-frame "duration" stored in the JSON (Aseprite / TexturePacker exports)
+await showAnimatedSprite("digits", { spritesheet: "digits", useFrameDurations: true });
+// separate images instead of a spritesheet
+await showAnimatedSprite("flag", { frames: ["flag1", "flag2", "flag3"] });
+
+const hero = canvas.find<AnimatedSprite>("hero");
+hero?.stop(); // play(), gotoAndStop(n), gotoAndPlay(n), loop, animationSpeed, currentFrame
+```
+
+`addAnimatedSprite`/`showAnimatedSprite` mirror `addImage`/`showImage` and return an `AnimatedSprite`.
+The second argument is an `AnimatedSpriteSource` (or a string, shorthand for `{ spritesheet }`); if
+omitted, the alias itself is used as the spritesheet alias. The source holds only aliases and frame
+names, which is what gets saved: on load/go-back the frames are rebuilt from it and the current frame,
+playing state, `loop` and `animationSpeed` are restored. Building one by hand:
+`new AnimatedSprite(options, source)` then `await sprite.load()` (frame/playing state set before
+`load()`, e.g. `setFrame(3, true)`, is applied once loaded). An `AnimatedSprite` created from raw
+`Texture[]` without a `source` renders fine but can't be restored from a save.
+`getSpritesheet(alias)` and `getAnimatedSpriteFrames(source)` are exported for custom components.
 
 ## Transitions
 
@@ -583,9 +620,11 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
 
 ## Gotchas
 
-- **`addImage`/`addVideo`/`addImageCointainer` only construct and register the element — the
+- **`AnimatedSprite`'s `onComplete`/`onFrameChange`/`onLoop` callbacks are not saved**, and the
+  animation runs on PixiJS' shared ticker, so `canvas.pause()` hides it but doesn't freeze its frame.
+- **`addImage`/`addVideo`/`addImageCointainer`/`addAnimatedSprite` only construct and register the element — the
   texture is not loaded/visible until you `await element.load()`.** The `show*` variants
-  (`showImage`, `showVideo`, `showImageContainer`, and the transition helpers) call `load()` for
+  (`showImage`, `showVideo`, `showImageContainer`, `showAnimatedSprite`, and the transition helpers) call `load()` for
   you; prefer them unless you need to prepare an element off-screen first.
 - **`getTexture`/`load()` throw a `PixiError` (`unregistered_asset`)** if the alias can't be
   resolved from the PixiJS `Assets` cache/manifest. See `pixi-vn-assets` for how to register an

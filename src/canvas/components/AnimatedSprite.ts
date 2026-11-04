@@ -34,8 +34,8 @@ import { logger } from "@utils/log-utility";
  * can be saved and rebuilt on restore. You need to use {@link load} to load the frames.
  * This class is used for functions like {@link addAnimatedSprite} and {@link showAnimatedSprite}.
  *
- * The `onComplete`, `onFrameChange` and `onLoop` callbacks are not saved: use {@link onEvent} with a registered
- * event for logic that must survive a save.
+ * The `onComplete`, `onFrameChange` and `onLoop` callbacks are not saved. For logic that must survive a save, use
+ * `.on(...)` with a handler registered with `eventDecorator`.
  * @example
  * ```ts
  * const explosion = new AnimatedSprite(
