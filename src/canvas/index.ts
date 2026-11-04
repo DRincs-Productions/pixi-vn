@@ -24,6 +24,7 @@ export type {
     default as AnchorExtension,
     AnchorExtensionProps,
 } from "./components/AnchorExtension";
+export { default as AnimatedSprite } from "./components/AnimatedSprite";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";
@@ -58,12 +59,23 @@ export {
 } from "./functions/canvas-transition";
 export { drawCanvasErrorHandler } from "./functions/error-handler";
 export { addImageCointainer, showImageContainer } from "./functions/image-container-utility";
+export { addAnimatedSprite, showAnimatedSprite } from "./functions/animated-sprite-utility";
 export { addImage, showImage } from "./functions/image-utility";
 export { showText } from "./functions/text-utility";
+export {
+    DEFAULT_ANIMATED_SPRITE_FRAME_TIME,
+    getAnimatedSpriteFrames,
+    getSpritesheet,
+} from "./functions/spritesheet-utility";
 export { getTexture } from "./functions/texture-utility";
 export { addVideo, showVideo } from "./functions/video-utility";
+export type {
+    AnimatedSpriteFrameSource,
+    AnimatedSpriteSource,
+} from "./interfaces/AnimatedSpriteSource";
 export type { default as AssetMemory } from "./interfaces/AssetMemory";
 export type {
+    AnimatedSpriteOptions,
     ContainerOptions,
     ImageContainerOptions,
     ImageSpriteOptions,
@@ -97,6 +109,7 @@ export type {
     VignettePulseEffectProps,
     WiggleEffectProps,
 } from "./interfaces/effect-props";
+export type { default as AnimatedSpriteMemory } from "./interfaces/memory/AnimatedSpriteMemory";
 export type { default as CanvasBaseItemMemory } from "./interfaces/memory/CanvasBaseItemMemory";
 export type { default as ContainerMemory } from "./interfaces/memory/ContainerMemory";
 export type { default as ImageContainerMemory } from "./interfaces/memory/ImageContainerMemory";
