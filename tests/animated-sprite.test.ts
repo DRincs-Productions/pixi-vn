@@ -231,6 +231,84 @@ describe("AnimatedSprite", () => {
     });
 });
 
+describe("AnimatedSprite playback", () => {
+    /** One 60fps frame: `deltaTime` 1 = 1000/60 ms. */
+    const tick = (sprite: AnimatedSprite, ms: number) =>
+        sprite.update({ deltaTime: (ms * 60) / 1000 } as PIXI.Ticker);
+
+    test("frame durations from the spritesheet drive the frame changes", async () => {
+        const sprite = new AnimatedSprite(
+            { autoUpdate: false },
+            { spritesheet: ASEPRITE_ALIAS, useFrameDurations: true },
+        );
+        await sprite.load();
+        sprite.play();
+        // durations: 50, 100, 150 ms
+        tick(sprite, 40);
+        expect(sprite.currentFrame).toBe(0);
+        tick(sprite, 20);
+        expect(sprite.currentFrame).toBe(1);
+        tick(sprite, 100);
+        expect(sprite.currentFrame).toBe(2);
+    });
+
+    test("animationSpeed is used when there are no durations", async () => {
+        const sprite = new AnimatedSprite(
+            { autoUpdate: false, animationSpeed: 0.5 },
+            { spritesheet: SHEET_ALIAS },
+        );
+        await sprite.load();
+        sprite.play();
+        sprite.update({ deltaTime: 2 } as PIXI.Ticker);
+        expect(sprite.currentFrame).toBe(1);
+    });
+
+    test("a frame set before load() out of range is clamped to the last frame", async () => {
+        const sprite = new AnimatedSprite({ autoUpdate: false }, { spritesheet: SHEET_ALIAS });
+        sprite.setFrame(99, false);
+        await sprite.load();
+        expect(sprite.currentFrame).toBe(3);
+        expect(sprite.playing).toBe(false);
+    });
+
+    test("memory reports the pending frame before load()", () => {
+        const sprite = new AnimatedSprite({ autoUpdate: false }, { spritesheet: SHEET_ALIAS });
+        sprite.setFrame(2, false);
+        expect(sprite.memory.currentFrame).toBe(2);
+    });
+
+    test("load() without a source does nothing", async () => {
+        const sprite = new AnimatedSprite();
+        await sprite.load();
+        expect(sprite.haveEmptyTexture).toBe(true);
+    });
+
+    test("can be created from a Texture[] like PIXI.AnimatedSprite", () => {
+        const sprite = new AnimatedSprite([PIXI.Texture.WHITE, PIXI.Texture.EMPTY]);
+        expect(sprite.totalFrames).toBe(2);
+        expect(sprite.source).toBeUndefined();
+    });
+
+    test("copyProperty copies playback settings but not the source", async () => {
+        const sprite = new AnimatedSprite(
+            { autoUpdate: false },
+            { spritesheet: SHEET_ALIAS, animation: "blink" },
+        );
+        await RegisteredCanvasComponents.copyProperty("AnimatedSprite", sprite, {
+            pixivnId: "AnimatedSprite",
+            source: { spritesheet: ASEPRITE_ALIAS },
+            animationSpeed: 2,
+            loop: false,
+            alpha: 0.4,
+        } as AnimatedSpriteMemory);
+        expect(sprite.source).toEqual({ spritesheet: SHEET_ALIAS, animation: "blink" });
+        expect(sprite.animationSpeed).toBe(2);
+        expect(sprite.loop).toBe(false);
+        expect(sprite.alpha).toBe(0.4);
+        expect(sprite.haveEmptyTexture).toBe(true);
+    });
+});
+
 describe("addAnimatedSprite / showAnimatedSprite", () => {
     function mockCanvas(oldMemory?: AnimatedSpriteMemory) {
         const add = vi.spyOn(canvas, "add").mockImplementation(() => {});

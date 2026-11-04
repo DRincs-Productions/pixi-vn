@@ -1,4 +1,9 @@
-import { AnimatedSprite, canvas, showAnimatedSprite } from "@drincs/pixi-vn/canvas";
+import {
+    addAnimatedSprite,
+    type AnimatedSprite,
+    canvas,
+    showAnimatedSprite,
+} from "@drincs/pixi-vn/canvas";
 import { narration } from "@drincs/pixi-vn/narration";
 import { registerTestLabel } from "./registry";
 
@@ -64,6 +69,28 @@ registerTestLabel(
             );
             narration.dialogue = {
                 text: "The fighter was replaced (same alias) by a 3-frame animation: it keeps its position and anchor.",
+            };
+        },
+        () => {
+            canvas.remove("explosion");
+            addAnimatedSprite("explosion-lazy", MC, {
+                anchor: 0.5,
+                align: { x: 0.2, y: 0.5 },
+                animationSpeed: 0.5,
+            });
+            narration.dialogue = {
+                text: "The explosion was removed and 'explosion-lazy' was added with addAnimatedSprite: nothing must be visible on the left yet.",
+            };
+        },
+        async () => {
+            const lazy = canvas.find<AnimatedSprite>("explosion-lazy");
+            if (lazy) {
+                lazy.setFrame(13, true);
+                await lazy.load();
+            }
+            canvas.find<AnimatedSprite>("digits")?.gotoAndPlay(0);
+            narration.dialogue = {
+                text: "load() was called: the explosion starts from frame 13 and plays. The digits play again from 0. Save, reload and go back here: frames and playing state must match.",
             };
         },
     ],
