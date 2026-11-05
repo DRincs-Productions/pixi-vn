@@ -41,19 +41,20 @@ registerTestLabel(
     [
         async () => {
             canvas.clear();
-            await showAnimatedSprite("explosion", MC, {
+            await showAnimatedSprite(MC, {
                 anchor: 0.5,
                 align: { x: 0.2, y: 0.5 },
                 animationSpeed: 0.5,
             });
-            await showAnimatedSprite("fighter", FIGHTER, {
+            await showAnimatedSprite(FIGHTER, {
                 anchor: 0.5,
                 align: 0.5,
                 animationSpeed: 0.3,
             });
+            // a source without spritesheet uses the alias as spritesheet
             await showAnimatedSprite(
-                "digits",
-                { spritesheet: DIGITS, useFrameDurations: true },
+                DIGITS,
+                { useFrameDurations: true },
                 { anchor: 0.5, align: { x: 0.8, y: 0.5 } },
             );
             narration.dialogue = {
@@ -61,8 +62,8 @@ registerTestLabel(
             };
         },
         () => {
-            canvas.find<AnimatedSprite>("fighter")?.stop();
-            const explosion = canvas.find<AnimatedSprite>("explosion");
+            canvas.find<AnimatedSprite>(FIGHTER)?.stop();
+            const explosion = canvas.find<AnimatedSprite>(MC);
             if (explosion) {
                 explosion.animationSpeed = 0.1;
             }
@@ -71,15 +72,15 @@ registerTestLabel(
             };
         },
         () => {
-            canvas.find<AnimatedSprite>("fighter")?.play();
-            canvas.find<AnimatedSprite>("digits")?.gotoAndStop(7);
+            canvas.find<AnimatedSprite>(FIGHTER)?.play();
+            canvas.find<AnimatedSprite>(DIGITS)?.gotoAndStop(7);
             narration.dialogue = {
                 text: "The fighter plays again, the digits are stopped on 7.",
             };
         },
         async () => {
             await showAnimatedSprite(
-                "fighter",
+                FIGHTER,
                 {
                     spritesheet: FIGHTER,
                     frames: ["rollSequence0000.png", "rollSequence0010.png", "rollSequence0020.png"],
@@ -91,7 +92,7 @@ registerTestLabel(
             };
         },
         () => {
-            canvas.remove("explosion");
+            canvas.remove(MC);
             addAnimatedSprite("explosion-lazy", MC, {
                 anchor: 0.5,
                 align: { x: 0.2, y: 0.5 },
@@ -107,7 +108,7 @@ registerTestLabel(
                 lazy.setFrame(13, true);
                 await lazy.load();
             }
-            canvas.find<AnimatedSprite>("digits")?.gotoAndPlay(0);
+            canvas.find<AnimatedSprite>(DIGITS)?.gotoAndPlay(0);
             narration.dialogue = {
                 text: "load() was called: the explosion starts from frame 13 and plays. The digits play again from 0. Save, reload and go back here: frames and playing state must match.",
             };
