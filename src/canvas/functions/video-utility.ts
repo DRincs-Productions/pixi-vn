@@ -1,9 +1,22 @@
 import { PixiError } from "@drincs/pixi-vn/core";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+import { splitUrlAndOptions } from "@canvas/functions/add-arguments-utility";
 import { canvas, type VideoSpriteOptions } from "..";
 import { CANVAS_VIDEO_ID } from "../../constants";
 import VideoSprite from "../components/VideoSprite";
 
+/**
+ * Add a video in the canvas, using `alias` as the video alias. The video is not shown: use {@link VideoSprite.load}.
+ * @param alias The unique alias of the component, also used as the alias of the asset (it must be registered in the asset cache or manifest).
+ * @param options The options of the video.
+ * @returns This function returns an {@link VideoSprite} that you can use to manipulate the component.
+ * @throws {PixiError} when `alias` is not registered in the asset cache.
+ * @example
+ * ```ts
+ * const c = addVideo("video1", { xAlign: 0.5 });
+ * ```
+ */
+export function addVideo(alias: string, options?: VideoSpriteOptions): VideoSprite;
 /**
  * Add a video in the canvas.
  * Is the same that {@link showVideo}, but the video is not shown.
@@ -26,7 +39,15 @@ export function addVideo(
     alias: string,
     videoUrl?: string,
     options?: VideoSpriteOptions,
+): VideoSprite;
+export function addVideo(
+    alias: string,
+    videoUrlOrOptions?: string | VideoSpriteOptions,
+    opts?: VideoSpriteOptions,
 ): VideoSprite {
+    const args = splitUrlAndOptions(videoUrlOrOptions, opts);
+    let videoUrl = args.url;
+    const options = args.options;
     if (!videoUrl) {
         if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;
@@ -53,6 +74,18 @@ export function addVideo(
 }
 
 /**
+ * Add and show a video in the canvas, using `alias` as the video alias.
+ * @param alias The unique alias of the component, also used as the alias of the asset (it must be registered in the asset cache or manifest).
+ * @param options The options of the video.
+ * @returns This function returns an {@link VideoSprite} that you can use to manipulate the component.
+ * @throws {PixiError} when `alias` is not registered in the asset cache.
+ * @example
+ * ```ts
+ * await showVideo("video1", { xAlign: 0.5 });
+ * ```
+ */
+export async function showVideo(alias: string, options?: VideoSpriteOptions): Promise<VideoSprite>;
+/**
  * Add and show a video in the canvas. This function is a combination of {@link addVideo}.
  * @param alias The unique alias of the video. You can use this alias to refer to this video
  * @param videoUrl The url of the video.
@@ -70,7 +103,15 @@ export async function showVideo(
     alias: string,
     videoUrl?: string,
     options?: VideoSpriteOptions,
+): Promise<VideoSprite>;
+export async function showVideo(
+    alias: string,
+    videoUrlOrOptions?: string | VideoSpriteOptions,
+    opts?: VideoSpriteOptions,
 ): Promise<VideoSprite> {
+    const args = splitUrlAndOptions(videoUrlOrOptions, opts);
+    let videoUrl = args.url;
+    const options = args.options;
     if (!videoUrl) {
         if (PIXI.Assets.resolver.hasKey(alias)) {
             videoUrl = alias;

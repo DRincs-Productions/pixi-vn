@@ -342,6 +342,39 @@ describe("addAnimatedSprite / showAnimatedSprite", () => {
         expect(sprite.source).toEqual({ spritesheet: SHEET_ALIAS });
     });
 
+    test("(alias, options) uses the alias as spritesheet", () => {
+        mockCanvas();
+        vi.spyOn(PIXI.Assets.resolver, "hasKey").mockReturnValue(true);
+        const sprite = addAnimatedSprite(SHEET_ALIAS, { animationSpeed: 0.3, loop: false });
+        expect(sprite.source).toEqual({ spritesheet: SHEET_ALIAS });
+        expect(sprite.animationSpeed).toBe(0.3);
+        expect(sprite.loop).toBe(false);
+    });
+
+    test("a source without spritesheet and frames uses the alias as spritesheet", () => {
+        mockCanvas();
+        vi.spyOn(PIXI.Assets.resolver, "hasKey").mockReturnValue(true);
+        const sprite = addAnimatedSprite(SHEET_ALIAS, { animation: "blink" }, { loop: false });
+        expect(sprite.source).toEqual({ spritesheet: SHEET_ALIAS, animation: "blink" });
+        expect(sprite.loop).toBe(false);
+    });
+
+    test("(alias, undefined, options) uses the alias as spritesheet", () => {
+        mockCanvas();
+        vi.spyOn(PIXI.Assets.resolver, "hasKey").mockReturnValue(true);
+        const sprite = addAnimatedSprite(SHEET_ALIAS, undefined, { animationSpeed: 2 });
+        expect(sprite.source).toEqual({ spritesheet: SHEET_ALIAS });
+        expect(sprite.animationSpeed).toBe(2);
+    });
+
+    test("showAnimatedSprite(alias, options) loads the alias spritesheet", async () => {
+        mockCanvas();
+        vi.spyOn(PIXI.Assets.resolver, "hasKey").mockReturnValue(true);
+        const sprite = await showAnimatedSprite(SHEET_ALIAS, { autoPlay: false });
+        expect(sprite.totalFrames).toBe(4);
+        expect(sprite.playing).toBe(false);
+    });
+
     test("throws when no source is passed and the alias is not registered", () => {
         mockCanvas();
         vi.spyOn(PIXI.Assets.resolver, "hasKey").mockReturnValue(false);
