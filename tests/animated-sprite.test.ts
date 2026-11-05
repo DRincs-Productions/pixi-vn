@@ -1,3 +1,4 @@
+import type { FrameObject, Spritesheet, Texture, Ticker } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { afterEach, beforeAll, describe, expect, test, vi } from "vitest";
 import {
@@ -46,7 +47,7 @@ async function registerSheet(alias: string, data: any) {
     return sheet;
 }
 
-let sheet: PIXI.Spritesheet;
+let sheet: Spritesheet;
 
 beforeAll(async () => {
     sheet = await registerSheet(SHEET_ALIAS, createSheetData(FRAME_NAMES));
@@ -72,7 +73,7 @@ describe("getSpritesheet", () => {
 
 describe("getAnimatedSpriteFrames", () => {
     test("uses all frames in natural order when only the spritesheet is set", async () => {
-        const frames = (await getAnimatedSpriteFrames({ spritesheet: SHEET_ALIAS })) as PIXI.Texture[];
+        const frames = (await getAnimatedSpriteFrames({ spritesheet: SHEET_ALIAS })) as Texture[];
         expect(frames).toEqual([
             sheet.textures["frame 1.png"],
             sheet.textures["frame 2.png"],
@@ -107,7 +108,7 @@ describe("getAnimatedSpriteFrames", () => {
         const frames = (await getAnimatedSpriteFrames({
             spritesheet: ASEPRITE_ALIAS,
             useFrameDurations: true,
-        })) as PIXI.FrameObject[];
+        })) as FrameObject[];
         expect(frames.map((f) => f.time)).toEqual([50, 100, 150]);
     });
 
@@ -116,7 +117,7 @@ describe("getAnimatedSpriteFrames", () => {
             spritesheet: SHEET_ALIAS,
             animation: "blink",
             useFrameDurations: true,
-        })) as PIXI.FrameObject[];
+        })) as FrameObject[];
         expect(frames.map((f) => f.time)).toEqual([
             DEFAULT_ANIMATED_SPRITE_FRAME_TIME,
             DEFAULT_ANIMATED_SPRITE_FRAME_TIME,
@@ -235,7 +236,7 @@ describe("AnimatedSprite", () => {
 describe("AnimatedSprite playback", () => {
     /** One 60fps frame: `deltaTime` 1 = 1000/60 ms. */
     const tick = (sprite: AnimatedSprite, ms: number) =>
-        sprite.update({ deltaTime: (ms * 60) / 1000 } as PIXI.Ticker);
+        sprite.update({ deltaTime: (ms * 60) / 1000 } as Ticker);
 
     test("frame durations from the spritesheet drive the frame changes", async () => {
         const sprite = new AnimatedSprite(
@@ -260,7 +261,7 @@ describe("AnimatedSprite playback", () => {
         );
         await sprite.load();
         sprite.play();
-        sprite.update({ deltaTime: 2 } as PIXI.Ticker);
+        sprite.update({ deltaTime: 2 } as Ticker);
         expect(sprite.currentFrame).toBe(1);
     });
 
@@ -311,7 +312,7 @@ describe("AnimatedSprite playback", () => {
 
 describe("AnimatedSprite events", () => {
     const tick = (sprite: AnimatedSprite, deltaTime = 1) =>
-        sprite.update({ deltaTime } as PIXI.Ticker);
+        sprite.update({ deltaTime } as Ticker);
 
     test("emits complete, loop and frameChange", async () => {
         const sprite = new AnimatedSprite(
@@ -322,12 +323,12 @@ describe("AnimatedSprite events", () => {
         const frames: number[] = [];
         const loop = vi.fn();
         const complete = vi.fn();
-        sprite.on("frameChange" as any, (frame: number, component: AnimatedSprite) => {
+        sprite.on("frameChange", (frame: number, component: AnimatedSprite) => {
             frames.push(frame);
             expect(component).toBe(sprite);
         });
-        sprite.on("loop" as any, loop);
-        sprite.on("complete" as any, complete);
+        sprite.on("loop", loop);
+        sprite.on("complete", complete);
         sprite.play();
         tick(sprite); // frame 1
         tick(sprite); // back to frame 0 -> loop
@@ -361,8 +362,8 @@ describe("AnimatedSprite events", () => {
             { spritesheet: SHEET_ALIAS, animation: "blink" },
         );
         await sprite.load();
-        sprite.on("complete" as any, handler);
-        sprite.on("frameChange" as any, handler);
+        sprite.on("complete", handler);
+        sprite.on("frameChange", handler);
         sprite.gotoAndStop(1);
         const memory = JSON.parse(JSON.stringify(sprite.memory)) as AnimatedSpriteMemory;
         expect(memory.onEvents).toEqual({

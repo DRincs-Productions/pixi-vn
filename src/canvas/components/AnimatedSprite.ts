@@ -281,6 +281,18 @@ export default class AnimatedSprite
     /** ListenerExtension */
 
     readonly onEventsHandlers: OnEventsHandlers = {};
+    /**
+     * Add a listener for the `"complete"` or `"loop"` animation event. Register the listener with `eventDecorator` to save it.
+     */
+    override on(event: "complete" | "loop", fn: (component: this) => void, context?: any): this;
+    /**
+     * Add a listener for the `"frameChange"` animation event. Register the listener with `eventDecorator` to save it.
+     */
+    override on(
+        event: "frameChange",
+        fn: (currentFrame: number, component: this) => void,
+        context?: any,
+    ): this;
     override on<
         T extends
             | keyof ContainerEvents<ContainerChild>
@@ -300,10 +312,11 @@ export default class AnimatedSprite
             ]
         ) => void,
         context?: any,
-    ): this {
+    ): this;
+    override on(event: any, fn: (...args: any[]) => void, context?: any): this {
         addListenerHandler(event, this, fn);
 
-        return super.on<T>(event, (...e) => fn(...e, this), context);
+        return super.on(event, (...e: any[]) => fn(...e, this), context);
     }
 
     /** AdditionalPositionsExtension */
