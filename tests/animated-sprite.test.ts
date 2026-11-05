@@ -342,16 +342,13 @@ describe("AnimatedSprite events", () => {
         expect(sprite.playing).toBe(false);
     });
 
-    test("callbacks passed in the options are still called", async () => {
-        const onFrameChange = vi.fn();
-        const sprite = new AnimatedSprite(
-            { autoUpdate: false, onFrameChange },
-            { spritesheet: SHEET_ALIAS },
-        );
-        await sprite.load();
-        sprite.play();
-        tick(sprite);
-        expect(onFrameChange).toHaveBeenCalledWith(1);
+    test("onComplete, onFrameChange and onLoop are not accepted as options", () => {
+        // @ts-expect-error the callbacks can't be saved: use the events
+        new AnimatedSprite({ onComplete: () => {} });
+        // @ts-expect-error the callbacks can't be saved: use the events
+        new AnimatedSprite({ onFrameChange: () => {} });
+        // @ts-expect-error the callbacks can't be saved: use the events
+        new AnimatedSprite({ onLoop: () => {} });
     });
 
     test("a registered listener is saved and restored, and not called during the restore", async () => {

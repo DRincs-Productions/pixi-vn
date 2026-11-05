@@ -44,7 +44,7 @@ export type AnimatedSpriteEventType = "complete" | "loop" | "frameChange";
  * can be saved and rebuilt on restore. You need to use {@link load} to load the frames.
  * This class is used for functions like {@link addAnimatedSprite} and {@link showAnimatedSprite}.
  *
- * The `onComplete`, `onFrameChange` and `onLoop` callbacks are not saved. For logic that must survive a save, listen to the
+ * The `onComplete`, `onFrameChange` and `onLoop` callbacks can't be passed in the options, because they can't be saved. Listen to the
  * `"complete"`, `"frameChange"` and `"loop"` events (see {@link AnimatedSpriteEventType}) with `.on(...)` and a handler
  * registered with `eventDecorator`:
  * ```ts
@@ -97,19 +97,10 @@ export default class AnimatedSprite
         });
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_ANIMATED_SPRITE_ID;
         // Turn the PixiJS callbacks into events, so they can be listened with `.on(...)` and saved
-        const { onComplete, onFrameChange, onLoop } = options || {};
-        this.onComplete = () => {
-            this.emitAnimationEvent("complete");
-            onComplete?.();
-        };
-        this.onLoop = () => {
-            this.emitAnimationEvent("loop");
-            onLoop?.();
-        };
-        this.onFrameChange = (currentFrame: number) => {
+        this.onComplete = () => this.emitAnimationEvent("complete");
+        this.onLoop = () => this.emitAnimationEvent("loop");
+        this.onFrameChange = (currentFrame: number) =>
             this.emitAnimationEvent("frameChange", currentFrame);
-            onFrameChange?.(currentFrame);
-        };
         if (source) {
             this._source = source;
         }

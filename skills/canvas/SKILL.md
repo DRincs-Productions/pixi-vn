@@ -657,8 +657,9 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
 
 ## Gotchas
 
-- **`AnimatedSprite`'s `onComplete`/`onFrameChange`/`onLoop` callbacks are not saved** (use the
-  `"complete"`/`"loop"`/`"frameChange"` events with `@eventDecorator()` instead), and the
+- **`AnimatedSprite` doesn't accept `onComplete`/`onFrameChange`/`onLoop` in its options** (like `Sprite`
+  doesn't accept `on`): callbacks can't be saved, so use the `"complete"`/`"loop"`/`"frameChange"` events
+  with `@eventDecorator()` instead, and the
   animation runs on PixiJS' shared ticker, so `canvas.pause()` hides it but doesn't freeze its frame.
 - **`addImage`/`addVideo`/`addImageCointainer`/`addAnimatedSprite` only construct and register the element — the
   texture is not loaded/visible until you `await element.load()`.** The `show*` variants
