@@ -8,6 +8,7 @@ import {
     getAnimatedSpriteFrames,
     getSpritesheet,
     RegisteredCanvasComponents,
+    RegisteredEvents,
     showAnimatedSprite,
 } from "../src/canvas";
 import type { AnimatedSpriteMemory } from "../src/canvas";
@@ -305,6 +306,81 @@ describe("AnimatedSprite playback", () => {
         expect(sprite.loop).toBe(false);
         expect(sprite.alpha).toBe(0.4);
         expect(sprite.haveEmptyTexture).toBe(true);
+    });
+});
+
+describe("AnimatedSprite events", () => {
+    const tick = (sprite: AnimatedSprite, deltaTime = 1) =>
+        sprite.update({ deltaTime } as PIXI.Ticker);
+
+    test("emits complete, loop and frameChange", async () => {
+        const sprite = new AnimatedSprite(
+            { autoUpdate: false, loop: true },
+            { spritesheet: SHEET_ALIAS, animation: "blink" },
+        );
+        await sprite.load();
+        const frames: number[] = [];
+        const loop = vi.fn();
+        const complete = vi.fn();
+        sprite.on("frameChange" as any, (frame: number, component: AnimatedSprite) => {
+            frames.push(frame);
+            expect(component).toBe(sprite);
+        });
+        sprite.on("loop" as any, loop);
+        sprite.on("complete" as any, complete);
+        sprite.play();
+        tick(sprite); // frame 1
+        tick(sprite); // back to frame 0 -> loop
+        expect(frames).toEqual([1, 0]);
+        expect(loop).toHaveBeenCalledWith(sprite);
+
+        sprite.loop = false;
+        tick(sprite); // frame 1
+        tick(sprite); // end -> complete
+        expect(complete).toHaveBeenCalledWith(sprite);
+        expect(sprite.playing).toBe(false);
+    });
+
+    test("callbacks passed in the options are still called", async () => {
+        const onFrameChange = vi.fn();
+        const sprite = new AnimatedSprite(
+            { autoUpdate: false, onFrameChange },
+            { spritesheet: SHEET_ALIAS },
+        );
+        await sprite.load();
+        sprite.play();
+        tick(sprite);
+        expect(onFrameChange).toHaveBeenCalledWith(1);
+    });
+
+    test("a registered listener is saved and restored, and not called during the restore", async () => {
+        const handler = vi.fn();
+        RegisteredEvents.add(handler, "animated-sprite-test-complete");
+        const sprite = new AnimatedSprite(
+            { autoUpdate: false, loop: false },
+            { spritesheet: SHEET_ALIAS, animation: "blink" },
+        );
+        await sprite.load();
+        sprite.on("complete" as any, handler);
+        sprite.on("frameChange" as any, handler);
+        sprite.gotoAndStop(1);
+        const memory = JSON.parse(JSON.stringify(sprite.memory)) as AnimatedSpriteMemory;
+        expect(memory.onEvents).toEqual({
+            complete: "animated-sprite-test-complete",
+            frameChange: "animated-sprite-test-complete",
+        });
+
+        handler.mockClear();
+        const restored = new AnimatedSprite();
+        await restored.setMemory(memory);
+        expect(restored.currentFrame).toBe(1);
+        expect(handler).not.toHaveBeenCalled();
+
+        restored.gotoAndPlay(0);
+        tick(restored); // frame 1 -> frameChange
+        tick(restored); // end -> complete
+        expect(handler).toHaveBeenCalledWith(1, restored);
+        expect(handler).toHaveBeenCalledWith(restored);
     });
 });
 

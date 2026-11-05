@@ -25,6 +25,7 @@ export type {
     AnchorExtensionProps,
 } from "./components/AnchorExtension";
 export { default as AnimatedSprite } from "./components/AnimatedSprite";
+export type { AnimatedSpriteEventType } from "./components/AnimatedSprite";
 export { default as Container } from "./components/Container";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";

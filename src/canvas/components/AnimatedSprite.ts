@@ -26,6 +26,17 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { logger } from "@utils/log-utility";
 
 /**
+ * The events emitted by an {@link AnimatedSprite}, in addition to the usual PixiJS container events:
+ * - `"complete"`: the animation reached its last frame and stopped (only with `loop: false`). The listener receives `(component)`.
+ * - `"loop"`: the animation restarted from the first frame (only with `loop: true`). The listener receives `(component)`.
+ * - `"frameChange"`: the current frame changed. The listener receives `(currentFrame, component)`.
+ *
+ * Listeners added with `.on(...)` are saved if they are registered with `eventDecorator`.
+ * They are not called while the frames are loaded or a save is restored.
+ */
+export type AnimatedSpriteEventType = "complete" | "loop" | "frameChange";
+
+/**
  * This class is a extension of the [PIXI.AnimatedSprite class](https://pixijs.com/8.x/examples/sprite/animated-sprite-jet),
  * it has the same properties and methods, but it has the ability to be saved and loaded by the Pixi’VN library.
  *
@@ -33,8 +44,18 @@ import { logger } from "@utils/log-utility";
  * can be saved and rebuilt on restore. You need to use {@link load} to load the frames.
  * This class is used for functions like {@link addAnimatedSprite} and {@link showAnimatedSprite}.
  *
- * The `onComplete`, `onFrameChange` and `onLoop` callbacks are not saved. For logic that must survive a save, use
- * `.on(...)` with a handler registered with `eventDecorator`.
+ * The `onComplete`, `onFrameChange` and `onLoop` callbacks are not saved. For logic that must survive a save, listen to the
+ * `"complete"`, `"frameChange"` and `"loop"` events (see {@link AnimatedSpriteEventType}) with `.on(...)` and a handler
+ * registered with `eventDecorator`:
+ * ```ts
+ * class Events {
+ *     \@eventDecorator()
+ *     static removeExplosion(component: AnimatedSprite) {
+ *         canvas.remove(component.label);
+ *     }
+ * }
+ * explosion.on("complete", Events.removeExplosion);
+ * ```
  * @example
  * ```ts
  * const explosion = new AnimatedSprite(
@@ -68,6 +89,20 @@ export default class AnimatedSprite
             textures: [PIXI.Texture.EMPTY],
         });
         this.pixivnId = this.constructor.prototype.pixivnId || CANVAS_ANIMATED_SPRITE_ID;
+        // Turn the PixiJS callbacks into events, so they can be listened with `.on(...)` and saved
+        const { onComplete, onFrameChange, onLoop } = options || {};
+        this.onComplete = () => {
+            this.emitAnimationEvent("complete");
+            onComplete?.();
+        };
+        this.onLoop = () => {
+            this.emitAnimationEvent("loop");
+            onLoop?.();
+        };
+        this.onFrameChange = (currentFrame: number) => {
+            this.emitAnimationEvent("frameChange", currentFrame);
+            onFrameChange?.(currentFrame);
+        };
         if (source) {
             this._source = source;
         }
@@ -79,6 +114,30 @@ export default class AnimatedSprite
         }
     }
     readonly pixivnId: string = CANVAS_ANIMATED_SPRITE_ID;
+    /**
+     * When `true`, the animation events are not emitted. It is used while the frames are loaded and while
+     * the memory is restored, so that restoring a save doesn't run the listeners again.
+     */
+    private _silentEvents = false;
+    private emitAnimationEvent(event: AnimatedSpriteEventType, ...args: unknown[]) {
+        if (this._silentEvents) {
+            return;
+        }
+        this.emit(event as any, ...(args as any[]));
+    }
+    /**
+     * Run `fn` without emitting animation events.
+     * @internal
+     */
+    async withSilentEvents<T>(fn: () => Promise<T> | T): Promise<T> {
+        const previous = this._silentEvents;
+        this._silentEvents = true;
+        try {
+            return await fn();
+        } finally {
+            this._silentEvents = previous;
+        }
+    }
     private _source?: AnimatedSpriteSource;
     /**
      * The description of the frames, used by {@link load} and saved in the memory.
@@ -107,7 +166,7 @@ export default class AnimatedSprite
         };
     }
     async setMemory(value: AnimatedSpriteMemory): Promise<void> {
-        await setMemoryAnimatedSprite(this, value);
+        await this.withSilentEvents(() => setMemoryAnimatedSprite(this, value));
         this.reloadPosition();
     }
     /**
@@ -154,16 +213,18 @@ export default class AnimatedSprite
         this._loadIsStarted = true;
         try {
             const frames = await getAnimatedSpriteFrames(this._source);
-            const wasPlaying = this.playing;
-            const frame = this._pendingFrame ?? this.currentFrame;
-            this._pendingFrame = undefined;
-            this.textures = frames;
-            const safeFrame = Math.min(Math.max(0, frame), this.totalFrames - 1);
-            if (wasPlaying) {
-                this.gotoAndPlay(safeFrame);
-            } else {
-                this.gotoAndStop(safeFrame);
-            }
+            await this.withSilentEvents(() => {
+                const wasPlaying = this.playing;
+                const frame = this._pendingFrame ?? this.currentFrame;
+                this._pendingFrame = undefined;
+                this.textures = frames;
+                const safeFrame = Math.min(Math.max(0, frame), this.totalFrames - 1);
+                if (wasPlaying) {
+                    this.gotoAndPlay(safeFrame);
+                } else {
+                    this.gotoAndStop(safeFrame);
+                }
+            });
             this.reloadPosition();
         } catch (e) {
             logger.error("Error into AnimatedSprite.load()", e);
