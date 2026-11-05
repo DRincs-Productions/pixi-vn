@@ -73,6 +73,10 @@ await bunny1.load();
 
 // showImage() is addImage() + load() in one call
 const bunny2 = await showImage("bunny2");
+// options can be passed directly as 2nd argument: the alias is also the asset alias
+const bg = await showImage("bg", { xAlign: 0.5, zIndex: -1 });
+// a different asset than the alias: (alias, assetAliasOrUrl, options)
+const bunny3 = await showImage("bunny3", "bunny2", { xAlign: 1 });
 bunny2.anchor = 0.5;
 bunny2.x = canvas.width / 2;
 bunny2.y = canvas.height / 2;
@@ -85,7 +89,9 @@ Always pass a manifest **alias** (as above), not a raw URL/path — see `pixi-vn
 assets get registered (local vs. online) and loaded. `addImage`/`showImage` do also accept a raw
 URL as a second argument for quick prototyping, but that couples code to a specific file location;
 `addImage`/`showImage` throw a `PixiError` if neither a URL nor a registered alias resolves. Both
-return an `ImageSprite`.
+return an `ImageSprite`. Since 1.9.9 `addImage`/`showImage`, `addVideo`/`showVideo` and
+`addAnimatedSprite`/`showAnimatedSprite` accept both `(alias, options?)` and `(alias, url?, options?)`;
+passing `undefined` as url also means "use the alias".
 
 For a composite image made of multiple stacked textures (e.g. a character body + outfit + face),
 use `ImageContainer` via `addImageCointainer` / `showImageContainer` (note the exported spelling
@@ -152,8 +158,32 @@ await showAnimatedSprite("digits", { spritesheet: "digits", useFrameDurations: t
 // separate images instead of a spritesheet
 await showAnimatedSprite("flag", { frames: ["flag1", "flag2", "flag3"] });
 
+// (alias, options): the alias is the spritesheet; { animation } alone also uses the alias as spritesheet
+await showAnimatedSprite("fighter", { align: 0.5, animationSpeed: 0.4 });
+await showAnimatedSprite("hero-sheet", { animation: "run" }, { align: 0.5 });
+
 const hero = canvas.find<AnimatedSprite>("hero");
 hero?.stop(); // play(), gotoAndStop(n), gotoAndPlay(n), loop, animationSpeed, currentFrame
+```
+
+React to the animation with the `"complete"` (end of a non-looping animation), `"loop"` and
+`"frameChange"` events, not with the PixiJS `onComplete`/`onLoop`/`onFrameChange` callbacks: events
+registered with `@eventDecorator()` are saved and restored like pointer events, callbacks are not.
+Listeners receive `(component)`, or `(currentFrame, component)` for `"frameChange"`, and are not
+called while frames load or a save is restored.
+
+```ts
+import { AnimatedSprite, canvas, eventDecorator, showAnimatedSprite } from "@drincs/pixi-vn";
+
+export class ExplosionEvents {
+    @eventDecorator()
+    static remove(component: AnimatedSprite) {
+        canvas.remove(component.label);
+    }
+}
+
+const explosion = await showAnimatedSprite("explosion", { loop: false });
+explosion.on("complete", ExplosionEvents.remove);
 ```
 
 `addAnimatedSprite`/`showAnimatedSprite` mirror `addImage`/`showImage` and return an `AnimatedSprite`.
@@ -621,7 +651,8 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
 
 ## Gotchas
 
-- **`AnimatedSprite`'s `onComplete`/`onFrameChange`/`onLoop` callbacks are not saved**, and the
+- **`AnimatedSprite`'s `onComplete`/`onFrameChange`/`onLoop` callbacks are not saved** (use the
+  `"complete"`/`"loop"`/`"frameChange"` events with `@eventDecorator()` instead), and the
   animation runs on PixiJS' shared ticker, so `canvas.pause()` hides it but doesn't freeze its frame.
 - **`addImage`/`addVideo`/`addImageCointainer`/`addAnimatedSprite` only construct and register the element — the
   texture is not loaded/visible until you `await element.load()`.** The `show*` variants
