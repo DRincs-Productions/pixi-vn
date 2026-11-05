@@ -18,7 +18,7 @@ on:
         required: false
         default: "false"
 
-run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
+run-name: ${{ github.workflow }} for ${{ github.ref_name }} by @${{ github.actor }}
 
 jobs:
   test:
@@ -89,12 +89,51 @@ jobs:
           - **Tone.js**: ${{ steps.versions.outputs.tone }}
           - **Motion**: ${{ steps.versions.outputs.motion }}
 
-  deploy-docs:
-    name: Deploy Docs to Wiki
+  check-wiki-write-access:
+    name: Check Wiki write access
     runs-on: ubuntu-latest
     if: |
       github.event_name == 'push' ||
       github.event.inputs.run_deploy_docs == 'true'
+    permissions:
+      contents: write
+    outputs:
+      writable: ${{ steps.probe.outputs.writable }}
+    steps:
+      - name: Probe Wiki write access
+        id: probe
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          set -euo pipefail
+          if ! git clone --quiet "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki-probe; then
+            echo "writable=false" >> "$GITHUB_OUTPUT"
+            echo "Wiki is unavailable to this workflow; documentation deployment will be skipped."
+            exit 0
+          fi
+          cd wiki-probe
+          branch="$(git branch --show-current)"
+          if [ -z "$branch" ]; then
+            echo "writable=false" >> "$GITHUB_OUTPUT"
+            echo "Could not determine the Wiki branch; documentation deployment will be skipped."
+            exit 0
+          fi
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git commit --allow-empty -m "Probe Wiki write access"
+          if git push --dry-run origin "HEAD:$branch" >/dev/null 2>&1; then
+            echo "writable=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "writable=false" >> "$GITHUB_OUTPUT"
+            echo "Workflow token cannot write to the Wiki; documentation deployment will be skipped."
+          fi
+
+  deploy-docs:
+    name: Deploy Docs to Wiki
+    needs: check-wiki-write-access
+    runs-on: ubuntu-latest
+    if: needs.check-wiki-write-access.outputs.writable == 'true'
     permissions:
       contents: write
     steps:
@@ -112,9 +151,14 @@ jobs:
       - name: Generate docs
         run: npm run docs
 
+      - name: Check generated docs
+        run: test -n "$(find doc -type f -print -quit)"
+
       - name: Clone Wiki
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          git clone https://x-access-token:${{ secrets.GITHUB_TOKEN }}@github.com/${{ github.repository }}.wiki.git wiki
+          git clone "https://x-access-token:${GITHUB_TOKEN}@github.com/${GITHUB_REPOSITORY}.wiki.git" wiki
 
       - name: Clean Wiki (safe)
         run: |
