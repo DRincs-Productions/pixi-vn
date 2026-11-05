@@ -21,8 +21,8 @@ on:
 run-name: Deploy to ${{ inputs.deploy_target }} by @${{ github.actor }}
 
 jobs:
-  build:
-    name: Build
+  test:
+    name: Test supported Node.js versions
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     strategy:
@@ -40,7 +40,7 @@ jobs:
 
   publish-npm:
     name: Publish to NPM
-    needs: [build]
+    needs: [test]
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     permissions:
