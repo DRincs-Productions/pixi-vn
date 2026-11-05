@@ -53,7 +53,7 @@ export default function App() {
 
     const api = getTestingApi();
 
-    // Every registered label already shows up as a choice on the "sandbox-start" screen (see
+    // Every registered label already shows up as a choice on the "playground-start" screen (see
     // labels/start.ts) - only render the generic choices list below when it's showing something
     // *other* than that same menu, to avoid listing every label twice.
     const showChoices = Boolean(state?.choices?.length) && state?.currentLabelId !== START_LABEL_ID;
@@ -94,7 +94,7 @@ export default function App() {
                 boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
             }}
         >
-            <h1 style={{ margin: "0 0 12px", fontSize: 18 }}>Pixi&apos;VN sandbox</h1>
+            <h1 style={{ margin: "0 0 12px", fontSize: 18 }}>Pixi&apos;VN playground</h1>
             <button
                 disabled={!api || busy}
                 onClick={() => run(() => api?.start(START_LABEL_ID))}

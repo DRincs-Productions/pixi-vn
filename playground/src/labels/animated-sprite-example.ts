@@ -11,9 +11,9 @@ import { registerTestLabel } from "./registry";
 
 // Spritesheet aliases. They are registered when the module is imported (not inside a step), so they also
 // resolve when a save is loaded or the player goes back without running the first step again.
-const MC = "sandbox-mc";
-const FIGHTER = "sandbox-fighter";
-const DIGITS = "sandbox-digits";
+const MC = "playground-mc";
+const FIGHTER = "playground-fighter";
+const DIGITS = "playground-digits";
 for (const [alias, src] of [
     [MC, "https://pixijs.com/assets/spritesheet/mc.json"],
     [FIGHTER, "https://pixijs.com/assets/spritesheet/fighter.json"],
@@ -28,7 +28,7 @@ for (const [alias, src] of [
 function removeOnComplete(component: AnimatedSprite) {
     canvas.remove(component.label);
 }
-RegisteredEvents.add(removeOnComplete, "sandbox-animated-sprite-remove-on-complete");
+RegisteredEvents.add(removeOnComplete, "playground-animated-sprite-remove-on-complete");
 
 /**
  * Exercises AnimatedSprite with real spritesheets and real ticker timing: frame order (natural sort),

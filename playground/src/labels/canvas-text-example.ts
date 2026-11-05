@@ -3,7 +3,7 @@ import { narration } from "@drincs/pixi-vn/narration";
 import { registerTestLabel } from "./registry";
 
 /**
- * Example sandbox test label — a template for testing anything that vitest can't cover
+ * Example playground test label — a template for testing anything that vitest can't cover
  * (real canvas rendering here; the same pattern works for sound/tickers/animations).
  * Copy this file when adding a new one: import `registerTestLabel`, register a unique id,
  * and use it to drive/inspect the feature manually or via `window.pixiVN` (Game.testing).
@@ -15,11 +15,11 @@ registerTestLabel(
         (props) => {
             canvas.clear();
 
-            showText("sandbox-text", "Hello from the sandbox!", {
+            showText("playground-text", "Hello from the playground!", {
                 anchor: 0.5,
                 x: canvas.width / 2,
                 y: canvas.height / 2,
-                // PixiJS' default text fill is black, invisible against the sandbox's black canvas
+                // PixiJS' default text fill is black, invisible against the playground's black canvas
                 // background - set explicitly so the text is actually visible.
                 style: { fill: 0xffffff },
             });

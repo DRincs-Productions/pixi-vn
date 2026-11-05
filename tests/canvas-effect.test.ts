@@ -230,7 +230,7 @@ describe("glitchEffect", () => {
         // displacement texture - jsdom doesn't implement getContext("2d") (see the same note in
         // tests/filters-round-trip.test.ts), so a minimal fake context is stubbed in just for this
         // test rather than excluding glitchEffect from Vitest entirely; the real drawing is still only
-        // meaningfully verified in the sandbox (CLAUDE.md §3).
+        // meaningfully verified in the playground (CLAUDE.md §3).
         vi.spyOn(HTMLCanvasElement.prototype, "getContext").mockReturnValue({
             clearRect: () => {},
             fillRect: () => {},

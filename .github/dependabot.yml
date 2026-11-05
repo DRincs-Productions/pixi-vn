@@ -3,7 +3,7 @@ updates:
   - package-ecosystem: "npm"
     directory: "/"
     exclude-paths:
-      - "sandbox/**"
+      - "playground/**"
     schedule:
       interval: "weekly"
   - package-ecosystem: "github-actions"

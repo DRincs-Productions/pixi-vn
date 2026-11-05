@@ -1,5 +1,5 @@
 // Importing each label module registers it (newLabel/registerTestLabel run at import time) —
-// add a line here for every new sandbox test label file.
+// add a line here for every new playground test label file.
 import "./animated-sprite-example";
 import "./blur-transition-example";
 import "./canvas-text-example";

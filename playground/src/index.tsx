@@ -54,14 +54,14 @@ Game.init(body, {}).then(async () => {
     reactRoot.render(<App />);
 
     // Exposes window.pixiVN so a browser-driven test session (see the `pixi-vn-testing` skill)
-    // can drive/inspect the sandbox. Never enable this in a production build.
+    // can drive/inspect the playground. Never enable this in a production build.
     if (process.env.NODE_ENV !== "production") {
         Game.testing.enable();
         (window as any).pixiVN.canvas = canvas;
         (window as any).pixiVN.sound = sound;
     }
 
-    // Boots the sandbox menu (sandbox/src/labels/start.ts), which lists every registered
+    // Boots the playground menu (playground/src/labels/start.ts), which lists every registered
     // test label as a choice.
     await Game.start(START_LABEL_ID, {});
 });

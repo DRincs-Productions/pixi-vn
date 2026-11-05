@@ -10,7 +10,7 @@
     "dist"
   ],
   "workspaces": [
-    "sandbox"
+    "playground"
   ],
   "scripts": {
     "dev": "tsup --watch",
@@ -23,7 +23,7 @@
     "test:cdn": "npm run build && node scripts/test-pencode-local.mjs",
     "docs": "typedoc",
     "skills:validate": "node scripts/validate-skills.mjs",
-    "sandbox": "npm run build && node scripts/sync-sandbox.mjs && npm run start --workspace=sandbox"
+    "playground": "npm run build && node scripts/sync-playground.mjs && npm run start --workspace=playground"
   },
   "exports": {
     ".": {

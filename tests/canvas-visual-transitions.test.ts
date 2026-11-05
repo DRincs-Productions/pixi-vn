@@ -315,7 +315,7 @@ describe("fadeComponent: softens the pop-in/pop-out for blur/flash (default true
     // the same established scope boundary as the rest of this file: they need `swapComponentForEffect`
     // to actually build/register a new component (real asset loading via `canvas.add`), which needs a
     // live canvas registry this test file doesn't set up - see the `blurOut`/`pixelateOut` tests above
-    // for the identical reasoning. Verified in the sandbox instead (see CLAUDE.md §3).
+    // for the identical reasoning. Verified in the playground instead (see CLAUDE.md §3).
 
     test("pixelateOut does not fade the component by default (fadeComponent defaults to false)", () => {
         const target = createSprite();
