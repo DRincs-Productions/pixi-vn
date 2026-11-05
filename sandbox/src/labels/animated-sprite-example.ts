@@ -9,9 +9,20 @@ import {
 import { narration } from "@drincs/pixi-vn/narration";
 import { registerTestLabel } from "./registry";
 
-const MC = "https://pixijs.com/assets/spritesheet/mc.json";
-const FIGHTER = "https://pixijs.com/assets/spritesheet/fighter.json";
-const DIGITS = "https://pixijs.com/assets/spritesheet/0123456789.json";
+// Spritesheet aliases. They are registered when the module is imported (not inside a step), so they also
+// resolve when a save is loaded or the player goes back without running the first step again.
+const MC = "sandbox-mc";
+const FIGHTER = "sandbox-fighter";
+const DIGITS = "sandbox-digits";
+for (const [alias, src] of [
+    [MC, "https://pixijs.com/assets/spritesheet/mc.json"],
+    [FIGHTER, "https://pixijs.com/assets/spritesheet/fighter.json"],
+    [DIGITS, "https://pixijs.com/assets/spritesheet/0123456789.json"],
+]) {
+    if (!Assets.resolver.hasKey(alias)) {
+        Assets.add({ alias, src });
+    }
+}
 
 /** Savable "complete" listener (same as `@eventDecorator()`, registered by hand to avoid decorators here). */
 function removeOnComplete(component: AnimatedSprite) {
@@ -115,12 +126,9 @@ registerTestLabel(
             };
         },
         async () => {
-            // (alias, options) form: the alias is the spritesheet alias
+            // (alias, options) form: the alias of the component is also the spritesheet alias
             canvas.clear();
-            if (!Assets.resolver.hasKey("sandbox-fighter")) {
-                Assets.add({ alias: "sandbox-fighter", src: FIGHTER });
-            }
-            await showAnimatedSprite("sandbox-fighter", { anchor: 0.5, align: 0.5, animationSpeed: 0.4 });
+            await showAnimatedSprite(FIGHTER, { anchor: 0.5, align: 0.5, animationSpeed: 0.4 });
             narration.dialogue = {
                 text: "showAnimatedSprite(alias, options): the fighter is loaded from the spritesheet registered with the same alias.",
             };
