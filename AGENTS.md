@@ -122,6 +122,36 @@ Other languages are welcome in discussions and for translations of the public do
 secondary: never make a non-English version the source of truth, and keep any translation in sync
 with the English original rather than the other way around.
 
+## 5. Codex and Claude implementation workflow
+
+When the agent working on this repository is **Codex**, check whether Claude Code is available and
+usable. If it is, **delegate code implementation to Claude**. Codex remains responsible for directing
+the work, reviewing the result, and running and evaluating the tests. If Claude is unavailable, Codex
+implements the changes itself and follows the same review and testing requirements.
+
+Follow this workflow:
+
+1. **Investigate reuse before delegating implementation.** Inspect the existing code, installed
+   dependencies, and their APIs for functionality that can simplify the solution. Also research
+   relevant libraries available online when they could reduce implementation complexity; verify
+   their current APIs using official documentation. Weigh compatibility, maintenance, license,
+   bundle size, and the modularity and peer dependency requirements in section 1. Do not add a
+   dependency merely because one exists: prefer the simplest suitable solution.
+2. **Codex directs Claude.** Give Claude a concrete scope, the relevant repository conventions,
+   reusable APIs or libraries found during the investigation, expected behavior, and required test
+   coverage. Review its changes and send corrections back to Claude as needed. Delegation does not
+   replace Codex's own judgment or responsibility for the result.
+3. **Review for simplification more than once before running tests.** Codex must perform at least
+   two deliberate review passes: first examine the design for unnecessary abstractions, duplicated
+   logic, and opportunities to reuse existing APIs; then examine the resulting implementation for
+   simpler control flow, clearer types and names, resource cleanup, and unnecessary code or comments.
+   Have Claude apply improvements and review the revised code again before testing. Repeat when
+   material concerns remain; passing tests alone does not establish that a design is good.
+4. **Codex tests and verifies the result.** Run the relevant Vitest tests and other required checks,
+   and use the playground for behavior that requires a real browser, following sections 2 and 3.
+   Direct Claude to fix failures, review the fixes, and rerun the affected checks. Report the final
+   changes, verification results, and any remaining limitations to the user.
+
 ## Related docs
 
 - `CONTRIBUTING.md` — project folder structure, issue/PR process.
