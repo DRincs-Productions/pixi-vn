@@ -17,6 +17,7 @@ import "./push-transition-example";
 import "./split-transition-example";
 import "./start";
 import "./transferred-ticker-position";
+import "./video-events-example";
 import "./wipe-transition-example";
 import "./zoomin-position";
 

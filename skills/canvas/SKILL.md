@@ -135,6 +135,32 @@ film.loop = true;
 `ImageSprite`). Files are also recognized as videos by extension automatically anywhere a
 transition helper accepts an image URL (`.mp4`, `.webm`, `.mov`, etc. — see `checkIfVideo`).
 
+React to the end of a video with the `"ended"` event (the `ended` event of the underlying
+`HTMLVideoElement`). As with `AnimatedSprite` events, a listener registered with `@eventDecorator()`
+is saved and restored; it receives `(component)` and is not called while the video loads or a save
+is restored. The listener follows the video element: replacing the texture (`load()`, `texture = ...`)
+moves it to the new video, and `destroy()` removes it. A looping video (`loop = true`) does not emit
+`"ended"`, because the browser restarts it without firing `ended`.
+
+```ts
+import { canvas, eventDecorator, showVideo, VideoSprite } from "@drincs/pixi-vn";
+
+export class FilmEvents {
+    @eventDecorator()
+    static remove(component: VideoSprite) {
+        canvas.remove(component.label);
+    }
+}
+
+const film = await showVideo("intro-film");
+film.on("ended", FilmEvents.remove);
+```
+
+Custom components can reuse the same mechanism with `EventSuppressor`: emit savable events through
+`suppressor.emit(this, "myEvent", ...args)` and wrap loading/restoring in `suppressor.run(...)`. Only
+the events emitted through the suppressor are silenced (pointer events are not), and nested or
+concurrent `run` calls keep them silenced until the last one finishes, even if one throws.
+
 ## Playing a frame animation (spritesheet)
 
 ```ts

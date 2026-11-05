@@ -1,8 +1,14 @@
 import type CanvasBaseItem from "@canvas/classes/CanvasBaseItem";
 import type AdditionalPositionsExtension from "@canvas/components/AdditionalPositionsExtension";
 import { analizePositionsExtensionProps } from "@canvas/components/AdditionalPositionsExtension";
+import { EventSuppressor } from "@canvas/components/EventSuppressor";
 import type ListenerExtension from "@canvas/components/ListenerExtension";
-import { addListenerHandler, type OnEventsHandlers } from "@canvas/components/ListenerExtension";
+import {
+    addListenerHandler,
+    type ListenerEventArgs,
+    type ListenerEventName,
+    type OnEventsHandlers,
+} from "@canvas/components/ListenerExtension";
 import { setMemorySprite } from "@canvas/components/Sprite";
 import { default as RegisteredCanvasComponents } from "@canvas/decorators/canvas-element-decorator";
 import { getMemorySprite } from "@canvas/functions/canvas-memory-utility";
@@ -13,15 +19,7 @@ import type { AnimatedSpriteOptions } from "@canvas/interfaces/canvas-options";
 import type AnimatedSpriteMemory from "@canvas/interfaces/memory/AnimatedSpriteMemory";
 import { CANVAS_ANIMATED_SPRITE_ID } from "@constants";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import type {
-    ContainerChild,
-    ContainerEvents,
-    EventEmitter,
-    ObservablePoint,
-    PointData,
-    Texture,
-    TextureSource,
-} from "@drincs/pixi-vn/pixi.js";
+import type { ObservablePoint, PointData, Texture, TextureSource } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { logger } from "@utils/log-utility";
 
@@ -112,29 +110,16 @@ export default class AnimatedSprite
         }
     }
     readonly pixivnId: string = CANVAS_ANIMATED_SPRITE_ID;
-    /**
-     * When `true`, the animation events are not emitted. It is used while the frames are loaded and while
-     * the memory is restored, so that restoring a save doesn't run the listeners again.
-     */
-    private _silentEvents = false;
+    private readonly _eventSuppressor = new EventSuppressor();
     private emitAnimationEvent(event: AnimatedSpriteEventType, ...args: unknown[]) {
-        if (this._silentEvents) {
-            return;
-        }
-        this.emit(event as any, ...(args as any[]));
+        this._eventSuppressor.emit(this, event, ...args);
     }
     /**
      * Run `fn` without emitting animation events.
      * @internal
      */
     async withSilentEvents<T>(fn: () => Promise<T> | T): Promise<T> {
-        const previous = this._silentEvents;
-        this._silentEvents = true;
-        try {
-            return await fn();
-        } finally {
-            this._silentEvents = previous;
-        }
+        return this._eventSuppressor.run(fn);
     }
     private _source?: AnimatedSpriteSource;
     /**
@@ -291,24 +276,9 @@ export default class AnimatedSprite
         fn: (currentFrame: number, component: this) => void,
         context?: any,
     ): this;
-    override on<
-        T extends
-            | keyof ContainerEvents<ContainerChild>
-            | keyof { [K: symbol]: any; [K: {} & string]: any },
-    >(
+    override on<T extends ListenerEventName>(
         event: T,
-        fn: (
-            ...args: [
-                ...EventEmitter.ArgumentMap<
-                    ContainerEvents<ContainerChild> & { [K: symbol]: any; [K: {} & string]: any }
-                >[Extract<
-                    T,
-                    | keyof ContainerEvents<ContainerChild>
-                    | keyof { [K: symbol]: any; [K: {} & string]: any }
-                >],
-                typeof this,
-            ]
-        ) => void,
+        fn: (...args: ListenerEventArgs<T, this>) => void,
         context?: any,
     ): this;
     override on(event: any, fn: (...args: any[]) => void, context?: any): this {

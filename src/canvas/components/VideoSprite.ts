@@ -1,4 +1,6 @@
+import { EventSuppressor } from "@canvas/components/EventSuppressor";
 import ImageSprite, { setMemoryImageSprite } from "@canvas/components/ImageSprite";
+import type { ListenerEventArgs, ListenerEventName } from "@canvas/components/ListenerExtension";
 import RegisteredCanvasComponents from "@canvas/decorators/canvas-element-decorator";
 import type { showWithDissolve } from "@canvas/functions/canvas-transition";
 import type { addVideo } from "@canvas/functions/video-utility";
@@ -6,14 +8,65 @@ import type AssetMemory from "@canvas/interfaces/AssetMemory";
 import type { VideoSpriteOptions } from "@canvas/interfaces/canvas-options";
 import type VideoSpriteMemory from "@canvas/interfaces/memory/VideoSpriteMemory";
 import { CANVAS_VIDEO_ID } from "@constants";
-import type { Texture, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
+import type {
+    DestroyOptions,
+    Texture,
+    TextureSource,
+    TextureSourceLike,
+} from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+
+/**
+ * The savable events of a {@link VideoSprite}, in addition to the PixiJS container events:
+ * - `"ended"`: the video reached its end (the `ended` event of the `HTMLVideoElement`); the listener
+ *   receives `(component)`. Looping videos never emit it.
+ *
+ * They are not emitted while the video is loaded or a save is restored.
+ */
+export type VideoSpriteEventType = "ended";
+
+/**
+ * The `ended` listener of each sprite's `HTMLVideoElement`. It lives outside the instance because the
+ * superclass constructor calls the texture setter before the class fields are initialized.
+ */
+const videoEndedBindings = new WeakMap<
+    VideoSprite,
+    { resource: HTMLVideoElement; listener: () => void }
+>();
+
+function getVideoElement(texture?: Texture | null): HTMLVideoElement | undefined {
+    const resource = texture?.source?.resource;
+    if (typeof HTMLVideoElement !== "undefined" && resource instanceof HTMLVideoElement) {
+        return resource;
+    }
+    return undefined;
+}
+
+function detachVideoEndedListener(sprite: VideoSprite) {
+    const binding = videoEndedBindings.get(sprite);
+    if (binding) {
+        binding.resource.removeEventListener("ended", binding.listener);
+        videoEndedBindings.delete(sprite);
+    }
+}
 
 /**
  * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,
  * but it has some features that make video management easier.
  * You need to use {@link load} to show the video in the canvas.
  * This class is used for functions like {@link addVideo} and {@link showWithDissolve}.
+ *
+ * Listen to the `"ended"` event (see {@link VideoSpriteEventType}) with a handler registered with
+ * `eventDecorator`, so it is saved:
+ * ```ts
+ * class Events {
+ *     \@eventDecorator()
+ *     static removeFilm(component: VideoSprite) {
+ *         canvas.remove(component.label);
+ *     }
+ * }
+ * film.on("ended", Events.removeFilm);
+ * ```
  * @example
  * ```ts
  * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
@@ -67,8 +120,10 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         };
     }
     override async setMemory(value: VideoSpriteMemory) {
-        await setMemoryVideoSprite(this, value);
-        this.reloadPosition();
+        await this.withSilentEvents(async () => {
+            await setMemoryVideoSprite(this, value);
+            this.reloadPosition();
+        });
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         const sprite = PIXI.Sprite.from(source, skipCache);
@@ -77,11 +132,71 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         return mySprite;
     }
 
+    /**
+     * Load the video and set the texture of the sprite. The video events are not emitted during the loading.
+     * @returns A promise that resolves when the video is loaded.
+     */
     override async load() {
-        await super.load();
-        this.loop = this._looop;
-        this.currentTime = this._currentTime;
-        this.paused = this._paused;
+        await this.withSilentEvents(async () => {
+            await super.load();
+            this.loop = this._looop;
+            this.currentTime = this._currentTime;
+            this.paused = this._paused;
+        });
+    }
+
+    /** Video events */
+
+    private readonly _eventSuppressor = new EventSuppressor();
+    /**
+     * Run `fn` without emitting the video events (see {@link VideoSpriteEventType}).
+     * @internal
+     */
+    async withSilentEvents<T>(fn: () => Promise<T> | T): Promise<T> {
+        return this._eventSuppressor.run(fn);
+    }
+    /**
+     * Move the `ended` listener to the video element of the current texture, if it changed.
+     * Called by the superclass constructor too, so it must not rely on the fields of this class.
+     */
+    private syncVideoEndedListener() {
+        const resource = this.destroyed ? undefined : getVideoElement(this.texture);
+        if (videoEndedBindings.get(this)?.resource === resource) {
+            return;
+        }
+        detachVideoEndedListener(this);
+        if (resource) {
+            const listener = () => this._eventSuppressor.emit(this, "ended");
+            resource.addEventListener("ended", listener);
+            videoEndedBindings.set(this, { resource, listener });
+        }
+    }
+
+    override set texture(value: Texture<TextureSource<any>>) {
+        super.texture = value;
+        this.syncVideoEndedListener();
+    }
+    override get texture(): Texture<TextureSource<any>> {
+        return super.texture;
+    }
+
+    override destroy(options?: DestroyOptions): void {
+        detachVideoEndedListener(this);
+        super.destroy(options);
+    }
+
+    /**
+     * Add a listener for the `"ended"` video event. Register the listener with `eventDecorator` to save it.
+     */
+    override on(event: VideoSpriteEventType, fn: (component: this) => void, context?: any): this;
+    override on<T extends ListenerEventName>(
+        event: T,
+        fn: (...args: ListenerEventArgs<T, this>) => void,
+        context?: any,
+    ): this;
+    override on(event: any, fn: (...args: any[]) => void, context?: any): this {
+        // Sprite.on records the handler and appends the component
+        return super.on(event, fn as any, context);
     }
 
     private _looop: boolean = false;
@@ -192,9 +307,11 @@ export async function setMemoryVideoSprite(
         ignoreTexture?: boolean;
     },
 ) {
-    await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture });
-    if ("loop" in memory && memory.loop !== undefined) element.loop = memory.loop;
-    if ("currentTime" in memory && memory.currentTime !== undefined)
-        element.currentTime = memory.currentTime;
-    if ("paused" in memory && memory.paused !== undefined) element.paused = memory.paused;
+    await element.withSilentEvents(async () => {
+        await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture });
+        if ("loop" in memory && memory.loop !== undefined) element.loop = memory.loop;
+        if ("currentTime" in memory && memory.currentTime !== undefined)
+            element.currentTime = memory.currentTime;
+        if ("paused" in memory && memory.paused !== undefined) element.paused = memory.paused;
+    });
 }

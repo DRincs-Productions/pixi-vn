@@ -10,6 +10,7 @@ export type { TextureSourceLike, Ticker as TickerValue } from "@drincs/pixi-vn/p
 
 // * This import must be imported before the ImageSprite import.
 export { default as VideoSprite } from "./components/VideoSprite";
+export type { VideoSpriteEventType } from "./components/VideoSprite";
 
 export type { AnimationOptions as MotionAnimationOptions } from "motion";
 export { default as ImageContainer } from "../canvas/components/ImageContainer";
@@ -27,10 +28,14 @@ export type {
 export { default as AnimatedSprite } from "./components/AnimatedSprite";
 export type { AnimatedSpriteEventType } from "./components/AnimatedSprite";
 export { default as Container } from "./components/Container";
+export { EventSuppressor } from "./components/EventSuppressor";
+export type { EventSuppressorTarget } from "./components/EventSuppressor";
 export { default as ImageSprite } from "./components/ImageSprite";
 export type { default as Layer } from "./components/Layer";
 export { addListenerHandler } from "./components/ListenerExtension";
 export type {
+    ListenerEventArgs,
+    ListenerEventName,
     default as ListenerExtension,
     ListenerExtensionMemory,
     OnEventsHandlers,
