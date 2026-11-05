@@ -7,6 +7,7 @@ import type { addVideo } from "@canvas/functions/video-utility";
 import type AssetMemory from "@canvas/interfaces/AssetMemory";
 import type { VideoSpriteOptions } from "@canvas/interfaces/canvas-options";
 import type VideoSpriteMemory from "@canvas/interfaces/memory/VideoSpriteMemory";
+import { getVideoElement, systemPausedVideos } from "@canvas/functions/media-system-pause";
 import { CANVAS_VIDEO_ID } from "@constants";
 import type {
     DestroyOptions,
@@ -33,14 +34,6 @@ const videoEndedBindings = new WeakMap<
     VideoSprite,
     { resource: HTMLVideoElement; listener: () => void }
 >();
-
-function getVideoElement(texture?: Texture | null): HTMLVideoElement | undefined {
-    const resource = texture?.source?.resource;
-    if (typeof HTMLVideoElement !== "undefined" && resource instanceof HTMLVideoElement) {
-        return resource;
-    }
-    return undefined;
-}
 
 function detachVideoEndedListener(sprite: VideoSprite) {
     const binding = videoEndedBindings.get(sprite);
@@ -115,7 +108,7 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             ...super.memory,
             pixivnId: this.pixivnId,
             loop: this.loop,
-            paused: this._paused,
+            paused: this.paused,
             currentTime: this.currentTime,
         };
     }
@@ -215,10 +208,26 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
 
     private _paused: boolean = false;
     /**
-     * Set to true if you want the video to be paused.
+     * The suspension applied by `canvas.pause()` to the video of this sprite, if any.
+     */
+    private get systemPauseState() {
+        const video = getVideoElement(this.texture);
+        return video && systemPausedVideos.get(video);
+    }
+    /**
+     * Set to true if you want the video to be paused. This is also the state saved by {@link memory}.
+     *
+     * It reflects the video element, which is shared by every sprite showing it. While `canvas.pause()`
+     * suspends the video, it is the requested playback state (the one `canvas.resume()` will apply),
+     * not the temporary suspension. Before the video is loaded, it is the value that {@link load} applies.
      */
     get paused() {
-        return this.texture?.source?.resource?.paused || false;
+        const video = getVideoElement(this.texture);
+        if (!video) {
+            return this._paused;
+        }
+        const suspended = systemPausedVideos.get(video);
+        return suspended ? !suspended.play : video.paused;
     }
     set paused(value: boolean) {
         if (value) {
@@ -228,19 +237,30 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         }
     }
     /**
-     * Pause the video.
+     * Pause the video. If the video is suspended by `canvas.pause()`, it stays paused after `canvas.resume()`.
      */
     pause() {
         this._paused = true;
+        const suspended = this.systemPauseState;
+        if (suspended) {
+            suspended.play = false;
+        }
         if (this.texture?.source?.resource) {
             this.texture.source.resource.pause();
         }
     }
     /**
-     * Play the video.
+     * Play the video. If this sprite is suspended by `canvas.pause()`, the video starts playing on `canvas.resume()`.
      */
     play() {
         this._paused = false;
+        const suspended = this.systemPauseState;
+        if (suspended) {
+            suspended.play = true;
+            if (suspended.sprites.includes(this)) {
+                return;
+            }
+        }
         if (
             this.texture?.source?.resource?.play &&
             typeof this.texture.source.resource.play === "function"

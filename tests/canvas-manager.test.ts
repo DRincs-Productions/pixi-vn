@@ -84,22 +84,36 @@ describe("CanvasManager gameLayer render controls", () => {
         expect(alreadyPausedTicker.play).not.toHaveBeenCalled();
     });
 
-    test("export temporarily resumes and then re-pauses when game layer is paused", () => {
+    test("export saves the tickers paused by pause() as running and re-pauses them", () => {
         const manager = new CanvasManager();
-        const gameLayer = createGameLayer(false);
+        const gameLayer = createGameLayer(true);
         vi.spyOn(CanvasManagerStatic, "gameLayer", "get").mockReturnValue(gameLayer as any);
+        const ticker = createTicker();
+        TickersManagerStatic._currentTickers.set("active", { ticker } as any);
+        manager.pause();
 
+        let pausedDuringExport: boolean | undefined;
+        vi.spyOn(TickersManagerStatic, "currentTickersWithoutCreatedBySteps").mockImplementation(() => {
+            pausedDuringExport = ticker.paused;
+            return {};
+        });
+        // Animations and videos save their requested state: export doesn't resume/re-pause them
         const resumeSpy = vi.spyOn(manager, "resume");
         const pauseSpy = vi.spyOn(manager, "pause");
 
         manager.export();
 
-        expect(resumeSpy).toHaveBeenCalledTimes(1);
-        expect(pauseSpy).toHaveBeenCalledTimes(1);
+        expect(pausedDuringExport).toBe(false);
+        expect(ticker.paused).toBe(true);
         expect(gameLayer.renderable).toBe(false);
+        expect(resumeSpy).not.toHaveBeenCalled();
+        expect(pauseSpy).not.toHaveBeenCalled();
+
+        manager.resume();
+        expect(ticker.paused).toBe(false);
     });
 
-    test("extractImage resumes only for extraction and pauses again immediately", async () => {
+    test("extractImage renders only for extraction and pauses again immediately", async () => {
         const manager = new CanvasManager();
         const gameLayer = createGameLayer(false);
         vi.spyOn(CanvasManagerStatic, "gameLayer", "get").mockReturnValue(gameLayer as any);

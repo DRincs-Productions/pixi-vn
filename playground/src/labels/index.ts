@@ -2,6 +2,7 @@
 // add a line here for every new playground test label file.
 import "./animated-sprite-example";
 import "./blur-transition-example";
+import "./canvas-pause-intent-example";
 import "./canvas-text-example";
 import "./canvas-transition-position";
 import "./dissolve-fade-transition-example";

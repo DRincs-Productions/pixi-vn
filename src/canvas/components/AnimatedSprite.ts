@@ -13,13 +13,20 @@ import { setMemorySprite } from "@canvas/components/Sprite";
 import { default as RegisteredCanvasComponents } from "@canvas/decorators/canvas-element-decorator";
 import { getMemorySprite } from "@canvas/functions/canvas-memory-utility";
 import { CanvasPropertyUtility as PropsUtils } from "@canvas/functions/canvas-property-utility";
+import type { SystemPausable } from "@canvas/functions/media-system-pause";
 import { getAnimatedSpriteFrames } from "@canvas/functions/spritesheet-utility";
 import type { AnimatedSpriteSource } from "@canvas/interfaces/AnimatedSpriteSource";
 import type { AnimatedSpriteOptions } from "@canvas/interfaces/canvas-options";
 import type AnimatedSpriteMemory from "@canvas/interfaces/memory/AnimatedSpriteMemory";
 import { CANVAS_ANIMATED_SPRITE_ID } from "@constants";
 import { GameUnifier, PixiError } from "@drincs/pixi-vn/core";
-import type { ObservablePoint, PointData, Texture, TextureSource } from "@drincs/pixi-vn/pixi.js";
+import type {
+    ObservablePoint,
+    PointData,
+    Texture,
+    TextureSource,
+    Ticker,
+} from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
 import { logger } from "@utils/log-utility";
 
@@ -79,7 +86,11 @@ export type AnimatedSpriteEventType = "complete" | "loop" | "frameChange";
  */
 export default class AnimatedSprite
     extends PIXI.AnimatedSprite
-    implements CanvasBaseItem<AnimatedSpriteMemory>, ListenerExtension, AdditionalPositionsExtension
+    implements
+        CanvasBaseItem<AnimatedSpriteMemory>,
+        ListenerExtension,
+        AdditionalPositionsExtension,
+        SystemPausable
 {
     /**
      * @param options The options for the component.
@@ -251,6 +262,21 @@ export default class AnimatedSprite
      */
     get haveEmptyTexture() {
         return this.totalFrames <= 1 && this.texture === PIXI.Texture.EMPTY;
+    }
+
+    /**
+     * `true` while `canvas.pause()` suspends this component: its frame doesn't change, but {@link playing}
+     * keeps the requested playback state, so `play()`, `stop()`, `gotoAndStop()`, ... called meanwhile
+     * apply when `canvas.resume()` ends the suspension (if the component was removed from the game
+     * layer meanwhile, it is stopped instead).
+     * @internal
+     */
+    systemPaused: boolean = false;
+    override update(ticker: Ticker) {
+        if (this.systemPaused) {
+            return;
+        }
+        super.update(ticker);
     }
 
     override set texture(value: Texture<TextureSource<any>>) {

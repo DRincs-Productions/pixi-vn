@@ -4,6 +4,12 @@ import RegisteredCanvasComponents, {
 } from "@canvas/decorators/canvas-element-decorator";
 import { importCanvasElement } from "@canvas/functions/canvas-import-utility";
 import { exportCanvasElement, getMemoryContainer } from "@canvas/functions/canvas-memory-utility";
+import {
+    getVideoElement,
+    isSystemPausable,
+    type SystemPausable,
+    systemPausedVideos,
+} from "@canvas/functions/media-system-pause";
 import type { CanvasBaseInterface } from "@canvas/interfaces/CanvasBaseInterface";
 import type CanvasGameState from "@canvas/interfaces/CanvasGameState";
 import type CanvasHtmlLayersInterface from "@canvas/interfaces/CanvasHtmlLayersInterface";
@@ -20,9 +26,11 @@ import type {
     SequenceOptions,
 } from "@drincs/pixi-vn/motion";
 import type {
+    AnimatedSprite as PixiAnimatedSprite,
     ApplicationOptions,
     ImageLike,
     Container as PixiContainer,
+    Sprite as PixiSprite,
     UPDATE_PRIORITY,
 } from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
@@ -45,6 +53,10 @@ import { logger } from "@utils/log-utility";
  */
 export default class CanvasManager implements CanvasManagerInterface {
     private tickersPausedByGameLayerRender: string[] = [];
+    /** The pixi-vn `AnimatedSprite`s suspended by {@link pause} (see `AnimatedSprite.systemPaused`). */
+    private animatedSpritesSuspendedByGameLayerRender: (PixiAnimatedSprite & SystemPausable)[] = [];
+    /** The plain PixiJS `AnimatedSprite`s stopped by {@link pause}: they can't keep a requested state apart. */
+    private pixiAnimatedSpritesStoppedByGameLayerRender: PixiAnimatedSprite[] = [];
 
     get app() {
         return CanvasManagerStatic.app;
@@ -363,15 +375,16 @@ export default class CanvasManager implements CanvasManagerInterface {
             return;
         }
         this.gameLayer.renderable = false;
+        this.pauseTickersInternal();
+        this.releaseMediaSuspension();
+        this.suspendMedia(this.gameLayer);
+    }
+    private pauseTickersInternal() {
         this.tickersPausedByGameLayerRender = tickers.pause({
             id: Array.from(TickersManagerStatic._currentTickers.keys()),
         });
     }
-    resume() {
-        if (this.gameLayer.renderable === true) {
-            return;
-        }
-        this.gameLayer.renderable = true;
+    private resumeTickersInternal() {
         const tickerIdsToResume = this.tickersPausedByGameLayerRender.filter((id) =>
             TickersManagerStatic._currentTickers.has(id),
         );
@@ -379,6 +392,99 @@ export default class CanvasManager implements CanvasManagerInterface {
             tickers.resume({ id: tickerIdsToResume });
         }
         this.tickersPausedByGameLayerRender = [];
+    }
+    /**
+     * Suspend the animations and videos of `container` (nested ones included). The suspension is kept
+     * apart from the playback requested by the game, like `sound.unsaved.pauseAll()` does.
+     */
+    private suspendMedia(container: PixiContainer) {
+        for (const child of container.children ?? []) {
+            if (child instanceof PIXI.AnimatedSprite) {
+                if (isSystemPausable(child)) {
+                    child.systemPaused = true;
+                    this.animatedSpritesSuspendedByGameLayerRender.push(child);
+                } else if (child.playing) {
+                    child.stop();
+                    this.pixiAnimatedSpritesStoppedByGameLayerRender.push(child);
+                }
+            }
+            if (child instanceof PIXI.Sprite) {
+                this.suspendVideo(child);
+            }
+            this.suspendMedia(child);
+        }
+    }
+    private suspendVideo(sprite: PixiSprite) {
+        const video = getVideoElement(sprite.texture);
+        if (!video) {
+            return;
+        }
+        const suspended = systemPausedVideos.get(video);
+        if (suspended) {
+            suspended.sprites.push(sprite);
+            return;
+        }
+        // Even a paused video is tracked, so a `VideoSprite.play()` called while paused is kept for resume()
+        systemPausedVideos.set(video, { play: !video.paused, sprites: [sprite] });
+        if (!video.paused) {
+            video.pause();
+        }
+    }
+    /**
+     * End the suspension of {@link suspendMedia} without playing anything: the pixi-vn `AnimatedSprite`s
+     * still in gameLayer go back to their own `playing` state, the ones removed meanwhile are stopped
+     * (so they don't restart off-screen on the shared ticker), the tracked videos stay as they are.
+     */
+    private releaseMediaSuspension() {
+        this.animatedSpritesSuspendedByGameLayerRender.forEach((sprite) => {
+            if (!sprite.destroyed && !this.isInGameLayer(sprite)) {
+                sprite.stop();
+            }
+            sprite.systemPaused = false;
+        });
+        this.animatedSpritesSuspendedByGameLayerRender = [];
+        this.pixiAnimatedSpritesStoppedByGameLayerRender = [];
+        systemPausedVideos.clear();
+    }
+    private isInGameLayer(element: PixiContainer) {
+        for (let parent = element.parent; parent; parent = parent.parent) {
+            if (parent === this.gameLayer) {
+                return true;
+            }
+        }
+        return false;
+    }
+    resume() {
+        if (this.gameLayer.renderable === true) {
+            return;
+        }
+        this.gameLayer.renderable = true;
+        this.resumeTickersInternal();
+        this.pixiAnimatedSpritesStoppedByGameLayerRender.forEach((sprite) => {
+            if (!sprite.destroyed && this.isInGameLayer(sprite)) {
+                sprite.play();
+            }
+        });
+        const videosToPlay = Array.from(systemPausedVideos).filter(
+            ([video, { play, sprites }]) =>
+                play &&
+                sprites.some(
+                    (sprite) =>
+                        !sprite.destroyed &&
+                        getVideoElement(sprite.texture) === video &&
+                        this.isInGameLayer(sprite),
+                ),
+        );
+        // Released first, so a VideoSprite.play()/pause() called from here on acts on the video directly
+        this.releaseMediaSuspension();
+        videosToPlay.forEach(([video]) => {
+            // AbortError: play() interrupted by a later pause()
+            video.play().catch((e) => {
+                if (e?.name !== "AbortError") {
+                    logger.warn("Unable to resume a video paused by canvas.pause()", e);
+                }
+            });
+        });
     }
     /**
      * @deprecated Use the top-level `tickers` module (`@drincs/pixi-vn`) instead.
@@ -512,16 +618,15 @@ export default class CanvasManager implements CanvasManagerInterface {
     /* Other Methods */
 
     async extractImage() {
-        const shouldRePause = this.gameLayer.renderable === false;
-        if (shouldRePause) {
-            this.resume();
-        }
+        // Only the rendering is needed: the paused tickers, animations and videos are left untouched
+        const wasPaused = this.gameLayer.renderable === false;
+        this.gameLayer.renderable = true;
         let imagePromise: Promise<ImageLike>;
         try {
             imagePromise = this.app.renderer.extract.image(this.app.stage);
         } finally {
-            if (shouldRePause) {
-                this.pause();
+            if (wasPaused) {
+                this.gameLayer.renderable = false;
             }
         }
         const image = await imagePromise;
@@ -532,14 +637,18 @@ export default class CanvasManager implements CanvasManagerInterface {
         this.tickersPausedByGameLayerRender = [];
         tickers.removeAll();
         this.removeAll();
+        // After removeAll(), so the suspended animations are stopped instead of restarting off-screen
+        this.releaseMediaSuspension();
     }
 
     /* Export and Import Methods */
 
     public export(): CanvasGameState {
+        // The paused tickers are saved as running. The animations and videos already save their
+        // requested playback state (`AnimatedSprite.playing`, `VideoSprite` `paused`), not the suspension.
         const shouldRePause = this.gameLayer.renderable === false;
         if (shouldRePause) {
-            this.resume();
+            this.resumeTickersInternal();
         }
         try {
             const currentElements: { [alias: string]: CanvasBaseItemMemory } = {};
@@ -556,7 +665,11 @@ export default class CanvasManager implements CanvasManagerInterface {
                     TickersManagerStatic.currentTickersSequence(),
                 ),
                 elements: createExportableElement(currentElements),
-                stage: createExportableElement(getMemoryContainer(this.gameLayer)),
+                // The system pause (`renderable: false`) is not part of the game state
+                stage: createExportableElement({
+                    ...getMemoryContainer(this.gameLayer),
+                    ...(shouldRePause && { renderable: true }),
+                }),
                 elementAliasesOrder: createExportableElement(
                     CanvasManagerStatic.childrenAliasesOrder,
                 ),
@@ -566,7 +679,7 @@ export default class CanvasManager implements CanvasManagerInterface {
             };
         } finally {
             if (shouldRePause) {
-                this.pause();
+                this.pauseTickersInternal();
             }
         }
     }

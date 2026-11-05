@@ -358,14 +358,27 @@ export default interface CanvasManagerInterface {
      */
     readonly tickers: TickersInterface;
     /**
-     * Pause the rendering of gameLayer and pause currently running tickers.
-     * Use {@link resume} to restore rendering and resume only
-     * the tickers paused by this method.
+     * Pause the rendering of gameLayer, pause currently running tickers and suspend the
+     * `AnimatedSprite`s and videos inside gameLayer (including nested containers).
+     * Other layers and the shared PixiJS ticker are not affected.
+     *
+     * The suspension is temporary and kept apart from the playback requested by the game (like
+     * `sound.unsaved.pauseAll()`): for the pixi-vn `AnimatedSprite` and `VideoSprite`, `playing`/`paused`
+     * and the saved state keep the requested playback, and `play()`, `stop()`, `gotoAndStop()`, `pause()`,
+     * `paused = ...` called while paused take effect on {@link resume} (an explicit stop stays stopped).
+     *
+     * Elements added to gameLayer while paused are not suspended. Sprites sharing the same video element
+     * share its playback and its saved `paused` state, including in other layers.
+     * Plain PixiJS `AnimatedSprite`s and video sprites can't keep a requested state apart: they are
+     * stopped/paused, and {@link resume} restarts the ones that were playing.
      */
     pause(): void;
     /**
-     * Resume the rendering of gameLayer and resume tickers that were paused by
-     * {@link pause}.
+     * Resume the rendering of gameLayer, resume tickers that were paused by {@link pause} and end the
+     * suspension of animations and videos, applying their requested playback state: animations and
+     * videos stopped before or during the pause stay stopped. Elements removed from gameLayer (or
+     * destroyed) while paused are not restarted: such an `AnimatedSprite` is stopped. A video is played
+     * again only if a sprite that showed it is still in gameLayer, not destroyed and still showing it.
      */
     resume(): void;
     /**

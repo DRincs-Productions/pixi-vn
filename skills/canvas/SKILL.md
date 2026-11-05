@@ -685,8 +685,7 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
 
 - **`AnimatedSprite` doesn't accept `onComplete`/`onFrameChange`/`onLoop` in its options** (like `Sprite`
   doesn't accept `on`): callbacks can't be saved, so use the `"complete"`/`"loop"`/`"frameChange"` events
-  with `@eventDecorator()` instead, and the
-  animation runs on PixiJS' shared ticker, so `canvas.pause()` hides it but doesn't freeze its frame.
+  with `@eventDecorator()` instead.
 - **`addImage`/`addVideo`/`addImageCointainer`/`addAnimatedSprite` only construct and register the element — the
   texture is not loaded/visible until you `await element.load()`.** The `show*` variants
   (`showImage`, `showVideo`, `showImageContainer`, `showAnimatedSprite`, and the transition helpers) call `load()` for
@@ -719,6 +718,17 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
   `addLayer` will refuse to use that alias.
 - `canvas.pause()`/`canvas.resume()` stop/restart rendering and tickers for the whole game layer
   (e.g. when opening a menu) — remember to call `resume()` or elements will appear frozen.
+  `pause()` also *suspends* the `AnimatedSprite`s and videos (`VideoSprite`) of the game layer (nested
+  ones included). The suspension is temporary and separate from the playback the game asked for, as
+  with `sound.unsaved.pauseAll()`: `AnimatedSprite.playing`, `VideoSprite.paused` and the save keep the
+  requested state, and `stop()`/`gotoAndStop()`/`pause()`/`play()` called while paused are applied by
+  `resume()` — an animation or video stopped before or during the pause stays stopped, the others
+  continue. Animations and videos removed from the game layer while paused are not restarted by
+  `resume()` (or `canvas.clear()`). Elements added while paused are not suspended, other layers are
+  untouched (except that sprites sharing the same video element share its playback, and so its saved
+  `paused` state). Plain PixiJS `AnimatedSprite`s and video
+  sprites (not the pixi-vn components) are simply stopped and restarted if they were playing, so a stop
+  requested on them while paused is not kept.
 
 ## Related skills
 

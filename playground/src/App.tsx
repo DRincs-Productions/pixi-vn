@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { canvas } from "@drincs/pixi-vn/canvas";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { testLabels, type TestLabelEntry } from "./labels/registry";
 import { START_LABEL_ID } from "./labels/start";
 
@@ -26,20 +27,23 @@ export default function App() {
     const [state, setState] = useState<ReturnType<TestingApi["getState"]>>();
     const [errors, setErrors] = useState<unknown[]>([]);
     const [busy, setBusy] = useState(false);
+    // undefined while the canvas isn't initialized; otherwise whether the game layer is paused
+    const [gamePaused, setGamePaused] = useState<boolean>();
 
-    const refresh = () => {
+    const refresh = useCallback(() => {
         const api = getTestingApi();
         if (api) {
             setState(api.getState());
             setErrors(api.errors);
         }
-    };
+        setGamePaused(canvas.isInitialized ? !canvas.gameLayer.renderable : undefined);
+    }, []);
 
     useEffect(() => {
         refresh();
         const interval = window.setInterval(refresh, 250);
         return () => window.clearInterval(interval);
-    }, []);
+    }, [refresh]);
 
     const run = async (action: () => Promise<unknown> | unknown) => {
         setBusy(true);
@@ -145,6 +149,14 @@ export default function App() {
                     }}
                 >
                     Chiudi label
+                </button>
+                <button
+                    disabled={!api || busy || gamePaused === undefined}
+                    onClick={() =>
+                        run(() => (canvas.gameLayer.renderable ? canvas.pause() : canvas.resume()))
+                    }
+                >
+                    {gamePaused ? "Game resume" : "Game pause"}
                 </button>
             </div>
 
