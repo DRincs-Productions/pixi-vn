@@ -101,8 +101,12 @@ function naturalCompare(a: string, b: string) {
  * @throws {PixiError} when the spritesheet, the animation, or a frame can't be found, or the source has no frames.
  * @example
  * ```ts
+ * import { AnimatedSprite as PixiAnimatedSprite } from "pixi.js";
+ *
+ * Assets.add({ alias: "hero", src: "https://example.com/assets/hero.json" });
  * const frames = await getAnimatedSpriteFrames({ spritesheet: "hero", animation: "walk" });
- * const sprite = new AnimatedSprite({ textures: frames });
+ * // e.g. inside a custom component, or with a plain PixiJS AnimatedSprite
+ * const sprite = new PixiAnimatedSprite(frames);
  * ```
  */
 export async function getAnimatedSpriteFrames(
