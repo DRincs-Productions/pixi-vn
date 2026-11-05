@@ -18,11 +18,12 @@ import { logger } from "@utils/log-utility";
  * but this container is composed only of {@link ImageSprite} and introduces the {@link load} functionality
  * @example
  * ```ts
- *  const liamBodyImageUrl = 'https://example.com/assets/liam/body.png';
- *  const liamHeadImageUrl = 'https://example.com/assets/liam/head.png';
- *  const container = new ImageContainer(undefined, [liamBodyImageUrl, liamHeadImageUrl]);
- *  await container.load()
- *  canvas.add(container);
+ * Assets.add({ alias: "liam-body", src: "https://example.com/assets/liam/body.png" });
+ * Assets.add({ alias: "liam-head", src: "https://example.com/assets/liam/head.png" });
+ *
+ * const container = new ImageContainer({ xAlign: 0.5 }, ["liam-body", "liam-head"]);
+ * await container.load();
+ * canvas.add("liam", container);
  * ```
  */
 export default class ImageContainer extends Container<ImageSprite, ImageContainerMemory> {

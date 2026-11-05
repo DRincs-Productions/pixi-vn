@@ -16,18 +16,22 @@ import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
  * This class is used for functions like {@link addVideo} and {@link showWithDissolve}.
  * @example
  * ```ts
- * let film = new VideoSprite({
- *     x: 100,
- *     y: 100,
- * }, 'https://pixijs.com/assets/video.mp4')
- * await film.load()
- * canvas.add("film", film)
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ *
+ * const film = new VideoSprite({ x: 100, y: 100 }, "film");
+ * await film.load();
+ * canvas.add("film", film);
  * ```
  * @example
  * ```ts
- * let film = addVideo("film", 'https://pixijs.com/assets/video.mp4')
- * film.currentTime = 2
- * await film.load()
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ *
+ * // the alias of the component is also the alias of the asset
+ * const film = addVideo("film", { loop: true });
+ * film.currentTime = 2;
+ * await film.load();
+ * // a different alias for the component
+ * const film2 = await showVideo("film2", "film", { xAlign: 1 });
  * ```
  */
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {

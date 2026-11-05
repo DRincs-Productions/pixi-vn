@@ -69,7 +69,9 @@ function resolveSource(
  * @throws {PixiError} when `alias` is not registered in the asset cache.
  * @example
  * ```ts
+ * Assets.add({ alias: "fighter", src: "https://pixijs.com/assets/spritesheet/fighter.json" });
  * const fighter = addAnimatedSprite("fighter", { align: 0.5, animationSpeed: 0.4 });
+ * await fighter.load();
  * ```
  */
 export function addAnimatedSprite(alias: string, options?: AnimatedSpriteOptions): AnimatedSprite;
@@ -85,9 +87,12 @@ export function addAnimatedSprite(alias: string, options?: AnimatedSpriteOptions
  * @throws {PixiError} when `source` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * let fighter = addAnimatedSprite("fighter", "https://pixijs.com/assets/spritesheet/fighter.json", { loop: true });
- * await fighter.load();
- * fighter.play();
+ * Assets.add({ alias: "fighter", src: "https://pixijs.com/assets/spritesheet/fighter.json" });
+ *
+ * // a different alias for the component: (alias, spritesheetAlias, options)
+ * const myFighter = addAnimatedSprite("myFighter", "fighter", { loop: true });
+ * await myFighter.load();
+ * myFighter.play();
  * ```
  */
 export function addAnimatedSprite(
@@ -119,6 +124,7 @@ export function addAnimatedSprite(
  * @throws {PixiError} when `alias` is not registered in the asset cache.
  * @example
  * ```ts
+ * Assets.add({ alias: "fighter", src: "https://pixijs.com/assets/spritesheet/fighter.json" });
  * await showAnimatedSprite("fighter", { align: 0.5, animationSpeed: 0.4 });
  * ```
  */
@@ -137,8 +143,12 @@ export async function showAnimatedSprite(
  * @throws {PixiError} when `source` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * await showAnimatedSprite("explosion", "https://pixijs.com/assets/spritesheet/mc.json", { align: 0.5, anchor: 0.5 });
- * await showAnimatedSprite("fighter", { spritesheet: "fighter", frames: ["rollSequence0000.png", "rollSequence0001.png"] });
+ * Assets.add({ alias: "fighter", src: "https://pixijs.com/assets/spritesheet/fighter.json" });
+ *
+ * // a different alias for the component: (alias, spritesheetAlias, options)
+ * await showAnimatedSprite("myFighter", "fighter", { align: 0.5, anchor: 0.5 });
+ * // only some frames of the spritesheet
+ * await showAnimatedSprite("rolling", { spritesheet: "fighter", frames: ["rollSequence0000.png", "rollSequence0001.png"] });
  * ```
  */
 export async function showAnimatedSprite(

@@ -20,21 +20,22 @@ import { logger } from "@utils/log-utility";
  * This class is used for functions like {@link addImage} and {@link showWithDissolve}.
  * @example
  * ```ts
- * let alien = new ImageSprite({
- *     anchor: { x: 0.5, y: 0.5 },
- *     x: 100,
- *     y: 100,
- * }, 'https://pixijs.com/assets/eggHead.png')
- * await alien.load()
- * canvas.add("alien", alien)
+ * Assets.add({ alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" });
+ *
+ * const alien = new ImageSprite({ anchor: 0.5, x: 100, y: 100 }, "eggHead");
+ * await alien.load();
+ * canvas.add("alien", alien);
  * ```
  * @example
  * ```ts
- * let alien = addImage("alien", 'https://pixijs.com/assets/eggHead.png')
- * alien.anchor.set(0.5);
- * alien.x = 100
- * alien.y = 100
- * await alien.load()
+ * Assets.add({ alias: "eggHead", src: "https://pixijs.com/assets/eggHead.png" });
+ *
+ * // the alias of the component is also the alias of the asset
+ * const eggHead = addImage("eggHead", { anchor: 0.5, x: 100, y: 100 });
+ * await eggHead.load();
+ * // a different alias for the component
+ * const alien = addImage("alien", "eggHead", { anchor: 0.5, x: 300, y: 100 });
+ * await alien.load();
  * ```
  */
 export default class ImageSprite<

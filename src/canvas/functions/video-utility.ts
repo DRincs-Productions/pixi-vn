@@ -13,7 +13,9 @@ import VideoSprite from "../components/VideoSprite";
  * @throws {PixiError} when `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * const c = addVideo("video1", { xAlign: 0.5 });
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ * const film = addVideo("film", { xAlign: 0.5 });
+ * await film.load();
  * ```
  */
 export function addVideo(alias: string, options?: VideoSpriteOptions): VideoSprite;
@@ -28,11 +30,14 @@ export function addVideo(alias: string, options?: VideoSpriteOptions): VideoSpri
  * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * let video1 = addVideo("video1", "https://pixijs.com/assets/video1.mp4")
- * await video1.load()
- * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
- * let video2 = addVideo("video2")
- * await video2.load()
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ *
+ * // "film" is the alias of the component and of the asset
+ * const film1 = addVideo("film");
+ * await film1.load();
+ * // a different alias for the component: (alias, assetAlias, options)
+ * const film2 = addVideo("film2", "film", { xAlign: 1 });
+ * await film2.load();
  * ```
  */
 export function addVideo(
@@ -81,7 +86,8 @@ export function addVideo(
  * @throws {PixiError} when `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * await showVideo("video1", { xAlign: 0.5 });
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ * await showVideo("film", { xAlign: 0.5 });
  * ```
  */
 export async function showVideo(alias: string, options?: VideoSpriteOptions): Promise<VideoSprite>;
@@ -94,9 +100,12 @@ export async function showVideo(alias: string, options?: VideoSpriteOptions): Pr
  * @throws {PixiError} when `videoUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * let video1 = showVideo("video1", "https://pixijs.com/assets/video1.mp4")
- * Assets.add({ alias: "video2", src: "https://pixijs.com/assets/video2.png" })
- * let video2 = showVideo("video2")
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ *
+ * // "film" is the alias of the component and of the asset
+ * const film1 = await showVideo("film");
+ * // a different alias for the component: (alias, assetAlias, options)
+ * const film2 = await showVideo("film2", "film", { xAlign: 1 });
  * ```
  */
 export async function showVideo(

@@ -24,8 +24,9 @@ export interface AnimatedSpriteFrameSource {
  * - `frames` only: each frame is a texture alias or URL.
  * @example
  * ```ts
+ * Assets.add({ alias: "explosion", src: "https://pixijs.com/assets/spritesheet/mc.json" });
  * // all the frames of a spritesheet
- * const explosion: AnimatedSpriteSource = { spritesheet: "https://pixijs.com/assets/spritesheet/mc.json" };
+ * const explosion: AnimatedSpriteSource = { spritesheet: "explosion" };
  * // a named animation of a spritesheet
  * const walk: AnimatedSpriteSource = { spritesheet: "hero", animation: "walk" };
  * // some frames of a spritesheet, with custom durations

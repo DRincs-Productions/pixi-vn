@@ -21,7 +21,8 @@ export const DEFAULT_ANIMATED_SPRITE_FRAME_TIME = 100;
  * @throws {PixiError} when the alias is missing, the asset can't be loaded, or the asset is not a `Spritesheet`.
  * @example
  * ```ts
- * const sheet = await getSpritesheet("https://pixijs.com/assets/spritesheet/fighter.json");
+ * Assets.add({ alias: "fighter", src: "https://pixijs.com/assets/spritesheet/fighter.json" });
+ * const sheet = await getSpritesheet("fighter");
  * const textures = Object.values(sheet.textures);
  * ```
  */

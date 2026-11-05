@@ -58,18 +58,25 @@ export type AnimatedSpriteEventType = "complete" | "loop" | "frameChange";
  * ```
  * @example
  * ```ts
+ * Assets.add({ alias: "explosion", src: "https://pixijs.com/assets/spritesheet/mc.json" });
+ *
  * const explosion = new AnimatedSprite(
  *     { anchor: 0.5, align: 0.5, animationSpeed: 0.5, autoPlay: true },
- *     { spritesheet: "https://pixijs.com/assets/spritesheet/mc.json" },
+ *     { spritesheet: "explosion" },
  * );
  * await explosion.load();
  * canvas.add("explosion", explosion);
  * ```
  * @example
  * ```ts
- * const fighter = addAnimatedSprite("fighter", "https://pixijs.com/assets/spritesheet/fighter.json", { loop: true });
+ * Assets.add({ alias: "fighter", src: "https://pixijs.com/assets/spritesheet/fighter.json" });
+ *
+ * // the alias of the component is also the alias of the spritesheet
+ * const fighter = addAnimatedSprite("fighter", { loop: true });
  * await fighter.load();
  * fighter.play();
+ * // a different alias for the component
+ * const myFighter = await showAnimatedSprite("myFighter", "fighter", { xAlign: 1 });
  * ```
  */
 export default class AnimatedSprite

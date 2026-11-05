@@ -138,14 +138,20 @@ transition helper accepts an image URL (`.mp4`, `.webm`, `.mov`, etc. — see `c
 ## Playing a frame animation (spritesheet)
 
 ```ts
-import { AnimatedSprite, canvas, showAnimatedSprite } from "@drincs/pixi-vn";
+import { AnimatedSprite, Assets, canvas, showAnimatedSprite } from "@drincs/pixi-vn";
 
-// all frames of a spritesheet JSON, in natural order ("frame2" before "frame10")
-await showAnimatedSprite("explosion", "https://pixijs.com/assets/spritesheet/mc.json", {
+// usually registered in the assets manifest (see pixi-vn-assets)
+Assets.add({ alias: "explosion", src: "https://pixijs.com/assets/spritesheet/mc.json" });
+
+// all frames of a spritesheet JSON, in natural order ("frame2" before "frame10");
+// the alias of the component is also the alias of the spritesheet
+await showAnimatedSprite("explosion", {
     anchor: 0.5,
     align: 0.5,
     animationSpeed: 0.5, // plays by default; pass autoPlay: false to start stopped
 });
+// a different alias for the component: (alias, spritesheetAlias, options)
+await showAnimatedSprite("explosion2", "explosion", { align: { x: 0.8, y: 0.5 } });
 // a named animation of the spritesheet (its "animations" field)
 await showAnimatedSprite("hero", { spritesheet: "hero-sheet", animation: "walk" });
 // chosen frames, optionally with a duration in ms each

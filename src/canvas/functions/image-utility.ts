@@ -13,7 +13,9 @@ import ImageSprite from "../components/ImageSprite";
  * @throws {PixiError} when `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * const c = addImage("image1", { xAlign: 0.5 });
+ * Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
+ * const bunny = addImage("bunny", { xAlign: 0.5 });
+ * await bunny.load();
  * ```
  */
 export function addImage(alias: string, options?: ImageSpriteOptions): ImageSprite;
@@ -28,11 +30,14 @@ export function addImage(alias: string, options?: ImageSpriteOptions): ImageSpri
  * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * let bunny1 = addImage("bunny1", "https://pixijs.com/assets/bunny1.png")
- * await bunny1.load()
- * Assets.add({ alias: "bunny2", src: "https://pixijs.com/assets/bunny2.png" })
- * let bunny2 = addImage("bunny2")
- * await bunny2.load()
+ * Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
+ *
+ * // "bunny" is the alias of the component and of the asset
+ * const bunny1 = addImage("bunny");
+ * await bunny1.load();
+ * // a different alias for the component: (alias, assetAlias, options)
+ * const bunny2 = addImage("bunny2", "bunny", { xAlign: 1 });
+ * await bunny2.load();
  * ```
  */
 export function addImage(
@@ -81,7 +86,8 @@ export function addImage(
  * @throws {PixiError} when `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * await showImage("image1", { xAlign: 0.5 });
+ * Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
+ * await showImage("bunny", { xAlign: 0.5 });
  * ```
  */
 export async function showImage(alias: string, options?: ImageSpriteOptions): Promise<ImageSprite>;
@@ -94,9 +100,12 @@ export async function showImage(alias: string, options?: ImageSpriteOptions): Pr
  * @throws {PixiError} when `imageUrl` is not provided and `alias` is not registered in the asset cache.
  * @example
  * ```ts
- * let bunny1 = showImage("bunny1", "https://pixijs.com/assets/bunny1.png")
- * Assets.add({ alias: "bunny2", src: "https://pixijs.com/assets/bunny2.png" })
- * let bunny2 = showImage("bunny2")
+ * Assets.add({ alias: "bunny", src: "https://pixijs.com/assets/bunny.png" });
+ *
+ * // "bunny" is the alias of the component and of the asset
+ * const bunny1 = await showImage("bunny");
+ * // a different alias for the component: (alias, assetAlias, options)
+ * const bunny2 = await showImage("bunny2", "bunny", { xAlign: 1 });
  * ```
  */
 export async function showImage(
