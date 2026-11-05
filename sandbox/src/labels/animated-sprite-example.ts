@@ -1,7 +1,9 @@
 import {
     addAnimatedSprite,
     type AnimatedSprite,
+    Assets,
     canvas,
+    RegisteredEvents,
     showAnimatedSprite,
 } from "@drincs/pixi-vn/canvas";
 import { narration } from "@drincs/pixi-vn/narration";
@@ -10,6 +12,12 @@ import { registerTestLabel } from "./registry";
 const MC = "https://pixijs.com/assets/spritesheet/mc.json";
 const FIGHTER = "https://pixijs.com/assets/spritesheet/fighter.json";
 const DIGITS = "https://pixijs.com/assets/spritesheet/0123456789.json";
+
+/** Savable "complete" listener (same as `@eventDecorator()`, registered by hand to avoid decorators here). */
+function removeOnComplete(component: AnimatedSprite) {
+    canvas.remove(component.label);
+}
+RegisteredEvents.add(removeOnComplete, "sandbox-animated-sprite-remove-on-complete");
 
 /**
  * Exercises AnimatedSprite with real spritesheets and real ticker timing: frame order (natural sort),
@@ -91,6 +99,30 @@ registerTestLabel(
             canvas.find<AnimatedSprite>("digits")?.gotoAndPlay(0);
             narration.dialogue = {
                 text: "load() was called: the explosion starts from frame 13 and plays. The digits play again from 0. Save, reload and go back here: frames and playing state must match.",
+            };
+        },
+        async () => {
+            canvas.clear();
+            const once = await showAnimatedSprite("explosion-once", MC, {
+                anchor: 0.5,
+                align: 0.5,
+                animationSpeed: 0.2,
+                loop: false,
+            });
+            once.on("complete", removeOnComplete);
+            narration.dialogue = {
+                text: "A non-looping explosion with a saved 'complete' listener: it must disappear when it ends. Save before it ends and load: it must still disappear (listener restored, not fired by the restore).",
+            };
+        },
+        async () => {
+            // (alias, options) form: the alias is the spritesheet alias
+            canvas.clear();
+            if (!Assets.resolver.hasKey("sandbox-fighter")) {
+                Assets.add({ alias: "sandbox-fighter", src: FIGHTER });
+            }
+            await showAnimatedSprite("sandbox-fighter", { anchor: 0.5, align: 0.5, animationSpeed: 0.4 });
+            narration.dialogue = {
+                text: "showAnimatedSprite(alias, options): the fighter is loaded from the spritesheet registered with the same alias.",
             };
         },
     ],
