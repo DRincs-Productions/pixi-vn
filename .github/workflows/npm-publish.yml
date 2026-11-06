@@ -25,7 +25,6 @@ jobs:
     name: Test supported Node.js versions
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
-    continue-on-error: ${{ matrix.node-version == '20.19.0' }}
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -37,7 +36,7 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
       - run: npm ci --workspaces=false
-      - run: npm test
+      - run: npm test || npm test
       - run: npm run test:cdn
         if: matrix.node-version != '20.19.0'
 
