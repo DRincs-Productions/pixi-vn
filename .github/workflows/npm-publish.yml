@@ -28,6 +28,7 @@ jobs:
     continue-on-error: ${{ matrix.node-version == '20.19.0' }}
     strategy:
       fail-fast: false
+      max-parallel: 1
       matrix:
         node-version: ["20.19.0", "22.18.0", "24"]
     steps:
