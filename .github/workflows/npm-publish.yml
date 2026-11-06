@@ -67,27 +67,10 @@ jobs:
       contents: write
     steps:
     - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-    - name: Extract dependency versions
-      id: versions
-      run: |
-        PIXIJS_VERSION=$(node -p "require('./package.json').dependencies['pixi.js']")
-        TONE_VERSION=$(node -p "require('./package.json').dependencies['tone']")
-        PIXIDEVTOOLS_VERSION=$(node -p "require('./package.json').dependencies['@pixi/devtools']")
-        MOTION_VERSION=$(node -p "require('./package.json').dependencies['motion']")
-        echo "pixijs=$PIXIJS_VERSION" >> $GITHUB_OUTPUT
-        echo "pixidevtools=$PIXIDEVTOOLS_VERSION" >> $GITHUB_OUTPUT
-        echo "tone=$TONE_VERSION" >> $GITHUB_OUTPUT
-        echo "motion=$MOTION_VERSION" >> $GITHUB_OUTPUT
     - uses: ncipollo/release-action@339a81892b84b4eeb0f6e744e4574d79d0d9b8dd # v1
       with:
         body: |
-          Release ${{ github.ref }}
-          
-          ### Dependencies
-          - **PixiJS**: ${{ steps.versions.outputs.pixijs }}
-          - **Pixi Devtools**: ${{ steps.versions.outputs.pixidevtools }}
-          - **Tone.js**: ${{ steps.versions.outputs.tone }}
-          - **Motion**: ${{ steps.versions.outputs.motion }}
+          Release ${{ github.ref_name }}
 
   check-wiki-write-access:
     name: Check Wiki write access
