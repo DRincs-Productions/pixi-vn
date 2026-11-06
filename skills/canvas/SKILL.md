@@ -229,6 +229,34 @@ there is no `Texture[]` constructor, and `AnimatedSprite.fromFrames`/`fromImages
 textures can't be saved. Available since `@drincs/pixi-vn` 1.9.9.
 `getSpritesheet(alias)` and `getAnimatedSpriteFrames(source)` are exported for custom components.
 
+For `.ase`/`.aseprite` source files, the optional
+[`@drincs/assetpack-plugin-aseprite`](https://www.npmjs.com/package/@drincs/assetpack-plugin-aseprite)
+converts them into PixiJS spritesheets during the AssetPack build. It uses Node.js and does not
+require the Aseprite or LibreSprite CLI. Install both packages as development dependencies:
+
+```sh
+npm install --save-dev @assetpack/core @drincs/assetpack-plugin-aseprite
+```
+
+Add `aseprite()` before the standard PixiJS pipes and keep AssetPack's cache enabled to reuse
+conversions of unchanged files:
+
+```ts
+import { aseprite } from "@drincs/assetpack-plugin-aseprite";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+export default {
+    entry: "public/assets",
+    output: "public/assets-build",
+    cache: true,
+    cacheLocation: ".assetpack",
+    pipes: [aseprite(), ...pixiPipes()],
+};
+```
+
+Use the generated spritesheet alias with `AnimatedSprite` as usual. Aseprite tags become named
+animations, and `useFrameDurations: true` applies the timings stored in the source file.
+
 ## Transitions
 
 Docs: [pixi-vn.com/start/canvas-transition](https://pixi-vn.com/start/canvas-transition).
