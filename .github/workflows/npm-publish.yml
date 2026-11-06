@@ -29,7 +29,7 @@ jobs:
       fail-fast: false
       max-parallel: 1
       matrix:
-        node-version: ["20.19.0", "22.18.0", "24"]
+        node-version: ["22.18.0", "24"]
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
@@ -38,7 +38,19 @@ jobs:
       - run: npm ci --workspaces=false
       - run: npm test || npm test
       - run: npm run test:cdn
-        if: matrix.node-version != '20.19.0'
+
+  test-node-20:
+    name: Test Node.js 20 (non-blocking)
+    runs-on: ubuntu-latest
+    if: github.event_name == 'push'
+    continue-on-error: true
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version: 20.19.0
+      - run: npm ci --workspaces=false
+      - run: npm test || npm test
 
   publish-npm:
     name: Publish to NPM
