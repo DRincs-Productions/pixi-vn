@@ -26,6 +26,7 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
     strategy:
+      fail-fast: false
       matrix:
         node-version: ["20.19.0", "22.18.0", "24"]
     steps:
