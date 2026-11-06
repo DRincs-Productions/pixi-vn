@@ -7,7 +7,7 @@ import { stripedTriangleSvg } from "./targets";
 const image = "persistent-filters-image";
 
 /**
- * `filters` comes from a PixiJS global type mixin (`PixiMixins.Container`) that the sandbox's CRA
+ * `filters` comes from a PixiJS global type mixin (`PixiMixins.Container`) that the playground's CRA
  * TypeScript setup (old `moduleResolution`, can't even resolve `@drincs/pixi-vn/pixi.js`'s types)
  * doesn't pick up on `canvas.find()`'s return type - it's there at runtime.
  */

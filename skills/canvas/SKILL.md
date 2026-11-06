@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-canvas
-description: Use when adding, moving, or removing images, sprites, text, or video on the Pixi'VN game canvas, or when applying or creating transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate, or a custom one built on `canvas.animate`/`filters.animate`), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
+description: Use when adding, moving, or removing images, sprites, spritesheet frame animations (AnimatedSprite), text, or video on the Pixi'VN game canvas, or when applying or creating transitions (dissolve, fade, move, zoom, push, wipe, iris, split, flash, blur, pixelate, or a custom one built on `canvas.animate`/`filters.animate`), shake/animation effects, or ticker-based animations built on PixiJS. Covers the `canvas` singleton exported from `@drincs/pixi-vn`. For UI layers (HTML or PixiJS) mounted on top of the canvas, see `pixi-vn-ui` instead.
 ---
 
 # Pixi'VN Canvas
@@ -42,14 +42,14 @@ this skill is about the underlying rendering primitives.
   normally done for you by `Game.init(...)` from the core package — see `pixi-vn`).
 - **Elements are tracked by alias, not by variable** ([docs](https://pixi-vn.com/start/canvas-alias)).
   `canvas.add(alias, component)` inserts a component (an instance of `Container`, `Sprite`,
-  `ImageSprite`, `ImageContainer`, `Text`, or `VideoSprite`) into `canvas.layers.gameLayer` (a single
+  `ImageSprite`, `ImageContainer`, `Text`, `VideoSprite`, or `AnimatedSprite`) into `canvas.layers.gameLayer` (a single
   PixiJS `Container` that holds all "in-scene" elements) and sets `component.label = alias`. Use
   `canvas.find<T>(alias)` to look elements back up and `canvas.remove(alias)` to remove them.
   Aliases are also how Pixi'VN saves/restores canvas state (see `pixi-vn-storage`), so prefer the
   alias-based helpers below over holding onto raw object references across steps.
 - **Every element class is a save-able extension of a PixiJS class**: `Container` extends
-  `PIXI.Container`, `Sprite`/`ImageSprite`/`VideoSprite` extend `PIXI.Sprite`, `Text` extends
-  `PIXI.Text`. They add a `.memory` getter / `.setMemory()` for serialization, plus convenience
+  `PIXI.Container`, `Sprite`/`ImageSprite`/`VideoSprite` extend `PIXI.Sprite`, `AnimatedSprite`
+  extends `PIXI.AnimatedSprite`, `Text` extends `PIXI.Text`. They add a `.memory` getter / `.setMemory()` for serialization, plus convenience
   properties (`anchor`, `align`, `percentagePosition`, `xAlign`/`yAlign`, `percentageX`/`percentageY`)
   as alternative ways to position an element without doing pixel math.
 - **`Layer`** is just a type alias for a plain `PIXI.Container<ContainerChild>` — there's no
@@ -73,6 +73,10 @@ await bunny1.load();
 
 // showImage() is addImage() + load() in one call
 const bunny2 = await showImage("bunny2");
+// options can be passed directly as 2nd argument: the alias is also the asset alias
+const bg = await showImage("bg", { xAlign: 0.5, zIndex: -1 });
+// a different asset than the alias: (alias, assetAliasOrUrl, options)
+const bunny3 = await showImage("bunny3", "bunny2", { xAlign: 1 });
 bunny2.anchor = 0.5;
 bunny2.x = canvas.width / 2;
 bunny2.y = canvas.height / 2;
@@ -85,7 +89,9 @@ Always pass a manifest **alias** (as above), not a raw URL/path — see `pixi-vn
 assets get registered (local vs. online) and loaded. `addImage`/`showImage` do also accept a raw
 URL as a second argument for quick prototyping, but that couples code to a specific file location;
 `addImage`/`showImage` throw a `PixiError` if neither a URL nor a registered alias resolves. Both
-return an `ImageSprite`.
+return an `ImageSprite`. Since 1.9.9 `addImage`/`showImage`, `addVideo`/`showVideo` and
+`addAnimatedSprite`/`showAnimatedSprite` accept both `(alias, options?)` and `(alias, url?, options?)`;
+passing `undefined` as url also means "use the alias".
 
 For a composite image made of multiple stacked textures (e.g. a character body + outfit + face),
 use `ImageContainer` via `addImageCointainer` / `showImageContainer` (note the exported spelling
@@ -128,6 +134,128 @@ film.loop = true;
 `addVideo`/`showVideo` mirror `addImage`/`showImage` and return a `VideoSprite` (extends
 `ImageSprite`). Files are also recognized as videos by extension automatically anywhere a
 transition helper accepts an image URL (`.mp4`, `.webm`, `.mov`, etc. — see `checkIfVideo`).
+
+React to the end of a video with the `"ended"` event (the `ended` event of the underlying
+`HTMLVideoElement`). As with `AnimatedSprite` events, a listener registered with `@eventDecorator()`
+is saved and restored; it receives `(component)` and is not called while the video loads or a save
+is restored. The listener follows the video element: replacing the texture (`load()`, `texture = ...`)
+moves it to the new video, and `destroy()` removes it. A looping video (`loop = true`) does not emit
+`"ended"`, because the browser restarts it without firing `ended`.
+
+```ts
+import { canvas, eventDecorator, showVideo, VideoSprite } from "@drincs/pixi-vn";
+
+export class FilmEvents {
+    @eventDecorator()
+    static remove(component: VideoSprite) {
+        canvas.remove(component.label);
+    }
+}
+
+const film = await showVideo("intro-film");
+film.on("ended", FilmEvents.remove);
+```
+
+Custom components can reuse the same mechanism with `EventSuppressor`: emit savable events through
+`suppressor.emit(this, "myEvent", ...args)` and wrap loading/restoring in `suppressor.run(...)`. Only
+the events emitted through the suppressor are silenced (pointer events are not), and nested or
+concurrent `run` calls keep them silenced until the last one finishes, even if one throws.
+
+## Playing a frame animation (spritesheet)
+
+```ts
+import { AnimatedSprite, Assets, canvas, showAnimatedSprite } from "@drincs/pixi-vn";
+
+// usually registered in the assets manifest (see pixi-vn-assets)
+Assets.add({ alias: "explosion", src: "https://pixijs.com/assets/spritesheet/mc.json" });
+
+// all frames of a spritesheet JSON, in natural order ("frame2" before "frame10");
+// the alias of the component is also the alias of the spritesheet
+await showAnimatedSprite("explosion", {
+    anchor: 0.5,
+    align: 0.5,
+    animationSpeed: 0.5, // plays by default; pass autoPlay: false to start stopped
+});
+// a different alias for the component: (alias, spritesheetAlias, options)
+await showAnimatedSprite("explosion2", "explosion", { align: { x: 0.8, y: 0.5 } });
+// a named animation of the spritesheet (its "animations" field)
+await showAnimatedSprite("hero", { spritesheet: "hero-sheet", animation: "walk" });
+// chosen frames, optionally with a duration in ms each
+await showAnimatedSprite("blink", {
+    spritesheet: "hero-sheet",
+    frames: [{ texture: "eyes_open.png", time: 2000 }, "eyes_closed.png"],
+});
+// per-frame "duration" stored in the JSON (Aseprite / TexturePacker exports)
+await showAnimatedSprite("digits", { spritesheet: "digits", useFrameDurations: true });
+// separate images instead of a spritesheet
+await showAnimatedSprite("flag", { frames: ["flag1", "flag2", "flag3"] });
+
+// (alias, options): the alias is the spritesheet; { animation } alone also uses the alias as spritesheet
+await showAnimatedSprite("fighter", { align: 0.5, animationSpeed: 0.4 });
+await showAnimatedSprite("hero-sheet", { animation: "run" }, { align: 0.5 });
+
+const hero = canvas.find<AnimatedSprite>("hero");
+hero?.stop(); // play(), gotoAndStop(n), gotoAndPlay(n), loop, animationSpeed, currentFrame
+```
+
+React to the animation with the `"complete"` (end of a non-looping animation), `"loop"` and
+`"frameChange"` events, not with the PixiJS `onComplete`/`onLoop`/`onFrameChange` callbacks: events
+registered with `@eventDecorator()` are saved and restored like pointer events, callbacks are not.
+Listeners receive `(component)`, or `(currentFrame, component)` for `"frameChange"`, and are not
+called while frames load or a save is restored.
+
+```ts
+import { AnimatedSprite, canvas, eventDecorator, showAnimatedSprite } from "@drincs/pixi-vn";
+
+export class ExplosionEvents {
+    @eventDecorator()
+    static remove(component: AnimatedSprite) {
+        canvas.remove(component.label);
+    }
+}
+
+const explosion = await showAnimatedSprite("explosion", { loop: false });
+explosion.on("complete", ExplosionEvents.remove);
+```
+
+`addAnimatedSprite`/`showAnimatedSprite` mirror `addImage`/`showImage` and return an `AnimatedSprite`.
+The second argument is an `AnimatedSpriteSource` (or a string, shorthand for `{ spritesheet }`); if
+omitted, the alias itself is used as the spritesheet alias. The source holds only aliases and frame
+names, which is what gets saved: on load/go-back the frames are rebuilt from it and the current frame,
+playing state, `loop` and `animationSpeed` are restored. Building one by hand:
+`new AnimatedSprite(options, source)` then `await sprite.load()` (frame/playing state set before
+`load()`, e.g. `setFrame(3, true)`, is applied once loaded). Frames can only come from a `source`:
+there is no `Texture[]` constructor, and `AnimatedSprite.fromFrames`/`fromImages` throw, because raw
+textures can't be saved. Available since `@drincs/pixi-vn` 1.9.9.
+`getSpritesheet(alias)` and `getAnimatedSpriteFrames(source)` are exported for custom components.
+
+For `.ase`/`.aseprite` source files, the optional
+[`@drincs/assetpack-plugin-aseprite`](https://www.npmjs.com/package/@drincs/assetpack-plugin-aseprite)
+converts them into PixiJS spritesheets during the AssetPack build. It uses Node.js and does not
+require the Aseprite or LibreSprite CLI. Install both packages as development dependencies:
+
+```sh
+npm install --save-dev @assetpack/core @drincs/assetpack-plugin-aseprite
+```
+
+Add `aseprite()` before the standard PixiJS pipes and keep AssetPack's cache enabled to reuse
+conversions of unchanged files:
+
+```ts
+import { aseprite } from "@drincs/assetpack-plugin-aseprite";
+import { pixiPipes } from "@assetpack/core/pixi";
+
+export default {
+    entry: "public/assets",
+    output: "public/assets-build",
+    cache: true,
+    cacheLocation: ".assetpack",
+    pipes: [aseprite(), ...pixiPipes()],
+};
+```
+
+Use the generated spritesheet alias with `AnimatedSprite` as usual. Aseprite tags become named
+animations, and `useFrameDurations: true` applies the timings stored in the source file.
 
 ## Transitions
 
@@ -583,9 +711,12 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
 
 ## Gotchas
 
-- **`addImage`/`addVideo`/`addImageCointainer` only construct and register the element — the
+- **`AnimatedSprite` doesn't accept `onComplete`/`onFrameChange`/`onLoop` in its options** (like `Sprite`
+  doesn't accept `on`): callbacks can't be saved, so use the `"complete"`/`"loop"`/`"frameChange"` events
+  with `@eventDecorator()` instead.
+- **`addImage`/`addVideo`/`addImageCointainer`/`addAnimatedSprite` only construct and register the element — the
   texture is not loaded/visible until you `await element.load()`.** The `show*` variants
-  (`showImage`, `showVideo`, `showImageContainer`, and the transition helpers) call `load()` for
+  (`showImage`, `showVideo`, `showImageContainer`, `showAnimatedSprite`, and the transition helpers) call `load()` for
   you; prefer them unless you need to prepare an element off-screen first.
 - **`getTexture`/`load()` throw a `PixiError` (`unregistered_asset`)** if the alias can't be
   resolved from the PixiJS `Assets` cache/manifest. See `pixi-vn-assets` for how to register an
@@ -615,6 +746,17 @@ save-file thumbnails, and how to build a UI purely out of PixiJS components, is 
   `addLayer` will refuse to use that alias.
 - `canvas.pause()`/`canvas.resume()` stop/restart rendering and tickers for the whole game layer
   (e.g. when opening a menu) — remember to call `resume()` or elements will appear frozen.
+  `pause()` also *suspends* the `AnimatedSprite`s and videos (`VideoSprite`) of the game layer (nested
+  ones included). The suspension is temporary and separate from the playback the game asked for, as
+  with `sound.unsaved.pauseAll()`: `AnimatedSprite.playing`, `VideoSprite.paused` and the save keep the
+  requested state, and `stop()`/`gotoAndStop()`/`pause()`/`play()` called while paused are applied by
+  `resume()` — an animation or video stopped before or during the pause stays stopped, the others
+  continue. Animations and videos removed from the game layer while paused are not restarted by
+  `resume()` (or `canvas.clear()`). Elements added while paused are not suspended, other layers are
+  untouched (except that sprites sharing the same video element share its playback, and so its saved
+  `paused` state). Plain PixiJS `AnimatedSprite`s and video
+  sprites (not the pixi-vn components) are simply stopped and restarted if they were playing, so a stop
+  requested on them while paused is not kept.
 
 ## Related skills
 

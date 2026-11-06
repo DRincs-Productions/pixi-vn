@@ -1,4 +1,5 @@
-import { useEffect, useMemo, useState } from "react";
+import { canvas } from "@drincs/pixi-vn/canvas";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { testLabels, type TestLabelEntry } from "./labels/registry";
 import { START_LABEL_ID } from "./labels/start";
 
@@ -26,20 +27,23 @@ export default function App() {
     const [state, setState] = useState<ReturnType<TestingApi["getState"]>>();
     const [errors, setErrors] = useState<unknown[]>([]);
     const [busy, setBusy] = useState(false);
+    // undefined while the canvas isn't initialized; otherwise whether the game layer is paused
+    const [gamePaused, setGamePaused] = useState<boolean>();
 
-    const refresh = () => {
+    const refresh = useCallback(() => {
         const api = getTestingApi();
         if (api) {
             setState(api.getState());
             setErrors(api.errors);
         }
-    };
+        setGamePaused(canvas.isInitialized ? !canvas.gameLayer.renderable : undefined);
+    }, []);
 
     useEffect(() => {
         refresh();
         const interval = window.setInterval(refresh, 250);
         return () => window.clearInterval(interval);
-    }, []);
+    }, [refresh]);
 
     const run = async (action: () => Promise<unknown> | unknown) => {
         setBusy(true);
@@ -53,7 +57,7 @@ export default function App() {
 
     const api = getTestingApi();
 
-    // Every registered label already shows up as a choice on the "sandbox-start" screen (see
+    // Every registered label already shows up as a choice on the "playground-start" screen (see
     // labels/start.ts) - only render the generic choices list below when it's showing something
     // *other* than that same menu, to avoid listing every label twice.
     const showChoices = Boolean(state?.choices?.length) && state?.currentLabelId !== START_LABEL_ID;
@@ -94,7 +98,7 @@ export default function App() {
                 boxShadow: "0 12px 32px rgba(0, 0, 0, 0.35)",
             }}
         >
-            <h1 style={{ margin: "0 0 12px", fontSize: 18 }}>Pixi&apos;VN sandbox</h1>
+            <h1 style={{ margin: "0 0 12px", fontSize: 18 }}>Pixi&apos;VN playground</h1>
             <button
                 disabled={!api || busy}
                 onClick={() => run(() => api?.start(START_LABEL_ID))}
@@ -145,6 +149,14 @@ export default function App() {
                     }}
                 >
                     Chiudi label
+                </button>
+                <button
+                    disabled={!api || busy || gamePaused === undefined}
+                    onClick={() =>
+                        run(() => (canvas.gameLayer.renderable ? canvas.pause() : canvas.resume()))
+                    }
+                >
+                    {gamePaused ? "Game resume" : "Game pause"}
                 </button>
             </div>
 

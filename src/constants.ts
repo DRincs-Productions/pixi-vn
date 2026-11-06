@@ -11,6 +11,7 @@ export const CANVAS_IMAGE_ID = "Image";
 export const CANVAS_SPRITE_ID = "Sprite";
 export const CANVAS_TEXT_ID = "Text";
 export const CANVAS_VIDEO_ID = "Video";
+export const CANVAS_ANIMATED_SPRITE_ID = "AnimatedSprite";
 
 /**
  * The default audio channel for sounds that don't specify one.

@@ -13,7 +13,7 @@ import { RegisteredFilters } from "../src/filters";
  * `GlitchFilter`'s constructor draws onto a scratch `<canvas>` (2D context) to build its displacement
  * texture - `jsdom` doesn't implement `getContext("2d")` (see the "Not implemented" warnings this whole
  * suite already logs), so it can't even be constructed here, let alone round-tripped. Its registration
- * is still exercised for real in the sandbox (a real browser has a real 2D context) - see CLAUDE.md §3.
+ * is still exercised for real in the playground (a real browser has a real 2D context) - see CLAUDE.md §3.
  */
 const JSDOM_UNCONSTRUCTABLE = new Set(["GlitchFilter"]);
 

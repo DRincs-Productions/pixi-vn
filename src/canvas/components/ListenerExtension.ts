@@ -1,6 +1,30 @@
 import RegisteredEvents, { SERIALIZABLE_EVENT } from "@canvas/decorators/event-decorator";
-import type { Container } from "@drincs/pixi-vn/pixi.js";
+import type {
+    Container,
+    ContainerChild,
+    ContainerEvents,
+    EventEmitter,
+} from "@drincs/pixi-vn/pixi.js";
 import { logger } from "@utils/log-utility";
+
+/** Arbitrary string/symbol events, accepted by every PixiJS container. */
+type CustomEvents = { [K: symbol]: any; [K: {} & string]: any };
+type ListenerEvents = ContainerEvents<ContainerChild> & CustomEvents;
+
+/**
+ * An event name accepted by `.on(...)`: a PixiJS container event (e.g. `"pointerdown"`) or any custom
+ * string/symbol event.
+ */
+export type ListenerEventName = keyof ContainerEvents<ContainerChild> | keyof CustomEvents;
+
+/**
+ * The arguments received by a `.on(event, fn)` listener: the arguments of the event, followed by the
+ * component that emitted it.
+ */
+export type ListenerEventArgs<T extends ListenerEventName, Component> = [
+    ...EventEmitter.ArgumentMap<ListenerEvents>[Extract<T, ListenerEventName>],
+    Component,
+];
 
 export interface ListenerExtensionMemory {
     onEvents?: OnEventsHandlers;
@@ -61,7 +85,7 @@ export function addListenerHandler<T extends ListenerExtension>(
         return true;
     } else {
         logger.warn(
-            `The event handler for event "${event as string}" is not registered with the eventDecorator, it will not be saved in the memory and it will not work after loading the game. Please register the event handler with the eventDecorator to avoid this warning. Read more about it here: https://pixi-vn.com/start/canvas-functions#add-a-listener-to-an-event`,
+            `The event handler for event "${String(event)}" is not registered with the eventDecorator, it will not be saved in the memory and it will not work after loading the game. Please register the event handler with the eventDecorator to avoid this warning. Read more about it here: https://pixi-vn.com/start/canvas-functions#add-a-listener-to-an-event`,
         );
         return false;
     }

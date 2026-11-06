@@ -1,4 +1,5 @@
 import type {
+    AnimatedSpriteOptions as PixiAnimatedSpriteOptions,
     CanvasTextOptions,
     ContainerOptions as PixiContainerOptions,
     SpriteOptions as PixiSpriteOptions,
@@ -25,3 +26,15 @@ export interface VideoSpriteOptions extends ImageSpriteOptions {
     paused?: boolean;
     currentTime?: number;
 }
+/**
+ * The options of an {@link AnimatedSprite}. The frames are not options: they are described by an
+ * `AnimatedSpriteSource` and loaded with `load()`, so that the component can be saved and restored.
+ * The `onComplete`, `onFrameChange` and `onLoop` callbacks are not options either, because they can't be saved:
+ * listen to the `"complete"`, `"frameChange"` and `"loop"` events with `.on(...)` instead.
+ */
+export interface AnimatedSpriteOptions
+    extends Omit<
+            PixiAnimatedSpriteOptions,
+            "on" | "textures" | "onComplete" | "onFrameChange" | "onLoop"
+        >,
+        AdditionalPositionsExtensionProps {}

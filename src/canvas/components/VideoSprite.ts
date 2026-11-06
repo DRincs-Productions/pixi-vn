@@ -1,33 +1,83 @@
+import { EventSuppressor } from "@canvas/components/EventSuppressor";
 import ImageSprite, { setMemoryImageSprite } from "@canvas/components/ImageSprite";
+import type { ListenerEventArgs, ListenerEventName } from "@canvas/components/ListenerExtension";
 import RegisteredCanvasComponents from "@canvas/decorators/canvas-element-decorator";
 import type { showWithDissolve } from "@canvas/functions/canvas-transition";
 import type { addVideo } from "@canvas/functions/video-utility";
 import type AssetMemory from "@canvas/interfaces/AssetMemory";
 import type { VideoSpriteOptions } from "@canvas/interfaces/canvas-options";
 import type VideoSpriteMemory from "@canvas/interfaces/memory/VideoSpriteMemory";
+import { getVideoElement, systemPausedVideos } from "@canvas/functions/media-system-pause";
 import { CANVAS_VIDEO_ID } from "@constants";
-import type { Texture, TextureSourceLike } from "@drincs/pixi-vn/pixi.js";
+import type {
+    DestroyOptions,
+    Texture,
+    TextureSource,
+    TextureSourceLike,
+} from "@drincs/pixi-vn/pixi.js";
 import { default as PIXI } from "@drincs/pixi-vn/pixi.js";
+
+/**
+ * The savable events of a {@link VideoSprite}, in addition to the PixiJS container events:
+ * - `"ended"`: the video reached its end (the `ended` event of the `HTMLVideoElement`); the listener
+ *   receives `(component)`. Looping videos never emit it.
+ *
+ * They are not emitted while the video is loaded or a save is restored.
+ */
+export type VideoSpriteEventType = "ended";
+
+/**
+ * The `ended` listener of each sprite's `HTMLVideoElement`. It lives outside the instance because the
+ * superclass constructor calls the texture setter before the class fields are initialized.
+ */
+const videoEndedBindings = new WeakMap<
+    VideoSprite,
+    { resource: HTMLVideoElement; listener: () => void }
+>();
+
+function detachVideoEndedListener(sprite: VideoSprite) {
+    const binding = videoEndedBindings.get(sprite);
+    if (binding) {
+        binding.resource.removeEventListener("ended", binding.listener);
+        videoEndedBindings.delete(sprite);
+    }
+}
 
 /**
  * This class is a extension of the {@link ImageSprite} class, it has the same properties and methods,
  * but it has some features that make video management easier.
  * You need to use {@link load} to show the video in the canvas.
  * This class is used for functions like {@link addVideo} and {@link showWithDissolve}.
- * @example
+ *
+ * Listen to the `"ended"` event (see {@link VideoSpriteEventType}) with a handler registered with
+ * `eventDecorator`, so it is saved:
  * ```ts
- * let film = new VideoSprite({
- *     x: 100,
- *     y: 100,
- * }, 'https://pixijs.com/assets/video.mp4')
- * await film.load()
- * canvas.add("film", film)
+ * class Events {
+ *     \@eventDecorator()
+ *     static removeFilm(component: VideoSprite) {
+ *         canvas.remove(component.label);
+ *     }
+ * }
+ * film.on("ended", Events.removeFilm);
  * ```
  * @example
  * ```ts
- * let film = addVideo("film", 'https://pixijs.com/assets/video.mp4')
- * film.currentTime = 2
- * await film.load()
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ *
+ * const film = new VideoSprite({ x: 100, y: 100 }, "film");
+ * await film.load();
+ * canvas.add("film", film);
+ * ```
+ * @example
+ * ```ts
+ * Assets.add({ alias: "film", src: "https://pixijs.com/assets/video.mp4" });
+ *
+ * // the alias of the component is also the alias of the asset
+ * const film = addVideo("film", { loop: true });
+ * film.currentTime = 2;
+ * await film.load();
+ * // a different alias for the component
+ * const film2 = await showVideo("film2", "film", { xAlign: 1 });
  * ```
  */
 export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
@@ -58,13 +108,15 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
             ...super.memory,
             pixivnId: this.pixivnId,
             loop: this.loop,
-            paused: this._paused,
+            paused: this.paused,
             currentTime: this.currentTime,
         };
     }
     override async setMemory(value: VideoSpriteMemory) {
-        await setMemoryVideoSprite(this, value);
-        this.reloadPosition();
+        await this.withSilentEvents(async () => {
+            await setMemoryVideoSprite(this, value);
+            this.reloadPosition();
+        });
     }
     static override from(source: Texture | TextureSourceLike, skipCache?: boolean) {
         const sprite = PIXI.Sprite.from(source, skipCache);
@@ -73,11 +125,71 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         return mySprite;
     }
 
+    /**
+     * Load the video and set the texture of the sprite. The video events are not emitted during the loading.
+     * @returns A promise that resolves when the video is loaded.
+     */
     override async load() {
-        await super.load();
-        this.loop = this._looop;
-        this.currentTime = this._currentTime;
-        this.paused = this._paused;
+        await this.withSilentEvents(async () => {
+            await super.load();
+            this.loop = this._looop;
+            this.currentTime = this._currentTime;
+            this.paused = this._paused;
+        });
+    }
+
+    /** Video events */
+
+    private readonly _eventSuppressor = new EventSuppressor();
+    /**
+     * Run `fn` without emitting the video events (see {@link VideoSpriteEventType}).
+     * @internal
+     */
+    async withSilentEvents<T>(fn: () => Promise<T> | T): Promise<T> {
+        return this._eventSuppressor.run(fn);
+    }
+    /**
+     * Move the `ended` listener to the video element of the current texture, if it changed.
+     * Called by the superclass constructor too, so it must not rely on the fields of this class.
+     */
+    private syncVideoEndedListener() {
+        const resource = this.destroyed ? undefined : getVideoElement(this.texture);
+        if (videoEndedBindings.get(this)?.resource === resource) {
+            return;
+        }
+        detachVideoEndedListener(this);
+        if (resource) {
+            const listener = () => this._eventSuppressor.emit(this, "ended");
+            resource.addEventListener("ended", listener);
+            videoEndedBindings.set(this, { resource, listener });
+        }
+    }
+
+    override set texture(value: Texture<TextureSource<any>>) {
+        super.texture = value;
+        this.syncVideoEndedListener();
+    }
+    override get texture(): Texture<TextureSource<any>> {
+        return super.texture;
+    }
+
+    override destroy(options?: DestroyOptions): void {
+        detachVideoEndedListener(this);
+        super.destroy(options);
+    }
+
+    /**
+     * Add a listener for the `"ended"` video event. Register the listener with `eventDecorator` to save it.
+     */
+    override on(event: VideoSpriteEventType, fn: (component: this) => void, context?: any): this;
+    override on<T extends ListenerEventName>(
+        event: T,
+        fn: (...args: ListenerEventArgs<T, this>) => void,
+        context?: any,
+    ): this;
+    override on(event: any, fn: (...args: any[]) => void, context?: any): this {
+        // Sprite.on records the handler and appends the component
+        return super.on(event, fn as any, context);
     }
 
     private _looop: boolean = false;
@@ -96,10 +208,26 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
 
     private _paused: boolean = false;
     /**
-     * Set to true if you want the video to be paused.
+     * The suspension applied by `canvas.pause()` to the video of this sprite, if any.
+     */
+    private get systemPauseState() {
+        const video = getVideoElement(this.texture);
+        return video && systemPausedVideos.get(video);
+    }
+    /**
+     * Set to true if you want the video to be paused. This is also the state saved by {@link memory}.
+     *
+     * It reflects the video element, which is shared by every sprite showing it. While `canvas.pause()`
+     * suspends the video, it is the requested playback state (the one `canvas.resume()` will apply),
+     * not the temporary suspension. Before the video is loaded, it is the value that {@link load} applies.
      */
     get paused() {
-        return this.texture?.source?.resource?.paused || false;
+        const video = getVideoElement(this.texture);
+        if (!video) {
+            return this._paused;
+        }
+        const suspended = systemPausedVideos.get(video);
+        return suspended ? !suspended.play : video.paused;
     }
     set paused(value: boolean) {
         if (value) {
@@ -109,19 +237,30 @@ export default class VideoSprite extends ImageSprite<VideoSpriteMemory> {
         }
     }
     /**
-     * Pause the video.
+     * Pause the video. If the video is suspended by `canvas.pause()`, it stays paused after `canvas.resume()`.
      */
     pause() {
         this._paused = true;
+        const suspended = this.systemPauseState;
+        if (suspended) {
+            suspended.play = false;
+        }
         if (this.texture?.source?.resource) {
             this.texture.source.resource.pause();
         }
     }
     /**
-     * Play the video.
+     * Play the video. If this sprite is suspended by `canvas.pause()`, the video starts playing on `canvas.resume()`.
      */
     play() {
         this._paused = false;
+        const suspended = this.systemPauseState;
+        if (suspended) {
+            suspended.play = true;
+            if (suspended.sprites.includes(this)) {
+                return;
+            }
+        }
         if (
             this.texture?.source?.resource?.play &&
             typeof this.texture.source.resource.play === "function"
@@ -188,9 +327,11 @@ export async function setMemoryVideoSprite(
         ignoreTexture?: boolean;
     },
 ) {
-    await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture });
-    if ("loop" in memory && memory.loop !== undefined) element.loop = memory.loop;
-    if ("currentTime" in memory && memory.currentTime !== undefined)
-        element.currentTime = memory.currentTime;
-    if ("paused" in memory && memory.paused !== undefined) element.paused = memory.paused;
+    await element.withSilentEvents(async () => {
+        await setMemoryImageSprite(element, memory, { ignoreTexture: options?.ignoreTexture });
+        if ("loop" in memory && memory.loop !== undefined) element.loop = memory.loop;
+        if ("currentTime" in memory && memory.currentTime !== undefined)
+            element.currentTime = memory.currentTime;
+        if ("paused" in memory && memory.paused !== undefined) element.paused = memory.paused;
+    });
 }

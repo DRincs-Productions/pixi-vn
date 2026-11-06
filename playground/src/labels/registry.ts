@@ -15,17 +15,17 @@ function inferCategory(title: string): string {
 }
 
 /**
- * Every sandbox test label registers itself here so the start menu (see ./start.ts) and the App's
+ * Every playground test label registers itself here so the start menu (see ./start.ts) and the App's
  * per-category accordion (see ../App.tsx) can list it without maintaining a separate hardcoded list.
  */
 export const testLabels: TestLabelEntry[] = [];
 
 /**
- * Same as `newLabel`, but also lists the label in the sandbox start menu.
- * Use this (instead of `newLabel` directly) for every label added under sandbox/src/labels
- * that a human or an agent should be able to reach from the sandbox root menu.
+ * Same as `newLabel`, but also lists the label in the playground start menu.
+ * Use this (instead of `newLabel` directly) for every label added under playground/src/labels
+ * that a human or an agent should be able to reach from the playground root menu.
  * @param category Groups this label with others of the same category under one accordion in the
- * sandbox's start menu. Defaults to the text before the first `:` in `title` (e.g. "Canvas: blur
+ * playground's start menu. Defaults to the text before the first `:` in `title` (e.g. "Canvas: blur
  * transition" -> "Canvas") - pass it explicitly once a module's labels grow past a handful and would
  * benefit from a finer split (e.g. "Canvas transitions" vs "Canvas regressions").
  */

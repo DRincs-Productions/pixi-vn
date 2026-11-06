@@ -12,8 +12,11 @@ import type ImageSprite from "../components/ImageSprite";
  * @returns This function returns an {@link ImageContainer} that you can use to manipulate the component.
  * @example
  * ```ts
- * let bunny = addImageContainer("bunny", ["https://pixijs.com/assets/bunny-body.png", "https://pixijs.com/assets/bunny-eyes.png"])
- * await bunny.load()
+ * Assets.add({ alias: "bunny-body", src: "https://pixijs.com/assets/bunny-body.png" });
+ * Assets.add({ alias: "bunny-eyes", src: "https://pixijs.com/assets/bunny-eyes.png" });
+ *
+ * const bunny = addImageCointainer("bunny", ["bunny-body", "bunny-eyes"]);
+ * await bunny.load();
  * ```
  */
 export function addImageCointainer(
@@ -38,7 +41,10 @@ export function addImageCointainer(
  * @returns This function returns an {@link ImageContainer} that you can use to manipulate the component.
  * @example
  * ```ts
- * let bunny = showImageContainer("bunny", ["https://pixijs.com/assets/bunny-body.png", "https://pixijs.com/assets/bunny-eyes.png"])
+ * Assets.add({ alias: "bunny-body", src: "https://pixijs.com/assets/bunny-body.png" });
+ * Assets.add({ alias: "bunny-eyes", src: "https://pixijs.com/assets/bunny-eyes.png" });
+ *
+ * const bunny = await showImageContainer("bunny", ["bunny-body", "bunny-eyes"]);
  * ```
  */
 export async function showImageContainer(

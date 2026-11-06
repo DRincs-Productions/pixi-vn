@@ -1,6 +1,8 @@
 // Importing each label module registers it (newLabel/registerTestLabel run at import time) —
-// add a line here for every new sandbox test label file.
+// add a line here for every new playground test label file.
+import "./animated-sprite-example";
 import "./blur-transition-example";
+import "./canvas-pause-intent-example";
 import "./canvas-text-example";
 import "./canvas-transition-position";
 import "./dissolve-fade-transition-example";
@@ -16,6 +18,7 @@ import "./push-transition-example";
 import "./split-transition-example";
 import "./start";
 import "./transferred-ticker-position";
+import "./video-events-example";
 import "./wipe-transition-example";
 import "./zoomin-position";
 

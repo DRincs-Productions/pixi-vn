@@ -14,7 +14,7 @@ Pixi'VN is a general-purpose engine, not a specific game. Every module under `sr
   has been initialized unless that's its documented job.
 - **Independently of any specific game's content.** Nothing in `src/` should hardcode a label id,
   asset alias, character name, or UI convention that only makes sense for one project. Anything that
-  looks like "my game's logic" belongs in the sandbox (§3) or a template, never in `src/`.
+  looks like "my game's logic" belongs in the playground (§3) or a template, never in `src/`.
 - **Independently of a specific bundler/framework where feasible.** Bundler-specific integrations
   (e.g. `src/vite/`) are opt-in extras layered on top of a core that itself does not require Vite,
   React, or any particular tool. `pixi.js`, `pixi-filters`, `tone`, `motion`, `@pixi/devtools`, and
@@ -52,26 +52,29 @@ and Web Audio APIs are available without a real browser — most modules, includ
 a feature or fixing a bug without a Vitest test to cover it is incomplete work unless the thing being
 changed genuinely cannot be observed outside a real browser (§3).
 
-## 3. What Vitest can't cover: the sandbox
+## 3. What Vitest can't cover: the playground
 
 Some things can't be meaningfully verified under `jsdom` — real PixiJS rendering/animation timing,
 actual audio playback, real browser ticker/RAF behavior, visual layout. For those:
 
-1. **Add a test label** under [sandbox/src/labels/](sandbox/src/labels/) that exercises the feature.
+The `playground/` app uses Create React App (`react-scripts` and Webpack), not Vite. The library's
+optional Vite integration is separate; use the playground's existing CRA setup for browser checks.
+
+1. **Add a test label** under [playground/src/labels/](playground/src/labels/) that exercises the feature.
    Use `registerTestLabel(id, title, steps)` from
-   [sandbox/src/labels/registry.ts](sandbox/src/labels/registry.ts) (a thin wrapper around `newLabel`)
-   and import the new file from [sandbox/src/labels/index.ts](sandbox/src/labels/index.ts) — it then
-   automatically shows up as a choice in the sandbox's start menu. See
-   [sandbox/src/labels/canvas-text-example.ts](sandbox/src/labels/canvas-text-example.ts) as a
+   [playground/src/labels/registry.ts](playground/src/labels/registry.ts) (a thin wrapper around `newLabel`)
+   and import the new file from [playground/src/labels/index.ts](playground/src/labels/index.ts) — it then
+   automatically shows up as a choice in the playground's start menu. See
+   [playground/src/labels/canvas-text-example.ts](playground/src/labels/canvas-text-example.ts) as a
    template.
 
-2. **Run the sandbox:**
+2. **Run the playground:**
 
    ```bash
-   npm run sandbox   # builds the library, syncs dist/ into sandbox/node_modules, starts the CRA dev server
+   npm run playground   # builds the library, syncs dist/ into playground/node_modules, starts the CRA dev server
    ```
 
-3. **Open the browser** at the printed URL (default `http://localhost:3000`). The sandbox boots
+3. **Open the browser** at the printed URL (default `http://localhost:3000`). The playground boots
    straight into the start menu label, which lists every registered test label as a choice.
    **If the Chrome DevTools MCP server is available, use it** to drive this step yourself
    (`new_page`/`navigate_page`, `click`/`take_snapshot` to click through labels and the
@@ -81,8 +84,8 @@ actual audio playback, real browser ticker/RAF behavior, visual layout. For thos
    headless Playwright script missed because it wasn't checking console output as closely. Fall back
    to a Playwright/`chromium-cli` script, or asking the human to drive the browser, only when Chrome
    DevTools MCP isn't available.
-4. **Drive/inspect it through `Game.testing`** (exposed on `window.pixiVN` in the sandbox — enabled
-   automatically for non-production builds, see `sandbox/src/index.tsx`) instead of clicking blindly:
+4. **Drive/inspect it through `Game.testing`** (exposed on `window.pixiVN` in the playground — enabled
+   automatically for non-production builds, see `playground/src/index.tsx`) instead of clicking blindly:
    read `window.pixiVN.getState()` to see the current dialogue/choices, `selectChoice(i)` to enter a
    test label, and inspect `window.pixiVN.canvas` / `.sound` / `.storage` / `.Game` for state that
    isn't visible as text. Follow the full API and cookbook in the `pixi-vn-testing` skill
@@ -91,19 +94,19 @@ actual audio playback, real browser ticker/RAF behavior, visual layout. For thos
    the right position, does the transition look right, does the animation run smoothly) — `Game.testing`
    tells you *what state the engine thinks it's in*, not what it looks like on screen.
 
-The sandbox is a scratchpad for exercising engine internals, not a game. Its React console is only
+The playground is a scratchpad for exercising engine internals, not a game. Its React console is only
 for test control; labels remain responsible for exercising the engine behavior. Browser-driven
 scripts can use `window.pixiVN`, while a human can use the same actions through the console.
 
-The sandbox currently includes a small React testing console in `sandbox/src/App.tsx`. It lists
+The playground currently includes a small React testing console in `playground/src/App.tsx`. It lists
 registered test labels and provides controls for starting a label, continuing, going back, closing
 the current label, and selecting open choices. The console uses the same `Game.testing` bridge as
 browser-driven tests; `window.pixiVN.canvas` and `window.pixiVN.sound` are also exposed in dev
 mode so visual and audio state can be inspected directly. Keep the console focused on test control,
 not game UI.
 
-Keep sandbox test labels small and focused on one feature each — they're throwaway verification
-tools, not sample content. It's fine (and expected) for `sandbox/src/labels/` to accumulate one file
+Keep playground test labels small and focused on one feature each — they're throwaway verification
+tools, not sample content. It's fine (and expected) for `playground/src/labels/` to accumulate one file
 per feature under active development; delete a test label once the feature it covers is stable and
 adequately covered elsewhere (Vitest, or another still-relevant test label).
 
@@ -118,6 +121,36 @@ conversation with a maintainer happens in another language.
 Other languages are welcome in discussions and for translations of the public docs, but they are
 secondary: never make a non-English version the source of truth, and keep any translation in sync
 with the English original rather than the other way around.
+
+## 5. Codex and Claude implementation workflow
+
+When the agent working on this repository is **Codex**, check whether Claude Code is available and
+usable. If it is, **delegate code implementation to Claude**. Codex remains responsible for directing
+the work, reviewing the result, and running and evaluating the tests. If Claude is unavailable, Codex
+implements the changes itself and follows the same review and testing requirements.
+
+Follow this workflow:
+
+1. **Investigate reuse before delegating implementation.** Inspect the existing code, installed
+   dependencies, and their APIs for functionality that can simplify the solution. Also research
+   relevant libraries available online when they could reduce implementation complexity; verify
+   their current APIs using official documentation. Weigh compatibility, maintenance, license,
+   bundle size, and the modularity and peer dependency requirements in section 1. Do not add a
+   dependency merely because one exists: prefer the simplest suitable solution.
+2. **Codex directs Claude.** Give Claude a concrete scope, the relevant repository conventions,
+   reusable APIs or libraries found during the investigation, expected behavior, and required test
+   coverage. Review its changes and send corrections back to Claude as needed. Delegation does not
+   replace Codex's own judgment or responsibility for the result.
+3. **Review for simplification more than once before running tests.** Codex must perform at least
+   two deliberate review passes: first examine the design for unnecessary abstractions, duplicated
+   logic, and opportunities to reuse existing APIs; then examine the resulting implementation for
+   simpler control flow, clearer types and names, resource cleanup, and unnecessary code or comments.
+   Have Claude apply improvements and review the revised code again before testing. Repeat when
+   material concerns remain; passing tests alone does not establish that a design is good.
+4. **Codex tests and verifies the result.** Run the relevant Vitest tests and other required checks,
+   and use the playground for behavior that requires a real browser, following sections 2 and 3.
+   Direct Claude to fix failures, review the fixes, and rerun the affected checks. Report the final
+   changes, verification results, and any remaining limitations to the user.
 
 ## Related docs
 
