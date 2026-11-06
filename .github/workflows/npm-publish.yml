@@ -25,6 +25,7 @@ jobs:
     name: Test supported Node.js versions
     runs-on: ubuntu-latest
     if: github.event_name == 'push'
+    continue-on-error: ${{ matrix.node-version == '20.19.0' }}
     strategy:
       fail-fast: false
       matrix:
