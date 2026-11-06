@@ -169,7 +169,9 @@ describe("CanvasManager pause/resume of plain PixiJS AnimatedSprites", () => {
             expect(sprite.currentFrame).toBe(frameWhilePaused);
 
             manager.resume();
-            ticker.update(ticker.lastTime + frameTime);
+            // Leave a small timing margin: `currentFrame` advances only after the ticker's deltaTime
+            // reaches a whole frame, and floating-point rounding can put one nominal frame just below it.
+            ticker.update(ticker.lastTime + frameTime * 2);
             expect(sprite.currentFrame).not.toBe(frameWhilePaused);
         } finally {
             sprite?.destroy();
@@ -341,7 +343,7 @@ describe("CanvasManager pause/resume of pixi-vn AnimatedSprites", () => {
             expect(sprite.currentFrame).toBe(0);
 
             manager.resume();
-            ticker.update(ticker.lastTime + frameTime);
+            ticker.update(ticker.lastTime + frameTime * 2);
             expect(sprite.currentFrame).not.toBe(0);
         } finally {
             sprite.destroy();
