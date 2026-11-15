@@ -69,10 +69,12 @@ Pixi’VN is independent of any distribution technology, but strong emphasis is 
 Before starting, you must have the following tools installed:
 
 - [Node.js](https://nodejs.org/) version 20.19.0 or higher.
-- Text editor with TypeScript support, such as:
+- Text editor with TypeScript support or AI coding app, such as:
   - [Visual Studio Code](https://code.visualstudio.com/)
   - [Cursor](https://www.cursor.com/)
-  - [VSCodium](https://vscodium.com/)
+  - [ChatGPT](https://chatgpt.com/download/)
+  - [Claude](https://claude.com/download)
+  - [OpenCode](https://opencode.ai/)
 
 ## Installation
 
