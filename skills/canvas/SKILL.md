@@ -203,6 +203,12 @@ there is no `Texture[]` constructor, and `AnimatedSprite.fromFrames`/`fromImages
 textures can't be saved. Available since `@drincs/pixi-vn` 1.9.9.
 `getSpritesheet(alias)` and `getAnimatedSpriteFrames(source)` are exported for custom components.
 
+Spritesheets don't have to be authored by hand: `.aseprite`/`.ase` files (Aseprite, LibreSprite) and
+`.pxo` files (Pixelorama) can be converted at build time into spritesheets that `AnimatedSprite` uses
+directly, with tags becoming named `animation`s (use `useFrameDurations: true` for the exported frame
+timing). This is done by the AssetPack plugin `@drincs/assetpack-plugin-aseprite`; the quickest setup is
+`npm create pixi-vn@latest add aseprite`.
+
 ## Transitions
 
 Docs: [pixi-vn.com/start/canvas-transition](https://pixi-vn.com/start/canvas-transition).
