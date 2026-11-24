@@ -592,7 +592,7 @@ dependencies and types before adapting examples to a project's PixiJS/Pixi'VN ve
 
 ### Live2D: `@drincs/pixi-vn-live2d`
 
-Use this wrapper around `untitled-pixi-live2d-engine` for Live2D models. Register its render
+Use this wrapper around `untitled-pixi-live2d-engine` for Live2D models. In a template created with `create-pixi-vn`, install and set it up with `npm create pixi-vn@latest add live2d`. Register its render
 plugin **before** `Game.init()` (or `canvas.init()`):
 
 ```ts
@@ -624,7 +624,7 @@ for model options). Do not substitute `ImageSprite.load()` for `Live2D.ready`.
 
 ### Spine: `@drincs/pixi-vn-spine`
 
-Use this wrapper around `@esotericsoftware/spine-pixi-v8` for skeletal animation. Add
+Use this wrapper around `@esotericsoftware/spine-pixi-v8` for skeletal animation. In a template created with `create-pixi-vn`, install and set it up with `npm create pixi-vn@latest add spine2d`. Add
 `import "@drincs/pixi-vn-spine";` to the app entry point: importing the package registers
 the serializable component. A lazy scene import alone is insufficient when a save is restored
 before that scene has ever loaded.

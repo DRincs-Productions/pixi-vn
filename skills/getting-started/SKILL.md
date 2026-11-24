@@ -36,7 +36,7 @@ These are separate npm packages built on `@drincs/pixi-vn`; they are not covered
 | Package | Use it for | Skills / docs |
 | --- | --- | --- |
 | `@drincs/pixi-vn-ink` | Writing the story in [ink](https://github.com/inkle/ink) (`.ink` files, hashtag commands) instead of TypeScript labels | Own skill set, install it alongside this one: `npx skills@latest add DRincs-Productions/pixi-vn-ink@latest --skill '*' -g -y`. Entry point: `pixi-vn-ink`. Docs: [pixi-vn.com/ink](https://pixi-vn.com/ink) |
-| `@drincs/nqtr` | NQTR (Navigation Quest Time Routine): locations/navigation, quests, time management and game state for a not-quite-point-and-click adventure | Own skill set, install it alongside this one: `npx skills@latest add DRincs-Productions/nqtr@latest --skill '*' -g -y`. Entry point: `nqtr`. Docs: [pixi-vn.com/nqtr](https://pixi-vn.com/nqtr) |
+| `@drincs/nqtr` | NQTR (Navigation Quest Time Routine): locations/navigation, quests, time management and game state for a not-quite-point-and-click adventure | Own skill set, install it alongside this one: `npx skills@latest add DRincs-Productions/nqtr@latest --skill '*' -g -y`. Add it to a `create-pixi-vn` template with `npm create pixi-vn@latest add quest-system`. Entry point: `nqtr`. Docs: [pixi-vn.com/nqtr](https://pixi-vn.com/nqtr) |
 
 When a project uses one of these, load its skills (if any) in addition to the matching skill from the map; the plain-TypeScript skills in this set still apply to everything outside the ink/nqtr-specific parts.
 
@@ -415,10 +415,12 @@ of `@drincs/pixi-vn`:
   API reference: [jsdocs.pixi-vn.com/pixi-vn-ai](https://jsdocs.pixi-vn.com/pixi-vn-ai).
 - `@drincs/pixi-vn-live2d`: Live2D models. Register `Live2DPlugin` before initializing the
   canvas; see [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
+  Add it to a `create-pixi-vn` template with `npm create pixi-vn@latest add live2d`.
   API reference: [jsdocs.pixi-vn.com/pixi-vn-live2d](https://jsdocs.pixi-vn.com/pixi-vn-live2d).
 - `@drincs/pixi-vn-spine`: Spine skeletal animation. Import the package in the app entry
   point so saved components can be restored even before lazy scenes load; see
   [canvas plugin setup](../canvas/SKILL.md#external-rendering-plugins).
+  Add it to a `create-pixi-vn` template with `npm create pixi-vn@latest add spine2d`.
   API reference: [jsdocs.pixi-vn.com/pixi-vn-spine](https://jsdocs.pixi-vn.com/pixi-vn-spine).
 
 Check each plugin's installed peer dependencies against the project's engine/PixiJS version.
