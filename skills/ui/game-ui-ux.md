@@ -32,8 +32,24 @@ a material, a voice and a sense of touch. If the result could be dropped into a 
 unchanged, it is wrong for a game.
 
 If the project has these skills installed (`npx skills@latest add emilkowalski/skills`,
-`npx impeccable install`), run their review commands too — but read their verdicts through the
-table below.
+`npx impeccable install`), use them — Emil's `animate`, `choreograph`, `review-animations`,
+`remove-animations`, `break-ui`; Impeccable's `critique`, `audit`, `polish`, `delight`, `animate`
+— but read their verdicts through the tables below.
+
+### Every game screen has a mode
+
+Impeccable picks a **mode** per surface, not per product — and a game contains all of them. Decide
+the mode of each screen before designing it:
+
+| Mode | Game screens | What ambition looks like |
+| --- | --- | --- |
+| **Experience** — the player is inside the work | title screen, gameplay HUD, cutscene overlays, the world map | the art leads; UI recedes or becomes part of the world |
+| **Persuade** — the player decides and commits | reward/level-up, character select, shop offers, results | one authored, bold, celebratory moment |
+| **Operate** — the player completes a task | inventory, equipment, settings, save/load, crafting | precision, scanability, speed, consistency; personality lives in details (sounds, materials, press feel) |
+| **Read** — the player understands something | codex, tutorial pages, quest log, credits | comprehension first, then a reading experience worth staying in |
+
+A shop or inventory is an *Operate* screen that happens to be in a game: it should be as fast and
+legible as a great tool, dressed in the game's material — not a celebration on every click.
 
 ### What transfers and what flips
 
@@ -41,15 +57,19 @@ table below.
 | --- | --- |
 | Animate with a purpose; "sometimes the best animation is no animation." | **Same.** Every motion must acknowledge, explain, orient, warn or celebrate. Purpose just includes *fun* more often. |
 | Frequency decides: things used hundreds of times a day get little or no animation. | **Same, and critical.** Menu navigation, inventory scrolling, "next" presses: instant response. Save the big moments for rare events (level up, reward, boss, unlock). |
-| Enter/exit with **ease-out**, never ease-in; keep UI motion **under ~300 ms**. | **Same for anything blocking input.** Rare, celebratory, non-blocking moments may run longer (a reward reveal of 600–1200 ms), but must be skippable. |
-| Never start from `scale(0)`; start from ~0.9–0.95. Press feedback ≈ `scale(0.97)`. | **Pushed further.** Pressed buttons may squash to 0.92–0.95; pop-ins may start at 0.8 and overshoot. Still never from 0 for routine elements. |
-| Impeccable flags **bounce/elastic easing** as slop ("makes a routine action feel fussy"). | **Flips for the right element.** Springs and overshoot are *juice*: icons, coins, badges, counters, reward popups, a selected card. Keep them off things the player waits on (opening the pause menu, confirm dialogs, settings). |
+| Never animate keyboard-initiated actions. | **Partly flips.** In a game the keyboard/gamepad *is* the main input, so the response to it must exist — but be instant: the focus highlight jumps immediately and carries at most a ≤100 ms flourish; holding a direction to scroll a list disables even that. Shortcuts to frequent screens (`I` for inventory, `Esc` for pause) open with little or no animation. |
+| Enter/exit with **ease-out**, never ease-in; keep UI motion **under ~300 ms** (modals/drawers up to ~500 ms). | **Same for anything blocking input.** Rare, celebratory, non-blocking moments may run longer (a reward reveal of 600–1500 ms), but must be skippable. |
+| Never start from `scale(0)`; start from ~0.9–0.97 with opacity. Press feedback `scale(0.95–0.98)`. | **Pushed further.** Pressed buttons may squash to 0.92–0.95; pop-ins may start at 0.8 and overshoot. Still never from 0 — nothing in a believable world appears from nothing. |
+| Impeccable flags **bounce/elastic easing** "by reflex" as slop; Emil keeps spring `bounce` at 0.1–0.3 and "for playful interactions". | **Flips for the right element.** Game UI *is* a playful interaction: springs and overshoot are *juice* on icons, coins, badges, counters, reward popups, a selected card (bounce 0.3–0.5 for rare celebratory moments). Keep them off things the player waits on (opening the pause menu, confirm dialogs, settings). |
+| "One authored moment", not scattered effects or the same entrance on every section (Impeccable). | **Same, per screen.** Each screen gets at most one focal motion (the item reveal, the title logo); everything else is quiet supporting feedback. Ten things bouncing at once is noise, not juice. |
 | `transform-origin` at the trigger; modals stay centered. | **Same.** A tooltip grows from the slot, a context menu from the cursor, a dropdown from its button. |
 | Avoid gradient text, glow, glassmorphism, pulsing dots, hard offset shadows. | **Context decides.** These are slop when they are *defaults*. In a game they're legitimate if the art direction calls for them (a glowing rare item, a hard drop shadow on a cartoon UI). They are still slop when used by reflex. |
 | Body text ≈ 16 px, line length 65–75 ch, line height ~1.5. | **Bigger, shorter.** Players read at distance and mid-action: see "Typography". Long prose belongs only in codex/lore screens. |
 | Inter / Geist / system font everywhere; cream or purple-gradient palettes are "AI defaults". | **Doubly wrong in games.** Pick display type and palette from the game's fiction. A neutral sans is acceptable only for small numeric/body text, never as the game's voice. |
 | Cards, nested cards, identical card grids. | **Panels, frames, slots, plates, ribbons.** Game UI uses objects (wood, metal, paper, glass, pixels, ink) with a consistent shape language, not floating white rectangles. |
-| Hover states. | **Hover is a bonus, not a requirement.** Gamepad and touch have no hover: focus/selection is the primary state. |
+| Hover states, gated behind `@media (hover: hover) and (pointer: fine)`; the hovered element stays still and a child carries the motion. | **Hover is a bonus, not a requirement.** Gamepad and touch have no hover: focus/selection is the primary state. Keep the gating and the "child moves, hit area stays" rule — a slot that lifts out from under the cursor flickers. |
+| Theme the browser surfaces nobody drew: selection, caret, scrollbars, focus rings (Impeccable's craft floor). | **Even more critical** — these are what instantly reveal "this is a web page": the default arrow cursor, blue text selection on a double-click, the right-click context menu, the ghost image when dragging a sprite, native scrollbars, the blue focus ring, the tap-highlight flash on mobile. Replace or disable every one of them. |
+| No emoji or Unicode glyphs as an icon system; no system display font (Impact, Arial Black) as the voice. | **Same.** Icons are drawn in one consistent style (from the game's art or a real icon set); the display face is sourced and bundled, never "the closest installed font". |
 | Toasts in a corner. | **Toasts are events.** They have sound, an entry direction that matches their exit, a queue, and they never cover critical info. |
 
 ## Start from the player loop
@@ -100,6 +120,11 @@ what lives on the HUD, what lives in menus, and what only appears on change.
   motion/sound personality.
 - **Consistency is what separates "amateur" from "shipped"**: one panel style (9-slice), one button
   family, one font pair, one corner treatment, one spacing scale.
+- **One depth system.** Declare elevation once — outline, drop shadow, or bevel — and use it
+  everywhere; shadows have an offset and a direction consistent with the game's light. A hard,
+  unblurred offset shadow is fine when the world is cartoon/neobrutalist by choice, not by default.
+- **Dark or light comes from the scene, not the genre**: where and when the game is played, and what
+  the art underneath looks like.
 - **The strongest visual treatment goes to the most important current event** — not to the logo,
   not to a decorative frame.
 - **Always test over real gameplay**, ideally the brightest and busiest scene, never over a flat
@@ -150,7 +175,8 @@ Every interactive element needs **every** state, visually distinct:
 - **Previews must match the real rules** (damage preview, stat comparison, cost) and never leak
   hidden state.
 - Cover the edges: empty list, full inventory, one item, 999 items, very long names, filtered to
-  nothing, failed action.
+  nothing, failed action, a 9 999 999 score, a translated label twice as long. Feed worst-case data
+  on purpose (Emil's `break-ui` does exactly this) instead of designing for the happy path.
 - Preserve selection by **stable id**, not list index, across sort/filter.
 - A minimal widget kit for a game: 9-slice panel, button, icon button, bar (HP/progress), slider,
   toggle, list row/slot, tab, tooltip, modal.
@@ -160,37 +186,77 @@ Every interactive element needs **every** state, visually distinct:
 Game UI should feel **tactile**: things have weight, respond to touch, and react to each other.
 That is where it differs most from web UI — but the discipline is the same.
 
-**Rules (from Emil Kowalski, adapted):**
+**Should it animate at all?** Emil's frequency gate, translated to games — answer it before picking
+any curve:
 
-- **Purpose first**: acknowledge, explain, orient, warn, celebrate. Routine input never waits for
-  ornamental animation.
-- **Frequency inverts intensity.** The more often a player sees it, the shorter and subtler it is.
-  The rarer, the bigger.
-- **Ease-out for things entering or responding; never ease-in for UI.** Built-in `ease-out` is
-  often too weak — use a stronger custom curve (e.g. `cubic-bezier(0.22, 1, 0.36, 1)`) or a spring.
-- **Interruptible.** A new input cancels or retargets the current animation; it never queues behind
-  it. Springs (e.g. `motion`, a peer dependency of Pixi'VN) retarget naturally.
-- **Spatial consistency.** Something that slides in from the right leaves to the right; a submenu
-  pushes in the direction of navigation and back reverses it.
-- **Animate `transform` and `opacity`** (or PixiJS `scale`/`position`/`alpha`), not layout
-  properties. No `transition: all`.
+| How often the player sees it | Game examples | Decision |
+| --- | --- | --- |
+| Hundreds of times per session | focus moving in a menu, "next"/advance, scrolling a list, opening inventory/pause by shortcut | instant; at most a ≤100 ms highlight, plus a sound |
+| Tens of times per session | button press, tab switch, tooltip, picking up an item, a counter ticking | short and subtle (100–250 ms) |
+| Occasionally | opening a submenu/modal, a quest update, a notification, a scene/screen transition | standard animation (200–500 ms) |
+| Rarely / once | level up, rare drop, unlock, boss intro, title screen, game over, first-time tutorial | the delight budget lives here — bold, authored, skippable |
+
+**Then name its purpose**: feedback, spatial consistency, state indication, preventing a jarring
+change, explanation — or *delight*, which is only allowed in the rare tier. "It looks cool" on a
+frequent element is a reason to stop.
+
+**Rules (Emil Kowalski and Impeccable, adapted):**
+
+- **Routine input never waits for ornamental animation.** Acknowledge input on the same frame;
+  stagger and entrances never block interaction.
+- **Easing by situation**: entering, exiting or responding → ease-out; moving/morphing on screen →
+  ease-in-out; color/hover changes → ease; constant motion (loading bars, marquees) → linear.
+  **Never ease-in on UI.** The built-in CSS curves are too weak — use strong ones and define them
+  once as tokens:
+
+  ```css
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);       /* entrances, responses */
+  --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);   /* on-screen movement */
+  --ease-drawer: cubic-bezier(0.32, 0.72, 0, 1);    /* sheets, sliding panels */
+  ```
+
+  Don't hand-roll curves: take them from [easing.dev](https://easing.dev) or
+  [easings.co](https://easings.co).
+- **Springs for things that should feel alive** — Motion's `{ type: "spring", duration: 0.5,
+  bounce: 0.2 }` (`motion` is a Pixi'VN peer dependency, and `canvas.animate` accepts its options).
+  Bounce 0.1–0.3 for tactile UI, up to ~0.5 for rare celebratory pops, 0 for anything the player
+  waits on.
+- **Interruptible.** A new input retargets the current animation from where it is; it never
+  restarts from zero or queues behind it. In CSS this means transitions, not keyframes, for anything
+  that can fire rapidly; springs carry velocity through an interruption.
+- **Exits are faster than entrances** (~70–80% of the entry duration), and leave the way they came:
+  something that slides in from the right leaves to the right; a submenu pushes in the direction of
+  navigation and back reverses it.
+- **Asymmetric timing where the player decides.** Hold-to-confirm (skip cutscene, delete save,
+  sell a rare item) fills slowly and linearly (~1–2 s) and snaps back fast (~200 ms ease-out) on
+  release.
+- **Origin-aware.** Popovers, tooltips and radial menus grow from their trigger; centered modals
+  stay centered.
+- **Cheap properties.** Animate `transform`/`opacity` (PixiJS: `position`, `scale`, `rotation`,
+  `alpha`), not layout. No `transition: all`. Blur is a legitimate crossfade mask (`blur(2px)`), but
+  keep it under ~20 px and scoped — in PixiJS every filter is an extra render pass.
+- **Loading screens stay smooth with CSS.** Games load assets while they animate; main-thread/rAF
+  animation drops frames during heavy loading, while CSS `transform`/`opacity` animations run on the
+  compositor. Use CSS (or WAAPI) for spinners and loading bars on HTML layers.
 
 **Suggested timings (starting points, tune by feel):**
 
 | Interaction | Duration | Notes |
 | --- | --- | --- |
-| Button press | 60–100 ms down, 120–200 ms release | squash to ~0.93–0.97, spring back with a little overshoot |
-| Focus/selection move | 80–150 ms | instant if the player holds a direction to scroll |
-| Tooltip | 100–150 ms after a short open delay | siblings open instantly once one is open |
-| Panel / submenu in | 150–250 ms | ease-out or a stiff spring; from 0.95 scale or a short slide |
-| Panel out | ~70% of the in duration | exits are faster than entrances |
+| Button press | 100–160 ms | squash to ~0.93–0.97, spring back with a little overshoot |
+| Focus/selection move | 0–100 ms | instant if the player holds a direction to scroll |
+| Tooltip | 125–200 ms after a short open delay | siblings open instantly, with no animation, once one is open |
+| Panel / submenu in | 150–300 ms | `--ease-out` or a stiff spring; from 0.95 scale or a short slide |
+| Modal / full-screen overlay in | 200–400 ms | centered; dim the background at the same time |
+| Exit of any of the above | ~70–80% of the entry | exits are faster than entrances |
 | Bar change (HP, XP) | 200–400 ms | instant main fill + delayed "ghost" chunk that drains after |
 | Counter roll-up (score, coins) | 300–800 ms | skippable; tabular figures |
 | Reward / level-up / unlock | 600–1500 ms | rare, celebratory, always skippable |
 
 **Juice vocabulary** (use sparingly, on the right elements): squash & stretch, overshoot and
 settle, anticipation (a tiny wind-up before a big pop), staggered entrance of list items
-(30–60 ms apart, capped so the last item isn't late), screen-space particles on rewards, a short
+(30–80 ms apart, slightly non-uniform, total capped so the last item isn't late — one entrance per
+container, not per scrolled section), screen-space particles on rewards, a short
 shake on error (a few px, ~200 ms), a flash on hit/damage, number pop-ups, icons that fly to their
 counter (a coin flies to the coin total, which then bumps).
 
@@ -199,9 +265,19 @@ cancel/back, error, open/close panel, reward. Keep routine sounds short and soft
 repeated ones slightly, and route them through a UI channel the player can mute separately
 (see `pixi-vn-sound`).
 
-**Reduced motion** (`prefers-reduced-motion` or an in-game setting): replace movement with fades or
-instant changes, disable shake/flash, keep the information. Essential feedback must survive with
-motion off. Avoid full-screen flashes for photosensitivity regardless of the setting.
+**Celebration is proportional to frequency and consequence** (Impeccable's `delight`). A routine
+save should simply feel *certain*; a rare drop can explode. Juice must still feel good on the
+hundredth repetition — if it gets tiring, cut it down or move it to a rarer event. Never fake waiting
+or delay a result to stage a flourish.
+
+**Reduced motion** (`prefers-reduced-motion` or an in-game setting) means *fewer and gentler*
+animations, not zero: drop movement, shake, zoom and parallax; keep opacity and color transitions
+and every piece of feedback that confirms an action. Avoid full-screen flashes for photosensitivity
+regardless of the setting.
+
+**Judge motion in motion.** A screenshot can't show timing. Play animations at 2–5× duration or
+frame by frame (Chrome DevTools' Animations panel for HTML layers), check gestures on a real
+device, and look again the next day with fresh eyes.
 
 ## Menus and navigation
 
@@ -267,8 +343,9 @@ loading; scrolling pages instead of screens.
 
 **AI slop that also hits games** (from Impeccable's catalog): purple-to-blue gradients and cyan
 glow by default, gradient text, glassmorphism everywhere, nested panels in panels, identical tile
-grids, label-above-heading, gray text on colored backgrounds, content stuck at `opacity: 0` because
-an entrance animation never ran.
+grids, eyebrow/kicker labels above headings, a colored stripe down one side of a rounded panel, a
+1px border under a wide soft shadow, gray text on colored backgrounds, emoji as icons, content stuck
+at `opacity: 0` because an entrance animation never ran (the default state must be visible).
 
 **Game-specific failures:**
 
@@ -281,6 +358,8 @@ an entrance animation never ran.
 | Feels sluggish | long or ease-in animations on frequent actions; input waits for animation | shorter ease-out, interruptible, instant input |
 | Feels dead | no press feedback, no sound, values snap | press squash, UI sounds, tweened bars/counters |
 | Feels fussy | bounce on everything | springs only on celebratory/tactile elements |
+| Feels like a web page | default cursor, text selection, context menu, native scrollbars/focus ring | custom cursor, `user-select: none`, block the context menu, themed scrollbars and focus |
+| Animation stutters while loading | rAF/JS animation during asset loading | CSS/WAAPI `transform`/`opacity` on the loading screen |
 | Gamepad stuck | nothing focused on open, focus escapes modal | default focus per screen, focus trap, focus restore |
 | Breaks at other resolutions | absolute pixel positions | anchors + margins, one scaling policy |
 | Blurry pixel UI | fractional scale, smoothing | integer scale, nearest-neighbour, pixel snapping |
