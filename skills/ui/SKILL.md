@@ -1,6 +1,6 @@
 ---
 name: pixi-vn-ui
-description: Use when building game UI (menus, HUD, dialogue box, settings/save screens) on top of Pixi'VN with an external JS framework (React, Vue) or with plain PixiJS components — mounting HTML or PixiJS UI layers over the canvas, navigating between UI screens/routes, theming a shadcn/ui-based template, and connecting UI components to game storage/settings. Covers `canvas.htmlLayers.add`/`get`/`remove` and the PixiJS-only layer helpers `canvas.layers.add`/`get`/`remove`.
+description: Use when building game UI (menus, HUD, dialogue box, settings/save screens) on top of Pixi'VN with an external JS framework (React, Vue) or with plain PixiJS components — mounting HTML or PixiJS UI layers over the canvas, navigating between UI screens/routes, theming a shadcn/ui-based template, and connecting UI components to game storage/settings, and designing how a 2D game UI should look, move and feel (HUD, menus, juice, readability, controller navigation). Covers `canvas.htmlLayers.add`/`get`/`remove` and the PixiJS-only layer helpers `canvas.layers.add`/`get`/`remove`.
 ---
 
 # Pixi'VN User Interface (UI)
@@ -28,7 +28,9 @@ Load this skill whenever a task involves:
 
 For the rendering primitives the UI sits on top of (images, sprites, text, transitions), see
 `pixi-vn-canvas`. For building UI screens purely out of PixiJS components (no HTML framework), see
-**`pixijs.md`** in this same skill folder.
+**`pixijs.md`** in this same skill folder. For how a game interface should *look, move and feel*
+(HUD, menus, motion/juice, readability, controller navigation, accessibility), see
+**`game-ui-ux.md`** in this same skill folder.
 
 ## UI vs canvas
 
@@ -312,6 +314,9 @@ storage.setStorageHandler({
   `canvas.add`/`remove`) refuses that alias for a PixiJS UI layer.
 
 ## Related skills
+
+- `game-ui-ux.md` (this folder): design guidance for 2D game UI/UX — load it before designing or
+  restyling any screen.
 
 - pixi-vn-canvas: the rendering primitives (images, sprites, text, transitions) the UI sits on top
   of, and the `gameLayer`/alias system the UI deliberately does _not_ use.
