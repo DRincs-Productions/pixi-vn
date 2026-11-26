@@ -415,6 +415,9 @@ export default class NarrationManager implements NarrationManagerInterface {
                     logger.warn("stepSha not found, setting to ERROR");
                     stepSha = AdditionalShaSpetsEnum.ERROR;
                 }
+                // Recorded before running the step, so a label called from within it is
+                // pushed on top of a parent entry that already carries its sha.
+                NarrationManagerStatic.setCurrentStepSha(stepSha);
                 let result: StepLabelResultType | undefined;
                 let err: unknown;
                 try {

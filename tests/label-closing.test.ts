@@ -45,7 +45,7 @@ test("onLabelClosing can defer the natural end of a called label without resumin
 
     expect(pendingClose).not.toBeNull();
     expect(narration.dialogue?.text).toEqual("Sub line 2.");
-    expect(narration.labels.opened).toEqual([
+    expect(narration.labels.opened).toMatchObject([
         { label: "lc_page1", currentStepIndex: 1 },
         { label: "lc_sub", currentStepIndex: 2 },
     ]);
@@ -54,7 +54,7 @@ test("onLabelClosing can defer the natural end of a called label without resumin
     await pendingClose!();
 
     expect(narration.dialogue?.text).toEqual("resumed.");
-    expect(narration.labels.opened).toEqual([{ label: "lc_page1", currentStepIndex: 2 }]);
+    expect(narration.labels.opened).toMatchObject([{ label: "lc_page1", currentStepIndex: 2 }]);
 });
 
 test("onLabelClosing receives the id of the label that is closing", async () => {
@@ -165,6 +165,6 @@ test("a goNext-style loop (deferring both onLabelStarting and onLabelClosing) te
     await goNext({}); // enters finalLabel, runs out of steps - must not loop forever
 
     expect(narration.dialogue?.text).toEqual("the end.");
-    expect(narration.labels.opened).toEqual([]);
+    expect(narration.labels.opened).toMatchObject([]);
     expect(narration.canContinue).toEqual(false);
 });

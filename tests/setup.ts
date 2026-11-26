@@ -57,8 +57,11 @@ GameUnifier.init({
     },
     restoreGameStepState: async (state, navigate) => {
         HistoryManagerStatic._originalStepData = state;
-        NarrationManagerStatic.openedLabels = state.openedLabels;
+        // Mirrors Game.init: storage first, then relocate steps moved by a game update.
         storage.restore(state.storage);
+        NarrationManagerStatic.openedLabels = NarrationManagerStatic.validateOpenedLabels(
+            state.openedLabels,
+        ).openedLabels;
         // await canvas.restore(state.canvas);
         await sound.restore(state.sound);
         navigate(state.path);

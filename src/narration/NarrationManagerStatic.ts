@@ -4,7 +4,9 @@ import type Label from "@narration/classes/Label";
 import type LabelAbstract from "@narration/classes/LabelAbstract";
 import RegisteredLabels from "@narration/decorators/RegisteredLabels";
 import type HistoryStep from "@narration/interfaces/HistoryStep";
+import { AdditionalShaSpetsEnum } from "@narration/interfaces/HistoryStep";
 import type OpenedLabel from "@narration/interfaces/OpenedLabel";
+import type OpenedLabelsValidation from "@narration/interfaces/OpenedLabelsValidation";
 import type ChoicesMadeType from "@narration/types/ChoicesMadeType";
 import type { LabelIdType } from "@narration/types/LabelIdType";
 import type { StepLabelPropsType, StepLabelResultType } from "@narration/types/StepLabelType";
@@ -322,12 +324,155 @@ export default class NarrationManagerStatic {
                 NarrationManagerStatic._openedLabels[
                     NarrationManagerStatic._openedLabels.length - 1
                 ];
+            const { stepSha1: _previousStepSha, ...rest } = item;
             NarrationManagerStatic._openedLabels[NarrationManagerStatic._openedLabels.length - 1] =
                 {
-                    ...item,
+                    ...rest,
                     currentStepIndex: item.currentStepIndex + 1,
                 };
         }
+    }
+    /**
+     * Record the sha1 of the step the current label is about to run.
+     * @param stepSha The sha1 of the step at the current label's `currentStepIndex`.
+     */
+    static setCurrentStepSha(stepSha: string) {
+        const lastIndex = NarrationManagerStatic._openedLabels.length - 1;
+        if (lastIndex < 0) {
+            return;
+        }
+        NarrationManagerStatic._openedLabels[lastIndex] = {
+            ...NarrationManagerStatic._openedLabels[lastIndex],
+            stepSha1: stepSha,
+        };
+    }
+    /**
+     * Check an opened-labels stack (usually from a save) against the labels currently registered,
+     * to detect labels that were edited, renamed or deleted after the stack was recorded.
+     *
+     * For every entry of the stack:
+     * - if its label is no longer registered, the stack is invalid from that entry onward;
+     * - if the sha1 of the step at `currentStepIndex` still matches the recorded one, it is kept;
+     * - if the same step is found at another index (steps were added or removed before it),
+     *   `currentStepIndex` is relocated there (the closest match to the old index wins);
+     * - otherwise (the step was changed or removed) the stack is invalid from that entry onward.
+     *
+     * An entry with no usable recorded sha1 (saves made with older versions, a label closing, or a
+     * label that doesn't provide step sha1s) is accepted as-is.
+     * @param openedLabels The stack to check. It is not modified.
+     * @returns The status and the stack to use: relocated when needed, the given one unchanged when
+     * invalid.
+     */
+    static validateOpenedLabels(openedLabels: OpenedLabel[]): OpenedLabelsValidation {
+        const result: OpenedLabel[] = [];
+        let relocated = false;
+        for (let depth = 0; depth < openedLabels.length; depth++) {
+            const entry = openedLabels[depth];
+            if (!RegisteredLabels.has(entry.label)) {
+                return { status: "invalid", openedLabels };
+            }
+            const label = RegisteredLabels.get(entry.label) as LabelAbstract<any> | undefined;
+            const expectedSha = entry.stepSha1;
+            if (!label || !NarrationManagerStatic.isComparableSha(expectedSha)) {
+                result.push(entry);
+                continue;
+            }
+            const inRange = entry.currentStepIndex >= 0 && entry.currentStepIndex < label.stepCount;
+            const currentSha = inRange
+                ? NarrationManagerStatic.safeStepSha(label, entry.currentStepIndex)
+                : undefined;
+            // An in-range step without a usable sha can't be checked, so it is trusted; an index
+            // that is now out of range means the recorded step was removed (or moved).
+            if (currentSha === expectedSha || (inRange && currentSha === undefined)) {
+                result.push(entry);
+                continue;
+            }
+            const newIndex = NarrationManagerStatic.findClosestStepIndex(
+                label,
+                expectedSha,
+                entry.currentStepIndex,
+            );
+            if (newIndex === undefined) {
+                return { status: "invalid", openedLabels };
+            }
+            logger.warn(
+                `The step ${entry.currentStepIndex} of the label "${entry.label}" was moved to ${newIndex} in this version of the game, so it was relocated`,
+            );
+            relocated = true;
+            result.push({ ...entry, currentStepIndex: newIndex });
+        }
+        return { status: relocated ? "relocated" : "valid", openedLabels: result };
+    }
+    /**
+     * Best-effort repair of an opened-labels stack that {@link validateOpenedLabels} rejected,
+     * touching only the narration pointer (used when the history can't rewind to a valid state):
+     * - entries whose label is no longer registered are removed;
+     * - if the top label's current step was changed or removed, its index is moved back by one, so
+     *   that the next `continue()` runs the step now at that position;
+     * - a parent whose step was changed keeps its index, so narration resumes after it once the
+     *   labels above it close.
+     * @returns The repaired stack; empty when nothing usable is left.
+     */
+    static repairOpenedLabels(openedLabels: OpenedLabel[]): OpenedLabel[] {
+        const result: OpenedLabel[] = [];
+        openedLabels.forEach((entry, depth) => {
+            const isTop = depth === openedLabels.length - 1;
+            const validation = NarrationManagerStatic.validateOpenedLabels([entry]);
+            if (validation.status !== "invalid") {
+                result.push(validation.openedLabels[0]);
+                return;
+            }
+            const label = RegisteredLabels.has(entry.label)
+                ? (RegisteredLabels.get(entry.label) as LabelAbstract<any> | undefined)
+                : undefined;
+            if (!label) {
+                logger.warn(
+                    `The label "${entry.label}" no longer exists in this version of the game, so it was closed`,
+                );
+                return;
+            }
+            logger.warn(
+                `The step ${entry.currentStepIndex} of the label "${entry.label}" was changed or removed in this version of the game`,
+            );
+            result.push({
+                label: entry.label,
+                currentStepIndex: isTop
+                    ? Math.min(entry.currentStepIndex, label.stepCount) - 1
+                    : entry.currentStepIndex,
+            });
+        });
+        return result;
+    }
+    private static isComparableSha(sha: string | undefined): sha is string {
+        return (
+            !!sha &&
+            sha !== AdditionalShaSpetsEnum.ERROR &&
+            sha !== AdditionalShaSpetsEnum.DEVELOPER
+        );
+    }
+    private static safeStepSha(label: LabelAbstract<any>, index: number): string | undefined {
+        try {
+            const sha = label.getStepSha(index);
+            return NarrationManagerStatic.isComparableSha(sha) ? sha : undefined;
+        } catch (_e) {
+            return undefined;
+        }
+    }
+    private static findClosestStepIndex(
+        label: LabelAbstract<any>,
+        sha: string,
+        oldIndex: number,
+    ): number | undefined {
+        let best: number | undefined;
+        for (let index = 0; index < label.stepCount; index++) {
+            if (NarrationManagerStatic.safeStepSha(label, index) !== sha) {
+                continue;
+            }
+            if (best === undefined || Math.abs(index - oldIndex) < Math.abs(best - oldIndex)) {
+                best = index;
+            }
+        }
+        return best;
     }
 
     private static _onStepStart?: (

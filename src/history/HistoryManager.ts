@@ -123,6 +123,42 @@ export default class HistoryManager implements HistoryManagerInterface {
         }
         return HistoryManagerStatic._stepsInfoHistory.get(fromKey)?.inputValue;
     }
+    /**
+     * Undoes the checkpoint diff with the highest key below `beforeKey`, without touching the
+     * live game or the history maps. `fromKey` is the restored state's step count, i.e. the first
+     * history key that the restored state invalidates.
+     * @throws when the diff can't be applied.
+     */
+    private async undoCheckpoint(
+        state: GameStepState,
+        beforeKey: number = Number.POSITIVE_INFINITY,
+    ): Promise<{ state: GameStepState; fromKey: number; diffKey: number } | undefined> {
+        // In "step" mode this is always the same as lastKey; in "paragraph" mode most
+        // steps have no diff of their own, so this finds the checkpoint to jump to.
+        let targetKey: number | undefined;
+        for (const key of HistoryManagerStatic._diffHistory.keys()) {
+            if (key < beforeKey && (targetKey === undefined || key > targetKey)) {
+                targetKey = key;
+            }
+        }
+        if (targetKey === undefined) {
+            return undefined;
+        }
+        const diff = HistoryManagerStatic._diffHistory.get(targetKey);
+        if (!diff) {
+            return undefined;
+        }
+        const result = await restoreDiffMaybeOffloaded(state, diff);
+        // The diff at `targetKey` undoes everything merged into it since the
+        // PREVIOUS checkpoint - so that previous checkpoint's key (+1), not
+        // `targetKey` itself, is both the restored state's true step count and
+        // where every now-invalidated step (merged or not) needs deleting from.
+        return {
+            state: result,
+            fromKey: this.previousCheckpointKey(targetKey) + 1,
+            diffKey: targetKey,
+        };
+    }
     private async getOldGameState(
         steps: number,
         restoredStep: GameStepState,
@@ -133,38 +169,72 @@ export default class HistoryManager implements HistoryManagerInterface {
         if (this.size === 0) {
             return restoredStep;
         }
-        // In "step" mode this is always the same as lastKey; in "paragraph" mode most
-        // steps have no diff of their own, so this finds the checkpoint to jump to.
-        const targetKey = this.lastDiffKey;
-        if (typeof targetKey !== "number") {
+        if (typeof this.lastDiffKey !== "number") {
             logger.warn("You can't go back, there is no step to go back");
             return restoredStep;
         }
-        const diff = HistoryManagerStatic._diffHistory.get(targetKey);
-        if (diff) {
-            try {
-                const result = await restoreDiffMaybeOffloaded(restoredStep, diff);
-                // The diff at `targetKey` undoes everything merged into it since the
-                // PREVIOUS checkpoint - so that previous checkpoint's key (+1), not
-                // `targetKey` itself, is both the restored state's true step count and
-                // where every now-invalidated step (merged or not) needs deleting from.
-                const fromKey = this.previousCheckpointKey(targetKey) + 1;
-                GameUnifier.stepCounter = fromKey;
-                // Only the final landing spot matters here - do this before deleting the
-                // now-invalidated steps below, since that's what erases the answer.
-                if (steps === 1) {
-                    this.pendingInputRestoreValue = this.findPreviousInputAnswer(fromKey);
-                }
-                this.deleteFromKeyOnward(fromKey);
-                return this.getOldGameState(steps - 1, result);
-            } catch (e) {
-                logger.error("Error applying diff", e);
+        try {
+            const undone = await this.undoCheckpoint(restoredStep);
+            if (!undone) {
+                logger.warn("No diff found for the last step, cannot go back");
                 return restoredStep;
             }
-        } else {
-            logger.warn("No diff found for the last step, cannot go back");
+            const { state, fromKey } = undone;
+            GameUnifier.stepCounter = fromKey;
+            // Only the final landing spot matters here - do this before deleting the
+            // now-invalidated steps below, since that's what erases the answer.
+            if (steps === 1) {
+                this.pendingInputRestoreValue = this.findPreviousInputAnswer(fromKey);
+            }
+            this.deleteFromKeyOnward(fromKey);
+            return this.getOldGameState(steps - 1, state);
+        } catch (e) {
+            logger.error("Error applying diff", e);
             return restoredStep;
         }
+    }
+    async rewindUntil(
+        isValid: (
+            state: GameStepState,
+            stepInfo: Omit<HistoryStep, "diff"> | undefined,
+        ) => boolean | Promise<boolean>,
+    ): Promise<GameStepState | undefined> {
+        const startState = HistoryManagerStatic._originalStepData;
+        if (!startState) {
+            return undefined;
+        }
+        // The baseline is the state of the most recent checkpoint: in "step" mode that's the
+        // last recorded step, in "paragraph" mode it can be older (the last diff key, or the
+        // first step when no paragraph has ended yet).
+        let baselineKey = this.lastKey ?? -1;
+        if (HistoryManagerStatic.goBackMode !== "step") {
+            baselineKey = this.lastDiffKey ?? Math.min(...this.keys(), baselineKey);
+        }
+        let fromKey = baselineKey + 1;
+        let beforeKey = Number.POSITIVE_INFINITY;
+        let state: GameStepState = startState;
+        try {
+            while (true) {
+                if (await isValid(state, HistoryManagerStatic._stepsInfoHistory.get(fromKey - 1))) {
+                    break;
+                }
+                const undone = await this.undoCheckpoint(state, beforeKey);
+                if (!undone) {
+                    return undefined;
+                }
+                state = undone.state;
+                fromKey = undone.fromKey;
+                beforeKey = undone.diffKey;
+            }
+        } catch (e) {
+            logger.error("Error applying diff", e);
+            return undefined;
+        }
+        GameUnifier.stepCounter = fromKey;
+        this.deleteFromKeyOnward(fromKey);
+        HistoryManagerStatic._narrationHistory.clear();
+        this.restoreNarrativeHistory();
+        return state;
     }
     public async back(props: StepLabelPropsType, options: { steps?: number } = {}) {
         const { steps = 1 } = options;

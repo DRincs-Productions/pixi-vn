@@ -18,6 +18,7 @@ export type { default as NarrationLabelsInterface } from "@narration/interfaces/
 export type { default as NarrationManagerInterface } from "@narration/interfaces/NarrationManagerInterface";
 export type { default as NarrationQueriesInterface } from "@narration/interfaces/NarrationQueriesInterface";
 export type { default as OpenedLabel } from "@narration/interfaces/OpenedLabel";
+export type { default as OpenedLabelsValidation } from "@narration/interfaces/OpenedLabelsValidation";
 export type { default as StepLabelProps } from "@narration/interfaces/StepLabelProps";
 export type { default as StepLabelResult } from "@narration/interfaces/StepLabelResult";
 export type {

@@ -1,4 +1,4 @@
-import type { HistoryInfo } from "@drincs/pixi-vn";
+import type { GameStepState, HistoryInfo } from "@drincs/pixi-vn";
 import type { Difference } from "microdiff";
 import type { CachedMap } from "../../classes";
 import type {
@@ -83,6 +83,24 @@ export default interface HistoryManagerInterface {
      * Block the go back function.
      */
     blockGoBack(): void;
+    /**
+     * Walk the recorded history backwards, checkpoint by checkpoint, applying the diffs in memory
+     * only (nothing is restored in the live game), until `isValid` accepts a state. Used when
+     * loading a save whose current step no longer exists in this version of the game.
+     *
+     * When a state is accepted, every history step after it is deleted and the step counter is
+     * moved back to it; the caller is responsible for restoring the returned state. When none is
+     * accepted, the history is left untouched and `undefined` is returned.
+     * @param isValid Called with each candidate state (most recent first) and the history step it
+     * corresponds to, if still recorded.
+     * @returns The accepted state, or `undefined`.
+     */
+    rewindUntil(
+        isValid: (
+            state: GameStepState,
+            stepInfo: Omit<HistoryStep, "diff"> | undefined,
+        ) => boolean | Promise<boolean>,
+    ): Promise<GameStepState | undefined>;
     /**
      * Return true if it is possible to go back.
      */

@@ -80,6 +80,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                 {
                     label: "stepCounter",
                     currentStepIndex: 2,
+                    stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                 },
             ],
             stepCounter: 9,
@@ -127,6 +128,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 0,
+                            stepSha1: "baebec4b549ebe7469c1e505411d708cd3bda655",
                         },
                     ],
                 },
@@ -144,6 +146,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 1,
+                            stepSha1: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
                         },
                     ],
                     diff: [
@@ -177,6 +180,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 1,
                             oldValue: 0,
                         },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
+                            oldValue: "baebec4b549ebe7469c1e505411d708cd3bda655",
+                        },
                     ],
                 },
                 {
@@ -193,6 +202,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 2,
+                            stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                         },
                     ],
                     diff: [
@@ -226,6 +236,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 2,
                             oldValue: 1,
                         },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "7025258c04dd14d937729de1286486bb81ba833c",
+                            oldValue: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
+                        },
                     ],
                 },
                 {
@@ -242,6 +258,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 0,
+                            stepSha1: "baebec4b549ebe7469c1e505411d708cd3bda655",
                         },
                     ],
                     diff: [
@@ -281,6 +298,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 0,
                             oldValue: 2,
                         },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "baebec4b549ebe7469c1e505411d708cd3bda655",
+                            oldValue: "7025258c04dd14d937729de1286486bb81ba833c",
+                        },
                     ],
                 },
                 {
@@ -297,6 +320,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 1,
+                            stepSha1: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
                         },
                     ],
                     diff: [
@@ -324,6 +348,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 1,
                             oldValue: 0,
                         },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
+                            oldValue: "baebec4b549ebe7469c1e505411d708cd3bda655",
+                        },
                     ],
                 },
                 {
@@ -340,6 +370,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 2,
+                            stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                         },
                     ],
                     diff: [
@@ -367,6 +398,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 2,
                             oldValue: 1,
                         },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "7025258c04dd14d937729de1286486bb81ba833c",
+                            oldValue: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
+                        },
                     ],
                 },
                 {
@@ -383,6 +420,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 0,
+                            stepSha1: "baebec4b549ebe7469c1e505411d708cd3bda655",
                         },
                     ],
                     diff: [
@@ -416,6 +454,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 0,
                             oldValue: 2,
                         },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "baebec4b549ebe7469c1e505411d708cd3bda655",
+                            oldValue: "7025258c04dd14d937729de1286486bb81ba833c",
+                        },
                     ],
                 },
                 {
@@ -432,6 +476,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 1,
+                            stepSha1: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
                         },
                     ],
                     diff: [
@@ -459,6 +504,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             value: 1,
                             oldValue: 0,
                         },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
+                            oldValue: "baebec4b549ebe7469c1e505411d708cd3bda655",
+                        },
                     ],
                 },
                 {
@@ -475,6 +526,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                         {
                             label: "stepCounter",
                             currentStepIndex: 2,
+                            stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                         },
                     ],
                     diff: [
@@ -501,6 +553,12 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                             type: "CHANGE",
                             value: 2,
                             oldValue: 1,
+                        },
+                        {
+                            path: ["openedLabels", 0, "stepSha1"],
+                            type: "CHANGE",
+                            value: "7025258c04dd14d937729de1286486bb81ba833c",
+                            oldValue: "d470173d5d952b59f404ee196f7e4a7f0f820c7a",
                         },
                     ],
                 },
@@ -540,6 +598,7 @@ test("Game.exportGameState & Game.clear & Game.exportGameState", async () => {
                     {
                         label: "stepCounter",
                         currentStepIndex: 2,
+                        stepSha1: "7025258c04dd14d937729de1286486bb81ba833c",
                     },
                 ],
             },

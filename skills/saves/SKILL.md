@@ -83,6 +83,38 @@ Game.addOnRestoreGameState(() => myLibrary.refresh(), { timing: "after" });
   `OnRestoreGameStateOptions`, `GameStateHookTiming`.
 - Make custom properties optional (`?`) — saves created before the library was added won't have them.
 
+## Loading a save after a game update
+
+A save records, for every opened label, the current step index **and the sha1 of that step's source
+code** (`OpenedLabel.stepSha1`). On `Game.restoreGameState`, every opened label is checked against
+the labels registered in the current version of the game. You don't need to call anything:
+
+| What changed since the save | What happens on load |
+| --- | --- |
+| Nothing, or only steps the player already passed | Restored as saved. |
+| Steps added/removed **before** the current one | The current step is found by its sha1 and its index is relocated, so nothing is repeated or skipped. |
+| The current step was changed or removed, or a label in the stack was deleted/renamed | The engine walks the save's go-back history backwards **in memory** to the most recent step that still exists unchanged, then restores storage, canvas and sound **once**, at that step. The next `continue()` runs the new content. |
+| As above, but the history can't reach a valid step (`stepLimitSaved`, `blockGoBack()`) | Only the narration pointer is repaired: deleted labels are closed, a changed current step is re-run on the next `continue()`. |
+| Nothing valid is left (e.g. the root label was deleted) | Handlers registered with `Game.addOnError` receive a `PixiError` with code `"obsolete_save"`; no label is left open. |
+
+```ts
+import { Game, PixiError } from "@drincs/pixi-vn";
+
+Game.addOnError((error) => {
+    if (error instanceof PixiError && error.code === "obsolete_save") {
+        // e.g. tell the player and go back to the main menu with your app's own router
+        // (the step props passed to this handler are empty: no step is running while loading)
+        showObsoleteSaveMessage();
+    }
+});
+```
+
+- Renaming a label id counts as deleting it. Keep ids stable across releases.
+- Going back after a relocated load (`stepHistory.back`) is relocated too.
+- Detection relies on `LabelAbstract.getStepSha`: custom label classes whose steps all return the same
+  sha1 (or `undefined`) can't be checked, so their saves are restored as before. Saves made with
+  older Pixi'VN versions have no `stepSha1` and are restored as-is.
+
 ## Real-world persistence convention (official React template)
 
 `Game.exportGameState()` says nothing about *where* that payload lives or what metadata a save-slot

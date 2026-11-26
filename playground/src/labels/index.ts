@@ -15,6 +15,7 @@ import "./move-transition-example";
 import "./persistent-filters-example";
 import "./pixelate-transition-example";
 import "./push-transition-example";
+import "./save-compatibility-example";
 import "./split-transition-example";
 import "./start";
 import "./transferred-ticker-position";

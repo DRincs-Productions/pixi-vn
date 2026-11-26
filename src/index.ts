@@ -146,8 +146,13 @@ export namespace Game {
             },
             restoreGameStepState: async (state, navigate) => {
                 historyUtils.HistoryManagerStatic._originalStepData = state;
-                narrationUtils.NarrationManagerStatic.openedLabels = state.openedLabels;
+                // Storage first: labels whose steps are generated from game state need it to
+                // compute the step sha1s used to relocate steps moved by a game update.
                 storageUtils.storage.restore(state.storage);
+                narrationUtils.NarrationManagerStatic.openedLabels =
+                    narrationUtils.NarrationManagerStatic.validateOpenedLabels(
+                        state.openedLabels,
+                    ).openedLabels;
                 try {
                     if (canvasUtils.canvas.isInitialized) {
                         await canvasUtils.canvas.restore(state.canvas);
@@ -394,12 +399,29 @@ export namespace Game {
     export async function restoreGameState(data: pixivninterface.GameState): Promise<void> {
         await runOnRestoreGameState(data, "before");
         historyUtils.stepHistory.restore(data.historyData);
-        const lastHistoryKey = historyUtils.stepHistory.lastKey;
-        if (typeof lastHistoryKey === "number") {
-            const historyItem = historyUtils.stepHistory.stepsInfoMap.get(lastHistoryKey) || null;
-            await narrationUtils.narration.restore(data.stepData, historyItem);
-        }
+        // Storage first: labels whose steps are generated from game state need it to compute
+        // the step sha1s used to check the save against the current version of the game.
         storageUtils.storage.restore(data.storageData);
+        const savedOpenedLabels = data.stepData?.openedLabels ?? [];
+        const validation =
+            narrationUtils.NarrationManagerStatic.validateOpenedLabels(savedOpenedLabels);
+        if (validation.status === "invalid") {
+            const rewound = await rewindToValidState();
+            if (rewound) {
+                await runOnRestoreGameState(data, "after");
+                return;
+            }
+            // The rewind tried (and restored the storage of) older states: put the saved one back.
+            storageUtils.storage.restore(data.storageData);
+        }
+        const openedLabels =
+            validation.status === "invalid"
+                ? narrationUtils.NarrationManagerStatic.repairOpenedLabels(savedOpenedLabels)
+                : validation.openedLabels;
+        await narrationUtils.narration.restore(
+            { ...data.stepData, openedLabels },
+            lastHistoryStep(),
+        );
         try {
             if (canvasUtils.canvas.isInitialized) {
                 await canvasUtils.canvas.restore(data.canvasData);
@@ -407,7 +429,55 @@ export namespace Game {
             await soundUtils.sound.restore(data.soundData);
         } catch (_e) {}
         await GameUnifier.navigate(data.path);
+        if (savedOpenedLabels.length > 0 && openedLabels.length === 0) {
+            await GameUnifier.runOnError(
+                new PixiError(
+                    "obsolete_save",
+                    "The save is not compatible with this version of the game: the labels it was in no longer exist and the history can't go back to a valid step",
+                ),
+                {},
+            );
+        }
         await runOnRestoreGameState(data, "after");
+    }
+
+    function lastHistoryStep() {
+        const lastKey = historyUtils.stepHistory.lastKey;
+        return typeof lastKey === "number"
+            ? historyUtils.stepHistory.stepsInfoMap.get(lastKey) || null
+            : null;
+    }
+
+    /**
+     * Called while loading a save whose narration position is no longer valid in this version of
+     * the game (a label was deleted/renamed, or its current step was changed or removed). Goes back,
+     * in memory only, through the save's history to the most recent step that is still valid, and
+     * restores the game there with a single restoration of every module.
+     * @returns `true` if a valid step was found and restored.
+     */
+    async function rewindToValidState(): Promise<boolean> {
+        let openedLabels: narrationUtils.OpenedLabel[] = [];
+        const state = await historyUtils.stepHistory.rewindUntil((candidate) => {
+            if (!candidate.openedLabels?.length) {
+                return false;
+            }
+            storageUtils.storage.restore(candidate.storage);
+            const validation = narrationUtils.NarrationManagerStatic.validateOpenedLabels(
+                candidate.openedLabels,
+            );
+            openedLabels = validation.openedLabels;
+            return validation.status !== "invalid";
+        });
+        if (!state) {
+            return false;
+        }
+        logger.warn(
+            "The save was made at a point of the story that was changed in this version of the game, so it was loaded from the most recent step that still exists",
+        );
+        const stepCounter = GameUnifier.stepCounter;
+        await narrationUtils.narration.restore({ openedLabels, stepCounter }, lastHistoryStep());
+        await GameUnifier.restoreGameStepState({ ...state, openedLabels }, GameUnifier.navigate);
+        return true;
     }
 
     /**
