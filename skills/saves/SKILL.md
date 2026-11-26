@@ -85,6 +85,8 @@ Game.addOnRestoreGameState(() => myLibrary.refresh(), { timing: "after" });
 
 ## Loading a save after a game update
 
+Available since `@drincs/pixi-vn` 1.9.10.
+
 A save records, for every opened label, the current step index **and the sha1 of that step's source
 code** (`OpenedLabel.stepSha1`). On `Game.restoreGameState`, every opened label is checked against
 the labels registered in the current version of the game. You don't need to call anything:
